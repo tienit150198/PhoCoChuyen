@@ -2,7 +2,9 @@
 
 🖥️ #440 (chủ game 19/10 "các nghề đều phải có cả 2 bên"): mỗi nghề chọn riêng Giao diện đầy đủ (cũ) / gọn (mới) ở nút ⋯ màn làm việc (mnl.clean.c, v4/shell.js setCleanCareer), "↩️ Theo cài đặt chung" để bỏ; thêm bản gọn cho khách sạn, tiệc, bưu điện, xưởng vẽ, luật sư, giặt ủi, hải quan; trả bản đầy đủ cho cứu hộ, y tá, công an, cà phê, quần áo, tạp hóa, kho.
 📋 Đối chiếu nội bộ: bản đầy đủ mở sẵn chứng từ, chip xuống dòng; ui-kit tapSlip chặn chạm nhầm khi lướt ([data-tap-guard]).
-Có gì mới 2.4.62: 2 dòng.
+🧹 #447 (chủ game 19/10 "làm việc tốt và phạt nặng gì đó để được xóa tội"): org.clear_one / pm_org_clear: đang công tác (không đình chỉ), CLEAR_RUN 10 ngày liên tục không vi phạm (x.clean), ★ ≥ 4.0, nộp phạt CLEAR_FINE 500k × lần thứ n từ ví → hồ sơ công tác −1 vi phạm, chuỗi ngày tốt về 0; journey.svc.pd đếm số lần (bản cũ không đọc được khóa pd: rollback dưới 2.4.62 từ chối save đã xóa vi phạm). Hải quan từ chối vì vi phạm thì chỉ cách xóa; 🎖️ Cấp bậc → Xem thêm có ô 🧹.
+💌 Vòng quay 20/10: lời chúc riêng mỗi người (wish_of: 10 × 16 × 8 câu ghép theo mã quà), hiện thay đoạn chữ chung.
+Có gì mới 2.4.62: 4 dòng.
 
 # v2.4.61 — 2026-10-19
 

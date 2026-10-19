@@ -139,12 +139,47 @@ WHEEL = (
     (1_000_000, 5, 'Tròn một triệu'),
     (1_314_000, 2, '1314 · Trọn đời trọn kiếp'),
 )
+# 💌 each player's own 20/10 wish (owner 19/10 "mỗi người 1 lời chúc khác nhau"): one line of each, picked from the gift
+# id's hash, 10 × 16 × 8 = 1280 different wishes; computed when shown, so a gift queued before this text existed has one too
+WISH_A = (
+    'Chúc mừng ngày Phụ nữ Việt Nam 20/10!', 'Mừng 20/10, Phố Có Chuyện gửi bạn một lời chúc nhỏ!', '20/10 vui thật vui nha!',
+    'Hôm nay là 20/10, ngày của những bông hoa!', 'Cả phố chúc mừng 20/10!', 'Một ngày 20/10 thật đặc biệt gửi tới bạn!',
+    'Phố lên đèn mừng 20/10!', 'Gửi bạn một bó hoa 20/10 thật xinh!', 'Ngày 20/10 đến rồi!', 'Nhân ngày 20/10, cả phố gửi bạn lời chúc nè!',
+)
+WISH_B = (
+    'Chúc bạn luôn xinh đẹp, rạng rỡ và được yêu thương thật nhiều.',
+    'Chúc những người phụ nữ bạn thương luôn khỏe mạnh, bình an và hạnh phúc.',
+    'Chúc bạn có một ngày ngập tràn hoa, quà và những nụ cười.',
+    'Chúc mẹ, chị, em và người thương của bạn luôn vui như hôm nay.',
+    'Chúc bạn làm gì cũng thuận, tiệm đông khách và ví luôn đầy.',
+    'Chúc bạn luôn tự tin, mạnh mẽ và tỏa sáng theo cách của riêng mình.',
+    'Chúc bạn được nuông chiều cả ngày, không phải lo nghĩ gì hết.',
+    'Chúc trái tim bạn luôn ấm áp và có người bên cạnh sẻ chia.',
+    'Chúc bạn một năm bình yên, sức khỏe dồi dào, tình cảm vẹn tròn.',
+    'Chúc mọi ước mơ của bạn đều nở hoa như những đóa hồng hôm nay.',
+    'Chúc bạn luôn được trân trọng, ở trong game lẫn ngoài đời.',
+    'Chúc bạn cười thật nhiều, vì nụ cười của bạn làm cả phố sáng lên.',
+    'Chúc gia đình bạn luôn đầm ấm, tiếng cười rộn ràng mỗi ngày.',
+    'Chúc bạn đủ dịu dàng để yêu thương và đủ mạnh mẽ để vượt mọi khó khăn.',
+    'Chúc bạn gặp toàn điều may, làm toàn việc vui, quen toàn người tốt.',
+    'Chúc bạn luôn trẻ trung, yêu đời và hạnh phúc như tuổi đôi mươi.',
+)
+WISH_C = ('💐', '🌸 Chơi vui nha!', '💖 Thương bạn!', '🌷 Cảm ơn bạn đã ở cùng phố!', '🌹 Mãi xinh nha!', '🎀 Hạnh phúc nhé!',
+          '💛 Cả phố yêu bạn!', '🌼 Chúc bạn một ngày thật đẹp!')
+
+
+def wish_of(gid: str) -> str:
+    h = int(hashlib.sha256(f'wish{gid}'.encode()).hexdigest()[:12], 16)
+    a, h = h % len(WISH_A), h // len(WISH_A)
+    b, h = h % len(WISH_B), h // len(WISH_B)
+    return f'{WISH_A[a]} {WISH_B[b]} {WISH_C[h % len(WISH_C)]}'
 
 
 def wheel_slot(prefix: str, sid: str) -> int:
     """The save's slot on the wheel: by weight, from a hash of the prefix and the sid (no state, the same each time)."""
-    n = int(hashlib.sha256(f'{prefix}\x1f{sid}'.encode()).hexdigest()[:12], 16) % sum(w for _, w, _ in WHEEL)
-    for i, (_, w, _) in enumerate(WHEEL):
+    n = int(hashlib.sha256(f'{prefix}\x1f{sid}'.encode()).hexdigest()[:12], 16) % sum(x[1] for x in WHEEL)
+    for i, x in enumerate(WHEEL):
+        w = x[1]
         if n < w:
             return i
         n -= w
@@ -152,10 +187,10 @@ def wheel_slot(prefix: str, sid: str) -> int:
 
 
 def wheel_of(gid: str) -> dict | None:
-    """The card's wheel for a wheel gift id ({slots: [{coins, note}]}), None for any other gift."""
+    """The card's wheel for a wheel gift id ({slots: [{coins, note}], wish}), None for any other gift."""
     if not any(b.get('wheel') and gid.startswith(b['prefix'] + '-') for b in BROADCASTS):
         return None
-    return dict(slots=[dict(coins=c, note=t) for c, _, t in WHEEL])
+    return dict(slots=[dict(coins=c, note=t) for c, _, t in WHEEL], wish=wish_of(gid))
 
 
 def _broadcast_id(prefix: str, sid: str) -> str:

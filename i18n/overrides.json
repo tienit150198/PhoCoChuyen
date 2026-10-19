@@ -1,5 +1,9 @@
 {
   "strings": {
+  "Hồ sơ công tác: làm 10 ngày liên tục không vi phạm, ★ từ 4.0 và nộp phạt là xóa được 1 vi phạm (🎖️ Cấp bậc → Xem thêm).": "Service record: 10 clean days in a row, ★ 4.0+ and a fine clear one violation (🎖️ Rank → See more).",
+  "Vòng quay 20/10 kèm lời chúc riêng cho từng người.": "The 20/10 wheel now comes with a wish of your own.",
+  "Không trong thời gian tạm đình chỉ": "Not suspended",
+  "Mỗi lần xóa 1 vi phạm, chuỗi ngày làm tốt tính lại từ 0, lần sau phạt nặng hơn.": "Each clearing starts the good run again from 0, and the next fine is heavier.",
   "Mỗi nghề có cả 2 kiểu: bấm ⋯ trong màn làm việc, chọn Giao diện đầy đủ (cũ) hoặc gọn (mới), game nhớ riêng từng nghề.": "Every career has both looks: tap ⋯ at work and pick the full (classic) or compact (new) layout, remembered per career.",
   "Đối chiếu nội bộ: bản đầy đủ hiện hết chứng từ như trước, lướt danh sách không còn chọn nhầm thẻ.": "Internal reconciliation: the full layout shows every document again, and scrolling no longer picks a card by mistake.",
   "📋 Giao diện đầy đủ (cũ)": "📋 Full layout (classic)",
@@ -26864,6 +26868,11 @@
   "bếp sạch từ đầu ca, món đúng lưu ý của bàn và sảnh tắt điện an toàn": "a kitchen clean from the start of the shift, dishes that follow each table's notes, and a hall powered down safely"
   },
   "patterns": {
+  "🧹 Xóa 1 vi phạm khỏi hồ sơ công tác (đang có $1)": "🧹 Clear one violation from the service record ($1 now)",
+  "🧹 Nộp phạt $1 xu · xóa 1 vi phạm": "🧹 Pay a $1 xu fine · clear one violation",
+  "$1/$2 ngày làm liên tục không vi phạm": "$1/$2 worked days in a row without a violation",
+  "★ trung bình từ $1 ($2 hiện tại)": "★ average $1+ ($2 now)",
+  "Nộp phạt $1 xu từ ví (ví đang có $2)": "Pay a $1 xu fine from the wallet ($2 in it)",
   "↩️ Bỏ lựa chọn riêng của $1 nghề": "↩️ Clear the own choice of $1 careers",
   "Chưa đủ điều kiện xét tuyển Hải quan: $1. Cách lên: xin việc lại Công an, làm đều tay mỗi ngày (trung bình từ $2★, không vi phạm): $3, mỗi cấp $4 ngày làm việc. Đạt $5 rồi nghỉ Công an là xin Hải quan được.": "Not yet eligible to apply to Customs: $1. How: join the Police again and work steadily every day (average $2★ or more, no violations): $3, $4 worked days per grade. Once you reach $5, leave the Police and apply to Customs.",
   "Lên hạng $1 · $2 xu": "Rank up to $1 · $2 xu",

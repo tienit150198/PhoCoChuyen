@@ -28,6 +28,14 @@ function missing(n){
   return `<ul class="pm-rules og-todo">${left.slice(0,3).map(r=>`<li class="bad">🔒 ${esc(r.label)}</li>`).join('')}</ul>`;
 }
 function rows(list){return `<ul class="pm-rules">${(list||[]).map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}</li>`).join('')}</ul>`;}
+/** 🧹 one violation off the hồ sơ công tác (game/org.py clear_view): good work in a row, ★, and a fine that grows. */
+function clearBox(o,cmd){
+  const k=o.clear;if(!k)return '';
+  const fee=Number(k.fee).toLocaleString('vi-VN');
+  return `<div class="og-clear"><p class="pm-eyebrow">🧹 Xóa 1 vi phạm khỏi hồ sơ công tác (đang có ${k.total})</p>${rows(k.rows)}
+    ${cmd(`🧹 Nộp phạt ${fee} xu · xóa 1 vi phạm`,'pm_org_clear',{},`${k.ok?'primary':'ghost'} full`,!k.ok)}
+    <p class="small muted">Mỗi lần xóa 1 vi phạm, chuỗi ngày làm tốt tính lại từ 0, lần sau phạt nặng hơn.</p></div>`;
+}
 function more(o,cmd){
   const warns=o.warns.length?`<p class="pm-eyebrow">⚠️ Cảnh cáo đang có</p><ul class="pm-rules">${o.warns.map(w=>`<li class="bad">⚠️ ${esc(w.why)}<small class="pm-hint">📖 ${esc(w.how)}</small></li>`).join('')}</ul>
     <p class="small muted">🧽 ${Math.min(o.clean,o.decay)}/${o.decay} ngày làm không vi phạm → xóa hết cảnh cáo. Có vi phạm mới thì đếm lại từ 0.</p>`:'';
@@ -37,7 +45,7 @@ function more(o,cmd){
   const aims=o.aims.length>1?`<div class="row wrap og-aims">${o.aims.map(a=>cmd(`🧭 ${esc(a.short)}`,'pm_org_aim',{post:a.id},`small ${a.id===o.aim?'primary':'ghost'}`,a.id===o.aim)).join('')}</div>`:'';
   const ladder=`<ol class="og-ladder">${o.ladder.map(g=>`<li class="${g.on?'on':''}">${boardSVG(g.ins,44)}<span>${esc(g.name)}</span></li>`).join('')}</ol>`;
   const mark=o.mark.on?`<p class="small bad">💵 Dấu liêm chính${o.mark.self?' (đã tự giác)':''}: không bổ nhiệm Trợ lý BGĐ, Phó Giám đốc, Giám đốc, không lên Đại tá.</p>`:'';
-  return `<details class="pm-more"><summary>Xem thêm</summary>${warns}${ng}${np}${aims}${mark}${hist}${ladder}
+  return `<details class="pm-more"${o.clear?.ok?' open':''}><summary>Xem thêm</summary>${clearBox(o,cmd)}${warns}${ng}${np}${aims}${mark}${hist}${ladder}
     <ul class="pm-rules"><li>Vi phạm quy trình: cảnh cáo. ${o.decay||10} ngày làm không vi phạm: xóa hết.</li><li>Lần 2: ghi 1 kỳ “Không hoàn thành nhiệm vụ”. Lần 3: hạ 1 bậc hàm, giam hàm 20 ngày. Lần 4: tạm giữ, khai trừ khỏi lực lượng.</li><li>Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.</li><li>Giám đốc CATP: ${o.seats?.gd??1} người · Phó Giám đốc: tối đa ${o.seats?.pgd??5} người.</li></ul></details>`;
 }
 export function orgView(env,head,act,cmd,place){

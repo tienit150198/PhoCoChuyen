@@ -484,7 +484,7 @@ class Wheel2010(Base):
             (g,) = shown
             coins = sg.WHEEL[sg.wheel_slot('wheel2010', self.store.key(tok))][0]
             self.assertEqual(g['coins'], coins)
-            self.assertEqual([x['coins'] for x in g['wheel']['slots']], [c for c, _, _ in sg.WHEEL])
+            self.assertEqual([x['coins'] for x in g['wheel']['slots']], [x[0] for x in sg.WHEEL])
             self.assertEqual(self.wallet(tok), w0 + coins)
             self.assertTrue(sg.seen(self.store, tok, g['id']))
             self.assertEqual(self.load(tok), (False, []))
@@ -492,11 +492,13 @@ class Wheel2010(Base):
 
     def test_the_slots_by_weight(self):
         got = [sg.wheel_slot('wheel2010', f'sid-{i}') for i in range(20000)]
-        total = sum(w for _, w, _ in sg.WHEEL)
+        total = sum(x[1] for x in sg.WHEEL)
         for i, (c, w, _) in enumerate(sg.WHEEL):
             self.assertTrue(100_000 <= c <= 1_314_000)
             self.assertAlmostEqual(got.count(i) / len(got), w / total, delta=0.015)
         self.assertIsNone(sg.wheel_of('all1004-abc'))
+        wishes = {sg.wish_of(f'wheel2010-{i}') for i in range(500)}
+        self.assertGreater(len(wishes), 400)
 
 
 if __name__ == '__main__':

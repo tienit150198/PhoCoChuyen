@@ -3,7 +3,9 @@
 export default [
  {"version":"2.4.62","date":"2026-10-20","items":[
   {"emoji":"🖥️","text":"Mỗi nghề có cả 2 kiểu: bấm ⋯ trong màn làm việc, chọn Giao diện đầy đủ (cũ) hoặc gọn (mới), game nhớ riêng từng nghề."},
-  {"emoji":"📋","text":"Đối chiếu nội bộ: bản đầy đủ hiện hết chứng từ như trước, lướt danh sách không còn chọn nhầm thẻ."}
+  {"emoji":"📋","text":"Đối chiếu nội bộ: bản đầy đủ hiện hết chứng từ như trước, lướt danh sách không còn chọn nhầm thẻ."},
+  {"emoji":"🧹","text":"Hồ sơ công tác: làm 10 ngày liên tục không vi phạm, ★ từ 4.0 và nộp phạt là xóa được 1 vi phạm (🎖️ Cấp bậc → Xem thêm)."},
+  {"emoji":"💌","text":"Vòng quay 20/10 kèm lời chúc riêng cho từng người."}
  ]},
  {"version":"2.4.61","date":"2026-10-19","items":[
   {"emoji":"🎡","text":"Mừng 20/10: vào game trong ngày 20/10 là được một lượt quay may mắn từ 100k tới 1.314k xu, có mốc 520k, 666k, 888k."},

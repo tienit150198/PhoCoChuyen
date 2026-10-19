@@ -434,6 +434,46 @@ class Bribe(unittest.TestCase):
         self.assertFalse(next(r for r in ng['rows'] if r['id'] == 'mark')['met'])
 
 
+class ClearRecord(unittest.TestCase):
+    """Owner 19/10 (#447): good work in a row, ★ and a heavy fine take one violation off the hồ sơ công tác."""
+
+    def test_good_days_stars_and_a_fine_clear_one_violation(self):
+        j = officer()
+        jj = j.state['journey']
+        jj['svc'] = dict(v=1, police=6)
+        x = org(j)
+        x['clean'], x['st'] = 3, [45] * 10
+        v = view(j)['org']['clear']
+        self.assertEqual(v['total'], 6)
+        self.assertFalse(v['ok'])
+        with self.assertRaises(GameError):
+            j.act('pm_org_clear')
+        x['clean'] = ORG.CLEAR_RUN
+        jj['wallet'] = 2_000_000
+        w0 = jj['wallet']
+        j.act('pm_org_clear')
+        self.assertEqual(ORG.svc_total(j.state), 5)
+        self.assertEqual(j.state['journey']['wallet'], w0 - ORG.CLEAR_FINE)
+        self.assertEqual(org(j)['clean'], 0)
+        self.assertEqual(ORG.clear_fee(j.state), 2 * ORG.CLEAR_FINE)
+        validate_state(j.state)
+        with self.assertRaises(GameError):   # the good run starts again
+            j.act('pm_org_clear')
+
+    def test_low_stars_or_no_money_wait(self):
+        j = officer()
+        j.state['journey']['svc'] = dict(v=1, police=2)
+        x = org(j)
+        x['clean'], x['st'] = 20, [30] * 10
+        j.state['journey']['wallet'] = 10**7
+        self.assertFalse(ORG.clear_view(j.state, x, 'police')['ok'])
+        x['st'] = [45] * 10
+        j.state['journey']['wallet'] = 1000
+        self.assertFalse(ORG.clear_view(j.state, x, 'police')['ok'])
+        j.state['journey']['svc'] = dict(v=1, police=0)
+        self.assertIsNone(ORG.clear_view(j.state, x, 'police'))
+
+
 class PoliceTasks(unittest.TestCase):
     def test_a_patrol_skipping_danger_is_a_warning(self):
         from tests.test_career_police import at, P, PC

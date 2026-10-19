@@ -41,7 +41,7 @@ function wheelHTML(g,more){
   return `${more}<div class="gf-top"><p class="gf-title" id="gfTitle">${esc(g.title)}</p>`+
     `<div class="gf-wheel-wrap"><i class="gf-pin" aria-hidden="true">▼</i><div class="gf-wheel" style="--n:${n}" aria-hidden="true">${seg}</div></div>`+
     `<p class="gf-amount gf-hide" aria-live="polite"><span>+${fmt(g.coins)} xu</span></p><p class="gf-note gf-hide"></p></div>`+
-    `<p class="gf-text" id="gfText">${esc(g.text)}</p>`+
+    `<p class="gf-text gf-wish" id="gfText">💌 ${esc(g.wheel.wish||g.text)}</p>`+
     `<div class="gf-foot"><button type="button" class="btn primary big full" data-gf="spin">🎡 Quay ngay</button></div>`;
 }
 let spinning=false;

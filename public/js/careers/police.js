@@ -58,7 +58,7 @@ function rulesCard(x){
 }
 function svcLine(x){
   const o=x.room.promo?.org;if(!o||typeof o.svc!=='number')return '';
-  return `<p class="small">🗂️ Hồ sơ công tác: <b>${x.esc(o.svc)}</b> lần vi phạm trong cả quá trình công tác.</p>`;
+  return `<p class="small">🗂️ Hồ sơ công tác: <b>${x.esc(o.svc)}</b> lần vi phạm trong cả quá trình công tác.${o.clear?' 🧹 Làm tốt và nộp phạt để xóa bớt: 🎖️ Cấp bậc → Xem thêm.':''}</p>`;
 }
 /* ------------------------------------------------------------ 🎖️ cấp bậc: the rank line, an envelope, owning up */
 function rankBar(x){

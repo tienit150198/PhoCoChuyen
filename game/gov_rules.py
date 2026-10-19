@@ -197,7 +197,17 @@ def entry_block(s) -> str | None:
     text = f'Chưa đủ điều kiện xét tuyển Hải quan: {bad[0]["label"]}.'
     if bad[0]['id'] == 'police':   # player feedback #441 "phải apply lại Công an mới ứng tuyển Hải quan được hả": say how
         text += ' ' + police_path()
+    elif bad[0]['id'] == 'viol':   # player feedback #447 (6 violations): owner 19/10, good work and a heavy fine clear one
+        text += ' ' + clear_path(s)
     return text
+
+
+def clear_path(s) -> str:
+    """How a violation leaves the hồ sơ công tác (org.clear_one)."""
+    from . import org as ORG
+    return (f'Cách xóa: đang công tác Công an, làm {ORG.CLEAR_RUN} ngày liên tục không vi phạm, ★ trung bình từ '
+            f'{ORG.CLEAR_STARS / 10:.1f}, rồi vào 🎖️ Cấp bậc → Xem thêm → 🧹 nộp phạt {ORG.clear_fee(s):,} xu để xóa 1 vi phạm '
+            f'(mỗi lần xóa sau phạt nặng hơn).').replace(',', '.')
 
 
 def police_path() -> str:
