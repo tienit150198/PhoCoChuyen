@@ -20,7 +20,7 @@ import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,cloc
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton,CSS_KIT} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime,barParts} from './v4/guide.js';
 import {cratePage} from './v4/inventory-limits.js';   // big parcels in trays (stockDesk crateGoods)
-import {inventoryView,stockBoot,stockBatchButton,autoStockRow,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
+import {inventoryView,stockBoot,stockBatchButton,autoStockRow,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input,receiveCounted} from './v4/views.js';
 import {certBadge} from './v4/certificates.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay,EASY_DAYS} from './v4/onboard.js';  // a brand-new player's first minutes
@@ -249,8 +249,10 @@ async function cmd(action,payload={},options={}){
 const acctDue=cid=>!!api.state?.accounting_school?.jobs?.places?.[cid]?.[2]&&!api.state.careers?.[cid]?.open;
 async function acctCheck(cid){const m=await viaLazy(L.accountingSchool);if(await m.accountingCheckOpen(env(),cid))openSheet('accountingSchool');}
 // A page behind the server's release (update.js FIRM) reloads onto it at the next navigation, when nothing is lost.
-function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;api.updates.navigated();}
-function openSheet(view,data={}){if(api.updates.navigated())return;$('#sheet').resetGesture?.();if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
+/** Player #431: leaving the stock room with crates counted right but not received puts them on the shelf (v4/views.js). */
+function stockLeft(){try{receiveCounted(env()).catch(()=>{});}catch{}}
+function closeSheet(){if(ui.view==='inventory')stockLeft();if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;api.updates.navigated();}
+function openSheet(view,data={}){if(ui.view==='inventory'&&view!=='inventory'&&$('#sheet').open)stockLeft();if(api.updates.navigated())return;$('#sheet').resetGesture?.();if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
@@ -1508,6 +1510,7 @@ $('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.curre
 $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
   // The close event is async: the sheet may already be reopened with another view.
   if($('#sheet').open)return;
+  if(ui.view==='inventory')stockLeft();   // Esc / the dialog's own close: counted crates still go onto the shelf
   if(ui.view){ui.view=null;ui.ai={};world.paused=ui.paused;}
   // Rail/dock highlight follows the open sheet.
   if(api.state&&api.state.current)renderMain();});

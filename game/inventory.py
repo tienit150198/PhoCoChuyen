@@ -1052,6 +1052,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         return dict(message=msg)
     if name == 'inv_cancel':
         return _cancel(s, c, career, x, p)
+    if name == 'inv_receive' and p.get('staff') is True:
+        return _staff_receive(s, c, career, x)
     if p.get('group') is not None and name in ('inv_receive', 'inv_claim', 'inv_rate'):
         return _group_action(s, c, career, x, name, p)
     if p.get('box') is not None and name == 'inv_receive':
@@ -1440,29 +1442,32 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
                 oos=gone['item'] if gone else None, later=placing != now)
 
 
-def _box_receive(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
-    """inv_receive {box: 'auto', counts: {order_id: n}}: every automatic order at the door in ONE step (📦 Gộp thùng tự
-    đặt, game/auto_order.py). Each line is counted and checked as a single crate; one shop step for the lot. A short
-    line keeps its own claim (inv_claim {order}): the lines may come from different suppliers."""
+def _counted(c: dict, career: str, lines: list, counts) -> list:
+    """The lines of a crate the player counted (`counts`: {order_id: n}), checked as single crates are: every count
+    given must be the real number in the crate, and the shelf must take what is counted (lines of one item share its
+    room). Player #427 (19/10): a merged crate goes onto the shelf line by line, as each line is counted; the lines not
+    counted yet stay at the door (in_transit), to count later or to hand to the staff (inv_receive {staff}).
+    Ids that are not in the crate (a line received a moment ago) are left out. All or nothing for what was given."""
     from . import engine as e
-    from . import auto_order
     need = e.need
-    need(p.get('box') == 'auto' and auto_order.box_owned(c), f'Mua {auto_order.BOX_NAME} trước nhé.')
-    boxed = auto_order.box_ids(c)
-    door = clock(c, career, turn=c['turn'] - 1)
-    lines = [o for o in x['orders'] if o['id'] in boxed and o['status'] == 'in_transit' and not o.get('group')
-             and door['abs'] >= o['at']]
-    need(lines, 'Chưa có hàng tự đặt nào tới cửa.')
-    counts = p.get('counts')
-    need(isinstance(counts, dict), 'Đếm từng món trong thùng trước nhé.')
-    need(set(counts) == {o['id'] for o in lines}, 'Thùng vừa có thêm hàng tới. Mở ra đếm lại cả thùng nhé.')
-    for o in lines:
+    need(isinstance(counts, dict) and counts, 'Đếm từng món trong thùng trước nhé.')
+    picked = [o for o in lines if o['id'] in counts]
+    need(picked, 'Đơn đã nhận hoặc không tồn tại.')
+    want: dict = {}
+    for o in picked:
         it = item(career, o['item'])
         counted = e.integer(counts.get(o['id']), 0, max(999, o['qty']))
         need(counted == o['actual'], f'Số đếm {it["name"]} chưa khớp số hàng thực có trong thùng. Đếm lại nhé.')
+        want[it['id']] = want.get(it['id'], 0) + o['actual']
         room = _receive_room(c, career, o, it['id'])
-        need(o['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
+        need(want[it['id']] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
              'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
+    return picked
+
+
+def _shelve(c: dict, career: str, lines: list) -> tuple[list, list]:
+    """Counted lines onto the shelf (one lot each, plugins' on_receive): (['5/6 Áo thun', …], short lines)."""
+    from . import engine as e
     got, short = [], []
     for o in lines:
         it = item(career, o['item'])
@@ -1472,14 +1477,89 @@ def _box_receive(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
         got.append(f'{o["actual"]}/{o["qty"]} {it["name"]}')
         if o['actual'] < o['qty']:
             short.append(dict(order=o['id'], item=it['id'], missing=o['qty'] - o['actual'], refund=_refund(o)))
-    e.log(s, c, 'stock', f'Kiểm nhận thùng tự đặt: {", ".join(got)}.'[:300], ref=lines[0]['id'])
-    msg = f'Đã nhập kho cả thùng tự đặt: {", ".join(got)}.'
-    if short:
-        refund = sum(v['refund'] for v in short)
-        msg += f' Giao thiếu {len(short)} món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn {refund} xu.'
-        return dict(message=msg, short=dict(order=short[0]['order'], lines=short,
-                                            missing=sum(v['missing'] for v in short), refund=refund))
-    return dict(message=msg)
+    return got, short
+
+
+def _short_result(msg: str, short: list, **ref) -> dict:
+    if not short:
+        return dict(message=msg)
+    refund = sum(v['refund'] for v in short)
+    msg += f' Giao thiếu {len(short)} món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn {refund} xu.'
+    return dict(message=msg, short=dict(**ref, order=short[0]['order'], lines=short,
+                                        missing=sum(v['missing'] for v in short), refund=refund))
+
+
+def _left_note(left: int) -> str:
+    return f' Còn {left} món trong thùng chưa đếm: đếm tiếp hoặc nhờ nhân viên nhé.' if left else ''
+
+
+def _box_receive(s: dict, c: dict, career: str, x: dict, p: dict) -> dict:
+    """inv_receive {box: 'auto', counts: {order_id: n}}: the automatic orders at the door (📦 Gộp thùng tự đặt,
+    game/auto_order.py), the counted lines in ONE step (all of them, or only those counted so far: _counted). Each
+    line is checked as a single crate; one shop step for the lot. A short line keeps its own claim (inv_claim
+    {order}): the lines may come from different suppliers."""
+    from . import engine as e
+    from . import auto_order
+    need = e.need
+    need(p.get('box') == 'auto' and auto_order.box_owned(c), f'Mua {auto_order.BOX_NAME} trước nhé.')
+    boxed = auto_order.box_ids(c)
+    door = clock(c, career, turn=c['turn'] - 1)
+    lines = [o for o in x['orders'] if o['id'] in boxed and o['status'] == 'in_transit' and not o.get('group')
+             and door['abs'] >= o['at']]
+    need(lines, 'Chưa có hàng tự đặt nào tới cửa.')
+    picked = _counted(c, career, lines, p.get('counts'))
+    got, short = _shelve(c, career, picked)
+    left = len(lines) - len(picked)
+    e.log(s, c, 'stock', f'Kiểm nhận thùng tự đặt: {", ".join(got)}.'[:300], ref=picked[0]['id'])
+    whole = 'cả thùng tự đặt' if not left else 'phần đã đếm của thùng tự đặt'
+    return _short_result(f'Đã nhập kho {whole}: {", ".join(got)}.{_left_note(left)}', short)
+
+
+def staff_helper(c: dict) -> dict | None:
+    """The workplace's staff member who can count a delivery now (hired, on shift, not resting, paused or on strike:
+    the same team that serves orders, game/workplace_business.py), or None. Players #427 #431: "thuê nhân viên rồi
+    thì nhân viên cũng phải phụ"."""
+    o = c.get('ops') if isinstance(c, dict) else None
+    if not isinstance(o, dict) or not o.get('staff'):
+        return None
+    from . import workplace_business as wb
+    try:
+        team = wb._eligible(c)
+    except (KeyError, TypeError, AttributeError):
+        return None
+    return team[0] if team else None
+
+
+def _staff_receive(s: dict, c: dict, career: str, x: dict) -> dict:
+    """inv_receive {staff: true} (👥 Nhân viên đếm giúp): a staff member on shift counts every crate at the door and
+    puts it on the shelf, line by line, as a correct count would (the real `actual`, at the order's unit cost; already
+    paid, so nothing is free). Lines the shelf cannot take stay at the door, as the manual receive leaves them; a short
+    line is claimed by the player as usual. One shop step, like receiving one crate."""
+    from . import engine as e
+    need = e.need
+    helper = staff_helper(c)
+    need(helper, 'Chưa có nhân viên trong ca để đếm giúp. Tuyển người ở Sổ tiệm → Nhân viên rồi cho vào ca nhé.')
+    door = clock(c, career, turn=c['turn'] - 1)
+    lines = [o for o in x['orders'] if o['status'] == 'in_transit' and door['abs'] >= o['at']]
+    need(lines, 'Chưa có thùng hàng nào tới cửa.')
+    want: dict = {}
+    take, full = [], []
+    for o in lines:
+        it = item(career, o['item'])
+        if want.get(it['id'], 0) + o['actual'] > _receive_room(c, career, o, it['id']):
+            if it['name'] not in full:
+                full.append(it['name'])
+            continue
+        want[it['id']] = want.get(it['id'], 0) + o['actual']
+        take.append(o)
+    need(take, f'Kệ {", ".join(full)} đã đầy. Bán hoặc bỏ bớt lô cũ rồi nhờ đếm tiếp nhé.')
+    got, short = _shelve(c, career, take)
+    who = helper.get('name') or 'Nhân viên'
+    e.log(s, c, 'stock', f'👥 {who} đếm giúp: {", ".join(got)}.'[:300], ref=take[0].get('group') or take[0]['id'])
+    msg = f'👥 {who} đếm giúp, đã nhập kho: {", ".join(got)}.'
+    if full:
+        msg += f' Kệ {", ".join(full)} đầy nên phần đó còn chờ ở cửa.'
+    return _short_result(msg, short)
 
 
 def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) -> dict:
@@ -1494,35 +1574,17 @@ def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) ->
         lines = [o for o in lines if o['status'] == 'in_transit']
         need(lines, 'Đơn đã nhận hoặc không tồn tại.')
         door = clock(c, career, turn=c['turn'] - 1)
-        if door['abs'] < min(o['at'] for o in lines):
-            eta = _eta(lines[0], door['abs'], c, career, door)
-            need(False, f'Hàng chưa tới. Dự kiến {eta["eta_label"]} — làm việc khác trong lúc chờ nhé.')
         counts = p.get('counts')
-        need(isinstance(counts, dict), 'Đếm từng món trong thùng trước nhé.')
-        for o in lines:
-            it = item(career, o['item'])
-            counted = e.integer(counts.get(o['id']), 0, max(999, o['qty']))
-            need(counted == o['actual'], f'Số đếm {it["name"]} chưa khớp số hàng thực có trong thùng. Đếm lại nhé.')
-            room = _receive_room(c, career, o, it['id'])
-            need(o['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
-                 'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
-        got, short = [], []
-        for o in lines:
-            it = item(career, o['item'])
-            _receive_lot(c, career, o, it, sup)
-            o['status'] = 'received'
-            e.metric(c, 'restocked')
-            got.append(f'{o["actual"]}/{o["qty"]} {it["name"]}')
-            if o['actual'] < o['qty']:
-                short.append(dict(order=o['id'], item=it['id'], missing=o['qty'] - o['actual'], refund=_refund(o)))
-        e.log(s, c, 'stock', f'Kiểm nhận đơn gộp từ {sup["name"]}: {", ".join(got)}.', ref=gid)
-        msg = f'Đã nhập kho cả thùng: {", ".join(got)}.'
-        if short:
-            refund = sum(v['refund'] for v in short)
-            msg += f' Giao thiếu {len(short)} món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn {refund} xu.'
-            return dict(message=msg, short=dict(group=gid, order=short[0]['order'], lines=short,
-                                                missing=sum(v['missing'] for v in short), refund=refund))
-        return dict(message=msg)
+        late = [o for o in lines if door['abs'] < o['at'] and (not isinstance(counts, dict) or o['id'] in counts)]
+        if late:
+            eta = _eta(late[0], door['abs'], c, career, door)
+            need(False, f'Hàng chưa tới. Dự kiến {eta["eta_label"]} — làm việc khác trong lúc chờ nhé.')
+        picked = _counted(c, career, lines, counts)
+        got, short = _shelve(c, career, picked)
+        left = len(lines) - len(picked)
+        e.log(s, c, 'stock', f'Kiểm nhận đơn gộp từ {sup["name"]}: {", ".join(got)}.'[:300], ref=gid)
+        whole = 'cả thùng' if not left else 'phần đã đếm'
+        return _short_result(f'Đã nhập kho {whole}: {", ".join(got)}.{_left_note(left)}', short, group=gid)
     if name == 'inv_claim':
         due = [o for o in lines if o['status'] == 'received' and o['actual'] < o['qty'] and not o['claimed']]
         need(due, 'Đơn này giao đủ hoặc đã được giải quyết.')
@@ -1581,6 +1643,8 @@ def public(c: dict, career: str) -> dict | None:
     from . import capacity_progression
     v['storage_upgrade'] = capacity_progression.public(c, career, capacity(career))
     v['cancel_pct'] = CANCEL_PCT  # share of the price an inv_cancel gives back (the confirm shows the xu)
+    # 👥 Nhân viên đếm giúp (inv_receive {staff}): who on shift can count the crates at the door, or None.
+    v['helper'] = (staff_helper(c) or {}).get('name') or None
     v['sizes'] = tree_copy((_spec(career) or {}).get('sizes', {}))
     # Derived numbers for the stock screen: what is on the way, room left on
     # each shelf and how many game days the oldest lot still has.

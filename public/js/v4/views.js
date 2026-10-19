@@ -186,6 +186,10 @@ export function inventoryView(env){
   const tallied=o=>(ui.invTally?.[o.id]||[]).length;
   const counted=o=>{const typed=Boolean(ui.invTyped?.[o.id])&&String(ui.invCount?.[o.id]??'').trim()!=='',k=tallied(o),n=Number(o.count_hint)||0;
     return {ok:k>=n||typed||null,note:k?`${k} món`:'',go:k<n&&!typed?(trayed(o)?{sel:`#crate-${o.id} .inv-tray-tap:not(.on):not([disabled])`,label:TRAY_TIP}:{sel:`#crate-${o.id} .inv-good:not(.on)`,label:COUNT_TIP}):null};};
+  // A merged crate goes onto the shelf line by line (player #427): the lines counted so far, or the whole crate.
+  const countedN=g=>g.lines.filter(o=>String(ui.invCount?.[o.id]??'').trim()!=='').length;
+  const groupWord=g=>{const k=countedN(g);return k&&k<g.lines.length?`Nhập luôn phần đã đếm · ${k}/${g.lines.length} món`:'Nhận cả thùng lên kệ';};
+  const groupLabel=g=>'✅ '+groupWord(g);
   const sups=supplierList(env),supOf=sid=>sups.find(x=>x.id===sid)||content.inventory.suppliers.find(x=>x.id===sid);
   // A draft open in the stock tab (đơn gộp): opened from its chip, or right after something was added.
   const pick=ui.orderItem&&byId[ui.orderItem]&&!inv.locked.includes(ui.orderItem)?byId[ui.orderItem]:null;
@@ -206,6 +210,9 @@ export function inventoryView(env){
   /* ONE next step for this room (guide.js), in order of what gets goods onto the shelf soonest. */
   const steps=[];
   const crates=focus.length?readyS.filter(g=>g.lines.some(mine)):readyS;
+  // 👥 A staff member on shift counts every crate at the door (inventory.py inv_receive {staff}; players #427 #431).
+  const staffGo=inv.helper&&readyS.length?{cmd:'inv_receive',payload:{staff:true},label:`👥 ${esc(inv.helper)} đếm giúp · nhập hết lên kệ`}:null;
+  if(staffGo&&crates.length)steps.push({ok:null,label:'Nhờ nhân viên đếm giúp',go:staffGo});
   for(const g of crates){
     if(!g.group){const o=g.o,i=byId[o.item];
       if(!opened(g)){steps.push({ok:null,label:`Mở thùng ${i?.name||''}`,go:{act:'v4InvOpen',data:{order:o.id},label:`📦 Mở thùng ${name(i)} & xếp lên kệ`}});continue;}
@@ -214,7 +221,7 @@ export function inventoryView(env){
       continue;}
     if(!opened(g)){steps.push({ok:null,label:`Mở thùng gộp ${g.lines.length} món`,go:{act:'v4InvOpen',data:{order:g.id},label:`📦 Mở thùng gộp · ${g.lines.length} món`}});continue;}
     for(const o of g.lines)steps.push({label:`Đếm ${byId[o.item]?.name||''}`,...counted(o)});
-    steps.push({ok:null,label:'Nhận cả thùng vào kệ',go:{act:'v4ReceiveGroup',data:g.box?{box:g.box}:{group:g.id},label:'✅ Nhận cả thùng lên kệ'}});
+    steps.push({ok:null,label:'Nhận cả thùng vào kệ',go:{act:'v4ReceiveGroup',data:g.box?{box:g.box}:{group:g.id},label:groupLabel(g)}});
   }
   // A crate that came short (and no order form in hand): the claim is offered right here, not only deep in the order list (player feedback #28).
   const shorts=unclaimed(orders,c.day),shortS=shipments(shorts);
@@ -292,8 +299,8 @@ export function inventoryView(env){
   const groupCrate=g=>{
     const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)}${sizeNote(o)} ×${o.qty}`).join(' · ');
     const body=isOpen?`<p class="inv-tip">${g.lines.some(trayed)?TRAY_TIP:COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
-        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul>${pages(o)}<div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}${stockBatchButton(o.id,env)}</div></div>`;}).join('')+
-      `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" ${g.box?`data-box="${esc(g.box)}"`:`data-group="${esc(g.id)}"`}>${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
+        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate${trayed(o)?' inv-trays':''}" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul>${pages(o)}<div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}${stockBatchButton(o.id,env)}<button class="btn small${String(ui.invCount?.[o.id]??'').trim()!==''?' primary':' ghost'}" type="button" data-action="v4ReceiveGroup" data-line="${esc(o.id)}" ${g.box?`data-box="${esc(g.box)}"`:`data-group="${esc(g.id)}"`}>${icon('check',13)} Nhập món này</button></div></div>`;}).join('')+
+      `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" ${g.box?`data-box="${esc(g.box)}"`:`data-group="${esc(g.id)}"`}>${icon('check',15)} ${groupWord(g)}</button><p class="muted small">Đếm xong món nào nhập món đó cũng được; món chưa đếm vẫn nằm trong thùng. Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
       :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng ${g.box?'tự đặt':'gộp'} · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
     const from=g.box?[...new Set(g.lines.map(o=>{const x=sup(o);return `${x?.emoji||''} ${x?.name||''}`.trim();}))].map(esc).join(', '):`${esc(s?.emoji||'')} ${esc(s?.name||'')}`;
     return `<article class="card inv-crate-card inv-group${isOpen?' open':''}" id="crate-${esc(g.id)}"><div class="row spread"><div><strong>${g.box?'📦 Thùng tự đặt':'🛒 Đơn gộp'} · ${g.lines.length} món</strong><small class="muted block">${from} · đã trả ${fmt(paidOf(g))} xu${g.o.arrives_time?` · tới lúc ${esc(g.o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${body}</article>`;};
@@ -304,7 +311,9 @@ export function inventoryView(env){
       // The one that is the next step already has the big button in the strip above.
       (isNext?'':`<div class="row wrap">${cmdBtn(go.label,'inv_claim',go.payload,'small primary')}</div>`)+'</article>';};
   const shortBox=shortS.length?`<section class="inv-door inv-shorts" aria-label="Hàng giao thiếu"><h4 class="section-title">📉 Giao thiếu · khiếu nại để được hoàn tiền</h4>${shortS.map(shortCard).join('')}</section>`:'';
-  const door=readyS.length?`<section class="inv-door" aria-label="Thùng hàng đã tới"><h4 class="section-title">📦 Thùng đã tới · mở & xếp lên kệ</h4>${readyS.map(g=>g.group?groupCrate(g):crate(g.o)).join('')}</section>`:'';
+  // The staff button here unless it is already the big next-step button in the strip above.
+  const staffRow=staffGo&&nx?.go!==staffGo?`<div class="row wrap">${cmdBtn(staffGo.label,'inv_receive',staffGo.payload,'small')}</div>`:'';
+  const door=readyS.length?`<section class="inv-door" aria-label="Thùng hàng đã tới"><h4 class="section-title">📦 Thùng đã tới · mở & xếp lên kệ</h4>${staffRow}${readyS.map(g=>g.group?groupCrate(g):crate(g.o)).join('')}</section>`:'';
   const nothing=(text='Chưa có hàng')=>`<div class="empty inv-empty">${icon('truck',30)}<p><b>${esc(text)}</b> · Đặt hàng ↓</p>${button(`${icon('plus',15)} Đặt hàng`,'v4InvTab',{tab:'stock'},'primary')}</div>`;
 
   let body='';
@@ -935,6 +944,21 @@ function countOff(env,id,count,what=''){
   document.querySelectorAll(`#crate-${CSS.escape(id)} .inv-good:not(.on)`).forEach(b=>b.classList.add('miss'));
   return true;
 }
+/** Player #431: "nhập hàng xong mà tôi quên nhấn nút … thì lại không có hàng để bán". Leaving the stock room
+ * (closed, or another sheet opened) with crates counted right but not received: they go onto the shelf now, through
+ * the same inv_receive the buttons send (the server checks every count again). A count that does not match the
+ * crate (count_hint) is left as it is, for the player to see when they come back. */
+export async function receiveCounted(env){
+  const {api,ui,cmd}=env,inv=api?.state?.careers?.[api.state.current]?.inventory;if(!inv||!ui?.invCount)return;
+  const right=o=>{const r=String(ui.invCount[o.id]??'').trim();return o.count_hint!=null&&r!==''&&Number(r)===Number(o.count_hint);};
+  const done=(inv.orders||[]).filter(o=>o.status==='in_transit'&&o.ready_now&&right(o));
+  for(const g of shipments(done)){
+    const counts=Object.fromEntries(g.lines.map(o=>[o.id,Number(ui.invCount[o.id])]));
+    const r=await cmd('inv_receive',!g.group?{order:g.o.id,count:counts[g.o.id]}:g.box?{box:g.box,counts}:{group:g.id,counts});
+    if(!r)break;
+    for(const o of g.lines)for(const k of ['invCount','invTally','invTyped'])if(ui[k])delete ui[k][o.id];
+  }
+}
 export async function v4Action(action,data,el,env){
   const {api,ui,cmd,confirmAction,renderSheet,openSheet}=env;
   switch(action){
@@ -1011,14 +1035,17 @@ export async function v4Action(action,data,el,env){
       return true;}
     case'v4ReceiveGroup':{
       const inv=api.state.careers[api.state.current]?.inventory,gid=data.box?'box-'+data.box:data.group;
-      const lines=(inv?.orders||[]).filter(o=>(data.box?!o.group&&o.box===data.box:o.group===data.group)&&o.status==='in_transit'),counts={};
-      for(const o of lines){const inp=document.getElementById('count-'+o.id),raw=String(inp?.value??ui.invCount?.[o.id]??'').trim();
-        if(raw===''){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);toastOr(env,`Đếm ${it?.name||'từng món'} trong thùng trước đã nhé.`);inp?.focus();return true;}
-        counts[o.id]=Number(raw);}
+      const crate=(inv?.orders||[]).filter(o=>(data.box?!o.group&&o.box===data.box:o.group===data.group)&&o.status==='in_transit'),counts={};
+      const raw=o=>String(document.getElementById('count-'+o.id)?.value??ui.invCount?.[o.id]??'').trim();
+      // Player #427: "Nhập món này" sends one line; the big button the lines counted so far (all of them: the whole crate).
+      const lines=data.line?crate.filter(o=>o.id===data.line):crate.some(o=>raw(o)!=='')?crate.filter(o=>raw(o)!==''):crate;
+      for(const o of lines){const inp=document.getElementById('count-'+o.id),r=raw(o);
+        if(r===''){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);toastOr(env,`Đếm ${it?.name||'từng món'} trong thùng trước đã nhé.`);inp?.focus();return true;}
+        counts[o.id]=Number(r);}
       // Same check as one crate (countOff): a line that cannot match is pointed out before inv_receive refuses the lot.
       for(const o of lines){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);if(countOff(env,o.id,counts[o.id],it?.name||''))return true;}
       if(lines.length&&await cmd('inv_receive',data.box?{box:data.box,counts}:{group:data.group,counts})){for(const o of lines)for(const k of ['invCount','invTally','invTyped'])if(ui[k])delete ui[k][o.id];
-        if(ui.invOpen===gid||lines.some(o=>o.id===ui.invOpen))ui.invOpen=null;renderSheet();}
+        if(lines.length===crate.length&&(ui.invOpen===gid||lines.some(o=>o.id===ui.invOpen)))ui.invOpen=null;else if(lines.length<crate.length)ui.invOpen=gid;renderSheet();}
       return true;}
     case'v4Supplier':ui.orderSupplier=data.supplier;renderSheet();return true;
     case'v4OrderSize':{(ui.orderSize??={})[data.item]=data.size||null;renderSheet();return true;}
