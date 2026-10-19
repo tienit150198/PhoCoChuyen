@@ -65,7 +65,10 @@ function bind(){
   on('kara_vt',f=>{if(!here(f)||!K.stage||f.e!==K.stage.e||!Number.isFinite(f.vt)||!Number.isFinite(f.at))return;   // 🎙️ the singer's own video time
     K.vt=vtOf(f);if(K.mic.sy)K.mic.sy.up=K.vt.up;});
   on('kara_cvt',f=>{if(!here(f)||!K.stage||f.e!==K.stage.e||typeof f.pid!=='string'||!Number.isFinite(f.vt)||!Number.isFinite(f.at))return;   // 🎤 a co-singer's
-    if(K.co.has(f.pid))K.cvt.set(f.pid,vtOf(f));});
+    const v=K.co.get(f.pid);if(!v)return;K.cvt.set(f.pid,vtOf(f));
+    // their video time comes only while their mic is live: a voice I gave up on (three failed tries, e.g. their mic
+    // came long after the "Cho hát", a browser prompt) is tried again, at most every CO_AGAIN s
+    if(!v.h&&!v.joining&&v.tries>2&&Date.now()-(v.again||0)>CO_AGAIN){v.again=Date.now();v.tries=0;coListen(f.pid);}});
   on('kara_ask',f=>{if(!here(f)||!K.live||f.e!==K.live.e)return;   // 🎤 the singer: someone asks to sing along
     K.asks=K.asks.filter(a=>a.pid!==f.pid);if(f.on){K.asks.push({pid:f.pid,name:f.name,until:f.until});toast(`🙋 ${f.name||''} muốn hát cùng`);}paint();});
   on('kara_sing',f=>{if(!here(f))return;if(f.on)coPublish(f);else coRefused(f);});
@@ -420,11 +423,12 @@ function coHTML(mine){
   const c=K.mic.co;
   if(K.mic.cpub)return h+`<div class="kr-live-ctl"><b class="grow">🔴 Bạn đang hát cùng</b><button type="button" class="btn small" data-kr="joinoff">Tắt mic</button></div><small>🎧 Đeo tai nghe cho đỡ vọng nhạc</small>`;
   if(c.st==='ask')return h+`<div class="kr-live-ctl"><small class="grow">🙋 Đang chờ người hát đồng ý…</small><button type="button" class="btn small" data-kr="joinoff">Hủy</button></div>`;
+  if(c.st==='perm')return h+`<small>🎙️ Đang mở micro…</small>`;
   if(c.st==='join')return h+`<small>🎙️ Đang nối mic…</small>`;
-  if(c.st==='fail')return h+`<div class="kr-live-ctl"><span class="grow">Chưa phát được giọng</span><button type="button" class="btn small" data-kr="join">Thử lại</button></div>`;
+  if(c.st==='fail')return h+`<div class="kr-live-ctl"><span class="grow">Chưa phát được giọng</span><button type="button" class="btn small" data-kr="join">Thử lại</button></div>${c.msg?`<small class="kr-co-why">${esc(c.msg)}</small>`:''}`;
   return list.length<CO_MAX||list.some(x=>x.pid===me)?h+`<div class="kr-live-ctl"><button type="button" class="btn small kr-join" data-kr="join">🎤 Hát cùng</button></div>`:h;
 }
-const CO_MAX=3;
+const CO_MAX=3,CO_AGAIN=20000;
 const coCan=()=>micFlag()&&!!K.room?.account&&!K.coOff&&!!window.RTCPeerConnection;
 function roundHTML(){
   if(K.reveal){const v=K.reveal;return `<div class="kr-round done" role="status"><b>🧩 ${esc(v.answer)}</b><small>${v.by?`🎉 ${esc(v.by.name)}${v.xu?` +${v.xu} xu`:''}`:'Hết giờ'}</small></div>`;}
@@ -625,6 +629,20 @@ const errCode=err=>err?.code&&err?.stage?err.code:[err?.name,String(err?.message
 const NEXT={'':'mod',mod:'sdk',sdk:'token',token:'signal',perm:'signal',signal:'ice',ice:'track',track:'audio'};
 const SERVER_END=new Set([4,5,10]);   // LiveKit DisconnectReason: PARTICIPANT_REMOVED, ROOM_DELETED, ROOM_CLOSED (the mic went off)
 const MIC_NO_PERM='Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.';
+/** What a microphone failure says to the player, by the error's name (getUserMedia's DOMException, kept by
+ * karaoke-mic.js tag()): blocked, none on this machine, held by another app (a call, a recorder), else the network. */
+const micNo=err=>{const n=err?.name;
+  return n==='NotAllowedError'||n==='SecurityError'||n==='PermissionDeniedError'?MIC_NO_PERM
+    :n==='NotFoundError'||n==='OverconstrainedError'||n==='DevicesNotFoundError'?'Không thấy micro trên máy này.'
+    :n==='NotReadableError'||n==='TrackStartError'||n==='AbortError'?'Micro đang bận ở ứng dụng khác. Tắt ứng dụng đó rồi thử lại nhé.'
+    :'Chưa kết nối được mic, thử lại nhé.';};
+/** 🎤 Before asking to sing along: the microphone opens here (the browser's prompt comes with the player's own tap,
+ * not later when the singer's "Cho hát" arrives) and closes at once (nothing is recorded or kept open while the
+ * singer decides). null: it works; else the error. */
+async function micProbe(){
+  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});for(const t of s.getTracks())t.stop();return null;}
+  catch(err){return err||new Error('mic');}
+}
 
 async function micOn(){
   if(K.mic.busy||K.mic.pub||!K.stage)return;
@@ -661,7 +679,7 @@ async function micOn(){
 function singFailed(e,stage,err){
   micReport('sing',stage||'?',errCode(err));
   K.mic.pubFail={e,stage};
-  toast(err?.name==='NotAllowedError'?MIC_NO_PERM:err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
+  toast(micNo(err),true);
 }
 /** The singer's voice leaves the phone: outbound RTP bytes a few seconds after publishing. */
 function sendCheck(h,role='sing'){
@@ -774,9 +792,16 @@ function setVol(v){K.mic.vol=v;for(const h of voices())h.setVolume(v);try{localS
  * the stage singer with their music a little behind it (mixNow: lead), never hears themselves (no local monitor), and
  * the other co-singers as soon as they arrive. Every page hears each co-singer through a listen() of its own. */
 async function coJoin(){
-  const lv=K.live,st=K.stage;if(!lv||!st||lv.e!==st.e||K.mic.cpub||K.mic.co.st==='ask'||K.mic.co.st==='join')return;
-  const e=lv.e;K.mic.co={st:'ask',e};paint();
+  const lv=K.live,st=K.stage;if(!lv||!st||lv.e!==st.e||K.mic.cpub||['perm','ask','join'].includes(K.mic.co.st))return;
+  const e=lv.e;K.mic.co={st:'perm',e};paint();
   mic().then(M=>{ownLatency(M);return M.loadSDK();}).catch(()=>{/* coPublish says so */});   // while the singer decides
+  // #430: the microphone first. A machine without one, a blocked or busy one, failed only after the singer's "Cho
+  // hát" (and the page then showed 🎤 Hát cùng again, the singer asked to say yes again and again).
+  const bad=await micProbe();
+  if(K.mic.co.e!==e||K.mic.co.st!=='perm')return;
+  if(bad){K.mic.co={st:'fail',e,msg:micNo(bad)};micReport('cosing','perm',errCode(bad));toast(K.mic.co.msg,true);paint();return;}
+  if(!K.live||K.live.e!==e){K.mic.co={st:''};paint();return;}   // the mic went off meanwhile
+  K.mic.co={st:'ask',e};paint();
   const r=await ask('kara_join',{e,on:1},'kara_join',8000);
   if(K.mic.co.e!==e||K.mic.co.st!=='ask')return;
   if(r?.on)return;   // waiting (kara_sing comes with the answer) or live again (kara_sing came first)
@@ -807,13 +832,13 @@ async function coPublish(f){
       K.mic.cpub=null;K.mic.cpubE=null;K.mic.co={st:''};
       if(SERVER_END.has(why)){paint();return;}   // turned off by the server: its kara_co / kara_live frame says so
       live.send({t:'kara_join',e:f.e,on:0});micReport('cosing','ice',`dropped r${why??'?'}`);
-      K.mic.co={st:'fail',e:f.e};toast('Mic đã ngắt kết nối.',true);paint();}});
+      K.mic.co={st:'fail',e:f.e,msg:'Mic đã ngắt kết nối.'};toast(K.mic.co.msg,true);paint();}});
     if(!K.stage||K.stage.e!==f.e||!K.live||K.live.e!==f.e||K.mic.co.st!=='join'){h.stop();live.send({t:'kara_join',e:f.e,on:0});K.mic.co={st:''};}
     else{K.mic.cpub=h;K.mic.cpubE=f.e;K.mic.co={st:'live',e:f.e};sendCheck(h,'cosing');}
   }catch(err){
     live.send({t:'kara_join',e:f.e,on:0});micReport('cosing',err?.stage||'?',errCode(err));
-    K.mic.co={st:'fail',e:f.e};
-    toast(err?.name==='NotAllowedError'?MIC_NO_PERM:err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
+    K.mic.co={st:'fail',e:f.e,msg:micNo(err)};
+    toast(K.mic.co.msg,true);
   }
   paint();
 }
@@ -837,7 +862,9 @@ function onCo(f){
     return;
   }
   if(f.pid===me){
-    const was=!!K.mic.cpub||K.mic.co.st==='join';coStop();K.mic.co={st:''};
+    // #430: my page turned its own mic off after a failure (kara_join on:0): the server's echo (why 'off') keeps the
+    // failure and its reason on screen ("Chưa phát được giọng · Thử lại"), not the first 🎤 Hát cùng button
+    const was=!!K.mic.cpub||K.mic.co.st==='join',keep=f.why==='off'&&K.mic.co.st==='fail';coStop();if(!keep)K.mic.co={st:''};
     if(was&&f.why!=='off')toast(f.why==='kick'?'Người hát đã tắt mic hát cùng của bạn.':'Mic hát cùng đã tắt.',f.why==='kick');
   }else coDrop(f.pid);
 }

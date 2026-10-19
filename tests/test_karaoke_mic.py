@@ -222,6 +222,19 @@ class VoiceSync(unittest.TestCase):
                              encoding='utf-8', timeout=60)
         self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
 
+    def test_co_singer_page(self):
+        """🎤 Hát cùng (feedback #430): the co-singer's page in node (tests/karaoke_duet.mjs): the singer's yes makes the
+        mic live; a microphone that fails stays said ("Chưa phát được giọng · Thử lại" and why), never the first
+        🎤 Hát cùng button again; no microphone is said before the singer is asked; a voice given up on is tried again."""
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        out = subprocess.run([node, str(ROOT / 'tests' / 'karaoke_duet.mjs')], cwd=ROOT, capture_output=True, text=True,
+                             encoding='utf-8', timeout=180)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
     def test_page_works_with_an_older_live_service(self):
         js = (ROOT / 'public/js/v4/karaoke.js').read_text(encoding='utf-8')
         quiet = re.search(r"\[('kara_dur'[^\]]*)\]\.includes\(f\.ref\)", js).group(1)

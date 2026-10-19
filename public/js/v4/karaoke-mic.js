@@ -30,7 +30,17 @@ export function codeOf(err){
   const msg=String(err.message||'').replace(/https?:\/\/\S+/g,'').replace(/\s+/g,' ').trim().slice(0,48);
   return (bits.join(' ')+(msg?` ${msg}`:'')).trim().slice(0,72)||'?';
 }
-const tag=(err,stage)=>{if(err&&typeof err==='object'&&!err.stage){err.stage=stage;err.code=codeOf(err);}return err&&typeof err==='object'?err:fail(stage,String(err));};
+/** `err` with the stage it stopped at. A DOMException (getUserMedia: NotAllowedError, NotFoundError,
+ * NotReadableError…) has a read-only `code`: setting it threw a TypeError in this strict module, so every microphone
+ * failure reached the page as "TypeError Cannot set property code" (feedback #430: no reason shown, the beacon
+ * useless). Such an error is wrapped instead, keeping its `name` (the page words its message by it). */
+export const tag=(err,stage)=>{
+  if(!err||typeof err!=='object')return fail(stage,String(err));
+  if(err.stage)return err;
+  const code=codeOf(err);
+  try{err.code=code;if(err.code===code){err.stage=stage;return err;}}catch{/* read-only (DOMException) */}
+  const e=fail(stage,code,err);if(err.name)e.name=err.name;return e;
+};
 
 function script(url){
   return new Promise((ok,bad)=>{
