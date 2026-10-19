@@ -29,7 +29,7 @@ const ui={invOpen:gid,invTab:'orders'};let calls=[];
 const cmd=async(op,payload)=>{calls.push([op,payload]);return {message:'ok'};};
 const env={api,ui,cmd,toast:()=>{},renderSheet:()=>{}};
 // The stock sheet renders without a DOM (as tests/order_limits.mjs); the actions read the count boxes through one.
-const dom=()=>{globalThis.document={getElementById:()=>null,querySelectorAll:()=>[]};globalThis.CSS={escape:s=>s};};
+const dom=()=>{globalThis.document={getElementById:()=>null,querySelectorAll:()=>[],querySelector:()=>({}),addEventListener(){}};globalThis.window??={addEventListener(){}};globalThis.CSS={escape:s=>s};};
 const undom=()=>{delete globalThis.document;delete globalThis.CSS;};
 
 let html=inventoryView(env);
