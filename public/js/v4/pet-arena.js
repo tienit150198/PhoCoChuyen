@@ -97,6 +97,7 @@ async function run(op,data,after){
 async function onClick(op,data){
   if(op==='close'){close();return;}
   if(op==='pets'){close();S.env.act?.('pets',{tab:'adopt'});return;}
+  if(op==='bang'){close();S.env.act?.('bang',{});return;}   // ⚔️ no bang yet: v4/bang.js (find or found one)
   if(op==='tab'){S.tab=data.tab;S.sub='';S.flash=null;render();loadTab();return;}
   if(op==='back'){S.sub='';render();return;}
   if(op==='team'){S.sub='team';S.pick=[...(S.v?.lineup||[])];render();return;}
@@ -254,7 +255,7 @@ function warTab(v){
   const when=`<p>${w.phase==='pick'?`Đấu <b>${esc(hm(w.start))}</b> · chốt đội ${esc(clock(w.lock))}`:w.phase==='live'?'🔴 Đang diễn ra':w.phase==='done'?'Đã xong tuần này':w.phase==='cancelled'?'Tuần này không đủ bang':'Đang xếp cặp…'}</p>`;
   const head=`<section class="pa-card pa-war-card"><h3>🛡️ Bang chiến pet</h3>${when}<p class="pa-muted">Mỗi người chọn 1 bé, mỗi bang ${w.size} bé. Xếp cặp ngẫu nhiên ${w.size} trận 1–1, thắng nhiều hơn vào vòng trong.</p></section>`;
   let team='';
-  if(!w.team)team=`<div class="pa-locked"><span aria-hidden="true">🏯</span><p>Vào một bang để cùng ra trận nhé.</p></div>`;
+  if(!w.team)team=`<div class="pa-locked"><span aria-hidden="true">🏯</span><p>Vào một bang để cùng ra trận nhé.</p><button type="button" class="pa-chip" data-pa="bang">⚔️ Tìm bang</button></div>`;
   else{
     const slots=[];for(let i=0;i<w.size;i++){const p=w.picks[i];slots.push(p?`<div class="pa-slot${p.me?' me':''}">${pic(p.pet,44)}<small data-no-translate>${esc(p.name)}</small></div>`:`<div class="pa-slot empty"><span>?</span><small>Trống</small></div>`);}
     const mine=w.picks.find(p=>p.me);

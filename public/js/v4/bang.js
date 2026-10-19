@@ -296,7 +296,7 @@ function rankTab(){
   if(!data)return `<p class="sd-empty">⏳</p>`;
   const top=data.top||[];
   const rows=top.length?`<ol class="sd-board bg-board">${top.map(x=>`<li class="${x.id===mine?'me':''}"><span>${x.rank===1?'🥇':x.rank===2?'🥈':x.rank===3?'🥉':x.rank}</span><b data-no-translate>${esc(x.emoji)} ${esc(x.name)}${data.crown===x.id?' 👑':''}</b><em>${fmt(x.score)}</em></li>`).join('')}</ol>`:'<p class="tp-note">Tuần này chưa bang nào có điểm.</p>';
-  return `<section class="sd-card"><h3>👑 Bang mạnh nhất tuần</h3><p class="tp-note">Điểm = điểm cống hiến cả bang kiếm trong tuần + cấp công trình. Bang đứng đầu: cả bang mang danh hiệu “👑 Bang mạnh nhất tuần” suốt tuần sau.</p>
+  return `<section class="sd-card"><h3>👑 Bang mạnh nhất tuần</h3><p class="tp-note">Điểm = điểm cống hiến cả bang kiếm trong tuần + cấp công trình + 🛡️ Bang chiến pet. Bang đứng đầu: cả bang mang danh hiệu “👑 Bang mạnh nhất tuần” suốt tuần sau.</p>
     <p class="tp-line"><span>Tuần kết thúc sau <b data-bg-until="${data.ends}">${esc(left(data.ends-serverNow()))}</b></span></p>${rows}</section>`;
 }
 const roleIcon=r=>({chu:'👑',pho:'🛡️',lao:'📜',tinh:'⭐',tv:'👤'})[r]||'👤';

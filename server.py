@@ -85,6 +85,7 @@ from game import live_effects, live_dating
 from game import quay_hire
 from game import lixi  # 🧧 Lì xì: phát và giật (game/lixi.py)
 from game import pet_arena  # 🐾 Đấu trường pet, giải tuần, bang chiến (game/pet_arena.py, pet_cup.py, pet_war.py)
+from game import bang_pets  # ⚔️ the bangs as the pet war's teams (game/bang_pets.py registers kind 'bang' in game/pet_war.py)
 from game import rentals
 from game import bank_xfer  # 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 from game import wedding_live

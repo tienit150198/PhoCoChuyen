@@ -27,7 +27,8 @@ What a player does
   (ads' private ×1,5 stays on top as before). A window counts for a member who was in the bang when it started (its
   membership span, bang_stints), so offline catch-up books the same as polling. No query per order: the storage layer
   reads every member's windows once a minute per process (prepare) and binds this save's to the command (bind).
-* 👑 Bang mạnh nhất tuần: points earned in the Vietnam ISO week + facility levels; the winner, frozen after the week,
+* 👑 Bang mạnh nhất tuần: points earned in the Vietnam ISO week + facility levels + the week's 🛡️ Bang chiến pet
+  (war_scores: the team ladder's points × C.PET_WAR_SCORE once the war is over); the winner, frozen after the week,
   gives its members the title for the next week (shown in the tag; leaving drops it). No money prize.
 
 State in the save: only s['journey']['bang'] = {v, n, sum, last} (absent until the first paid command; journey.validate
@@ -636,10 +637,26 @@ def _cached(key, fn):
 EARN_KINDS = ('give', 'checkin', 'work')
 
 
+def war_scores(db, week: str, t: float | None = None) -> dict:
+    """{bang id: score} from that week's 🛡️ Bang chiến pet (game/pet_war.py), once it is over by `t` (its results are
+    fixed at the lock but shown only as the matches play: never sooner here either): the team ladder's points (a win
+    PTS_WIN, the champion PTS_CHAMP more) × C.PET_WAR_SCORE."""
+    from . import pet_war
+    t = now() if t is None else t
+    war = _row(db, "SELECT * FROM pet_war WHERE week=? AND status='done'", (week,))
+    if not war or pet_war.end_of(war) > t:
+        return {}
+    return {r['team_id']: int(r['pts']) * C.PET_WAR_SCORE
+            for r in _rows(db, "SELECT team_id, pts FROM pet_team_ladder WHERE week=? AND team_kind='bang' AND pts>0", (week,))}
+
+
 def scores(db, week: str) -> list:
-    """[(bang id, score)] of active, shown bangs, best first: the week's points + facility levels (Tượng bang's bonus)."""
+    """[(bang id, score)] of active, shown bangs, best first: the week's points + facility levels + the week's pet war
+    (war_scores), all × Tượng bang's bonus."""
     pts = {r['bang']: int(r['p']) for r in _rows(db, "SELECT bang, SUM(pts) AS p FROM bang_points WHERE week=? AND pts>0 "
                                                      "AND kind IN ('give','checkin','work') GROUP BY bang", (week,))}
+    for bid, war in war_scores(db, week).items():
+        pts[bid] = pts.get(bid, 0) + war
     fac: dict = {}
     for r in _rows(db, 'SELECT f.bang AS bang, f.fac AS fac, f.level AS level FROM bang_facilities f JOIN bangs b ON b.id=f.bang '
                        "WHERE b.status='active' AND b.hidden=0"):
@@ -911,7 +928,8 @@ def me_view(store, token) -> dict:
 
 
 def member_perks(store, sid: str) -> dict | None:
-    """For other systems (the pet battles to come): {bang, role, pet (Sân luyện pet level)} of a member, or None."""
+    """For other systems: {bang, role, pet (Sân luyện pet level)} of a member, or None. The pet war reads the bang through
+    game/bang_pets.py (its TeamProvider), not this."""
     with store.connect() as db:
         m = _mine(db, sid)
         if not m:

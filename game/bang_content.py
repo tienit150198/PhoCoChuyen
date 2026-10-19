@@ -67,7 +67,7 @@ FACILITIES = {
                         (50_000_000, 16), (75_000_000, 24), (110_000_000, 36), (160_000_000, 48)]),
     'xuong_may': dict(name='Xưởng may', emoji='🧵', blurb='May đồng phục màu bang, giảm giá đồ may ở cửa hàng.',
                       levels=[(3_000_000, 2), (8_000_000, 4), (18_000_000, 8), (35_000_000, 16), (60_000_000, 24)]),
-    'san_pet': dict(name='Sân luyện pet', emoji='🐾', blurb='Sân tập cho thú cưng của thành viên (đấu thú cưng sắp mở).',
+    'san_pet': dict(name='Sân luyện pet', emoji='🐾', blurb='Sân tập cho thú cưng: bé ra trận Bang chiến pet khỏe hơn.',
                     levels=[(2_000_000, 1), (4_000_000, 2), (7_000_000, 3), (12_000_000, 5), (20_000_000, 8), (32_000_000, 12),
                             (50_000_000, 16), (75_000_000, 24), (110_000_000, 36), (160_000_000, 48)]),
     'den_vang': dict(name='Đền vàng', emoji='⏰', blurb='Giờ vàng riêng của bang: bang chủ chọn giờ, lãi tiệm và quầy ×2.',
@@ -86,6 +86,8 @@ KHO_BONUS = 2                  # +2 % points on deposits per Kho bang level
 XUONG_OFF = 5                  # −5 % on the uniform, the badge and the boat paint per Xưởng may level
 TUONG_BONUS = 2                # +2 % weekly score per Tượng bang level
 FAC_SCORE = 100                # weekly score per facility level the bang holds
+PET_WAR_SCORE = 100            # weekly score per point of the week's 🛡️ Bang chiến pet ladder (a win 3, the title 5 more)
+PET_WAR_MAX = 5                # % the Sân luyện pet adds in the war at most (game/pet_war.py TRAINING_MAX, 1 %/level)
 SLOTS = ((1, 1), (3, 2))       # builds at once: 1, 2 from hall level 3
 
 
@@ -121,7 +123,7 @@ def perk(fac: str, level: int) -> str:
         out = f'Đồng phục: {", ".join(styles)}; đồ may −{XUONG_OFF * level}%'
         return out + ('; sơn thuyền màu bang' if level >= 2 else '')
     if fac == 'san_pet':
-        return f'Sân luyện cấp {level} (đấu thú cưng sắp mở)'
+        return f'Bé ra trận Bang chiến pet +{min(level, PET_WAR_MAX)}% chỉ số' + (' (tối đa)' if level >= PET_WAR_MAX else '')
     if fac == 'den_vang':
         g = GOLDEN[level]
         return f'Giờ vàng {g[1]} phút, {g[0]} lần/tuần' + (' (mỗi ngày 1 lần)' if g[0] >= 7 else '')
