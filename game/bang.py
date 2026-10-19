@@ -484,7 +484,7 @@ def _log(db, bid: str, sid: str, kind: str, text: str, t: float) -> None:
 
 def _bump(db, bid: str) -> None:
     db.execute('UPDATE bangs SET seq=seq+1 WHERE id=?', (bid,))
-    _VIEW.clear()
+    _drop_views()
 
 
 def _notify(db, **event) -> None:
@@ -920,6 +920,15 @@ def _cached(key, fn):
     return out
 
 
+def _drop_views() -> None:
+    """A member's write: the cached lists and boards go (they show counts, scores, names), 👑 stays until its own
+    VIEW_SECS: last week's winner never changes with this week's writes (bang-smooth 21/10: every tap's answer read
+    it again, and with no winner yet, as in the launch week, that was a write transaction under the week's lock)."""
+    with _VIEW_LOCK:
+        for k in [k for k in _VIEW if k[0] != 'crown']:
+            del _VIEW[k]
+
+
 EARN_KINDS = ('give', 'checkin', 'work')
 
 
@@ -988,7 +997,11 @@ def crown(store, t: float | None = None) -> str | None:
         try:
             with store.connect() as db:   # frozen already (every day of the week but its first minutes): a read only
                 r = _row(db, 'SELECT * FROM bang_week_win WHERE week=?', (prev_week(t),))
-            return r or store.transaction(lambda db: freeze(db, t))
+                # no bang was there last week (the launch week, a new server): nobody can win it, nothing to write
+                # (scores() counts only bangs founded before that week's end); a read, no transaction, no lock
+                none = not r and not db.execute("SELECT 1 FROM bangs WHERE status='active' AND hidden=0 AND created<? LIMIT 1",
+                                                (week_end(prev_week(t)),)).fetchone()
+            return r or (None if none else store.transaction(lambda db: freeze(db, t)))
         except Exception:  # noqa: BLE001 - the page never fails for this
             return None
     r = _cached(('crown', prev_week(t)), run)
@@ -1817,7 +1830,7 @@ def post(store, token, op: str, data) -> dict:
     if op in ('join', 'accept', 'approve'):
         _pre_profile(store, sid, op, data)
     out = store.transaction(lambda db: OPS[op](db, sid, data, now()))
-    _VIEW.clear()
+    _drop_views()
     return dict(done=out or {}, **get_view(store, token, {}))
 
 

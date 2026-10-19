@@ -8,7 +8,12 @@
  *        its real ladder, a title step in any career, the account's age), set by Phó bang and up (⚙️), shown on its card;
  *        the career ladders come from GET /api/bang?careers=1 when ⚙️ opens.
  *   the commands jr_bang_found (5.000.000 xu) and jr_bang_give (the fund) go through the save like any payment.
- * Phone first: one bang a screen, emoji tabs, one main button in the sticky bar. Styles: /css/spend.css + /css/bang.css. */
+ * Phone first: one bang a screen, emoji tabs, one main button in the sticky bar. Styles: /css/spend.css + /css/bang.css.
+ * Smooth taps (owner 21/10 "bang bấm còn giật giật lắm", "chọn cái nào có thể tiếp tục đóng cái đó"): the sheet is one
+ * HTML string patched into the live page (morph: only changed nodes are touched, lists keyed by data-k), a tap marks
+ * only its own button as pending (never the whole sheet disabled and greyed), the tapped card stays under the finger
+ * (scroll anchoring), the result line sits in the sticky bottom dock (nothing above moves), the tab, the chosen amount,
+ * the open member and each tab's scroll stay; the town redraws once the sheet closes. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {qtyBox,QTY,qtyVal} from '../qty-input.js';
 import {COLORS,ROLES,chip,setMine,tagLine} from './bang-tag.js';
@@ -17,7 +22,9 @@ const IN_TABS=[['home','🏯','Bang của tôi'],['members','👥','Thành viên
 const OUT_TABS=[['find','🔎','Tìm bang'],['found','⚔️','Lập bang'],['rank','👑','Xếp hạng tuần']];
 const BIG=1_000_000;
 const S={dlg:null,env:null,view:null,tab:'',flash:null,busy:false,q:'',list:null,found:null,form:null,amount:0,arm:'',armTimer:0,
-  friends:null,sel:'',gh:null,timer:0,at:0,bang:null,ladder:null,rules:null};
+  friends:null,sel:'',gh:null,timer:0,at:0,bang:null,ladder:null,rules:null,
+  armAt:0,tapEl:null,pendSel:'',ys:{},dirtyMain:false,flashTimer:0,reqN:0,seen:0};
+const ARM_GAP=200;   // ms: a second tap sooner than this is a double tap, not the confirming tap
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const cash=()=>Number(J().wallet)||0;
@@ -29,7 +36,7 @@ const rank=r=>(CAT().roles?.[r]?.rank)||1;
 const serverNow=()=>(Number(S.view?.now)||Date.now()/1000)+Math.max(0,Date.now()-S.at)/1000;
 const hex=c=>(COLORS[c]||COLORS.do)[0];
 const ink=c=>(COLORS[c]||COLORS.do)[1];
-function left(sec){sec=Math.max(0,Math.round(sec));const h=Math.floor(sec/3600),m=Math.ceil((sec%3600)/60);return h?`${h} giờ${m&&h<10?` ${m} phút`:''}`:`${Math.max(1,m)} phút`;}
+function left(sec){const all=Math.max(1,Math.ceil(Math.max(0,Math.round(sec))/60)),h=Math.floor(all/60),m=all%60;return h?`${h} giờ${m&&h<10?` ${m} phút`:''}`:`${m} phút`;}   // whole minutes, rounded up ("3 giờ 60 phút" never)
 const VN=7*3600;
 const vnDate=t=>new Date((t+VN)*1000);
 const hm=t=>{const d=vnDate(t);return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;};
@@ -61,12 +68,16 @@ function dialog(){
   d.addEventListener('input',e=>{
     const t=e.target;
     if(t.name==='bg-q'){S.q=t.value;clearTimeout(S.qTimer);S.qTimer=setTimeout(search,300);return;}
-    if(t.name?.startsWith('f-')&&S.form){S.form[t.name.slice(2)]=t.type==='checkbox'?t.checked:t.value;return;}
+    // the name / motto typed: the preview and the Lập bang button follow (a patch: the box being typed in is kept)
+    if(t.name?.startsWith('f-')&&S.form){S.form[t.name.slice(2)]=t.type==='checkbox'?t.checked:t.value;S.tapEl=null;render();return;}
     if(t.matches?.('input[data-qty]')){S.amount=clampGive(qtyVal(t));S.arm='';const b=d.querySelector('[data-bg="give"]');if(b)b.textContent=giveLabel();}
   });
   d.addEventListener('change',e=>{const t=e.target;if(t.name==='f-open'&&S.form)S.form.open=t.checked;
     if(t.name?.startsWith('rq-')){const r=draft(),k=t.name.slice(3);r[k]=k==='career'?t.value:Math.max(0,Math.floor(Number(t.value)||0));if(k==='career')r.rank=t.value?Math.max(1,r.rank||1):0;render();return;}if(t.name?.startsWith('gh-')&&S.gh){S.gh[t.name.slice(3)]=Number(t.value);render();}});
-  d.addEventListener('close',()=>{S.flash=null;S.arm='';clearInterval(S.timer);S.timer=0;});
+  d.addEventListener('close',()=>{S.flash=null;S.arm='';clearInterval(S.timer);S.timer=0;clearTimeout(S.flashTimer);
+    if(S.dirtyMain){S.dirtyMain=false;S.env?.renderMain?.();}});   // the uniform, the tag, the wallet: the town redraws once, now
+  // Back to the game after a while (the phone was locked, another app): the page as it is now (a build may be done).
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&d.open&&!S.busy&&Date.now()-S.at>5000)load().then(render);});
   S.dlg=d;return d;
 }
 
@@ -75,7 +86,7 @@ export async function openBang(env,data={}){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet?.();
   await ensureCss();
   const d=dialog();
-  S.flash=null;S.arm='';S.sel='';
+  S.flash=null;S.arm='';S.sel='';S.tapEl=null;S.ys={};S.order=null;
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
   await load();
@@ -85,12 +96,15 @@ export async function openBang(env,data={}){
 }
 
 async function load(query=''){
-  try{const v=await S.env.api.json('/api/bang'+query);accept(v);}
+  const my=++S.reqN;
+  try{const v=await S.env.api.json('/api/bang'+query);accept(v,my);}
   catch(e){S.flash={text:e?.message||'Chưa tải được. Thử lại nhé.',kind:'bad'};}
 }
-function accept(v){
-  if(!v||typeof v!=='object')return;
-  S.view=v;S.at=Date.now();setMine(v.mine||null);
+/** A page from the server. `my`: its request's number; an answer older than one already shown is dropped (a
+ * background refresh landing after a tap's own answer). */
+function accept(v,my=++S.reqN){
+  if(!v||typeof v!=='object'||my<S.seen)return;
+  S.seen=my;S.view=v;S.at=Date.now();setMine(v.mine||null);
   if(!v.mine&&v.list)S.list=v.list;
   const tabs=(v.mine?IN_TABS:OUT_TABS).map(t=>t[0]);
   if(!tabs.includes(S.tab))S.tab=tabs[0];
@@ -99,35 +113,52 @@ async function search(){
   try{const v=await S.env.api.json('/api/bang?q='+encodeURIComponent(S.q.slice(0,30)));S.list=v.list||[];if(v.board&&S.view)S.view.board=v.board;}catch{/* keep the last list */}
   render();
 }
-async function post(op,data={}){
-  if(S.busy)return null;S.busy=true;render();
-  try{
-    const r=await S.env.api.post('/api/bang/'+op,data);const done=r?.done||{};delete r.done;accept(r);
-    if(['wear','buy','join','accept','leave','kick','disband','set'].includes(op))S.env.renderMain?.();   // the uniform, the tag: the town redraws me
-    S.flash=done.message?{text:done.message,kind:'good'}:null;return done;
-  }catch(e){S.flash={text:e?.message||'Chưa được. Thử lại nhé.',kind:'bad'};return null;}
-  finally{S.busy=false;S.arm='';render();}
+/** The tapped button alone shows it is working (a spinner), until its answer is drawn; the rest of the sheet stays as
+ * it is (taps that need the server wait their turn: S.busy). */
+function selOf(el){
+  if(!el?.getAttribute)return '';
+  let s='';for(const a of Array.from(el.attributes))if(a.name.startsWith('data-'))s+=`[${a.name}="${CSS.escape(a.value)}"]`;
+  return s;
 }
-async function command(name,payload){
-  if(S.busy)return null;S.busy=true;render();
+function pend(el){S.pendSel=selOf(el);el?.classList?.add('is-pending');el?.setAttribute?.('aria-busy','true');S.dlg?.setAttribute('aria-busy','true');}
+function said(text,kind){
+  S.flash=text?{text,kind}:null;clearTimeout(S.flashTimer);
+  if(kind==='good')S.flashTimer=setTimeout(()=>{if(S.flash?.text===text){S.flash=null;if(S.dlg?.open){S.tapEl=null;render();}}},6000);
+}
+async function post(op,data={},el=null){
+  if(S.busy)return null;S.busy=true;pend(el);const my=++S.reqN;
   try{
-    const r=await S.env.api.command(name,payload);S.flash={text:r?.message||'Xong!',kind:'good'};S.env.renderMain?.();
-    await load();return r;
-  }catch(e){S.flash=e?.quiet?null:{text:e?.message||'Chưa được. Thử lại nhé.',kind:'bad'};return null;}
-  finally{S.busy=false;S.arm='';render();}
+    const r=await S.env.api.post('/api/bang/'+op,data);const done=r?.done||{};delete r.done;accept(r,my);
+    if(['wear','buy','join','accept','leave','kick','disband','set'].includes(op))S.dirtyMain=true;   // the uniform, the tag: the town redraws me when the sheet closes
+    said(done.message||'','good');return done;
+  }catch(e){said(e?.message||'Chưa được. Thử lại nhé.','bad');return null;}
+  finally{S.busy=false;S.arm='';S.pendSel='';render();}
+}
+/** A paid command (the save). `then`: 'load' waits for the new page before letting go (founding: the sheet changes
+ * altogether), 'bg' (the fund) lets the next tap go at once and refreshes the page behind it. */
+async function command(name,payload,el=null,then='load'){
+  if(S.busy)return null;S.busy=true;pend(el);
+  let r=null;
+  try{
+    r=await S.env.api.command(name,payload);said(r?.message||'Xong!','good');S.dirtyMain=true;
+    if(then==='load')await load();
+  }catch(e){said(e?.quiet?'':e?.message||'Chưa được. Thử lại nhé.','bad');r=null;}
+  finally{S.busy=false;S.arm='';S.pendSel='';render();}
+  if(r&&then==='bg')load().then(render);
+  return r;
 }
 const rid=()=>'bg-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
-/** A second tap within 5 s confirms (`key`: what is armed). */
+/** A second tap within 5 s confirms (`key`: what is armed); a double tap (two taps within ARM_GAP) never does. */
 function armed(key){
-  if(S.arm===key){S.arm='';return true;}
-  S.arm=key;clearTimeout(S.armTimer);S.armTimer=setTimeout(()=>{S.arm='';if(S.dlg?.open)render();},5000);render();return false;
+  if(S.arm===key){if(Date.now()-S.armAt<ARM_GAP)return false;S.arm='';return true;}
+  S.arm=key;S.armAt=Date.now();clearTimeout(S.armTimer);S.armTimer=setTimeout(()=>{S.arm='';if(S.dlg?.open)render();},5000);render();return false;
 }
 
 function tick(){
   if(!S.dlg?.open)return;
-  for(const el of S.dlg.querySelectorAll('[data-bg-until]'))el.textContent=left(Number(el.dataset.bgUntil)-serverNow());
+  for(const el of S.dlg.querySelectorAll('[data-bg-until]')){const s=left(Number(el.dataset.bgUntil)-serverNow());if(el.textContent!==s)el.textContent=s;}   // only a changed minute is drawn
   const due=(P()?.facilities||[]).some(f=>f.building&&f.ready<=serverNow());
-  if(due&&Date.now()-S.at>15000){S.at=Date.now();load().then(render);}
+  if(due&&!S.busy&&Date.now()-S.at>15000){S.at=Date.now();load().then(render);}
 }
 
 /* ---- the fund amount ---- */
@@ -144,51 +175,58 @@ function giveWhy(){
 }
 
 /* ---- clicks ---- */
+const LOCAL=new Set(['close','tab','sel','amount','ghDay','unpeek','more','chat','island','toFund','peek']);   // no server write: never waits
 async function onClick(op,d,el){
   const p=P(),me=ME();
+  if(S.busy&&!LOCAL.has(op)&&!(S.form&&(op==='emoji'||op==='color')))return;   // one write at a time: a double tap never sends twice
+  S.tapEl=el;   // render() keeps it (or its card) where the finger was
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=d.tab;S.flash=null;S.arm='';S.sel='';if(d.tab==='found'&&!S.found)loadFound();if(d.tab==='members'&&!S.friends&&rank(me?.role)>=3)loadFriends();if(d.tab==='more'&&rank(me?.role)>=4){S.rules=null;if(!S.ladder)loadLadder();}render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);return;
-    case'join':await post('join',{bang:d.id});return;
-    case'cancel':await post('cancel',{bang:d.id});return;
-    case'accept':await post('accept',{bang:d.id});return;
-    case'decline':await post('decline',{bang:d.id});return;
-    case'peek':S.bang=d.id;try{S.bang={id:d.id,...await S.env.api.json('/api/bang?id='+encodeURIComponent(d.id))};}catch(e){S.flash={text:e?.message||'Không mở được.',kind:'bad'};S.bang=null;}render();return;
-    case'unpeek':S.bang=null;render();return;
-    case'checkin':await post('checkin');return;
+    case'tab':{S.ys[S.tab]=S.dlg.scrollTop;S.tab=d.tab;S.flash=null;S.arm='';S.tapEl=null;if(d.tab==='found'&&!S.found)loadFound();if(d.tab==='members'&&!S.friends&&rank(me?.role)>=3)loadFriends();if(d.tab==='more'&&rank(me?.role)>=4){S.rules=null;if(!S.ladder)loadLadder();}
+      render();S.dlg.scrollTop=S.ys[d.tab]||0;return;}   // each tab where it was left (a new one from its top)
+    case'join':await post('join',{bang:d.id},el);return;
+    case'cancel':await post('cancel',{bang:d.id},el);return;
+    case'accept':await post('accept',{bang:d.id},el);return;
+    case'decline':await post('decline',{bang:d.id},el);return;
+    case'peek':S.bang=d.id;S.ys.peek=S.dlg.scrollTop;S.tapEl=null;try{S.bang={id:d.id,...await S.env.api.json('/api/bang?id='+encodeURIComponent(d.id))};}catch(e){said(e?.message||'Không mở được.','bad');S.bang=null;}render();S.dlg.scrollTop=0;return;
+    case'unpeek':S.bang=null;S.tapEl=null;render();S.dlg.scrollTop=S.ys.peek||0;return;
+    case'checkin':await post('checkin',{},el);return;
     case'amount':S.amount=clampGive(Number(d.n));S.arm='';render();return;
-    case'give':{
+    case'give':{   // the amount stays chosen: one more tap gives it again (owner 21/10)
       const n=amount();if(n>=BIG&&!armed('give'))return;
-      await command('jr_bang_give',{bang:S.view.mine.bang,amount:n,confirm:true});S.amount=0;return;}
+      const r=await command('jr_bang_give',{bang:S.view.mine.bang,amount:n,confirm:true},el,'bg');
+      const pg=P();if(r&&pg){pg.fund=Math.min(pg.fund_cap||Infinity,(pg.fund||0)+n);render();}   // the bar moves now; the refresh behind brings the points
+      return;}
+    case'toFund':{const c=S.dlg.querySelector('[data-k="fund"]');c?.scrollIntoView?.({block:'center',behavior:'smooth'});c?.classList.remove('bg-hl');void c?.offsetWidth;c?.classList.add('bg-hl');return;}
     case'chat':S.dlg.close();await S.env.act?.('liveChat',{ch:d.ch});return;
     case'island':S.dlg.close();await S.env.act?.('bangIsland',{});return;   // 🏯 Đảo bang (v4/bang-island.js)
     case'sel':S.sel=S.sel===d.pid?'':d.pid;S.arm='';render();return;
-    case'role':{if(d.role==='chu'&&!armed('chu:'+d.pid))return;await post('role',{pid:d.pid,role:d.role,...(d.role==='chu'?{confirm:true}:{})});return;}
-    case'kick':if(!armed('kick:'+d.pid))return;await post('kick',{pid:d.pid,confirm:true});S.sel='';return;
-    case'approve':await post('approve',{pid:d.pid,ok:d.ok!=='0'});return;
+    case'role':{if(d.role==='chu'&&!armed('chu:'+d.pid))return;await post('role',{pid:d.pid,role:d.role,...(d.role==='chu'?{confirm:true}:{})},el);return;}
+    case'kick':if(!armed('kick:'+d.pid))return;if(await post('kick',{pid:d.pid,confirm:true},el))S.sel='';return;
+    case'approve':await post('approve',{pid:d.pid,ok:d.ok!=='0'},el);return;
     case'invite':{const v=(d.code||S.dlg.querySelector('input[name="bg-code"]')?.value||'').trim().toUpperCase();
-      if(!/^PCC-[0-9A-Z]{6}$/.test(v)){S.flash={text:'Nhập mã người chơi dạng PCC-XXXXXX nhé.',kind:'bad'};render();return;}
-      await post('invite',{code:v});return;}
-    case'build':{const f=(p?.facilities||[]).find(x=>x.id===d.id);if(!f)return;if(!armed('build:'+f.id))return;await post('build',{fac:f.id,confirm:true});return;}
-    case'buy':await post('buy',{item:d.id,rid:rid()});return;
-    case'wear':await post('wear',{item:d.id,on:d.on==='1',...(d.style?{style:d.style}:{})});return;
-    case'fire':{const r=await post('fire',{rid:rid()});if(r){try{(await import('./fireworks.js')).markMine?.('lon');}catch{/* the show comes anyway */}}return;}
+      if(!/^PCC-[0-9A-Z]{6}$/.test(v)){said('Nhập mã người chơi dạng PCC-XXXXXX nhé.','bad');render();return;}
+      await post('invite',{code:v},el);return;}
+    case'build':{const f=(p?.facilities||[]).find(x=>x.id===d.id);if(!f)return;if(!armed('build:'+f.id))return;await post('build',{fac:f.id,confirm:true},el);return;}
+    case'buy':await post('buy',{item:d.id,rid:rid()},el);return;
+    case'wear':await post('wear',{item:d.id,on:d.on==='1',...(d.style?{style:d.style}:{})},el);return;
+    case'fire':{const r=await post('fire',{rid:rid()},el);if(r){try{(await import('./fireworks.js')).markMine?.('lon');}catch{/* the show comes anyway */}}return;}
     case'ghDay':S.gh={...ghDefault(),...S.gh,day:Number(d.n)};render();return;
-    case'ghSet':{const t=ghStart();if(!t)return;await post('gh_set',{start:t});return;}
-    case'ghCancel':if(!armed('ghc:'+d.id))return;await post('gh_cancel',{id:Number(d.id)});return;
-    case'open':await post('set',{open:d.on==='1'});return;
-    case'mode':await post('rules',{mode:d.mode});S.rules=null;return;
-    case'rulesSave':{const r=draft();await post('rules',{career:r.rank?r.career:'',rank:r.career?r.rank:0,any:r.any,days:r.days});S.rules=null;return;}
-    case'rulesClear':await post('rules',{career:'',rank:0,any:0,days:0});S.rules=null;return;
-    case'emoji':if(S.form){S.form.emoji=d.e;render();}else await post('set',{emoji:d.e});return;
-    case'color':if(S.form){S.form.color=d.c;render();}else await post('set',{color:d.c});return;
-    case'motto':{const v=S.dlg.querySelector('input[name="bg-motto"]')?.value||'';await post('set',{motto:v});return;}
-    case'leave':if(!armed('leave'))return;await post('leave',{confirm:true});return;
-    case'disband':{const v=S.dlg.querySelector('input[name="bg-disband"]')?.value||'';if(!armed('disband'))return;await post('disband',{confirm:true,name:v});return;}
+    case'ghSet':{const t=ghStart();if(!t)return;await post('gh_set',{start:t},el);return;}
+    case'ghCancel':if(!armed('ghc:'+d.id))return;await post('gh_cancel',{id:Number(d.id)},el);return;
+    case'open':await post('set',{open:d.on==='1'},el);return;
+    case'mode':await post('rules',{mode:d.mode},el);S.rules=null;return;
+    case'rulesSave':{const r=draft();await post('rules',{career:r.rank?r.career:'',rank:r.career?r.rank:0,any:r.any,days:r.days},el);S.rules=null;return;}
+    case'rulesClear':await post('rules',{career:'',rank:0,any:0,days:0},el);S.rules=null;return;
+    case'emoji':if(S.form){S.form.emoji=d.e;render();}else await post('set',{emoji:d.e},el);return;
+    case'color':if(S.form){S.form.color=d.c;render();}else await post('set',{color:d.c},el);return;
+    case'motto':{const v=S.dlg.querySelector('input[name="bg-motto"]')?.value||'';await post('set',{motto:v},el);return;}
+    case'leave':if(!armed('leave'))return;await post('leave',{confirm:true},el);return;
+    case'disband':{const v=S.dlg.querySelector('input[name="bg-disband"]')?.value||'';if(!armed('disband'))return;await post('disband',{confirm:true,name:v},el);return;}
     case'found':{
       const f=S.form;if(!f)return;if(!armed('found'))return;
-      const r=await command('jr_bang_found',{name:String(f.name||'').trim(),emoji:f.emoji,color:f.color,motto:String(f.motto||'').trim(),open:!!f.open,confirm:true});
-      if(r){S.form=null;S.found=null;}return;}
+      const r=await command('jr_bang_found',{name:String(f.name||'').trim(),emoji:f.emoji,color:f.color,motto:String(f.motto||'').trim(),open:!!f.open,confirm:true},el);
+      if(r){S.form=null;S.found=null;render();}return;}
     case'more':{S.list=null;render();return;}
     default:return;
   }
@@ -221,16 +259,56 @@ function ghStart(){
 }
 
 /* ---- rendering ---- */
+/** Draw the sheet: page() patched into what is on screen (morph), the tapped control's card kept under the finger. */
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop;
-  const a=document.activeElement,keep=a&&S.dlg.contains(a)&&a.matches?.('input')?{name:a.name,qty:a.matches('[data-qty]'),value:a.value,pos:a.selectionStart}:null;
-  S.dlg.querySelector('.sd-root').innerHTML=page();
-  if(keep){const b=keep.qty?S.dlg.querySelector('input[data-qty]'):S.dlg.querySelector(`input[name="${keep.name}"]`);if(b&&b.type!=='checkbox'){b.value=keep.value;b.focus({preventScroll:true});try{b.setSelectionRange(keep.pos,keep.pos);}catch{/* not text */}}}
-  if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
+  const root=S.dlg.querySelector('.sd-root');
+  const a=document.activeElement,keep=a&&S.dlg.contains(a)&&a.matches?.('input')?{el:a,name:a.name,qty:a.matches('[data-qty]'),value:a.value,pos:a.selectionStart}:null;
+  // the anchor: the tapped control's keyed card (a member, a facility, an item) or the control; not in the sticky head / dock
+  const t=S.tapEl,ref=t?.isConnected&&S.dlg.contains(t)&&!t.closest('.bg-stick,.bg-dock')?(t.closest('[data-k]')||t):null;
+  const key=ref?.getAttribute('data-k'),sel=ref&&!key?selOf(ref):'',top=ref?ref.getBoundingClientRect().top:0;
+  morph(root,page());
+  if(ref){
+    const now=ref.isConnected?ref:key?S.dlg.querySelector(`[data-k="${CSS.escape(key)}"]`):sel?S.dlg.querySelector(sel):null;
+    if(now){const dy=now.getBoundingClientRect().top-top;if(Math.abs(dy)>=1)S.dlg.scrollTop+=dy;}
+  }
+  if(keep&&!keep.el.isConnected){const b=keep.qty?S.dlg.querySelector('input[data-qty]'):S.dlg.querySelector(`input[name="${CSS.escape(keep.name||'')}"]`);if(b&&b.type!=='checkbox'){b.value=keep.value;b.focus({preventScroll:true});try{b.setSelectionRange(keep.pos,keep.pos);}catch{/* not text */}}}
+  if(S.pendSel)S.dlg.querySelector(S.pendSel)?.classList.add('is-pending');
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
-const btn=(op,label,extra='',cls='btn')=>`<button type="button" class="${cls}" data-bg="${op}"${extra}${S.busy?' disabled':''}>${label}</button>`;
+/* ---- morph: the new HTML onto the live nodes. Same tag in the same place (or the same data-k among its siblings):
+ * the node stays and only its changed attributes / text are set; anything else is inserted or removed. An open
+ * <details> stays open, a box being typed in keeps what is typed, a select keeps the option drawn as selected. */
+const keyOf=n=>n.nodeType===1?n.getAttribute('data-k'):null;
+const BOXES=/^(INPUT|SELECT|TEXTAREA)$/;
+function morph(root,html){const t=document.createElement('template');t.innerHTML=html;kids(root,t.content);}
+function kids(a,b){
+  const keyed=new Map();for(const c of Array.from(a.children)){const k=c.getAttribute('data-k');if(k)keyed.set(k,c);}
+  let i=0;
+  for(const n of Array.from(b.childNodes)){
+    const here=a.childNodes[i]||null,k=keyOf(n);
+    let o=k?keyed.get(k):here;
+    if(o&&(o.nodeType!==n.nodeType||o.nodeName!==n.nodeName||keyOf(o)!==k))o=null;
+    // an unchanged subtree (the browser compares it natively) is left alone; boxes are always patched (a typed value)
+    if(o){if(o!==here)a.insertBefore(o,here);if(o.nodeType!==1||BOXES.test(o.nodeName)||o.querySelector('input,select,textarea')||!o.isEqualNode(n))patch(o,n);}
+    else a.insertBefore(n,here);
+    i++;
+  }
+  while(a.childNodes.length>i)a.removeChild(a.lastChild);
+}
+function patch(o,n){
+  if(o.nodeType!==1){if(o.nodeValue!==n.nodeValue)o.nodeValue=n.nodeValue;return;}
+  const typing=o===document.activeElement;
+  for(const at of Array.from(o.attributes))if(!n.hasAttribute(at.name)&&!(at.name==='open'&&o.nodeName==='DETAILS'))o.removeAttribute(at.name);
+  for(const at of Array.from(n.attributes))if(o.getAttribute(at.name)!==at.value)o.setAttribute(at.name,at.value);
+  if(o.nodeName==='INPUT'){
+    if(!typing){if(o.type==='checkbox'||o.type==='radio')o.checked=n.hasAttribute('checked');else{const v=n.getAttribute('value')??'';if(o.value!==v)o.value=v;}}
+    return;
+  }
+  kids(o,n);
+  if(o.nodeName==='SELECT'&&!typing){const s=Array.from(o.options).findIndex(x=>x.hasAttribute('selected'));o.selectedIndex=Math.max(0,s);}
+}
+const btn=(op,label,extra='',cls='btn')=>`<button type="button" class="${cls}" data-bg="${op}"${extra}>${label}</button>`;
 const crest=(e,c,size='')=>`<span class="bg-crest${size}" style="--bgc:${hex(c)};--bgi:${ink(c)}" aria-hidden="true">${esc(e||'⚔️')}</span>`;
 const bar=(pct,cls='')=>`<div class="tp-bar ${cls}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>`;
 
@@ -242,7 +320,7 @@ function page(){
   const nav=`<nav class="sd-tabs" role="tablist" aria-label="Bang">${tabs.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${t[0]===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${t[0]===id?'on':''}" data-bg="tab" data-tab="${id}">${e}</button>`).join('')}</nav></div>`;
   if(!v)return head+`</div><div class="sheet-body sd-body"><p class="sd-empty">⏳</p></div>`;
   const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
-  if(!v.account)return head+`</div><div class="sheet-body sd-body">${flash}<section class="sd-card bg-center"><p class="tp-big">⚔️</p><h3>Đăng nhập để vào bang</h3><p class="tp-note">Bang cần tài khoản (như chat).</p></section></div>`;
+  if(!v.account)return head+`</div><div class="sheet-body sd-body"><section class="sd-card bg-center"><p class="tp-big">⚔️</p><h3>Đăng nhập để vào bang</h3><p class="tp-note">Bang cần tài khoản (như chat).</p></section></div><div class="bg-dock">${flash}</div>`;
   let inner='',foot='';
   const id=t[0];
   if(S.bang&&!inside||S.bang&&id==='rank')inner=peekView();
@@ -254,18 +332,19 @@ function page(){
   else if(id==='build')inner=buildTab();
   else if(id==='shop')inner=shopTab();
   else if(id==='more')inner=moreTab();
-  return head+nav+`<div class="sheet-body sd-body">${flash}${inner}</div>`+foot;
+  // the result line sits in the sticky bottom dock with the main button: shown or gone, nothing above it moves
+  return head+nav+`<div class="sheet-body sd-body">${inner}</div><div class="bg-dock">${flash}${foot}</div>`;
 }
 
 /* -- outside a bang -- */
 function invitesCard(){
   const list=S.view?.invites||[];if(!list.length)return '';
-  return `<section class="sd-card bg-invites"><h3>📨 Lời mời vào bang</h3>${list.map(x=>`<div class="bg-row">${crest(x.emoji,x.color)}<div class="grow"><b data-no-translate>${esc(x.name)}</b><small>${esc(x.by)} mời bạn</small></div>${btn('accept','Vào',` data-id="${esc(x.bang)}"`,'btn primary')}${btn('decline','✕',` data-id="${esc(x.bang)}" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`;
+  return `<section class="sd-card bg-invites"><h3>📨 Lời mời vào bang</h3>${list.map(x=>`<div class="bg-row" data-k="v:${esc(x.bang)}">${crest(x.emoji,x.color)}<div class="grow"><b data-no-translate>${esc(x.name)}</b><small>${esc(x.by)} mời bạn</small></div>${btn('accept','Vào',` data-id="${esc(x.bang)}"`,'btn primary')}${btn('decline','✕',` data-id="${esc(x.bang)}" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`;
 }
 function bangCard(c){
   const full=c.n>=c.cap;
   const act=c.asked?btn('cancel','Hủy đơn',` data-id="${esc(c.id)}"`,'btn cream'):full?'<span class="bg-full">Đủ người</span>':modeOf(c)==='closed'?'<span class="bg-full">Đang đóng</span>':btn('join',joinLabel(c),` data-id="${esc(c.id)}"`,'btn primary');
-  return `<div class="bg-card"><button type="button" class="bg-peek" data-bg="peek" data-id="${esc(c.id)}" aria-label="Xem bang ${esc(c.name)}">${crest(c.emoji,c.color)}<span class="grow"><b data-no-translate>${esc(c.name)}</b>${c.motto?`<small data-no-translate>${esc(c.motto)}</small>`:''}<small>👥 ${c.n}/${c.cap} · ${esc(MODES[modeOf(c)])}${c.rank&&c.score?` · #${c.rank} tuần này`:''}</small>${reqLine(c)}</span></button>${act}</div>`;
+  return `<div class="bg-card" data-k="b:${esc(c.id)}"><button type="button" class="bg-peek" data-bg="peek" data-id="${esc(c.id)}" aria-label="Xem bang ${esc(c.name)}">${crest(c.emoji,c.color)}<span class="grow"><b data-no-translate>${esc(c.name)}</b>${c.motto?`<small data-no-translate>${esc(c.motto)}</small>`:''}<small>👥 ${c.n}/${c.cap} · ${esc(MODES[modeOf(c)])}${c.rank&&c.score?` · #${c.rank} tuần này`:''}</small>${reqLine(c)}</span></button>${act}</div>`;
 }
 function findTab(){
   const list=S.list||S.view?.list||[];
@@ -304,7 +383,7 @@ function foundFoot(){
   const ok=S.found,fee=CAT().fee||5_000_000,f=S.form||{};
   const why=!ok?'':!ok.account?'Cần đăng nhập':!ok.days_ok?`Tài khoản chưa đủ ${CAT().account_days||14} ngày`:ready()<fee?`Còn thiếu ${fmt(fee-ready())} xu`:String(f.name||'').trim().length<2?'Đặt tên bang':'';
   const label=S.arm==='found'?`Bấm lần nữa: trả ${fmt(fee)} xu`:`⚔️ Lập bang · ${fmt(fee)} xu`;
-  return `<footer class="sd-bar">${why?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main" data-bg="found"${S.busy||why||!ok?' disabled':''}>${esc(label)}</button></footer>`;
+  return `<footer class="sd-bar">${why?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main" data-bg="found"${why||!ok?' disabled':''}>${esc(label)}</button></footer>`;
 }
 function rankTab(){
   const b=S.view?.board||P()?.board;
@@ -332,26 +411,26 @@ function homeTab(){
   const pct=Math.floor((p.fund||0)*100/Math.max(1,p.fund_cap||1));
   const g=give(),presets=(g.presets||[]).filter(x=>x<=Math.max(g.min,room())),n=amount();
   const chips=presets.map(x=>`<button type="button" class="sd-chip${n===x?' on':''}" data-bg="amount" data-n="${x}" aria-pressed="${n===x}">${fmt(x)}</button>`).join('');
-  const gold=m.golden?`<p class="bg-gold">⏰ Giờ vàng của bang đang diễn ra: lãi tiệm và quầy ×2, còn <b data-bg-until="${m.golden.ends}">${esc(left(m.golden.ends-serverNow()))}</b></p>`:'';
-  const hero=`<section class="sd-card bg-hero" style="--bgc:${hex(c.color)}">${crown}${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
+  const gold=m.golden?`<p class="bg-gold" data-k="gold">⏰ Giờ vàng của bang đang diễn ra: lãi tiệm và quầy ×2, còn <b data-bg-until="${m.golden.ends}">${esc(left(m.golden.ends-serverNow()))}</b></p>`:'';
+  const hero=`<section class="sd-card bg-hero" data-k="hero" style="--bgc:${hex(c.color)}">${crown}${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
     <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island?btn('island','🏯 Đảo bang','','btn cream bg-chat'):''}</p></section>`;
-  const fund=`<section class="sd-card"><h3>💰 Quỹ bang</h3><div class="tp-money"><b>${fmt(p.fund)}</b><span>/ ${fmt(p.fund_cap)} xu</span></div>${bar(pct)}
+  const fund=`<section class="sd-card" data-k="fund"><h3>💰 Quỹ bang</h3><div class="tp-money"><b>${fmt(p.fund)}</b><span>/ ${fmt(p.fund_cap)} xu</span></div>${bar(pct)}
     <div class="sd-chips sd-amounts">${chips}<label class="tp-typed">${qtyBox({value:n,min:g.min,max:Math.max(g.min,Math.min(g.max,room()||g.max)),step:g.min,money:true,label:'Góp bao nhiêu xu',go:`data-bg="amount" data-n="${QTY}"`})}<small>xu</small></label></div>
     <p class="tp-note">Chỉ góp, không rút: quỹ chỉ dùng xây công trình bang. ${fmt(g.per_point||1000)} xu = 1 điểm cống hiến.</p></section>`;
-  const pts=`<section class="sd-card bg-pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
+  const pts=`<section class="sd-card bg-pts" data-k="pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
     <p class="tp-note">Hôm nay ${me.today}/${me.today_max} điểm hoạt động: 📅 điểm danh +${CAT().points?.checkin||20}, mỗi ngày làm việc +${CAT().points?.work||10}. Điểm đổi đồ ở 🛍️.</p></section>`;
   return gold+hero+fund+pts+goldenCard()+logCard();
 }
 function homeFoot(){
   const me=ME();if(!me)return '';
-  if(!me.checkin)return `<footer class="sd-bar"><button type="button" class="btn primary big sd-main" data-bg="checkin"${S.busy?' disabled':''}>📅 Điểm danh +${CAT().points?.checkin||20} điểm</button></footer>`;
+  if(!me.checkin)return `<footer class="sd-bar"><button type="button" class="btn primary big sd-main" data-bg="checkin">📅 Điểm danh +${CAT().points?.checkin||20} điểm</button></footer>`;
   const why=giveWhy();
-  return `<footer class="sd-bar">${why?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main${S.arm==='give'?' tp-arm':''}" data-bg="give"${S.busy||why?' disabled':''}>${esc(giveLabel())}</button></footer>`;
+  return `<footer class="sd-bar">${why?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main${S.arm==='give'?' tp-arm':''}" data-bg="give"${why?' disabled':''}>${esc(giveLabel())}</button></footer>`;
 }
 function goldenCard(){
   const p=P(),g=p.golden||{},me=p.me,lv=p.levels||{};
-  const list=(g.list||[]).map(w=>{const on=w.start<=serverNow();return `<li><span>${on?'🔥':'⏰'}</span><b>${esc(dayLabel(w.start))} ${hm(w.start)}–${hm(w.ends)}</b>${on?`<em>còn <i data-bg-until="${w.ends}">${esc(left(w.ends-serverNow()))}</i></em>`:rank(me.role)>=4?btn('ghCancel',S.arm==='ghc:'+w.id?'Bấm lần nữa để hủy':'Hủy',` data-id="${w.id}"`,'btn cream sm'):''}</li>`;}).join('');
-  if(!lv.den_vang)return `<section class="sd-card"><h3>⏰ Giờ vàng của bang</h3><p class="tp-note">Xây ⏰ Đền vàng (🏗️) để bang chủ chọn giờ vàng riêng: lãi tiệm và quầy của cả bang ×2.</p></section>`;
+  const list=(g.list||[]).map(w=>{const on=w.start<=serverNow();return `<li data-k="g:${w.id}"><span>${on?'🔥':'⏰'}</span><b>${esc(dayLabel(w.start))} ${hm(w.start)}–${hm(w.ends)}</b>${on?`<em>còn <i data-bg-until="${w.ends}">${esc(left(w.ends-serverNow()))}</i></em>`:rank(me.role)>=4?btn('ghCancel',S.arm==='ghc:'+w.id?'Bấm lần nữa để hủy':'Hủy',` data-id="${w.id}"`,'btn cream sm'):''}</li>`;}).join('');
+  if(!lv.den_vang)return denVang(p);
   let picker='';
   if(rank(me.role)>=4){
     const st={...ghDefault(),...S.gh},days=[0,1,2,3,4,5,6].map(i=>`<button type="button" class="sd-chip${st.day===i?' on':''}" data-bg="ghDay" data-n="${i}" aria-pressed="${st.day===i}">${esc(dayLabel(serverNow()+i*86400))}</button>`).join('');
@@ -360,17 +439,40 @@ function goldenCard(){
     const t=ghStart(),soon=t<serverNow()+3600;
     picker=`<div class="sd-chips bg-days">${days}</div><div class="bg-time"><label>Giờ <select name="gh-h">${hours}</select></label><label>Phút <select name="gh-m">${mins}</select></label>${btn('ghSet','Đặt giờ vàng',soon?' disabled':'','btn primary')}</div>${soon?'<small class="sd-why">Đặt trước ít nhất 1 tiếng nhé.</small>':''}`;
   }
-  return `<section class="sd-card"><h3>⏰ Giờ vàng của bang</h3><p class="tp-note">${g.per_week>=7?'Mỗi ngày 1 lần':`${g.per_week} lần mỗi tuần`}, ${g.minutes} phút: lãi tiệm và quầy ×2 cho cả bang (không cộng dồn với giờ vàng của phố).</p>
+  return `<section class="sd-card" data-k="golden"><h3>⏰ Giờ vàng của bang</h3><p class="tp-note">${g.per_week>=7?'Mỗi ngày 1 lần':`${g.per_week} lần mỗi tuần`}, ${g.minutes} phút: lãi tiệm và quầy ×2 cho cả bang (không cộng dồn với giờ vàng của phố).</p>
     ${list?`<ol class="bg-gh">${list}</ol>`:'<p class="tp-note">Chưa đặt giờ nào.</p>'}${picker}</section>`;
 }
+/** No ⏰ Đền vàng yet (owner 21/10 "bang chủ chưa chọn được giờ vàng của bang"): Bang chủ / Phó bang get the build as
+ * the card's main button (its price and time from the page's facility, the same two taps as 🏗️), with what the fund
+ * lacks and a way to it; while it builds, the countdown; members are told who builds it. */
+function denVang(p){
+  const me=p.me,f=(p.facilities||[]).find(x=>x.id==='den_vang')||{},c=(CAT().facilities||[]).find(x=>x.id==='den_vang')||{};
+  const name=`${c.emoji||'⏰'} ${c.name||'Đền vàng'}`,open=`<section class="sd-card bg-gold-cta" data-k="golden"><h3>⏰ Giờ vàng của bang</h3>`;
+  if(f.building){const total=Math.max(1,f.ready-f.started),done=Math.floor((serverNow()-f.started)*100/total);
+    return open+`<p class="tp-stage">🚧 Đang xây ${esc(name)}</p>${bar(done,'build')}<p class="tp-line"><span>Còn <b data-bg-until="${f.ready}">${esc(left(f.ready-serverNow()))}</b>, xong là chọn được giờ vàng</span></p></section>`;}
+  if(rank(me.role)<4||!f.next)return open+`<p class="tp-note">Nhờ Bang chủ/Phó bang xây ${esc(name)} để mở giờ vàng: lãi tiệm và quầy của cả bang ×2.</p></section>`;
+  const busy=(p.facilities||[]).filter(x=>x.building).length,short=Math.max(0,(f.cost||0)-(p.fund||0));
+  const why=(p.levels?.[ 'dai_sanh']||1)<(f.hall||0)?`Cần Đại sảnh cấp ${f.hall}`:busy>=p.slots?`Đang xây ${busy}/${p.slots} công trình, chờ xong nhé`:'';
+  const label=S.arm==='build:den_vang'?`Bấm lần nữa: xây ${c.name||'Đền vàng'} · ${money(f.cost)}`:`🏗️ Xây ${c.name||'Đền vàng'} · ${money(f.cost)} · ${left(f.secs)}`;
+  return open+`<p class="tp-note">Xây ${esc(name)} để chọn giờ vàng riêng của bang: lãi tiệm và quầy của cả bang ×2.</p>
+    ${btn('build',esc(label),` data-id="den_vang"${why||short?' disabled':''}`,'btn primary bg-cta')}
+    ${why?`<small class="sd-why">${esc(why)}</small>`:short?`<div class="bg-row bg-short"><small class="sd-why grow">Quỹ còn thiếu ${fmt(short)} xu</small>${btn('toFund','🙌 Góp quỹ','','btn cream')}</div>`:''}</section>`;
+}
+/** 10.000.000 → "10 triệu", 2.500.000 → "2,5 triệu", 800.000 → "800.000 xu". */
+const money=n=>(n=Number(n)||0)>=1e6?`${(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})} triệu`:`${fmt(n)} xu`;
 function logCard(){
   const log=P()?.log||[];if(!log.length)return '';
-  return `<details class="sd-card bg-log"><summary>📜 Chuyện trong bang</summary><ul>${log.slice(0,12).map(x=>`<li data-no-translate>${esc(x.text)}</li>`).join('')}</ul></details>`;
+  return `<details class="sd-card bg-log" data-k="log"><summary>📜 Chuyện trong bang</summary><ul>${log.slice(0,12).map(x=>`<li data-no-translate>${esc(x.text)}</li>`).join('')}</ul></details>`;
 }
 function membersTab(){
   const p=P(),me=p?.me;if(!p)return '<p class="sd-empty">⏳</p>';
   const my=rank(me.role),mine=S.view.mine;
-  const rows=p.members.map(x=>{
+  // The order of the list stays as it was first drawn while the sheet is open (the server sorts by role: a member
+  // just appointed would jump up the list away from the finger); newcomers go at the end.
+  const order=S.order||={};let n=Object.keys(order).length;
+  for(const x of p.members)if(!(x.pid in order))order[x.pid]=n++;
+  const list=[...p.members].sort((a,b)=>order[a.pid]-order[b.pid]);
+  const rows=list.map(x=>{
     const self=x.pid===mineP(),open=S.sel===x.pid&&!self;
     let acts='';
     if(open){
@@ -383,9 +485,9 @@ function membersTab(){
       acts=can.length?`<div class="bg-acts">${can.join('')}</div>`:'';
     }
     const sub=`${esc(ROLES[x.role]||'')} · vào ${esc(dmy(x.joined))}${x.last?` · ${esc(self?'đang chơi':'chơi '+ago(x.last))}`:''}`;
-    return `<li class="${self?'me':''}${open?' open':''}"><button type="button" class="bg-mem" data-bg="sel" data-pid="${x.pid}"${self?' disabled':''}><span aria-hidden="true">${roleIcon(x.role)}</span><span class="grow bg-mem-who"><b data-no-translate>${esc(x.name)}</b><small>${sub}</small></span><em title="Tuần này / tổng">⭐ ${fmt(x.week)}<small>/${fmt(x.earned)}</small></em></button>${acts}</li>`;
+    return `<li data-k="m:${x.pid}" class="${self?'me':''}${open?' open':''}"><button type="button" class="bg-mem" data-bg="sel" data-pid="${x.pid}"${self?' disabled':''}><span aria-hidden="true">${roleIcon(x.role)}</span><span class="grow bg-mem-who"><b data-no-translate>${esc(x.name)}</b><small>${sub}</small></span><em title="Tuần này / tổng">⭐ ${fmt(x.week)}<small>/${fmt(x.earned)}</small></em></button>${acts}</li>`;
   }).join('');
-  const asks=(p.asks||[]).length?`<section class="sd-card"><h3>🙋 Xin vào bang (${p.asks.length})</h3>${p.asks.map(a=>`<div class="bg-row"><div class="grow"><b data-no-translate>${esc(a.name)}</b></div>${btn('approve','Nhận',` data-pid="${a.pid}"`,'btn primary')}${btn('approve','✕',` data-pid="${a.pid}" data-ok="0" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`:'';
+  const asks=(p.asks||[]).length?`<section class="sd-card" data-k="asks"><h3>🙋 Xin vào bang (${p.asks.length})</h3>${p.asks.map(a=>`<div class="bg-row" data-k="a:${a.pid}"><div class="grow"><b data-no-translate>${esc(a.name)}</b></div>${btn('approve','Nhận',` data-pid="${a.pid}"`,'btn primary')}${btn('approve','✕',` data-pid="${a.pid}" data-ok="0" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`:'';
   let invite='';
   if(my>=3){
     const fr=(S.friends||[]).filter(f=>f.bang!==mine.bang).slice(0,12);
@@ -409,7 +511,7 @@ function buildTab(){
       const why=!can?'Phó bang trở lên mới xây':(p.levels[ 'dai_sanh']<f.hall)?`Cần Đại sảnh cấp ${f.hall}`:busy>=p.slots?`Đang xây ${busy}/${p.slots} công trình`:p.fund<f.cost?`Quỹ thiếu ${fmt(f.cost-p.fund)} xu`:'';
       foot=`<p class="bg-next">Cấp ${f.next}: ${esc(f.next_perk)}</p><div class="bg-buy"><span>💰 ${fmt(f.cost)} xu · ⏳ ${esc(left(f.secs))}</span>${btn('build',S.arm==='build:'+f.id?'Bấm lần nữa':'Nâng cấp',` data-id="${f.id}"${why?' disabled':''}`,'btn primary')}</div>${why?`<small class="sd-why">${esc(why)}</small>`:''}`;
     }else foot='<p class="bg-next">✨ Cấp cao nhất</p>';
-    return `<section class="sd-card bg-fac${f.building?' building':''}"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">${esc(c.emoji||'🏗️')}</span><div class="grow"><b>${esc(c.name||f.id)}</b><small>Cấp ${f.level}/${f.max} · ${esc(f.perk)}</small></div></div><div class="bg-pips" aria-hidden="true">${pips}</div>${foot}</section>`;
+    return `<section data-k="f:${f.id}" class="sd-card bg-fac${f.building?' building':''}"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">${esc(c.emoji||'🏗️')}</span><div class="grow"><b>${esc(c.name||f.id)}</b><small>Cấp ${f.level}/${f.max} · ${esc(f.perk)}</small></div></div><div class="bg-pips" aria-hidden="true">${pips}</div>${foot}</section>`;
   }).join('');
   return `<p class="tp-note bg-top">💰 Quỹ ${fmt(p.fund)} xu · xây cùng lúc ${busy}/${p.slots}</p>`+cards;
 }
@@ -421,12 +523,12 @@ function shopTab(){
     const it=items[s.id]||{},owned=s.owned>0,worn=bits[s.id]&&(me.wear&bits[s.id]);
     let act='';
     if(!s.unlocked)act=`<small class="sd-why">Cần ${esc(fac[it.needs?.[0]]?.name||'')} cấp ${it.needs?.[1]}</small>`;
-    else if(it.kind==='use'){act=`${owned?btn('fire',`🎆 Bắn (${s.owned})`,'','btn cream'):''}${btn('buy',`⭐ ${fmt(s.price)}`,` data-id="${s.id}"${me.points<s.price?' disabled':''}`,'btn primary')}`;}
+    else if(it.kind==='use'){act=`${btn('buy',`⭐ ${fmt(s.price)}`,` data-id="${s.id}"${me.points<s.price?' disabled':''}`,'btn primary')}${owned?btn('fire',`🎆 Bắn (${s.owned})`,'','btn cream'):''}`;}   // buy first: the 🎆 appearing never moves it
     else if(owned)act=btn('wear',worn?'Cất':'Dùng',` data-id="${s.id}" data-on="${worn?0:1}"`,worn?'btn cream':'btn primary');
     else act=btn('buy',`⭐ ${fmt(s.price)}`,` data-id="${s.id}"${me.points<s.price?' disabled':''}`,'btn primary');
     let extra='';
     if(s.id==='ao'&&owned){const ok=S.view.mine.uniforms||['polo'];extra=`<div class="sd-chips bg-uni">${(CAT().uniforms||[]).map(u=>`<button type="button" class="sd-chip${me.uniform===u.id?' on':''}" data-bg="wear" data-id="ao" data-on="1" data-style="${u.id}"${ok.includes(u.id)?'':' disabled'} aria-pressed="${me.uniform===u.id}">${esc(u.name)}</button>`).join('')}</div>`;}
-    return `<div class="bg-item${worn?' on':''}"><span class="sd-ico" aria-hidden="true">${esc(it.emoji||'🎁')}</span><div class="grow"><b>${esc(it.name||s.id)}</b><small>${esc(itemNote(s.id))}${worn?' · đang dùng':''}</small>${extra}</div><div class="bg-item-act">${act}</div></div>`;
+    return `<div data-k="i:${s.id}" class="bg-item${worn?' on':''}"><span class="sd-ico" aria-hidden="true">${esc(it.emoji||'🎁')}</span><div class="grow"><b>${esc(it.name||s.id)}</b><small>${esc(itemNote(s.id))}${worn?' · đang dùng':''}</small>${extra}</div><div class="bg-item-act">${act}</div></div>`;
   }).join('');
   const others=(S.view.items||[]).filter(x=>x.bang!==S.view.mine.bang);
   const old=others.length?`<section class="sd-card"><h3>🎒 Đồ của bang cũ</h3><p class="tp-note">Vẫn trong túi, chỉ dùng được khi quay lại bang đó.</p><ul class="bg-old">${others.map(x=>`<li>${esc(items[x.item]?.emoji||'')} ${esc(items[x.item]?.name||x.item)} · <span data-no-translate>${esc(x.bang_emoji)} ${esc(x.bang_name)}</span></li>`).join('')}</ul></section>`:'';
