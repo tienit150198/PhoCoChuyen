@@ -1,9 +1,11 @@
 /** 🏝️ Đảo riêng on the old interface: the island (public/js/island-layout.js) as a flat, warm 2D walk, drawn like the
  * other v4 walks (the figures are look.js paintPlayer). Same renderer contract as the new interface's Phaser scene
  * (client/isometric/private-island.ts): frame(model), toMap(clientX, clientY), toScreen(x, y, lift), personHeight,
- * resize(), destroy(). The scene controller (v4/island-scene.js) owns walking, the live room and the overlays. */
+ * resize(), destroy(), and 🏗️ setBuilds(built) (the plots and their buildings: v4/island-build-art.js). The scene
+ * controller (v4/island-scene.js) owns walking, the live room and the overlays. */
 import {figureOf,paintPlayer,CANVAS} from './look.js';
 import {inPoly} from '../island-layout.js';
+import {createBuildArt} from './island-build-art.js';
 
 const FLAT=.64;   // the map's y is squashed: a three-quarter view from above
 const FIG_H=160,FIG_W=110;
@@ -29,8 +31,9 @@ export function createWalkRenderer(canvas,L){
   for(let i=0;i<60;i++){const x=rand()*1.2-.1,y=rand()*1.2-.1;if(!inPoly(inset(L.shore,-.05),x,y))swells.push([x,y,8+rand()*14,rand()*6]);}
   for(let i=0;i<120;i++){const x=rand(),y=rand();if(inPoly(grass,x,y))dots.push([x,y,4+rand()*6]);}
   const palms=L.palms.map(([x,y])=>[x,y,(rand()-.5)*.5,70+rand()*24,rand()*6]);
-  let w=1,h=1,dpr=1,cam=walkCamera(1,1),focus=[L.villa.x,L.villa.y+L.villa.h],destroyed=false;
+  let w=1,h=1,dpr=1,cam=walkCamera(1,1),focus=[L.villa.x,L.villa.y+L.villa.h],destroyed=false,built=[];
   const P=(x,y)=>[cam.ox+x*cam.S,cam.oy+y*cam.S*FLAT];
+  const art=createBuildArt(ctx,()=>({P,S:cam.S,FLAT}));
   function poly(list,fill,dy=0){ctx.beginPath();list.forEach(([x,y],i)=>{const [a,b]=P(x,y);i?ctx.lineTo(a,b+dy):ctx.moveTo(a,b+dy);});ctx.closePath();ctx.fillStyle=fill;ctx.fill();}
   function rect(r,fill,dy=0){const [a,b]=P(r.x-r.w/2,r.y-r.h/2),[c,d]=P(r.x+r.w/2,r.y+r.h/2);ctx.fillStyle=fill;ctx.fillRect(a,b+dy,c-a,d-b);return [a,b,c,d];}
   function planks(r){
@@ -52,6 +55,7 @@ export function createWalkRenderer(canvas,L){
       if(d.t==='strip'){const r={x:d.x,y:d.y,w:d.w||.5,h:d.h||.06},[a,b,c,e]=rect(r,'#5d5a5f');ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.setLineDash([14,12]);ctx.beginPath();ctx.moveTo(a+8,(b+e)/2);ctx.lineTo(c-8,(b+e)/2);ctx.stroke();ctx.setLineDash([]);}
       if(d.t==='pool'){const r={x:d.x,y:d.y,w:d.w||.14,h:d.h||.06};rect({...r,w:r.w+.015,h:r.h+.02},'#f4efe6');rect(r,'#47b7d8');rect({...r,y:r.y-r.h*.3,h:r.h*.2},'rgba(255,255,255,.35)');}
     }
+    art.ground(L.plots,built);   // 🏗️ the plots: empty, lawns, pools, piers
     if(L.pad.kind==='heli'){const [a,b]=P(L.pad.x,L.pad.y),r=cam.S*.045;ctx.fillStyle='#6b6f74';ctx.beginPath();ctx.ellipse(a,b,r,r*FLAT,0,0,Math.PI*2);ctx.fill();
       ctx.strokeStyle='#ffd75a';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(a,b,r*.8,r*.8*FLAT,0,0,Math.PI*2);ctx.stroke();
       ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(r*.8)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('H',a,b+1);}
@@ -86,6 +90,7 @@ export function createWalkRenderer(canvas,L){
         const an=t/1100;ctx.fillStyle='rgba(255,243,176,.3)';ctx.beginPath();ctx.moveTo(a,b-135*k);ctx.lineTo(a+Math.cos(an)*130*k,b-135*k+Math.sin(an)*30*k-18*k);ctx.lineTo(a+Math.cos(an)*130*k,b-135*k+Math.sin(an)*30*k+18*k);ctx.fill();}]);
       else if(d.t==='steam')out.push([d.y,()=>{const [a,b]=P(d.x,d.y);for(let i=0;i<3;i++){const p=((t/2600)+i/3)%1;ctx.fillStyle=`rgba(255,255,255,${.5*(1-p)})`;ctx.beginPath();ctx.ellipse(a+(i-1)*12*k,b-10*k-p*60*k,(12+p*14)*k,(8+p*10)*k,0,0,Math.PI*2);ctx.fill();}}]);
     }
+    out.push(...art.standing(L.plots,built,t));   // 🏗️ houses, castles, tents, scaffolding
     for(const s of L.spots)out.push([s.y-.001,()=>{const [a,b]=P(s.x,s.y),bob=Math.sin(t/700+s.x*9)*4;
       ctx.fillStyle='rgba(255,255,255,.3)';ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(a,b,20*k,9*k,0,0,Math.PI*2);ctx.fill();ctx.stroke();
       ctx.fillStyle='#000';ctx.font=`${Math.round(24*k+6)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(s.emoji,a,b-12*k+bob);}]);
@@ -149,6 +154,8 @@ export function createWalkRenderer(canvas,L){
     toMap(clientX,clientY){const r=canvas.getBoundingClientRect(),x=(clientX-r.left-cam.ox)/cam.S,y=(clientY-r.top-cam.oy)/(cam.S*FLAT);return x>=-.1&&x<=1.1&&y>=-.1&&y<=1.1?[x,y]:null;},
     toScreen(x,y,lift=0){const [a,b]=P(x,y);return [a,b-lift*cam.S/900];},
     resize,
+    /** 🏗️ What stands on the plots now (public/js/island-layout.js withBuilds().built). */
+    setBuilds(list){built=Array.isArray(list)?list:[];},
     destroy(){destroyed=true;ro?.disconnect();figures.clear();},
   };
 }

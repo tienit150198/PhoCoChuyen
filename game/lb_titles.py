@@ -11,7 +11,8 @@ Who holds what
 * Every workplace board: its top 1 is "🏆 Trùm <nghề>" (CAREER_NOUN).
 * Only players the board shows (game/leaderboard.py _VISIBLE: accounts unless hidden, guests who opted in), in
   the board's own order. 💎 Sưu tầm (`collection`) too since 18/10, 🐾 Thú cưng (`pets`, game/pet_lb.py: the best pet's
-  💪 lực chiến, from pet_board) since 19/10, and 🦉 Online (`online`, game/online_board.py:
+  💪 lực chiến, from pet_board) since 19/10, 🏝️ Đảo đẹp (`island`, game/island_lb.py: the most beautiful island's
+  points, from island_builds) since 19/10, and 🦉 Online (`online`, game/online_board.py:
   play time this week, read from stat_play, not from the `leaderboard` table). Nothing is written into a save: holding a weekly title is a server fact (table
   `lb_weekly`), shown on the board, under the name in Phố nghề and on the name tag in Đi dạo.
 
@@ -37,7 +38,7 @@ import time
 from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calendar ("Khách mời của tuần" uses it too)
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
-ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS = 'all', 'titles', 'certs', 'wealth', 'collection', 'online', 'pets'
+ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND = 'all', 'titles', 'certs', 'wealth', 'collection', 'online', 'pets', 'island'
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -52,8 +53,10 @@ BOARD_TITLES = {                # (emoji, name) per tier
     ONLINE: (('🦉', 'Cú đêm của phố'), ('🌙', 'Thức cùng ánh trăng'), ('🏮', 'Hội cú đêm')),
     # 19/10 (owner: "bảng xếp hạng bên ngoài thêm bảng xếp hạng 'Thú cưng'"): 🐾 the best pet's 💪 lực chiến (game/pet_lb.py).
     PETS: (('🐉', 'Vua thú cưng của phố'), ('🦄', 'Sen cưng siêu cấp'), ('🐾', 'Hội sen yêu bé')),
+    # 19/10 (owner: "Đảo đẹp nhất tuần", a title only): 🏝️ the most beautiful island's points (game/island_lb.py).
+    ISLAND: (('🏝️', 'Đảo đẹp nhất phố'), ('🌴', 'Chủ đảo mộng mơ'), ('⛱️', 'Hội chủ đảo xinh')),
 }
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -140,6 +143,10 @@ def standings(db, t: float | None = None) -> list:
         if board == PETS:
             from . import pet_lb
             out.extend(pet_lb.standings(db, n))
+            continue
+        if board == ISLAND:
+            from . import island_lb
+            out.extend(island_lb.standings(db, n, t))
             continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))

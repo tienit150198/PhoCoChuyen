@@ -414,7 +414,7 @@ def parse_query(q: dict) -> tuple[str, int]:
     """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles|wealth|collection|online|pets&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
-    if board not in BOARDS and board not in (fh.board(), fh.edition(), 'fair-loss', 'online', 'pets'):   # 🦉 game/online_board.py, 🐾 game/pet_lb.py   # edition: an older client (rolling release)
+    if board not in BOARDS and board not in (fh.board(), fh.edition(), 'fair-loss', 'online', 'pets', 'island'):   # 🦉 game/online_board.py, 🐾 game/pet_lb.py, 🏝️ game/island_lb.py   # edition: an older client (rolling release)
         raise ValueError('Nghề không hợp lệ.')
     raw = q.get('limit') or str(LIMIT)
     if not (raw.isascii() and raw.isdigit() and len(raw) <= 3 and 1 <= int(raw) <= LIMIT):
@@ -495,6 +495,9 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
     if board == 'pets':     # 🐾 Thú cưng: each player's best pet by 💪 lực chiến (pet_board 'LC'), not a `leaderboard` row
         from . import pet_lb
         return pet_lb.view(store, limit, token)
+    if board == 'island':   # 🏝️ Đảo đẹp: each player's most beautiful island (island_builds), not a `leaderboard` row
+        from . import island_lb
+        return island_lb.view(store, limit, token)
     if board in (fh.board(), fh.edition()):
         from . import fair_loss
         if fair_loss.weekly_win():   # 🏆 Top lời of this week (owner 14/10), like Top lỗ (game/fair_loss.py)

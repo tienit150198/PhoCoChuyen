@@ -151,3 +151,31 @@ class Island(LiveCase):
         await a.nothing('isl', wait=.3)
         await b.send(t='isl_say', text='alo')
         await a.nothing('isl', wait=.3)
+
+    async def test_a_public_visitor_walks_in_and_goes_home_when_it_closes(self):
+        """🌍 Đảo mở cửa: a visitor who is not the owner's friend walks in while the island is open to everyone, the
+        room's cap grows past the boat's seats, closing the island sends the visitor home (friends aboard stay)."""
+        self.setup_trip(guests=1)                       # ⛵ 4 seats
+        self.accept(0)
+        marriage._mutate(self.store, {self.xsid: lambda s: s.setdefault('journey', {}).update(story=True)})
+        owner = await self.enter(self.owner)
+        c = await self.connect(self.stranger)
+        await c.send(t='isl_in', trip=self.trip, look=LOOK, g='male')
+        self.assertEqual((await c.expect('error'))['code'], 'no_island')        # not open yet
+        it.post(self.store, self.owner, 'public', dict(trip=self.trip, open=True))
+        it.post(self.store, self.stranger, 'visit', dict(trip=self.trip))
+        visitor = await self.enter(self.stranger)
+        self.assertEqual([p['pid'] for p in visitor.room['people']], [owner.pid])
+        came = await self.ev(owner, 'in')
+        self.assertEqual((came['pid'], came['o']), (visitor.pid, False))
+        friend = await self.enter(self.people[0][0])
+        await self.ev(owner, 'in')
+        await self.ev(visitor, 'in')
+        await visitor.send(t='isl_do', s='b_a')                                  # a building's spot (game/island_build.py)
+        self.assertEqual((await self.ev(owner, 'do'))['s'], 'b_a')
+        await self.ev(friend, 'do')
+        it.post(self.store, self.owner, 'public', dict(trip=self.trip, open=False))
+        await visitor.expect('isl_left', why='changed')
+        self.assertEqual((await self.ev(owner, 'out'))['pid'], visitor.pid)
+        await friend.send(t='isl_emote', e='wave')                               # the friend aboard is still there
+        self.assertEqual((await self.ev(owner, 'emote'))['e'], 'wave')

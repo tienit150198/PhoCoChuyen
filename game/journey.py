@@ -577,6 +577,8 @@ def upgrade(j: dict) -> None:
     pt.px.upgrade(j)   # 🏅 journey['petx'] (ranks, kennel, gear)
     lx.upgrade(j)   # 🛍️
     isl.upgrade(j)   # 🏝️
+    from . import island_build
+    island_build.upgrade(j)   # 🏗️ journey['islb']: buildings on the islands
     auc.upgrade(j)   # 🔨
     from . import town_projects
     town_projects.upgrade(j)   # 🏗️
@@ -1023,6 +1025,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(lx.action(s, name, p))
     elif name.startswith('jr_island_'):
         result.update(isl.action(s, name, p))   # 🏝️ Đảo riêng
+    elif name.startswith('jr_isle_'):   # 🏗️ Xây trên đảo (game/island_build.py)
+        from . import island_build
+        result.update(island_build.action(s, name, p))
     elif name.startswith('jr_auc_'):
         result.update(auc.action(s, name, p))
     elif name.startswith('jr_town_'):   # 🏗️ Công trình của phố (game/town_projects.py)
@@ -1156,9 +1161,15 @@ def public(s: dict) -> dict:
         garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
+        **({'islb': ibp} if (ibp := _islb_public(s)) else {}),   # 🏗️ only once something was built (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+
+
+def _islb_public(s: dict) -> dict | None:
+    from . import island_build
+    return island_build.public(s)
 
 
 def _tile_public(s: dict) -> dict:
@@ -1304,6 +1315,8 @@ def validate(s: dict) -> None:
     pt.pw.validate(s)   # 👗 journey['petw'] (optional)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     isl.validate(s)   # 🏝️ journey['island'] (optional)
+    from . import island_build
+    island_build.validate(s)   # 🏗️ journey['islb'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
     auc.x_validate(s)   # 🔨 journey['uniq_x'] (optional): vehicles, registrations, yacht names won; plates attached
     from . import town_projects

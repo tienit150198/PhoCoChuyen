@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 55  # 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 56  # 56: 🏗️ Xây trên đảo + 🌍 đảo mở cửa (island_builds: the buildings on private islands, a copy of journey.islb written in the save's transaction; island_public, island_visitors: islands open to everyone and their visitors: game/island_build.py, game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -802,6 +802,25 @@ CREATE TABLE IF NOT EXISTS island_guests (
   status {T} NOT NULL CHECK (status IN ('invited','aboard','declined','left','removed')),
   invited double precision NOT NULL, answered double precision, PRIMARY KEY (trip, guest)
 );
+-- 🏗️ Xây trên đảo (game/island_build.py; SCHEMA_VERSION 56, owner 19/10): one row per owner, island and plot, a copy of
+-- the save's journey.islb written in the save's own transaction (status 'up' | 'gone' after a phá dỡ or a sale: kept),
+-- what visitors, the open-island list and the weekly 🏝️ Đảo đẹp board read. A level stands once ready_at is past.
+-- 🌍 island_public: a trip its owner opened to everyone (open | closed); island_visitors: who visits it (in | left |
+-- removed), counted under the trip row's lock (game/island_trips.py). New tables and indexes only, no FK, no backfill.
+CREATE TABLE IF NOT EXISTS island_builds (
+  owner {T} NOT NULL, island {T} NOT NULL, plot integer NOT NULL CHECK (plot BETWEEN 0 AND 63), kind {T} NOT NULL,
+  lvl integer NOT NULL DEFAULT 0, next_lvl integer NOT NULL DEFAULT 0, ready_at double precision NOT NULL DEFAULT 0,
+  paid bigint NOT NULL DEFAULT 0, status {T} NOT NULL CHECK (status IN ('up','gone')), at double precision NOT NULL,
+  PRIMARY KEY (owner, island, plot)
+);
+CREATE TABLE IF NOT EXISTS island_public (
+  trip {T} PRIMARY KEY, owner {T} NOT NULL, island {T} NOT NULL, status {T} NOT NULL CHECK (status IN ('open','closed')),
+  opened double precision NOT NULL, closed double precision
+);
+CREATE TABLE IF NOT EXISTS island_visitors (
+  trip {T} NOT NULL, guest {T} NOT NULL, status {T} NOT NULL CHECK (status IN ('in','left','removed')),
+  at double precision NOT NULL, PRIMARY KEY (trip, guest)
+);
 -- 🧧 Lì xì (game/lixi.py, live/lixi.py; SCHEMA_VERSION 51, owner 16/10 "cho phép người ta phát lì xì và giật lì xì"):
 -- one row per packet a player gave, written in the giver's own save transaction (jr_lixi_give: the debit and this row,
 -- both or neither), locked FOR UPDATE by every grab and by the 24 h sweep (`seq` moves on every change). left_n/left_xu:
@@ -834,6 +853,9 @@ INDEX_DDL = """
 CREATE UNIQUE INDEX IF NOT EXISTS island_trip_open ON island_trips(owner) WHERE status='open';
 CREATE INDEX IF NOT EXISTS island_trip_ends ON island_trips(ends) WHERE status='open';
 CREATE INDEX IF NOT EXISTS island_guest_of ON island_guests(guest,status);
+CREATE INDEX IF NOT EXISTS island_builds_up ON island_builds(status) WHERE status='up';
+CREATE INDEX IF NOT EXISTS island_public_open ON island_public(opened) WHERE status='open';
+CREATE INDEX IF NOT EXISTS island_visitor_of ON island_visitors(guest,status);
 CREATE UNIQUE INDEX IF NOT EXISTS home_guest_active_pair ON home_guest_invites(owner,guest)
   WHERE status IN ('pending','accepted');
 CREATE INDEX IF NOT EXISTS home_guest_recipient ON home_guest_invites(guest,status);
@@ -1170,6 +1192,9 @@ TABLES = [
     dict(name='town_gifts', identity=None),
     dict(name='island_trips', identity=None),
     dict(name='island_guests', identity=None),
+    dict(name='island_builds', identity=None),
+    dict(name='island_public', identity=None),
+    dict(name='island_visitors', identity=None),
     dict(name='lixi_packets', identity=None),
     dict(name='lixi_grabs', identity=None),
     dict(name='mnl_meta', identity=None),

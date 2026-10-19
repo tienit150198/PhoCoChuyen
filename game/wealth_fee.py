@@ -2,7 +2,8 @@
 
 Once per Vietnam calendar day (real time, not life days), a player whose assets (assets(): wealth_pricing.total —
 wallet, bank, savings, coin, gold, homes, vehicles, counters' funds and tills — plus EVERY started workplace's fund,
-the jobs one is employed at included: 19/10, a top player had moved 80M there) are above FREE pays
+the jobs one is employed at included: 19/10, a top player had moved 80M there — plus 🏝️ private islands at their 60 %
+buy-back and 🏗️ the buildings on them at their 20 % salvage, islands()) are above FREE pays
 LOW_BP ‱ of the part between FREE and HIGH and HIGH_BP ‱ of the part above HIGH. Days away count too, at most
 MAX_DAYS at a time. The fee is taken from the wallet, then the bank account, then the savings không kỳ hạn, then the
 counters' tills (fullest first), then the workplaces' funds (fullest first, as 👛 Rút về ví allows: the 80 xu reserve
@@ -52,7 +53,18 @@ def assets(s: dict) -> int:
     from . import journey as jr
     extra = sum(max(0, c.get('money', 0)) for cid, c in (s.get('careers') or {}).items()
                 if isinstance(c, dict) and c.get('started') and jr._employed(cid))   # wealth_pricing.total leaves these out
-    return wealth_pricing.total(s) + extra
+    return wealth_pricing.total(s) + extra + islands(s)
+
+
+def islands(s: dict) -> int:
+    """🏝️ Private islands at their buy-back (60 % of the price paid, game/island.py worth) and 🏗️ the buildings on them
+    at their salvage (20 % of what they cost, game/island_build.py worth), 19/10: buying an island or pouring xu into
+    buildings does not take money out of this fee's reach beyond what is really gone."""
+    j = s.get('journey') if isinstance(s, dict) else None
+    if not isinstance(j, dict):
+        return 0
+    from . import island, island_build
+    return island.worth(j) + island_build.worth(j)
 
 
 def settle(s: dict, now: float | None = None) -> bool:

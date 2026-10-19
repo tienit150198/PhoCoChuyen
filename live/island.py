@@ -1,10 +1,14 @@
 """🏝️ Đảo riêng together (switch LIVE_HOME, like the homes): the owner and the friends aboard one trip walk the island
 together, see each other, talk in bubbles and wave (game/island_trips.py keeps the trips and the seats).
 
-Who may be there is the database's answer (island_trips.ACCESS_SQL: the trip is open and its hour not over, this
-player is its owner or holds an 'aboard' seat, still a mutual friend of the owner, nobody blocked): checked on entry,
+Who may be there is the database's answer (island_trips.ACCESS_SQL: the trip is open (no time limit since 19/10; a
+trip an older build started keeps its hour), this player is its owner or holds an 'aboard' seat, still a mutual friend
+of the owner, nobody blocked — or 🌍 the owner opened it to everyone and this player is visiting it): checked on entry,
 every CHECK_EVERY seconds and at once when the game server says something changed (NOTIFY {op:'island', sid, why,
-trip}). The room's cap is the trip's seats, so it never holds more people than the vehicle carried. Two guests who
+trip}). The room's cap is the trip's seats, so it never holds more people than the vehicle carried, and
+island_content.PUBLIC_CAP while it is open to everyone (island_trips.cap_for, read again on every check). Visitors
+walk, wave and use the spots (the buildings' too: game/island_build.py) like everyone; nothing here touches the
+database per movement frame. Two guests who
 block each other share the island without seeing or hearing each other (Player.hidden, like the street).
 Positions, gestures and bubbles are memory only; a bubble goes through the chat's store_message (filters, mutes,
 kept like all chat) in the channel 'isl:<trip>' (chat.route: delete, report, admin hide).
@@ -24,7 +28,7 @@ import math
 import re
 import time
 
-from game.island_trips import ACCESS_SQL, INVITED_SQL, access_for
+from game.island_trips import ACCESS_SQL, INVITED_SQL, access_for, cap_for
 from .auth import pid_of
 from .db import Error as DbError, log
 from .fair import clean_point
@@ -132,6 +136,7 @@ class IslandFeature(Feature):
                 self._detach(conn, 'changed')
             raise LiveError('no_island', 'Chuyến ra đảo đã kết thúc.' if ended else 'Bạn không còn chỗ trên chuyến này.')
         room.data['ends'] = float(row['ends'])
+        room.cap = cap_for(row)
         return room
 
     def _visible(self, a, b) -> bool:
@@ -158,7 +163,8 @@ class IslandFeature(Feature):
         if old is not None:
             self._detach(old, 'other' if old is not conn else None)
         rid = PREFIX + trip
-        room = self.hub.room(rid, cap=int(row['seats']), on_empty=self._empty)
+        room = self.hub.room(rid, cap=cap_for(row), on_empty=self._empty)
+        room.cap = cap_for(row)   # opened to everyone (or closed) since the room was made
         if not room.data:
             room.data.update(trip=trip, owner=pid_of(row['owner']), island=row['island'], kind=row['kind'], vehicle=row['vehicle'],
                              seats=int(row['seats']), ends=float(row['ends']), people={})

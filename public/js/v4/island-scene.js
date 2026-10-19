@@ -2,8 +2,12 @@
  * one draws with Phaser (client/isometric/private-island.ts, inside the isometric bundle), the old one with a 2D canvas
  * (v4/island-walk.js); this owns walking (tap, arrows / WASD, the spot buttons), the boat or plane arriving, the live
  * room (v4/island-live.js: others walking, waving, talking), names and bubbles over heads, the hour running out.
- * "← Về phố" just goes home: the trip goes on, the dialog (v4/island.js) brings the player back. */
-import {layout,arrival,step,walkable,nearestWalkable,spotNear,standAt,spotById,spotLine,EMOTES} from '../island-layout.js';
+ * "← Về phố" just goes home: the trip goes on, the dialog (v4/island.js) brings the player back.
+ * 🏗️ The island's buildings (trip.builds, game/island_build.py) stand on both maps (withBuilds): scaffolding until their
+ * hour, then the building; a leisure building is a spot (walk up: its pose, and actions.use() for the small daily tinh
+ * thần), a home's door opens its inside view; the owner taps an empty plot to build (actions.build). A trip has no time
+ * limit since 19/10 (trip.unlimited). */
+import {layout,arrival,step,walkable,nearestWalkable,spotNear,standAt,spotById,spotLine,EMOTES,withBuilds,plotAt,workAt,findPath} from '../island-layout.js';
 import {createIslandPresence,peerAt} from './island-live.js';
 import {lookOf} from './look.js';
 import {newInterface} from '../interface-mode.js';
@@ -36,19 +40,24 @@ export function facing(dx,dy,prev='se'){
   return Math.abs(dx)>=Math.abs(dy)?(dx>=0?'se':'nw'):(dy>=0?'sw':'ne');
 }
 const minutesLeft=(ends,now)=>Math.max(0,Math.ceil((ends-now)/60));
+/** "5g 12p" / "40p": a construction's time left. */
+export const hoursLeft=s=>{const m=Math.max(1,Math.ceil(s/60)),h=Math.floor(m/60);return h?`${h}g${m%60?` ${m%60}p`:''}`:`${m}p`;};
 
 /** The session without the DOM: tests drive it with a fake view, renderer, live socket and clock. */
 export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()=>null,actions={},clock=()=>performance.now(),wall=()=>Date.now()/1000,
-  raf=fn=>requestAnimationFrame(fn),caf=id=>cancelAnimationFrame(id),reduced=false,onClose=()=>{}}){
-  const L=layout(trip.island?.look),kind=trip.kind||'solo',route=vehicleRoute(L,kind,(trip.seats||0)>=12),[sx,sy]=landing(L,kind);
+  raf=fn=>requestAnimationFrame(fn),caf=id=>cancelAnimationFrame(id),reduced=false,onClose=()=>{},skew=0}){
+  const base=layout(trip.island?.look),kind=trip.visit?'solo':trip.kind||'solo',route=vehicleRoute(base,kind,!trip.visit&&(trip.seats||0)>=12),[sx,sy]=landing(base,kind);
+  /** The server's unix time (the buildings' hours are the server's). */
+  const serverNow=()=>wall()+skew;
+  let builds=Array.isArray(trip.builds)?trip.builds:[],L=withBuilds(base,builds,serverNow()),buildKey='';
   const me={x:sx,y:sy,target:null,dir:'se',left:false,walking:false,spot:null,pose:null,sent:[sx,sy],sendAt:0};
   const keys=new Set(),arriveMs=reduced?0:ARRIVE_MS;
-  let renderer=null,presence=null,frameId=0,closed=false,started=false,t0=0,last=0,previousPause=false,arrived=false,statusAt=-1e9,why=null;
+  let renderer=null,presence=null,frameId=0,closed=false,started=false,t0=0,last=0,previousPause=false,arrived=false,statusAt=-1e9,why=null,signsAt=-1e9,pingOff=null;
   const look=lookOf(env.api.state),gender=env.api.state?.journey?.gender==='male'||env.api.state?.journey?.gender==='female'?env.api.state.journey.gender:null;
 
   function close(reason=null){
     if(closed)return;closed=true;why=reason;caf(frameId);
-    presence?.stop();renderer?.destroy();renderer=null;env.api.removeEventListener?.('state',onState);view.destroy();
+    presence?.stop();pingOff?.();renderer?.destroy();renderer=null;env.api.removeEventListener?.('state',onState);view.destroy();
     if(started&&env.world){env.world.paused=previousPause;env.world.wake?.();}
     const said={ended:'Chủ đảo đã kết thúc chuyến chơi. Mọi người về phố nhé.',time:'Hết giờ chơi trên đảo, thuyền đưa mọi người về phố.',
       changed:'Bạn đã rời chuyến ra đảo này.',other:'Bạn đang ở trên đảo ở một cửa sổ khác.',gone:'Chuyến ra đảo đã kết thúc.'}[reason];
@@ -58,19 +67,39 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   function onState(){if(env.api.state?.jail)close();}
   const go=(x,y,spot=null)=>{
     if(!arrived)return;
-    const [tx,ty]=nearestWalkable(L,x,y);me.target=[tx,ty];me.spot=spot;me.pose=null;
-    const d=Math.hypot(tx-me.x,ty-me.y);send([tx,ty],d/SPEED*1000);
+    const [tx,ty]=nearestWalkable(L,x,y),path=findPath(L,[me.x,me.y],[tx,ty]);   // around the houses and the sites
+    me.path=path.length?path:[[tx,ty]];me.target=me.path.shift();me.spot=spot;me.pose=null;
+    const d=Math.hypot(me.target[0]-me.x,me.target[1]-me.y);send(me.target,d/SPEED*1000);
   };
   function send(to,ms){if(!presence)return;presence.move([me.x,me.y],to,Math.min(6000,ms));me.sent=to;me.sendAt=clock();}
   function tap(clientX,clientY){
     const p=renderer?.toMap(clientX,clientY);if(!p)return;
+    const plot=plotAt(L,p[0],p[1]),here=plot>=0?L.built.find(b=>b.plot===plot):null;
+    if(plot>=0&&trip.mine&&actions.build&&(!here||here.work)){actions.build(plot);return;}   // the owner: an empty plot / a site
+    if(here&&!here.work&&here.level>=1){const sp=L.spots.find(x=>x.build?.plot===plot);if(sp){const [x,y]=standAt(L,sp);go(x,y,sp);return;}}
     const s=spotNear(L,p[0],p[1],.06);
     if(s){const [x,y]=standAt(L,s);go(x,y,s);}else go(p[0],p[1]);
   }
   function useSpot(id){const s=spotById(L,id);if(s){const [x,y]=standAt(L,s);go(x,y,s);}}
   function reachSpot(s){
-    me.spot=null;me.pose=s.pose;
+    me.spot=null;
+    if(s.home){me.pose=null;view.inside?.({kind:s.build.kind,level:s.build.level,name:s.build.art.name,emoji:s.build.art.emoji,owner:trip.owner?.name||'',mine:Boolean(trip.mine)});return;}
+    me.pose=s.pose;
     view.notice(`${s.emoji} ${spotLine(s,Math.floor(clock()/1000))}`);presence?.act(s.id);
+    if(s.build)Promise.resolve(actions.use?.(s.build.plot)).then(line=>{if(line&&!closed)view.notice(`${s.emoji} ${spotLine(s,Math.floor(clock()/1000))} ${line}`);}).catch(()=>{});
+  }
+  /** 🏗️ The buildings changed (a new list from the server, or a construction's hour is over): the map, the spots. */
+  function rebuild(list=builds){
+    builds=Array.isArray(list)?list:[];
+    const now=serverNow(),key=JSON.stringify(builds.map(b=>[b.p,b.k,b.l,b.b,workAt(b,now)]));
+    if(key===buildKey)return;buildKey=key;
+    L=withBuilds(base,builds,now);renderer?.setBuilds?.(L.built);view.spots?.(L.spots);
+    if(!walkable(L,me.x,me.y)){const [x,y]=nearestWalkable(L,me.x,me.y);me.x=x;me.y=y;}
+  }
+  let reloading=0;
+  async function reload(){
+    if(!actions.reload||closed||Date.now()-reloading<1500)return;reloading=Date.now();
+    try{const t=await actions.reload();if(t&&!closed)rebuild(t.builds);}catch{/* the map keeps what it had */}
   }
   function key(code,down){
     const map={ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r'};
@@ -80,13 +109,14 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     let vx=(keys.has('r')?1:0)-(keys.has('l')?1:0),vy=(keys.has('d')?1:0)-(keys.has('u')?1:0);
     const was=[me.x,me.y];
     if(vx||vy){
-      me.target=null;me.spot=null;me.pose=null;const n=Math.hypot(vx,vy);vx/=n;vy/=n;
+      me.target=null;me.path=null;me.spot=null;me.pose=null;const n=Math.hypot(vx,vy);vx/=n;vy/=n;
       const [nx,ny]=step(L,me.x,me.y,me.x+vx,me.y+vy,SPEED*dt);me.x=nx;me.y=ny;
       if(t-me.sendAt>=SEND_MS){const ahead=step(L,me.x,me.y,me.x+vx,me.y+vy,SPEED*SEND_MS/1000);send([ahead[0],ahead[1]],SEND_MS);}
     }else if(me.target){
       const [nx,ny,done]=step(L,me.x,me.y,me.target[0],me.target[1],SPEED*dt);me.x=nx;me.y=ny;
       const stuck=Math.hypot(nx-was[0],ny-was[1])<1e-7;
-      if(done||stuck){const s=me.spot;me.target=null;if(s&&Math.hypot(me.x-standAt(L,s)[0],me.y-standAt(L,s)[1])<.03)reachSpot(s);else me.spot=null;}
+      if(done&&me.path?.length){me.target=me.path.shift();send(me.target,Math.hypot(me.target[0]-me.x,me.target[1]-me.y)/SPEED*1000);}   // the next bend
+      else if(done||stuck){const s=me.spot;me.target=null;me.path=null;if(s&&Math.hypot(me.x-standAt(L,s)[0],me.y-standAt(L,s)[1])<.03)reachSpot(s);else me.spot=null;}
     }
     const dx=me.x-was[0],dy=me.y-was[1];me.walking=Math.hypot(dx,dy)>1e-6;
     if(me.walking){me.dir=facing(dx,dy,me.dir);if(Math.abs(dx)>1e-6)me.left=dx<0;}
@@ -109,8 +139,11 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   function status(){
     const left=minutesLeft(trip.ends,wall()),n=1+(presence?.peers.size||0);
     if(left<=0){close('time');return;}
-    const veh=trip.vehicle?`${trip.vehicle.emoji||VEHICLE_ICON[kind]} ${trip.vehicle.name}`:`${VEHICLE_ICON.solo} Xuồng của đảo`;
-    view.status(`${veh} · ${n} người trên đảo · còn ${left} phút`+(presence&&!presence.online?' · đang kết nối lại…':''));
+    rebuild();   // a construction whose hour is over stands now
+    const ve=trip.vehicle?.emoji||VEHICLE_ICON[kind],vn=String(trip.vehicle?.name||'');   // the island's own boat is named '🚤 Xuồng của đảo': its icon once
+    const veh=trip.visit?'🌍 Khách ghé đảo':trip.vehicle?(vn.startsWith(ve)?vn:`${ve} ${vn}`):`${VEHICLE_ICON.solo} Xuồng của đảo`;
+    const time=trip.unlimited||left>60*24*365?'':` · còn ${left} phút`;
+    view.status(`${veh} · ${n} người trên đảo${time}`+(presence&&!presence.online?' · đang kết nối lại…':''));
   }
   function tick(t){
     if(closed||!renderer)return;
@@ -122,6 +155,8 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     renderer.frame({people:list,vehicle:vehicleAt(route,a),focus:[me.x,me.y]},t);
     const head=renderer.personHeight||90;
     view.tags(list.filter(p=>!p.hidden).map(p=>{const s=renderer.toScreen(p.x,p.y);return s&&{...p,sx:s[0],sy:s[1]-head-(p.pose==='swim'?-head*.35:0)};}).filter(Boolean));
+    if(view.signs&&t-signsAt>500){signsAt=t;const now=serverNow();   // ⏳ how long the crews still work
+      view.signs(L.built.filter(b=>b.work).map(b=>{const s=renderer.toScreen(b.x,b.y,0);return s&&{id:'b'+b.plot,sx:s[0],sy:s[1]+6,text:`⏳ ${hoursLeft(b.until-now)}`};}).filter(Boolean));}
     if(t-statusAt>1000){statusAt=t;status();}
     if(!closed)frameId=raf(tick);
   }
@@ -130,6 +165,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   view.onEmote(e=>{if(presence)presence.emote(e);});
   view.onSay(text=>{const ok=presence?.say(text);if(!ok)view.notice('Chưa nói được: đang mất kết nối, thử lại sau nhé.');return ok;});
   view.onEnd?.(async()=>{try{if(await actions.end?.()===false)return;close('ended');}catch(e){view.notice(e.message||'Chưa kết thúc được chuyến này.');}});
+  view.onBuild?.(()=>actions.build?.(-1));
 
   async function start(){
     if(started||closed)return;
@@ -139,15 +175,32 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     env.closeSheet?.();env.api.addEventListener?.('state',onState);view.open(L,trip);
     try{
       renderer=await loadRenderer(view);if(closed){renderer?.destroy();renderer=null;return;}
+      renderer.setBuilds?.(L.built);view.spots?.(L.spots);buildKey='';rebuild();
       view.ready();
       const live=await loadLive().catch(()=>null);if(closed)return;
+      if(live?.on)pingOff=live.on('island_ping',f=>{if(f.trip===trip.id&&f.why==='seat')reload();});   // 🏗️ the owner built or razed something
       if(live)presence=createIslandPresence({live,trip:trip.id,look,gender,at:()=>[me.x,me.y],clock,
         onChange:()=>{},onLeft:w=>close(w),onError:(msg,code)=>{if(code==='no_island')close('gone');else view.notice(msg);}}).start();
       t0=last=clock();frameId=raf(tick);
     }catch(error){if(!closed){env.toast?.(error?.message||'Chưa mở được đảo. Thử lại nhé.',true);close();}}
   }
-  return {start,close,tick,tap,useSpot,key,
-    get me(){return me;},get arrived(){return arrived;},get why(){return why;},get presence(){return presence;},get closed(){return closed;}};
+  return {start,close,tick,tap,useSpot,key,rebuild,reload,
+    get me(){return me;},get arrived(){return arrived;},get why(){return why;},get presence(){return presence;},get closed(){return closed;},get layout(){return L;}};
+}
+
+const spotChips=list=>list.map(s=>`<button type="button" class="isl-chip${s.build?' isl-chip-b':''}" data-spot="${esc(s.id)}">${esc(s.emoji)} ${esc(s.name)}</button>`).join('');
+/** 🏠 What a home holds at each level: [emoji, left %, bottom %, size px] on the floor, the wall's and the floor's colours. */
+const ROOMS={
+  nha_san:{wall:'#e8c98f',floor:'#b5844f',items:[['🛏️',18,8,46],['🪔',70,40,30],['🏺',82,10,34]],more:[['🪑',48,6,34],['🪴',6,34,34]],most:[['🎣',62,48,30],['🧺',36,26,30]]},
+  biet_thu:{wall:'#f4efe6',floor:'#d9c7a8',items:[['🛋️',20,8,52],['📺',62,44,36],['🪴',86,10,40]],more:[['🛏️',56,6,48],['🖼️',30,62,32]],most:[['🛁',78,26,40],['🎹',6,20,40]]},
+  lau_dai:{wall:'#cfc6b8',floor:'#8f8476',items:[['🪑',30,8,44],['🕯️',12,44,30],['🛡️',72,58,34]],more:[['🎹',58,6,50],['🖼️',36,62,34]],most:[['🏆',86,30,34],['📚',4,10,44],['💎',48,40,26]]},
+};
+function roomHtml(info){
+  const r=ROOMS[info.kind]||ROOMS.nha_san,lv=Math.max(1,Math.min(3,Number(info.level)||1));
+  const items=[...r.items,...(lv>1?r.more:[]),...(lv>2?r.most:[])];
+  return `<div class="isl-room" style="--wall:${r.wall};--floor:${r.floor}"><div class="isl-room-wall"><span class="isl-room-window" aria-hidden="true"></span>${lv>2?'<span class="isl-room-lamp" aria-hidden="true">💡</span>':''}</div><div class="isl-room-floor"></div>
+    ${items.map(([e,x,y,size])=>`<span class="isl-room-item" style="left:${x}%;bottom:${y}%;font-size:${size}px" aria-hidden="true">${e}</span>`).join('')}</div>
+    <div class="isl-inside-bar"><p><b>${esc(info.emoji)} ${esc(info.name)}</b> · ${'⭐'.repeat(lv)}${info.mine?'':` · ${esc(info.owner)}`}</p><button type="button" class="btn primary" data-out>Ra ngoài</button></div>`;
 }
 
 /** The fullscreen dialog: the stage, names and bubbles, the spots, emotes and the chat line. */
@@ -155,8 +208,8 @@ export function createView(){
   const previous=document.activeElement,dialog=document.createElement('dialog');
   dialog.className='isl-scene';dialog.setAttribute('data-island-scene','');dialog.setAttribute('aria-labelledby','islSceneTitle');
   const listeners=[],on=(t,n,fn,o)=>{t.addEventListener(n,fn,o);listeners.push(()=>t.removeEventListener(n,fn,o));};
-  const cb={close:()=>{},tap:()=>{},key:()=>false,spot:()=>{},emote:()=>{},say:()=>true,end:null};
-  let tagCache=new Map(),noticeTimer=0;
+  const cb={close:()=>{},tap:()=>{},key:()=>false,spot:()=>{},emote:()=>{},say:()=>true,end:null,build:null};
+  let tagCache=new Map(),signCache=new Map(),noticeTimer=0;
   const release=()=>{for(const c of ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'])cb.key(c,false);};
   function bind(canvas){
     let down=null;
@@ -168,30 +221,47 @@ export function createView(){
   }
   const view={
     canvas:null,dialog,
-    onClose:fn=>{cb.close=fn;},onTap:fn=>{cb.tap=fn;},onKey:fn=>{cb.key=fn;},onSpot:fn=>{cb.spot=fn;},onEmote:fn=>{cb.emote=fn;},onSay:fn=>{cb.say=fn;},onEnd:fn=>{cb.end=fn;},
+    onClose:fn=>{cb.close=fn;},onTap:fn=>{cb.tap=fn;},onKey:fn=>{cb.key=fn;},onSpot:fn=>{cb.spot=fn;},onEmote:fn=>{cb.emote=fn;},onSay:fn=>{cb.say=fn;},onEnd:fn=>{cb.end=fn;},onBuild:fn=>{cb.build=fn;},
     open(L,trip){
       const owner=trip.mine;
       dialog.innerHTML=`<div class="isl-layout">
         <header class="isl-top"><div class="isl-title"><h2 id="islSceneTitle">${esc(trip.island?.emoji||'🏝️')} ${esc(trip.island?.name||L.name)}</h2><p data-status role="status">Đang ra đảo…</p></div>
-          <div class="isl-top-actions">${owner?'<button type="button" class="btn ghost" data-end aria-label="Kết thúc chuyến chơi">Kết thúc</button>':''}<button type="button" class="btn" data-close>← Về phố</button></div></header>
+          <div class="isl-top-actions">${owner?'<button type="button" class="btn ghost isl-build-btn" data-build aria-label="Xây trên đảo" title="Xây trên đảo">🏗️</button><button type="button" class="btn ghost" data-end aria-label="Kết thúc chuyến chơi">Kết thúc</button>':''}<button type="button" class="btn" data-close>← Về phố</button></div></header>
         <div class="isl-stage"><canvas tabindex="0" aria-label="${esc(L.name)}: chạm để đi, chạm vào một chỗ chơi để tới đó; dùng mũi tên hoặc W A S D để di chuyển."></canvas>
           <div class="isl-tags" aria-hidden="true"></div><p class="isl-loading" role="status">${esc(trip.kind==='heli'?'🚁 Trực thăng đang hạ cánh…':trip.kind==='plane'?'✈️ Máy bay đang hạ cánh…':'🛥️ Thuyền đang cập bến…')}</p>
           <p class="isl-notice" role="status" aria-live="polite" hidden></p></div>
         <footer class="isl-bar">
-          <div class="isl-row isl-spots" role="group" aria-label="Chỗ chơi trên đảo">${L.spots.map(s=>`<button type="button" class="isl-chip" data-spot="${esc(s.id)}">${esc(s.emoji)} ${esc(s.name)}</button>`).join('')}</div>
+          <div class="isl-row isl-spots" role="group" aria-label="Chỗ chơi trên đảo">${spotChips(L.spots)}</div>
           <div class="isl-row isl-emotes" role="group" aria-label="Biểu cảm">${EMOTES.map(([id,e,name])=>`<button type="button" class="isl-emo" data-emote="${id}" aria-label="${esc(name)}" title="${esc(name)}">${e}</button>`).join('')}</div>
           <form class="isl-say"><input type="text" maxlength="120" autocomplete="off" enterkeyhint="send" placeholder="Nói gì đó với mọi người…" aria-label="Nói với mọi người trên đảo"><button type="submit" class="btn primary">Gửi</button></form>
         </footer></div>`;
       view.canvas=dialog.querySelector('canvas');
       const canvas=view.canvas,input=dialog.querySelector('.isl-say input');
-      on(dialog,'cancel',e=>{e.preventDefault();cb.close();});
+      on(dialog,'cancel',e=>{e.preventDefault();if(dialog.querySelector('.isl-inside')){view.inside(null);return;}cb.close();});
       on(dialog,'click',e=>{const b=e.target.closest('button');if(!b)return;
-        if(b.hasAttribute('data-close'))cb.close();else if(b.hasAttribute('data-end'))cb.end?.();
+        if(b.hasAttribute('data-out')){view.inside(null);return;}
+        if(b.hasAttribute('data-close'))cb.close();else if(b.hasAttribute('data-end'))cb.end?.();else if(b.hasAttribute('data-build'))cb.build?.();
         else if(b.dataset.spot)cb.spot(b.dataset.spot);else if(b.dataset.emote)cb.emote(b.dataset.emote);});
       on(dialog,'submit',e=>{e.preventDefault();const text=input.value.trim();if(text&&cb.say(text)!==false)input.value='';});
       bind(canvas);
       on(window,'pagehide',()=>cb.close());
       document.body.append(dialog);dialog.showModal();
+    },
+    /** 🏗️ The spot buttons again (a building finished, was built or razed). */
+    spots(list){const row=dialog.querySelector('.isl-spots');const html=spotChips(list);if(row&&row._html!==html){row.innerHTML=html;row._html=html;}},
+    /** ⏳ The construction sites' time left, under each one. */
+    signs(list){
+      const box=dialog.querySelector('.isl-tags');if(!box)return;const seen=new Set();
+      for(const x of list){seen.add(x.id);let el=signCache.get(x.id);if(!el){el=document.createElement('span');el.className='isl-sign';box.append(el);signCache.set(x.id,el);}
+        if(el.textContent!==x.text)el.textContent=x.text;el.style.transform=`translate(${Math.round(x.sx)}px,${Math.round(x.sy)}px) translate(-50%,0)`;}
+      for(const [id,el] of signCache)if(!seen.has(id)){el.remove();signCache.delete(id);}
+    },
+    /** 🏠 Inside a home (null: back outside): a room that fills up with its level. */
+    inside(info){
+      const stage=dialog.querySelector('.isl-layout');if(!stage)return;stage.querySelector('.isl-inside')?.remove();
+      if(!info)return;
+      const el=document.createElement('div');el.className='isl-inside';el.setAttribute('role','group');el.setAttribute('aria-label',`Bên trong ${info.name}`);
+      el.innerHTML=roomHtml(info);stage.append(el);el.querySelector('[data-out]')?.focus({preventScroll:true});
     },
     /** A fresh canvas for the 2D fallback when the new interface's renderer could not start on the first one. */
     swapCanvas(){const fresh=view.canvas.cloneNode(false);view.canvas.replaceWith(fresh);view.canvas=fresh;bind(fresh);return fresh;},
@@ -210,7 +280,7 @@ export function createView(){
       }
       for(const [id,el] of tagCache)if(!seen.has(id)){el.remove();tagCache.delete(id);}
     },
-    destroy(){clearTimeout(noticeTimer);listeners.splice(0).forEach(off=>off());if(dialog.open)dialog.close();dialog.remove();tagCache.clear();if(previous?.isConnected)previous.focus?.({preventScroll:true});},
+    destroy(){clearTimeout(noticeTimer);listeners.splice(0).forEach(off=>off());if(dialog.open)dialog.close();dialog.remove();tagCache.clear();signCache.clear();if(previous?.isConnected)previous.focus?.({preventScroll:true});},
   };
   return view;
 }
@@ -233,8 +303,10 @@ export async function loadRendererFor(env,view,L){
 }
 
 let active=null;
-/** Open the island of `trip` (a trip view from GET /api/island). `actions.end` ends it (the owner's button). */
-export function openIslandScene(env,trip,{actions={},onClose=()=>{}}={}){
+/** Open the island of `trip` (a trip view from GET /api/island). `actions.end` ends it (the owner's button); 🏗️
+ * `actions.build(plot)` opens the build sheet, `actions.use(plot)` a leisure building's tinh thần, `actions.reload()`
+ * the trip again (its buildings); `skew`: the server's clock minus this device's (seconds). */
+export function openIslandScene(env,trip,{actions={},onClose=()=>{},skew=0}={}){
   if(active)return active;
   if(env.api.state?.jail)return env.act?.('jail');
   active=(async()=>{
@@ -242,7 +314,7 @@ export function openIslandScene(env,trip,{actions={},onClose=()=>{}}={}){
       const {stylesheet}=await import('../lazy.js');await stylesheet('/css/island.css');
       const L=layout(trip.island?.look);
       const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches||false;
-      const session=createIslandSession(env,{trip,view:createView(),actions,reduced,
+      const session=createIslandSession(env,{trip,view:createView(),actions,reduced,skew,
         loadRenderer:view=>loadRendererFor(env,view,L),
         loadLive:async()=>{const network=await import('./live.js');env.bootLive?.(network);return network.live;},
         onClose:why=>{active=null;onClose(why);}});
