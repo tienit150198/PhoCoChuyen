@@ -1,3 +1,14 @@
+# v2.4.60 — 2026-10-19
+
+⚡ Lag (chủ game 19/10 "check ipad phản hồi người dùng rất lag", "máy tính với đth nữa check k để lag"):
+- Ảnh thú cưng nhỏ (dưới 90 px: dải bé, tủ đồ, bảng 🐾) là <img> tĩnh (pet-art.js petIMG/petPicture, blob: URL, cache 160), chỉ ảnh lớn chuyển động (.pet-live); bảng 🐾 mở 3,5 s → 0,24 s trên điện thoại chậm 4×, chờ chạm iPad 99 → 17 ms.
+- pets.js không dựng lại khi HTML không đổi và bỏ qua state khi đóng; bảng tin chạy chữ tạm dừng dưới sheet (blur trên tablet); isometric-town/movement chỉ ghi DOM khi giá trị đổi.
+- Server: nhớ đệm lịch x3 tuần, bộ trang trí (deco.sets_of), feedback.normalize.
+🧰 Linh kiện thú cưng (chủ game 19/10 "bắt buộc cộng 10 rồi mới cho lên bậc, cũng 3 món, bậc S trở đi thì mất đồ nguyên liệu"; "làm sao nâng tới SSS, chỗ nào dễ nhìn hơn"): jr_pet_gear_fuse cần món chính +10 (có thể đang gắn), lên hạng tại chỗ về +0; trượt từ S mất 2 món nguyên liệu. Tab Linh kiện: 3 bước lên hạng, bảng loại × hạng (⬆), nút chính "Lên hạng" khi +10, nút Mua nguyên liệu D/C.
+🧧 #426 lì xì: không giới hạn số người cùng mạng (IP_MAX mặc định 0, LIXI_IP_MAX=n bật lại).
+🔁 #438/#439: bảng Tự đặt hàng nói hàng tới vẫn cần đếm, 🤖 Tự nhận hàng (Bộ đếm kho bậc 5) thì tự lên kệ.
+Có gì mới 2.4.60: 4 dòng.
+
 # v2.4.59 — 2026-10-19
 
 🐾 Thú cưng (chủ game 19/10 "thêm mấy pets kì lân, rồi khủng long … ở mức S trở lên sẽ có, nhưng khi ra thì random tỷ lệ, người dùng có thể chọn pets hiện tại hoặc chuyển đổi (mình sẽ đưa cho người ta pets đó chứ k phải để người dùng chọn)"):

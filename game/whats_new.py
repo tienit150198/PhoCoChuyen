@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.60", date="2026-10-19", items=(
+        dict(emoji='⚡', text="Mượt hơn trên iPad, điện thoại và máy tính: mở thú cưng, tủ đồ, bảng xếp hạng nhanh hơn, chạm phản hồi ngay."),
+        dict(emoji='🧰', text="Linh kiện: cường hóa đủ +10 rồi ghép với 2 món cùng loại, cùng hạng để lên hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.", go=dict(action='pets', data={'tab': 'gear'})),
+        dict(emoji='🧧', text="Lì xì: bạn bè, người nhà chung một wifi giật thoải mái, không giới hạn số người cùng mạng."),
+        dict(emoji='🔁', text="Tự đặt hàng nói rõ: hàng tới vẫn cần đếm, có 🤖 Tự nhận hàng (Bộ đếm kho bậc 5) thì hàng tự lên kệ."),
+    )),
     dict(version="2.4.59", date="2026-10-19", items=(
         dict(emoji='✨', text="Ghép bé lên hạng S trở lên có khi gặp thần thú: Kỳ Lân, Kỳ Lân Một Sừng, Khủng Long, Rồng Con… Giữ bé cũ hay hóa thần thú tùy bạn.", go=dict(action='pets', data={'tab': 'lab'})),
         dict(emoji='📦', text="Nhập hàng: đếm món nào nhập món đó, nhân viên trong ca đếm giúp; đếm đúng mà lỡ đóng kho thì hàng vẫn tự lên kệ."),
