@@ -717,6 +717,8 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
     if not action.startswith('jr_pet_'):
         return
     _power_row(db, sid, after)
+    from . import pet_arena
+    pet_arena.on_pet_commit(db, sid, after)   # ⚔️ the arena lineup's snapshot follows the pets (a player who set one)
     if action == 'jr_pet_fuse':
         _fuse_news(db, sid, after)
     row = board_row(after)

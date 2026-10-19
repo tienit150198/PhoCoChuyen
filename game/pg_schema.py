@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 57  # 57: ⚔️ Bang, player guilds (bangs, bang_members, bang_stints, bang_asks, bang_fund, bang_points, bang_facilities, bang_items, bang_gh, bang_log, bang_week_win: game/bang.py, live/bangs.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 56: 🏗️ Xây trên đảo + 🌍 đảo mở cửa (island_builds: the buildings on private islands, a copy of journey.islb written in the save's transaction; island_public, island_visitors: islands open to everyone and their visitors: game/island_build.py, game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 58  # 58: ⚔️ Đấu trường pet, 🏟️ Giải đấu pet tuần, 🛡️ Bang chiến pet (pet_arena, pet_arena_season, pet_arena_matches, pet_cup, pet_cup_entries, pet_war, pet_war_picks, pet_war_matches, pet_team_ladder, pet_team_rating: game/pet_arena.py, game/pet_cup.py, game/pet_war.py; new tables and indexes only, no FK, no backfill, no save key: 2.4.60 and older never read them, owner 19/10); 57: ⚔️ Bang, player guilds (bangs, bang_members, bang_stints, bang_asks, bang_fund, bang_points, bang_facilities, bang_items, bang_gh, bang_log, bang_week_win: game/bang.py, live/bangs.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 56: 🏗️ Xây trên đảo + 🌍 đảo mở cửa (island_builds: the buildings on private islands, a copy of journey.islb written in the save's transaction; island_public, island_visitors: islands open to everyone and their visitors: game/island_build.py, game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -934,6 +934,86 @@ CREATE INDEX IF NOT EXISTS bang_log_bang ON bang_log(bang, id);
 CREATE TABLE IF NOT EXISTS bang_week_win (
   week {T} PRIMARY KEY, bang {T} NOT NULL, score bigint NOT NULL, at double precision NOT NULL
 );
+-- ⚔️ Đấu trường pet (game/pet_arena.py, game/pet_battle.py; SCHEMA_VERSION 58, owner 19/10 "thêm thi đua nữa nhé, kết hợp
+-- với pet ra tranh đấu với bang nữa"). pet_arena: one row per player who set a lineup: the pets' battle snapshot (fighters,
+-- refreshed by every jr_pet_* command in the save's own transaction), the Elo rating, `ip` a keyed hash of the last
+-- address (never two players of one network in a ranked match), `npc` today's practice (thử thách) progress. Nothing of
+-- this is in a save: a battle never touches a pet. New tables and indexes only, no FK, no backfill: older releases never
+-- read them.
+CREATE TABLE IF NOT EXISTS pet_arena (
+  sid {T} PRIMARY KEY, pid {T} NOT NULL, name {T} NOT NULL DEFAULT '', lineup {T} NOT NULL DEFAULT '[]',
+  snap {T} NOT NULL DEFAULT '[]', size integer NOT NULL DEFAULT 0, pw integer NOT NULL DEFAULT 0,
+  rating integer NOT NULL DEFAULT 1000, best integer NOT NULL DEFAULT 1000, games integer NOT NULL DEFAULT 0,
+  wins integer NOT NULL DEFAULT 0, ip {T} NOT NULL DEFAULT '', npc {T} NOT NULL DEFAULT '{{}}',
+  at double precision NOT NULL, last double precision NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS pet_arena_rating ON pet_arena(rating);
+CREATE INDEX IF NOT EXISTS pet_arena_pid ON pet_arena(pid);
+-- The weekly season (Vietnam ISO week): each player's rating and record of ranked battles that week (`opp` distinct
+-- opponents, `stars` practice wins): the ladder and its titles (game/lb_titles.py board 'arena').
+CREATE TABLE IF NOT EXISTS pet_arena_season (
+  week {T} NOT NULL, sid {T} NOT NULL, rating integer NOT NULL, w integer NOT NULL DEFAULT 0, l integer NOT NULL DEFAULT 0,
+  d integer NOT NULL DEFAULT 0, opp integer NOT NULL DEFAULT 0, stars integer NOT NULL DEFAULT 0, at double precision NOT NULL,
+  PRIMARY KEY (week, sid)
+);
+CREATE INDEX IF NOT EXISTS pet_arena_season_top ON pet_arena_season(week, rating);
+-- One row per battle (kind rank | friend | npc | spar | cup): both lineups' snapshots and the engine version in `data`,
+-- the seed is the id (a replay is the same fight), the rating moves (ra/rb before, da/db the change), `rd` a cup round.
+CREATE TABLE IF NOT EXISTS pet_arena_matches (
+  id {T} PRIMARY KEY, kind {T} NOT NULL, day {T} NOT NULL, week {T} NOT NULL, a {T} NOT NULL, b {T} NOT NULL DEFAULT '',
+  a_name {T} NOT NULL DEFAULT '', b_name {T} NOT NULL DEFAULT '', win integer NOT NULL, ra integer NOT NULL DEFAULT 0,
+  rb integer NOT NULL DEFAULT 0, da integer NOT NULL DEFAULT 0, db integer NOT NULL DEFAULT 0, rd integer NOT NULL DEFAULT 0,
+  engine integer NOT NULL, data {T} NOT NULL, at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS pet_arena_matches_a ON pet_arena_matches(a, at);
+CREATE INDEX IF NOT EXISTS pet_arena_matches_b ON pet_arena_matches(b, at) WHERE b <> '';
+CREATE INDEX IF NOT EXISTS pet_arena_matches_day ON pet_arena_matches(a, day, kind);
+CREATE INDEX IF NOT EXISTS pet_arena_matches_cup ON pet_arena_matches(week, kind, rd) WHERE kind = 'cup';
+-- 🏟️ Giải đấu pet tuần (game/pet_cup.py): sign up during the week, a Swiss tournament on the lineups' snapshots at the
+-- close; `score` ×2 (a win 2, a draw 1), `tb` Buchholz, `rank` the final place.
+CREATE TABLE IF NOT EXISTS pet_cup (
+  week {T} PRIMARY KEY, status {T} NOT NULL CHECK (status IN ('done','cancelled')), n integer NOT NULL DEFAULT 0,
+  rounds integer NOT NULL DEFAULT 0, at double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS pet_cup_entries (
+  week {T} NOT NULL, sid {T} NOT NULL, name {T} NOT NULL DEFAULT '', rating integer NOT NULL DEFAULT 1000,
+  snap {T} NOT NULL DEFAULT '[]', score integer NOT NULL DEFAULT 0, tb integer NOT NULL DEFAULT 0, rank integer NOT NULL DEFAULT 0,
+  at double precision NOT NULL, PRIMARY KEY (week, sid)
+);
+CREATE INDEX IF NOT EXISTS pet_cup_entries_rank ON pet_cup_entries(week, rank);
+-- 🛡️ Bang chiến pet (game/pet_war.py, owner 19/10 "mỗi bang đến giờ sẽ chọn các pet ra đánh với nhau, đánh 5v5 và ngẫu
+-- nhiên … ai thắng nhiều thì vào vòng trong"): teams are (team_kind, team_id), a bang is kind 'bang' (its own tables
+-- live elsewhere). pet_war: one row per weekly war once its lineups lock (the bracket in `data`); pet_war_picks: the one
+-- pet each member fields; pet_war_matches: every team match (5 duels in `data`); pet_team_ladder: the week's standing
+-- of each team; pet_team_rating: a team's rating across weeks.
+CREATE TABLE IF NOT EXISTS pet_war (
+  week {T} PRIMARY KEY, status {T} NOT NULL CHECK (status IN ('done','cancelled')), start double precision NOT NULL,
+  n integer NOT NULL DEFAULT 0, rounds integer NOT NULL DEFAULT 0, champ_kind {T} NOT NULL DEFAULT '',
+  champ_id {T} NOT NULL DEFAULT '', champ_name {T} NOT NULL DEFAULT '', data {T} NOT NULL DEFAULT '{{}}',
+  at double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS pet_war_picks (
+  week {T} NOT NULL, sid {T} NOT NULL, team_kind {T} NOT NULL, team_id {T} NOT NULL, name {T} NOT NULL DEFAULT '',
+  pet {T} NOT NULL, snap {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (week, sid)
+);
+CREATE INDEX IF NOT EXISTS pet_war_picks_team ON pet_war_picks(week, team_kind, team_id, at);
+CREATE TABLE IF NOT EXISTS pet_war_matches (
+  week {T} NOT NULL, rd integer NOT NULL, slot integer NOT NULL, a_kind {T} NOT NULL, a_id {T} NOT NULL,
+  a_name {T} NOT NULL DEFAULT '', b_kind {T} NOT NULL DEFAULT '', b_id {T} NOT NULL DEFAULT '', b_name {T} NOT NULL DEFAULT '',
+  win integer NOT NULL, wa integer NOT NULL DEFAULT 0, wb integer NOT NULL DEFAULT 0, start double precision NOT NULL,
+  data {T} NOT NULL DEFAULT '{{}}', PRIMARY KEY (week, rd, slot)
+);
+CREATE TABLE IF NOT EXISTS pet_team_ladder (
+  week {T} NOT NULL, team_kind {T} NOT NULL, team_id {T} NOT NULL, name {T} NOT NULL DEFAULT '',
+  rating integer NOT NULL DEFAULT 1000, w integer NOT NULL DEFAULT 0, l integer NOT NULL DEFAULT 0,
+  best integer NOT NULL DEFAULT 0, pts integer NOT NULL DEFAULT 0, champ integer NOT NULL DEFAULT 0,
+  at double precision NOT NULL, PRIMARY KEY (week, team_kind, team_id)
+);
+CREATE TABLE IF NOT EXISTS pet_team_rating (
+  team_kind {T} NOT NULL, team_id {T} NOT NULL, name {T} NOT NULL DEFAULT '', rating integer NOT NULL DEFAULT 1000,
+  wars integer NOT NULL DEFAULT 0, titles integer NOT NULL DEFAULT 0, at double precision NOT NULL,
+  PRIMARY KEY (team_kind, team_id)
+);
 
 """
 
@@ -1296,6 +1376,16 @@ TABLES = [
     dict(name='bang_gh', identity='id'),
     dict(name='bang_log', identity='id'),
     dict(name='bang_week_win', identity=None),
+    dict(name='pet_arena', identity=None),
+    dict(name='pet_arena_season', identity=None),
+    dict(name='pet_arena_matches', identity=None),
+    dict(name='pet_cup', identity=None),
+    dict(name='pet_cup_entries', identity=None),
+    dict(name='pet_war', identity=None),
+    dict(name='pet_war_picks', identity=None),
+    dict(name='pet_war_matches', identity=None),
+    dict(name='pet_team_ladder', identity=None),
+    dict(name='pet_team_rating', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

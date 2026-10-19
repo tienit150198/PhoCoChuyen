@@ -39,6 +39,7 @@ from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calend
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
 ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND = 'all', 'titles', 'certs', 'wealth', 'collection', 'online', 'pets', 'island'
+ARENA, PET_CUP, PET_WAR = 'arena', 'pet_cup', 'pet_war'   # ⚔️ game/pet_arena.py, 🏟️ game/pet_cup.py, 🛡️ game/pet_war.py (19/10)
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -55,8 +56,17 @@ BOARD_TITLES = {                # (emoji, name) per tier
     PETS: (('🐉', 'Vua thú cưng của phố'), ('🦄', 'Sen cưng siêu cấp'), ('🐾', 'Hội sen yêu bé')),
     # 19/10 (owner: "Đảo đẹp nhất tuần", a title only): 🏝️ the most beautiful island's points (game/island_lb.py).
     ISLAND: (('🏝️', 'Đảo đẹp nhất phố'), ('🌴', 'Chủ đảo mộng mơ'), ('⛱️', 'Hội chủ đảo xinh')),
+    # 19/10 (owner: "thêm thi đua nữa nhé, kết hợp với pet ra tranh đấu với bang nữa"): ⚔️ the arena's weekly ladder
+    # (game/pet_arena.py standings: the week's season rating), 🏟️ the latest weekly cup (game/pet_cup.py), 🛡️ the
+    # fighters of the bang war's champion and runner-up (game/pet_war.py; its own two tiers, BOARD_TIERS).
+    ARENA: (('🏆', 'Vua đấu trường tuần'), ('⚔️', 'Cao thủ đấu trường'), ('🛡️', 'Chiến binh đấu trường')),
+    PET_CUP: (('👑', 'Vô địch giải pet tuần'), ('🥈', 'Top 3 giải pet tuần'), ('🎗️', 'Top 10 giải pet tuần')),
+    PET_WAR: (('🏆', 'Bang vô địch đấu pet'), ('🥈', 'Á quân bang chiến pet')),
 }
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND)     # the order of honour (a name tag shows the best one: tier first, then this order)
+# A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five.
+BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10))}
+BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân')}
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, ARENA, PET_CUP, PET_WAR)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -81,7 +91,7 @@ def now() -> float:
 def tier_of(board: str, rank: int) -> int | None:
     """0, 1, 2 for the tiers of a main board; 0 for the top 1 of a workplace board; None for no title."""
     if board in BOARD_TITLES:
-        return next((i for i, (lo, hi) in enumerate(TIERS) if lo <= rank <= hi), None)
+        return next((i for i, (lo, hi) in enumerate(BOARD_TIERS.get(board, TIERS)) if lo <= rank <= hi), None)
     return 0 if rank == 1 else None
 
 
@@ -101,7 +111,7 @@ def title_of(board: str, rank: int) -> dict | None:
         return None
     if board in BOARD_TITLES:
         emoji, name = BOARD_TITLES[board][tier]
-        label = TIER_LABELS[tier]
+        label = BOARD_LABELS.get(board, TIER_LABELS)[tier]
     elif board in CAREER_TITLE:
         (emoji, name), label = CAREER_TITLE[board], 'Top 1'
     else:
@@ -112,7 +122,8 @@ def title_of(board: str, rank: int) -> dict | None:
 def tiers_of(board: str) -> list:
     """The tiers of a board for the view: [{tier, label, emoji, name, ranks: (lo, hi)}]."""
     if board in BOARD_TITLES:
-        return [dict(tier=i, label=TIER_LABELS[i], emoji=e, name=n, lo=TIERS[i][0], hi=TIERS[i][1])
+        tiers, labels = BOARD_TIERS.get(board, TIERS), BOARD_LABELS.get(board, TIER_LABELS)
+        return [dict(tier=i, label=labels[i], emoji=e, name=n, lo=tiers[i][0], hi=tiers[i][1])
                 for i, (e, n) in enumerate(BOARD_TITLES[board])]
     t = title_of(board, 1)
     return [dict(tier=0, label='Top 1', emoji=t['emoji'], name=t['name'], lo=1, hi=1)]
@@ -148,9 +159,26 @@ def standings(db, t: float | None = None) -> list:
             from . import island_lb
             out.extend(island_lb.standings(db, n, t))
             continue
+        if board in (ARENA, PET_CUP, PET_WAR):   # ⚔️ 🏟️ 🛡️ not on the `leaderboard` table
+            out.extend(_pet_standings(db, board, now() if t is None else t, n))
+            continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))
     return out
+
+
+def _pet_standings(db, board: str, t: float, n: int) -> list:
+    try:
+        if board == ARENA:
+            from . import pet_arena
+            return pet_arena.standings(db, t, n)
+        if board == PET_CUP:
+            from . import pet_cup
+            return pet_cup.standings(db, n)
+        from . import pet_war
+        return pet_war.standings(db, t)
+    except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
+        return []
 
 
 def standings_online(db, t: float) -> list:
@@ -215,7 +243,9 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
                 if last_week == prev:   # the week that just ended: its final holders are the standings at its end
                     db.execute('DELETE FROM lb_weekly WHERE final=0 AND week=?', (last_week,))
                     # 🦉 Online starts again from zero each week: the ended week's own totals
-                    ended = [r for r in rows if r[0] != ONLINE] + [r for r in standings_online(db, week_start(t) - 3600)]
+                    # ⚔️ the arena's ladder too: the ended week's own season
+                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA)] + [r for r in standings_online(db, week_start(t) - 3600)]
+                             + _pet_standings(db, ARENA, week_start(t) - 3600, TOP))
                     _insert(db, last_week, ended, 1, day, t)
                 else:                   # a week long gone (the server was off): its last daily holders stand
                     db.execute('UPDATE lb_weekly SET final=1 WHERE final=0 AND week=?', (last_week,))

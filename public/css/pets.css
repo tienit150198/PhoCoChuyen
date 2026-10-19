@@ -236,3 +236,4 @@ html[data-theme="dem"] .pt-myth h4{color:#d6c2ff}
 .pt-gl-c.on{outline:2px solid #a259ff}
 .pt-gl-c i{font-style:normal;color:#c77d00;font-weight:900}
 html[data-theme="dem"] .pt-gl-c{background:#2a2633;border-color:#fff2}html[data-theme="dem"] .pt-gl-c.up{background:#4a3b12}html[data-theme="dem"] .pt-gsteps li{background:#2a2633}html[data-theme="dem"] .pt-gsteps li.ok{background:#1d3a26}html[data-theme="dem"] .pt-gsteps li.now{background:#3d3214}
+.pt-arena{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin:10px 0 0;font-weight:800}   /* ⚔️ → v4/pet-arena.js */

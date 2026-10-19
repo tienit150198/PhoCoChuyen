@@ -84,6 +84,7 @@ from game import event2010  # 💐 Thiệp 20/10: its own page /2010, cards anyo
 from game import live_effects, live_dating
 from game import quay_hire
 from game import lixi  # 🧧 Lì xì: phát và giật (game/lixi.py)
+from game import pet_arena  # 🐾 Đấu trường pet, giải tuần, bang chiến (game/pet_arena.py, pet_cup.py, pet_war.py)
 from game import rentals
 from game import bank_xfer  # 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 from game import wedding_live
@@ -1055,7 +1056,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1274,6 +1275,11 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/social/"):
                 if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,social.post(self.server.store,token,state,route[len("/api/social/"):],data));return
+            if route.startswith("/api/arena/"):  # 🐾 Đấu trường pet (game/pet_arena.py act): the battle resolves here, in one request; never a save write
+                op=route[len("/api/arena/"):]
+                if not self.server.rate_limit("arena:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                if op in ("fight","friend","npc") and not self.server.rate_limit("arena-fight:"+token,int(os.environ.get("ARENA_FIGHTS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, cho các bé nghỉ một chút nhé!","rate_limited");return
+                self.json(200,pet_arena.act(self.server.store,token,op,data,state,self.client_ip()));return
             if route in ("/api/push/subscribe","/api/push/unsubscribe"):
                 if not self.server.rate_limit("push:"+token,20):self.error(429,"Chờ một chút nhé.");return
                 self.json(200,push.subscribe(self.server.store,token,data) if route.endswith("/subscribe") else push.unsubscribe(self.server.store,token,data));return
@@ -1293,6 +1299,7 @@ class Handler(BaseHTTPRequestHandler):
         except system_gift.GiftError as e:self.error(e.status,e.message,e.code)  # 🎁 /api/admin/gift: before ValueError (its base)
         except event2010.EventError as e:self.error(e.status,e.message,e.code)
         except town_treasure.TreasureError as e:self.error(e.status,e.message,e.code)
+        except pet_arena.ArenaError as e:self.error(e.status,str(e),e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
         except dbm.OperationalError as e:  # busy/unreachable database: nothing was committed (or its receipt replays it)
@@ -1809,6 +1816,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         town_projects.run_housekeeping(store)  # 🏗️ Công trình của phố: finish what is built, open the next project (guarded: exactly once)
         lixi.run_housekeeping(store)  # 🧧 Lì xì: what nobody took in 24 h goes back to its giver (row locks: exactly once)
         auction.run_housekeeping(store)  # 🔨 Nhà đấu giá: today's lots, then settle the ones that ended (row locks: exactly once)
+        pet_arena.run_housekeeping(store)  # 🏟️ 🛡️ the weekly pet cup and the bang war when their time comes (advisory locks: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
 
 

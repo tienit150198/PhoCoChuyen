@@ -11,7 +11,8 @@ import {FRAMES} from './honour-frames-data.js';
 const DIR='/icons/frames/';
 // game/lb_titles.py BOARD_TITLES: [top 1, top 2–3, top 4–10]
 const TIERS={all:['25','26','27'],titles:['36','35','34'],certs:['31','32','33'],wealth:['28','30','29'],collection:['60','59','59'],
-  online:['73','71','69'],pets:['57','02','19'],island:['68','66','62']};   // 🏝️ Đảo đẹp (19/10): Chúa đảo's frame, the island bridge, the park   // 🐾 Thú cưng (19/10): the starry cat-and-dog frame, the orange cat, the bunny   // 🦉 Cú đêm của phố (owner's own board 18/10), the night-lantern frame, the sunset frame
+  online:['73','71','69'],pets:['57','02','19'],island:['68','66','62'],
+  arena:['65','20','57'],pet_cup:['25','26','27'],pet_war:['25','20']};   // ⚔️ 🏟️ 🛡️ the pet arena's boards (19/10): the stadium, the corgi, the starry pets; the laurels; the war's two tiers   // 🏝️ Đảo đẹp (19/10): Chúa đảo's frame, the island bridge, the park   // 🐾 Thú cưng (19/10): the starry cat-and-dog frame, the orange cat, the bunny   // 🦉 Cú đêm của phố (owner's own board 18/10), the night-lantern frame, the sunset frame
 // 🏆 Trùm <nghề>: the workplace's own art; the others wear "Top tổng hợp nghề" with the workplace's icon
 const CAREER={milk_tea:'37',clothing:'38',pharmacy:'39',accounting:'40',pilot:'41',grocery:'42',police:'43',flight_attendant:'44',
   it_helpdesk:'45',lawyer:'46',group_accounting:'47',corp_accounting:'48',art_studio:'49',post_office:'50',banquet:'51',hotel:'52',
@@ -24,7 +25,7 @@ const WORN={t_ct_cong_vien:'62',t_ct_rap_phim:'63',t_ct_thu_vien:'64',t_ct_san_v
 const FREE={k_01:['01','🧋','Trà sữa trân châu'],k_02:['02','🐱','Mèo cam tinh nghịch'],k_05:['05','⭐','Chủ tiệm năm sao'],k_19:['19','🐰','Thỏ bánh mochi'],
   k_22:['22','👻','Phố ma dễ thương'],k_23:['23','🎄','Giáng sinh trong phố'],k_24:['24','🧧','Tết có lộc']};
 const LB=/^lb_([a-z][a-z0-9_]{0,39})_([1-9]|10)$/;
-const tierOf=r=>r===1?0:r<=3?1:2;
+const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;   // 🛡️ game/lb_titles.py BOARD_TIERS: the champion bang's five, the runner-up's five
 
 /** {n, tier} of one honour id: n the art, tier the chip's colour (0 top 1, 1 top 2–3, 2 top 4–10, 3 trùm, 4 độc bản). */
 export function ofId(id){
@@ -32,7 +33,7 @@ export function ofId(id){
   if(id.startsWith('dh_'))return {n:'60',tier:4};
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]);
-  if(TIERS[b])return {n:TIERS[b][tierOf(r)],tier:tierOf(r)};
+  if(TIERS[b])return {n:TIERS[b][tierOf(r,b)],tier:tierOf(r,b)};
   if(r!==1||b==='pagoda')return null;   // a workplace: its top 1 only; nobody is the boss of a pagoda
   return {n:CAREER[b]||CAREER_ANY,tier:3,career:b};
 }
