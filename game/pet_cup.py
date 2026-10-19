@@ -100,6 +100,41 @@ def run_due(store, t: float | None = None) -> bool:
     return bool(store.transaction(lambda db: play(db, week, t)))
 
 
+PAIR_TRIES = 20_000
+
+
+def pair_round(order: list) -> list:
+    """Swiss pairs of `order` (best first): each player meets the best one below them they have not met, backtracking
+    when a greedy choice would force a rematch further down (at most PAIR_TRIES steps; then greedy, a rematch allowed)."""
+    budget = [PAIR_TRIES]
+
+    def rec(free):
+        if not free:
+            return []
+        p = free[0]
+        for j in range(1, len(free)):
+            q = free[j]
+            if q['sid'] in p['opps']:
+                continue
+            budget[0] -= 1
+            if budget[0] < 0:
+                return None
+            rest = rec(free[1:j] + free[j + 1:])
+            if rest is not None:
+                return [(p, q)] + rest
+        return None
+    got = rec(list(order)) if len(order) <= 2 * 400 else None
+    if got is not None:
+        return got
+    pairs, free = [], list(order)
+    while free:
+        p = free.pop(0)
+        q = next((x for x in free if x['sid'] not in p['opps']), free[0])
+        free.remove(q)
+        pairs.append((p, q))
+    return pairs
+
+
 def play(db, week: str, t: float) -> bool:
     """The whole Swiss tournament of `week`, once (the advisory lock and the pet_cup row)."""
     db.execute('SELECT pg_advisory_xact_lock(?, hashtext(?))', (LOCK_KEY, week))
@@ -124,13 +159,7 @@ def play(db, week: str, t: float) -> bool:
             bye['bye'] = True
             bye['score'] += 2
             order.remove(bye)
-        pairs = []
-        free = list(order)
-        while free:
-            p = free.pop(0)
-            q = next((x for x in free if x['sid'] not in p['opps']), free[0])
-            free.remove(q)
-            pairs.append((p, q))
+        pairs = pair_round(order)
         for i, (p, q) in enumerate(pairs):
             mid = f'c{week}-{rd}-{i}'
             res = B.battle(p['snap'], q['snap'], B.seed_of(mid))

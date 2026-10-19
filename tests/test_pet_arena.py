@@ -420,6 +420,14 @@ class Cup(Store):
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT status FROM pet_cup').fetchone()['status'], 'cancelled')
 
+    def test_pairing_avoids_a_rematch_greedy_would_force(self):
+        mk = lambda sid, *met: dict(sid=sid, opps=list(met))
+        order = [mk('A', 'C'), mk('B'), mk('C', 'A', 'D'), mk('D', 'C')]
+        got = [(p['sid'], q['sid']) for p, q in PC.pair_round(order)]
+        self.assertEqual(got, [('A', 'D'), ('B', 'C')])     # greedy: A–B, then C–D again
+        order = [mk('A', 'B'), mk('B', 'A')]
+        self.assertEqual([(p['sid'], q['sid']) for p, q in PC.pair_round(order)], [('A', 'B')], 'no way out: the rematch')
+
     def test_rounds(self):
         self.assertEqual([PC.rounds_for(n) for n in (4, 5, 8, 9, 16, 100, 1024)], [3, 3, 3, 4, 4, 7, 7])
 

@@ -88,7 +88,7 @@ test('the live presence carries `r` on joining and when it changes, and reads pe
   const world={mode:'town',x:6,getPresence(){return {x:this.x,y:6,direction:'se'};},getRide(){return ride;},setRemotePlayers(p){drawn.push(p);}};
   const env={world,api:{live:{url:'/live'},state:{journey:{gender:'female'}}}};
   const leisure={current:null,updatePeers(){},observeLocal(){return()=>{};}};
-  const context=vm.createContext({sitePresence:{active:false,subscribe:()=>()=>{}},live,leisurePresence:leisure,publicActivity:()=>null,lookOf:()=>({top:'ao'}),console,document:{visibilityState:'visible',...target},window:target,
+  const context=vm.createContext({sitePresence:{active:false,subscribe:()=>()=>{}},live,leisurePresence:leisure,publicActivity:()=>null,lookOf:()=>({top:'ao'}),withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',console,document:{visibilityState:'visible',...target},window:target,
     setInterval:fn=>{timers.set(++id,fn);return id;},clearInterval:i=>timers.delete(i),Date:{now:()=>now},JSON,Object,Array,Map,Number,String,Boolean,Math});
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
   const bridge=context.factory(()=>env,{transport:live,document:{visibilityState:'visible',...target},events:target,now:()=>now,leisure,status(){}});
