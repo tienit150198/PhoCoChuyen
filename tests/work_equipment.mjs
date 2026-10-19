@@ -5,6 +5,11 @@ let html=equipmentView({money:1000,upgrades:[]},'delivery',upgrades);
 assert.match(html,/Kit &lt;1&gt;/);assert.match(html,/Lắp thiết bị · 90 xu/);assert.match(html,/Cần bậc 1 trước/);
 html=equipmentView({money:1000,upgrades:['kit1']},'delivery',upgrades);
 assert.match(html,/Đã lắp bậc 1 · \+15%/);assert.match(html,/Lắp thiết bị · 180 xu/);
+// 🔁 Tự đặt hàng (#433): Mẹ & bé / Nhà thuốc get the same card; `box: null` there (the desk merges by itself): no box card
+html=equipmentView({money:1000,upgrades:[],warehouse:{reorder:{owned:false,price:100000,short:0,box:null}}},'mother_baby',[]);
+assert.match(html,/🔁 Tự đặt hàng/);assert.match(html,/Mua · 100\.000 xu/);assert.doesNotMatch(html,/Gộp thùng/);
+html=equipmentView({money:1000,upgrades:[],warehouse:{reorder:{owned:false,price:100000,short:0,box:{owned:false,price:10000,short:0}}}},'grocery',[]);
+assert.match(html,/📦 Gộp thùng tự đặt/,'the other shops still sell the box');
 assert.equal(hasWorkingStaff({careers:{x:{ops:{business:{status:'paused'}}}}}),false);
 assert.equal(hasWorkingStaff({careers:{x:{summary:true,business_running:true}}}),true,'Other careers continue refreshing');
 let tick,cleared=false,calls=0,resolve,hidden=false,busy=false,at=100000,synced=0;
