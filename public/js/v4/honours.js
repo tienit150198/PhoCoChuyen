@@ -16,8 +16,13 @@ const BOARDS={
   collection:['Sưu tầm',[['🏺','Bộ sưu tập huyền thoại'],['🔨','Nhà sưu tầm đấu giá'],['💠','Hội sưu tầm']]],
   online:['Online',[['🦉','Cú đêm của phố'],['🌙','Thức cùng ánh trăng'],['🏮','Hội cú đêm']]],
   pets:['Thú cưng',[['🐉','Vua thú cưng của phố'],['🦄','Sen cưng siêu cấp'],['🐾','Hội sen yêu bé']]],
+  arena:['Đấu trường',[['🏆','Vua đấu trường tuần'],['⚔️','Cao thủ đấu trường'],['🛡️','Chiến binh đấu trường']]],
+  pet_cup:['Giải pet',[['👑','Vô địch giải pet tuần'],['🥈','Top 3 giải pet tuần'],['🎗️','Top 10 giải pet tuần']]],
+  pet_war:['Bang chiến',[['🏆','Bang vô địch đấu pet'],['🥈','Á quân bang chiến pet']]],
 };
-const tierOf=r=>r===1?0:r<=3?1:2;
+// game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, then the runner-up's five
+const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;
+const WAR_SHORT=['Bang vô địch','Bang á quân'];
 // game/lb_titles.py CAREER_NOUN (a workplace board's top 1 is "🏆 Trùm <noun>"), CAREER_TITLE (no "Trùm" there)
 const NOUN={milk_tea:'trà sữa',grocery:'tạp hóa',delivery:'giao hàng',cafe_bakery:'bánh & cà phê',florist:'tiệm hoa',
   mother_baby:'mẹ & bé',restaurant:'mì cay',pet_care:'chăm thú cưng',salon:'salon tóc',repair:'sửa đồ',farm:'nông trại',
@@ -60,7 +65,8 @@ export function title(api,id){
   if(id.startsWith('dh_')){const u=(api?.content?.journey?.auction?.items||[]).find(x=>x.id===id&&x.kind==='title');return u?{emoji:u.emoji,short:u.short||u.name,full:u.name,src:'Danh hiệu độc bản · Nhà đấu giá'}:null;}
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]),B=BOARDS[b];
-  if(B){const [label,tiers]=B,[emoji,name]=tiers[tierOf(r)];return {emoji,short:`Top ${r} ${label}`,full:name,src:`Top ${r} ${label} · tuần này`};}
+  if(B&&b==='pet_war'){const t=tierOf(r,b),[emoji,name]=B[1][t];return {emoji,short:WAR_SHORT[t],full:name,src:`${WAR_SHORT[t]} · ${B[0]} tuần này`};}
+  if(B){const [label,tiers]=B,[emoji,name]=tiers[tierOf(r,b)];return {emoji,short:`Top ${r} ${label}`,full:name,src:`Top ${r} ${label} · tuần này`};}
   if(r!==1)return null;
   const c=CAREER_TITLE[b];if(c)return {emoji:c[0],short:c[2],full:c[1],src:'Top 1 tuần này'};
   const n=noun(api,b);return n?{emoji:'🏆',short:`Trùm ${n}`,full:`Trùm ${n}`,src:'Top 1 tuần này'}:null;

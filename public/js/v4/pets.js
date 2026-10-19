@@ -392,7 +392,8 @@ function home(v,c){
     :`<button type="button" class="btn primary pt-walkbtn" data-pt="walk">🦮 Dắt ${esc(p.n)} đi dạo</button><p class="pt-hint">Bé đi dạo sẽ theo bạn ra phố${p.pct?` và cộng +${p.pct}% tiền làm việc`:''}. Mỗi lần dắt được một bé.</p>`;
   return strip+`<section class="pt-card pt-hero${p.r>=4||p.legend?' pt-shine':''}"><div class="pt-stage">${petPic(c,p,pose,150)}</div>
     <h3>${rankTag(p)} <span data-no-translate>${esc(p.n)}</span> ${MOOD[p.mood]||''}</h3><p class="pt-muted">${esc(b?.name||'')}${fx?` · ${fx.emoji} ${esc(fx.name)}`:''}${Number.isInteger(p.pw)?` · 💪${p.pw}`:''}${p.pts?` · 🏆${p.pts}`:''}</p>${walk}${meters(p.needs)}${bonusLine(v,p)}${wearLine(p)}</section>
-    <div class="pt-acts">${acts.map(([s,e,l])=>`<button type="button" class="pt-act" data-pt="sub" data-sub="${s}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</div>`;
+    <div class="pt-acts">${acts.map(([s,e,l])=>`<button type="button" class="pt-act" data-pt="sub" data-sub="${s}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</div>
+    <button type="button" class="btn pt-arena" data-action="petArena">⚔️ Đấu trường pet</button>`;   // v4/pet-arena.js (owner 19/10 "thi đua … pet ra tranh đấu")
 }
 /** 📋 Every pet of this save in one list, filtered by kind, rank and place, best first (owner 19/10 "xem danh sách
  * all các bé trong nhà … lọc theo bậc, theo loại chó/mèo"). A tap opens it: a home pet's card, or awayCard. */

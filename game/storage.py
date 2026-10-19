@@ -885,6 +885,8 @@ class Store:
             spend.forget(db,sid)  # 🎨 the style row; 🙏 donations stay on the board as anonymous
             from . import pets
             pets.forget(db,sid)  # 🐾 their pets leave the weekly board
+            from . import pet_arena
+            pet_arena.forget(db,sid)  # ⚔️ their arena row, season rows, open cup entry and war pick (past matches keep the names shown)
             from . import lux
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
             from . import town_projects

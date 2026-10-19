@@ -10,7 +10,7 @@ export const nextTownRide=(state,content)=>nextRide(state,content);
 export function townRiding(state,content){
   try{const v=canRide(state,content)?rideChoice(state,content):null;return v?{kind:String(v.kind||''),bell:v.kind==='bicycle'}:null;}catch{return null;}
 }
-const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
+const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:'pets',petArena:'pets',spend:'spend',spendStyle:'spend',spendQuan:'spend',spendSpa:'spend',spendRap:'spend',spendChua:'spend',lux:'lux',luxFw:'lux',luxTrip:'lux',luxSuu:'lux',luxNha:'lux',luxBay:'lux',luxTiec:'lux',luxHoc:'lux',luxMtq:'lux',abroad:'abroad'};
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs',island:'island',lixi:'lixi'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
@@ -60,6 +60,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['pets','paw','🐾','Thú cưng'],['spend','coffee','☕','Đi chơi'],
       ['pets','paw','🐱','Nhận nuôi thú cưng',{tab:'adopt'},'pets-adopt'],['pets','paw','🐶','Tiệm thú cưng',{tab:'shop'},'pets-shop'],
       ['pets','award','🏆','Bé cưng của tuần',{tab:'board'},'pets-board'],
+      ['petArena','award','🐾','Đấu trường pet'],['petArena','shield','🛡️','Bang chiến pet',{tab:'war'},'pet-war'],
       ['stView','home','👶','Chăm con riêng & thú cưng',{view:'household'},'household'],
       ['spendQuan','coffee','☕','Cà phê & quán ăn'],['spendSpa','sparkle','🪷','Spa'],['spendRap','camera','🎬','Rạp phim'],['spendChua','home','🙏','Công đức'],
       ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],
