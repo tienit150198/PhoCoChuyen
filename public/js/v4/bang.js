@@ -2,12 +2,16 @@
  * points-only shop, the bang's own Giờ vàng and the weekly ranking. Opened with data-action="bang" (Tiện ích › Bạn bè &
  * khu phố, Thêm › Khu phố, the old interface's rail). Every rule is on the server:
  *   GET  /api/bang (mine + my bang's page, or the list) · ?q= search · ?id= a bang's card · ?friends=1 · ?found=1 checklist
- *   POST /api/bang/<op> (join, accept, leave, invite, approve, kick, role, set, rules, disband, checkin, build, buy, wear,
- *        fire, gh_set, gh_cancel): database only, the answer carries the new page;
+ *   POST /api/bang/<op> (join, accept, leave, invite, approve, kick, role, set, rules, disband, checkin, build, isle, buy,
+ *        wear, fire, gh_set, gh_cancel): database only, the answer carries the new page;
+ *   🏝️ Đảo bang (owner 21/10): bought (cấp 1, 1 triệu) then upgraded (cấp 2…5) from the fund by Phó bang and up
+ *        (isle {to, confirm}); until it is bought the island, the pet arena and the Bang chiến are locked, and the
+ *        home tab shows the offer first (members: ask an officer). The island card sits first in 🏗️ Công trình;
  *   🚪 how a bang takes people (owner 20/10): mode closed / ask / auto + optional requirements (a career from a title of
  *        its real ladder, a title step in any career, the account's age), set by Phó bang and up (⚙️), shown on its card;
  *        the career ladders come from GET /api/bang?careers=1 when ⚙️ opens.
- *   the commands jr_bang_found (5.000.000 xu) and jr_bang_give (the fund) go through the save like any payment.
+ *   the commands jr_bang_found (5.000.000 xu) and jr_bang_give (the fund: no cap, any amount the player has since
+ *        21/10, "Tất cả" = wallet + bank) go through the save like any payment.
  * Phone first: one bang a screen, emoji tabs, one main button in the sticky bar. Styles: /css/spend.css + /css/bang.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {qtyBox,QTY,qtyVal} from '../qty-input.js';
@@ -29,7 +33,7 @@ const rank=r=>(CAT().roles?.[r]?.rank)||1;
 const serverNow=()=>(Number(S.view?.now)||Date.now()/1000)+Math.max(0,Date.now()-S.at)/1000;
 const hex=c=>(COLORS[c]||COLORS.do)[0];
 const ink=c=>(COLORS[c]||COLORS.do)[1];
-function left(sec){sec=Math.max(0,Math.round(sec));const h=Math.floor(sec/3600),m=Math.ceil((sec%3600)/60);return h?`${h} giờ${m&&h<10?` ${m} phút`:''}`:`${Math.max(1,m)} phút`;}
+function left(sec){const t=Math.max(1,Math.ceil(Math.max(0,sec)/60)),h=Math.floor(t/60),m=t%60;return h?`${h} giờ${m&&h<10?` ${m} phút`:''}`:`${m} phút`;}   // never "5 giờ 60 phút"
 const VN=7*3600;
 const vnDate=t=>new Date((t+VN)*1000);
 const hm=t=>{const d=vnDate(t);return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;};
@@ -80,6 +84,7 @@ export async function openBang(env,data={}){
   render();
   await load();
   if(data?.tab)S.tab=String(data.tab);
+  if(data?.isle&&S.view?.mine)S.tab=isleLevel()?'build':'home';   // 🏯 Đảo bang tapped before the island is bought: the offer
   render();
   clearInterval(S.timer);S.timer=setInterval(tick,1000);
 }
@@ -126,20 +131,20 @@ function armed(key){
 function tick(){
   if(!S.dlg?.open)return;
   for(const el of S.dlg.querySelectorAll('[data-bg-until]'))el.textContent=left(Number(el.dataset.bgUntil)-serverNow());
-  const due=(P()?.facilities||[]).some(f=>f.building&&f.ready<=serverNow());
+  const due=(P()?.facilities||[]).some(f=>f.building&&f.ready<=serverNow())||Boolean(P()?.isle?.to&&P().isle.ready<=serverNow());
   if(due&&Date.now()-S.at>15000){S.at=Date.now();load().then(render);}
 }
 
 /* ---- the fund amount ---- */
-const give=()=>CAT().give||{min:1000,max:10_000_000,presets:[100_000,500_000,1_000_000,5_000_000]};
-const room=()=>Math.max(0,(P()?.fund_cap||0)-(P()?.fund||0));
-function clampGive(n){const g=give(),lo=g.min,hi=Math.max(lo,Math.min(g.max,room()||g.max));let v=Math.floor((Number(n)||0)/lo)*lo;return Math.max(lo,Math.min(hi,v||lo));}
+const give=()=>CAT().give||{min:1000,max:1e12,presets:[1_000_000,10_000_000,100_000_000]};
+/** 21/10: no cap on the fund nor on a gift: at most what I have (wallet then bank), whole thousands. */
+const most=()=>Math.floor(Math.min(give().max,ready())/give().min)*give().min;
+function clampGive(n){const g=give(),lo=g.min,hi=Math.max(lo,most());let v=Math.floor((Number(n)||0)/lo)*lo;return Math.max(lo,Math.min(hi,v||lo));}
 const amount=()=>clampGive(S.amount||give().presets[0]);
 const giveLabel=()=>S.arm==='give'?`Bấm lần nữa: góp ${fmt(amount())} xu`:`💰 Góp ${fmt(amount())} xu`;
 function giveWhy(){
   if(!J().story)return 'Chỉ có trong hành trình';
   if(cash()<0)return 'Ví đang nợ';
-  if(room()<give().min)return 'Quỹ đầy: nâng Kho bang';
   const n=amount();return ready()>=n?'':`Còn thiếu ${fmt(n-ready())} xu`;
 }
 
@@ -156,12 +161,14 @@ async function onClick(op,d,el){
     case'peek':S.bang=d.id;try{S.bang={id:d.id,...await S.env.api.json('/api/bang?id='+encodeURIComponent(d.id))};}catch(e){S.flash={text:e?.message||'Không mở được.',kind:'bad'};S.bang=null;}render();return;
     case'unpeek':S.bang=null;render();return;
     case'checkin':await post('checkin');return;
-    case'amount':S.amount=clampGive(Number(d.n));S.arm='';render();return;
+    case'amount':S.amount=clampGive(d.n==='all'?most():Number(d.n));S.arm='';render();return;
+    case'isle':{const to=Number(d.to)||1;if(!armed('isle:'+to))return;await post('isle',{to,confirm:true});if(to===1)S.env.renderMain?.();return;}
     case'give':{
       const n=amount();if(n>=BIG&&!armed('give'))return;
       await command('jr_bang_give',{bang:S.view.mine.bang,amount:n,confirm:true});S.amount=0;return;}
     case'chat':S.dlg.close();await S.env.act?.('liveChat',{ch:d.ch});return;
-    case'island':S.dlg.close();await S.env.act?.('bangIsland',{});return;   // 🏯 Đảo bang (v4/bang-island.js)
+    case'island':if(!isleLevel()){S.tab='home';render();S.dlg.querySelector('.bg-isle')?.scrollIntoView?.({block:'nearest'});return;}
+      S.dlg.close();await S.env.act?.('bangIsland',{});return;   // 🏯 Đảo bang (v4/bang-island.js)
     case'sel':S.sel=S.sel===d.pid?'':d.pid;S.arm='';render();return;
     case'role':{if(d.role==='chu'&&!armed('chu:'+d.pid))return;await post('role',{pid:d.pid,role:d.role,...(d.role==='chu'?{confirm:true}:{})});return;}
     case'kick':if(!armed('kick:'+d.pid))return;await post('kick',{pid:d.pid,confirm:true});S.sel='';return;
@@ -324,23 +331,52 @@ const joinLabel=c=>modeOf(c)==='auto'?'Vào':'Xin vào';
 const ago=t=>{if(!t)return '';const d=Math.floor((serverNow()-t)/86400);return d<=0?'hôm nay':d===1?'hôm qua':`${d} ngày trước`;};
 const dmy=t=>{const d=vnDate(t),y=d.getUTCFullYear();return `${String(d.getUTCDate()).padStart(2,'0')}/${String(d.getUTCMonth()+1).padStart(2,'0')}${y!==vnDate(serverNow()).getUTCFullYear()?'/'+y:''}`;};
 
+/* -- 🏝️ Đảo bang (owner 21/10) -- */
+const isleLevel=()=>Number(P()?.isle?.level??S.view?.mine?.isle??1);
+const mil=n=>n>=1e6&&n%1e6===0?`${fmt(n/1e6)} triệu`:fmt(n);
+/** Before the island is bought: what it is, its price, one button for an officer (members: ask one). */
+function isleOffer(){
+  const p=P(),i=p?.isle;if(!i||i.level)return '';
+  const can=rank(p.me.role)>=4,cost=i.cost||1_000_000,short=Math.max(0,cost-(p.fund||0));
+  const why=!can?'Nhờ Bang chủ hoặc Phó bang mua đảo nhé':short?`Quỹ bang thiếu ${fmt(short)} xu: góp quỹ ở dưới`:'';
+  return `<section class="sd-card bg-isle bg-isle-offer"><div class="bg-isle-art" aria-hidden="true">🏝️</div><h3>Mua Đảo bang</h3>
+    <p class="tp-note">Đảo riêng của cả bang: gặp nhau, 🐾 Đấu trường, 🛡️ Bang chiến pet. Nâng dần tới cấp ${i.max||5}.</p>
+    <p class="tp-line"><span>💰 ${mil(cost)} xu</span><span>👥 ${i.next_cap||30} người</span><span>⚡ Có ngay</span></p>
+    ${can?btn('isle',S.arm==='isle:1'?`Bấm lần nữa: dùng ${mil(cost)} xu quỹ`:`🏝️ Mua đảo · ${mil(cost)} xu`,` data-to="1"${why?' disabled':''}`,'btn primary big'):''}${why?`<small class="sd-why">${esc(why)}</small>`:''}</section>`;
+}
+/** The island's card (🏗️ first): its level, who fits, the zones, the upgrade being built or the next one. */
+function isleCard(){
+  const p=P(),i=p?.isle;if(!i)return '';
+  if(!i.level)return isleOffer();
+  const can=rank(p.me.role)>=4,pips=Array.from({length:i.max},(_,k)=>`<i class="${k<i.level?'on':''}${i.to&&k===i.level?' go':''}"></i>`).join('');
+  let foot='';
+  if(i.to){const total=Math.max(1,i.ready-i.started),done=Math.floor((serverNow()-i.started)*100/total);
+    foot=`<p class="tp-stage">🚧 Đang mở rộng lên cấp ${i.to}: ${esc(i.next_zone||'')}</p>${bar(done,'build')}<p class="tp-line"><span>Còn <b data-bg-until="${i.ready}">${esc(left(i.ready-serverNow()))}</b></span></p>`;}
+  else if(i.next){
+    const why=!can?'Phó bang trở lên mới nâng đảo':p.fund<i.cost?`Quỹ thiếu ${fmt(i.cost-p.fund)} xu`:'';
+    foot=`<p class="bg-next">Cấp ${i.next}: ${esc(i.next_zone||'')} · 👥 ${i.next_cap} người</p><div class="bg-buy"><span>💰 ${mil(i.cost)} xu · ⏳ ${esc(left(i.secs))}</span>${btn('isle',S.arm==='isle:'+i.next?'Bấm lần nữa':`Nâng lên cấp ${i.next}`,` data-to="${i.next}"${why?' disabled':''}`,'btn primary')}</div>${why?`<small class="sd-why">${esc(why)}</small>`:''}`;
+  }else foot='<p class="bg-next">✨ Đảo đã ở cấp cao nhất</p>';
+  return `<section class="sd-card bg-fac bg-isle${i.to?' building':''}"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">🏝️</span><div class="grow"><b>Đảo bang</b><small>Cấp ${i.level}/${i.max} · 👥 ${i.cap} người cùng lúc</small></div>${btn('island','Ra đảo','','btn cream sm')}</div><div class="bg-pips" aria-hidden="true">${pips}</div>
+    <p class="tp-note bg-zones">${(i.zones||[]).map(z=>esc(z)).join(' · ')}</p>${foot}</section>`;
+}
+
 /* -- inside a bang -- */
 function homeTab(){
   const p=P(),m=S.view.mine;if(!p)return '<p class="sd-empty">⏳</p>';
   const c=p.bang,me=p.me;
   const crown=p.crowned?`<p class="bg-crown">👑 Bang mạnh nhất tuần</p>`:'';
-  const pct=Math.floor((p.fund||0)*100/Math.max(1,p.fund_cap||1));
-  const g=give(),presets=(g.presets||[]).filter(x=>x<=Math.max(g.min,room())),n=amount();
-  const chips=presets.map(x=>`<button type="button" class="sd-chip${n===x?' on':''}" data-bg="amount" data-n="${x}" aria-pressed="${n===x}">${fmt(x)}</button>`).join('');
+  const g=give(),all=most(),n=amount();
+  const chips=(g.presets||[]).map(x=>`<button type="button" class="sd-chip${n===x?' on':''}" data-bg="amount" data-n="${x}" aria-pressed="${n===x}"${x>all?' disabled':''}>${mil(x).replace(' triệu','tr')}</button>`).join('')
+    +`<button type="button" class="sd-chip${n===all&&all>=g.min?' on':''}" data-bg="amount" data-n="all"${all<g.min?' disabled':''}>Tất cả</button>`;
   const gold=m.golden?`<p class="bg-gold">⏰ Giờ vàng của bang đang diễn ra: lãi tiệm và quầy ×2, còn <b data-bg-until="${m.golden.ends}">${esc(left(m.golden.ends-serverNow()))}</b></p>`:'';
   const hero=`<section class="sd-card bg-hero" style="--bgc:${hex(c.color)}">${crown}${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
-    <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island?btn('island','🏯 Đảo bang','','btn cream bg-chat'):''}</p></section>`;
-  const fund=`<section class="sd-card"><h3>💰 Quỹ bang</h3><div class="tp-money"><b>${fmt(p.fund)}</b><span>/ ${fmt(p.fund_cap)} xu</span></div>${bar(pct)}
-    <div class="sd-chips sd-amounts">${chips}<label class="tp-typed">${qtyBox({value:n,min:g.min,max:Math.max(g.min,Math.min(g.max,room()||g.max)),step:g.min,money:true,label:'Góp bao nhiêu xu',go:`data-bg="amount" data-n="${QTY}"`})}<small>xu</small></label></div>
-    <p class="tp-note">Chỉ góp, không rút: quỹ chỉ dùng xây công trình bang. ${fmt(g.per_point||1000)} xu = 1 điểm cống hiến.</p></section>`;
+    <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island&&isleLevel()?btn('island',`🏯 Đảo bang · cấp ${isleLevel()}`,'','btn cream bg-chat'):''}</p></section>`;
+  const fund=`<section class="sd-card"><h3>💰 Quỹ bang</h3><div class="tp-money"><b>${fmt(p.fund)}</b><span>xu</span></div>
+    <div class="sd-chips sd-amounts">${chips}<label class="tp-typed">${qtyBox({value:n,min:g.min,max:Math.max(g.min,all),step:g.min,money:true,label:'Góp bao nhiêu xu',go:`data-bg="amount" data-n="${QTY}"`})}<small>xu</small></label></div>
+    <p class="tp-note">Góp bao nhiêu cũng được, chỉ góp không rút: quỹ dùng mua đảo và xây công trình bang. ${fmt(g.per_point||1000)} xu = 1 điểm cống hiến (tối đa ${fmt(g.day_pts||50000)} điểm/ngày).</p></section>`;
   const pts=`<section class="sd-card bg-pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
     <p class="tp-note">Hôm nay ${me.today}/${me.today_max} điểm hoạt động: 📅 điểm danh +${CAT().points?.checkin||20}, mỗi ngày làm việc +${CAT().points?.work||10}. Điểm đổi đồ ở 🛍️.</p></section>`;
-  return gold+hero+fund+pts+goldenCard()+logCard();
+  return gold+isleOffer()+hero+fund+pts+goldenCard()+logCard();
 }
 function homeFoot(){
   const me=ME();if(!me)return '';
@@ -406,12 +442,12 @@ function buildTab(){
     if(f.building){const total=Math.max(1,f.ready-f.started),done=Math.floor((serverNow()-f.started)*100/total);
       foot=`<p class="tp-stage">🚧 Đang lên cấp ${f.building}</p>${bar(done,'build')}<p class="tp-line"><span>Còn <b data-bg-until="${f.ready}">${esc(left(f.ready-serverNow()))}</b></span></p>`;}
     else if(f.next){
-      const why=!can?'Phó bang trở lên mới xây':(p.levels[ 'dai_sanh']<f.hall)?`Cần Đại sảnh cấp ${f.hall}`:busy>=p.slots?`Đang xây ${busy}/${p.slots} công trình`:p.fund<f.cost?`Quỹ thiếu ${fmt(f.cost-p.fund)} xu`:'';
+      const why=!can?'Phó bang trở lên mới xây':(p.levels[ 'dai_sanh']<f.hall)?`Cần Đại sảnh cấp ${f.hall}`:isleLevel()<(f.isle||0)?`Cần 🏝️ Đảo bang cấp ${f.isle}`:busy>=p.slots?`Đang xây ${busy}/${p.slots} công trình`:p.fund<f.cost?`Quỹ thiếu ${fmt(f.cost-p.fund)} xu`:'';
       foot=`<p class="bg-next">Cấp ${f.next}: ${esc(f.next_perk)}</p><div class="bg-buy"><span>💰 ${fmt(f.cost)} xu · ⏳ ${esc(left(f.secs))}</span>${btn('build',S.arm==='build:'+f.id?'Bấm lần nữa':'Nâng cấp',` data-id="${f.id}"${why?' disabled':''}`,'btn primary')}</div>${why?`<small class="sd-why">${esc(why)}</small>`:''}`;
     }else foot='<p class="bg-next">✨ Cấp cao nhất</p>';
     return `<section class="sd-card bg-fac${f.building?' building':''}"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">${esc(c.emoji||'🏗️')}</span><div class="grow"><b>${esc(c.name||f.id)}</b><small>Cấp ${f.level}/${f.max} · ${esc(f.perk)}</small></div></div><div class="bg-pips" aria-hidden="true">${pips}</div>${foot}</section>`;
   }).join('');
-  return `<p class="tp-note bg-top">💰 Quỹ ${fmt(p.fund)} xu · xây cùng lúc ${busy}/${p.slots}</p>`+cards;
+  return `<p class="tp-note bg-top">💰 Quỹ ${fmt(p.fund)} xu · xây cùng lúc ${busy}/${p.slots}</p>`+isleCard()+cards;
 }
 function shopTab(){
   const p=P();if(!p)return '<p class="sd-empty">⏳</p>';

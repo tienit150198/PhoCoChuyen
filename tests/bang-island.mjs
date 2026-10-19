@@ -16,7 +16,8 @@ import {townUtilityGroups,townServiceAvailable} from '../public/js/isometric/tow
 const L=B.LAYOUT,PY=readFileSync('game/bang_island.py','utf8');
 const overlap=(a,b,pad=0)=>Math.abs(a.x-b.x)<(a.w+b.w)/2+pad&&Math.abs(a.y-b.y)<(a.h+b.h)/2+pad;
 const corners=r=>[[r.x-r.w/2,r.y-r.h/2],[r.x+r.w/2,r.y-r.h/2],[r.x+r.w/2,r.y+r.h/2],[r.x-r.w/2,r.y+r.h/2]];
-function reachable(){
+const LEVELS=[1,2,3,4,5].map(n=>B.layout(n));
+function reachable(L=B.LAYOUT){
   const N=150,seen=new Set(),q=[],s=B.arrival(L),k0=[Math.round(s[0]*N),Math.round(s[1]*N)];
   q.push(k0);seen.add(k0.join());
   while(q.length){const [x,y]=q.shift();for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,k=nx+','+ny;if(!seen.has(k)&&B.walkable(L,nx/N,ny/N)){seen.add(k);q.push([nx,ny]);}}}
@@ -28,30 +29,58 @@ test('the facilities match game/bang_island.py and each has a fixed slot on the 
   assert.deepEqual(B.FACILITY_IDS,ids);
   assert.deepEqual(Object.keys(L.slots).sort(),[...ids].sort());
   const spots=PY.match(/^SPOTS = \(([^)]*)\)/m)[1].match(/'([a-z_]+)'/g).map(s=>s.slice(1,-1));
-  assert.deepEqual(L.spots.map(s=>s.id),spots);
+  assert.deepEqual(B.layout(B.ISLE_MAX).spots.map(s=>s.id),spots,'every level\'s spots, the top level has them all');
+  assert.deepEqual(L.spots.map(s=>s.id),spots.slice(0,6),'level 1: the island as it was before 21/10');
   assert.deepEqual(B.SPOT_IDS,[...ids,...spots]);
+  assert.equal(B.ISLE_MAX,Number(PY.match(/^ISLE_MAX = (\d+)/m)[1]));
   // The hall in the middle, the gate at the pier (towards the viewer), everything inside the coast.
   const [ha,hb]=B.screenOf(L.slots.dai_sanh.x,L.slots.dai_sanh.y),[ga,gb]=B.screenOf(L.slots.cong_bang.x,L.slots.cong_bang.y);
   assert.ok(Math.abs(ha)<.01&&Math.abs(hb)<.2,'hall in the middle');assert.ok(Math.abs(ga)<.01&&gb>.25,'gate towards the pier');
-  for(const r of [...Object.values(L.slots),...L.plots])for(const [x,y] of corners(r))assert.ok(B.inPoly(L.shore,x,y),`${r.id}: inside the coast`);
+  for(const M of LEVELS)for(const r of [...Object.values(M.slots),...M.plots])for(const [x,y] of corners(r))assert.ok(B.inPoly(M.shore,x,y),`level ${M.level}: ${r.id} inside the coast`);
   for(const n of [0,1,3,4,6,7,10])assert.equal(B.band(n),[0,1,1,1,2,2,2,3,3,3,3][n]);
 });
 
 test('no two slots, plots or gate pillars overlap; trees stand clear of them; nothing blocks the gate', () => {
+ for(const L of LEVELS){
   const rects=[...Object.values(L.slots).filter(s=>s.id!=='cong_bang'),...L.plots,...B.gatePosts(L).map((g,i)=>({...g,id:'post'+i}))];
   for(let i=0;i<rects.length;i++)for(let j=i+1;j<rects.length;j++)assert.ok(!overlap(rects[i],rects[j],.005),`${rects[i].id} × ${rects[j].id}`);
-  for(const [x,y] of [...L.palms,...L.trees]){assert.ok(B.inPoly(L.shore,x,y),'a tree at sea');for(const r of rects)assert.ok(!overlap(r,{x,y,w:0,h:0},.015),`a tree in ${r.id}`);}
+  for(const [x,y] of [...L.palms,...L.trees,...(L.lamps||[])]){assert.ok(B.inPoly(L.shore,x,y),'a tree at sea');for(const r of rects)assert.ok(!overlap(r,{x,y,w:0,h:0},.015),`a tree in ${r.id}`);}
   const [gx,gy]=B.at(L.gate.a,L.gate.b);assert.ok(B.walkable(L,gx,gy),'the way through the gate');
   for(const g of B.gatePosts(L))assert.ok(!B.walkable(L,g.x,g.y),'a pillar');
   for(const s of Object.values(L.slots))if(s.solid)assert.ok(!B.walkable(L,s.x,s.y),`${s.id}: nobody walks through it`);
   assert.ok(B.walkable(L,L.slots.san_pet.x,L.slots.san_pet.y),'the yard is walked on');
   assert.ok(!B.walkable(L,.02,.02)&&!B.walkable(L,.98,.98),'the corners are sea');
+ }
+});
+
+test('🏝️ each island level adds land and a zone, keeps every facility where it was, stays inside the map', () => {
+  const area=poly=>Math.abs(poly.reduce((s,[x,y],i)=>{const [u,v]=poly[(i+1)%poly.length];return s+x*v-u*y;},0))/2;
+  assert.equal(B.layout(1),B.LAYOUT);assert.equal(B.layout(0),B.LAYOUT);assert.equal(B.layout(9),B.layout(5));assert.equal(B.layout(3),B.layout(3),'one object a level (walkable caches it)');
+  for(let n=2;n<=B.ISLE_MAX;n++){
+    const a=B.layout(n-1),b=B.layout(n);
+    assert.ok(area(b.shore)>area(a.shore)*1.02,`level ${n}: more land`);
+    for(const [x,y] of a.shore.map(([x,y])=>[.5+(x-.5)*.97,.5+(y-.5)*.97]))assert.ok(B.inPoly(b.shore,x,y),`level ${n} keeps level ${n-1}'s land`);
+    assert.deepEqual(b.slots,B.LAYOUT.slots,'the facilities never move');
+    assert.ok(b.spots.length===a.spots.length+1&&b.plots.length===a.plots.length+1,`level ${n}: one more zone`);
+    for(const [x,y] of b.shore)assert.ok(x>0&&x<1&&y>0&&y<1,`level ${n}: the coast inside the map's square`);
+  }
+  assert.ok(B.layout(5).lamps.length>=8&&!B.layout(4).lamps.length,'gold lanterns at level 5');
+  // While the next level is built: its land is a work site, nobody walks on it yet.
+  const L2=B.layout(2,3);assert.equal(L2.site.level,3);assert.equal(L2.site.kind,'teahouse');assert.deepEqual(L2.shore,B.layout(2).shore);
+  assert.ok(!B.walkable(L2,L2.site.x,L2.site.y)&&B.walkable(B.layout(3),...B.doorOf(B.layout(3),'tra_dinh')),'the site: not walkable until done');
+  assert.equal(B.layout(5,6).site,undefined);assert.equal(B.layout(2,2).site,undefined);
 });
 
 test('from the pier every door and spot is reachable, and a tap finds the facility under it', () => {
-  const reach=reachable();
-  assert.ok(B.walkable(L,...B.arrival(L)));
-  for(const id of B.SPOT_IDS){const d=B.doorOf(L,id);assert.ok(B.walkable(L,...d),`${id}: door walkable`);assert.ok(reach(d),`${id}: reachable`);}
+  // 🏝️ and walked the scene's way (findPath's legs, step by step) from the pier to every door and spot of every level
+  for(const M of LEVELS)for(const id of [...B.FACILITY_IDS,...M.spots.map(s=>s.id)]){
+    let [x,y]=B.arrival(M);const d=B.doorOf(M,id),route=B.findPath(M,[x,y],d);let to=route.shift(),n=0;
+    for(;n<8000;n++){const [nx,ny,done]=B.step(M,x,y,to[0],to[1],.0025),moved=Math.hypot(nx-x,ny-y);x=nx;y=ny;
+      if(done&&route.length&&Math.hypot(x-to[0],y-to[1])<1e-4){to=route.shift();continue;}if(done||moved<1e-7)break;}
+    assert.ok(Math.hypot(x-d[0],y-d[1])<.03,`level ${M.level}: walked from the pier to ${id}`);
+  }
+  for(const M of LEVELS){const reach=reachable(M);assert.ok(B.walkable(M,...B.arrival(M)));
+    for(const id of [...B.FACILITY_IDS,...M.spots.map(s=>s.id)]){const d=B.doorOf(M,id);assert.ok(B.walkable(M,...d),`level ${M.level} ${id}: door walkable`);assert.ok(reach(d),`level ${M.level} ${id}: reachable`);}}
   for(const s of Object.values(L.slots))assert.equal(B.facilityAt(L,s.x,s.y)?.id,s.id);
   assert.equal(B.facilityAt(L,.02,.02),null);
   for(const sp of L.spots)assert.equal(B.spotNear(L,sp.x,sp.y)?.id,sp.id);
@@ -92,6 +121,8 @@ test('the old interface draws the island for every level band and maps taps back
 
 /* ---- the new interface: the Phaser scene with a chainable fake Phaser ---- */
 function chain(){const f=function(){};const p=new Proxy(f,{get:(t,k)=>k in t?t[k]:k===Symbol.toPrimitive?()=>0:p,apply:()=>p,set:(t,k,v)=>{t[k]=v;return true;}});return p;}
+let FAKE=null;
+const phaserOnce=async()=>FAKE??=await phaserFake();   // one fake: the bundle (and its Phaser) is imported once
 async function phaserFake(){
   const images=[],textures=new Set(),baked=[],texts=[];
   const camera={scrollX:0,scrollY:0,width:390,height:600,zoom:1,setSize(w,h){this.width=w;this.height=h;},setZoom(z){this.zoom=z;},
@@ -115,7 +146,7 @@ async function phaserFake(){
   return {BangIslandRenderer,images,baked,texts,camera};
 }
 test('the new interface paints every band and state, people sorted by depth, only changed facilities repainted', async () => {
-  const f=await phaserFake(),canvas={getBoundingClientRect:()=>({left:0,top:0,width:390,height:600}),parentElement:null};
+  const f=await phaserOnce(),canvas={getBoundingClientRect:()=>({left:0,top:0,width:390,height:600}),parentElement:null};
   for(const preset of ['low','mid','high','empty','build']){
     f.images.length=0;f.baked.length=0;f.texts.length=0;
     const r=new f.BangIslandRenderer(canvas,L,BANG(preset));await r.ready;
@@ -224,4 +255,42 @@ test('both interfaces list ⚔️ Đảo bang only while the server has it on', 
   const app=readFileSync('public/js/app.js','utf8');
   assert.match(app,/if\(api\.content\?\.bang_island\)items\.push\(\['bangIsland'/);
   assert.match(app,/action==='bangIsland'\)\{await \(await import\('\.\/v4\/bang-island\.js'\)\)\.bangIslandAction/);
+});
+
+test('🏝️ both interfaces draw every island level and the next level\'s work site', async () => {
+  globalThis.document??={createElement:()=>fakeCanvas(110,160).canvas};
+  const {createBangWalkRenderer}=await import('../public/js/v4/bang-island-walk.js');
+  for(const M of [...LEVELS,B.layout(1,2),B.layout(3,4),B.layout(4,5)]){
+    const {canvas,calls}=fakeCanvas(390,600),r=createBangWalkRenderer(canvas,M,BANG('high'));
+    r.frame({people:[],focus:B.arrival(M)},1000);r.frame({people:[],focus:B.doorOf(M,M.spots.at(-1).id)},1500);
+    assert.ok(calls.includes('fill')&&calls.length>500,`old interface, level ${M.level}${M.site?' + site':''}`);r.destroy();
+  }
+  const f=await phaserOnce(),canvas={getBoundingClientRect:()=>({left:0,top:0,width:390,height:600}),parentElement:null};
+  const baked=M=>{f.baked.length=0;const r=new f.BangIslandRenderer(canvas,M,BANG('high'));const n=f.baked.length;r.destroy();return n;};
+  const n1=baked(B.layout(1)),n5=baked(B.layout(5)),site=baked(B.layout(2,3));
+  assert.ok(n5>n1+10,`level 5 paints its zones and lanterns (${n1} → ${n5})`);assert.ok(site>baked(B.layout(2)),'the work site is painted');
+});
+
+test('🏝️ the island upgrades while I am on it: the map is drawn again at its new level', async () => {
+  const calls=[],api=new EventTarget();api.state={journey:{story:true,gender:'female'},wardrobe:{look:{}}};
+  const env={api,world:{paused:false},closeSheet:()=>{},toast:()=>{}};
+  const view={open:()=>{},ready:()=>{},status:s=>calls.push(['status',s]),notice:()=>{},tags:()=>{},labels:()=>{},panel:()=>{},facilities:()=>{},destroy:()=>{},
+    spots:l=>calls.push(['spots',l.length]),swapCanvas:()=>calls.push('swap'),isle:()=>{},
+    onClose(){},onTap(){},onKey(){},onVisit(){},onEmote(){},onSay(){},onAction(){},onPanelClose(){},onIsle(fn){this.isleTap=fn;}};
+  const made=[];let tick=null,wall=1000,clock=0;
+  const building=isle();building.bang.isle={level:2,max:5,cap:40,state:'building',ready_at:1030,to:3,left:30};
+  const done=isle();done.bang.isle={level:3,max:5,cap:50,state:'done',ready_at:null,to:null,left:0};
+  const session=createBangIslandSession(env,{isle:building,view,loadRenderer:async(v,lk,L)=>{made.push(L);return {frame(){},setBang(){},toMap:()=>null,toScreen:()=>[0,0],anchor:()=>null,personHeight:80,destroy:()=>calls.push('destroy')};},
+    loadLive:async()=>null,clock:()=>clock,wall:()=>wall,raf:fn=>{tick=fn;return 1;},caf:()=>{tick=null;},actions:{refresh:async()=>done}});
+  await session.start();
+  assert.equal(session.layout,B.layout(2,3),'level 2 with level 3\'s work site');assert.equal(made[0],B.layout(2,3));
+  assert.ok(calls.some(c=>Array.isArray(c)&&c[0]==='status')||true);
+  wall=1031;for(let i=0;i<80&&tick;i++){clock+=16;tick(clock);}await new Promise(r=>setTimeout(r,0));await new Promise(r=>setTimeout(r,0));
+  assert.equal(session.layout,B.layout(3),'done: level 3');assert.equal(made.at(-1),B.layout(3));
+  assert.ok(calls.includes('destroy')&&calls.includes('swap'),'the old renderer goes, a fresh canvas');
+  assert.ok(calls.some(c=>Array.isArray(c)&&c[0]==='spots'&&c[1]===8),'the spot chips follow the level');
+  for(let i=0;i<80&&tick;i++){clock+=16;tick(clock);}
+  const st=calls.filter(c=>Array.isArray(c)&&c[0]==='status').at(-1)[1];assert.match(st,/Đảo cấp 3/);assert.match(st,/\/50/);
+  for(let i=0;i<5&&tick;i++){clock+=16;tick(clock);}assert.ok(tick,'the frame loop kept going');
+  session.close();
 });

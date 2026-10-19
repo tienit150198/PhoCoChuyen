@@ -10,7 +10,7 @@ frames (`off`). No table, no save key: a rollback loses nothing.
 | Piece | File |
 |---|---|
 | Contract, derived view, provider registry, stub, HTTP | `game/bang_island.py` |
-| Live room (room per bang, cap 40) | `live/bang_island.py` (`BangIslandFeature`, welcome flag `bisle`) |
+| Live room (room per bang, cap by the island's level: 30 → 80) | `live/bang_island.py` (`BangIslandFeature`, welcome flag `bisle`) |
 | Map (slots, plots, spots, geometry) shared by both interfaces | `public/js/bang-island-layout.js` |
 | New interface (2.5D Phaser) | `client/isometric/bang-island.ts` → bundle `public/js/isometric/phaser-world.js` (`BangIslandRenderer`) |
 | Old interface (2D walk) | `public/js/v4/bang-island-walk.js` |
@@ -18,7 +18,8 @@ frames (`off`). No table, no save key: a rollback loses nothing.
 | Live client | `public/js/v4/bang-island-live.js` |
 | Entry + button hooks | `public/js/v4/bang-island.js` (`data-action="bangIsland"`, `openBangIsland`, `registerBangIslandAction`) |
 | Styles | `public/css/bang-island.css` |
-| Tests | `tests/test_bang_island.py`, `tests/test_live_bang_island.py`, `tests/bang-island.mjs` |
+| Buying and upgrading the island (21/10) | `game/bang.py` (`isle` op, `island_of`, `has_island`, `finish_isle`), `game/bang_content.py` `ISLE_*`, §5 |
+| Tests | `tests/test_bang_island.py`, `tests/test_bang_island_buy.py`, `tests/test_live_bang_island.py`, `tests/bang-island.mjs` |
 
 ## 1. The input: `BangIslandView` (what the Bang branch provides)
 
@@ -41,7 +42,12 @@ class BangIslandView(TypedDict, total=False):
     level: int                             # the bang's own level, 1..99
     facilities: list[FacilityView]         # at most 32 entries; a facility left out = level 0, done
     members_online: int                    # optional, ≥ 0
+    isle: IsleView                         # optional (21/10): {level 1..5, max, state, ready_at, cap}; absent = level 1, done, CAP
 ```
+
+`Access` may also carry `isle` (the island's level; 0 = the bang has not bought it: a member's GET answers the offer,
+`{bang: null, offer: {cost, fund, officer, cap, …}}`, a guest is refused, the live room refuses everyone) and `cap`
+(people on that island at once, ≤ `CAP_MAX` 100; the live room's cap).
 
 Facility ids (never renamed): `dai_sanh` (Đại sảnh, centre), `kho_bang` (Kho bang), `xuong_may` (Xưởng may),
 `san_pet` (Sân luyện pet), `den_vang` (Đền vàng), `tuong_bang` (Tượng bang, plaza), `cong_bang` (Cổng bang, at the pier).
@@ -159,6 +165,30 @@ bootstrap content carries `bang_island` and both interfaces list "Đảo bang" i
 * Live (`live/bang_island.py`): `bisl_in {bang, look, g, x?, y?}` → `bisl_room {room, bang, me, kind, role, cap, people}`;
   `bisl_out`, `bisl_mv {p, ms}`, `bisl_emote {e}` (wave heart laugh wow bow cheers fight), `bisl_say {text}` (chat store,
   channel `bisl:<bang>`), `bisl_do {s}` (a facility or spot); pushes `bisl {room, ev}` and `bisl_left {why}`.
+
+## 3b. 🏝️ Buying and upgrading the island (owner 21/10, SCHEMA_VERSION 62)
+
+* A bang founded from 21/10 has no island (`bangs.isle = 0`) until a Phó bang or the Bang chủ buys **cấp 1** from the
+  fund: 1.000.000 xu, at once (`POST /api/bang/isle {to: 1, confirm: true}`). Upgrades go one level at a time:
+  **cấp 2 / 3 / 4 / 5** for 30 / 60 / 120 / 200 triệu (the private islands' prices, `game/island_content.py`, read in
+  order; never indexed), built in 6 / 12 / 24 / 48 real hours (`isle_to`, `isle_ready`; `finish_isle` writes it, guarded,
+  from `finish_builds`; reads count it done by time). Paid only from the fund, under the bang row's lock: two officers
+  at once debit once; the same `to` again answers `again: true` and pays nothing. Ledger: `bang_fund` kind `build`,
+  id `i:<bang>:<level>`.
+* What each level adds (`public/js/bang-island-layout.js` `ZONES`, `layout(level, building)`): 1 the island as it was;
+  2 🥋 Võ đường (east cape, a sparring ring); 3 🍵 Trà đình (west cape, a tea pavilion over a koi pond); 4 🛕 Bảo tháp
+  (north cape behind the hall, a five-roof pagoda); 5 🗼 Hải đăng (the east tip), the capes grown, gold lanterns along the
+  roads, golden paving. Facilities never move (positions mean the same place at every level). While the next level is
+  built its land shows as a raw sand bank with stakes, scaffolding and a crane (`site`, not walkable). The scene draws
+  the map again when the level or the work changes (`relayout`), and walks around obstacles (`findPath`).
+* The room's cap: 30 / 40 / 50 / 60 / 80 (`Access.cap`); moves are flushed once per `MV_FLUSH` (0.2 s) per room.
+* Facility levels wait for the island (`bang_content.isle_needed`): on the ten-level scale (a 5-level facility counts
+  double) 1–4 nothing, 5–6 cấp 2, 7–8 cấp 3, 9 cấp 4, 10 cấp 5. Levels already built stay.
+* `bang.has_island(db, bang_id)` (keep the name: other branches call it) gates what is played there: the visit, the pet
+  arena (`pet_arena.view` → `locked: 'island'`, ops `lineup` / `npc` / `war_pick` → `no_island`) and the Bang chiến
+  (`bang_pets.can_pick` False). Joining, the fund, check-in, builds, the shop, chat and the Giờ vàng do not need it.
+* Bangs from before this release hold cấp 1 for free: the column's default is 1 with `isle_how = 'grant'` (also a bang a
+  2.4.64 process founds during the rollout); the new code founds with 0 and `''`, a purchase sets `'buy'`.
 
 ## 4. Dev
 

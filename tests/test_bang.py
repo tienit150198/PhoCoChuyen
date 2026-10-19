@@ -103,7 +103,7 @@ class Catalogue(unittest.TestCase):
             self.assertNotRegex(op, 'withdraw|rut|refund|transfer|pay')
         self.assertNotIn('live_effects', src)                                    # nothing paid into a save later either
         self.assertEqual(src.count('_wallet('), 1)                               # _take's debit, the only wallet row
-        self.assertEqual(src.count('INSERT INTO bang_fund'), 3)                  # give, build, burn: the only ledger rows
+        self.assertEqual(src.count('INSERT INTO bang_fund'), 4)                  # give, build, the island (kind build), burn: the only ledger rows
         self.assertEqual(src.count("kind, amount, balance, at) VALUES(?,?,?,'give'"), 1)
 
 
@@ -173,7 +173,8 @@ class Reducer(unittest.TestCase):
         ok = dict(bang='b0123456789', confirm=True)
         refused(self, s, 'jr_bang_give', amount=999, **ok)
         refused(self, s, 'jr_bang_give', amount=1500, **ok)
-        refused(self, s, 'jr_bang_give', amount=10_000_001, **ok)
+        refused(self, s, 'jr_bang_give', amount=10_000_001, **ok)                  # not a whole thousand (and more than the wallet)
+        refused(self, s, 'jr_bang_give', amount=C.GIVE_MAX + 1000, **ok)            # the technical ceiling
         refused(self, s, 'jr_bang_give', amount=1000.0, **ok)
         refused(self, s, 'jr_bang_give', amount=True, **ok)
         refused(self, s, 'jr_bang_give', amount=1000, bang='nope', confirm=True)
@@ -325,6 +326,10 @@ class Base(unittest.TestCase):
 
     def set_fund(self, bid, xu):
         self.store.transaction(lambda db: db.execute('UPDATE bangs SET fund=? WHERE id=?', (xu, bid)))
+
+    def set_isle(self, bid, level=1):
+        """🏝️ The bang holds its island at `level` (21/10: a bang founded from now on buys it)."""
+        self.store.transaction(lambda db: db.execute('UPDATE bangs SET isle=?, isle_to=NULL, isle_ready=NULL WHERE id=?', (level, bid)))
 
 
 class Founding(Base):
@@ -554,9 +559,9 @@ class Fund(Base):
         self.assertEqual([(x['id'], x['kind'], x['amount'], x['balance']) for x in led], [(f'g:{self.pid(b)}:{nonce}', 'give', 2_500_000, 2_500_000)])
         m = self.mine(b)
         self.assertEqual((m['points'], m['earned'], m['given']), (2500, 2500, 2_500_000))
-        self.set_level(self.bid, 'kho', 5)                                        # +10 % points
+        self.set_level(self.bid, 'kho', 5)                                        # +25 % points (+5 %/level since 21/10)
         self.give(b, 1_000_000)
-        self.assertEqual(self.mine(b)['points'], 2500 + 1100)
+        self.assertEqual(self.mine(b)['points'], 2500 + 1250)
         validate_state(self.store.read(b)[0])
 
     def test_refusals_pay_nothing(self):
@@ -564,15 +569,14 @@ class Fund(Base):
         self.refused_cmd(b, 'jr_bang_give', 'not_member', bang=self.bid, amount=1000, confirm=True)
         self.give(self.a, 10_000_000)
         self.give(self.a, 10_000_000)
-        msg = self.refused_cmd(self.a, 'jr_bang_give', 'fund_full', bang=self.bid, amount=1000, confirm=True)   # 20 M without a Kho
-        self.assertIn('Kho bang', msg)
-        self.assertEqual(self.one('SELECT fund FROM bangs WHERE id=?', (self.bid,))['fund'], 20_000_000)
+        self.give(self.a, 1000)                                                   # 21/10: no cap (it was 20 M without a Kho)
+        self.assertEqual(self.one('SELECT fund FROM bangs WHERE id=?', (self.bid,))['fund'], 20_001_000)
 
-    def test_two_deposits_at_once_near_the_cap(self):
+    def test_two_deposits_at_once_no_cap(self):
         b = self.player(name='Minh')
         self.op(b, 'join', bang=self.bid)
         self.give(self.a, 10_000_000)
-        self.give(self.a, 4_000_000)                                              # 6 M left
+        self.give(self.a, 4_000_000)                                              # the old cap (20 M) is no more
         ok, errs = [], []
 
         def go(tok):
@@ -584,11 +588,11 @@ class Fund(Base):
         th = [threading.Thread(target=go, args=(t,)) for t in (self.a, b)]
         [t.start() for t in th]
         [t.join() for t in th]
-        self.assertEqual((len(ok), errs), (1, ['fund_full']))
-        self.assertEqual(self.one('SELECT fund FROM bangs WHERE id=?', (self.bid,))['fund'], 19_000_000)
+        self.assertEqual((len(ok), errs), (2, []))
+        self.assertEqual(self.one('SELECT fund FROM bangs WHERE id=?', (self.bid,))['fund'], 24_000_000)
         total = sum(x['amount'] for x in self.rows("SELECT amount FROM bang_fund WHERE bang=? AND kind='give'", (self.bid,)))
-        self.assertEqual(total, 19_000_000)
-        self.assertEqual(self.wallet(self.a) + self.wallet(b), 45_000_000 - 14_000_000 + 50_000_000 - 5_000_000)
+        self.assertEqual(total, 24_000_000)
+        self.assertEqual(self.wallet(self.a) + self.wallet(b), 45_000_000 - 19_000_000 + 50_000_000 - 5_000_000)
 
     def test_two_members_deposit_at_once_many_times(self):
         b = self.player(name='Minh')
@@ -782,7 +786,7 @@ class Facilities(Base):
         fac = {f['id']: f for f in page['facilities']}
         self.assertEqual((fac[C.HALL]['level'], fac[C.HALL]['next'], fac[C.HALL]['cost']), (1, 2, 20_000_000))
         self.assertEqual((fac['kho']['level'], fac['kho']['cost'], fac['kho']['secs']), (0, 2_000_000, 3600))
-        self.assertEqual(page['fund_cap'], C.FUND_BASE_CAP)
+        self.assertEqual(page['fund_cap'], C.FUND_MAX)                           # 21/10: no cap (an older page reads the ceiling)
         self.assertEqual(page['bang']['cap'], 10)
 
 

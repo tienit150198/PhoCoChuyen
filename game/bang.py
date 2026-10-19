@@ -18,12 +18,22 @@ What a player does
   all applying: a career from a title of its real ladder (game/promotion.py), a title step in any career, the account's
   age. Checked on the server from the player's real save (parsed before the transaction, only for a bang with
   requirements) on join, request, invitation and approval; members already in stay when they change.
-* 💰 Quỹ bang: deposits only (the command jr_bang_give {bang, amount, confirm}, C.GIVE_MIN..C.GIVE_MAX, whole thousands),
-  written with the save (ledger row 'g:<pid>:<nonce>', the nonce in journey.bang.last.r: never reused after reset_all or
-  an imported older save; a clash refuses the whole command) under the bang row's lock, up to the Kho bang's cap.
-  Nothing pays out of it: it only buys facility levels (and later the bang island); disbanding burns it (a 'burn' row,
-  `burned`). There is no withdraw, transfer or refund path anywhere (tests/test_bang.py checks the source).
-* ⭐ Điểm cống hiến, per member per bang: 1 per 1.000 xu given (+ the Kho bang's bonus), 📅 Điểm danh once a day,
+* 💰 Quỹ bang: deposits only (the command jr_bang_give {bang, amount, confirm}: from C.GIVE_MIN, whole thousands, no
+  maximum but what the player has, wallet then bank: owner 21/10 "quỹ bang cho k giới hạn", "góp 1 lần không giới hạn";
+  the wallet's part in Sổ ví rows of at most ROW_MAX), written with the save (ledger row 'g:<pid>:<nonce>', the nonce in
+  journey.bang.last.r: never reused after reset_all or an imported older save; a clash refuses the whole command) under
+  the bang row's lock. No cap on the fund (only C.FUND_MAX, a technical ceiling). Nothing pays out of it: it only buys
+  facility levels and the bang's island; disbanding burns it (a 'burn' row, `burned`). There is no withdraw, transfer or
+  refund path anywhere (tests/test_bang.py checks the source).
+* 🏝️ Đảo bang (owner 21/10, SCHEMA_VERSION 62: bangs.isle…): bought (cấp 1, C.ISLE_BUY) then upgraded (cấp 2…5 at the
+  private islands' prices, real-time builds) from the fund by Phó bang and up (POST /api/bang/isle {to, confirm}:
+  idempotent by `to`, under the bang row's lock). has_island() gates what is played there: a visit (game/
+  bang_island_source.py), the pet arena (game/pet_arena.py) and the Bang chiến pet (game/bang_pets.py can_pick).
+  Joining, the fund, check-in, builds, the shop, chat and the Giờ vàng work without it (a bang saves up to buy it).
+  Facilities' higher levels wait for higher island levels (C.isle_needed). Bangs from before 21/10 hold cấp 1 (the
+  column's default, 'grant').
+* ⭐ Điểm cống hiến, per member per bang: 1 per 1.000 xu given (+ the Kho bang's bonus; at most C.GIVE_PTS_DAY a day
+  from gifts, every bang together), 📅 Điểm danh once a day,
   work days closed (end_day, a few a day): C.ACTIVITY_DAY_MAX a day from activity, one ledger id per player and day so
   hopping between bangs earns nothing more. Spent only in the 🛍️ Cửa hàng bang (never xu).
 * 🎖️ Danh hiệu: Bang chủ (1), Phó bang (2), Trưởng lão (3), Tinh anh (5), Thành viên; the leader appoints and may hand
@@ -422,7 +432,7 @@ def action(s: dict, name: str, p: dict) -> dict:
     need_(isinstance(bid, str) and ID_RE.fullmatch(bid), 'Chọn bang của bạn nhé.')
     amount = p['amount']
     need_(type(amount) is int and C.GIVE_MIN <= amount, f'Góp từ {fmt(C.GIVE_MIN)} xu trở lên nhé.')
-    need_(amount <= C.GIVE_MAX, f'Mỗi lần góp tối đa {fmt(C.GIVE_MAX)} xu nhé.')
+    need_(amount <= C.GIVE_MAX, 'Số xu góp không hợp lệ.')   # a technical ceiling only (21/10: no cap but what you have)
     need_(amount % C.GIVE_MIN == 0, f'Góp theo bội số {fmt(C.GIVE_MIN)} xu nhé.')
     need_(p.get('confirm') is True, f'Xác nhận góp {fmt(amount)} xu vào quỹ bang (không rút lại được).')
     why = _ready_why(s, amount)
@@ -502,7 +512,9 @@ def _isle(db, why: str, bid: str, sid: str = '') -> None:
 
 
 def finish_builds(db, bid: str, t: float) -> list:
-    """Builds whose time is up become their level (guarded by target: idempotent, any number of processes)."""
+    """Builds whose time is up become their level (guarded by target: idempotent, any number of processes); the
+    island's upgrade too (finish_isle, first: the bang row before the facility rows, the module's lock order)."""
+    finish_isle(db, bid, t)
     done = _rows(db, 'UPDATE bang_facilities SET level=target, target=NULL WHERE bang=? AND target IS NOT NULL AND ready_at<=? '
                  'RETURNING fac, level', (bid, t))
     for r in done:
@@ -516,7 +528,56 @@ def finish_builds(db, bid: str, t: float) -> list:
 
 
 def builds_due(db, bid: str, t: float) -> bool:
-    return db.execute('SELECT 1 FROM bang_facilities WHERE bang=? AND target IS NOT NULL AND ready_at<=? LIMIT 1', (bid, t)).fetchone() is not None
+    return (db.execute('SELECT 1 FROM bang_facilities WHERE bang=? AND target IS NOT NULL AND ready_at<=? LIMIT 1', (bid, t)).fetchone() is not None
+            or db.execute('SELECT 1 FROM bangs WHERE id=? AND isle_to IS NOT NULL AND isle_ready<=?', (bid, t)).fetchone() is not None)
+
+
+# ---------------------------------------------------------------- 🏝️ Đảo bang (owner 21/10, SCHEMA_VERSION 62)
+def island_of(row: dict, t: float) -> dict:
+    """{level, to, ready, started, how} of a bang row's island now: an upgrade whose time is up counts as done (read only:
+    finish_isle writes it). level 0: not bought."""
+    lv = int(row.get('isle') or 0)
+    to, ready = row.get('isle_to'), row.get('isle_ready')
+    if to is not None and ready is not None and float(ready) <= t:
+        lv, to = max(lv, int(to)), None
+    return dict(level=max(0, min(C.ISLE_MAX, lv)), to=int(to) if to is not None else None,
+                ready=float(ready) if to is not None and ready is not None else None,
+                started=float(row['isle_started']) if to is not None and row.get('isle_started') is not None else None,
+                how=str(row.get('isle_how') or ''))
+
+
+def has_island(db, bang_id: str) -> bool:
+    """🏝️ Does this (active) bang hold its island: cấp ≥ 1, bought, or granted to the bangs from before 21/10. One
+    primary-key read. The gate of everything played there (owner 21/10 "phải có mua đảo bang thì mới chơi được"): a
+    visit, the pet arena, the Bang chiến pet; other branches call it too (keep the name and the signature)."""
+    r = db.execute("SELECT isle FROM bangs WHERE id=? AND status='active'", (bang_id,)).fetchone()
+    return bool(r) and int(r['isle'] or 0) >= 1
+
+
+def finish_isle(db, bid: str, t: float) -> bool:
+    """The island's upgrade whose time is up becomes its level (guarded by isle_to: idempotent, any process)."""
+    r = _row(db, 'UPDATE bangs SET isle=isle_to, isle_to=NULL, isle_ready=NULL WHERE id=? AND isle_to IS NOT NULL AND isle_ready<=? '
+                 'RETURNING isle', (bid, t))
+    if not r:
+        return False
+    lv = int(r['isle'])
+    _log(db, bid, '', 'built', f'🏝️ Đảo bang lên cấp {lv}: {C.ISLE_ZONES[lv - 1]}, {C.isle_cap(lv)} người cùng lúc.', t)
+    _bump(db, bid)
+    _isle(db, 'view', bid)
+    return True
+
+
+def isle_card(row: dict, t: float) -> dict:
+    """The island for the bang's page: level, cap, what each level added, the upgrade being built, the next one."""
+    cur = island_of(row, t)
+    lv = cur['level']
+    out = dict(level=lv, max=C.ISLE_MAX, cap=C.isle_cap(lv), how=cur['how'], zones=list(C.ISLE_ZONES[:lv]))
+    if cur['to']:
+        out.update(to=cur['to'], ready=cur['ready'], started=cur['started'] or t)
+    if lv < C.ISLE_MAX:
+        xu, secs = C.isle_cost(lv + 1)
+        out.update(next=lv + 1, cost=xu, secs=secs, next_cap=C.isle_cap(lv + 1), next_zone=C.ISLE_ZONES[lv])
+    return out
 
 
 def levels(db, bid: str) -> dict:
@@ -533,7 +594,8 @@ def cap_of(lv: dict) -> int:
 
 
 def fund_cap(lv: dict) -> int:
-    return C.KHO_CAP[min(len(C.KHO_CAP) - 1, lv['kho'])]
+    """21/10: the fund has no cap (an older page still reads `fund_cap`: the technical ceiling)."""
+    return C.FUND_MAX
 
 
 def _chat_add(db, ch: str, sid: str, t: float) -> None:
@@ -659,7 +721,9 @@ def _found_commit(db, sid, pid, x, info, t) -> None:
         _leave(db, sid, locked[mine['bang']], t, 'switch')
     bid = 'b' + secrets.token_hex(5)
     ch = 'g:' + secrets.token_hex(5)
-    db.execute('INSERT INTO bangs(id, name, key, emoji, color, motto, open, leader, created, created_by, channel) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
+    # 🏝️ isle 0: a bang founded from 21/10 buys its island (the column's default 1 is the grant of the older bangs)
+    db.execute("INSERT INTO bangs(id, name, key, emoji, color, motto, open, leader, created, created_by, channel, isle, isle_how) "
+               "VALUES(?,?,?,?,?,?,?,?,?,?,?,0,'')",
                (bid, info['name'], key, info['emoji'], info['color'], info['motto'], 1 if info['open'] else 0, sid, t, sid, ch))
     db.execute("INSERT INTO bang_members(bang, sid, pid, status, role, joined) VALUES(?, ?, ?, 'in', 'chu', ?)", (bid, sid, pid, t))
     db.execute('INSERT INTO bang_stints(bang, sid, joined) VALUES(?,?,?)', (bid, sid, t))
@@ -689,9 +753,8 @@ def _give_commit(db, sid, pid, x, info, t) -> None:
     e.need(me is not None, f'Bạn không còn ở bang {bang["name"]}. Mở lại mục ⚔️ Bang xem nhé.', 'not_member')
     finish_builds(db, bid, t)
     lv = levels(db, bid)
-    cap = fund_cap(lv)
-    left = cap - int(bang['fund'])
-    e.need(x['a'] <= left, f'Kho bang chỉ còn chứa thêm {fmt(max(0, left))} xu. Nâng Kho bang để chứa nhiều hơn nhé.', 'fund_full')
+    # 21/10: no cap on the fund (C.FUND_MAX is a bigint's safety margin, never reached)
+    e.need(int(bang['fund']) + x['a'] <= C.FUND_MAX, 'Quỹ bang đã quá lớn. Thử lại sau nhé.', 'fund_full')
     ref = give_ref(pid, x)
     bal = int(bang['fund']) + x['a']
     # A row with this id already there (cannot happen with a nonce): refuse, so the whole command rolls back and the
@@ -701,6 +764,10 @@ def _give_commit(db, sid, pid, x, info, t) -> None:
            'Khoản góp này trùng mã với một khoản trước. Thử lại nhé.', 'retry')
     db.execute('UPDATE bangs SET fund=?, given=given+? WHERE id=?', (bal, x['a'], bid))
     pts = x['a'] // C.XU_PER_POINT * (100 + C.KHO_BONUS * lv['kho']) // 100
+    if pts > 0:   # at most C.GIVE_PTS_DAY a Vietnam day from gifts, every bang together (the save row is locked: one at a time)
+        today = int(db.execute("SELECT COALESCE(SUM(pts), 0) AS p FROM bang_points WHERE sid=? AND day=? AND kind='give'",
+                               (sid, vn_day(t))).fetchone()['p'])
+        pts = max(0, min(pts, C.GIVE_PTS_DAY - today))
     if pts > 0:
         db.execute('INSERT INTO bang_points(id, bang, sid, kind, pts, week, day, at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING',
                    (ref, bid, sid, 'give', pts, vn_week(t), vn_day(t), t))
@@ -1029,7 +1096,9 @@ def catalogue() -> dict:
     return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
                 emojis=list(C.EMOJIS), colors=[color(k) for k in C.COLORS],
                 roles={k: dict(name=v[0], short=v[1], seats=v[2], rank=v[3]) for k, v in C.ROLES.items()},
-                give=dict(min=C.GIVE_MIN, max=C.GIVE_MAX, presets=list(C.GIVE_PRESETS), per_point=C.XU_PER_POINT),
+                give=dict(min=C.GIVE_MIN, max=C.GIVE_MAX, presets=list(C.GIVE_PRESETS), per_point=C.XU_PER_POINT, day_pts=C.GIVE_PTS_DAY),
+                isle=dict(max=C.ISLE_MAX, prices=list(C.ISLE_PRICES), hours=list(C.ISLE_HOURS), caps=list(C.ISLE_CAP[1:]),
+                          zones=list(C.ISLE_ZONES), gate=list(C.ISLE_GATE)),
                 points=dict(checkin=C.CHECKIN_POINTS, work=C.WORK_POINTS, work_days=C.WORK_DAYS, day_max=C.ACTIVITY_DAY_MAX),
                 facilities=[dict(id=f, name=C.FACILITIES[f]['name'], emoji=C.FACILITIES[f]['emoji'], blurb=C.FACILITIES[f]['blurb'],
                                  max=C.max_level(f)) for f in C.FAC_ORDER],
@@ -1055,7 +1124,7 @@ def _unlocked(item: str, lv: dict) -> bool:
 def _card(r: dict, n: int, cap: int, score: int = 0, rank: int = 0) -> dict:
     rules = rules_of(r)
     return dict(id=r['id'], name=r['name'], emoji=r['emoji'], color=r['color'], motto=r['motto'], open=rules['mode'] == 'auto',
-                mode=rules['mode'], req=req_lines(rules), n=n, cap=cap, score=score, rank=rank)
+                mode=rules['mode'], req=req_lines(rules), n=n, cap=cap, score=score, rank=rank, isle=island_of(r, now())['level'])
 
 
 def search(store, sid: str | None, q: str = '') -> list:
@@ -1131,7 +1200,7 @@ def _facilities(db, bid: str, t: float) -> list:
             d.update(building=int(r['target']), ready=float(r['ready_at']), started=float(r['started']))
         if nxt:
             xu, secs = C.cost(f, nxt)
-            d.update(next=nxt, cost=xu, secs=secs, hall=C.hall_needed(f, nxt), next_perk=C.perk(f, nxt))
+            d.update(next=nxt, cost=xu, secs=secs, hall=C.hall_needed(f, nxt), isle=C.isle_needed(f, nxt), next_perk=C.perk(f, nxt))
         out.append(d)
     return out
 
@@ -1159,13 +1228,15 @@ def page(store, sid: str, bid: str | None = None) -> dict:
         r = _row(db, 'SELECT * FROM bangs WHERE id=?', (bid,))
         need(r is not None and (r['status'] == 'active' and not r['hidden'] or (mine and mine['bang'] == bid)), 'Không tìm thấy bang này.', 'not_found', 404)
         due = r['status'] == 'active' and builds_due(db, bid, t)
-    if due:   # a write transaction only when a build's time is up (a page read otherwise writes nothing)
-        store.transaction(lambda db: finish_builds(db, bid, t))
+    if due:   # a write transaction only when a build's time is up (a page read otherwise writes nothing); the bang row first
+        store.transaction(lambda db: (_lock(db, bid), finish_builds(db, bid, t)))
     with store.connect() as db:
+        if due:
+            r = _row(db, 'SELECT * FROM bangs WHERE id=?', (bid,)) or r
         lv = levels(db, bid)
         n, cap = _count(db, bid), cap_of(lv)
         out = dict(bang=_card(r, n, cap), member=bool(mine and mine['bang'] == bid), leader_name=_display(db, r['leader']),
-                   levels=lv, color=color(r['color']), created=float(r['created']), status=r['status'])
+                   levels=lv, color=color(r['color']), created=float(r['created']), status=r['status'], isle=isle_card(r, t))
         if not out['member']:
             ask = _row(db, "SELECT kind FROM bang_asks WHERE bang=? AND sid=? AND status='open'", (bid, sid)) if sid else None
             out.update(asked=bool(ask and ask['kind'] == 'ask'), invited=bool(ask and ask['kind'] == 'invite'),
@@ -1207,8 +1278,8 @@ def me_view(store, token) -> dict:
         return out
     with store.connect() as db:
         try:
-            mine = _row(db, "SELECT m.*, b.name, b.emoji, b.color, b.channel, b.hidden FROM bang_members m JOIN bangs b ON b.id=m.bang "
-                            "WHERE m.sid=? AND m.status='in'", (sid,))
+            mine = _row(db, "SELECT m.*, b.name, b.emoji, b.color, b.channel, b.hidden, b.isle, b.isle_to, b.isle_ready, b.isle_started, "
+                            "b.isle_how FROM bang_members m JOIN bangs b ON b.id=m.bang WHERE m.sid=? AND m.status='in'", (sid,))
         except Exception:  # noqa: BLE001 - an older schema: no bangs yet
             return out
         out['invites'] = [dict(bang=x['bang'], name=x['name'], emoji=x['emoji'], color=x['color'], by=str(x['display'] or GONE)[:24])
@@ -1220,7 +1291,7 @@ def me_view(store, token) -> dict:
             lv = levels(db, mine['bang'])
             out['mine'] = dict(bang=mine['bang'], pid=pid_of(sid), name=mine['name'], emoji=mine['emoji'], color=color(mine['color']), role=mine['role'],
                                wear=int(mine['wear']), uniform=mine['uniform'] if mine['uniform'] in C.UNIFORMS else 'polo',
-                               points=int(mine['points']), channel=mine['channel'], pet=lv['san_pet'],
+                               points=int(mine['points']), channel=mine['channel'], pet=lv['san_pet'], isle=island_of(mine, t)['level'],
                                uniforms=[u for u in C.UNIFORM_ORDER if C.UNIFORMS[u][2] <= lv['xuong_may']])
     if mine:
         g = gold_now(store, sid, t)
@@ -1642,6 +1713,8 @@ def _op_build(db, sid, data, t):
     nxt = level + 1
     hall = C.hall_needed(fac, nxt)
     need(lv[C.HALL] >= hall, f'Cần {C.FACILITIES[C.HALL]["name"]} cấp {hall} trước.', 'hall')
+    isle = C.isle_needed(fac, nxt)   # 🏝️ 21/10: the higher levels wait for the island (levels already built stay)
+    need(island_of(bang, t)['level'] >= isle, f'Cần 🏝️ Đảo bang cấp {isle} trước.', 'island')
     busy = sum(1 for r in rows.values() if r['target'] is not None)
     slots = C.build_slots(lv[C.HALL])
     need(busy < slots, f'Bang đang xây {busy} công trình (tối đa {slots} cùng lúc).', 'slots')
@@ -1661,6 +1734,49 @@ def _op_build(db, sid, data, t):
     _isle(db, 'view', bang['id'])
     hours = secs // 3600
     return dict(message=f'{f["emoji"]} Bắt đầu xây {f["name"]} cấp {nxt}: {hours} giờ nữa xong.')
+
+
+def _op_isle(db, sid, data, t):
+    """🏝️ Buy the island (to=1) or upgrade it one level (to=level+1), Phó bang and up, from the fund only, under the bang
+    row's lock: two officers at once wait for each other, the second sees the first's purchase. Idempotent by `to`: a
+    level held, or the upgrade to it already being built, answers again=True and pays nothing."""
+    bang, me = _officer(db, sid, C.BUILD_FROM)
+    to = data.get('to')
+    need(type(to) is int and 1 <= to <= C.ISLE_MAX, 'Chọn cấp đảo nhé.')
+    finish_builds(db, bang['id'], t)
+    bang = _row(db, 'SELECT * FROM bangs WHERE id=?', (bang['id'],))     # locked by _officer; finish_isle may have moved it
+    cur = island_of(bang, t)
+    if cur['level'] >= to:
+        return dict(message='Bang đã có đảo rồi.' if to == 1 else f'Đảo bang đã ở cấp {cur["level"]} rồi.', again=True)
+    if cur['to'] == to:
+        return dict(message=f'Đảo đang được mở rộng lên cấp {to} rồi.', again=True)
+    need(cur['to'] is None, f'Đảo đang mở rộng lên cấp {cur["to"]}: xong rồi mới nâng tiếp nhé.', 'building')
+    need(to == cur['level'] + 1, f'Nâng lần lượt nhé: tiếp theo là cấp {cur["level"] + 1}.', 'order')
+    xu, secs = C.isle_cost(to)
+    fund = int(bang['fund'])
+    need(fund >= xu, f'Quỹ bang còn thiếu {fmt(xu - fund)} xu.', 'not_enough')
+    what = 'mua Đảo bang' if to == 1 else f'nâng Đảo bang lên cấp {to}'
+    need(data.get('confirm') is True, f'Xác nhận dùng {fmt(xu)} xu quỹ bang để {what}.')
+    bal = fund - xu
+    bid = bang['id']
+    db.execute("INSERT INTO bang_fund(id, bang, sid, kind, amount, balance, note, at) VALUES(?,?,?,'build',?,?,?,?)",
+               (f'i:{bid}:{to}', bid, sid, -xu, bal, f'isle {to}', t))
+    if secs:
+        db.execute('UPDATE bangs SET fund=?, spent=spent+?, isle_to=?, isle_started=?, isle_ready=?, isle_paid=isle_paid+? WHERE id=?',
+                   (bal, xu, to, t, t + secs, xu, bid))
+    else:
+        db.execute("UPDATE bangs SET fund=?, spent=spent+?, isle=?, isle_to=NULL, isle_ready=NULL, isle_started=?, isle_paid=isle_paid+?, "
+                   "isle_how=CASE WHEN ?=1 THEN 'buy' ELSE isle_how END WHERE id=?", (bal, xu, to, t, xu, to, bid))
+    who = _display(db, sid)
+    if to == 1:
+        _log(db, bid, sid, 'build', f'🏝️ {who} mua Đảo bang ({fmt(xu)} xu quỹ): cả bang ra đảo chơi được rồi!', t)
+    else:
+        _log(db, bid, sid, 'build', f'🏝️ {who} cho mở rộng Đảo bang lên cấp {to} ({fmt(xu)} xu quỹ).', t)
+    _bump(db, bid)
+    _isle(db, 'view', bid)
+    if to == 1:
+        return dict(message='🏝️ Bang đã có đảo! Bấm 🏯 Đảo bang để cả bang ra chơi.', isle=to)
+    return dict(message=f'🏗️ Bắt đầu mở rộng Đảo bang lên cấp {to}: {secs // 3600} giờ nữa xong.', isle=to)
 
 
 def _op_buy(db, sid, data, t):
@@ -1781,7 +1897,7 @@ def _op_gh_cancel(db, sid, data, t):
 
 OPS = dict(join=_op_join, cancel=_op_cancel, accept=_op_accept, decline=_op_decline, leave=_op_leave, invite=_op_invite,
            approve=_op_approve, kick=_op_kick, role=_op_role, set=_op_set, disband=_op_disband, checkin=_op_checkin,
-           build=_op_build, buy=_op_buy, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel, rules=_op_rules)
+           build=_op_build, buy=_op_buy, isle=_op_isle, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel, rules=_op_rules)
 
 
 def _pre_profile(store, sid: str, op: str, data: dict) -> None:

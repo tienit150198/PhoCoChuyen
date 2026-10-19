@@ -4,10 +4,14 @@ the levels, the build timers, the fund) belongs to the Bang branch, which plugs 
 
 * The input, BangIslandView (docs/BANG_ISLAND.md has the JSON schema):
       {bang_id, name, emoji, color, level, facilities: [{id, level, state: 'building'|'done', ready_at, note?}],
-       members_online?}
+       members_online?, isle?: {level, max, state, ready_at, cap}}
   `level` of a facility is the level in effect now (0: not built yet), `max` its top level (optional, ≤ 10; a Bang
   facility has 5 or 10); `state == 'building'` means level + 1 is being built and is ready at `ready_at` (epoch
-  seconds). A facility the view leaves out counts as level 0, done.
+  seconds). A facility the view leaves out counts as level 0, done. `isle` (21/10, optional: the bought island's level
+  1…ISLE_MAX, its top, an upgrade being built and the room's cap) sizes the map (public/js/bang-island-layout.js
+  layout(level)); without it: level 1, done, CAP.
+* Access may carry `isle` (0: the bang has not bought its island: a member gets the offer instead of the island, a
+  guest nothing; the live room refuses both) and `cap` (people at once on that island).
 * The provider (BangIslandProvider below): bang_of / view / access for the game server (sync, game.storage.Store),
   access_live for the live service (async, live.db), and optionally act (the facility buttons). The Bang branch
   registers one with register(), or simply ships game/bang_island_source.py with PROVIDER = <its provider>: provider()
@@ -35,7 +39,9 @@ from . import marriage as mr
 # ---------------------------------------------------------------- the contract ---------------------------------------
 LEVEL_MAX = 10
 BANG_LEVEL_MAX = 99
-CAP = 40                                  # people on one bang island at once (the live room's cap)
+CAP = 40                                  # people on one bang island at once when the provider says nothing (the stub)
+CAP_MAX = 100                             # a provider's cap is bounded by this (the live service's own safety margin)
+ISLE_MAX = 5                              # island levels (game/bang_content.py ISLE_MAX; the map has one zone a level)
 BANG_ID = re.compile(r'[a-z0-9_-]{1,32}')
 COLOR = re.compile(r'#[0-9a-fA-F]{6}')
 NAME_MAX, NOTE_MAX, EMOJI_MAX = 40, 120, 16
@@ -52,6 +58,14 @@ class FacilityView(TypedDict, total=False):
     note: str                              # optional: one short line the panel shows (what the next level brings)
 
 
+class IsleView(TypedDict, total=False):
+    level: int                             # 1..ISLE_MAX: the island's level in effect now
+    max: int                               # its top level (default ISLE_MAX)
+    state: Literal['building', 'done']     # building: level + 1 is being built, ready at ready_at
+    ready_at: float | None
+    cap: int                               # people on the island at once (1..CAP_MAX)
+
+
 class BangIslandView(TypedDict, total=False):
     bang_id: str                           # [a-z0-9_-]{1,32}
     name: str                              # 1..40 characters
@@ -60,11 +74,14 @@ class BangIslandView(TypedDict, total=False):
     level: int                             # the bang's own level, 1..99
     facilities: list[FacilityView]
     members_online: int                    # optional
+    isle: IsleView                         # optional (21/10): the island's level; absent = level 1, CAP
 
 
 class Access(TypedDict, total=False):
     kind: Literal['member', 'guest']       # a member of this bang, or a guest the bang let in
     role: str | None                       # the Bang branch's role id (ROLES below), None for a guest
+    isle: int                              # optional: the island's level (0: not bought: no visit; absent: bought)
+    cap: int                               # optional: people on that island at once (the live room's cap)
 
 
 ROLES = {'bang_chu': 'Bang chủ', 'pho_bang': 'Phó bang', 'truong_lao': 'Trưởng lão', 'tinh_anh': 'Tinh anh', 'thanh_vien': 'Thành viên'}
@@ -77,6 +94,7 @@ class BangIslandProvider(Protocol):
     def access(self, store, sid: str, bang_id: str) -> Access | None: ...          # may this save be on that island
     async def access_live(self, db, sid: str, bang_id: str) -> Access | None: ...  # the same, for the live service
     # optional: def act(self, store, sid, bang_id, facility, op, data) -> dict  ({message, ...}; raise BangIslandError)
+    # optional: def offer(self, store, sid, bang_id) -> dict  (what a member sees before the island is bought)
 
 
 class BangIslandError(mr.MarriageError):
@@ -117,7 +135,8 @@ FACILITY = {f['id']: f for f in FACILITIES}
 OPS = frozenset(a[0] for f in FACILITIES for a in f['actions'])
 BANDS = ((0, 'Đất trống'), (1, 'Gỗ'), (2, 'Đá'), (3, 'Vàng'))   # band 0: not built; 1: levels 1–3, 2: 4–6, 3: 7–10
 # The decorative spots of public/js/bang-island-layout.js a player can walk up to (besides the facilities).
-SPOTS = ('ben_tau', 'vuon_hoa', 'ao_sen', 'rung_truc', 'den_long', 'doi_thong')
+# The last four come with the island's levels 2…5 (21/10: Võ đường, Trà đình, Bảo tháp, Hải đăng).
+SPOTS = ('ben_tau', 'vuon_hoa', 'ao_sen', 'rung_truc', 'den_long', 'doi_thong', 'vo_duong', 'tra_dinh', 'bao_thap', 'hai_dang')
 
 
 def band(level: int, top: int = LEVEL_MAX) -> int:
@@ -197,7 +216,33 @@ def validate_view(raw) -> BangIslandView:
         if not _int(mo, 0, 100_000):
             bad('members_online')
         view['members_online'] = mo
+    isle = raw.get('isle')
+    if isle is not None:
+        if not isinstance(isle, Mapping):
+            bad('isle')
+        top, lv, st, ready, cap = isle.get('max', ISLE_MAX), isle.get('level'), isle.get('state', 'done'), isle.get('ready_at'), isle.get('cap', CAP)
+        if not _int(top, 1, ISLE_MAX):
+            bad('isle.max')
+        if not _int(lv, 1, top):
+            bad('isle.level')
+        if st not in STATES:
+            bad('isle.state')
+        if st == 'building':
+            if lv >= top:
+                bad('isle: building past the top level')
+            if type(ready) not in (int, float) or not math.isfinite(ready) or not 0 < ready < READY_MAX:
+                bad('isle.ready_at')
+            ready = float(ready)
+        else:
+            ready = None
+        if not _int(cap, 1, CAP_MAX):
+            bad('isle.cap')
+        view['isle'] = IsleView(level=lv, max=top, state=st, ready_at=ready, cap=cap)
     return view
+
+
+def isle_of(view: BangIslandView) -> IsleView:
+    return view.get('isle') or IsleView(level=1, max=1, state='done', ready_at=None, cap=CAP)
 
 
 def island_view(view: BangIslandView, now: float | None = None) -> dict:
@@ -215,8 +260,13 @@ def island_view(view: BangIslandView, now: float | None = None) -> dict:
             to=lv + 1 if building else None, next=lv + 1 if lv < top else None,
             next_band=band(lv + 1, top) if lv < top else None, note=f.get('note'),
             actions=[dict(op=op, emoji=e, label=label) for op, e, label, _ in meta['actions']]))
+    isle = isle_of(view)
+    building = isle['state'] == 'building'
     out = dict(id=view['bang_id'], name=view['name'], emoji=view['emoji'], color=view['color'], level=view['level'],
-               facilities=facilities)
+               facilities=facilities,
+               isle=dict(level=isle['level'], max=isle['max'], cap=isle['cap'], state=isle['state'], ready_at=isle['ready_at'],
+                         to=isle['level'] + 1 if building else None,
+                         left=max(0, int(math.ceil(isle['ready_at'] - now))) if building else 0))
     if 'members_online' in view:
         out['members_online'] = view['members_online']
     return out
@@ -359,6 +409,13 @@ def _answer(store, sid, p, bang_id: str | None) -> dict:
             return dict(now=now, bang=None, me=None, cap=CAP, why='Bạn chưa vào bang nào. Vào một bang để có đảo bang nhé.')
     acc = p.access(store, sid, bang_id)
     need(acc and acc.get('kind') in ('member', 'guest'), 'Bạn không phải thành viên hay khách của bang này.', 'not_member', 403)
+    role = acc.get('role') if acc.get('kind') == 'member' else None
+    me = dict(kind=acc['kind'], role=role if role in ROLES else None, role_name=ROLES.get(role) if role else None)
+    if acc.get('isle', 1) == 0:   # 🏝️ 21/10: the bang has not bought its island yet: a member sees the offer, a guest nothing
+        need(acc['kind'] == 'member', 'Bang này chưa có đảo.', 'no_island', 403)
+        offer = getattr(p, 'offer', None)
+        return dict(now=now, cap=0, bang=None, me=me, offer=offer(store, sid, bang_id) if callable(offer) else {},
+                    why='Bang chưa có đảo. Bang chủ hoặc Phó bang mua đảo bằng quỹ bang nhé.')
     raw = p.view(store, bang_id)
     need(raw is not None, 'Không tìm thấy bang này.', 'not_found', 404)
     try:
@@ -367,9 +424,7 @@ def _answer(store, sid, p, bang_id: str | None) -> dict:
         print(f'[bang-island] {e}', flush=True)
         need(False, 'Đảo bang đang bận sửa, thử lại sau nhé.', 'bang_view', 502)
     need(view['bang_id'] == bang_id, 'Không tìm thấy bang này.', 'not_found', 404)
-    role = acc.get('role') if acc.get('kind') == 'member' else None
-    return dict(now=now, cap=CAP, bang=island_view(view, now),
-                me=dict(kind=acc['kind'], role=role if role in ROLES else None, role_name=ROLES.get(role) if role else None))
+    return dict(now=now, cap=isle_of(view)['cap'], bang=island_view(view, now), me=me)
 
 
 def get(store, token, query=None) -> dict:
@@ -389,6 +444,7 @@ def post(store, token, sub, data) -> dict:
     need(fid in FACILITY and any(a[0] == op for a in FACILITY[fid]['actions']), 'Không có thao tác này.', 'unknown_action')
     acc = p.access(store, sid, bang_id)
     need(acc and acc.get('kind') in ('member', 'guest'), 'Bạn không phải thành viên hay khách của bang này.', 'not_member', 403)
+    need(acc.get('isle', 1) != 0, 'Bang chưa có đảo. Mua đảo ở ⚔️ Bang nhé.', 'no_island', 403)
     act = getattr(p, 'act', None)
     extra = data.get('data') if isinstance(data.get('data'), dict) else {}
     done = act(store, sid, bang_id, fid, op, extra) if callable(act) else dict(placeholder=True, message=placeholder_line(fid, op))
@@ -403,5 +459,5 @@ def content() -> dict | None:
     """The bootstrap's `bang_island` (game/content.py): only while MNL_BANG_ISLAND=1, so the menus list ⚔️ Đảo bang."""
     if not enabled():
         return None
-    return dict(cap=CAP, level_max=LEVEL_MAX, bands=[name for _, name in BANDS],
+    return dict(cap=CAP, isle_max=ISLE_MAX, level_max=LEVEL_MAX, bands=[name for _, name in BANDS],
                 facilities=[dict(id=f['id'], emoji=f['emoji'], name=f['name']) for f in FACILITIES], roles=ROLES)

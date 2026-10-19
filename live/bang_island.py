@@ -5,7 +5,10 @@ Who may be there is the Bang branch's answer through the contract (game.bang_isl
 bang)): asked on entry, again every CHECK_EVERY seconds per player from tick() (a few at a time), and at once when
 the game server says something changed (NOTIFY {op: 'bang_island', sid?, bang?, why}). Never per movement frame:
 positions, gestures and bubbles are memory only; a frame is checked against the room the socket is in. One room per
-bang ('bisl:<bang id>'), at most CAP people. Two players who block each other share the island without seeing or
+bang ('bisl:<bang id>'), at most the island's cap (the contract's Access.cap: 30 → 80 by the island's level since
+21/10, BI.CAP when the provider says nothing; a bang that has not bought its island has no room). Walks are sent in one
+frame per room every MV_FLUSH seconds (each walker's latest move), so a full island costs a few frames a second per
+person rather than one per walker's step. Two players who block each other share the island without seeing or
 hearing each other (Player.hidden, like the street). A bubble goes through the chat's store_message (filters, mutes,
 kept like all chat) in the channel 'bisl:<bang>' (chat.route: delete, report, admin hide).
 
@@ -20,6 +23,7 @@ bisl_left {why: other | changed | ended}. An older client ignores it all.
 """
 from __future__ import annotations
 
+import asyncio
 import math
 import time
 
@@ -36,6 +40,7 @@ SAY_LEN = 120
 CHECK_EVERY = 10.0           # seconds between two access checks of one player
 CHECKS_PER_TICK = 200        # at most this many checks per second (the rest wait for the next tick)
 MAX_MS = 6000
+MV_FLUSH = .2                # seconds: the moves of a room go out together (each walker's latest), at most 5 frames a second
 WHYS = frozenset(('join', 'left', 'kicked', 'role', 'guest', 'view', 'disband'))
 SID_LEN = 64
 
@@ -57,6 +62,9 @@ class BangIslandFeature(Feature):
 
     # ---- rooms --------------------------------------------------------------------------------------------------
     def _empty(self, room):
+        timer = room.data.pop('mv_at', None)
+        if timer is not None:
+            timer.cancel()
         self.hub.drop_room(room.id)
 
     def _current(self, conn):
@@ -98,7 +106,34 @@ class BangIslandFeature(Feature):
         if prov is None:
             return None
         acc = await prov.access_live(self.db, sid, bang)
-        return acc if isinstance(acc, dict) and acc.get('kind') in ('member', 'guest') else None
+        if not isinstance(acc, dict) or acc.get('kind') not in ('member', 'guest') or acc.get('isle', 1) == 0:
+            return None   # 🏝️ isle 0: the bang has not bought its island (21/10): nobody is on it
+        return acc
+
+    @staticmethod
+    def _cap(acc) -> int:
+        cap = acc.get('cap') if isinstance(acc, dict) else None
+        return cap if type(cap) is int and 1 <= cap <= BI.CAP_MAX else BI.CAP
+
+    def _flush(self, room) -> None:
+        """Send the room's waiting moves in one frame (people who block each other: each gets the list without the other)."""
+        room.data.pop('mv_at', None)
+        q = room.data.pop('mvq', None)
+        if not q or self.hub.rooms.get(room.id) is not room:
+            return
+        ev = list(q.values())
+        movers = {self.hub.players.get(pid) for pid in q}
+        hidden = set().union(*(m.hidden for m in movers if m is not None))
+        plain, apart = [], []
+        for c in room.conns:
+            (apart if c.player.pid in hidden or (c.player.hidden & q.keys()) else plain).append(c)
+        if plain:
+            self.hub.send_many(plain, dict(t='bisl', room=room.id, ev=ev))
+        for c in apart:
+            mine = [e for e in ev if e['pid'] not in c.player.hidden and (self.hub.players.get(e['pid']) is None
+                                                                          or c.player.pid not in self.hub.players[e['pid']].hidden)]
+            if mine:
+                self.hub.send(c, dict(t='bisl', room=room.id, ev=mine))
 
     async def _recheck(self, conn) -> bool:
         """Ask the contract again whether this socket's player may stay; detach it if not. True: still there."""
@@ -112,6 +147,7 @@ class BangIslandFeature(Feature):
         if not acc:
             self._detach(conn, 'changed')
             return False
+        room.cap = max(room.cap or 0, self._cap(acc))   # an island upgraded since the room opened: more room at once
         person = room.data['people'].get(conn.player.pid)
         if person is not None:
             person['kd'], person['r'] = acc['kind'], acc.get('role') if acc['kind'] == 'member' else None
@@ -145,7 +181,9 @@ class BangIslandFeature(Feature):
         if old is not None:
             self._detach(old, 'other' if old is not conn else None)
         rid = PREFIX + bang
-        room = self.hub.room(rid, cap=BI.CAP, on_empty=self._empty)
+        cap = self._cap(acc)
+        room = self.hub.room(rid, cap=cap, on_empty=self._empty)
+        room.cap = cap                                   # the island's level now (it may have grown since the room opened)
         if not room.data:
             room.data.update(bang=bang, people={})
         if not room.add(conn):
@@ -163,7 +201,7 @@ class BangIslandFeature(Feature):
             seen.clear()
         seen.add(rid)
         room.send(dict(t='bisl', room=rid, ev=[dict(k='in', **person)]), sender=p, skip=conn)
-        return dict(t='bisl_room', room=rid, bang=bang, me=p.pid, kind=acc['kind'], role=person['r'], cap=BI.CAP, people=people)
+        return dict(t='bisl_room', room=rid, bang=bang, me=p.pid, kind=acc['kind'], role=person['r'], cap=cap, people=people)
 
     @on('bisl_out', rate=(20, 60))
     async def bisl_out(self, conn, f):
@@ -180,8 +218,11 @@ class BangIslandFeature(Feature):
         room = self._room_of(conn)
         person = room.data['people'][conn.player.pid]
         person['x'], person['y'] = path[-1]
-        room.send(dict(t='bisl', room=room.id, ev=[dict(k='mv', pid=conn.player.pid, p=path, ms=int(min(MAX_MS, max(0, ms))))]),
-                  sender=conn.player, skip=conn)
+        q = room.data.setdefault('mvq', {})
+        q.pop(conn.player.pid, None)                      # the latest move of each walker, in the order they last moved
+        q[conn.player.pid] = dict(k='mv', pid=conn.player.pid, p=path, ms=int(min(MAX_MS, max(0, ms))))
+        if 'mv_at' not in room.data:
+            room.data['mv_at'] = asyncio.get_running_loop().call_later(MV_FLUSH, self._flush, room)
 
     @on('bisl_emote', rate=(6, 10))
     async def bisl_emote(self, conn, f):
