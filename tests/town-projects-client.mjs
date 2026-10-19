@@ -115,7 +115,7 @@ test('menus: Tiện ích and Khu phố for a story player only, the app opens th
   assert.ok(items.some(x=>x.action==='townProjects'));
   const app=readFileSync('public/js/app.js','utf8');
   assert.match(app,/items\.push\(\['townProjects','building','Công trình của phố'\]\)/);
-  assert.match(app,/'jrTown','rank','townProjects'\]/);
+  assert.match(app,/'jrTown','rank','townProjects'(,'[A-Za-z]+')*\]/);   // later entries (⚔️ bang) may follow
   assert.match(app,/action==='townProjects'\)\{await \(await import\('\.\/v4\/town-projects\.js'\)\)\.openTownProjects\(env\(\),data\)/);
   assert.match(readFileSync('public/js/iso-guide.js','utf8'),/syncProjects\(env\)/);
 });

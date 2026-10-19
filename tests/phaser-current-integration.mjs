@@ -84,12 +84,12 @@ test('jailed island destinations reopen the camp while chat remains available',a
 
 test('active fireworks welcome is subscribed before live connects, once per page',async()=>{
   const handlers=new Map(),calls=[];
-  const m={live:{on:(type,fn)=>{calls.push(['on',type]);handlers.set(type,fn);}},liveBoot:()=>{
-    calls.push(['boot']);handlers.get('welcome')?.({fw:{id:'active-show'}});
+  const m={live:{on:(type,fn)=>{calls.push(['on',type]);handlers.set(type,[...(handlers.get(type)||[]),fn]);}},liveBoot:()=>{
+    calls.push(['boot']);for(const fn of handlers.get('welcome')||[])fn({fw:{id:'active-show'}});   // live.on keeps every listener (⚔️ bang tags listen too)
   }};
   const context=vm.createContext({env:()=>({}),console,fireworks:{onFireworks:(_env,f)=>calls.push(['fireworks',f.id])}});
   let src=take(app,'function bootLive(m){','\nconst env=');
-  src=src.replace("import('./v4/fireworks.js')",'Promise.resolve(fireworks)');
+  src=src.replace("import('./v4/fireworks.js')",'Promise.resolve(fireworks)').replace("import('./v4/bang-tag.js')",'Promise.resolve({loadMine(){}})');
   vm.runInContext(src+'\nglobalThis.boot=bootLive;',context);
   context.boot(m);await Promise.resolve();context.boot(m);await Promise.resolve();
   assert.ok(calls.findIndex(c=>c[1]==='welcome')<calls.findIndex(c=>c[0]==='boot'));

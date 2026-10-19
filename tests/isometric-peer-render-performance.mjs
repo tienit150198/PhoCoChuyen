@@ -16,6 +16,7 @@ class Image {
   setVisible(visible){this.visible=visible;return this;}
   setTexture(key){counters.textureSwaps++;this.key=key;return this;}
   setText(text){this.text=text;return this;}
+  setColor(){return this;}   // ⚔️ the bang tag's ink (phaser-world.ts)
   destroy(){this.destroyed=true;}
 }
 const original=globalThis.__peerRenderTest;
