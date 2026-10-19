@@ -1,5 +1,10 @@
 {
   "strings": {
+  "Ghép bé lên hạng S trở lên có khi gặp thần thú: Kỳ Lân, Kỳ Lân Một Sừng, Khủng Long, Rồng Con… Giữ bé cũ hay hóa thần thú tùy bạn.": "Fusing a pet to rank S or more may bring a mythic pet: qilin, unicorn, dinos, a baby dragon… Keep your pet or let it transform.",
+  "Nhập hàng: đếm món nào nhập món đó, nhân viên trong ca đếm giúp; đếm đúng mà lỡ đóng kho thì hàng vẫn tự lên kệ.": "Receiving: shelve each line as you count it, staff on shift can count for you; counted crates go on the shelf even if you close.",
+  "Tiệm Mẹ & bé và Nhà thuốc đã có 🔁 Tự đặt hàng như các tiệm khác: mua ở Kho hoặc Thiết bị nghề.": "Mẹ & bé and the pharmacy now have 🔁 Auto order like other shops: buy it in the stock room or the work equipment.",
+  "Giao diện mới: ở khu phố nút giữa là Về quán, không tự mở ca nữa. Lì xì: bạn bè chung wifi cũng giật được cùng bao.": "New interface: in town the middle button is Back to the shop, no auto shift. Friends on one wifi can all grab lì xì.",
+  "Phòng hát: Hát cùng báo rõ khi micro bị chặn hay đang bận. Bảng Online hiện phút chơi đã ghi nhận và còn bao lâu nữa lên bảng.": "Karaoke: Sing together says when the mic is blocked or busy. The Online card shows your counted minutes and time left.",
   "Kỳ Lân": "Qilin",
   "Kỳ Lân Một Sừng": "Unicorn",
   "Khủng Long Bạo Chúa": "Baby T-Rex",

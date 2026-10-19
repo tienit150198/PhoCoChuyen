@@ -1,3 +1,16 @@
+# v2.4.59 — 2026-10-19
+
+🐾 Thú cưng (chủ game 19/10 "thêm mấy pets kì lân, rồi khủng long … ở mức S trở lên sẽ có, nhưng khi ra thì random tỷ lệ, người dùng có thể chọn pets hiện tại hoặc chuyển đổi (mình sẽ đưa cho người ta pets đó chứ k phải để người dùng chọn)"):
+- ✨ 6 thần thú (pets_content fuse='myth', không bán): Kỳ Lân, Kỳ Lân Một Sừng, Khủng Long Bạo Chúa, Khủng Long Cổ Dài, Khủng Long Ba Sừng, Rồng Con. Ghép thành công lên S/SS/SSS+ có tỷ lệ ẩn (pet_wardrobe.MYTH_BP 25/30/40%) game chọn ngẫu nhiên một thần thú (petw.mo, khóa tùy chọn); người chơi giữ bé hoặc cho bé hóa thần thú (jr_pet_morph), giữ hạng/tên/đồ/linh kiện; Linh Khuyển/Mèo Thần Tài hóa thần thú vẫn là huyền thoại. pet-art: sừng, gạc, bờm cầu vồng/lửa, diềm cổ, gai lưng, mõm dài, đuôi bò sát, cánh rồng; thần thú giữ màu khi có hiệu ứng lông SSS.
+Góp ý người chơi (chủ game "check feedback … xử lý luôn rồi rep luôn"):
+- #426 lì xì: mỗi bao tối đa 5 lượt giật trên một mạng (LIXI_IP_MAX), bạn bè chung wifi giật được.
+- #427/#431 nhập hàng: đếm món nào nhập món đó (thùng gộp, thùng tự đặt), 👥 nhân viên trong ca đếm giúp (inv_receive staff), đóng kho mà đếm đúng thì tự nhập kệ.
+- #432 giao diện mới: nút giữa ở khu phố là "Về quán/Về tiệm/Về lớp…" (không start_day); ngày đầu tiên vẫn mở ca một chạm.
+- #433 🔁 Tự đặt hàng cho Mẹ & bé và Nhà thuốc (khóa c.auto_order_desk, gộp theo nhà cung cấp).
+- #434 bảng Online: thẻ của mình báo đã ghi nhận phút chơi và còn bao lâu lên bảng (giờ đầu tuần không tính lên bảng).
+- #430 phòng hát: Hát cùng kiểm tra micro ngay khi bấm, lỗi mic không còn quay về nút ban đầu, báo đúng lý do (không có mic / bị chặn / đang bận).
+Có gì mới 2.4.59: 5 dòng.
+
 # v2.4.58 — 2026-10-19
 
 🐾 Thú cưng (chủ game 19/10 "thêm nhiều trang phục thú cưng và linh kiện … mua được cánh nữa, cánh thì nhiều loại", "con pets nào cũng có thể lên cấp sss và huyền thoại hết nhé, khi lên thì được chọn giữ bé hiện tại hoặc đổi giống", "chưa thấy chỗ mua cánh … đổi pets đi như nào cũng k biết", "làm dễ hiểu hơn nhé", "bậc S trở lên mới mất", "khung xếp hạng thú cưng cute hơn nhé"):
