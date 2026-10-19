@@ -1,3 +1,10 @@
+# v2.4.61 — 2026-10-19
+
+🎡 Quà 20/10 (chủ game 19/10 "vòng quay từ 100k -> 1m", "mốc 666k 888k, 1314, 520 cho có ý nghĩa", "tài khoản mới/cũ, miễn sao trong 20/10 vào là được tặng"): system_gift BROADCASTS wheel2010 (since/until 20/10 00:00 → 21/10 00:00 VN), ô quay WHEEL 100k·168k·200k·520k·666k·888k·1tr·1.314k theo trọng số (trung bình ≈ 360k), chọn theo hash sid; thẻ quà (gift.js) quay bánh xe rồi mới hiện số.
+🛃 #441 Hải quan: lời từ chối vì cấp bậc Công an chỉ đường Binh nhì → Binh nhất → Hạ sĩ.
+🐾 #446: nút ✓ Đổi tên bé bật ngay khi gõ (trước đó vẫn mờ tới lần vẽ lại).
+Có gì mới 2.4.61: 3 dòng.
+
 # v2.4.60 — 2026-10-19
 
 ⚡ Lag (chủ game 19/10 "check ipad phản hồi người dùng rất lag", "máy tính với đth nữa check k để lag"):
