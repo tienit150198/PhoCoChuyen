@@ -5,7 +5,7 @@ export default [
   {"emoji":"⚔️","text":"Bang: lập bang, góp quỹ xây 7 công trình, danh hiệu, cửa hàng bang và giờ vàng riêng do chủ bang chọn."},
   {"emoji":"🏯","text":"Đảo bang: cả bang cùng xây lãnh địa trên đảo, gặp nhau và đi chơi cùng lúc."},
   {"emoji":"🏝️","text":"Xây trên đảo riêng: nhà sàn, biệt thự, lâu đài, hồ bơi, công viên… mở đảo cho cả phố ghé thăm."},
-  {"emoji":"🐾","text":"Đấu trường pet: đấu xếp hạng, giải tuần và Bang chiến pet 5v5 tối thứ Bảy."}
+  {"emoji":"🐾","text":"Đấu trường pet: đấu xếp hạng, giải tuần và Bang chiến pet 5v5 20:00 Chủ nhật."}
  ]},
  {"version":"2.4.62","date":"2026-10-20","items":[
   {"emoji":"🖥️","text":"Mỗi nghề có cả 2 kiểu: bấm ⋯ trong màn làm việc, chọn Giao diện đầy đủ (cũ) hoặc gọn (mới), game nhớ riêng từng nghề."},

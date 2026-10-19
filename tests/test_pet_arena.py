@@ -455,7 +455,7 @@ class Teams(PW.TeamProvider):
 
 
 class War(Store):
-    SAT = at(2026, 10, 24, 21, 0)
+    SAT = PW.start_of(at(2026, 10, 21, 12, 0))   # the war's start that week (Sunday 20:00 since 21/10), read from pet_war
 
     def setUp(self):
         super().setUp()

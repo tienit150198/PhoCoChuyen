@@ -55,9 +55,9 @@ def _env_int(name: str, default: int, lo: int, hi: int) -> int:
 
 
 def start_of(t: float) -> float:
-    """The start of the war of the Vietnam week of `t` (Saturday 21:00 by default)."""
+    """The start of the war of the Vietnam week of `t` (Sunday 20:00 by default: owner 21/10 "bang chiến diễn ra chủ nhật hằng tuần, 8h tối")."""
     from .wedding_live import week_start
-    return (week_start(t) + _env_int('PET_WAR_DOW', 5, 0, 6) * 86400 + _env_int('PET_WAR_HOUR', 21, 0, 23) * 3600
+    return (week_start(t) + _env_int('PET_WAR_DOW', 6, 0, 6) * 86400 + _env_int('PET_WAR_HOUR', 20, 0, 23) * 3600
             + _env_int('PET_WAR_MIN', 0, 0, 59) * 60)
 
 

@@ -1,3 +1,7 @@
+# v2.4.65 — 2026-10-21
+
+🛡️ Bang chiến pet chuyển sang 20:00 Chủ nhật hằng tuần (chốt đội hình 19:50; chủ game 21/10 "bang chiến diễn ra chủ nhật hằng tuần, 8h tối"); PET_WAR_DOW/HOUR vẫn chỉnh được. Dòng Có gì mới 2.4.63 sửa "tối thứ Bảy" → "20:00 Chủ nhật". Không có Có gì mới mới.
+
 # v2.4.64 — 2026-10-21
 
 Sửa và đổi luật sau 2.4.63 (chủ game 21/10). Không có Có gì mới.
