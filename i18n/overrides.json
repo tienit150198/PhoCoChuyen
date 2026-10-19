@@ -1,5 +1,7 @@
 {
   "strings": {
+  "Mỗi nghề có cả 2 kiểu: bấm ⋯ trong màn làm việc, chọn Giao diện đầy đủ (cũ) hoặc gọn (mới), game nhớ riêng từng nghề.": "Every career has both looks: tap ⋯ at work and pick the full (classic) or compact (new) layout, remembered per career.",
+  "Đối chiếu nội bộ: bản đầy đủ hiện hết chứng từ như trước, lướt danh sách không còn chọn nhầm thẻ.": "Internal reconciliation: the full layout shows every document again, and scrolling no longer picks a card by mistake.",
   "📋 Giao diện đầy đủ (cũ)": "📋 Full layout (classic)",
   "✨ Giao diện gọn (mới)": "✨ Compact layout (new)",
   "↩️ Theo cài đặt chung": "↩️ Use the general setting",

@@ -1,3 +1,9 @@
+# v2.4.62 — 2026-10-20
+
+🖥️ #440 (chủ game 19/10 "các nghề đều phải có cả 2 bên"): mỗi nghề chọn riêng Giao diện đầy đủ (cũ) / gọn (mới) ở nút ⋯ màn làm việc (mnl.clean.c, v4/shell.js setCleanCareer), "↩️ Theo cài đặt chung" để bỏ; thêm bản gọn cho khách sạn, tiệc, bưu điện, xưởng vẽ, luật sư, giặt ủi, hải quan; trả bản đầy đủ cho cứu hộ, y tá, công an, cà phê, quần áo, tạp hóa, kho.
+📋 Đối chiếu nội bộ: bản đầy đủ mở sẵn chứng từ, chip xuống dòng; ui-kit tapSlip chặn chạm nhầm khi lướt ([data-tap-guard]).
+Có gì mới 2.4.62: 2 dòng.
+
 # v2.4.61 — 2026-10-19
 
 🎡 Quà 20/10 (chủ game 19/10 "vòng quay từ 100k -> 1m", "mốc 666k 888k, 1314, 520 cho có ý nghĩa", "tài khoản mới/cũ, miễn sao trong 20/10 vào là được tặng"): system_gift BROADCASTS wheel2010 (since/until 20/10 00:00 → 21/10 00:00 VN), ô quay WHEEL 100k·168k·200k·520k·666k·888k·1tr·1.314k theo trọng số (trung bình ≈ 360k), chọn theo hash sid; thẻ quà (gift.js) quay bánh xe rồi mới hiện số.
