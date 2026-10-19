@@ -365,9 +365,14 @@ class Box(Base):
         before = copy.deepcopy(j.state)
         with self.assertRaises(GameError):                                   # one line counted wrong: nothing received
             j.act('inv_receive', box='auto', counts={**counts, orders[0]['id']: orders[0]['actual'] + 1})
-        with self.assertRaises(GameError):                                   # the crate holds both lines
-            j.act('inv_receive', box='auto', counts={orders[0]['id']: orders[0]['actual']})
         self.assertEqual(j.state, before)
+        # Player #427: the line counted so far goes onto the shelf now, the other one waits in the crate.
+        part = j.act('inv_receive', box='auto', counts={orders[0]['id']: orders[0]['actual']})
+        self.assertIn('phần đã đếm', part['message'])
+        now = {o['id']: o for o in j.c['ext']['inv']['orders']}
+        self.assertEqual(now[orders[0]['id']]['status'], 'received')
+        self.assertEqual(now[orders[1]['id']]['status'], 'in_transit')
+        j.state = copy.deepcopy(before)
         turn = j.c['turn']
         r = j.act('inv_receive', box='auto', counts=counts)
         self.assertIn('cả thùng tự đặt', r['message'])
