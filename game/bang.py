@@ -361,6 +361,14 @@ def _notify(db, **event) -> None:
     live_chat.notify(db, dict(op='bang', **event))
 
 
+def _isle(db, why: str, bid: str, sid: str = '') -> None:
+    """⚔️ Đảo bang (live/bang_island.py on_notify): re-check this player now (join, left, kicked, role, guest), repaint
+    the island (view: a facility, the name, the colours) or close it (disband). Delivered on commit; an older live
+    service ignores the op."""
+    from . import live_chat
+    live_chat.notify(db, dict(op='bang_island', why=why, bang=bid, **(dict(sid=sid) if sid else {})))
+
+
 def finish_builds(db, bid: str, t: float) -> list:
     """Builds whose time is up become their level (guarded by target: idempotent, any number of processes)."""
     done = _rows(db, 'UPDATE bang_facilities SET level=target, target=NULL WHERE bang=? AND target IS NOT NULL AND ready_at<=? '
@@ -371,6 +379,7 @@ def finish_builds(db, bid: str, t: float) -> list:
             _log(db, bid, '', 'built', f'{f["emoji"]} {f["name"]} lên cấp {r["level"]}: {C.perk(r["fac"], int(r["level"]))}.', t)
     if done:
         _bump(db, bid)
+        _isle(db, 'view', bid)
     return done
 
 
@@ -412,6 +421,7 @@ def _leave(db, sid: str, bang: dict, t: float, why: str) -> None:
     _log(db, bang['id'], sid, 'leave', f'{_display(db, sid)} {word}.', t)
     _bump(db, bang['id'])
     _notify(db, pids=[pid_of(sid)], ch=bang['channel'], rm=[pid_of(sid)])
+    _isle(db, 'kicked' if why == 'kick' else 'left', bang['id'], sid)
     _GH['at'] = 0.0
 
 
@@ -438,6 +448,7 @@ def _join(db, sid: str, bang: dict, t: float, locked: dict, how: str = 'join') -
     _log(db, bang['id'], sid, 'join', f'{_display(db, sid)} vào bang.', t)
     _bump(db, bang['id'])
     _notify(db, pids=[pid_of(sid)], ch=bang['channel'], add=[pid_of(sid)])
+    _isle(db, 'join', bang['id'], sid)
     _GH['at'] = 0.0
 
 
@@ -1061,6 +1072,7 @@ def _op_decline(db, sid, data, t):
     bid = data.get('bang')
     need(isinstance(bid, str) and ID_RE.fullmatch(bid), 'Chọn một bang nhé.')
     db.execute("UPDATE bang_asks SET status='declined', answered=? WHERE bang=? AND sid=? AND kind='invite' AND status='open'", (t, bid, sid))
+    _isle(db, 'guest', bid, sid)            # no longer a guest of that island
     return dict(message='Đã từ chối lời mời.')
 
 
@@ -1109,6 +1121,7 @@ def _op_invite(db, sid, data, t):
     _log(db, bang['id'], sid, 'invite', f'{_display(db, sid)} mời {_display(db, other)}.', t)
     _bump(db, bang['id'])
     _notify(db, invite=pid_of(other), name=bang['name'], emoji=bang['emoji'])
+    _isle(db, 'guest', bang['id'], other)   # an open invitation: a guest of the island
     return dict(message=f'Đã gửi lời mời tới {_display(db, other)}.')
 
 
@@ -1155,6 +1168,8 @@ def _op_role(db, sid, data, t):
         _log(db, bang['id'], sid, 'role', f'{_display(db, sid)} trao chức Bang chủ cho {_display(db, m["sid"])}.', t)
         _bump(db, bang['id'])
         _notify(db, pids=[pid_of(sid), m['pid']])
+        _isle(db, 'role', bang['id'], sid)
+        _isle(db, 'role', bang['id'], m['sid'])
         return dict(message=f'{_display(db, m["sid"])} là Bang chủ mới.')
     if m['role'] == role:
         return dict(message='Không có gì thay đổi.')
@@ -1164,6 +1179,7 @@ def _op_role(db, sid, data, t):
     _log(db, bang['id'], sid, 'role', f'{_display(db, m["sid"])} thành {C.ROLES[role][0]}.', t)
     _bump(db, bang['id'])
     _notify(db, pids=[m['pid']])
+    _isle(db, 'role', bang['id'], m['sid'])
     return dict(message=f'Đã phong {C.ROLES[role][0]}.')
 
 
@@ -1196,6 +1212,7 @@ def _op_set(db, sid, data, t):
     _log(db, bang['id'], sid, 'set', 'Bang chủ đổi: ' + ', '.join(changes) + '.', t)
     _bump(db, bang['id'])
     _notify(db, bang=bang['id'], ch=bang['channel'])
+    _isle(db, 'view', bang['id'])
     return dict(message='Đã lưu.')
 
 
@@ -1224,6 +1241,7 @@ def _disband(db, bang: dict, sid: str, t: float, text: str) -> None:
     _log(db, bang['id'], sid, 'disband', text, t)
     _bump(db, bang['id'])
     _notify(db, pids=[m['pid'] for m in members], ch=bang['channel'], rm=[m['pid'] for m in members])
+    _isle(db, 'disband', bang['id'])
     _GH['at'] = 0.0
 
 
@@ -1268,6 +1286,7 @@ def _op_build(db, sid, data, t):
                'paid=bang_facilities.paid+excluded.paid', (bang['id'], fac, level, nxt, t, t + secs, xu))
     _log(db, bang['id'], sid, 'build', f'{_display(db, sid)} cho xây {f["emoji"]} {f["name"]} cấp {nxt} ({fmt(xu)} xu).', t)
     _bump(db, bang['id'])
+    _isle(db, 'view', bang['id'])
     hours = secs // 3600
     return dict(message=f'{f["emoji"]} Bắt đầu xây {f["name"]} cấp {nxt}: {hours} giờ nữa xong.')
 
@@ -1449,6 +1468,7 @@ def admin_act(store, admin: str, data) -> dict:
         _bump(db, bid)
         pids = [r['pid'] for r in _rows(db, "SELECT pid FROM bang_members WHERE bang=? AND status='in'", (bid,))]
         _notify(db, pids=pids, bang=bid, ch=bang['channel'])
+        _isle(db, 'view', bid)
     store.transaction(run)
     _VIEW.clear()
     return dict(ok=True, **admin_view(store))

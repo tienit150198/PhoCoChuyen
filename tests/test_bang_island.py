@@ -1,7 +1,7 @@
 """⚔️ Đảo bang (game/bang_island.py): the contract with the Bang branch (the view's checks, unknown ids and keys
 dropped, a facility left out is level 0), the derived island view (bands, next level, time left, buttons), the
 provider registry (the Bang branch's module, the dev stub, nothing: closed), the HTTP routes behind MNL_BANG_ISLAND
-(off by default: 404), membership through the provider, the placeholder buttons, the menu entry in the bootstrap,
+(on by default since the Bang provider ships, 0: 404), membership through the provider, the placeholder buttons, the menu entry in the bootstrap,
 and the ids shared with the client map (public/js/bang-island-layout.js) and the live room."""
 import json
 import os
@@ -14,6 +14,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import game
 from game import bang_island as BI
 from tests import test_http   # its HTTPTests' helpers, borrowed (importing the class would run its tests here too)
 
@@ -95,12 +96,17 @@ class Registry(unittest.TestCase):
         BI._provider, BI._looked = None, False
 
     def test_nothing_registered_means_closed_and_the_stub_needs_its_switch(self):
-        BI._provider, BI._looked = None, False
-        with patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': ''}):
-            self.assertIsNone(BI.provider())
-        BI._provider, BI._looked = None, False
-        with patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': '1', 'MNL_BANG_ISLAND_STUB_SET': 'high'}):
-            p = BI.provider()
+        # without the Bang branch's module (game/bang_island_source.py): closed, or the stub off production
+        with patch.object(game, 'bang_island_source', None, create=True):
+            BI._provider, BI._looked = None, False
+            with patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': ''}):
+                self.assertIsNone(BI.provider())
+            BI._provider, BI._looked = None, False
+            with patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': '1', 'DATABASE_URL': 'postgresql://prod/db'}), patch('builtins.print'):
+                self.assertIsNone(BI.provider(), 'never the stub next to the servers\' database')
+            BI._provider, BI._looked = None, False
+            with patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': '1', 'MNL_BANG_ISLAND_STUB_SET': 'high', 'DATABASE_URL': ''}):
+                p = BI.provider()
         self.assertIsInstance(p, BI.StubProvider)
         self.assertEqual(p.bang_of(None, 'a' * 64), 'bang_thu')
         self.assertEqual(BI.band(p.view(None, 'bang_thu')['facilities'][0]['level']), 3)
@@ -109,8 +115,12 @@ class Registry(unittest.TestCase):
         mod = types.ModuleType('game.bang_island_source')
         mod.PROVIDER = BI.StubProvider(members={'s': ('b', 'bang_chu')})
         BI._provider, BI._looked = None, False
-        with patch.dict('sys.modules', {'game.bang_island_source': mod}), patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': '1'}):
+        with patch.object(game, 'bang_island_source', mod, create=True), patch.dict('sys.modules', {'game.bang_island_source': mod}), \
+                patch.dict(os.environ, {'MNL_BANG_ISLAND_STUB': '1'}):
             self.assertIs(BI.provider(), mod.PROVIDER)
+        BI._provider, BI._looked = None, False
+        from game import bang_island_source
+        self.assertIs(BI.provider(), bang_island_source.PROVIDER, 'the real bangs ship in this build')
         other = BI.StubProvider()
         BI.register(other)
         self.assertIs(BI.provider(), other)
@@ -162,9 +172,14 @@ class BangIslandHTTP(unittest.TestCase):
         status, _, body = self.req('/api/bang-island' + q)
         return status, json.loads(body)
 
-    def test_off_by_default(self):
+    def test_on_by_default_and_off_with_its_switch(self):
+        env = {k: v for k, v in os.environ.items() if k != 'MNL_BANG_ISLAND'}
+        with patch.dict(os.environ, env, clear=True):
+            self.assertTrue(BI.enabled())
+            self.assertIsNotNone(BI.content())
         self.bootstrap()
-        with patch.dict(os.environ, {'MNL_BANG_ISLAND': ''}):
+        with patch.dict(os.environ, {'MNL_BANG_ISLAND': '0'}):
+            self.assertFalse(BI.enabled())
             self.assertEqual(self.get()[0], 404)
             self.assertEqual(self.req('/api/bang-island/act', 'POST', {'bang': 'b1', 'facility': 'dai_sanh', 'op': 'nang_cap'})[0], 404)
             self.assertIsNone(BI.content())

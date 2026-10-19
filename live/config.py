@@ -8,7 +8,7 @@
 | `LIVE_FAIR` | as `LIVE_STREET` | players walking the hội chợ's fairground see each other (live/fair.py), and its photobooth's shared rooms (live/booth.py, welcome flag `booth`) |
 | `LIVE_HOME` | as `LIVE_STREET` | married players in the same home see each other and share gestures (live/home.py) |
 | `LIVE_TOWN` | 0 | real player presence on the shared 2.5D town map, independent of chat (live/town.py) |
-| `MNL_BANG_ISLAND` | 0 | ⚔️ Đảo bang: members of a bang walk its island together (live/bang_island.py, welcome flag `bisle`); the game server reads the same switch (game/bang_island.py) |
+| `MNL_BANG_ISLAND` | 1 | ⚔️ Đảo bang: members of a bang walk its island together (live/bang_island.py, welcome flag `bisle`); the game server reads the same switch (game/bang_island.py) |
 | `LIVE_KARAOKE` | 0 | 🎤 Phòng hát: public karaoke rooms with a synced YouTube video, a queue, the stage and 🧩 Đoán bài (live/karaoke.py, welcome flag `kara`) |
 | `LIVE_KARAOKE_MIC` | 0 | 🎙️ the stage singer's live mic in those rooms (welcome flag `kara_mic`; needs `LIVE_KARAOKE=1` and the four LIVEKIT_* below, else it stays off). The game server reads the same switch for its headers (server.py) |
 | `LIVEKIT_URL` | unset | what browsers open for the mic (the SFU's signal URL, `wss://phocochuyen.io.vn/sfu`; deploy/livekit) |
@@ -58,7 +58,7 @@ class Config:
     town: bool = False               # 🏝️ shared 2.5D town map (live/town.py); explicitly LIVE_TOWN=1
     treasure: bool = False           # global chests: LIVE_TOWN_TREASURE=1, requires LIVE_TOWN=1
     kara: bool = False               # 🎤 Phòng hát (live/karaoke.py); explicitly LIVE_KARAOKE=1, off by default
-    bisle: bool = False              # ⚔️ Đảo bang (live/bang_island.py); MNL_BANG_ISLAND=1, off by default
+    bisle: bool = False              # ⚔️ Đảo bang (live/bang_island.py); MNL_BANG_ISLAND, on unless set to 0 (from_env)
     kara_mic: bool = False           # 🎙️ its live mic (LIVE_KARAOKE_MIC=1 and the SFU configured); off by default
     sfu_url: str = ''                # LIVEKIT_URL: the signal URL browsers open
     sfu_api: str = 'http://127.0.0.1:7880'
@@ -119,7 +119,7 @@ def from_env(argv=None) -> Config:
                  fair=_flag('LIVE_FAIR', '1' if street else '0'),
                  home=_flag('LIVE_HOME', '1' if street else '0'),
                  visits=_flag('LIVE_VISITS', '1' if street else '0'),
-                 town=_flag('LIVE_TOWN'), treasure=_flag('LIVE_TOWN_TREASURE'), kara=_flag('LIVE_KARAOKE'), bisle=_flag('MNL_BANG_ISLAND'),
+                 town=_flag('LIVE_TOWN'), treasure=_flag('LIVE_TOWN_TREASURE'), kara=_flag('LIVE_KARAOKE'), bisle=_flag('MNL_BANG_ISLAND', '1'),
                  trust_proxy=_flag('LIVE_TRUST_PROXY'), max_conn=_int('LIVE_MAX_CONN', 5000), per_player=_int('LIVE_PER_PLAYER', 5),
                  per_ip=_int('LIVE_PER_IP', 40), pool_max=max(1, _int('LIVE_PG_POOL', 8)), db_url=url, new_secs=float(_int('LIVE_NEW_SECS', 600)),
                  handshakes_per_ip=_int('LIVE_HANDSHAKES_PER_IP', 60), admins=admin_users(), db_schema=args.schema)

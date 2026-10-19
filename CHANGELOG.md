@@ -49,6 +49,15 @@ Kỹ thuật: POST /api/arena/<op> (view, lineup, fight, friend, friends, npc, r
 - Chạm công trình mở bảng: cấp, cấp tiếp theo, giờ xây còn lại, các nút (Nâng cấp, Góp quỹ, Đấu trường pet…) hiện là chỗ chờ cho nhánh Bang / đấu trường pet nối vào.
 - Hợp đồng dữ liệu với nhánh Bang: game/bang_island.py (BangIslandView, provider), docs/BANG_ISLAND.md (JSON schema, cách nối). Không bảng mới, không khóa save mới.
 
+# Chưa phát hành — tích hợp (feat/island-bang-pets)
+
+Gộp 4 nhánh (Xây trên đảo, Bang, Đấu trường pet, Đảo bang) và nối chúng với nhau; SCHEMA_VERSION 58 (56 đảo, 57 bang, 58 pet; Đảo bang không thêm bảng):
+- 🛡️ Bang chiến pet dùng bang thật (game/bang_pets.py, đăng ký loại đội 'bang' ở game/pet_war.py): đội = bang đang ở (bang đang hoạt động, không bị quản trị ẩn), mỗi thành viên chọn 1 bé, 5 người chọn trước ra trận; Sân luyện pet +1%/cấp chỉ số bé trong bang chiến, tối đa 5% (cấp 6–10 chỉ còn tính điểm xếp hạng). Chưa vào bang: nút ⚔️ Tìm bang trong tab Bang chiến.
+- 👑 Bang mạnh nhất tuần cộng điểm bang chiến pet của tuần (điểm bảng bang chiến × 100: thắng 1 trận 300, vô địch thêm 500), chỉ sau khi bang chiến xong (game/bang.py war_scores).
+- ⚔️ Đảo bang bật mặc định (MNL_BANG_ISLAND=0 để tắt), nối bang thật (game/bang_island_source.py): công trình bang → ô trên đảo (kho → Kho bang, tuong → Tượng bang, cong → Cổng bang), mỗi công trình có cấp tối đa riêng (5 hoặc 10, diện mạo co giãn theo 10 bậc), xây xong theo giờ hiện ngay; thành viên (chức theo bang), khách = người đang có lời mời của bang; bang giải tán thì đảo đóng; bang bị ẩn chỉ thành viên vào được. Bang báo đảo khi vào/rời/mời ra/phong chức/mời/xây/giải tán (pg_notify op 'bang_island').
+- Nút trên đảo: ⬆️ Nâng cấp chạy lệnh xây của bang (Phó bang trở lên, quỹ bang, hỏi xác nhận giá trước); 👥/💌 → Bang › Thành viên, 🪙/✨ → Bang của tôi, 👘 → Cửa hàng bang, 🏆 → Xếp hạng tuần, 🏟️ → Đấu trường pet › Bang chiến, 🎯 → Thử thách. Nút 🏯 Đảo bang trong hộp Bang. MNL_BANG_ISLAND_STUB chỉ dùng khi thiếu provider thật và không bao giờ khi có DATABASE_URL.
+- i18n: giữ bản dịch cũ của “Quỹ $1 xu”, “$1 người”; từ trùng của Đảo bang dùng cách gọi của nhánh Bang (“Guild”).
+
 # v2.4.60 — 2026-10-19
 
 ⚡ Lag (chủ game 19/10 "check ipad phản hồi người dùng rất lag", "máy tính với đth nữa check k để lag"):

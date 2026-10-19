@@ -57,7 +57,7 @@ export function createBangWalkRenderer(canvas,L,bang){
       if(p.kind==='pond'){poly(diamond({...p,w:p.w*1.12,h:p.h*1.12}),L.stoneDark);poly(diamond(p),'#3f9fbf');const r=seeded(9);for(let i=0;i<6;i++){const [a,b]=P(p.x+(r()-.5)*p.w*.7,p.y+(r()-.5)*p.h*.7);ctx.fillStyle='#4f9a4a';ctx.beginPath();ctx.ellipse(a,b,7*K(),3.5*K(),0,0,Math.PI*2);ctx.fill();if(i%2){ctx.fillStyle='#ff9ec0';ctx.beginPath();ctx.arc(a,b-2,2.6*K(),0,Math.PI*2);ctx.fill();}}}
     }
     // The training yard's floor (people walk on it).
-    const yard=L.slots.san_pet,yb=bandOf(fac('san_pet').level);
+    const yard=L.slots.san_pet,yf=fac('san_pet'),yb=yf.band??bandOf(yf.level);
     poly(diamond({...yard,w:yard.w*.96,h:yard.h*.96}),['#c6a06a','#c6a06a','#8fcd68','#e6cf98'][yb]);
   }
   /* A front view: a box of `wd` × `ht` standing on (a, b), walls and a roof; tiers stack up. */
@@ -104,7 +104,7 @@ export function createBangWalkRenderer(canvas,L,bang){
   }
   /** One facility's front view at its slot. */
   function facility(id,t){
-    const f=fac(id),band=bandOf(f.level),building=f.state==='building',r=L.slots[id],k=K(),color=safeColor(B.color);
+    const f=fac(id),band=f.band??bandOf(f.level),building=f.state==='building',r=L.slots[id],k=K(),color=safeColor(B.color);
     const [a,b]=P(r.x+r.w*.42,r.y+r.h*.42),wd=(r.w+r.h)*R2*cam.S*.82;
     if(id==='cong_bang')return gate(band,building,k,t,color);
     if(id==='san_pet')return yardFront(r,band,building,k,t,color);
@@ -228,7 +228,7 @@ export function createBangWalkRenderer(canvas,L,bang){
     },
     toMap(clientX,clientY){const r=canvas.getBoundingClientRect(),u=(clientX-r.left-cam.ox)/cam.S,v=(clientY-r.top-cam.oy)/(cam.S*FLAT),x=(u+v)*R2,y=(v-u)*R2;return x>=-.1&&x<=1.1&&y>=-.1&&y<=1.1?[x,y]:null;},
     toScreen(x,y,lift=0){const [a,b]=P(x,y);return [a,b-lift*cam.S/900];},
-    anchor(id){const s=L.slots[id];if(!s)return null;const f=fac(id),tall=(TALL[id]||[10,60,90,120])[bandOf(f.level)];
+    anchor(id){const s=L.slots[id];if(!s)return null;const f=fac(id),tall=(TALL[id]||[10,60,90,120])[f.band??bandOf(f.level)];
       if(id==='cong_bang'){const g=gatePosts(L);return {x:(g[0].x+g[1].x)/2,y:(g[0].y+g[1].y)/2,lift:tall+12};}
       return {x:s.x+s.w*.42,y:s.y+s.h*.42,lift:tall+(id==='dai_sanh'?40:24)};},
     resize,

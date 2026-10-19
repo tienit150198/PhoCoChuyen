@@ -3,7 +3,8 @@
 A bang owns one island ("lãnh địa"): its seven facilities stand on fixed slots, its members (and the guests it lets
 in) walk there together in real time. This branch builds **only the island side**. Every bang fact (who is in which
 bang, roles, levels, build timers, the fund) belongs to the Bang branch, which plugs in through the small contract
-below. Ships dark: `MNL_BANG_ISLAND=0` (default) hides the menu entry, answers 404 on the routes and refuses the live
+below. The Bang side ships with it (`game/bang_island_source.py`, §2b), so the switch is **on by default**;
+`MNL_BANG_ISLAND=0` (game server and live service) hides the menu entry, answers 404 on the routes and refuses the live
 frames (`off`). No table, no save key: a rollback loses nothing.
 
 | Piece | File |
@@ -26,7 +27,8 @@ Python (`game/bang_island.py`, `TypedDict`):
 ```python
 class FacilityView(TypedDict, total=False):
     id: str                                # one of FACILITY_IDS; an unknown id is ignored (a newer Bang build)
-    level: int                             # 0..10, the level in effect NOW (0: not built yet)
+    level: int                             # 0..max, the level in effect NOW (0: not built yet)
+    max: int                               # optional, 1..10 (default 10): this facility's top level (a Bang facility: 5 or 10)
     state: Literal['building', 'done']     # building: level + 1 is being built (default 'done')
     ready_at: float | None                 # epoch SECONDS when that build finishes (required while building)
     note: str                              # optional, ≤ 120 chars: one line the panel shows (what the next level brings)
@@ -43,7 +45,8 @@ class BangIslandView(TypedDict, total=False):
 
 Facility ids (never renamed): `dai_sanh` (Đại sảnh, centre), `kho_bang` (Kho bang), `xuong_may` (Xưởng may),
 `san_pet` (Sân luyện pet), `den_vang` (Đền vàng), `tuong_bang` (Tượng bang, plaza), `cong_bang` (Cổng bang, at the pier).
-Look bands: level 0 empty staked plot · 1–3 wood · 4–6 stone · 7–10 gold; `state == 'building'` adds bamboo scaffolding.
+Look bands: level 0 empty staked plot · 1–3 wood · 4–6 stone · 7–10 gold (a facility with `max` < 10 is scaled onto
+the ten levels: a 5-level facility is gold at 4 and 5); `state == 'building'` adds bamboo scaffolding.
 
 JSON schema (draft 2020-12):
 
@@ -67,6 +70,7 @@ JSON schema (draft 2020-12):
         "properties": {
           "id": {"type": "string"},
           "level": {"type": "integer", "minimum": 0, "maximum": 10},
+          "max": {"type": "integer", "minimum": 1, "maximum": 10, "default": 10},
           "state": {"enum": ["building", "done"], "default": "done"},
           "ready_at": {"type": ["number", "null"], "exclusiveMinimum": 0, "maximum": 4102444800},
           "note": {"type": "string", "maxLength": 120}
@@ -125,6 +129,26 @@ Facility buttons (ops; placeholders until wired): `nang_cap` (every facility), `
 
 Entry: the Bang UI's button is `<button data-action="bangIsland">⚔️ Đảo bang</button>`. While the switch is on, the
 bootstrap content carries `bang_island` and both interfaces list "Đảo bang" in the menus (Ngân hàng & nhà / Tiện ích).
+
+## 2b. The real provider (this build)
+
+`game/bang_island_source.py` (`PROVIDER = BangIslandSource()`), on the Bang tables (game/bang.py):
+
+* Facility ids: Bang `dai_sanh, kho, xuong_may, san_pet, den_vang, tuong, cong` → island `dai_sanh, kho_bang, xuong_may,
+  san_pet, den_vang, tuong_bang, cong_bang`; `max` from game/bang_content.py (5 or 10); a build whose time is up is
+  shown done at once; `note` = what the next level brings. The bang's `level` is its Đại sảnh level.
+* Roles: `chu, pho, lao, tinh, tv` → `bang_chu, pho_bang, truong_lao, tinh_anh, thanh_vien`.
+* Access: a member of an active bang (also while an operator hid it: like its page); a **guest** = a player with an
+  open invitation of that bang (not hidden); everyone else none. A disbanded bang has no island (404, the room closes).
+* Notices (game/bang.py `_isle`): join, left (leave, switch, erase), kicked, role (appoint, handover), guest (invite,
+  decline), view (build started or finished, emoji/colour, an operator's rename/hide), disband.
+* Buttons: ⬆️ `nang_cap` runs the bang's own build (Phó bang and up, the fund, the hall gate, the build slots), asked
+  first: the answer `done.confirm = {title, text, label}` makes the client confirm, then send `data: {confirm: true}`.
+  The others open a sheet on top of the island (public/js/v4/bang-island.js `DEFAULT_HOOKS`): 👥 members and 💌
+  invitations → Bang › Thành viên, 🪙 fund and ✨ golden hour → Bang › Bang của tôi, 👘 → Cửa hàng bang, 🏆 →
+  Xếp hạng tuần, 🏟️ → the pet arena's 🛡️ Bang chiến tab, 🎯 → its 🎯 Thử thách. A guest is told to join first.
+* Entry: the Bang sheet's 🏯 Đảo bang button and the menus; a player in no bang who opens it gets the Bang sheet.
+* `MNL_BANG_ISLAND_STUB` is only read when the real provider is missing and never with `DATABASE_URL` set.
 
 ## 3. HTTP and live frames
 

@@ -5,15 +5,16 @@ the levels, the build timers, the fund) belongs to the Bang branch, which plugs 
 * The input, BangIslandView (docs/BANG_ISLAND.md has the JSON schema):
       {bang_id, name, emoji, color, level, facilities: [{id, level, state: 'building'|'done', ready_at, note?}],
        members_online?}
-  `level` of a facility is the level in effect now (0: not built yet); `state == 'building'` means level + 1 is being
-  built and is ready at `ready_at` (epoch seconds). A facility the view leaves out counts as level 0, done.
+  `level` of a facility is the level in effect now (0: not built yet), `max` its top level (optional, ≤ 10; a Bang
+  facility has 5 or 10); `state == 'building'` means level + 1 is being built and is ready at `ready_at` (epoch
+  seconds). A facility the view leaves out counts as level 0, done.
 * The provider (BangIslandProvider below): bang_of / view / access for the game server (sync, game.storage.Store),
   access_live for the live service (async, live.db), and optionally act (the facility buttons). The Bang branch
   registers one with register(), or simply ships game/bang_island_source.py with PROVIDER = <its provider>: provider()
-  finds it on first use. Without one the island stays closed ("Bang chưa mở"), except MNL_BANG_ISLAND_STUB=1 (dev and
-  tests only): a fake bang (StubProvider) where every signed-in player is a member.
+  finds it on first use (it ships: the real bangs). Without one the island stays closed ("Bang chưa mở"), except
+  MNL_BANG_ISLAND_STUB=1 (dev and tests only, never with DATABASE_URL): a fake bang where every signed-in player is a member.
 
-Switch: MNL_BANG_ISLAND=1 (game server and live service read the same variable); 0 by default, so it ships dark.
+Switch: MNL_BANG_ISLAND (game server and live service read the same variable): on by default, 0 turns it off.
 No table, no save key: rolling back to a build without this module loses nothing. Positions, gestures and bubbles of
 the live room are memory only (live/bang_island.py); bubbles go through the chat's store (filters, reports).
 
@@ -44,7 +45,8 @@ STATES = ('building', 'done')
 
 class FacilityView(TypedDict, total=False):
     id: str                                # one of FACILITY_IDS; an unknown id (a newer Bang build) is ignored
-    level: int                             # 0..LEVEL_MAX, the level in effect now (0: not built yet)
+    level: int                             # 0..max, the level in effect now (0: not built yet)
+    max: int                               # optional, 1..LEVEL_MAX (default LEVEL_MAX): this facility's top level
     state: Literal['building', 'done']     # building: level + 1 is being built
     ready_at: float | None                 # epoch seconds when the build finishes (required while building)
     note: str                              # optional: one short line the panel shows (what the next level brings)
@@ -118,9 +120,13 @@ BANDS = ((0, 'Đất trống'), (1, 'Gỗ'), (2, 'Đá'), (3, 'Vàng'))   # band
 SPOTS = ('ben_tau', 'vuon_hoa', 'ao_sen', 'rung_truc', 'den_long', 'doi_thong')
 
 
-def band(level: int) -> int:
-    """The look of a facility at `level`: 0 not built, 1 (1–3), 2 (4–6), 3 (7–10)."""
-    return 0 if level <= 0 else 1 if level <= 3 else 2 if level <= 6 else 3
+def band(level: int, top: int = LEVEL_MAX) -> int:
+    """The look of a facility at `level` of `top`: 0 not built, then on the 10-level scale 1 (1–3), 2 (4–6), 3 (7–10);
+    a facility with fewer levels (a Bang facility of 5) is scaled onto it (its top level is gold too)."""
+    if level <= 0:
+        return 0
+    lv = -(-level * LEVEL_MAX // max(1, top)) if top != LEVEL_MAX else level
+    return 1 if lv <= 3 else 2 if lv <= 6 else 3
 
 
 def _int(v, lo, hi) -> bool:
@@ -164,26 +170,28 @@ def validate_view(raw) -> BangIslandView:
         fid = f['id']
         if fid in out:
             bad(f'{fid} twice')
-        lv, st, ready = f.get('level'), f.get('state', 'done'), f.get('ready_at')
-        if not _int(lv, 0, LEVEL_MAX):
+        lv, st, ready, top = f.get('level'), f.get('state', 'done'), f.get('ready_at'), f.get('max', LEVEL_MAX)
+        if not _int(top, 1, LEVEL_MAX):
+            bad(f'{fid}.max')
+        if not _int(lv, 0, top):
             bad(f'{fid}.level')
         if st not in STATES:
             bad(f'{fid}.state')
         if st == 'building':
-            if lv >= LEVEL_MAX:
+            if lv >= top:
                 bad(f'{fid}: building past the top level')
             if type(ready) not in (int, float) or not math.isfinite(ready) or not 0 < ready < READY_MAX:
                 bad(f'{fid}.ready_at')
             ready = float(ready)
         else:
             ready = None
-        one = FacilityView(id=fid, level=lv, state=st, ready_at=ready)
+        one = FacilityView(id=fid, level=lv, max=top, state=st, ready_at=ready)
         note = _text(f.get('note'), NOTE_MAX)
         if note:
             one['note'] = note
         out[fid] = one
     view = BangIslandView(bang_id=bid, name=name, emoji=emoji, color=color.lower(), level=raw['level'],
-                          facilities=[out.get(i) or FacilityView(id=i, level=0, state='done', ready_at=None) for i in FACILITY_IDS])
+                          facilities=[out.get(i) or FacilityView(id=i, level=0, max=LEVEL_MAX, state='done', ready_at=None) for i in FACILITY_IDS])
     mo = raw.get('members_online')
     if mo is not None:
         if not _int(mo, 0, 100_000):
@@ -197,15 +205,15 @@ def island_view(view: BangIslandView, now: float | None = None) -> dict:
     now = time.time() if now is None else now
     facilities = []
     for f in view['facilities']:
-        meta, lv = FACILITY[f['id']], f['level']
+        meta, lv, top = FACILITY[f['id']], f['level'], f.get('max', LEVEL_MAX)
         building = f['state'] == 'building'
         ready = f['ready_at'] if building else None
         facilities.append(dict(
-            id=f['id'], name=meta['name'], emoji=meta['emoji'], desc=meta['desc'], level=lv, max=LEVEL_MAX,
-            band=band(lv), band_name=BANDS[band(lv)][1], state=f['state'], ready_at=ready,
+            id=f['id'], name=meta['name'], emoji=meta['emoji'], desc=meta['desc'], level=lv, max=top,
+            band=band(lv, top), band_name=BANDS[band(lv, top)][1], state=f['state'], ready_at=ready,
             left=max(0, int(math.ceil(ready - now))) if building else 0,
-            to=lv + 1 if building else None, next=lv + 1 if lv < LEVEL_MAX else None,
-            next_band=band(lv + 1) if lv < LEVEL_MAX else None, note=f.get('note'),
+            to=lv + 1 if building else None, next=lv + 1 if lv < top else None,
+            next_band=band(lv + 1, top) if lv < top else None, note=f.get('note'),
             actions=[dict(op=op, emoji=e, label=label) for op, e, label, _ in meta['actions']]))
     out = dict(id=view['bang_id'], name=view['name'], emoji=view['emoji'], color=view['color'], level=view['level'],
                facilities=facilities)
@@ -220,7 +228,9 @@ _looked = False
 
 
 def enabled() -> bool:
-    return os.environ.get('MNL_BANG_ISLAND', '').strip().lower() in ('1', 'true', 'yes', 'on')
+    """On unless MNL_BANG_ISLAND says otherwise (0 / empty: off), now that the Bang provider ships
+    (game/bang_island_source.py). The live service reads the same switch (live/config.py)."""
+    return os.environ.get('MNL_BANG_ISLAND', '1').strip().lower() in ('1', 'true', 'yes', 'on')
 
 
 def register(p: BangIslandProvider | None) -> None:
@@ -240,12 +250,23 @@ def provider() -> BangIslandProvider | None:
             _provider = getattr(bang_island_source, 'PROVIDER', None)
         except ImportError:
             _provider = None
-        if _provider is None and os.environ.get('MNL_BANG_ISLAND_STUB', '').strip() in ('1', 'true', 'yes', 'on'):
+        if _provider is None and stub_allowed():
             _provider = StubProvider.from_env()
     return _provider
 
 
 # ---------------------------------------------------------------- the stub (dev, tests) -------------------------------
+def stub_allowed() -> bool:
+    """MNL_BANG_ISLAND_STUB=1 only counts off production: never with DATABASE_URL set (the servers' database), and only
+    when the Bang provider is missing (provider() tries it first)."""
+    if os.environ.get('MNL_BANG_ISLAND_STUB', '').strip() not in ('1', 'true', 'yes', 'on'):
+        return False
+    if (os.environ.get('DATABASE_URL') or '').strip():
+        print('[bang-island] MNL_BANG_ISLAND_STUB ignored: DATABASE_URL is set', flush=True)
+        return False
+    return True
+
+
 def stub_view(bang_id: str = 'bang_thu', preset: str = 'mix', now: float | None = None) -> BangIslandView:
     """A fake bang. Presets: low (levels 1–3), mid (4–6), high (7–10), build (everything under scaffolding), empty
     (nothing built), mix (one of each)."""
@@ -314,7 +335,7 @@ class StubProvider:
 def placeholder_line(facility: str, op: str) -> str:
     meta = FACILITY.get(facility)
     label = next((a[2] for a in meta['actions'] if a[0] == op), op) if meta else op
-    return f'“{label}” sẽ mở khi Bang ra mắt. Đảo bang mới đang dựng, hẹn bạn ít hôm nữa nhé!'
+    return f'“{label}” sắp mở, hẹn bạn ít hôm nữa nhé!'
 
 
 def _ready(store, token):
