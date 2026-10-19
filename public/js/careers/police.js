@@ -93,7 +93,7 @@ function briefPanel(t,x){
   const picks=es.map(e=>act(x,`${x.esc(e.emoji)} ${x.esc(briefName(e))}`,'pickFirst',{task:t.id,v:e.id},`cap-pick${first===e.id?' on':''}`,` aria-pressed="${first===e.id}" aria-label="Làm trước: ${x.esc(e.name)}"`)).join('');
   // Clean layout: the choice waits behind one line until the book is read (or a pick is made), then opens by itself.
   if(c)return `<section class="card cap-book"><h4>📒 Sổ trực ban</h4><ul class="cap-notes">${rows}</ul></section>
-    <section class="card cap-first">${pane(x,`first-${t.id}`,'🚶 <b>Làm trước</b>',`<div class="cap-picks">${picks}</div>`,!es.some(e=>!e.text)||!!first)}</section>`;
+    <section class="card cap-first">${pane(x,`first-${t.id}`,'🚶 <b>Làm trước</b>',`<div class="cap-picks">${picks}</div>`,!es.some(e=>!e.text)||!!first||!clean())}</section>`;
   return `<section class="card cap-book"><h4>📒 Sổ trực ban đêm qua</h4><ul class="cap-notes">${rows}</ul></section>
     <section class="card cap-first"><h4>🚶 Làm trước</h4><div class="cap-picks">${picks}</div></section>`;
 }

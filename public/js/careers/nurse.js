@@ -78,7 +78,7 @@ function shiftPanel(t,x){
     :x.cmd(`<b>${x.esc(c?bedShort(n.name):n.name)}</b><small>📋${c?'':' Đọc ghi chú ca đêm'}</small>`,'dd_read',{task:t.id,bed:n.bed},'dd-note').replace('<button ',`<button aria-label="Đọc ghi chú ca đêm: ${x.esc(n.name)}" `)}</li>`).join('');
   const pick=notes.map(n=>act(x,`G${x.esc(n.name.split('·')[0].replace(/\D/g,''))}`,'pickFirst',{task:t.id,bed:n.bed},`dd-bedpick${first===n.bed?' on':''}`,` aria-pressed="${first===n.bed}"`)).join('');
   if(c)return `<section class="card dd-shift"><h4>📋 Sổ giao ca</h4><ul class="dd-notes">${rows}</ul></section>
-    <section class="card dd-first">${pane(x,`first-${t.id}`,'🚶 <b>Giường xem trước</b>',`<div class="dd-picks">${pick}</div>`,!notes.some(n=>!n.text)||!!first)}</section>`;
+    <section class="card dd-first">${pane(x,`first-${t.id}`,'🚶 <b>Giường xem trước</b>',`<div class="dd-picks">${pick}</div>`,!notes.some(n=>!n.text)||!!first||!clean())}</section>`;
   return `<section class="card dd-shift"><h4>📋 Sổ giao ca đêm qua</h4><ul class="dd-notes">${rows}</ul></section>
     <section class="card dd-first"><h4>🚶 Giường xem trước</h4><div class="dd-picks">${pick}</div></section>`;
 }

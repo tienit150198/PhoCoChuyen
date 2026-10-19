@@ -1,9 +1,12 @@
 /** Bình An: dossier cards, an editable timeline, invoice arithmetic and case decisions. */
 import {data,act,amountBox,kitInput,kitActions} from './street_kit.js';
+import {clean,tip} from '../ui-kit.js';
 const current=t=>t.needs?.steps?.[t.at];
 const draft=(x,key)=>(x.ui.lawDraft??={})[key]??=[];
 function progress(x){
   const d=data(x),m=d.milestone||{};
+  // Compact layout (owner 19/10: every career has both sides): the milestone is one folded line under the work.
+  if(clean())return `<details class="lw-progress card"><summary>⚖️ ${m.qualified||0}/${m.required_cases||120} · 📅 ${m.active_days||0}/${m.required_days||30}${m.earned?' ✓':''}</summary><p class="small">Cần tới ngày nghề ${m.required_day||40} để mở đủ bước soát cuối. Ca rỗng không tăng tiến trình.</p><p class="small">Lương ngày theo hợp đồng. Thưởng hồ sơ 4–7 xu trước hệ số; giảm khi phải sửa.</p></details>`;
   return `<section class="lw-progress card"><h4>⚖️ Hồ sơ vững vàng</h4><p>${m.qualified||0}/${m.required_cases||120} hồ sơ không phải sửa · ${m.active_days||0}/${m.required_days||30} ngày có hoàn tất hồ sơ.</p><p class="small">Cần tới ngày nghề ${m.required_day||40} để mở đủ bước soát cuối. Ca rỗng không tăng tiến trình.</p>${m.earned?'<strong>Đã đạt mốc Hồ sơ vững vàng.</strong>':''}<p class="small">Lương ngày theo hợp đồng. Thưởng hồ sơ 4–7 xu trước hệ số; giảm khi phải sửa.</p></section>`;
 }
 function invoices(n,x){
@@ -11,7 +14,7 @@ function invoices(n,x){
 }
 function paperwork(t,x){
   const n=t.needs;
-  return `<section class="lw-rule"><h4>Quy tắc của hồ sơ</h4><p>${x.esc(n.rule)}</p><small>${x.esc(n.disclaimer)}</small></section><div class="lw-docs">${(n.documents||[]).map(d=>`<article class="lw-document"><h4>${x.esc(d.title)}</h4><p>${x.esc(d.text)}</p></article>`).join('')}</div>${current(t)?.type==='amount'&&t.stage==='work'?'':invoices(n,x)}`;
+  return `<section class="lw-rule"><h4>Quy tắc của hồ sơ</h4><p>${x.esc(n.rule)}</p>${tip(x.esc(n.disclaimer),'Quy tắc của hồ sơ')}</section><div class="lw-docs">${(n.documents||[]).map(d=>`<article class="lw-document"><h4>${x.esc(d.title)}</h4><p>${x.esc(d.text)}</p></article>`).join('')}</div>${current(t)?.type==='amount'&&t.stage==='work'?'':invoices(n,x)}`;
 }
 function work(t,x){
   const s=current(t);if(!s)return '<p>Hồ sơ đã bàn giao.</p>';
@@ -23,7 +26,7 @@ function work(t,x){
     const by=Object.fromEntries(s.options.map(o=>[o.id,o.label]));
     body=(s.type==='order'&&got.length?`<ol class="lw-timeline">${got.map(id=>`<li>${x.esc(by[id])}</li>`).join('')}</ol>`:'')+s.options.map(o=>act(x,x.esc(o.label),'select',{key,item:o.id},`lw-option ${got.includes(o.id)?'selected':''}`,` aria-pressed="${got.includes(o.id)}"`)).join('');
     const count=s.type==='multi'?2:3;
-    body+=`<p class="small" aria-live="polite">Đã chọn ${got.length}/${count}. Chạm mục đã chọn để bỏ.</p>${act(x,s.type==='multi'?'Gắn cặp chứng cứ':'Chốt dòng thời gian','submit',{key,task:t.id,step:s.id},'primary',got.length===count?'':' disabled')}${act(x,'Xếp lại','reset',{key},'ghost')}`;
+    body+=`<p class="small" aria-live="polite">${clean()?`✓ ${got.length}/${count}`:`Đã chọn ${got.length}/${count}. Chạm mục đã chọn để bỏ.`}</p>${act(x,s.type==='multi'?'Gắn cặp chứng cứ':'Chốt dòng thời gian','submit',{key,task:t.id,step:s.id},'primary',got.length===count?'':' disabled')}${act(x,'Xếp lại','reset',{key},'ghost')}`;
   }
   const question=s.type==='amount'?`Cộng các chứng từ gốc dưới đây, mỗi mã tính một lần. ${x.fmt(t.needs.cap)} xu là mức trần, không phải tổng chứng từ. Nếu tổng nhỏ hơn mức trần, dùng tổng đó; nếu lớn hơn, dùng mức trần. Sau đó trừ ${x.fmt(t.needs.credit)} xu đã nhận, kết quả thấp nhất là 0.`:s.question;
   return `<section class="lw-work card" aria-label="Bước hồ sơ"><p class="lw-step">Bước ${t.at+1}/${t.needs.steps.length}</p><h3>${x.esc(s.title)}</h3><p>${x.esc(question)}</p>${s.type==='amount'?invoices(t.needs,x):''}<div class="lw-controls">${body}</div>${t.last_feedback?`<p class="lw-feedback" role="status">${x.esc(t.last_feedback)}</p>`:''}</section>`;
@@ -32,7 +35,7 @@ export default {
   id:'lawyer',css:true,
   next(t,x){return x.esc(!t.known?'Hỏi khách để mở hồ sơ':current(t)?.title||'Hồ sơ đã bàn giao');},
   job(t,x){return `<div class="career-job lw"><header><h3>⚖️ ${x.esc(t.title)}</h3><p>${x.esc(t.opening||'')}</p></header>${!t.known?x.cmd('Hỏi khách và mở hồ sơ','ask',{task:t.id},'primary sk-ask'):`${work(t,x)}${paperwork(t,x)}`}${progress(x)}</div>`;},
-  idle(x){return `<div class="career-job lw"><p>Đọc tài liệu gốc, trình bày có căn cứ. Hồ sơ mới sẽ tới theo nhịp ca.</p>${progress(x)}</div>`;},
+  idle(x){return `<div class="career-job lw">${tip('Đọc tài liệu gốc, trình bày có căn cứ. Hồ sơ mới sẽ tới theo nhịp ca.','','p')}${progress(x)}</div>`;},
   input:kitInput,
   actions:{...kitActions,
     async select(d,el,x){const got=draft(x,d.key),i=got.indexOf(d.item);if(i>=0)got.splice(i,1);else if(got.length<3)got.push(d.item);x.render();},

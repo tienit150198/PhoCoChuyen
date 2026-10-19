@@ -19,7 +19,7 @@ import {keepRow} from '../keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
 // The shared bar, dimmed-with-reason buttons and the "?" sheet (docs/UI_KIT.md).
-import {actBar,withWhy,helpBtn} from '../ui-kit.js';
+import {actBar,withWhy,helpBtn,clean} from '../ui-kit.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 /** The workplace money word the 💰 chip uses too ("Quỹ tiệm", "Quỹ nông trại"…; v4/money.js). */
@@ -71,7 +71,8 @@ const holdSfx=new Sound();
  * Bộ đếm kho · Bậc 5 is owned, else nothing (the locked line was clutter for a new player, #384). */
 export function autoStockRow(a){
   if(!a)return '';
-  if(!a.unlocked)return '';   // not owned: no locked advert in the stock room (#384); Thiết bị lists Bộ đếm kho · Bậc 5
+  // Not owned: no locked advert in the compact stock room (#384; Thiết bị lists Bộ đếm kho · Bậc 5); the full layout keeps its line.
+  if(!a.unlocked)return clean()?'':`<p class="inv-auto locked"><span aria-hidden="true">🔒</span> 🤖 Tự nhận hàng · mở bằng <b>Bộ đếm kho · Bậc 5</b> (Thiết bị)</p>`;
   return `<button type="button" class="inv-auto${a.on?' on':''}" role="switch" aria-checked="${a.on?'true':'false'}" data-command="stock_auto" data-payload="${esc(JSON.stringify({on:!a.on}))}"><span>🤖 Tự nhận hàng: <b>${a.on?'Bật':'Tắt'}</b></span><i aria-hidden="true"></i></button>`;
 }
 /** 🔁 Tự đặt hàng (game/auto_order.py; `warehouse.reorder`, an older server sends none: nothing shows). Not owned: one
@@ -271,7 +272,7 @@ export function inventoryView(env){
   const cta=nx?.go&&!nx.go.sel?`<button type="button" class="btn primary big gd-cta"${goAttrs(nx.go)}>${nx.go.label}</button>`:'';
   const chip=(n,label,kind,tabId)=>n?`<button type="button" class="inv-chip ${kind}" data-action="v4InvTab" data-tab="${tabId}"><b>${n}</b> ${label}</button>`:'';
   const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:'';
-  const now=clk?`<div class="row spread"><span class="tag blue" title="Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}">🕑 ${esc(clk.label)}</span></div>`:'';   // the hours: its tooltip (#384)
+  const now=clk?`<div class="row spread"><span class="tag blue" title="Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}">🕑 ${esc(clk.label)}</span>${clean()?'':`<small class="muted">Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}</small>`}</div>`:'';   // compact: the hours are its tooltip (#384)
   const first=transit[0],next=!ready.length&&first?`<small class="inv-next">${icon('truck',13)} ${first.group?`Đơn gộp ${transitS.find(g=>g.id===first.group)?.lines.length||''} món`:name(byId[first.item])} · <b>${esc(first.left_label||first.eta_label||'')}</b>${first.left_label&&first.eta_label?` <span class="muted">(${esc(first.eta_label)})</span>`:''}</small>`:'';
   const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}${autoStockRow(c.warehouse?.auto)}${reorderRow(c.warehouse?.reorder,ui,byId,c.warehouse?.auto)}<div class="inv-chips">${chip(readyS.length,'thùng đã tới','accent','orders')}${chip(transitS.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
 

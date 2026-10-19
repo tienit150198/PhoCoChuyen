@@ -39,7 +39,7 @@ export function refTable(groups,esc){
 
 /** The switch: html[data-clean] (v4/shell.js applyClean). Phones and the 2.5D look by default; Cài đặt → Giao diện can turn it
  * off (or on everywhere), and the server can turn it off for everyone (MNL_CLEAN_UI=off). */
-export const clean=()=>typeof document!=='undefined'&&document.documentElement.hasAttribute('data-clean');
+export const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');   // a test's stub document has none
 
 /** The one bottom bar of a work screen.
  *   next: HTML for the left slot (a chip: the next step, a pointer "👆 …", a count, or '' for none);
@@ -115,9 +115,9 @@ export function helpBtn(key,title,sections,{label='?',cls='',tips=false}={}){
 /** An explanation (a rule, a tile's description, a long hint): shown inline on the classic layout; on the clean
  * layout it is hidden from the work screen and listed in the "?" sheet (helpBtn {tips:true}). `title` names what
  * it explains ("Pít-tông cao su"). Pass HTML-safe text. */
-export function tip(text,title='',tag='small'){
+export function tip(text,title='',tag='small',cls=''){
   if(!text)return '';
-  return `<${tag} class="ui-tip"${title?` data-tip="${e(title)}"`:''}>${text}</${tag}>`;
+  return `<${tag} class="ui-tip${cls?' '+e(cls):''}"${title?` data-tip="${e(title)}"`:''}>${text}</${tag}>`;
 }
 function tipsOf(root){
   const seen=new Set(),rows=[];
@@ -233,12 +233,31 @@ export function warnBudget(dialog){
     console.warn(`text budget: ${b.words} words on a ${b.kind} screen (cap ${b.cap})${b.toast>WORD_CAPS.toast?`, toast ${b.toast} words (cap ${WORD_CAPS.toast})`:''}`);},400);
 }
 
+/* ---------------------------------------------------------------- a tap, not the end of a scroll */
+/** #440 (iPhone, the group bookkeeper's card list and reason chips): "lướt tìm lỡ ấn cái nó bị sai luôn". A choice in a
+ * long or sideways list ([data-tap-guard], or a bar's choice row .ui-bar-top) only counts as a real tap: the finger
+ * did not travel (TAP_SLOP px), nothing scrolled while it was down, and it did not land while the list was still
+ * gliding (a scroll in the TAP_FLING ms before it came down: that touch stops the fling). Mouse and keyboard clicks
+ * (no touch just before) always go through. `g` = {t, moved, flung, scrollAt}; `now` = the click's time. */
+export const TAP_SLOP=10,TAP_FLING=140;
+export function tapSlip(g,now){
+  if(!g||!(now-g.t<1200))return false;   // no touch just before: a mouse or a key
+  return Boolean(g.moved||g.flung||g.scrollAt>g.t);
+}
+const tapG={t:-1e9,x:0,y:0,moved:false,flung:false,scrollAt:-1e9};
+
 /* ---------------------------------------------------------------- one listener for all of it */
 if(typeof document!=='undefined'&&!globalThis.__uiKit){
   globalThis.__uiKit=true;
+  const o={capture:true,passive:true},clock=()=>performance.now();
+  document.addEventListener('scroll',()=>{tapG.scrollAt=clock();},o);
+  document.addEventListener('touchstart',e=>{const p=e.touches?.[0];if(!p)return;const n=clock();
+    Object.assign(tapG,{t:n,x:p.clientX,y:p.clientY,moved:(e.touches.length||1)>1,flung:n-tapG.scrollAt<TAP_FLING});},o);
+  document.addEventListener('touchmove',e=>{const p=e.touches?.[0];if(p&&Math.hypot(p.clientX-tapG.x,p.clientY-tapG.y)>TAP_SLOP)tapG.moved=true;},o);
   // Capture: runs before app.js's click delegate, so a dimmed button never sends its command.
   document.addEventListener('click',ev=>{
     const t=ev.target;if(!t?.closest)return;
+    if(ev.detail!==0&&t.closest('[data-tap-guard],.ui-bar-top')&&tapSlip(tapG,clock())){ev.preventDefault();ev.stopImmediatePropagation();return;}
     const why=t.closest('[aria-disabled="true"][data-why]');
     if(why){ev.preventDefault();ev.stopImmediatePropagation();whyTap(why);return;}
     const q=t.closest('[data-ui-help]');

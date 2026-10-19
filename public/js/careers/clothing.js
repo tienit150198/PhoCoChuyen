@@ -75,7 +75,7 @@ function introCard(x,closable=true){
     ${closable?x.cmd('🪡 Vào ca thôi!','ao_intro',{seen:true},'primary full ao-intro-go'):''}</section>`;
 }
 const showIntro=x=>!data(x).intro||x.ui.intro;
-const introFold=x=>`<details class="ao-intro-fold"><summary>🧵 Giới thiệu nghề</summary>${introCard(x)}</details>`;
+const introFold=x=>`<details class="ao-intro-fold"><summary>🧵 Giới thiệu nghề${clean()?'':' <small>· công việc, người bạn gặp, khi nào được sao</small>'}</summary>${introCard(x)}</details>`;
 
 /* ------------------------------------------------------------ small cards */
 function todayStrip(x){

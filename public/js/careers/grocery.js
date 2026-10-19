@@ -648,11 +648,16 @@ function stockView(x){
     ${calm.length?pane(x,'stock-calm',`📦 ${calm.length} món còn đủ hàng · xem giá & nhập thêm`,calm.map(row).join(''),!hot.length,'gr-stock-more'):''}${lockChip(x,shut)}`;
   // The how-to and the shelf size live behind "?" (#384: "nhiều chữ… rối mắt").
   const how=helpBtn('gr-stock-how','🏷️ Kho & giá',[{title:'Nhập hàng & chỉnh giá',body:`<p>Bấm 📦 Nhập để đặt hàng → thùng về thì mở ở 📦 Kho, chạm đếm từng món → hàng mới lên kệ. Chỉnh giá bán bằng − / +.</p><p>Sức chứa ${cap} mỗi loại.</p>`,open:true}]);
-  return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4>${how}</div>
+  const body=`
     ${rotationNotes(x)}${incoming(x)}
     ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,40,80].filter(v=>v<=lm).map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}${qtyBox({value:qty,min:1,max:lm,label:'Số lượng mỗi lần nhập',live:true,go:`data-action="car:qty" data-qty="${QTY}"`})}</div></div>
     <div class="gr-stock-list">${rows}</div>
     ${rules(x,x.cc.stock_rules,'Quy tắc kho')}</div>`;
+  // Full layout (the per-career "Giao diện đầy đủ"): the how-to and the shelf size stay on the card, as before #384.
+  if(!clean())return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
+    <p class="small muted gr-how">Bấm 📦 Nhập để đặt hàng → thùng về thì mở ở 📦 Kho, chạm đếm từng món → hàng mới lên kệ. Chỉnh giá bán bằng − / +.</p>`+body;
+  return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4>${how}</div>`+body;
+
 }
 
 /* ------------------------------------------------------------ ledger */

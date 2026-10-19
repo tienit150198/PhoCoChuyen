@@ -1,5 +1,12 @@
 {
   "strings": {
+  "📋 Giao diện đầy đủ (cũ)": "📋 Full layout (classic)",
+  "✨ Giao diện gọn (mới)": "✨ Compact layout (new)",
+  "↩️ Theo cài đặt chung": "↩️ Use the general setting",
+  "✓ Giao diện đầy đủ": "✓ Full layout",
+  "✓ Giao diện gọn": "✓ Compact layout",
+  "✓ Theo cài đặt chung": "✓ General setting",
+  "Từng nghề chọn riêng được: nút ⋯ trên màn làm việc.": "Each career can have its own: the ⋯ button on the work screen.",
   "Mượt hơn trên iPad, điện thoại và máy tính: mở thú cưng, tủ đồ, bảng xếp hạng nhanh hơn, chạm phản hồi ngay.": "Smoother on iPad, phones and computers: pets, the wardrobe and the leaderboards open faster and taps answer at once.",
   "Linh kiện: cường hóa đủ +10 rồi ghép với 2 món cùng loại, cùng hạng để lên hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.": "Pet gear: enhance to +10, then fuse with 2 of the same kind and rank to rank up. From S, a miss loses the 2 ingredients.",
   "Lì xì: bạn bè, người nhà chung một wifi giật thoải mái, không giới hạn số người cùng mạng.": "Lì xì: friends and family on one Wi-Fi all grab freely, no limit per network.",
@@ -26840,6 +26847,7 @@
   "bếp sạch từ đầu ca, món đúng lưu ý của bàn và sảnh tắt điện an toàn": "a kitchen clean from the start of the shift, dishes that follow each table's notes, and a hall powered down safely"
   },
   "patterns": {
+  "↩️ Bỏ lựa chọn riêng của $1 nghề": "↩️ Clear the own choice of $1 careers",
   "Lên hạng $1 · $2 xu": "Rank up to $1 · $2 xu",
   "Cần thêm $1 món hạng $2": "Need $1 more of rank $2",
   "Lên hạng $1 $2 → $3?": "Rank up $1 $2 → $3?",
