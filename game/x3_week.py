@@ -21,6 +21,7 @@ trải nghiệm ấy, k phải trò chơi".
 from __future__ import annotations
 
 import datetime
+import functools
 import os
 import random
 import time
@@ -47,19 +48,26 @@ def _date(t: float) -> datetime.date:
     return datetime.datetime.fromtimestamp(t, VN).date()
 
 
+@functools.lru_cache(maxsize=8)
+def _plan(monday: str, careers: tuple, first: tuple) -> tuple:
+    """A week's careers per day, Monday..Sunday: the same for the whole week (a few ms of shuffles, computed once
+    per week and process instead of on every public view)."""
+    ids = list(first)
+    random.Random(f'x3-week|{monday}').shuffle(ids)
+    days = [[c for c in ids[i::7] if c in careers] for i in range(7)]
+    for c in careers:
+        if c not in first:
+            few = min(map(len, days))
+            random.Random(f'x3-week|{monday}|{c}').choice([d for d in days if len(d) == few]).append(c)
+    return tuple(tuple(sorted(d, key=careers.index)) for d in days)
+
+
 def week(t: float | None = None) -> tuple[str, list]:
     """(this week's Monday 'YYYY-MM-DD', the careers of each day Monday..Sunday)."""
     t = now() if t is None else t
     d = _date(t)
-    monday = d - datetime.timedelta(days=d.weekday())
-    ids = list(FIRST)
-    random.Random(f'x3-week|{monday.isoformat()}').shuffle(ids)
-    days = [[c for c in ids[i::7] if c in CAREERS] for i in range(7)]
-    for c in CAREERS:
-        if c not in FIRST:
-            few = min(map(len, days))
-            random.Random(f'x3-week|{monday.isoformat()}|{c}').choice([d for d in days if len(d) == few]).append(c)
-    return monday.isoformat(), [sorted(d, key=CAREERS.index) for d in days]
+    monday = (d - datetime.timedelta(days=d.weekday())).isoformat()
+    return monday, [list(x) for x in _plan(monday, tuple(CAREERS), tuple(FIRST))]
 
 
 def today(t: float | None = None) -> list:

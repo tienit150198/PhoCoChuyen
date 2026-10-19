@@ -21,9 +21,9 @@ this is something to spend them on that everyone online enjoys. Story mode.
   empty. A second tap on the same packet answers the first amount again.
 * 🛡️ Not a pipe between one's own accounts: a grabber needs a registered account ACCOUNT_DAYS old and a save at life day
   LIFE_DAYS (game/quay_hire.py's rules), must not have blocked or be blocked by the giver (`blocks` by pid,
-  `marriage_blocks` by sid), and at most IP_MAX envelopes per network address per packet (a hash of the address, never
-  the address; owner 19/10, feedback #426: friends and family on one Wi-Fi all get to grab, a farm of alts still does
-  not). Owner 17/10: "giật lì xì mỗi người không giới hạn, giật thoải mái": GRAB_DAY, GRAB_DAY_XU and PAIR_DAY are None
+  `marriage_blocks` by sid). No cap per network address (owner 19/10, feedback #426: "không giới hạn", friends and
+  family on one Wi-Fi all grab; the account age and life day rules above stop a farm of alts). A hash of the address
+  (never the address) is still kept with each grab, and LIXI_IP_MAX=n turns a per-packet cap back on. Owner 17/10: "giật lì xì mỗi người không giới hạn, giật thoải mái": GRAB_DAY, GRAB_DAY_XU and PAIR_DAY are None
   (a number turns that cap back on: an envelope is then cut to what is left of GRAB_DAY_XU and the cut part goes back to
   the giver).
 * ⏳ 24 h: an envelope nobody took goes back to the giver (sweep, housekeeping every 30 s and on the page: under the row
@@ -62,10 +62,9 @@ LIFE_DAYS = qh.LIFE_DAYS         # a grabber's save has lived this many days (10
 GRAB_DAY = None               # envelopes a player opens a Vietnam day (None: no cap, owner 17/10 "giật thoải mái")
 GRAB_DAY_XU = None            # xu a player gets from envelopes a Vietnam day (None: no cap)
 PAIR_DAY = None               # packets of one giver a player opens a Vietnam day (None: no cap)
-# Envelopes of one packet a network address (hashed) opens: a household or a group of friends on one Wi-Fi is never
-# blocked (owner 19/10, feedback #426: "1 ip có thể cùng nhặt nhiều lần"), a farm of alts still is. 0: no cap.
-# LIXI_IP_MAX sets it; the old switch LIXI_ONE_PER_IP=0 still turns it off.
-IP_MAX = 0 if os.environ.get('LIXI_ONE_PER_IP', '1') == '0' else max(0, int(os.environ.get('LIXI_IP_MAX') or 5))
+# Envelopes of one packet a network address (hashed) opens. 0: no cap (owner 19/10, feedback #426: "không giới hạn",
+# not 5: everyone on one Wi-Fi grabs). LIXI_IP_MAX=n turns a cap back on.
+IP_MAX = max(0, int(os.environ.get('LIXI_IP_MAX') or 0))
 NEWS_FROM = 500_000           # a packet from this total gets a line on the ticker
 TEXT_MAX = 40                 # a giver's own line
 KIND = 'life'                 # wallet history kind (journey.HISTORY_KINDS): every build knows it

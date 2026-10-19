@@ -739,7 +739,23 @@ def _match(need: tuple, items: list, tags: tuple) -> tuple[int, list]:
 
 
 def sets_of(L: dict) -> list[dict]:
-    """Per set: done (in some room), the room closest to it and what it still needs there."""
+    """Per set: done (in some room), the room closest to it and what it still needs there.
+    Depends only on what stands in which room and the rooms' types and tags: memoised on those (the room
+    search is the costly part of a home's public view), each caller gets its own copy."""
+    key = (tuple(sorted((u, q['r'], L['kinds'][u]) for u, q in L['pos'].items())),
+           tuple((room['id'], room['type'], tuple(room['tags'])) for room in L['rooms']))
+    hit = _SETS_MEMO.get(key)
+    if hit is None:
+        if len(_SETS_MEMO) >= 2048:
+            _SETS_MEMO.clear()
+        hit = _SETS_MEMO[key] = _sets_scan(L)
+    return [dict(x, miss=list(x['miss'])) for x in hit]
+
+
+_SETS_MEMO: dict = {}
+
+
+def _sets_scan(L: dict) -> list[dict]:
     out = []
     by_room = {}
     for u, q in L['pos'].items():
