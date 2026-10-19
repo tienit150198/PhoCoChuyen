@@ -203,3 +203,14 @@ html[data-theme="dem"] .pt-fzwarn{background:#4a2410;color:#ffd6b8}
 .pt-fzbreed .pt-chip{display:inline-flex;align-items:center;gap:4px;font-size:.84rem;padding:0 10px 0 4px}
 html[data-theme="dem"] .pt-wcard.off{background:linear-gradient(160deg,#2c2440,#33281c)}
 html[data-theme="dem"] .pt-season{background:#4a3010;color:#ffd6a0}
+/* ✨ thần thú offer (owner 19/10) */
+.pt-myth{margin:0 0 12px;padding:12px;border-radius:18px;text-align:center;border:2px solid #c9b3f2;
+  background:linear-gradient(135deg,#fff4fb,#f1ecff 50%,#e9fbf6);box-shadow:0 4px 14px rgba(150,110,220,.18)}
+.pt-myth h4{margin:0 0 4px;font-size:1.05rem;color:#6b3fb8}
+.pt-myth p{margin:0 0 8px;font-size:.85rem}
+.pt-myth-pics{display:flex;align-items:center;justify-content:center;gap:8px}
+.pt-myth-pics figure{margin:0;display:grid;justify-items:center;gap:2px;font-size:.78rem;font-weight:700}
+.pt-myth-pics figure.to{filter:drop-shadow(0 0 8px rgba(190,140,255,.55))}
+.pt-myth-pics>span{font-size:1.4rem;color:#a07ae0}
+html[data-theme="dem"] .pt-myth{background:linear-gradient(135deg,#3a2436,#2e2a44 50%,#1f3330);border-color:#7a5ab8}
+html[data-theme="dem"] .pt-myth h4{color:#d6c2ff}

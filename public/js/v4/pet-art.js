@@ -78,6 +78,13 @@ export const SHAPES={
   jade:{k:'cat',ear:'bigcat',tail:'long',muzzle:'cat',face:'tux2'},
   linh_khuyen:{k:'dog',ear:'prick',tail:'plume',fluff:'ruff',muzzle:'dog',ridge:1,body:1.12,brows:1,smile:1},
   than_tai:{k:'cat',ear:'cat',tail:'long',face:'calico',muzzle:'cat',chubby:1},
+  // ✨ thần thú (owner 19/10 "kì lân, kì lân 1 sừng, khủng long"): horns, manes, spikes, snouts, reptile tails
+  ky_lan:{k:'dog',ear:'horse',horn:'antler',mane:'flame',tail:'qilin',muzzle:'snout',scales:1,belly:1,body:1.08,brows:1,smile:1},
+  unicorn:{k:'cat',ear:'horse',horn:'uni',mane:'rainbow',tail:'horse',muzzle:'snout',smile:1},
+  trex:{k:'dog',ear:'none',muzzle:'snout',spikes:1,tail:'dino',belly:1,head:1.1,smile:1},
+  bronto:{k:'cat',ear:'none',muzzle:'snout',tail:'dino',neck:1,belly:1,body:1.1,spots:1,smile:1},
+  trice:{k:'dog',ear:'none',horn:'trice',frill:1,muzzle:'snout',tail:'dino',belly:1,body:1.05,smile:1},
+  dragon:{k:'cat',ear:'fin',horn:'dragon',spikes:1,tail:'dragon',bwings:1,muzzle:'snout',belly:1,smile:1},
 };
 /* 🏅 Ranks (game/pet_tiers.py RANKS: 0 D … 6 SSS) and the coat effects of an SSS (FX) or a mutant pup. */
 export const RANK=['D','C','B','A','S','SS','SSS'];
@@ -207,6 +214,9 @@ function ears(S,K,x,y,r,front){
     case'tuft':return front?L(`M${n(x-r*.82)} ${n(y-r*1.42)}l${n(-r*.08)} ${n(-r*.3)}M${n(x+r*.82)} ${n(y-r*1.42)}l${n(r*.08)} ${n(-r*.3)}`,m,1.3):pair(.44,1.45,.25);
     case'flop':case'long':{const h=S.ear==='long'?1.2:.95;if(!front)return '';
       return [-1,1].map(sx=>Pa(`M${n(x+sx*r*.62)} ${n(y-r*.62)}q${n(sx*r*.62)} ${n(r*.02)} ${n(sx*r*.5)} ${n(r*h)}q${n(-sx*r*.08)} ${n(r*.3)} ${n(-sx*r*.34)} ${n(r*.14)}q${n(-sx*r*.22)} ${n(-r*.42)} ${n(-sx*r*.3)} ${n(-r*.95)}z`,S.face==='blaze'?b:(K.m))).join('');}
+    case'horse':return pair(.3,1.5,.1,'#f7b9c7');
+    case'none':return '';
+    case'fin':return front?[-1,1].map(sx=>Pa(`M${n(x+sx*r*.9)} ${n(y-r*.15)}l${n(sx*r*.55)} ${n(-r*.42)}l${n(-sx*r*.08)} ${n(r*.28)}l${n(sx*r*.3)} ${n(-r*.05)}l${n(-sx*r*.22)} ${n(r*.34)}z`,K.m,1.2)).join(''):'';
     case'puff':return front?[-1,1].map(sx=>C(x+sx*r*.98,y+r*.12,r*.42,b,1.4)+C(x+sx*r*.92,y+r*.5,r*.34,b,1.4)).join(''):'';
     case'fold':if(!front)return '';
       if(S.k==='cat')return [-1,1].map(sx=>Pa(`M${n(x+sx*r*.25)} ${n(y-r*.82)}q${n(sx*r*.38)} ${n(-r*.18)} ${n(sx*r*.62)} ${n(r*.12)}q${n(-sx*r*.22)} ${n(r*.05)} ${n(-sx*r*.58)} ${n(-r*.02)}z`,ec,1.3)).join('');
@@ -234,12 +244,13 @@ function face(S,K,x,y,r,mood,blink){
   if(S.brows&&/Đen vàng|Tam thể/.test(K.name||''))o+=E(x-r*.4,y-r*.36,r*.13,r*.09,K.m,0)+E(x+r*.4,y-r*.36,r*.13,r*.09,K.m,0);
   // Muzzle, nose, mouth.
   const my=y+r*(cat?.32:.36);
-  if(S.muzzle==='dog'){o+=E(x,my,r*.48,r*.36,S.face==='mask'||S.face==='urajiro'||S.face==='blaze'?l:l,0)+Pa(`M${n(x-r*.2)} ${n(my-r*.2)}q${n(r*.2)} ${n(-r*.1)} ${n(r*.4)} 0q${n(-.02)} ${n(r*.2)} ${n(-r*.2)} ${n(r*.24)}q${n(-r*.2)} ${n(-r*.04)} ${n(-r*.2)} ${n(-r*.24)}z`,NOSE,0)+C(x-r*.07,my-r*.18,r*.05,'#fff',0,' opacity=".7"');}
+  if(S.muzzle==='snout'){o+=E(x,my+r*.04,r*.6,r*.4,l,1.1)+C(x-r*.17,my-r*.06,r*.055,NOSE,0)+C(x+r*.17,my-r*.06,r*.055,NOSE,0);}
+  else if(S.muzzle==='dog'){o+=E(x,my,r*.48,r*.36,S.face==='mask'||S.face==='urajiro'||S.face==='blaze'?l:l,0)+Pa(`M${n(x-r*.2)} ${n(my-r*.2)}q${n(r*.2)} ${n(-r*.1)} ${n(r*.4)} 0q${n(-.02)} ${n(r*.2)} ${n(-r*.2)} ${n(r*.24)}q${n(-r*.2)} ${n(-r*.04)} ${n(-r*.2)} ${n(-r*.24)}z`,NOSE,0)+C(x-r*.07,my-r*.18,r*.05,'#fff',0,' opacity=".7"');}
   else if(S.muzzle==='flat'){o+=E(x,my+r*.02,r*.56,r*.4,m,0)+E(x,my-r*.14,r*.2,r*.13,NOSE,0);}
   else{const fl=S.muzzle==='flatcat';o+=E(x-r*.16,my+r*.06,r*.2,r*.15,l,0)+E(x+r*.16,my+r*.06,r*.2,r*.15,l,0)+Pa(`M${n(x-r*.1)} ${n(my-r*(fl?.14:.08))}h${n(r*.2)}l${n(-r*.1)} ${n(r*.12)}z`,'#e88a9c',0)
     +L(`M${n(x-r*.55)} ${n(my)}l${n(-r*.55)} ${n(-r*.08)}M${n(x-r*.55)} ${n(my+r*.12)}l${n(-r*.52)} ${n(r*.1)}M${n(x+r*.55)} ${n(my)}l${n(r*.55)} ${n(-r*.08)}M${n(x+r*.55)} ${n(my+r*.12)}l${n(r*.52)} ${n(r*.1)}`,OL,.7,' opacity=".55"');}
-  const mouthY=my+(S.muzzle==='dog'?r*.08:r*.14),happy=mood==='happy';
-  if(happy&&S.k==='dog')o+=Pa(`M${n(x-r*.22)} ${n(mouthY)}q${n(r*.22)} ${n(r*.5)} ${n(r*.44)} 0z`,'#a8434f',1.1)+Pa(`M${n(x-r*.11)} ${n(mouthY+r*.14)}q${n(r*.11)} ${n(r*.36)} ${n(r*.22)} 0z`,TONGUE,0);
+  const mouthY=my+(S.muzzle==='dog'?r*.08:S.muzzle==='snout'?r*.16:r*.14),happy=mood==='happy';
+  if(happy&&(S.k==='dog'||S.muzzle==='snout'))o+=Pa(`M${n(x-r*.22)} ${n(mouthY)}q${n(r*.22)} ${n(r*.5)} ${n(r*.44)} 0z`,'#a8434f',1.1)+Pa(`M${n(x-r*.11)} ${n(mouthY+r*.14)}q${n(r*.11)} ${n(r*.36)} ${n(r*.22)} 0z`,TONGUE,0);
   else if(happy)o+=Pa(`M${n(x-r*.16)} ${n(mouthY)}q${n(r*.16)} ${n(r*.32)} ${n(r*.32)} 0z`,'#c75a6a',1);
   else o+=L(`M${n(x-r*.24)} ${n(mouthY)}q${n(r*.12)} ${n(r*.14)} ${n(r*.24)} 0q${n(r*.12)} ${n(r*.14)} ${n(r*.24)} 0`,OL,1.1);
   if(S.smile&&!happy)o+=Pa(`M${n(x-r*.08)} ${n(mouthY+r*.05)}q${n(r*.08)} ${n(r*.2)} ${n(r*.16)} 0z`,TONGUE,0);
@@ -260,14 +271,37 @@ function ruff(S,K,x,y,r){
   for(let i=0;i<N;i++){const a=Math.PI*(-.08+i/(N-1)*1.16);pts.push([x+Math.cos(a)*r*1.06,y+r*.2+Math.sin(a)*r*.82]);}
   return pts.map(([a,b])=>C(a,b,r*.36,c,1.4)).join('')+pts.map(([a,b])=>C(a,b,r*.36-.75,c,0)).join('');
 }
+function mane(S,K,x,y,r,front){   // ✨ a rainbow (kỳ lân một sừng) or flame (kỳ lân) mane: behind the head, a forelock in front
+  if(!S.mane)return '';const fl=S.mane==='flame',col=i=>fl?[K.m,'#ffb648',K.m,'#ffd36b'][i%4]:RB[i%6];
+  if(front)return [[-.32,-.9,.24],[0,-1.02,.27],[.3,-.92,.22]].map(([a,b,c],i)=>C(x+a*r,y+b*r,c*r,col(i+1),1.1)).join('');
+  const out=[];for(let i=0;i<7;i++){const a=Math.PI*(1.02+i*.13);out.push(C(x+Math.cos(a)*r*1.02-r*.08,y+Math.sin(a)*r*.98+r*.1,r*(fl?.34:.31),col(i),1.3));}
+  for(let i=0;i<3;i++)out.push(C(x-r*(1.05+i*.12),y+r*(.25+i*.32),r*.3,col(i+3),1.3));
+  return out.join('');
+}
+function horn(S,K,x,y,r){   // ✨ one spiral horn, a qilin's antlers, a dragon's horns, a triceratops' three
+  const gold='#ffe08a',ivory='#fff4dc';
+  switch(S.horn){
+    case'uni':return Pa(`M${n(x-r*.16)} ${n(y-r*.78)}L${n(x)} ${n(y-r*1.78)}L${n(x+r*.16)} ${n(y-r*.78)}Z`,gold,1.3)+L(`M${n(x-r*.12)} ${n(y-r*.98)}l${n(r*.22)} ${n(-r*.08)}M${n(x-r*.09)} ${n(y-r*1.22)}l${n(r*.17)} ${n(-r*.07)}M${n(x-r*.05)} ${n(y-r*1.45)}l${n(r*.1)} ${n(-r*.05)}`,'#d9a531',1)+star(x+r*.3,y-r*1.6,r*.12,'#fff');
+    case'antler':return [-1,1].map(sx=>L(`M${n(x+sx*r*.32)} ${n(y-r*.8)}q${n(sx*r*.1)} ${n(-r*.5)} ${n(sx*r*.42)} ${n(-r*.82)}M${n(x+sx*r*.42)} ${n(y-r*1.12)}l${n(sx*r*.3)} ${n(-r*.08)}M${n(x+sx*r*.5)} ${n(y-r*1.38)}l${n(-sx*r*.06)} ${n(-r*.22)}`,OL,4.2)+L(`M${n(x+sx*r*.32)} ${n(y-r*.8)}q${n(sx*r*.1)} ${n(-r*.5)} ${n(sx*r*.42)} ${n(-r*.82)}M${n(x+sx*r*.42)} ${n(y-r*1.12)}l${n(sx*r*.3)} ${n(-r*.08)}M${n(x+sx*r*.5)} ${n(y-r*1.38)}l${n(-sx*r*.06)} ${n(-r*.22)}`,gold,2.4)).join('');
+    case'dragon':return [-1,1].map(sx=>Pa(`M${n(x+sx*r*.3)} ${n(y-r*.82)}q${n(sx*r*.12)} ${n(-r*.48)} ${n(sx*r*.5)} ${n(-r*.62)}q${n(-sx*r*.16)} ${n(r*.24)} ${n(-sx*r*.22)} ${n(r*.6)}z`,ivory,1.2)).join('');
+    case'trice':return [-1,1].map(sx=>Pa(`M${n(x+sx*r*.42)} ${n(y-r*.62)}q${n(sx*r*.02)} ${n(-r*.42)} ${n(sx*r*.2)} ${n(-r*.72)}q${n(sx*r*.04)} ${n(r*.36)} ${n(sx*r*.06)} ${n(r*.66)}z`,ivory,1.2)).join('')
+      +Pa(`M${n(x-r*.12)} ${n(y+r*.08)}q${n(r*.1)} ${n(-r*.36)} ${n(r*.12)} ${n(-r*.5)}q${n(r*.06)} ${n(r*.2)} ${n(r*.14)} ${n(r*.5)}z`,ivory,1.1);
+  }
+  return '';
+}
+function frill(S,K,x,y,r){   // the triceratops' fan behind the head
+  if(!S.frill)return '';
+  return E(x,y-r*.25,r*1.62,r*1.28,K.m,1.6)+[0,1,2,3,4,5,6].map(i=>{const a=Math.PI*(1.08+i*.14);return C(x+Math.cos(a)*r*1.38,y-r*.25+Math.sin(a)*r*1.06,r*.13,K.l,0);}).join('');
+}
 function head(S,K,x,y,r,o={}){
   const mood=o.mood||'',pos=S.chubby?1.2:S.k==='cat'?1.12:1.06,ry=S.chubby?.9:.95;
-  let s=ruff(S,K,x,y,r)+ears(S,K,x,y,r,false);
+  let s=frill(S,K,x,y,r)+mane(S,K,x,y,r,false)+ruff(S,K,x,y,r)+ears(S,K,x,y,r,false);
   if(S.fluff==='curly')s+=[[-.6,-.95,.42],[0,-1.12,.5],[.6,-.95,.42]].map(([a,b,c])=>C(x+a*r,y+b*r,c*r,K.b,1.4)).join('');
   const headFill=S.face==='mask'||S.face==='blaze'&&false?K.l:(S.face==='calico'||S.face==='calico2'&&K.name==='Tam thể'?K.b:K.b);
   s+=E(x,y,r*pos,r*ry,S.face==='mask'?K.l:headFill,1.6);
   if(S.chubby)s+=E(x-r*.78,y+r*.38,r*.4,r*.28,headFill,0)+E(x+r*.78,y+r*.38,r*.4,r*.28,headFill,0);
-  s+=face(S,K,x,y,r,mood,o.blink)+ears(S,K,x,y,r,true);
+  if(S.scales)s+=[[-.55,-.45],[.55,-.45],[-.75,0],[.75,0]].map(([a,b])=>E(x+a*r,y+b*r,r*.12,r*.08,K.m,0,' opacity=".55"')).join('');
+  s+=face(S,K,x,y,r,mood,o.blink)+ears(S,K,x,y,r,true)+mane(S,K,x,y,r,true)+horn(S,K,x,y,r);
   if(o.acc?.eye&&o.blink!=='sleep')s+=eyeX(o.acc.eye,x,y,r);
   if(S.fluff==='curly')s+=[[-.38,-.92,.3],[.38,-.92,.3],[0,-1.02,.32]].map(([a,b,c])=>C(x+a*r,y+b*r,c*r,K.b,1.2)).join('');
   if(o.acc?.head)s+=hat(o.acc.head,x,y,r);
@@ -452,8 +486,8 @@ function wingX(it,flip,s){
   return `<g transform="scale(${n(flip*s)} ${n(s)})">${g}</g>`;
 }
 /** What is worn on the back, behind the body (wings, a cape, the bouquet) or in front of it (the float ring). */
-function backX(acc,mode,g){
-  const it=wd(acc?.back),cape=wd(acc?.body);let behind='',front='';
+function backX(acc,mode,g,inn=null){
+  const it=wd(acc?.back)||inn,cape=wd(acc?.body);let behind='',front='';
   if(cape&&cape.art==='cape'){const c=cape.color,c2=cape.c2||'#fff';
     behind+=mode==='sit'?Pa(`M${n(-g.w*.7)} ${n(g.y)}q${n(-g.w*.9)} ${n(g.h*.9)} ${n(-g.w*1.15)} ${n(g.h*1.25)}h${n(g.w*3.7)}q${n(-g.w*.25)} ${n(-g.h*.35)} ${n(-g.w*1.15)} ${n(-g.h*1.25)}z`,c,1.3)
       :Pa(`M${n(g.x+g.rx*.4)} ${n(g.y-g.ry*.95)}q${n(-g.rx*.9)} ${n(-g.ry*.4)} ${n(-g.rx*1.6)} ${n(g.ry*1.1)}q${n(g.rx*.6)} ${n(g.ry*.2)} ${n(g.rx*1.3)} ${n(-g.ry*.2)}z`,c,1.3);
@@ -461,7 +495,7 @@ function backX(acc,mode,g){
   if(!it)return [behind,front];
   const c=it.color,c2=it.c2||'#fff';
   if(/^w_/.test(it.art)){
-    const sz=it.art==='w_peacock'?.66:/^w_(feather|galaxy|rainbow)$/.test(it.art)?1.12:.95,lift=/^w_(feather|galaxy|rainbow|peacock)$/.test(it.art)?-.05:.2;
+    const sz=it.sz||(it.art==='w_peacock'?.66:/^w_(feather|galaxy|rainbow)$/.test(it.art)?1.12:.95),lift=/^w_(feather|galaxy|rainbow|peacock)$/.test(it.art)?-.05:.2;
     behind+=`<g class="pet-wings">`+(mode==='sit'?`<g transform="translate(${n(-g.w*.45)} ${n(g.y+g.h*lift)})">${wingX(it,1,sz)}</g><g transform="translate(${n(g.w*.45)} ${n(g.y+g.h*lift)})">${wingX(it,-1,sz)}</g>`
       :`<g transform="translate(${n(g.x-g.rx*.1)} ${n(g.y-g.ry*.75)}) rotate(14)">${wingX(it,1,sz*.8)}</g><g transform="translate(${n(g.x+g.rx*.15)} ${n(g.y-g.ry*.85)}) rotate(4)">${wingX(it,1,sz*.68)}</g>`)+'</g>';
   }else if(it.art==='pack'){
@@ -514,6 +548,14 @@ function bedX(it,w){
 function tail(S,K,x,y,dir,big=1,anim=true){   // dir: 1 = the tail goes to the right/up, -1 to the left
   const c=S.face==='points'?K.m:S.tail==='pom'?K.b:K.b,cls=anim?' class="pet-tail"':'',sw=1.5,k=big;
   switch(S.tail){
+    case'dino':return `<g${cls}>`+(S.spikes?[.3,.55,.78].map(t=>Pa(`M${n(x+dir*24*k*t-dir*2*k)} ${n(y-6*k-8*k*t*t)}l${n(dir*2*k)} ${n(-4.4*k)}l${n(dir*2.6*k)} ${n(3.6*k)}z`,K.m,1)).join(''):'')
+      +Pa(`M${n(x)} ${n(y-6*k)}Q${n(x+dir*12*k)} ${n(y-6*k)} ${n(x+dir*24*k)} ${n(y-14*k)}Q${n(x+dir*15*k)} ${n(y+2*k)} ${n(x)} ${n(y+5*k)}Z`,c,sw)+'</g>';
+    case'horse':{const cols=S.mane==='rainbow'?RB:[K.m,K.m,K.m];return `<g${cls}>`+[0,1,2,3,4].map(i=>L(`M${n(x)} ${n(y-1+i*.6)}q${n(dir*(12+i*2)*k)} ${n((-2+i)*k)} ${n(dir*(10+i*3)*k)} ${n((10-i*1.5)*k)}`,OL,4.4)).join('')
+      +[0,1,2,3,4].map(i=>L(`M${n(x)} ${n(y-1+i*.6)}q${n(dir*(12+i*2)*k)} ${n((-2+i)*k)} ${n(dir*(10+i*3)*k)} ${n((10-i*1.5)*k)}`,cols[i%cols.length],2.8)).join('')+'</g>';}
+    case'qilin':return `<g${cls}>`+L(`M${n(x)} ${n(y)}q${n(dir*12*k)} ${n(-2*k)} ${n(dir*13*k)} ${n(-14*k)}`,OL,4.4)+L(`M${n(x)} ${n(y)}q${n(dir*12*k)} ${n(-2*k)} ${n(dir*13*k)} ${n(-14*k)}`,c,2.8)
+      +flame(x+dir*13*k,y-13*k,9*k,K.m,'#ffd36b')+'</g>';
+    case'dragon':return `<g${cls}>`+L(`M${n(x)} ${n(y)}q${n(dir*14*k)} ${n(0)} ${n(dir*14*k)} ${n(-15*k)}`,OL,5)+L(`M${n(x)} ${n(y)}q${n(dir*14*k)} ${n(0)} ${n(dir*14*k)} ${n(-15*k)}`,c,3.2)
+      +Pa(`M${n(x+dir*14*k)} ${n(y-13*k)}l${n(-dir*4*k)} ${n(-2*k)}l${n(dir*4*k)} ${n(-6*k)}l${n(dir*4*k)} ${n(6*k)}l${n(-dir*4*k)} ${n(2*k)}z`,K.m,1.1)+'</g>';
     case'curl':return `<g${cls}>`+Pa(`M${n(x)} ${n(y)}q${n(dir*12*k)} ${n(-2*k)} ${n(dir*10*k)} ${n(-12*k)}q${n(-dir*1*k)} ${n(-6*k)} ${n(-dir*7*k)} ${n(-3*k)}q${n(dir*4*k)} ${n(2*k)} ${n(dir*2*k)} ${n(7*k)}q${n(-dir*2*k)} ${n(5*k)} ${n(-dir*7*k)} ${n(5*k)}z`,c,sw)+'</g>';
     case'plume':return `<g${cls}>`+Pa(`M${n(x)} ${n(y)}q${n(dir*14*k)} ${n(-4*k)} ${n(dir*16*k)} ${n(-18*k)}q${n(dir*2*k)} ${n(10*k)} ${n(-dir*4*k)} ${n(16*k)}q${n(-dir*4*k)} ${n(4*k)} ${n(-dir*12*k)} ${n(4*k)}z`,c,sw)+'</g>';
     case'stub':return Pa(`M${n(x)} ${n(y)}q${n(dir*5*k)} ${n(-1*k)} ${n(dir*5*k)} ${n(-5*k)}q${n(-dir*3*k)} ${n(-1*k)} ${n(-dir*6*k)} ${n(1*k)}z`,c,sw);
@@ -538,16 +580,25 @@ function marks(S,K,cx,cy,rx,ry){   // body markings: tabby stripes, Bengal spots
   if(S.face==='points')s+='';
   return s;
 }
+function spikeRow(cx,cy,rx,ry,a0,a1,cnt,sz,col){   // ✨ dino / dragon plates along the body's edge (angles in degrees)
+  let s='';for(let i=0;i<cnt;i++){const a=(a0+(a1-a0)*i/(cnt-1))*Math.PI/180,px=cx+Math.cos(a)*rx*.92,py=cy+Math.sin(a)*ry*.92,nx=Math.cos(a),ny=Math.sin(a)*rx/ry,l=Math.hypot(nx,ny),ux=nx/l,uy=ny/l;
+    s+=Pa(`M${n(px-uy*sz*.7)} ${n(py+ux*sz*.7)}L${n(px+ux*sz*1.5)} ${n(py+uy*sz*1.5)}L${n(px+uy*sz*.7)} ${n(py-ux*sz*.7)}Z`,col,1.1);}
+  return s;
+}
+const innate=(S,K)=>S.bwings?{art:'w_dragon',color:K.m,c2:K.l,sz:.72}:null;
 function sitPose(S,K,o){
   const sc=S.body||1,legs=S.legs||1,lng=S.long||1,hr=12.5*(S.head||1),bw=13*sc*(S.chubby?1.12:1),bh=17*sc*(S.legs<.7?.85:1);
-  const by=-bh*.62,hy=by-bh*.55-hr*.62,happy=o.mood==='happy'||o.wave;let s='';
+  const by=-bh*.62,neck=S.neck?hr*1.05:0,hy=by-bh*.55-hr*.62-neck,happy=o.mood==='happy'||o.wave;let s='';
   s+=E(0,-.5,bw*1.2+4,2.4,'#000',0,' opacity=".12"');
-  const [bk,fr]=backX(o.acc,'sit',{w:bw,y:by-bh*.45,h:bh*.95});s+=bk;   // 👗 wings, a cape: behind
+  const [bk,fr]=backX(o.acc,'sit',{w:bw,y:by-bh*.45,h:bh*.95},innate(S,K));s+=bk;   // 👗 wings, a cape: behind
+  if(S.spikes)s+=spikeRow(0,by,bw,bh*.62,150,260,5,3.4,K.m);
   s+=tail(S,K,-bw*.7,-3,-1,1.05*sc);
   s+=E(-bw*.62,-bw*.38,bw*.5,bw*.4,K.b,1.5)+E(bw*.62,-bw*.38,bw*.5,bw*.4,K.b,1.5);   // haunches
   s+=E(0,by,bw,bh*.62,S.bald?K.b:K.b,1.6);                                         // body
-  const chest=S.face==='mask'||S.face==='urajiro'||S.face==='blaze'||S.face==='tux'&&/^#f|^#e/i.test(K.l)||S.fluff==='ruff'||S.face==='points'||S.face==='tux2'&&K.name==='Hai màu';
+  const chest=S.belly||S.face==='mask'||S.face==='urajiro'||S.face==='blaze'||S.face==='tux'&&/^#f|^#e/i.test(K.l)||S.fluff==='ruff'||S.face==='points'||S.face==='tux2'&&K.name==='Hai màu';
   if(chest)s+=E(0,by+bh*.08,bw*.55,bh*.48,K.l,0);
+  if(S.belly)s+=L([-.25,.05,.35].map(t=>`M${n(-bw*.4)} ${n(by+bh*t)}q${n(bw*.4)} ${n(bh*.08)} ${n(bw*.8)} 0`).join(''),K.m,.9,' opacity=".45"');
+  if(neck)s+=R(-hr*.42,hy+hr*.4,hr*.84,by-bh*.4-hy-hr*.4,K.b,hr*.4,1.5)+R(-hr*.22,hy+hr*.7,hr*.44,by-bh*.4-hy-hr*.7,K.l,hr*.22,0);
   s+=marks(S,K,0,by+2,bw,bh*.55);
   if(o.acc?.body)s+=coat(o.acc.body,'sit',0,by-bh*.45,bw,bh*.95);
   s+=fr;
@@ -563,15 +614,18 @@ function sitPose(S,K,o){
 }
 function walkPose(S,K,o){
   const sc=S.body||1,legs=S.legs||1,lng=S.long||1,hr=11.5*(S.head||1),rx=13*sc*lng*(S.chubby?1.08:1),ry=8.2*sc,lh=Math.max(4.5,10*legs);
-  const cy=-lh-ry*.6,hx=rx*.72,hy=cy-ry-hr*.35;let s='';
+  const cy=-lh-ry*.6,neck=S.neck?hr*1.1:0,hx=rx*.72+neck*.35,hy=cy-ry-hr*.35-neck;let s='';
   s+=E(0,-.5,rx+5,2.3,'#000',0,' opacity=".12"');
-  const [bk,fr]=backX(o.acc,'walk',{x:0,y:cy,rx,ry});s+=bk;
+  const [bk,fr]=backX(o.acc,'walk',{x:0,y:cy,rx,ry},innate(S,K));s+=bk;
+  if(S.spikes)s+=spikeRow(0,cy,rx,ry,195,320,6,3.2,K.m);
   const leg=(x,cls)=>`<g class="pet-leg ${cls}">${R(x-2.8,cy+ry*.2,5.6,lh+ry*.4-1,K.b,2.6,1.3)+E(x,-1.1,3.6,2.1,S.face==='points'?K.m:K.l,1.1)}</g>`;
   s+=leg(-rx*.58,'b')+leg(rx*.5,'a');                                                  // far legs
   s+=tail(S,K,-rx*.9,cy-ry*.25,-1,.95*sc);
   s+=E(0,cy,rx,ry,K.b,1.6);
   if(S.face!=='calico'&&(S.face==='mask'||S.face==='urajiro'||S.face==='blaze'||S.fluff==='ruff'||S.face==='tux'&&/^#f|^#e/i.test(K.l)))s+=Pa(`M${n(-rx*.6)} ${n(cy+ry*.6)}q${n(rx*.6)} ${n(ry*.55)} ${n(rx*1.3)} ${n(-ry*.2)}q${n(-rx*.5)} ${n(ry*.05)} ${n(-rx*1.3)} ${n(ry*.2)}z`,K.l,0);
+  if(S.belly)s+=Pa(`M${n(-rx*.6)} ${n(cy+ry*.6)}q${n(rx*.6)} ${n(ry*.55)} ${n(rx*1.3)} ${n(-ry*.2)}q${n(-rx*.5)} ${n(ry*.05)} ${n(-rx*1.3)} ${n(ry*.2)}z`,K.l,0);
   s+=marks(S,K,0,cy,rx,ry);
+  if(neck){const d=`M${n(rx*.45)} ${n(cy-ry*.3)}Q${n(hx+hr*.05)} ${n(cy-ry*.6)} ${n(hx-hr*.05)} ${n(hy+hr*.6)}`;s+=L(d,OL,hr*.86+3)+L(d,K.b,hr*.86)+L(d,K.l,hr*.32,' opacity=".8"');}
   if(o.acc?.body)s+=coat(o.acc.body,'walk',0,cy,rx,ry);
   s+=fr;
   s+=leg(-rx*.38,'a')+leg(rx*.68,'b');                                                 // near legs
@@ -583,6 +637,7 @@ function walkPose(S,K,o){
 function sleepPose(S,K,o){
   const sc=S.body||1,lng=S.long||1,hr=11*(S.head||1),rx=16*sc*Math.min(1.25,lng),ry=8.5*sc;let s='';
   s+=E(0,-.4,rx+5,2.4,'#000',0,' opacity=".12"');
+  if(S.spikes)s+=spikeRow(0,-ry,rx,ry,200,320,6,3,K.m);
   s+=E(0,-ry,rx,ry,K.b,1.6)+marks(S,K,0,-ry,rx,ry);
   if(o.acc?.body)s+=Pa(`M${n(-rx*.7)} ${n(-ry*1.75)}q${n(rx*.6)} ${n(-ry*.35)} ${n(rx*1.2)} ${n(.2)}l${n(rx*.05)} ${n(ry*1.1)}h${n(-rx*1.3)}z`,coatColor(o.acc.body),1.2);
   s+=tail(S,K,-rx*.85,-ry*.45,1,.0001,false);
@@ -600,7 +655,7 @@ const coatColor=id=>({ao_len:'#e58b7a',ao_mua:'#f6cf45',ao_vn:'#d8392f',ao_khung
 export function petInner(breed,coat,pose='sit',acc={},fx={}){
   // fx: r rank, x coat effect, lg a 🌟 legendary that kept its breed, wr {slot: piece rank}, o cute aura, st a whole set
   const x=fx?.x||'',r=Math.max(0,Math.min(6,Number(fx?.r)||0)),legend=breed?.fuse==='legend'||fx?.lg===true;
-  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':'',wave:breed?.id==='than_tai',wr:fx?.wr||null};
+  const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(breed?.fuse==='myth'?{}:FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':'',wave:breed?.id==='than_tai',wr:fx?.wr||null};
   const body=pose==='walk'?walkPose(S,K,o):pose==='sleep'?sleepPose(S,K,o):sitPose(S,K,o);
   const bed=acc?.bed?bedSVG(acc.bed,pose==='walk'?52:46):'',tall=acc?.bed==='nha_go'||acc?.bed==='lau_dai'||/^(castle|canopy)$/.test(wd(acc?.bed)?.art||'');
   const [back0,front0]=aura(r,x,legend,S.k,pose,k),[wb,wf]=wearFx(Number(fx?.o)||0,fx?.st||''),back=back0+wb,front=front0+wf,mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';

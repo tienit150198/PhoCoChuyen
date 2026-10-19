@@ -796,9 +796,12 @@ def _fuse(s: dict, p: dict) -> dict:
     head = '🌟 HUYỀN THOẠI! ' if low == TOP else '🎉 '
     gone = ' và '.join(f[1]['n'] for f, _ in others)
     up = f'thành 🌟 huyền thoại' if low == TOP else f'lên hạng {RANKS[rank]}'
+    from . import pet_wardrobe
+    myth = pet_wardrobe.myth_offer(s, main, rank)   # ✨ owner 19/10: S and up may bring a thần thú
+    extra = f' ✨ Một bé {myth["name"]} xuất hiện, muốn nhập vào {main["n"]}!' if myth else ''
     return dict(message=f'{head}{main["n"]} {up}{" (giống " + br["name"] + ")" if br["name"] != old else ""}! '
-                        f'{gone} về quê với bà nghỉ ngơi. ({how})',
-                fuse=dict(ok=True, pet=main_id, rank=RANKS[rank], breed=main['b'], fx=fx, up=True))
+                        f'{gone} về quê với bà nghỉ ngơi. ({how}){extra}',
+                fuse=dict(ok=True, pet=main_id, rank=RANKS[rank], breed=main['b'], fx=fx, up=True, myth=myth))
 
 
 # ---------------------------------------------------------------- views

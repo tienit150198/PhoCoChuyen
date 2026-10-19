@@ -230,6 +230,7 @@ async function onClick(op,data){
     case'wdrop':{const [k,r]=S.wsel.split('|'),it=wItem(k);if(!it)return;if(!await ask(`Bỏ một ${it.name}?`,`${it.name} hạng ${RKS[r]} sẽ mất hẳn.`,'🗑️ Bỏ'))return;
       await send('jr_pet_wdrop',{k,r:Number(r),confirm:true});if(!myItems().some(i=>`${i.k}|${i.r}`===S.wsel))S.wsel='';render();return;}
     case'fzbreed':S.fzBreed=data.id||'';render();return;
+    case'morph':{const r=await send('jr_pet_morph',{take:data.take==='1'});if(r?.morph){S.pet=r.morph.pet;S.flash={...S.flash,kind:'good win'};}render();return;}
     case'pet':S.pet=data.id;S.sub='';render();return;
     case'pick':S.pet=data.id;S.sub='';render();top();return;
     case'ff':S.ff[data.key]=data.val;render();return;
@@ -343,11 +344,22 @@ function page(){
   const w=why&&why.trim();
   const bar=label?`<footer class="pt-bar">${w?`<small class="pt-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big pt-main" data-pt="go"${S.busy||w||why===' '?' disabled':''}>${esc(label)}</button></footer>`:'';
   const flash=`<p class="pt-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
-  return head+tabs+`<div class="sheet-body pt-body">${flash}${inner}</div>`+bar;
+  return head+tabs+`<div class="sheet-body pt-body">${flash}${S.sub||S.tab==='board'?'':myth(c)}${inner}</div>`+bar;
 }
 const meters=n=>`<div class="pt-needs">${NEEDS.map(([k,e,l])=>`<span class="pt-need${n[k]<CAT().low?' low':''}" title="${l} ${n[k]}" aria-label="${l} ${n[k]}"><i aria-hidden="true">${e}</i><b style="--v:${n[k]}%"></b></span>`).join('')}</div>`;
 const chip=(op,data,on,inner,label='')=>`<button type="button" class="pt-chip${on?' on':''}" data-pt="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')} aria-pressed="${on}"${label?` aria-label="${esc(label)}" title="${esc(label)}"`:''}>${inner}</button>`;
 
+/** ✨ A thần thú came with the last fusion to S or more (owner 19/10): the game picked it, the player keeps the pet
+ * as it is or lets it turn into that one (jr_pet_morph). */
+function myth(c){
+  const o=V()?.petw?.mo,p=o&&allPets().find(q=>q.id===o.p);if(!p)return '';
+  const bb=breedOf(o.b),nm=esc(bb?.name||''),pn=esc(p.n);
+  return `<section class="pt-myth" aria-label="Thần thú xuất hiện"><h4>✨ Thần thú xuất hiện!</h4>
+    <p>Một bé <b>${nm}</b> muốn nhập vào <b data-no-translate>${pn}</b>. Đổi thì ${pn} hóa thành ${nm}, vẫn giữ hạng, tên, đồ và linh kiện. Không đổi thì ${nm} bay đi.</p>
+    <div class="pt-myth-pics"><figure>${petPic(c,p,'sit',92)}<figcaption>${esc(breedOf(p.b)?.name||'')}</figcaption></figure><span aria-hidden="true">➜</span>
+      <figure class="to">${petPic(c,{...p,b:o.b,c:o.c},'happy',92)}<figcaption>✨ ${nm}</figcaption></figure></div>
+    <div class="pt-chips pt-center">${chip('morph',{take:'0'},false,`💛 Giữ ${pn} như cũ`)}${chip('morph',{take:'1'},true,`✨ Đổi thành ${nm}`)}</div></section>`;
+}
 function home(v,c){
   const list=pets(),all=allPets(),lst=all.length>1?`<button type="button" class="pt-mini pt-all" data-pt="sub" data-sub="all" aria-label="Lọc các bé" title="Lọc các bé"><span aria-hidden="true">📋</span><small>${all.length}</small></button>`:'';
   if(S.sub==='all')return roster(v);

@@ -16,7 +16,7 @@ def _c(name, b, m, l, e='#3b2a22'):
 
 def _b(bid, kind, name, shape, price, trait, line, coats, *, tier='quen', shelter=False, size='s', shop=True, fuse='',
        st=(0, 0, 0, 0, 0)):
-    """shop False + fuse 'hybrid' | 'legend': only born from a 3-pet fusion (game/pet_tiers.py). st: the breed's lean
+    """shop False + fuse 'hybrid' | 'legend' | 'myth': only born from a 3-pet fusion (game/pet_tiers.py). st: the breed's lean
     on the five stats (game/pet_tiers.py STATS), added to what its rank gives."""
     return bid, dict(id=bid, kind=kind, name=name, shape=shape, price=price, trait=trait, line=line,
                      coats=list(coats), tier=tier, shelter=shelter, size=size, shop=shop, fuse=fuse, st=tuple(st))
@@ -167,6 +167,27 @@ BREEDS = dict((
        (_c('Hoàng kim', '#f2c14e', '#c98d1e', '#fff1b8', '#2fd4c0'),), tier='hiem', size='l', shop=False, fuse='legend', st=(14, 14, 14, 14, 14)),
     _b('than_tai', 'cat', 'Mèo Thần Tài', 'than_tai', 500000, 'Huyền thoại', 'Trắng ngọc trai viền vàng, đeo chuông vàng, giơ tay vẫy lộc cả ngày.',
        (_c('Ngọc trai', '#fffaf2', '#e0a92e', '#ffffff', '#e05a4f'),), tier='hiem', size='m', shop=False, fuse='legend', st=(14, 14, 14, 14, 14)),
+    # ---------------------------------------------------------------- ✨ thần thú (owner 19/10 "kì lân, kì lân 1 sừng, khủng
+    # long"): never sold, never picked: a fusion that reaches S or more may bring one (game/pet_wardrobe.py myth_offer)
+    # and the player keeps the pet as it is or lets it turn into that one. kind only picks toys and grooming.
+    _b('ky_lan', 'dog', 'Kỳ Lân', 'ky_lan', 400000, 'Thần thú', 'Mình vảy vàng, bờm lửa đỏ, đôi gạc nhỏ trên đầu; đi tới đâu là may mắn theo tới đó.',
+       (_c('Hoàng kim', '#f4c45a', '#d9483b', '#fff0c2', '#2fbf9a'), _c('Ngọc bích', '#7fd1b9', '#2f8f7a', '#e6fbf3', '#f2b632')),
+       tier='hiem', size='l', shop=False, fuse='myth', st=(10, 10, 10, 10, 12)),
+    _b('ky_lan_sung', 'cat', 'Kỳ Lân Một Sừng', 'unicorn', 400000, 'Thần thú', 'Lông trắng như mây, một chiếc sừng xoắn ánh ngọc, bờm và đuôi bảy sắc cầu vồng.',
+       (_c('Mây trắng', '#fffaff', '#c9b3f2', '#ffffff', '#7b6cf0'), _c('Hồng phấn', '#ffe1ee', '#f59bc4', '#fff6fa', '#5aa9e6')),
+       tier='hiem', size='m', shop=False, fuse='myth', st=(10, 8, 10, 14, 10)),
+    _b('khung_long', 'dog', 'Khủng Long Bạo Chúa', 'trex', 400000, 'Thần thú', 'Bạo chúa tí hon, tay ngắn ngủn nhưng gầm rất to; gai lưng đổi màu khi vui.',
+       (_c('Xanh lá', '#7cc576', '#3f8f4a', '#e8f6c9'), _c('Cam', '#f29b5a', '#c4612b', '#ffe6c8')),
+       tier='hiem', size='m', shop=False, fuse='myth', st=(12, 12, 6, 10, 8)),
+    _b('khung_long_co', 'cat', 'Khủng Long Cổ Dài', 'bronto', 400000, 'Thần thú', 'Cổ dài vươn tới tán cây, hiền khô, thích được gãi dưới cằm.',
+       (_c('Xanh biển', '#8fc3e8', '#4f87b8', '#e6f3fb', '#3b2a22'), _c('Tím lilac', '#c7b3ec', '#8a6cc7', '#f2ecfb', '#3b2a22')),
+       tier='hiem', size='l', shop=False, fuse='myth', st=(6, 14, 10, 10, 8)),
+    _b('khung_long_ba_sung', 'dog', 'Khủng Long Ba Sừng', 'trice', 400000, 'Thần thú', 'Ba chiếc sừng nhỏ và cái diềm cổ xòe như quạt; trông dữ mà lại rất mê ôm.',
+       (_c('Vàng cam', '#f6c45f', '#d1803a', '#fff2cf', '#3b2a22'), _c('Xanh rêu', '#9cc27a', '#5e8a45', '#eef6df', '#3b2a22')),
+       tier='hiem', size='m', shop=False, fuse='myth', st=(8, 14, 8, 8, 10)),
+    _b('rong_con', 'cat', 'Rồng Con', 'dragon', 400000, 'Thần thú', 'Rồng con có đôi cánh nhỏ xíu, hắt xì ra tia lửa hồng; ngủ cuộn tròn như cái bánh.',
+       (_c('Đỏ son', '#f06b5e', '#b8332e', '#ffe0c8', '#f2c14e'), _c('Xanh ngọc', '#5cc9c0', '#2a8a8a', '#e3fbf7', '#f2c14e')),
+       tier='hiem', size='m', shop=False, fuse='myth', st=(12, 10, 10, 8, 12)),
 ))
 # 📊 The first breeds' lean on the five stats (Tốc độ, Sức bền, Thông minh, Đáng yêu, May mắn), owner 19/10 "chỉ số".
 for _k, _st in dict(cho_ta=(2, 4, 2, 0, 4), poodle=(0, -2, 6, 6, 0), corgi=(-2, 2, 2, 8, 2), shiba=(4, 2, 2, 4, 2), pom=(-2, -2, 0, 10, 2),
@@ -182,6 +203,7 @@ DOGS = tuple(b for b in ORDER if BREEDS[b]['kind'] == 'dog')
 CATS = tuple(b for b in ORDER if BREEDS[b]['kind'] == 'cat')
 SHELTER = tuple(b for b in ORDER if BREEDS[b]['shelter'])
 SHOP = tuple(b for b in ORDER if BREEDS[b]['shop'])          # 🧬 hybrids and 🌟 legendaries only come from a fusion
+MYTH = tuple(b for b in ORDER if BREEDS[b]['fuse'] == 'myth')   # ✨ thần thú: only offered after a fusion to S or more
 KIND_NAME = dict(dog='Chó', cat='Mèo')
 
 # The shelter of Nhóm cứu hộ Chân Nhỏ (the adoption corner at Tiệm Thú Nhỏ Chú Út): adoption is free, a donation is

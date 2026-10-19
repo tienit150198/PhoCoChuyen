@@ -38,6 +38,8 @@ from . import pet_wardrobe_content as W
 KEY = 'petw'
 VERSION = 1
 BLOCK_KEYS = frozenset({'v', 'it', 'on', 'os', 'day', 'hot', 'lg', 'gm'})
+OPT_KEYS = frozenset({'mo'})                        # ✨ mo: a thần thú offer waiting for an answer (2.4.59)
+MYTH_BP = {4: 2500, 5: 3000, 6: 4000}               # per 10 000, a fusion that reaches S / SS / SSS+ (never shown)
 OID_RE = re.compile(r'o[0-9]{1,7}')
 RANKS = ('D', 'C', 'B', 'A', 'S', 'SS', 'SSS')
 TOP = len(RANKS) - 1
@@ -53,7 +55,7 @@ SET_BONUS = 100
 BONUS_MAX = 2500
 ITEM_MAX = 150
 CUTE_AT = (6, 15, 24)                              # the worn ranks' sum for cute aura 1, 2, 3
-COMMANDS = ('jr_pet_wbuy', 'jr_pet_wwear', 'jr_pet_wfuse', 'jr_pet_wdrop')
+COMMANDS = ('jr_pet_wbuy', 'jr_pet_wwear', 'jr_pet_wfuse', 'jr_pet_wdrop', 'jr_pet_morph')
 VN = datetime.timezone(datetime.timedelta(hours=7))
 
 
@@ -161,6 +163,8 @@ def _tidy(s: dict, x: dict) -> None:
     for pid in [pid for pid in x['on'] if pid not in live or not x['on'][pid]]:
         x['on'].pop(pid)
     x['lg'] = [pid for pid in x['lg'] if pid in live]
+    if 'mo' in x and x['mo']['p'] not in live:
+        x.pop('mo')
 
 
 def set_legend(s: dict, pid: str) -> None:
@@ -173,6 +177,41 @@ def set_model(s: dict, gid: str, m: int) -> None:
     x = _ensure(s)
     x['gm'][gid] = m
     tidy_models(s)
+
+
+def myth_offer(s: dict, pet: dict, rank: int) -> dict | None:
+    """✨ Owner 19/10: a fusion that reaches S or more may bring a thần thú (kỳ lân, khủng long …): the game picks which,
+    the player only keeps the pet as it is or lets it turn into that one (jr_pet_morph). Hidden odds (MYTH_BP)."""
+    from . import pets_content as C
+    bp = MYTH_BP.get(min(rank, TOP), 0)
+    pool = [b for b in C.MYTH if b != pet['b']]
+    if not bp or not pool or roll(10000) >= bp:
+        return None
+    b = pool[roll(len(pool))]
+    o = dict(p=pet['id'], b=b, c=roll(len(C.BREEDS[b]['coats'])))
+    _ensure(s)['mo'] = o
+    return dict(o, name=C.BREEDS[b]['name'])
+
+
+def _morph(s: dict, x: dict, p: dict) -> dict:
+    from . import pet_tiers, pets_content as C
+    pt = _pt()
+    pt._keys(p, {'take'}, {'take'})
+    _need(p['take'] in (True, False), 'Thông tin không hợp lệ.')
+    o = x.get('mo')
+    _need(isinstance(o, dict), 'Không có thần thú nào đang chờ.', 'gone')
+    rows, pet, where = pet_tiers._where(s, o['p'])
+    x.pop('mo')
+    _need(pet is not None, 'Bé này không còn ở bên bạn.', 'not_owned')
+    br = C.BREEDS[o['b']]
+    if not p['take']:
+        return dict(message=f'💛 {pet["n"]} vẫn là {C.BREEDS[pet["b"]]["name"]} như cũ. {br["name"]} bay đi tìm chủ khác rồi.', morph=None)
+    if C.BREEDS[pet['b']].get('fuse') == 'legend':
+        set_legend(s, pet['id'])   # a 🌟 Linh Khuyển / Mèo Thần Tài stays legendary in its new shape
+    old = C.BREEDS[pet['b']]['name']
+    pet['b'], pet['c'] = o['b'], o['c']
+    return dict(message=f'✨ {pet["n"]} đã hóa thành {br["name"]}! Hạng, tên, đồ và linh kiện vẫn giữ nguyên (trước là {old}).',
+                morph=dict(pet=pet['id'], breed=o['b']))
 
 
 def tidy_models(s: dict) -> None:
@@ -308,7 +347,7 @@ def validate(s: dict) -> None:
     x = j[KEY]
     bad = 'Dữ liệu tủ đồ thú cưng không hợp lệ.'
     ok = lambda v: need(v, bad, 'invalid_save')
-    ok(isinstance(x, dict) and set(x) == BLOCK_KEYS and x['v'] == VERSION and _int(x['os'], 1, 10**7))
+    ok(isinstance(x, dict) and BLOCK_KEYS <= set(x) <= BLOCK_KEYS | OPT_KEYS and x['v'] == VERSION and _int(x['os'], 1, 10**7))
     ok(isinstance(x['it'], list) and len(x['it']) <= ITEM_MAX)
     ids = set()
     for i in x['it']:
@@ -327,6 +366,11 @@ def validate(s: dict) -> None:
     ok(isinstance(x['lg'], list) and len(x['lg']) <= 128 and len(set(x['lg'])) == len(x['lg'])
        and all(isinstance(pid, str) and _pt().PID_RE.fullmatch(pid) is not None for pid in x['lg']))
     ok(isinstance(x['gm'], dict) and len(x['gm']) <= 64 and all(isinstance(g, str) and len(g) <= 12 and _int(m, 0, 4) for g, m in x['gm'].items()))
+    if 'mo' in x:
+        from . import pets_content as C
+        o = x['mo']
+        ok(isinstance(o, dict) and set(o) == {'p', 'b', 'c'} and isinstance(o['p'], str) and _pt().PID_RE.fullmatch(o['p']) is not None
+           and o['b'] in C.MYTH and _int(o['c'], 0, len(C.BREEDS[o['b']]['coats']) - 1))
     ok(x['hot'] is None or (isinstance(x['hot'], list) and len(x['hot']) == 2 and isinstance(x['hot'][0], str)
                             and _int(x['hot'][1], 0, 10**11)))
 
@@ -362,6 +406,8 @@ def action(s: dict, name_: str, p: dict) -> dict:
         i = _new(x, it['id'], r)
         return dict(message=f'🛍️ Đã mua {name(i)} ({how}).', item=i['id'])
     x = _ensure(s)
+    if name_ == 'jr_pet_morph':
+        return _morph(s, x, p)
     if name_ == 'jr_pet_wwear':
         pt._keys(p, {'pet', 'slot', 'item'}, {'pet', 'slot'})
         from . import pet_tiers
@@ -465,7 +511,7 @@ def item_view(x: dict, i: dict) -> dict:
 def public(s: dict) -> dict:
     x = get(s)
     d = x['day'] if x['day']['d'] == vn_day() else dict(d=0, f=0)
-    return dict(it=[item_view(x, i) for i in x['it']], fuse_today=d['f'])
+    return dict(it=[item_view(x, i) for i in x['it']], fuse_today=d['f'], mo=dict(x['mo']) if x.get('mo') else None)
 
 
 def catalogue() -> dict:

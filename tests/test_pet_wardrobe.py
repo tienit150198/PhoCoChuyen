@@ -176,3 +176,62 @@ class Live(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Myth(unittest.TestCase):
+    """✨ Owner 19/10: kỳ lân, khủng long … come with a fusion to S or more (hidden odds); the game picks which one and the
+    player keeps the pet or lets it turn into that one."""
+    def three(self, rank, breed='meo_mun'):
+        from tests.test_pet_tiers import Fusion
+        return Fusion.three(None, rank, (breed,) * 3)
+
+    def test_offer_from_s_and_the_choice(self):
+        from game import pets_content as C
+        self.assertGreaterEqual(len(C.MYTH), 6)
+        self.assertTrue(all(not C.BREEDS[b]['shop'] for b in C.MYTH))
+        refused(self, story(wallet=10**8), 'jr_pet_adopt', **{'from': 'shop'}, breed='ky_lan', coat=0, nick='X', confirm=True)
+        s, ids = self.three(2)                                         # B → A: never
+        with rolls(0, 0, 0, 0, 0, 0, 0), mock.patch.object(pw, 'roll', lambda n: 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertTrue(r['fuse']['ok'])
+        self.assertIsNone(r['fuse']['myth'])
+        s, ids = self.three(3)                                         # A → S: may
+        with rolls(0, 0, 0, 0, 0, 0, 0), mock.patch.object(pw, 'roll', lambda n: 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
+        m = r['fuse']['myth']
+        self.assertEqual((m['p'], m['b']), (ids[1], C.MYTH[0]))
+        self.assertIn(C.BREEDS[m['b']]['name'], r['message'])
+        self.assertEqual(pt.public(s)['petw']['mo']['b'], m['b'])
+        validate_state(s)
+        bad = copy.deepcopy(s)
+        WB(bad)['mo']['b'] = 'corgi'                                    # only a thần thú
+        with self.assertRaises(Exception):
+            validate_state(bad)
+        refused(self, s, 'jr_pet_morph', take='yes')
+        keep = copy.deepcopy(s)
+        keep, r = act(keep, 'jr_pet_morph', take=False)
+        self.assertEqual(next(p for p in px.all_pets(keep) if p['id'] == ids[1])['b'], 'meo_mun')
+        self.assertNotIn('mo', WB(keep))
+        refused(self, keep, 'jr_pet_morph', take=True)                  # answered once
+        s, r = act(s, 'jr_pet_morph', take=True)
+        p = next(p for p in px.all_pets(s) if p['id'] == ids[1])
+        self.assertEqual((p['b'], px.rec_of(s, p)['r']), (m['b'], 4))  # the rank, name, gear stay
+        self.assertIn('hóa thành', r['message'])
+        validate_state(s)
+
+    def test_no_offer_when_the_roll_misses_and_a_legend_stays_legend(self):
+        s, ids = self.three(4)
+        with rolls(0, 0, 0, 0, 0, 0, 0), mock.patch.object(pw, 'roll', lambda n: n - 1):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        self.assertIsNone(r['fuse']['myth'])
+        self.assertNotIn('mo', s['journey'].get('petw') or {})
+        s, ids = self.three(6)
+        p = next(p for p in px.all_pets(s) if p['id'] == ids[0])
+        p['b'] = 'than_tai'
+        WB_ = pw._ensure(s)
+        WB_['mo'] = dict(p=p['id'], b='rong_con', c=0)
+        s, r = act(s, 'jr_pet_morph', take=True)
+        p = next(p for p in px.all_pets(s) if p['id'] == ids[0])
+        self.assertEqual(p['b'], 'rong_con')
+        self.assertTrue(px.is_legend(p, s))                             # Mèo Thần Tài → rồng con, still 🌟
+        validate_state(s)
