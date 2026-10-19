@@ -328,3 +328,69 @@ class NameTags(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class MixedRollout(Base):
+    """Review fix 19/10: when 2.4.60 did the day's refresh (or the Monday freeze), it wrote only the boards it knows; the
+    next process of this build re-derives the newer boards' rows (this week's, and the ended week's on its first day)."""
+
+    def setUp(self):
+        super().setUp()
+        lbt.clear_cache()
+        lbt._done.clear()
+        lbt._pending.clear()
+        clock = unittest.mock.patch.object(lbt, 'now', return_value=at(2026, 9, 1, 12))
+        clock.start()
+        self.addCleanup(clock.stop)
+
+    def rows(self, sql, *args):
+        with self.store.connect() as db:
+            return [dict(r) for r in db.execute(sql, args)]
+
+    def old_build_did(self, t):
+        """What 2.4.60's refresh leaves: the day marked done, its own boards only (current and, Monday, the finals)."""
+        sid = self.sid(self.a)
+
+        def run(db):
+            db.execute("INSERT INTO leaderboard_meta(k,v) VALUES('weekly',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",
+                       (f'{lbt.vn_day(t)}|{lbt.vn_week(t)}',))
+            db.execute('DELETE FROM lb_weekly WHERE final=0')
+            lbt._insert(db, '2026-W40', [('all', 1, sid, 300)], 1, lbt.vn_day(t), t)
+            lbt._insert(db, lbt.vn_week(t), [('all', 1, sid, 300)], 0, lbt.vn_day(t), t)
+        self.store.transaction(run)
+
+    def test_newer_boards_come_back(self):
+        self.a = self.player(with_titles(2, xp=300), account='An')
+        sid = self.sid(self.a)
+        self.old_build_did(MON)
+        asked = []
+
+        def now_rows(db, board, t):
+            asked.append(('now', board))
+            return [(board, 1, sid, 5)] if board == lbt.ARENA else []
+
+        def ended_rows(db, board, t, prev):
+            asked.append(('ended', board, prev))
+            return [(board, 1, sid, 7)] if board in (lbt.ARENA, lbt.PET_WAR) else []
+        with unittest.mock.patch.object(lbt, '_new_standings', now_rows), unittest.mock.patch.object(lbt, '_ended_standings', ended_rows):
+            self.assertFalse(lbt.refresh(self.store, MON + 60))                  # done today by "2.4.60"
+            got = {(r['week'], r['board'], r['final']) for r in self.rows('SELECT week, board, final FROM lb_weekly')}
+            self.assertIn(('2026-W41', 'arena', 0), got)
+            self.assertIn(('2026-W40', 'arena', 1), got)
+            self.assertIn(('2026-W40', 'pet_war', 1), got)
+            self.assertIn(('2026-W40', 'all', 1), got)                            # the old build's rows untouched
+            self.assertIn(('arena', 1), [(h['board'], h['rank']) for h in lbt.holders(self.store)[sid]])
+            self.assertEqual(sorted(b for k, b, *_ in asked if k == 'ended'), ['arena', 'pet_cup', 'pet_war'])
+            asked.clear()
+            lbt._done.clear()                                                    # another process of this build
+            self.assertFalse(lbt.refresh(self.store, MON + 120))
+            self.assertNotIn(('now', 'arena'), asked)                             # healed already: not again
+            self.assertNotIn(('ended', 'arena', '2026-W40'), asked)
+            # Tuesday: a 2.4.60 refresh again; this week's rows come back, the ended week is left (no longer exact)
+            self.old_build_did(TUE)
+            asked.clear()
+            lbt._done.clear()
+            self.assertFalse(lbt.refresh(self.store, TUE + 60))
+            self.assertIn(('now', 'arena'), asked)
+            self.assertFalse([a for a in asked if a[0] == 'ended'])
+            self.assertTrue(self.rows("SELECT 1 FROM lb_weekly WHERE week='2026-W41' AND board='arena' AND final=0"))

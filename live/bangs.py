@@ -53,12 +53,16 @@ def frame(row: dict, crown: str | None) -> dict:
 class Bangs:
     def __init__(self, app):
         self.app = app
-        self.rows = LRU(CACHE)        # pid -> (fetched monotonic, tag | None)
+        self.rows = LRU(CACHE)        # pid -> (fetched monotonic, tag | None, bang id | None)
         self.off_until = 0.0
         self.crown = (0.0, None)      # (fetched monotonic, bang id holding 👑 this week)
 
     def forget(self, pid: str) -> None:
         self.rows.pop(pid, None)
+
+    def of_bang(self, bang: str) -> set:
+        """The cached players whose tag is of this bang (a leader's settings, an operator's hide / rename)."""
+        return {pid for pid, hit in list(self.rows.items()) if len(hit) > 2 and hit[2] == bang}
 
     def clear(self) -> None:
         self.rows = LRU(CACHE)
@@ -102,7 +106,7 @@ class Bangs:
             for pid in part:
                 row = got.get(pid)
                 tag = frame(row, crown) if row else None
-                self.rows.put(pid, (mono, tag))
+                self.rows.put(pid, (mono, tag, row['id'] if row else None))
                 if tag:
                     out[pid] = tag
         return out
@@ -151,9 +155,13 @@ class BangFeature(Feature):
             return
         tags = of_app(self.app)
         pids = [p for p in (e.get('pids') or []) if isinstance(p, str) and len(p) == 16]
-        if e.get('bang'):   # the bang itself changed (an admin rename / hide, the emoji or colour): every member's tag
-            tags.rows = LRU(CACHE)
-            await self._retag(None)
+        bang = e.get('bang') if isinstance(e.get('bang'), str) and len(e.get('bang')) <= 16 else None
+        if bang:   # the bang itself changed (an admin rename / hide, the emoji or colour): only its members' tags
+            only = set(pids) | tags.of_bang(bang)
+            for pid in only:
+                tags.forget(pid)
+            if only:
+                await self._retag(only)
         elif pids:
             for pid in pids:
                 tags.forget(pid)

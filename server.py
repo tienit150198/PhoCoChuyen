@@ -1825,7 +1825,9 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         town_projects.run_housekeeping(store)  # 🏗️ Công trình của phố: finish what is built, open the next project (guarded: exactly once)
         lixi.run_housekeeping(store)  # 🧧 Lì xì: what nobody took in 24 h goes back to its giver (row locks: exactly once)
         auction.run_housekeeping(store)  # 🔨 Nhà đấu giá: today's lots, then settle the ones that ended (row locks: exactly once)
-        pet_arena.run_housekeeping(store)  # 🏟️ 🛡️ the weekly pet cup and the bang war when their time comes (advisory locks: exactly once)
+        pet_arena.run_housekeeping(store)  # 🏟️ 🛡️ the weekly pet cup and the bang war when their time comes (advisory locks: exactly once); 🗄️ old matches to the archive
+        from game import bang
+        bang.run_housekeeping(store)  # 🗄️ ⚔️ old bang_log / bang_points / closed bang_stints rows to their archive tables (batched, off-peak, never dropped)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
 
 

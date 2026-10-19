@@ -28,7 +28,9 @@ import math
 import re
 import time
 
-from game.island_trips import ACCESS_SQL, INVITED_SQL, access_for, cap_for
+from game.island_trips import ACCESS_SQL, ACCESS_SQL_FRIENDS, INVITED_SQL, access_for, cap_for
+
+FRIENDS_ONLY_RETRY = 60.0   # seconds before the full check (island_public, island_visitors) is tried again
 from .auth import pid_of
 from .db import Error as DbError, log
 from .fair import clean_point
@@ -115,7 +117,21 @@ class IslandFeature(Feature):
             self._detach(c, why, broadcast=False)
 
     async def _access(self, sid: str, trip: str):
-        row = await self.db.fetchrow(ACCESS_SQL, (sid, trip))
+        mono = time.monotonic()
+        old = getattr(self, '_friends_only', 0.0)
+        if not old or mono - old >= FRIENDS_ONLY_RETRY:
+            try:
+                row = await self.db.fetchrow(ACCESS_SQL, (sid, trip))
+                self._friends_only = 0.0
+                return row, access_for(row, sid, time.time())
+            except DbError as e:
+                if getattr(e, 'sqlstate', None) != '42P01':   # anything but a missing table: as before
+                    raise
+                if not old:
+                    log('island access: island_public / island_visitors missing (the game server has not migrated yet): friends only')
+                self._friends_only = mono
+        # 🛟 deploy-order safety: the database is older than SCHEMA_VERSION 56: the friends-only check of 2.4.60
+        row = await self.db.fetchrow(ACCESS_SQL_FRIENDS, (sid, trip))
         return row, access_for(row, sid, time.time())
 
     async def _check(self, conn):

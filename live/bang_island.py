@@ -217,6 +217,8 @@ class BangIslandFeature(Feature):
         """Re-check access: every player about every check_every seconds, at most CHECKS_PER_TICK per tick."""
         due, mono = [], time.monotonic()
         for room in list(self.hub.rooms_with_prefix(PREFIX)):
+            if len(due) >= CHECKS_PER_TICK:   # the cap is for the whole tick, every room together (review fix 19/10)
+                break
             for conn in list(room.conns):
                 if mono - conn.ext.get('bisl_at', 0) >= self.check_every:
                     due.append(conn)

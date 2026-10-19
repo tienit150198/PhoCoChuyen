@@ -1,5 +1,14 @@
 {
   "strings": {
+  "Bang đang tạm nghỉ để bảo trì. Quay lại sau nhé!": "Guilds are paused for maintenance. Please come back later!",
+  "Đấu trường pet đang tạm nghỉ để bảo trì. Quay lại sau nhé!": "The pet arena is paused for maintenance. Please come back later!",
+  "Xây trên đảo đang tạm nghỉ để bảo trì. Công trình đang xây vẫn xong đúng giờ, quay lại sau nhé!": "Island building is paused for maintenance. Constructions in progress still finish on time; please come back later!",
+  "Khoản góp này trùng mã với một khoản trước. Thử lại nhé.": "This deposit clashed with an earlier one. Please try again.",
+  "Người này vừa đổi bang. Thử lại nhé.": "This player just changed guild. Please try again.",
+  "Hôm nay bạn đã vào 10 bang rồi. Mai hãy đổi bang tiếp nhé (vào bang vẫn miễn phí).": "You've joined 10 guilds today. Switch again tomorrow (joining stays free).",
+  "Hôm nay người này đã vào 10 bang rồi. Mai duyệt lại nhé.": "This player has joined 10 guilds today. Approve them again tomorrow.",
+  "Hôm nay bạn đã vào 10 bang rồi. Mai hãy lập bang nhé.": "You've joined 10 guilds today. Found your guild tomorrow.",
+  "Còn chưa tới 5 phút là Giờ vàng bắt đầu: không hủy được nữa.": "The Golden hour starts in under 5 minutes: it can no longer be cancelled.",
   "Xây": "Build",
   "Ghé đảo": "Visit islands",
   "Đảo mở cửa": "Open islands",

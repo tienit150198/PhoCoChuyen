@@ -184,3 +184,30 @@ class Off(LiveCase):
         self.assertNotIn('bisle', c.welcome['flags'])
         await c.send(t='bisl_in', bang='b1', look=LOOK)
         self.assertEqual((await c.expect('error'))['code'], 'off')
+
+
+class TickCap(BangIsland):
+    async def test_the_check_cap_holds_across_rooms(self):
+        """Review fix 19/10: at most CHECKS_PER_TICK re-checks a tick, every room together (the inner `break` alone let
+        each room take its own 200)."""
+        from types import SimpleNamespace
+        from live import bang_island as LBI
+        rooms = [SimpleNamespace(conns=[SimpleNamespace(ext={}) for _ in range(150)]) for _ in range(3)]
+        done = []
+
+        async def recheck(conn):
+            done.append(conn)
+            conn.ext['bisl_at'] = 10**12
+        orig = self.feat.hub.rooms_with_prefix
+        self.feat.hub.rooms_with_prefix = lambda prefix: rooms if prefix == LBI.PREFIX else orig(prefix)
+        self.feat._recheck = recheck
+        try:
+            await self.feat.tick(0)
+            self.assertEqual(len(done), LBI.CHECKS_PER_TICK)
+            await self.feat.tick(0)
+            self.assertEqual(len(done), 2 * LBI.CHECKS_PER_TICK)
+            await self.feat.tick(0)
+            self.assertEqual(len(done), 450)                                     # everyone, then nobody twice
+        finally:
+            del self.feat._recheck
+            self.feat.hub.rooms_with_prefix = orig

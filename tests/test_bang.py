@@ -120,8 +120,10 @@ class Reducer(unittest.TestCase):
         self.assertEqual(s2['journey']['wallet'], 0)
         self.assertEqual(s2['journey']['bank']['balance'], 7_000_000)
         self.assertEqual(before - 5_000_000, s2['journey']['bank']['balance'])
-        self.assertEqual(r['bang'], dict(k='found', n=1, name='Rồng Đỏ', emoji='🐉', color='do', motto='Đoàn kết', open=True))
-        self.assertEqual(s2['journey']['bang'], dict(v=1, n=1, sum=5_000_000, last=dict(n=1, k='found', a=5_000_000, at=int(T0))))
+        nonce = s2['journey']['bang']['last']['r']
+        self.assertRegex(nonce, r'^[0-9a-f]{16}$')                                  # the ledger ids' nonce (review fix 19/10)
+        self.assertEqual(r['bang'], dict(k='found', n=1, r=nonce, name='Rồng Đỏ', emoji='🐉', color='do', motto='Đoàn kết', open=True))
+        self.assertEqual(s2['journey']['bang'], dict(v=1, n=1, sum=5_000_000, last=dict(n=1, k='found', a=5_000_000, at=int(T0), r=nonce)))
         rows = [h for h in s2['journey']['history'] if h['label'].startswith('⚔️')]
         self.assertEqual([(h['amount'], h['kind']) for h in rows], [(-2_000_000, 'life')])
         validate_state(s2)
@@ -181,7 +183,9 @@ class Reducer(unittest.TestCase):
         refused(self, poor, 'jr_bang_give', 'not_enough', amount=6_000, **ok)
         s2, r = act(s, 'jr_bang_give', amount=1_000_000, **ok)
         self.assertEqual(s2['journey']['wallet'], 19_000_000)
-        self.assertEqual(r['bang'], dict(k='give', n=1, bang='b0123456789', a=1_000_000))
+        self.assertEqual(r['bang'], dict(k='give', n=1, bang='b0123456789', a=1_000_000, r=s2['journey']['bang']['last']['r']))
+        s3, r3 = act(s2, 'jr_bang_give', amount=1_000_000, **ok)
+        self.assertNotEqual(r3['bang']['r'], r['bang']['r'])                        # a new nonce each time
 
     def test_block_validate_and_upgrade(self):
         s = titled()
@@ -196,6 +200,16 @@ class Reducer(unittest.TestCase):
         j = {'bang': dict(v=1, n=3, sum=7, last=dict(n=3, k='give', a=5, at=1, extra=2), more=1)}
         bang.upgrade(j)
         self.assertEqual(j['bang'], dict(v=1, n=3, sum=7, last=dict(n=3, k='give', a=5, at=1)))
+        # the nonce is optional (a block written before it stays valid) and kept by upgrade; a bad one is refused
+        for ok_last in (dict(n=1, k='give', a=5, at=1), dict(n=1, k='give', a=5, at=1, r='0123456789abcdef')):
+            s['journey']['bang'] = dict(v=1, n=1, sum=5, last=ok_last)
+            validate_state(s)
+        s['journey']['bang'] = dict(v=1, n=1, sum=5, last=dict(n=1, k='give', a=5, at=1, r='nope'))
+        with self.assertRaises(GameError):
+            validate_state(s)
+        j = {'bang': dict(v=1, n=1, sum=5, last=dict(n=1, k='give', a=5, at=1, r='0123456789abcdef', extra=2))}
+        bang.upgrade(j)
+        self.assertEqual(j['bang']['last'], dict(n=1, k='give', a=5, at=1, r='0123456789abcdef'))
 
 
 class Base(unittest.TestCase):
@@ -208,7 +222,8 @@ class Base(unittest.TestCase):
         self.store = Store(Path(self.tmp.name) / 's.db', story=True)
         self.addCleanup(self.store.close_pool)
         bang._VIEW.clear()
-        bang._GH.update(at=0.0, by={})
+        bang.gh_reset()
+        self.addCleanup(bang.gh_reset)
         self.addCleanup(bang._VIEW.clear)
         self.t = [T0]
         p = patch.object(bang, 'now', lambda: self.t[0])
@@ -536,7 +551,8 @@ class Fund(Base):
         r = self.one('SELECT * FROM bangs WHERE id=?', (self.bid,))
         self.assertEqual((r['fund'], r['given']), (2_500_000, 2_500_000))
         led = self.rows('SELECT * FROM bang_fund WHERE bang=?', (self.bid,))
-        self.assertEqual([(x['id'], x['kind'], x['amount'], x['balance']) for x in led], [(f'g:{self.pid(b)}:1', 'give', 2_500_000, 2_500_000)])
+        nonce = self.store.read(b)[0]['journey']['bang']['last']['r']
+        self.assertEqual([(x['id'], x['kind'], x['amount'], x['balance']) for x in led], [(f'g:{self.pid(b)}:{nonce}', 'give', 2_500_000, 2_500_000)])
         m = self.mine(b)
         self.assertEqual((m['points'], m['earned'], m['given']), (2500, 2500, 2_500_000))
         self.set_level(self.bid, 'kho', 5)                                        # +10 % points
@@ -805,25 +821,42 @@ class Golden(Base):
         self.op(self.a, 'gh_cancel', id=int(g2['id']))
         self.assertEqual(self.one('SELECT status FROM bang_gh WHERE id=?', (g2['id'],))['status'], 'cancelled')
 
-    def test_windows_follow_membership_and_bind_per_command(self):
-        self.set_level(self.bid, 'den_vang', 1)
-        s0 = self.start()
-        self.op(self.a, 'gh_set', start=s0)
-        b, c = self.player(name='Minh'), self.player(name='Tú')
-        self.op(b, 'join', bang=self.bid)
-        self.t[0] = s0 + 60
-        self.op(c, 'join', bang=self.bid)                                          # joined after the start: not this window
-        self.op(b, 'leave', confirm=True)                                          # left during it: keeps it
+    def mult(self, token, *times):
+        tok = bang.bind(self.sid(token))
+        try:
+            return [bang.gold_mult(x) for x in times]
+        finally:
+            bang.unbind(tok)
+
+    def fresh(self, token=None):
+        """A new snapshot, as another process (or the next minute) reads it."""
+        bang.gh_reset()
         with self.store.connect() as db:
-            bang._GH['at'] = 0.0
-            bang.prepare(db, self.t[0])
+            bang.prepare(db, self.t[0], sid=self.sid(token) if token else None)
+
+    def test_windows_follow_membership_and_bind_per_command(self):
+        """A window counts for members who joined ≥ 24 h before it starts, and only until they leave."""
+        self.set_level(self.bid, 'den_vang', 1)
+        b, c = self.player(name='Minh'), self.player(name='Tú')
+        self.op(b, 'join', bang=self.bid)                                          # at T0
+        self.t[0] = T0 + 25 * 3600
+        s0 = self.start()                                                          # T0 + 27 h
+        self.op(self.a, 'gh_set', start=s0)
+        self.op(c, 'join', bang=self.bid)                                          # 2 h before the start: too late
+        self.t[0] = s0 + 60
+        self.fresh()
         for tok, want in ((self.a, 1), (b, 1), (c, 0)):
             self.assertEqual(len(bang.windows(self.sid(tok))), want, tok)
+        self.t[0] = s0 + 600
+        self.op(b, 'leave', confirm=True)                                          # left during it: ×2 only until then
+        for snapshot in ('this process', 'a fresh read'):
+            if snapshot == 'a fresh read':
+                self.fresh()
+            self.assertEqual(self.mult(b, s0 - 1, s0 + 5, s0 + 599, s0 + 600, s0 + 900), [100, 200, 200, 100, 100], snapshot)
+            self.assertEqual(self.mult(self.a, s0 + 5, s0 + 30 * 60 - 1, s0 + 30 * 60), [200, 200, 100], snapshot)
+            self.assertEqual(self.mult(c, s0 + 5), [100], snapshot)
         tok = bang.bind(self.sid(b))
         try:
-            self.assertEqual(bang.gold_mult(s0 + 5), 200)
-            self.assertEqual(bang.gold_mult(s0 + 31 * 60), 100)
-            self.assertEqual(bang.gold_mult(s0 - 1), 100)
             self.assertEqual(staff_market.x('milk_tea', s0 + 5, bang.gold_mult(s0 + 5)), 200)   # the market is off in tests: ×1
             self.assertEqual(golden_hour.scale_take(0, s0 + 5, bang.gold_mult(s0 + 5)), 100)    # take ×2
         finally:
@@ -831,18 +864,90 @@ class Golden(Base):
         self.assertEqual(bang.gold_mult(s0 + 5), 100)                              # unbound: nobody's
         # never both: inside the town's ×2 too, still ×2
         with patch.dict(os.environ, {'MNL_GOLDEN_OFF': '0'}), patch.object(golden_hour, '_plan', lambda d: dict(kind='hour', start=0, end=2**40, mult=200, minutes=60)):
-            tok = bang.bind(self.sid(b))
+            tok = bang.bind(self.sid(self.a))
             try:
                 self.assertEqual(staff_market.x('milk_tea', s0 + 5, bang.gold_mult(s0 + 5)) * 1, staff_market.market('milk_tea', s0 + 5) * 2)
                 self.assertEqual(golden_hour.scale_take(0, s0 + 5, bang.gold_mult(s0 + 5)), 100)
             finally:
                 bang.unbind(tok)
 
-    def test_the_command_binds_its_own_windows(self):
+    def test_hopping_between_two_bangs_windows(self):
+        """Review fix 19/10: hopping into another bang right before its window earns nothing there, and leaving a bang
+        stops its window; ×2 only where both rules hold. Offline catch-up (the windows read later, from the player's own
+        older ones) books exactly the same."""
+        e = self.player(name='Hùng')
+        other = self.found(e, 'Hổ Xám')
+        for bid in (self.bid, other):
+            self.set_level(bid, 'den_vang', 1)
+        h, g = self.player(name='Hà'), self.player(name='Giang')
+        self.op(h, 'join', bang=self.bid)                                          # h in Rồng Đỏ since T0
+        self.op(g, 'join', bang=other)                                             # g in Hổ Xám since T0
+        self.t[0] = T0 + 25 * 3600
+        wx, wy = self.start(2), self.start(3)                                      # Rồng Đỏ's window, then Hổ Xám's
+        self.op(self.a, 'gh_set', start=wx)
+        self.op(e, 'gh_set', start=wy)
+        self.t[0] = wx + 600
+        self.op(h, 'join', bang=other)                                             # hops to Hổ Xám 50 min before its window
+        self.t[0] = wy + 60
+        self.op(h, 'join', bang=self.bid)                                          # and back during it
+        self.t[0] = wy + 120
+        want_h = [200, 200, 100, 100, 100, 100]
+        times_h = (wx + 5, wx + 599, wx + 600, wx + 1700, wy + 5, wy + 100)
+        for snapshot in ('this process', 'a fresh read'):
+            if snapshot == 'a fresh read':
+                self.fresh(h)
+            self.assertEqual(self.mult(h, *times_h), want_h, snapshot)
+            self.assertEqual(self.mult(g, wx + 5, wy + 5, wy + 1799, wy + 1800), [100, 200, 200, 100], snapshot)
+        # back much later (the windows left the shared snapshot): the player's own older windows, the same answers
+        self.t[0] = wy + 6 * 3600
+        bang.gh_reset()
+        with self.store.connect() as db:
+            for tok in (h, g):
+                bang.prepare(db, self.t[0], sid=self.sid(tok))
+        self.assertEqual(bang._GH['wins'], {})
+        self.assertEqual(self.mult(h, *times_h), want_h)
+        self.assertEqual(self.mult(g, wx + 5, wy + 5, wy + 1799, wy + 1800), [100, 200, 200, 100])
+        # the snapshot is small: only windows on now (± an hour / three hours), never every member's history
+        self.t[0] = wx - 1800
+        self.fresh()
+        self.assertEqual({k: len(v) for k, v in bang._GH['wins'].items()}, {self.bid: 1})
+
+    def test_joins_a_day_are_capped_softly(self):
+        """Joining stays free, at most C.SWITCH_DAY_MAX bangs a Vietnam day (here 3), with a clear message."""
+        chiefs = [self.player(name=f'Chủ {i}') for i in range(3)]
+        others = [self.found(tok, f'Bang Số {i}') for i, tok in enumerate(chiefs)]
+        h = self.player(name='Hà')
+        with patch.object(C, 'SWITCH_DAY_MAX', 3):
+            for bid in (self.bid, others[0], others[1]):
+                self.op(h, 'join', bang=bid)
+            msg = self.refused_op(h, 'join', 'switch_cap', bang=others[2])
+            self.assertIn('3 bang', msg)
+            self.assertEqual(self.mine(h)['bang'], others[1])                      # still where they were
+            self.op(h, 'join', bang=others[1])                                     # the same bang: nothing to count
+            self.op(chiefs[2], 'set', open=False)                                  # asking is free; approving counts
+            self.op(h, 'join', bang=others[2])
+            self.assertIn('người này', self.refused_op(chiefs[2], 'approve', 'switch_cap', pid=self.pid(h)))
+            self.assertIn('3 bang', self.refused_cmd(h, 'jr_bang_found', 'switch_cap', name='Bang Mới', emoji='🐉', color='do',
+                                                    open=True, confirm=True))     # founding counts too: nothing paid
+            self.t[0] = bang.day_start(self.t[0]) + 86400 + 60                     # the next Vietnam day
+            self.op(chiefs[2], 'approve', pid=self.pid(h))
+            self.assertEqual(self.mine(h)['bang'], others[2])
+
+    def test_cancel_freezes_before_the_start(self):
         self.set_level(self.bid, 'den_vang', 1)
         s0 = self.start()
         self.op(self.a, 'gh_set', start=s0)
+        g = self.one('SELECT * FROM bang_gh WHERE bang=?', (self.bid,))
+        self.t[0] = s0 - 200                                                       # in the last 5 minutes
+        self.refused_op(self.a, 'gh_cancel', 'started', id=int(g['id']))
+
+    def test_the_command_binds_its_own_windows(self):
+        self.set_level(self.bid, 'den_vang', 1)
+        self.t[0] = T0 + 25 * 3600
+        s0 = self.start()
+        self.op(self.a, 'gh_set', start=s0)
         other = self.player(name='Ngoài')
+        self.t[0] = s0 + 5
         seen = {}
         from game.storage import Store
         real = Store._apply
@@ -850,18 +955,25 @@ class Golden(Base):
         def spy(store, raw, *a, **k):
             seen.setdefault(k.get('sid'), bang.gold_mult(s0 + 5))
             return real(store, raw, *a, **k)
-        bang._GH['at'] = 0.0
+        bang.gh_reset()
         with patch.object(Store, '_apply', spy):
             self.cmd(self.a, 'jr_seen', ids=['x'])
             self.cmd(other, 'jr_seen', ids=['x'])
         self.assertEqual(seen, {self.sid(self.a): 200, self.sid(other): 100})
 
+    def test_the_locked_path_reads_the_windows_before_its_lock(self):
+        """storage._command_locked: prepare runs on a connection of its own, before the save's lock (review fix 19/10)."""
+        src = inspect.getsource(__import__('game.storage', fromlist=['Store']).Store._command_locked)
+        self.assertLess(src.index('_bang_prepare(pdb'), src.index('db.begin()'))
+        self.assertEqual(src.count('_bang_prepare('), 1)
+
     def test_ticker_line(self):
         self.set_level(self.bid, 'den_vang', 1)
+        self.t[0] = T0 + 25 * 3600
         s0 = self.start()
         self.op(self.a, 'gh_set', start=s0)
         self.t[0] = s0 + 30
-        bang._GH['at'] = 0.0
+        bang.gh_reset()
         with patch.object(mr, 'now', lambda: self.t[0]):
             out = mr.news(self.store, 0, self.a)
         self.assertIn('Giờ vàng của bang Rồng Đỏ', out['golden']['text'])

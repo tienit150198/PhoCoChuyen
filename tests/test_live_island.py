@@ -179,3 +179,21 @@ class Island(LiveCase):
         self.assertEqual((await self.ev(owner, 'out'))['pid'], visitor.pid)
         await friend.send(t='isl_emote', e='wave')                               # the friend aboard is still there
         self.assertEqual((await self.ev(owner, 'emote'))['e'], 'wave')
+
+    async def test_deploy_order_without_the_public_tables(self):
+        """Review fix 19/10: a database without island_public / island_visitors (the live service is newer than the game
+        server's migration): the owner and the friends aboard still get in (2.4.60's friends-only check)."""
+        self.setup_trip()
+        self.accept(0)
+        self.sql('ALTER TABLE island_public RENAME TO island_public_later')
+        self.sql('ALTER TABLE island_visitors RENAME TO island_visitors_later')
+        try:
+            owner = await self.enter(self.owner)
+            guest = await self.enter(self.people[0][0])
+            self.assertEqual((await self.ev(owner, 'in'))['pid'], guest.pid)
+            c = await self.connect(self.stranger)
+            await c.send(t='isl_in', trip=self.trip, look=LOOK, g='male')
+            self.assertEqual((await c.expect('error'))['code'], 'no_island')
+        finally:
+            self.sql('ALTER TABLE island_public_later RENAME TO island_public')
+            self.sql('ALTER TABLE island_visitors_later RENAME TO island_visitors')

@@ -125,3 +125,28 @@ def in_save(state: dict, career: str, kind: str) -> list | None:
     if not isinstance(node, list):
         return []
     return list(reversed(node)) if spec.get("newest_first") else list(node)
+
+
+# ---------------------------------------------------------------- tables: rows past their keep (SCHEMA_VERSION 59)
+PEAK = ((17, 30), (20, 0))      # the owner's peak hours (Vietnam): no archiving batch then
+
+
+def peak(t: float) -> bool:
+    """Inside the 17:30–20:00 Vietnam peak (housekeeping that can wait does)."""
+    import datetime
+    d = datetime.datetime.fromtimestamp(t, datetime.timezone(datetime.timedelta(hours=7)))
+    m = d.hour * 60 + d.minute
+    return PEAK[0][0] * 60 + PEAK[0][1] <= m < PEAK[1][0] * 60 + PEAK[1][1]
+
+
+def move_rows(db, src: str, dst: str, ids: list, t: float, key: str = 'id') -> int:
+    """Rows `ids` of table `src` into its archive `dst` (the same columns, then archived_at), in the caller's
+    transaction: copied, then removed from `src`. A copy that fails (a column added to one table only) raises before
+    anything is removed: a row is never dropped. Returns the rows moved."""
+    if not ids:
+        return 0
+    n = db.execute(f'INSERT INTO {dst} SELECT s.*, ? FROM {src} s WHERE s.{key} = ANY(?)', (t, list(ids))).rowcount
+    if n != len(ids):
+        raise RuntimeError(f'archive {src}: {n} of {len(ids)} rows copied')
+    db.execute(f'DELETE FROM {src} WHERE {key} = ANY(?)', (list(ids),))
+    return n

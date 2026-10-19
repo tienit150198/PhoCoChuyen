@@ -218,8 +218,7 @@ def act(store, token, op, data, state, ip=''):
         A.need(pet, 'Bé này không ở nhà hay trại nuôi.', 'not_owned', 409)
         prov = _providers()[kind]
         A.need(prov.can_pick(db, tid, sid), 'Bạn chưa được ra trận cho bang tuần này.', 'not_allowed', 403)
-        n = int(db.execute('SELECT COUNT(*) FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=? AND sid<>?',
-                           (week, kind, tid, sid)).fetchone()[0])
+        n = len(current_picks(db, week, kind, tid, exclude=sid))   # only members still in the team count (leavers' picks never block)
         A.need(n < SIZE, f'Đội đã đủ {SIZE} bé rồi.', 'full', 409)
         f = A.fighter(state, pet)
         db.execute('INSERT INTO pet_war_picks(week, sid, team_kind, team_id, name, pet, snap, at) VALUES(?,?,?,?,?,?,?,?) '
@@ -229,18 +228,33 @@ def act(store, token, op, data, state, ip=''):
     return store.transaction(run)
 
 
+def current_picks(db, week: str, kind: str, tid: str, exclude: str = '') -> list:
+    """The team's picks of `week` (oldest first) whose player is still in that team now (a pick of someone who left, was
+    kicked or whose team is hidden does not count: the provider's team_of decides, as at the lock)."""
+    rows = db.execute('SELECT sid FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=? AND sid<>? ORDER BY at, sid',
+                      (week, kind, tid, exclude)).fetchall()
+    out = []
+    for r in rows:
+        now_team = team_of(db, r['sid'])
+        if now_team and (now_team[0], now_team[1]) == (kind, tid):
+            out.append(r['sid'])
+    return out
+
+
 def on_pet_commit(db, sid: str, after: dict) -> None:
     """The fielded pet's snapshot follows the pet until the lineups lock (game/pet_arena.py on_pet_commit)."""
     t = A.now()
     if t >= lock_of(t):
         return
     week = A.vn_week(t)
-    r = db.execute('SELECT pet FROM pet_war_picks WHERE week=? AND sid=?', (week, sid)).fetchone()
+    r = db.execute('SELECT pet, snap FROM pet_war_picks WHERE week=? AND sid=?', (week, sid)).fetchone()
     if not r:
         return
     pet = next((p for p in A.candidates(after) if p['id'] == r['pet']), None)
     if pet:
-        db.execute('UPDATE pet_war_picks SET snap=? WHERE week=? AND sid=?', (A._dump(A.fighter(after, pet)), week, sid))
+        snap = A._dump(A.fighter(after, pet))
+        if snap != r['snap']:   # nothing changed (most jr_pet_* commands): no write
+            db.execute('UPDATE pet_war_picks SET snap=? WHERE week=? AND sid=?', (snap, week, sid))
 
 
 # ---------------------------------------------------------------- the war
@@ -408,7 +422,7 @@ def summary(store, sid: str, t: float) -> dict:
     with store.connect() as db:
         team = team_of(db, sid)
         pick = db.execute('SELECT pet, snap FROM pet_war_picks WHERE week=? AND sid=?', (week, sid)).fetchone()
-        n = int(db.execute('SELECT COUNT(*) FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=?', (week, team[0], team[1])).fetchone()[0]) if team else 0
+        n = len(current_picks(db, week, team[0], team[1])) if team else 0
         done = db.execute('SELECT * FROM pet_war WHERE week=?', (week,)).fetchone()
     phase = 'pick' if t < lock else 'none' if not done or done['status'] != 'done' else 'live' if t < end_of(done) else 'done'
     return dict(week=week, start=start, lock=lock, phase=phase, team=dict(kind=team[0], id=team[1], name=team[2], label=team[3]) if team else None,
@@ -425,8 +439,9 @@ def view(store, token) -> dict:
         war = db.execute('SELECT * FROM pet_war WHERE week=?', (week,)).fetchone()
         picks = []
         if team:
+            still = set(current_picks(db, week, team[0], team[1]))
             picks = [dict(r) for r in db.execute('SELECT sid, name, pet, snap FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=? ORDER BY at, sid',
-                                                 (week, team[0], team[1])).fetchall()]
+                                                 (week, team[0], team[1])).fetchall() if r['sid'] in still]
         matches = [dict(r) for r in db.execute('SELECT week, rd, slot, a_name, b_name, a_kind, a_id, b_kind, b_id, win, wa, wb, start, data '
                                                'FROM pet_war_matches WHERE week=? ORDER BY rd, slot', (week,)).fetchall()] if war else []
         board = ladder(db, t=t)

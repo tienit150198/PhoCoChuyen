@@ -100,11 +100,12 @@ def _cand_prepare(db,action:str)->None:
     except Exception:  # noqa: BLE001 - never fails a command: without counts no cap is known
         pass
 
-def _bang_prepare(db)->None:
-    """⏰ Every bang member's Giờ vàng windows (game/bang.py prepare): read at most once a minute; never fails a command."""
+def _bang_prepare(db,sid:str|None=None)->None:
+    """⏰ The bangs' Giờ vàng windows (game/bang.py prepare): the shared snapshot at most once a minute (one thread a
+    process), this player's older ones every half hour; on a connection outside any locked transaction; never fails a command."""
     try:
         from . import bang
-        bang.prepare(db)
+        bang.prepare(db,sid=sid)
     except Exception:  # noqa: BLE001 - without windows nobody gets the bang's ×2
         pass
 
@@ -548,7 +549,7 @@ class Store:
                 else:row=_snapshot_row(db.execute(_SNAPSHOT,(request_id,sid),text_bytes=True).fetchone())
                 fh.loc_prepare(db,action)  # a fair luck round: is the hourly 🍀 gate open (no read for other actions)
                 _cand_prepare(db,action)  # 👮 the CAND seat counts (PGĐ ≤ 5, GĐ ≤ 1: game/cand_roster.py)
-                _bang_prepare(db)  # ⏰ the bangs' Giờ vàng windows (game/bang.py): one read a minute per process
+                _bang_prepare(db,sid)  # ⏰ the bangs' Giờ vàng windows (game/bang.py): one read a minute per process, no lock held
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             who[0]=sid
             # Still at the handed-over revision (no text fetched): start from that parse of its text.
@@ -805,6 +806,7 @@ class Store:
         compute under the write lock, like before optimistic commands."""
         db=None
         try:
+            with self.connect() as pdb:_bang_prepare(pdb,sid)  # ⏰ before the save's lock, never inside it (game/bang.py)
             db=self.connect()
             db.begin();self._patient(db)
             row=_snapshot_row(db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
@@ -816,7 +818,6 @@ class Store:
             before_out=[]
             fh.loc_prepare(db,action)
             _cand_prepare(db,action)
-            _bang_prepare(db)
             first=tree_copy(payload) if action in fh.LOC_ACTIONS else payload
             raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,first,internal,row["revision"],before_out=before_out)
             if not fh.loc_claim(db,result):  # 🍀 taken by another worker meanwhile: the same command, gate shut

@@ -366,7 +366,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.content?.journey?.island)items.push(['island','sun','Đảo riêng'],['islandOpen','globe','Đảo mở cửa']);  // 🏝️ v4/island.js (own dialog): only once the server has it; 🌍 the islands open to everyone (its Ghé đảo tab)
   if(api.content?.bang_island)items.push(['bangIsland','flag','Đảo bang']);  // ⚔️ v4/bang-island.js (own dialog): only while the server has it on (MNL_BANG_ISLAND)
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
-  if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng'],['petArena','award','Đấu trường pet']);  // 🐾 v4/pets.js, ⚔️ v4/pet-arena.js (own dialogs): only once the server has pets
+  if(api.state?.journey?.story&&api.state.journey.pets){items.push(['pets','paw','Thú cưng']);if(!api.content?.off?.pet_arena)items.push(['petArena','award','Đấu trường pet']);}  // 🐾 v4/pets.js, ⚔️ v4/pet-arena.js (own dialogs): only once the server has pets; 🛑 MNL_PET_ARENA_OFF hides the arena
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm'],['luxFw','sparkle','Bắn pháo hoa']);  // 🎆 #274 "bắn pháo hoa chỗ nào": one tap from Khu phố
   if(api.state?.journey?.story&&api.content?.journey?.lixi)items.push(['lixi','gift','Lì xì']);  // 🧧 phát & giật lì xì (v4/lixi.js, own dialog): only once the server has it
@@ -376,7 +376,7 @@ function navItems(c){
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story)items.push(['townProjects','building','Công trình của phố']);  // 🏗️ cả phố góp tiền xây (v4/town-projects.js, own dialog)
-  if(api.state?.journey?.story)items.push(['bang','shield','Bang',api.bangAlerts||0]);  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog)
+  if(api.state?.journey?.story&&!api.content?.off?.bang)items.push(['bang','shield','Bang',api.bangAlerts||0]);  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)

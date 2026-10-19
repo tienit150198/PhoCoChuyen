@@ -600,3 +600,61 @@ class Schema(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ReviewFixes(Store):
+    """Review fixes 19/10: no snapshot rewrite when nothing changed, old matches archived (a replay still finds them),
+    the ops' kill switch MNL_PET_ARENA_OFF."""
+
+    def test_pet_commit_writes_only_what_changed(self):
+        a = self.arena(('Mít',))
+        self.op(a, 'view')
+        st = self.store.read(a)[0]
+        writes = []
+
+        class Spy:
+            def __init__(self, db):
+                self.db = db
+
+            def execute(self, sql, args=()):
+                if sql.lstrip().upper().startswith('UPDATE'):
+                    writes.append(sql)
+                return self.db.execute(sql, args)
+        self.store.transaction(lambda db: A.on_pet_commit(Spy(db), self.sid(a), st))
+        self.assertEqual(writes, [])                                     # the same pets: no write, no row lock
+        pid = px.all_pets(st)[0]['id']
+        self.cmd(a, 'jr_pet_train', {'pet': pid, 'stat': 'spd'})          # a real change still follows
+        st2 = self.store.read(a)[0]
+        snap = self.row(a)['snap']
+        self.store.transaction(lambda db: A.on_pet_commit(Spy(db), self.sid(a), st2))
+        self.assertEqual((writes, self.row(a)['snap']), ([], snap))
+
+    def test_old_matches_move_to_the_archive_and_still_replay(self):
+        a, b = self.arena(), self.arena()
+        self.op(b, 'view', ip='2.2.2.2')
+        out = self.op(a, 'fight')['match']
+        old_t = A.now() + 40 * A.DAY
+        with self.store.connect() as db:
+            before = dict(db.execute('SELECT * FROM pet_arena_matches WHERE id=?', (out['id'],)).fetchone())
+        with mock.patch.object(A, 'ARCHIVE_BATCH', 1):
+            self.assertEqual(A.archive_matches(self.store, old_t), 1)
+        with self.store.connect() as db:
+            self.assertIsNone(db.execute('SELECT 1 FROM pet_arena_matches WHERE id=?', (out['id'],)).fetchone())
+            moved = dict(db.execute('SELECT * FROM pet_arena_matches_old WHERE id=?', (out['id'],)).fetchone())
+        self.assertEqual({k: v for k, v in moved.items() if k != 'archived_at'}, before)
+        self.assertEqual(moved['archived_at'], old_t)
+        self.assertEqual(self.op(b, 'replay', id=out['id'])['match']['ev'], out['ev'])
+        self.assertEqual(A.archive_matches(self.store, old_t), 0)
+        self.op(a, 'fight')
+        self.assertEqual(A.archive_matches(self.store, A.now()), 0)               # a recent match stays where it is read
+
+    def test_kill_switch(self):
+        a = self.arena()
+        with mock.patch.dict('os.environ', {'MNL_PET_ARENA_OFF': '1'}):
+            for op in ('view', 'fight', 'war', 'cup_board'):
+                with self.assertRaises(A.ArenaError) as cm:
+                    self.op(a, op)
+                self.assertEqual((cm.exception.code, cm.exception.status), ('off', 503))
+            from game import content
+            self.assertEqual(content._kill_switches()['off'], dict(pet_arena=True))
+        self.assertIn('team', self.op(a, 'view'))

@@ -186,14 +186,16 @@ def _sync(db, sid: str, state: dict, display: str, tag: str, t: float, ids=None)
 def on_pet_commit(db, sid: str, after: dict) -> None:
     """A jr_pet_* command (game/pets.py command_commit, the save's own transaction): the lineup's snapshot follows the
     pets (a fusion, training, gear). Nothing for a player who never opened the arena."""
-    row = db.execute('SELECT lineup FROM pet_arena WHERE sid=?', (sid,)).fetchone()
+    row = db.execute('SELECT lineup, snap FROM pet_arena WHERE sid=?', (sid,)).fetchone()
     if row:
         ids = _j(row['lineup'], [])
         have = {p['id'] for p in candidates(after)}
         ids = [i for i in ids if i in have] or default_lineup(after)
         snap = lineup_snap(after, ids)
-        db.execute('UPDATE pet_arena SET lineup=?, snap=?, size=?, pw=? WHERE sid=?',
-                   (_dump([f['id'] for f in snap]), _dump(snap), len(snap), sum(f['pw'] for f in snap), sid))
+        lineup, text = _dump([f['id'] for f in snap]), _dump(snap)
+        if (lineup, text) != (row['lineup'], row['snap']):   # nothing changed (a feed, a walk): no write, no row lock
+            db.execute('UPDATE pet_arena SET lineup=?, snap=?, size=?, pw=? WHERE sid=?',
+                       (lineup, text, len(snap), sum(f['pw'] for f in snap), sid))
     from . import pet_war
     pet_war.on_pet_commit(db, sid, after)
 
@@ -550,6 +552,11 @@ def replay(store, token, data) -> dict:
         sid, _ = store.resolve(token)
     with store.connect() as db:
         row = db.execute('SELECT * FROM pet_arena_matches WHERE id=?', (mid,)).fetchone()
+        if not row:   # 🗄️ an old match moved to the archive (archive_matches): still a replay
+            try:
+                row = db.execute('SELECT * FROM pet_arena_matches_old WHERE id=?', (mid,)).fetchone()
+            except Exception:  # noqa: BLE001 - a database before SCHEMA_VERSION 59
+                row = None
     need(row, 'Không thấy trận này.', 'not_found', 404)
     return dict(ok=True, match=_payload(dict(row), sid))
 
@@ -622,8 +629,19 @@ OPS = ('view', 'lineup', 'fight', 'friend', 'friends', 'npc', 'replay', 'ladder'
        'war', 'war_pick', 'war_unpick', 'war_match')
 
 
+OFF_TEXT = 'Đấu trường pet đang tạm nghỉ để bảo trì. Quay lại sau nhé!'
+
+
+def off() -> bool:
+    """🛑 MNL_PET_ARENA_OFF=1 (ops' kill switch, default unset: on): the 🐾 Đấu trường pet entry hides (content `off`) and
+    every /api/arena/<op> is refused gracefully. Nothing changes in any save (the arena never writes one); the weekly
+    cup and the bang war still play at their time (housekeeping), lineup snapshots still follow the pets."""
+    return os.environ.get('MNL_PET_ARENA_OFF', '').strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 def act(store, token, op: str, data: dict, state, ip: str = '') -> dict:
     """POST /api/arena/<op> (server.py). ArenaError → the caller's error answer."""
+    need(not off(), OFF_TEXT, 'off', 503)
     need(op in OPS, 'Thao tác không hợp lệ.', 'unknown', 404)
     need(isinstance(data, dict), 'Thông tin không hợp lệ.', 'bad')
     if op == 'view':
@@ -648,10 +666,47 @@ def act(store, token, op: str, data: dict, state, ip: str = '') -> dict:
     return pet_war.act(store, token, op, data, state, ip)
 
 
+KEEP_MATCH_DAYS = 30           # pet_arena_matches older than this go to pet_arena_matches_old (a replay still finds them)
+ARCHIVE_EVERY = 600.0
+ARCHIVE_BATCH = 500
+ARCHIVE_ROUNDS = 4
+_ARCH = dict(at=0.0)
+
+
+def archive_matches(store, t: float | None = None) -> int:
+    """Matches older than KEEP_MATCH_DAYS into pet_arena_matches_old (SCHEMA_VERSION 59), a few batches of
+    ARCHIVE_BATCH, each its own transaction (copied, then removed: game/archive.py move_rows). Recent matches, the
+    day's and the week's counts (met_today, the season's opponents, the cup's rounds) stay where they are read."""
+    from . import archive as ar
+    t = now() if t is None else t
+    moved = 0
+    for _ in range(ARCHIVE_ROUNDS):
+        def batch(db):
+            ids = [r['id'] for r in db.execute('SELECT id FROM pet_arena_matches WHERE at<? ORDER BY at LIMIT ? FOR UPDATE SKIP LOCKED',
+                                               (t - KEEP_MATCH_DAYS * DAY, ARCHIVE_BATCH)).fetchall()]
+            return ar.move_rows(db, 'pet_arena_matches', 'pet_arena_matches_old', ids, t)
+        n = store.transaction(batch)
+        moved += n
+        if n < ARCHIVE_BATCH:
+            break
+    return moved
+
+
 def run_housekeeping(store) -> None:
-    """server.py housekeeping (every 30 s, one process): the weekly cup and the bang war when their time comes."""
+    """server.py housekeeping (every 30 s, one process): the weekly cup and the bang war when their time comes; old
+    matches into the archive every ARCHIVE_EVERY seconds outside the peak hours."""
     import sys
+    from . import archive as ar
     from . import pet_cup, pet_war
+    t = now()
+    if t - _ARCH['at'] >= ARCHIVE_EVERY and not ar.peak(t):
+        _ARCH['at'] = t
+        try:
+            n = archive_matches(store, t)
+            if n:
+                sys.stderr.write(f'[pet_arena] archived {n} matches\n')
+        except Exception as e:  # noqa: BLE001 - an older schema: no archive table yet
+            sys.stderr.write(f'[pet_arena] archive: {type(e).__name__}\n')
     for name, fn in (('cup', pet_cup.run_due), ('war', pet_war.run_due)):
         try:
             fn(store)

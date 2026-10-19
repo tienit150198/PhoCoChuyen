@@ -220,6 +220,7 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
             built = db.execute("SELECT v FROM leaderboard_meta WHERE k='backfill'").fetchone()
         if row and row[0].split('|')[0] == day:
             _done[key] = day
+            heal(store, t)   # done today by another process: perhaps an older build that knows only its own boards
             return False
         if built and built[0] != str(VERSION):   # the boards are being rebuilt (a new formula): wait for them
             _pending[key] = time.monotonic()
@@ -260,6 +261,77 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
         _done[key] = day
         clear_cache()
         return bool(did)
+
+
+# ---------------------------------------------------------------- mixed rollout (review fix 19/10)
+# 2.4.60 refreshes only the boards it knows: its daily refresh deletes every current row (final=0) and writes its own
+# boards back, its Monday freeze writes the ended week's finals of its boards only. The boards new since then are
+# re-derived here, by the next process of this build that sees the day done (refresh above), once a process a day:
+# * this week's current rows (final=0) of 🏝️ island, ⚔️ arena, 🏟️ pet_cup, 🛡️ pet_war: from their standings now;
+# * the ended week's finals (final=1) of arena (that week's season), pet_cup (the latest cup of a week up to it) and
+#   pet_war (the latest war over by the week's end): exact, as long as it runs before the next cup / war, so only on the
+#   first day of the new week.
+# What cannot be fixed from here: 🏝️ island's final row of an ended week frozen by 2.4.60 (the board is the islands'
+# beauty *now*: the builds at the week's end are not kept), and the hours between 2.4.60's refresh and this heal, when
+# those boards show no holder.
+NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR)
+HEAL_LOCK = 17863
+
+
+def _new_standings(db, board: str, t: float) -> list:
+    if board == ISLAND:
+        from . import island_lb
+        try:
+            return island_lb.standings(db, TOP, t)
+        except Exception:  # noqa: BLE001
+            return []
+    return _pet_standings(db, board, t, TOP)
+
+
+def _ended_standings(db, board: str, t: float, prev: str) -> list:
+    try:
+        if board == ARENA:
+            return _pet_standings(db, ARENA, week_start(t) - 3600, TOP)
+        if board == PET_CUP:
+            from . import pet_cup
+            return pet_cup.standings(db, TOP, prev)
+        from . import pet_war
+        return pet_war.standings(db, week_start(t))
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def heal(store, t: float | None = None) -> bool:
+    """Re-derive the rows of NEW_BOARDS an older build's refresh or freeze left out (see above). True when it wrote."""
+    t = now() if t is None else t
+    day, week = vn_day(t), vn_week(t)
+    prev = vn_week(week_start(t) - 3600)
+
+    def run(db):
+        db.execute('SELECT pg_advisory_xact_lock(?, hashtext(?))', (HEAL_LOCK, week))
+        have = {r['board'] for r in db.execute('SELECT DISTINCT board FROM lb_weekly WHERE final=0 AND week=? AND board = ANY(?)',
+                                               (week, list(NEW_BOARDS))).fetchall()}
+        rows = [r for b in NEW_BOARDS if b not in have for r in _new_standings(db, b, t)]
+        if rows:
+            _insert(db, week, rows, 0, day, t)
+        ended = []
+        if t < week_start(t) + 86400 and db.execute('SELECT 1 FROM lb_weekly WHERE final=1 AND week=? LIMIT 1', (prev,)).fetchone():
+            had = {r['board'] for r in db.execute('SELECT DISTINCT board FROM lb_weekly WHERE final=1 AND week=? AND board = ANY(?)',
+                                                  (prev, [ARENA, PET_CUP, PET_WAR])).fetchall()}
+            ended = [r for b in (ARENA, PET_CUP, PET_WAR) if b not in had for r in _ended_standings(db, b, t, prev)]
+            if ended:
+                _insert(db, prev, ended, 1, day, t)
+        if rows or ended:
+            from .live_chat import notify
+            notify(db, dict(op='honours_lb'))
+        return bool(rows or ended)
+    try:
+        did = bool(store.transaction(run, 250))
+    except Exception:  # noqa: BLE001 - a page or the housekeeping never fails because of this
+        return False
+    if did:
+        clear_cache()
+    return did
 
 
 def run_refresh(store) -> None:

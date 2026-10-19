@@ -142,6 +142,13 @@ GOLDEN_AHEAD_MIN = 3600        # set at least 1 hour ahead
 GOLDEN_AHEAD_MAX = 7 * 86400   # at most 7 days ahead
 GOLDEN_STEP = 300              # on 5-minute marks
 GOLDEN_LOOKBACK = 14 * 86400   # windows a settlement still books (offline catch-up within two weeks)
+GOLDEN_SENIORITY = 86400       # a window counts for members who joined the bang at least 24 h before it starts (review 19/10:
+                               # no hopping into another bang's window), and only while they are still in (until they leave)
+GOLDEN_CANCEL_FREEZE = 300     # a window can no longer be cancelled in its last 5 minutes before the start (every process's
+                               # snapshot of the windows is at most a minute old: none books a cancelled one)
+
+# ---------------------------------------------------------------- anti-churn (joining stays free, owner 19/10)
+SWITCH_DAY_MAX = 10            # bangs joined (or founded) a Vietnam day at most per player: a soft cap against hopping
 
 # ---------------------------------------------------------------- 🛍️ Cửa hàng bang (points only)
 # id: (name, emoji, price in points, needs (facility, level) or None, kind)

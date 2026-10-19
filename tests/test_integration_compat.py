@@ -1,7 +1,9 @@
-"""Rollback of the integrated build (Xây trên đảo + Bang + Đấu trường pet + Đảo bang, SCHEMA_VERSION 58) to 2.4.60
+"""Rollback of the integrated build (Xây trên đảo + Bang + Đấu trường pet + Đảo bang, SCHEMA_VERSION 59 since the review
+fixes: the archive tables) to 2.4.60
 (e05bacf5): one save holding every new save key at once (journey.islb, journey.bang, pets that fought and were fielded in
-the bang war) validates, migrates and takes a command there, the blocks untouched; and 2.4.60's startup on a database
-at 58 with rows in every new table runs no DDL (same tables, same indexes, version never lowered, rows kept)."""
+the bang war, journey.bang.last with its nonce) validates, migrates and takes a command there, the blocks untouched; and
+2.4.60's startup on a database at 59 with rows in every new table (the archive tables too) runs no DDL (same tables, same
+indexes, version never lowered, rows kept)."""
 import io
 import json
 import os
@@ -53,7 +55,8 @@ print(json.dumps([v,n]))
 store.close_pool()
 '''
 TABLES = ('island_builds', 'island_public', 'island_visitors', 'bangs', 'bang_members', 'bang_fund', 'bang_points',
-          'pet_arena', 'pet_arena_matches', 'pet_war_picks')
+          'pet_arena', 'pet_arena_matches', 'pet_war_picks', 'bang_log_old', 'bang_points_old', 'bang_stints_old',
+          'pet_arena_matches_old')
 
 
 class Integrated(Base):
@@ -110,12 +113,19 @@ class Integrated(Base):
         for before, after in got:
             self.assertEqual(before, after)
             self.assertEqual(json.loads(before)[1]['n'], 2, 'journey.bang as written here (found + give)')
+            self.assertRegex(json.loads(before)[1]['last']['r'], r'^[0-9a-f]{16}$', 'the nonce rides along untouched')
 
-    def test_2_4_60_starts_on_schema_58_without_ddl(self):
+    def test_2_4_60_starts_on_schema_59_without_ddl(self):
         self.everything()
         with self.store.connect() as db:
             db.execute("INSERT INTO island_public(trip, owner, island, status, opened) VALUES('t1', 'o', 'dao_dua', 'open', 1)")
             db.execute("INSERT INTO island_visitors(trip, guest, status, at) VALUES('t1', 'g', 'in', 1)")
+            db.execute("INSERT INTO bang_log_old(id, bang, sid, kind, text, at, archived_at) VALUES(1, 'b1', '', 'x', 'cũ', 1, 2)")
+            db.execute("INSERT INTO bang_points_old(id, bang, sid, kind, pts, week, day, at, archived_at) "
+                       "VALUES('w:1', 'b1', 's', 'work', 5, '2026-W33', '2026-08-20', 1, 2)")
+            db.execute("INSERT INTO bang_stints_old(id, bang, sid, joined, left_at, why, archived_at) VALUES(1, 'b1', 's', 1, 2, 'leave', 3)")
+            db.execute("INSERT INTO pet_arena_matches_old(id, kind, day, week, a, win, engine, data, at, archived_at) "
+                       "VALUES('m1', 'npc', '2026-08-20', '2026-W33', 's', 0, 1, '{}', 1, 2)")
 
         def catalog():
             with self.store.connect() as db:
@@ -127,6 +137,6 @@ class Integrated(Base):
         self.assertTrue(all(before[2][x] > 0 for x in TABLES), before[2])
         v, n = self.run_old(STARTUP, str(self.store.path), ','.join(TABLES))
         self.assertEqual(int(v), pg_schema.SCHEMA_VERSION)
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 58)
+        self.assertEqual(pg_schema.SCHEMA_VERSION, 59)
         self.assertEqual(n, before[2])
         self.assertEqual(catalog(), before, 'no table or index changed by the old startup')

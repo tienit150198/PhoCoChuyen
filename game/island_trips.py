@@ -71,6 +71,13 @@ LEFT JOIN island_guests g ON g.trip=t.id AND g.guest=v.sid
 LEFT JOIN island_public pb ON pb.trip=t.id
 LEFT JOIN island_visitors vi ON vi.trip=t.id AND vi.guest=v.sid
 """
+# Deploy-order safety (review fix 19/10): a live service started before the game server created island_public /
+# island_visitors (SCHEMA_VERSION 56) answers with the friends-only check of 2.4.60 (no public visits yet) instead of
+# failing every island entry; live/island.py switches back once the tables exist.
+ACCESS_SQL_FRIENDS = (ACCESS_SQL.replace("COALESCE(pb.status, '') AS pub, COALESCE(vi.status, '') AS visit", "'' AS pub, '' AS visit")
+                      .replace("LEFT JOIN island_public pb ON pb.trip=t.id\n", "")
+                      .replace("LEFT JOIN island_visitors vi ON vi.trip=t.id AND vi.guest=v.sid\n", ""))
+assert 'island_public' not in ACCESS_SQL_FRIENDS and 'island_visitors' not in ACCESS_SQL_FRIENDS
 
 
 def access_for(row, sid: str, now: float) -> str | None:
@@ -443,12 +450,8 @@ def _visit(db, sid: str, data: dict, now: float) -> dict:
     from . import home_coop
     _, blocked = home_coop.relation(db, t['owner'], sid)
     need(not blocked, 'Bạn không ghé đảo này được.', 'blocked', 403)
-    row = db.execute('SELECT state FROM sessions WHERE sid=?', (sid,)).fetchone()
-    state = _state(row['state']) if row else {}
-    j = state.get('journey') if isinstance(state.get('journey'), dict) else {}
-    need(j.get('story'), 'Ghé đảo chỉ có trong hành trình.', 'locked', 403)
-    from . import jail
-    need(not jail.jailed(state, now), jail.JAILED, 'jailed', 403)
+    if not data.get('_checked'):   # post() checked the save before taking the trip's lock (never parsed under it)
+        _visit_check(db, sid, now)
     seat = mr._row(db, 'SELECT status FROM island_guests WHERE trip=? AND guest=?', (t['id'], sid))
     if seat and seat['status'] == 'aboard':   # a friend already aboard: the seat is theirs
         return dict(visit=False, trip=t['id'])
@@ -469,6 +472,16 @@ def _visit(db, sid: str, data: dict, now: float) -> dict:
     return dict(visit=True, trip=t['id'])
 
 
+def _visit_check(db, sid: str, now: float) -> None:
+    """A visitor is in story mode and not in the trại tạm giữ: their save, parsed once (outside any trip lock: post)."""
+    row = db.execute('SELECT state FROM sessions WHERE sid=?', (sid,)).fetchone()
+    state = _state(row['state']) if row else {}
+    j = state.get('journey') if isinstance(state.get('journey'), dict) else {}
+    need(j.get('story'), 'Ghé đảo chỉ có trong hành trình.', 'locked', 403)
+    from . import jail
+    need(not jail.jailed(state, now), jail.JAILED, 'jailed', 403)
+
+
 OPS = dict(start=_start, invite=_invite, answer=_answer, leave=_leave, remove=_remove, end=_end_op, public=_public, visit=_visit)
 
 
@@ -476,6 +489,11 @@ def post(store, token, sub, data) -> dict:
     sid = _actor(store, token)
     need(isinstance(data, dict), 'Yêu cầu không hợp lệ.')
     need(sub in OPS, 'Không tìm thấy mục này.', 'not_found', 404)
+    data = {k: v for k, v in data.items() if k != '_checked'}
+    if sub == 'visit':   # 🌍 the visitor's save is read and parsed here, before the trip row's lock (review fix 19/10)
+        with store.connect() as db:
+            _visit_check(db, sid, mr.now())
+        data['_checked'] = True
 
     def run(db):
         now = mr.now()

@@ -36,6 +36,7 @@ keeps it untouched and never shows it — tests/test_island_build_compat.py prov
 """
 from __future__ import annotations
 
+import os
 import re
 import time
 
@@ -235,11 +236,22 @@ def worth(j: dict) -> int:
     return total
 
 
+OFF_TEXT = 'Xây trên đảo đang tạm nghỉ để bảo trì. Công trình đang xây vẫn xong đúng giờ, quay lại sau nhé!'
+
+
+def off() -> bool:
+    """🛑 MNL_ISLAND_BUILD_OFF=1 (ops' kill switch, default unset: on): the 🏗️ Xây tab hides (the island catalogue's
+    `build_off`), jr_isle_* are refused gracefully. Saves keep journey.islb as it is, a construction still stands once
+    its time is up (readers compare the time), selling an island still pays its salvage, the islands still show them."""
+    return os.environ.get('MNL_ISLAND_BUILD_OFF', '').strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 # ---------------------------------------------------------------- commands
 def action(s: dict, name: str, p: dict) -> dict:
     need = _core().need
     j = s['journey']
     need(j.get('story'), 'Xây trên đảo chỉ có trong hành trình.', 'locked')
+    need(not off(), OFF_TEXT, 'off')
     need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     need(isinstance(p, dict), 'Thông tin không hợp lệ.')
     if name == 'jr_isle_use':

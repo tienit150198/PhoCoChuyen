@@ -237,7 +237,15 @@ def public_content() -> dict:
                 careers={cid:(PLUGINS[cid].content() if hasattr(PLUGINS[cid],'content') else {}) for cid in PLUGINS},operations=operations.content(),catalogue=catalogue,npcs=NPCS,products=PRODUCTS,ph_products=PH_PRODUCTS,lots=list(LOT_INDEX.values()),
                 papers=PAPERS,ribbons=RIBBONS,upgrades=UPGRADES,quests=QUESTS,
                 event_catalogue=[dict(id=e["id"],career=e["career_id"],title=e["title"],category=e["category"],min_day=e["min_game_day"]) for e in EVENT_SEEDS],
-                journey=journey.content(),**_bang_island())
+                journey=journey.content(),**_bang_island(),**_kill_switches())
+
+
+def _kill_switches() -> dict:
+    """🛑 The ops' kill switches (MNL_BANG_OFF, MNL_ISLAND_BUILD_OFF, MNL_PET_ARENA_OFF; all unset: nothing here): the
+    menus hide the entry of a feature switched off (public/js/app.js reads `off`). Absent when nothing is off."""
+    from . import bang, island_build, pet_arena
+    off = {k: True for k, on in (('bang', bang.off()), ('island_build', island_build.off()), ('pet_arena', pet_arena.off())) if on}
+    return {'off': off} if off else {}
 
 
 def _bang_island() -> dict:

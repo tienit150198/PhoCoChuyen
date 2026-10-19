@@ -10,9 +10,11 @@ What a player does
   there rolls the whole command back, nothing paid.
 * 🚪 Vào bang thoải mái (POST /api/bang/<op>, database only, no save): join an open bang at once, ask a closed one, or
   accept an invitation; one bang at a time, no cooldown: joining another bang leaves the current one (a Bang chủ hands
-  over or disbands first). Members cap: the Đại sảnh (C.HALL_CAP, 10 → 30), counted under the bang row's lock.
+  over or disbands first), a soft anti-churn cap of C.SWITCH_DAY_MAX bangs joined (or founded) a Vietnam day. Members
+  cap: the Đại sảnh (C.HALL_CAP, 10 → 30), counted under the bang row's lock.
 * 💰 Quỹ bang: deposits only (the command jr_bang_give {bang, amount, confirm}, C.GIVE_MIN..C.GIVE_MAX, whole thousands),
-  written with the save (ledger row 'g:<pid>:<n>', idempotent) under the bang row's lock, up to the Kho bang's cap.
+  written with the save (ledger row 'g:<pid>:<nonce>', the nonce in journey.bang.last.r: never reused after reset_all or
+  an imported older save; a clash refuses the whole command) under the bang row's lock, up to the Kho bang's cap.
   Nothing pays out of it: it only buys facility levels (and later the bang island); disbanding burns it (a 'burn' row,
   `burned`). There is no withdraw, transfer or refund path anywhere (tests/test_bang.py checks the source).
 * ⭐ Điểm cống hiến, per member per bang: 1 per 1.000 xu given (+ the Kho bang's bonus), 📅 Điểm danh once a day,
@@ -24,15 +26,19 @@ What a player does
 * 🏗️ Công trình bang (facilities, many levels each, real-time builds paid from the fund by Phó bang and up).
 * ⏰ Giờ vàng của bang (Đền vàng): windows the leader (or a Phó bang) sets at least an hour ahead. During one, members'
   staff orders and counter sales take ×2 (C.GOLDEN_MULT) like the town's Giờ vàng: the larger of the two, never both
-  (ads' private ×1,5 stays on top as before). A window counts for a member who was in the bang when it started (its
-  membership span, bang_stints), so offline catch-up books the same as polling. No query per order: the storage layer
-  reads every member's windows once a minute per process (prepare) and binds this save's to the command (bind).
+  (ads' private ×1,5 stays on top as before). A window counts for a member who joined the bang at least
+  C.GOLDEN_SENIORITY (24 h) before it started, and only until they leave (membership spans, bang_stints), so hopping
+  between bangs earns nothing and offline catch-up books the same as polling. No query per order: before each command
+  (never under its lock) the storage layer refreshes a small shared snapshot of the windows on now (once a minute, one
+  thread a process) and, every half hour, the player's own windows that already ended (prepare); the command binds
+  this save's (bind).
 * 👑 Bang mạnh nhất tuần: points earned in the Vietnam ISO week + facility levels + the week's 🛡️ Bang chiến pet
   (war_scores: the team ladder's points × C.PET_WAR_SCORE once the war is over); the winner, frozen after the week,
   gives its members the title for the next week (shown in the tag; leaving drops it). No money prize.
 
-State in the save: only s['journey']['bang'] = {v, n, sum, last} (absent until the first paid command; journey.validate
-of every build allows extra keys), the counter the paid commands' ledger ids come from. Everything else is in the
+State in the save: only s['journey']['bang'] = {v, n, sum, last: {n, k, a, at, r?}} (absent until the first paid command;
+journey.validate of every build allows extra keys): the paid commands' counter and the last one's nonce (`r`, optional).
+Old rows go to archive tables (run_housekeeping, SCHEMA_VERSION 59), never deleted. 🛑 MNL_BANG_OFF: off(). Everything else is in the
 database (game/pg_schema.py SCHEMA_VERSION 57), visible to everyone.
 """
 from __future__ import annotations
@@ -42,6 +48,7 @@ import datetime
 import hashlib
 import json
 import math
+import os
 import re
 import secrets
 import threading
@@ -57,6 +64,8 @@ KIND = 'life'                    # wallet history kind every build knows
 COMMANDS = ('jr_bang_found', 'jr_bang_give')
 BLOCK_KEYS = frozenset({'v', 'n', 'sum', 'last'})
 LAST_KEYS = frozenset({'n', 'k', 'a', 'at'})
+LAST_OPT = frozenset({'r'})       # the paid command's nonce (review fix 19/10): optional, a block without it stays valid
+NONCE_RE = re.compile(r'[0-9a-f]{16}')
 ROW_MAX = 10_000_000             # a wallet history row (every build validates ±10 M)
 BIG = 10**12
 ID_RE = re.compile(r'b[0-9a-f]{10}')
@@ -81,6 +90,16 @@ def need(ok, message: str, code: str = 'bang_error', status: int = 400):
 
 def now() -> float:
     return time.time()
+
+
+OFF_TEXT = 'Bang đang tạm nghỉ để bảo trì. Quay lại sau nhé!'
+
+
+def off() -> bool:
+    """🛑 MNL_BANG_OFF=1 (ops' kill switch, default unset: on): the ⚔️ Bang entry hides (content `off`), new actions
+    are refused gracefully (the paid commands, POST /api/bang/<op>, the pages). Nothing in the database or the saves
+    changes: builds finish on time, Giờ vàng windows already set still count, tags stay, the pet war still runs."""
+    return os.environ.get('MNL_BANG_OFF', '').strip().lower() in ('1', 'true', 'yes', 'on')
 
 
 def _core():
@@ -194,8 +213,9 @@ def _ensure(s: dict) -> dict:
 
 
 def _last_ok(x) -> bool:
-    return x is None or (isinstance(x, dict) and set(x) == LAST_KEYS and _int(x['n'], 1, 10**9) and x['k'] in ('found', 'give')
-                         and _int(x['a'], 1, BIG) and _int(x['at'], 0, 2**34))
+    return x is None or (isinstance(x, dict) and LAST_KEYS <= set(x) <= LAST_KEYS | LAST_OPT and _int(x['n'], 1, 10**9)
+                         and x['k'] in ('found', 'give') and _int(x['a'], 1, BIG) and _int(x['at'], 0, 2**34)
+                         and ('r' not in x or (isinstance(x['r'], str) and NONCE_RE.fullmatch(x['r']) is not None)))
 
 
 def validate(s: dict) -> None:
@@ -224,7 +244,7 @@ def upgrade(j: dict) -> None:
     out['sum'] = b['sum'] if _int(b.get('sum')) else 0
     last = b.get('last')
     if isinstance(last, dict) and set(last) >= LAST_KEYS:
-        last = {k: last[k] for k in LAST_KEYS}
+        last = {k: last[k] for k in LAST_KEYS | LAST_OPT if k in last}
     out['last'] = last if _last_ok(last) and last and last['n'] == out['n'] else None
     if out != b:
         j[KEY] = out
@@ -262,6 +282,7 @@ def action(s: dict, name: str, p: dict) -> dict:
     need_ = e.need
     j = s['journey']
     need_(j.get('story'), 'Bang chỉ có trong hành trình.', 'locked')
+    need_(not off(), OFF_TEXT, 'off')
     need_(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     need_(isinstance(p, dict), 'Thông tin không hợp lệ.')
     t = int(now())
@@ -283,9 +304,9 @@ def action(s: dict, name: str, p: dict) -> dict:
         b = _ensure(s)
         b['n'] += 1
         b['sum'] = min(BIG, b['sum'] + C.FOUND_FEE)
-        b['last'] = dict(n=b['n'], k='found', a=C.FOUND_FEE, at=t)
+        b['last'] = dict(n=b['n'], k='found', a=C.FOUND_FEE, at=t, r=secrets.token_hex(8))
         return dict(message=f'{emoji} Bang {bname} ra đời! Bạn là Bang chủ ({how}).',
-                    bang=dict(k='found', n=b['n'], name=bname, emoji=emoji, color=color, motto=motto, open=is_open))
+                    bang=dict(k='found', n=b['n'], r=b['last']['r'], name=bname, emoji=emoji, color=color, motto=motto, open=is_open))
     need_(set(p) <= {'bang', 'amount', 'confirm'} and {'bang', 'amount'} <= set(p), 'Thông tin không hợp lệ.')
     bid = p['bang']
     need_(isinstance(bid, str) and ID_RE.fullmatch(bid), 'Chọn bang của bạn nhé.')
@@ -300,8 +321,9 @@ def action(s: dict, name: str, p: dict) -> dict:
     b = _ensure(s)
     b['n'] += 1
     b['sum'] = min(BIG, b['sum'] + amount)
-    b['last'] = dict(n=b['n'], k='give', a=amount, at=t)
-    return dict(message=f'💰 Bạn góp {fmt(amount)} xu vào quỹ bang ({how}).', bang=dict(k='give', n=b['n'], bang=bid, a=amount))
+    # 🔑 the ledger id comes from a nonce, never from n alone: n starts again after reset_all or an imported older save
+    b['last'] = dict(n=b['n'], k='give', a=amount, at=t, r=secrets.token_hex(8))
+    return dict(message=f'💰 Bạn góp {fmt(amount)} xu vào quỹ bang ({how}).', bang=dict(k='give', n=b['n'], bang=bid, a=amount, r=b['last']['r']))
 
 
 # ---------------------------------------------------------------- database helpers
@@ -383,6 +405,10 @@ def finish_builds(db, bid: str, t: float) -> list:
     return done
 
 
+def builds_due(db, bid: str, t: float) -> bool:
+    return db.execute('SELECT 1 FROM bang_facilities WHERE bang=? AND target IS NOT NULL AND ready_at<=? LIMIT 1', (bid, t)).fetchone() is not None
+
+
 def levels(db, bid: str) -> dict:
     out = {f: 0 for f in C.FACILITIES}
     for r in _rows(db, 'SELECT fac, level FROM bang_facilities WHERE bang=?', (bid,)):
@@ -422,7 +448,39 @@ def _leave(db, sid: str, bang: dict, t: float, why: str) -> None:
     _bump(db, bang['id'])
     _notify(db, pids=[pid_of(sid)], ch=bang['channel'], rm=[pid_of(sid)])
     _isle(db, 'kicked' if why == 'kick' else 'left', bang['id'], sid)
-    _GH['at'] = 0.0
+    _war_unpick(db, bang['id'], [sid], t)
+    _noted_leave(sid, bang['id'], t)   # the bang's Giờ vàng stops counting for them now (no snapshot reset)
+
+
+def day_start(t: float) -> float:
+    d = datetime.datetime.fromtimestamp(t, VN).date()
+    return datetime.datetime(d.year, d.month, d.day, tzinfo=VN).timestamp()
+
+
+def joins_today(db, sid: str, t: float) -> int:
+    """Bangs this player joined (or founded) this Vietnam day: one bang_stints row each (index bang_stints_sid)."""
+    return int(db.execute('SELECT COUNT(*) AS n FROM bang_stints WHERE sid=? AND joined>=?', (sid, day_start(t))).fetchone()['n'])
+
+
+def _switch_need(db, sid: str, t: float, how: str = 'join') -> None:
+    """Joining stays free (owner 19/10), with a soft anti-churn cap: C.SWITCH_DAY_MAX bangs a Vietnam day."""
+    if joins_today(db, sid, t) < C.SWITCH_DAY_MAX:
+        return
+    if how == 'approve':
+        need(False, f'Hôm nay người này đã vào {C.SWITCH_DAY_MAX} bang rồi. Mai duyệt lại nhé.', 'switch_cap')
+    need(False, f'Hôm nay bạn đã vào {C.SWITCH_DAY_MAX} bang rồi. Mai hãy đổi bang tiếp nhé (vào bang vẫn miễn phí).', 'switch_cap')
+
+
+def _war_unpick(db, bid: str, sids: list, t: float) -> None:
+    """🛡️ Their pet leaves the bang's lineup for this week's war while it is still open (game/pet_war.py: a pick
+    counts only for a current member, the lineup's five slots free again)."""
+    if not sids:
+        return
+    from . import pet_war
+    if t >= pet_war.lock_of(t):
+        return
+    db.execute("DELETE FROM pet_war_picks WHERE week=? AND team_kind='bang' AND team_id=? AND sid = ANY(?)",
+               (pet_war.A.vn_week(t), bid, list(sids)))
 
 
 def _join(db, sid: str, bang: dict, t: float, locked: dict, how: str = 'join') -> None:
@@ -435,6 +493,8 @@ def _join(db, sid: str, bang: dict, t: float, locked: dict, how: str = 'join') -
         need(mine['role'] != 'chu', 'Bạn đang là Bang chủ: trao lại chức hoặc giải tán bang cũ trước nhé.', 'leader')
         old = locked.get(mine['bang'])
         need(old is not None, 'Thử lại nhé.', 'retry')
+    _switch_need(db, sid, t, how)
+    if mine:
         _leave(db, sid, old, t, 'switch')
     finish_builds(db, bang['id'], t)
     cap = cap_of(levels(db, bang['id']))
@@ -449,7 +509,6 @@ def _join(db, sid: str, bang: dict, t: float, locked: dict, how: str = 'join') -
     _bump(db, bang['id'])
     _notify(db, pids=[pid_of(sid)], ch=bang['channel'], add=[pid_of(sid)])
     _isle(db, 'join', bang['id'], sid)
-    _GH['at'] = 0.0
 
 
 # ---------------------------------------------------------------- the paid commands, in the save's transaction
@@ -462,7 +521,7 @@ def command_commit(db, sid: str, action: str, after: dict, result) -> None:
     b = get(after)
     x = b['last'] if b else None
     info = (result or {}).get('bang') if isinstance(result, dict) else None
-    if not x or not isinstance(info, dict) or info.get('n') != x['n'] or info.get('k') != x['k']:
+    if not x or not isinstance(info, dict) or info.get('n') != x['n'] or info.get('k') != x['k'] or info.get('r') != x.get('r'):
         return
     t = now()
     pid = pid_of(sid)
@@ -484,6 +543,7 @@ def _found_commit(db, sid, pid, x, info, t) -> None:
            'Tên bang này đã có. Thử một tên khác nhé.', 'name_taken')
     mine = _mine(db, sid)
     locked = _lock(db, mine['bang']) if mine else {}
+    e.need(joins_today(db, sid, t) < C.SWITCH_DAY_MAX, f'Hôm nay bạn đã vào {C.SWITCH_DAY_MAX} bang rồi. Mai hãy lập bang nhé.', 'switch_cap')
     if mine:
         e.need(mine['role'] != 'chu', 'Bạn đang là Bang chủ: trao lại chức hoặc giải tán bang cũ trước nhé.', 'leader')
         _leave(db, sid, locked[mine['bang']], t, 'switch')
@@ -504,6 +564,11 @@ def _found_commit(db, sid, pid, x, info, t) -> None:
     _VIEW.clear()
 
 
+def give_ref(pid: str, x: dict) -> str:
+    """The deposit's ledger id: 'g:<pid>:<nonce>' (a block from before the nonce: 'g:<pid>:<n>', as it was)."""
+    return f'g:{pid}:{x["r"]}' if x.get('r') else f'g:{pid}:{x["n"]}'
+
+
 def _give_commit(db, sid, pid, x, info, t) -> None:
     e = _core()
     bid = info.get('bang')
@@ -517,11 +582,13 @@ def _give_commit(db, sid, pid, x, info, t) -> None:
     cap = fund_cap(lv)
     left = cap - int(bang['fund'])
     e.need(x['a'] <= left, f'Kho bang chỉ còn chứa thêm {fmt(max(0, left))} xu. Nâng Kho bang để chứa nhiều hơn nhé.', 'fund_full')
-    ref = f'g:{pid}:{x["n"]}'
+    ref = give_ref(pid, x)
     bal = int(bang['fund']) + x['a']
-    if not db.execute("INSERT INTO bang_fund(id, bang, sid, kind, amount, balance, at) VALUES(?,?,?,'give',?,?,?) ON CONFLICT DO NOTHING "
-                      'RETURNING id', (ref, bid, sid, x['a'], bal, t)).fetchone():
-        return   # written already (cannot happen: n moves with the save)
+    # A row with this id already there (cannot happen with a nonce): refuse, so the whole command rolls back and the
+    # wallet is never debited without its deposit (review fix 19/10: an old `n` after reset_all / an older import).
+    e.need(db.execute("INSERT INTO bang_fund(id, bang, sid, kind, amount, balance, at) VALUES(?,?,?,'give',?,?,?) ON CONFLICT DO NOTHING "
+                      'RETURNING id', (ref, bid, sid, x['a'], bal, t)).fetchone() is not None,
+           'Khoản góp này trùng mã với một khoản trước. Thử lại nhé.', 'retry')
     db.execute('UPDATE bangs SET fund=?, given=given+? WHERE id=?', (bal, x['a'], bid))
     pts = x['a'] // C.XU_PER_POINT * (100 + C.KHO_BONUS * lv['kho']) // 100
     if pts > 0:
@@ -557,36 +624,134 @@ def _earn(db, bid: str, sid: str, ref: str, kind: str, pts: int, t: float) -> bo
 
 # ---------------------------------------------------------------- ⏰ Giờ vàng của bang
 GH_REFRESH = 60.0
-GH_MAX = 200_000                 # (player, window) pairs kept at most (bounded memory)
-_GH: dict = dict(at=0.0, by={})  # sid -> ((start, ends, bang name), ...)
-_GH_LOCK = threading.Lock()
+GH_AHEAD = 3600.0                # windows starting within the next hour (set ≥ 1 h ahead: none is missed by a refresh)
+GH_MARGIN = 3 * 3600.0           # windows that ended in the last 3 h stay in the shared snapshot
+GH_WIN_MAX = 2000                # windows in the shared snapshot at most (newest first)
+GH_STINT_MAX = 30_000            # membership spans in it at most (only those of the snapshot's bangs that can count)
+GH_COLD_TTL = 1800.0             # a player's own older windows (offline catch-up) are read again after this (< GH_MARGIN − 1 h)
+GH_COLD_MAX = 4096               # players whose older windows are kept (least recently used out first)
+GH_GONE_MAX = 10_000
+INF = float('inf')
+# The shared snapshot (per process): {at, wins: {bang: ((gid, start, ends, name), …)}, stints: {sid: ((bang, joined,
+# left_at | INF), …)}}. `gone`: this process's own leaves since (sid -> (bang, t, when noted)), applied on top until the
+# next refresh has them. `_COLD`: sid -> (read at, ((gid, start, until, name), …)): the player's windows that had already
+# ended when read (never changed again: a window cannot be cancelled once started, a later leave is after its end).
+_GH: dict = dict(at=0.0, wins={}, stints={}, gone={})
+_GH_LOCK = threading.Lock()      # guards the dicts' swaps
+_GH_LOAD = threading.Lock()      # single flight: one thread a process reads the snapshot, the others use the one they have
+_COLD: dict = {}
 _CUR: contextvars.ContextVar = contextvars.ContextVar('bang_gh', default=())
 
 
-def prepare(db, t: float | None = None) -> None:
-    """Every member's windows (a window counts for a player who was in when it started), read at most once a minute per
-    process. Never raises (a database without the tables: no windows)."""
-    t = now() if t is None else t
-    if t - _GH['at'] < GH_REFRESH:
-        return
-    try:
-        rows = db.execute("SELECT s.sid AS sid, g.start AS start, g.ends AS ends, b.name AS name FROM bang_gh g "
-                          "JOIN bang_stints s ON s.bang=g.bang JOIN bangs b ON b.id=g.bang "
-                          "WHERE g.status='set' AND g.ends>? AND g.start>=s.joined AND (s.left_at IS NULL OR g.start<s.left_at) "
-                          'ORDER BY g.start LIMIT ?', (t - C.GOLDEN_LOOKBACK, GH_MAX)).fetchall()
-    except Exception:  # noqa: BLE001 - an older schema: nobody has a window
-        with _GH_LOCK:
-            _GH.update(at=t, by={})
-        return
-    by: dict = {}
-    for r in rows:
-        by.setdefault(r['sid'], []).append((float(r['start']), float(r['ends']), str(r['name'])))
+def gh_reset() -> None:
+    """Forget every snapshot (tests; an operator's repair)."""
     with _GH_LOCK:
-        _GH.update(at=t, by={k: tuple(v) for k, v in by.items()})
+        _GH.update(at=0.0, wins={}, stints={}, gone={})
+        _COLD.clear()
+
+
+def _load_hot(db, t: float) -> None:
+    rows = db.execute("SELECT g.id AS id, g.bang AS bang, g.start AS start, g.ends AS ends, b.name AS name FROM bang_gh g "
+                      "JOIN bangs b ON b.id=g.bang WHERE g.status='set' AND g.ends>=? AND g.start<=? ORDER BY g.start DESC LIMIT ?",
+                      (t - GH_MARGIN, t + GH_AHEAD, GH_WIN_MAX)).fetchall()
+    wins: dict = {}
+    for r in rows:
+        wins.setdefault(r['bang'], []).append((int(r['id']), float(r['start']), float(r['ends']), str(r['name'])))
+    stints: dict = {}
+    if wins:
+        starts = [w[1] for v in wins.values() for w in v]
+        for r in db.execute('SELECT bang, sid, joined, left_at FROM bang_stints WHERE bang = ANY(?) AND joined<=? '
+                            'AND (left_at IS NULL OR left_at>?) ORDER BY joined DESC LIMIT ?',
+                            (list(wins), max(starts) - C.GOLDEN_SENIORITY, min(starts), GH_STINT_MAX)).fetchall():
+            stints.setdefault(r['sid'], []).append((r['bang'], float(r['joined']), INF if r['left_at'] is None else float(r['left_at'])))
+    with _GH_LOCK:
+        gone = {k: v for k, v in _GH['gone'].items() if v[2] >= t - GH_REFRESH}   # older ones: in this read already
+        _GH.update(at=t, wins={k: tuple(v) for k, v in wins.items()}, stints={k: tuple(v) for k, v in stints.items()}, gone=gone)
+
+
+def _load_cold(db, sid: str, t: float) -> None:
+    rows = db.execute("SELECT g.id AS id, g.start AS start, g.ends AS ends, b.name AS name, s.left_at AS left_at FROM bang_stints s "
+                      "JOIN bang_gh g ON g.bang=s.bang JOIN bangs b ON b.id=g.bang WHERE s.sid=? AND (s.left_at IS NULL OR s.left_at>?) "
+                      "AND g.status='set' AND g.ends>? AND g.ends<=? AND g.start>=s.joined+? AND (s.left_at IS NULL OR g.start<s.left_at) "
+                      'ORDER BY g.start DESC LIMIT 64', (sid, t - C.GOLDEN_LOOKBACK, t - C.GOLDEN_LOOKBACK, t, C.GOLDEN_SENIORITY)).fetchall()
+    got = tuple((int(r['id']), float(r['start']), min(float(r['ends']), INF if r['left_at'] is None else float(r['left_at'])), str(r['name']))
+                for r in rows)
+    with _GH_LOCK:
+        _COLD.pop(sid, None)
+        _COLD[sid] = (t, got)
+        while len(_COLD) > GH_COLD_MAX:
+            _COLD.pop(next(iter(_COLD)))
+
+
+def prepare(db, t: float | None = None, sid: str | None = None) -> None:
+    """Before a command (game/storage.py, on the snapshot's connection, never inside the command's locked transaction):
+    the shared snapshot of the windows on now (read at most once a minute per process, by one thread: the others go on
+    with the one they have), and, for `sid`, the player's own windows that already ended (offline catch-up within
+    C.GOLDEN_LOOKBACK: read again every GH_COLD_TTL). Never raises (a database without the tables: no windows)."""
+    t = now() if t is None else t
+    if t - _GH['at'] >= GH_REFRESH or _GH['at'] > t + GH_REFRESH:
+        first = _GH['at'] == 0.0
+        if _GH_LOAD.acquire(blocking=first):          # the very first read: wait for it; afterwards never wait
+            try:
+                if t - _GH['at'] >= GH_REFRESH or _GH['at'] > t + GH_REFRESH:
+                    _load_hot(db, t)
+            except Exception:  # noqa: BLE001 - an older schema: nobody has a window
+                with _GH_LOCK:
+                    _GH.update(at=t, wins={}, stints={})
+            finally:
+                _GH_LOAD.release()
+    if sid:
+        hit = _COLD.get(sid)
+        if hit is None or t - hit[0] >= GH_COLD_TTL or hit[0] > t:
+            try:
+                _load_cold(db, sid, t)
+            except Exception:  # noqa: BLE001
+                with _GH_LOCK:
+                    _COLD[sid] = (t, ())
+
+
+def _hot_of(sid: str) -> list:
+    """(gid, start, until, name, ends) of the shared snapshot's windows that count for `sid`: a window of a bang they
+    joined at least C.GOLDEN_SENIORITY before it starts, until it ends or they left (whichever is first)."""
+    wins, mine, gone = _GH['wins'], _GH['stints'].get(sid, ()), _GH['gone'].get(sid)
+    out = []
+    for bid, joined, left in mine:
+        if gone and gone[0] == bid and gone[1] < left:
+            left = gone[1]
+        for gid, a, b, name in wins.get(bid, ()):
+            if joined <= a - C.GOLDEN_SENIORITY and a < left:
+                out.append((gid, a, min(b, left), name, b))
+    return out
 
 
 def windows(sid: str) -> tuple:
-    return _GH['by'].get(sid, ())
+    """((start, until, bang name), …) of every window that counts for this player (the snapshot and their older ones)."""
+    seen, out = set(), []
+    for gid, a, u, name, *_ in list(_hot_of(sid)) + list((_COLD.get(sid) or (0, ()))[1]):
+        if gid not in seen and u > a:
+            seen.add(gid)
+            out.append((a, u, name))
+    out.sort()
+    return tuple(out)
+
+
+def _noted_leave(sid: str, bid: str, t: float) -> None:
+    """A leave this process wrote: the shared snapshot stops counting the player's windows of that bang from `t` at
+    once (other processes: at their next refresh, within GH_REFRESH)."""
+    with _GH_LOCK:
+        if len(_GH['gone']) >= GH_GONE_MAX:
+            _GH['gone'] = {}
+        _GH['gone'] = dict(_GH['gone'], **{sid: (bid, t, now())})
+
+
+def _noted_cancel(bid: str, gid: int | None = None, after: float = 0.0) -> None:
+    """Windows of one bang cancelled (one, or every one starting after `after`: a disband): out of this process's
+    snapshot now (a window already on stays: what was booked before the members left still counts)."""
+    with _GH_LOCK:
+        cur = _GH['wins'].get(bid)
+        if cur:
+            keep = tuple(w for w in cur if (w[0] != gid if gid is not None else w[1] <= after))
+            _GH['wins'] = dict(_GH['wins'], **{bid: keep})
 
 
 def bind(sid: str):
@@ -599,7 +764,7 @@ def unbind(token) -> None:
 
 
 def gold_mult(t: float) -> int:
-    """×2 (hundredths) at time t inside one of the bound save's bang windows, else 100."""
+    """×2 (hundredths) at time t inside one of the bound save's bang windows (while still a member), else 100."""
     for a, b, _ in _CUR.get():
         if a <= t < b:
             return C.GOLDEN_MULT
@@ -612,9 +777,9 @@ def gold_now(store, sid: str, t: float | None = None) -> dict | None:
     if t - _GH['at'] >= GH_REFRESH:
         with store.connect() as db:
             prepare(db, t)
-    for a, b, name in windows(sid):
-        if a <= t < b:
-            return dict(name=name, ends=b, minutes=int(round((b - a) / 60)))
+    for gid, a, until, name, ends in _hot_of(sid):
+        if a <= t < until:
+            return dict(name=name, ends=ends, minutes=int(round((ends - a) / 60)))
     return None
 
 
@@ -711,7 +876,9 @@ def crown(store, t: float | None = None) -> str | None:
 
     def run():
         try:
-            return store.transaction(lambda db: freeze(db, t))
+            with store.connect() as db:   # frozen already (every day of the week but its first minutes): a read only
+                r = _row(db, 'SELECT * FROM bang_week_win WHERE week=?', (prev_week(t),))
+            return r or store.transaction(lambda db: freeze(db, t))
         except Exception:  # noqa: BLE001 - the page never fails for this
             return None
     r = _cached(('crown', prev_week(t)), run)
@@ -871,7 +1038,8 @@ def page(store, sid: str, bid: str | None = None) -> dict:
             return {}
         r = _row(db, 'SELECT * FROM bangs WHERE id=?', (bid,))
         need(r is not None and (r['status'] == 'active' and not r['hidden'] or (mine and mine['bang'] == bid)), 'Không tìm thấy bang này.', 'not_found', 404)
-    if r['status'] == 'active':
+        due = r['status'] == 'active' and builds_due(db, bid, t)
+    if due:   # a write transaction only when a build's time is up (a page read otherwise writes nothing)
         store.transaction(lambda db: finish_builds(db, bid, t))
     with store.connect() as db:
         lv = levels(db, bid)
@@ -912,6 +1080,8 @@ def me_view(store, token) -> dict:
     sid, display = mr.whoami(store, token)
     t = now()
     out = dict(now=t, account=bool(display), catalogue=catalogue())
+    if off():
+        return dict(out, off=True, message=OFF_TEXT)
     if not sid:
         return out
     with store.connect() as db:
@@ -951,6 +1121,7 @@ def member_perks(store, sid: str) -> dict | None:
 
 def get_view(store, token, query: dict) -> dict:
     """GET /api/bang?q= (search), ?id= (a bang's page), ?board=1, else me + my bang's page."""
+    need(not off(), OFF_TEXT, 'off', 503)
     sid, _ = mr.whoami(store, token)
     q = query or {}
     if q.get('board'):
@@ -1087,13 +1258,17 @@ def _op_leave(db, sid, data, t):
     return dict(message=f'Bạn đã rời bang {bang["name"]}. Điểm và đồ bang vẫn giữ nếu quay lại.')
 
 
+def _role_need(me: dict, rank_from: int) -> None:
+    need(_rank(me['role']) >= rank_from, f'Việc này cần {C.ROLES[next(k for k in C.ROLE_ORDER if C.ROLES[k][3] == rank_from)][0]} trở lên.', 'role')
+
+
 def _officer(db, sid, rank_from: int) -> tuple[dict, dict]:
     """(my locked bang row, my member row) when my role is at least rank_from."""
     me = _mine(db, sid)
     need(me is not None, 'Bạn chưa ở bang nào.', 'not_member')
     bang = _lock(db, me['bang'])[me['bang']]
     me = _need_member(db, sid, bang['id'])
-    need(_rank(me['role']) >= rank_from, f'Việc này cần {C.ROLES[next(k for k in C.ROLE_ORDER if C.ROLES[k][3] == rank_from)][0]} trở lên.', 'role')
+    _role_need(me, rank_from)
     return bang, me
 
 
@@ -1126,19 +1301,31 @@ def _op_invite(db, sid, data, t):
 
 
 def _op_approve(db, sid, data, t):
-    bang, me = _officer(db, sid, C.APPROVE_FROM)
     pid = data.get('pid')
     need(isinstance(pid, str) and PID_RE.fullmatch(pid), 'Chọn một người nhé.')
-    rows = _rows(db, "SELECT sid FROM bang_asks WHERE bang=? AND kind='ask' AND status='open'", (bang['id'],))
+    me = _mine(db, sid)
+    need(me is not None, 'Bạn chưa ở bang nào.', 'not_member')
+    rows = _rows(db, "SELECT sid FROM bang_asks WHERE bang=? AND kind='ask' AND status='open'", (me['bang'],))
     other = next((r['sid'] for r in rows if pid_of(r['sid']) == pid), None)
     need(other is not None, 'Đơn này không còn nữa.', 'gone')
+    theirs = _mine(db, other) if data.get('ok') is not False else None
+    # Both bang ids read first, then locked together in id order (review fix 19/10: locking mine, then theirs, could
+    # deadlock with them moving bang, which locks the two in id order too).
+    locked = _lock(db, me['bang'], theirs['bang'] if theirs else None)
+    bang = locked.get(me['bang'])
+    need(bang is not None, 'Thử lại nhé.', 'retry')
+    me = _need_member(db, sid, bang['id'])
+    _role_need(me, C.APPROVE_FROM)
+    need(_row(db, "SELECT 1 FROM bang_asks WHERE bang=? AND sid=? AND kind='ask' AND status='open'", (bang['id'], other)),
+         'Đơn này không còn nữa.', 'gone')
     if data.get('ok') is False:
         db.execute("UPDATE bang_asks SET status='declined', answered=? WHERE bang=? AND sid=? AND kind='ask'", (t, bang['id'], other))
         _bump(db, bang['id'])
         return dict(message='Đã từ chối đơn.')
-    theirs = _mine(db, other)
-    locked = _lock(db, bang['id'], theirs['bang'] if theirs else None)
-    _join(db, other, locked[bang['id']], t, locked)
+    now_theirs = _mine(db, other)
+    need((now_theirs['bang'] if now_theirs else None) == (theirs['bang'] if theirs else None),
+         'Người này vừa đổi bang. Thử lại nhé.', 'retry')
+    _join(db, other, bang, t, locked, how='approve')
     return dict(message=f'Đã nhận {_display(db, other)} vào bang.')
 
 
@@ -1211,7 +1398,8 @@ def _op_set(db, sid, data, t):
         db.execute('UPDATE chat_channels SET title=? WHERE id=?', (f'{data["emoji"]} {bang["name"]}'[:40], bang['channel']))
     _log(db, bang['id'], sid, 'set', 'Bang chủ đổi: ' + ', '.join(changes) + '.', t)
     _bump(db, bang['id'])
-    _notify(db, bang=bang['id'], ch=bang['channel'])
+    pids = [x['pid'] for x in _rows(db, "SELECT pid FROM bang_members WHERE bang=? AND status='in'", (bang['id'],))]
+    _notify(db, bang=bang['id'], ch=bang['channel'], pids=pids)   # the live service re-tags these members only
     _isle(db, 'view', bang['id'])
     return dict(message='Đã lưu.')
 
@@ -1242,12 +1430,18 @@ def _disband(db, bang: dict, sid: str, t: float, text: str) -> None:
     _bump(db, bang['id'])
     _notify(db, pids=[m['pid'] for m in members], ch=bang['channel'], rm=[m['pid'] for m in members])
     _isle(db, 'disband', bang['id'])
-    _GH['at'] = 0.0
+    _war_unpick(db, bang['id'], [m['sid'] for m in members], t)
+    for m in members:
+        _noted_leave(m['sid'], bang['id'], t)
+    _noted_cancel(bang['id'], after=t)
 
 
 def _op_checkin(db, sid, data, t):
-    me = _mine(db, sid, lock=True)
+    me = _mine(db, sid)
     need(me is not None, 'Vào một bang để điểm danh nhé.', 'not_member')
+    bang = _lock(db, me['bang']).get(me['bang'])      # the bang row first, then mine (the one lock order: kick, disband)
+    need(bang is not None, 'Vào một bang để điểm danh nhé.', 'not_member')
+    me = _need_member(db, sid, bang['id'])
     day = vn_day(t)
     ok = _earn(db, me['bang'], sid, f'c:{me["pid"]}:{day}', 'checkin', C.CHECKIN_POINTS, t)
     need(ok, 'Hôm nay bạn điểm danh rồi. Mai quay lại nhé!', 'done')
@@ -1388,8 +1582,7 @@ def _op_gh_set(db, sid, data, t):
     db.execute("INSERT INTO bang_gh(bang, start, ends, by_sid, status, at) VALUES(?,?,?,?,'set',?)", (bang['id'], float(start), float(ends), sid, t))
     hhmm = datetime.datetime.fromtimestamp(start, VN).strftime('%H:%M %d/%m')
     _log(db, bang['id'], sid, 'golden', f'⏰ {_display(db, sid)} đặt Giờ vàng {hhmm} ({minutes} phút).', t)
-    _bump(db, bang['id'])
-    _GH['at'] = 0.0
+    _bump(db, bang['id'])   # no snapshot reset: set ≥ 1 h ahead, the next minute's read (GH_AHEAD) has it before it starts
     return dict(message=f'⏰ Đã đặt Giờ vàng của bang lúc {hhmm}, {minutes} phút: lãi tiệm và quầy ×2.')
 
 
@@ -1400,10 +1593,11 @@ def _op_gh_cancel(db, sid, data, t):
     r = _row(db, "SELECT start FROM bang_gh WHERE id=? AND bang=? AND status='set' FOR UPDATE", (gid, bang['id']))
     need(r is not None, 'Không tìm thấy Giờ vàng này.', 'gone')
     need(float(r['start']) > t, 'Giờ vàng đã bắt đầu thì không đổi được nữa.', 'started')
+    need(float(r['start']) - t > C.GOLDEN_CANCEL_FREEZE, f'Còn chưa tới {C.GOLDEN_CANCEL_FREEZE // 60} phút là Giờ vàng bắt đầu: không hủy được nữa.', 'started')
     db.execute("UPDATE bang_gh SET status='cancelled' WHERE id=?", (gid,))
     _log(db, bang['id'], sid, 'golden', f'{_display(db, sid)} hủy một Giờ vàng.', t)
     _bump(db, bang['id'])
-    _GH['at'] = 0.0
+    _noted_cancel(bang['id'], gid)   # only this bang's window, in this process; the others' next read (≤ 1 min, before the freeze)
     return dict(message='Đã hủy Giờ vàng đó.')
 
 
@@ -1414,6 +1608,7 @@ OPS = dict(join=_op_join, cancel=_op_cancel, accept=_op_accept, decline=_op_decl
 
 def post(store, token, op: str, data) -> dict:
     """POST /api/bang/<op>: one transaction (the bang rows locked in id order, then member rows)."""
+    need(not off(), OFF_TEXT, 'off', 503)
     sid = _actor(store, token)
     need(isinstance(data, dict), 'Yêu cầu không hợp lệ.')
     need(op in OPS, 'Không tìm thấy mục này.', 'not_found', 404)
@@ -1466,7 +1661,10 @@ def admin_act(store, admin: str, data) -> dict:
             db.execute('UPDATE bangs SET hidden=?, admin_note=? WHERE id=?', (1 if op == 'hide' else 0, f'{op} bởi {who}'[:200], bid))
             _log(db, bid, '', 'admin', 'Quản trị ẩn bang.' if op == 'hide' else 'Quản trị hiện lại bang.', t)
         _bump(db, bid)
-        pids = [r['pid'] for r in _rows(db, "SELECT pid FROM bang_members WHERE bang=? AND status='in'", (bid,))]
+        members = _rows(db, "SELECT sid, pid FROM bang_members WHERE bang=? AND status='in'", (bid,))
+        if op == 'hide':   # a hidden bang fields nobody in the pet war: its lineup's slots free (the picks go)
+            _war_unpick(db, bid, [r['sid'] for r in members], t)
+        pids = [r['pid'] for r in members]
         _notify(db, pids=pids, bang=bid, ch=bang['channel'])
         _isle(db, 'view', bid)
     store.transaction(run)
@@ -1496,6 +1694,65 @@ def forget(db, sid: str) -> None:
                     _disband(db, bang, sid, t, 'Bang chủ rời phố, bang giải tán.')
             else:
                 _leave(db, sid, bang, t, 'gone')
-    for table in ('bang_fund', 'bang_points', 'bang_log'):
+    for table in ('bang_fund', 'bang_points', 'bang_log', 'bang_points_old', 'bang_log_old'):
         db.execute(f"UPDATE {table} SET sid='' WHERE sid=?", (sid,))
     db.execute("UPDATE bang_asks SET status='cancelled' WHERE sid=? AND status='open'", (sid,))
+
+
+# ---------------------------------------------------------------- 🗄️ housekeeping (server.py, one process, every 30 s)
+KEEP_LOG_DAYS = 30              # bang_log rows older than this go to bang_log_old (each bang's newest LOG_SHOWN stay)
+KEEP_POINTS_DAYS = 35           # bang_points older than five weeks (the ranking reads this week and the last)
+KEEP_STINTS_DAYS = 30           # closed membership spans older than this (Giờ vàng reads 14 days back, the cap today)
+ARCHIVE_EVERY = 600.0
+ARCHIVE_BATCH = 500
+ARCHIVE_ROUNDS = 4
+_ARCH = dict(at=0.0)
+
+
+def archive_old(store, t: float | None = None) -> dict:
+    """Moves rows past their keep into the archive tables (SCHEMA_VERSION 59), a few small batches a call, each its own
+    transaction (game/archive.py move_rows: copied, then removed; never dropped). {table: rows moved}."""
+    from . import archive as ar
+    t = now() if t is None else t
+    out = dict(bang_log=0, bang_points=0, bang_stints=0)
+
+    def log_batch(db):
+        # a quiet bang's page still shows its newest LOG_SHOWN lines: only rows with that many newer ones in their bang
+        rows = _rows(db, 'SELECT l.id FROM bang_log l WHERE l.at<? AND (SELECT x.id FROM bang_log x WHERE x.bang=l.bang AND x.id>l.id '
+                         'ORDER BY x.id OFFSET ? LIMIT 1) IS NOT NULL ORDER BY l.at LIMIT ? FOR UPDATE SKIP LOCKED',
+                     (t - KEEP_LOG_DAYS * 86400, LOG_SHOWN - 1, ARCHIVE_BATCH))
+        return ar.move_rows(db, 'bang_log', 'bang_log_old', [int(r['id']) for r in rows], t), len(rows)
+
+    def points_batch(db):
+        rows = _rows(db, 'SELECT id FROM bang_points WHERE at<? ORDER BY at LIMIT ? FOR UPDATE SKIP LOCKED',
+                     (t - KEEP_POINTS_DAYS * 86400, ARCHIVE_BATCH))
+        return ar.move_rows(db, 'bang_points', 'bang_points_old', [r['id'] for r in rows], t), len(rows)
+
+    def stints_batch(db):
+        rows = _rows(db, 'SELECT id FROM bang_stints WHERE left_at IS NOT NULL AND left_at<? ORDER BY left_at LIMIT ? FOR UPDATE SKIP LOCKED',
+                     (t - KEEP_STINTS_DAYS * 86400, ARCHIVE_BATCH))
+        return ar.move_rows(db, 'bang_stints', 'bang_stints_old', [int(r['id']) for r in rows], t), len(rows)
+
+    for table, fn in (('bang_log', log_batch), ('bang_points', points_batch), ('bang_stints', stints_batch)):
+        for _ in range(ARCHIVE_ROUNDS):
+            moved, seen = store.transaction(fn)
+            out[table] += moved
+            if seen < ARCHIVE_BATCH or not moved:
+                break
+    return out
+
+
+def run_housekeeping(store) -> None:
+    """server.py housekeeping: archive_old every ARCHIVE_EVERY seconds, never in the peak hours. Never raises."""
+    import sys
+    from . import archive as ar
+    t = now()
+    if t - _ARCH['at'] < ARCHIVE_EVERY or ar.peak(t):
+        return
+    _ARCH['at'] = t
+    try:
+        n = archive_old(store, t)
+        if any(n.values()):
+            sys.stderr.write(f'[bang] archived {n}\n')
+    except Exception as e:  # noqa: BLE001 - housekeeping must never take the server down (an older schema: no archive tables)
+        sys.stderr.write(f'[bang] archive: {type(e).__name__}\n')

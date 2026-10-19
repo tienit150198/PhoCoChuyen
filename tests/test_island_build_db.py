@@ -284,3 +284,64 @@ class IslandBoard(T.Weekly):
 for _name in dir(T.Weekly):   # Weekly's own tests run in their own module
     if _name.startswith('test'):
         setattr(IslandBoard, _name, None)
+
+
+class ReviewFixes(Isle):
+    """Review fixes 19/10: a visit parses the visitor's save before the trip row's lock; the friends-only access check of
+    a database without island_public / island_visitors; the ops' kill switch MNL_ISLAND_BUILD_OFF."""
+    access = OpenToEveryone.access
+
+    def setUp(self):
+        super().setUp()
+        self.trip = self.post(self.a, 'start', island='dao_dua', vehicle='')['trip']['id']
+
+    def test_the_visitors_save_is_read_outside_the_trip_lock(self):
+        self.post(self.a, 'public', trip=self.trip, open=True)
+        real_tx, real_check, inside, seen = self.store.transaction, it._visit_check, [False], []
+
+        def tx(fn, *a, **k):
+            inside[0] = True
+            try:
+                return real_tx(fn, *a, **k)
+            finally:
+                inside[0] = False
+
+        def check(*a, **k):
+            seen.append(inside[0])
+            return real_check(*a, **k)
+        with patch.object(self.store, 'transaction', tx), patch.object(it, '_visit_check', check):
+            self.post(self.x[0], 'visit', trip=self.trip)
+            self.post(self.x[1], 'visit', trip=self.trip, _checked=True)        # a client cannot skip the check
+        self.assertEqual(seen, [False, False])
+        self.assertEqual(self.access(self.x[0])[0], 'visitor')
+
+    def test_friends_only_check_without_the_public_tables(self):
+        db = self.store.connect()
+        try:
+            db.begin()
+            db.execute('ALTER TABLE island_public RENAME TO island_public_gone')
+            db.execute('ALTER TABLE island_visitors RENAME TO island_visitors_gone')
+            row = db.execute(it.ACCESS_SQL_FRIENDS, (self.sid(self.a), self.trip)).fetchone()
+            self.assertEqual(it.access_for(row, self.sid(self.a), mr.now()), 'owner')
+            row = db.execute(it.ACCESS_SQL_FRIENDS, (self.sid(self.x[0]), self.trip)).fetchone()
+            self.assertIsNone(it.access_for(row, self.sid(self.x[0]), mr.now()))
+            self.assertEqual(it.cap_for(row), 1)
+        finally:
+            db.rollback()
+            db.close()
+
+    def test_build_kill_switch(self):
+        self.build(0, 'nha_san')
+        w = self.store.read(self.a)[0]['journey']['wallet']
+        with patch.dict('os.environ', {'MNL_ISLAND_BUILD_OFF': '1'}):
+            with self.assertRaises(GameError) as cm:
+                self.build(1, 'ho_boi')
+            self.assertEqual(cm.exception.code, 'off')
+            self.assertEqual(self.store.read(self.a)[0]['journey']['wallet'], w)
+            from game import island as isl
+            self.assertTrue(isl.catalogue()['build_off'])
+            trip = it.get(self.store, self.a)['trip']                              # what stands is still shown
+            self.assertEqual([b['k'] for b in trip['builds']], ['nha_san'])
+        from game import island as isl
+        self.assertNotIn('build_off', isl.catalogue())
+        self.build(1, 'ho_boi')

@@ -58,6 +58,21 @@ Gộp 4 nhánh (Xây trên đảo, Bang, Đấu trường pet, Đảo bang) và 
 - Nút trên đảo: ⬆️ Nâng cấp chạy lệnh xây của bang (Phó bang trở lên, quỹ bang, hỏi xác nhận giá trước); 👥/💌 → Bang › Thành viên, 🪙/✨ → Bang của tôi, 👘 → Cửa hàng bang, 🏆 → Xếp hạng tuần, 🏟️ → Đấu trường pet › Bang chiến, 🎯 → Thử thách. Nút 🏯 Đảo bang trong hộp Bang. MNL_BANG_ISLAND_STUB chỉ dùng khi thiếu provider thật và không bao giờ khi có DATABASE_URL.
 - i18n: giữ bản dịch cũ của “Quỹ $1 xu”, “$1 người”; từ trùng của Đảo bang dùng cách gọi của nhánh Bang (“Guild”).
 
+## review fixes
+
+Sửa theo hai lượt review (19/10); SCHEMA_VERSION 59 (chỉ thêm bảng/index lưu trữ, không FK, không backfill, không khóa save bắt buộc; 2.4.60 không đọc):
+- 💰 Góp quỹ không bao giờ mất tiền: id sổ quỹ 'g:<pid>:<nonce>' (nonce ngẫu nhiên trong journey.bang.last.r, tùy chọn: khối cũ vẫn hợp lệ) thay cho 'g:<pid>:<n>' (n đếm lại sau reset_all / nhập bản lưu cũ → trùng id, ví bị trừ mà quỹ không tăng); nếu trùng id thì báo lỗi và hoàn cả lệnh.
+- 🔒 Thứ tự khóa một chiều (dòng bang theo id rồi dòng thành viên): điểm danh khóa bang trước (không deadlock với mời ra/giải tán); duyệt đơn đọc cả hai bang rồi khóa cùng lúc theo thứ tự id (không deadlock khi người xin đang đổi bang).
+- ⏰ Giờ vàng của bang chỉ tính cho thành viên vào bang ≥ 24 giờ trước giờ bắt đầu và chỉ tới lúc rời bang (bang_stints), nên nhảy bang không ăn ×2; offline bù đơn vẫn y như online. Vào bang vẫn miễn phí, giới hạn mềm 10 bang/ngày (giờ VN, cả lập bang) có thông báo rõ. Hủy giờ vàng khóa 5 phút trước giờ bắt đầu.
+- ⏰ Bộ nhớ đệm giờ vàng nhỏ: chỉ cửa sổ đang quanh "bây giờ" (bắt đầu trong 1 giờ tới, kết thúc trong 3 giờ qua, mới nhất trước, ≤ 2.000) và quãng thành viên cần; mỗi tiến trình một luồng đọc (luồng khác dùng bản đang có); cửa sổ cũ hơn của từng người (bù đơn offline ≤ 14 ngày) đọc riêng mỗi 30 phút, giữ ≤ 4.096 người; không xóa đệm khi vào/rời bang (chỉ sửa đúng bang khi hủy); không bao giờ đọc trong giao dịch đang khóa bản lưu.
+- 🛡️ Bang chiến: chỉ đếm lượt chọn của thành viên hiện tại; rời bang / bị mời ra / bang bị ẩn hoặc giải tán thì bỏ bé đã chọn (trước giờ chốt đội).
+- 🗄️ Không để bảng phình mãi, không xóa dữ liệu: trận đấu trường > 30 ngày → pet_arena_matches_old (xem lại vẫn được), bang_log > 30 ngày (giữ 20 dòng mới nhất mỗi bang), bang_points > 35 ngày, bang_stints đã đóng > 30 ngày → bảng *_old; housekeeping 10 phút/lần, lô 500, ngoài giờ cao điểm 17:30–20:00.
+- Đảo bang: giới hạn 200 lần kiểm tra quyền mỗi tick tính chung mọi phòng. Thẻ bang: đổi cài đặt bang / quản trị chỉ làm mới thẻ của thành viên bang đó.
+- Thứ tự triển khai: live chạy trước khi game server tạo island_public / island_visitors thì vẫn cho chủ đảo và bạn bè vào (kiểm tra kiểu 2.4.60), tự thử lại mỗi phút. Live đọc bảng bang đã chịu được bảng chưa có (kiểm lại).
+- Đường nóng: lệnh jr_pet_* không ghi lại ảnh chụp đội khi không đổi; trang bang chỉ mở giao dịch ghi khi có công trình tới giờ xong (👑 đọc trước khi chốt); ghé đảo đọc bản lưu của khách trước khi khóa chuyến.
+- 🛑 Công tắc tắt khẩn (mặc định bật): MNL_BANG_OFF, MNL_ISLAND_BUILD_OFF, MNL_PET_ARENA_OFF (và MNL_BANG_ISLAND như cũ) ẩn lối vào (content.off / island build_off) và từ chối thao tác mới nhẹ nhàng; bản lưu, công trình đang xây, giờ vàng đã đặt, giải tuần và bang chiến vẫn chạy.
+- 🏅 Danh hiệu tuần khi chạy lẫn 2.4.60: nếu 2.4.60 làm lượt làm mới trong ngày, tiến trình bản mới kế tiếp dựng lại dòng tuần này của Đảo đẹp, đấu trường, giải pet, bang chiến; ngày đầu tuần còn dựng lại dòng chốt tuần trước của đấu trường, giải pet, bang chiến. Không sửa được: dòng chốt tuần trước của 🏝️ Đảo đẹp (bảng là độ đẹp hiện tại) và quãng vài giờ giữa lượt của 2.4.60 và lượt dựng lại.
+
 # v2.4.60 — 2026-10-19
 
 ⚡ Lag (chủ game 19/10 "check ipad phản hồi người dùng rất lag", "máy tính với đth nữa check k để lag"):

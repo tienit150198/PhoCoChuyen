@@ -10,7 +10,9 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {layout,PLOT_W} from '../island-layout.js';
 
-const TABS=[['buy','🏝️','Mua đảo'],['go','🛥️','Ra đảo'],['build','🏗️','Xây'],['inv','🌍','Ghé đảo']];
+const ALL_TABS=[['buy','🏝️','Mua đảo'],['go','🛥️','Ra đảo'],['build','🏗️','Xây'],['inv','🌍','Ghé đảo']];
+// 🛑 MNL_ISLAND_BUILD_OFF (content.journey.island.build_off): the 🏗️ Xây tab hides; buildings already there still show
+const tabsOn=()=>ALL_TABS.filter(t=>t[0]!=='build'||!CAT()?.build_off);
 export const ACTIONS={island:'',islandInvites:'inv',islandBuild:'build',islandOpen:'inv'};
 const S={dlg:null,env:null,tab:'buy',pick:'',isle:'',ride:'',sel:new Set(),list:null,listAt:0,skew:0,busy:false,flash:null,listening:false,seq:0,plot:-1,kind:''};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -96,7 +98,7 @@ export async function openIsland(env,tab){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();
-  if(TABS.some(t=>t[0]===tab))S.tab=tab;
+  if(tabsOn().some(t=>t[0]===tab))S.tab=tab;
   else if(!tab)S.tab=ownIds().length?'go':'buy';
   S.flash=null;
   if(!d.open){d.showModal();d.scrollTop=0;}
@@ -124,7 +126,8 @@ const row=(op,id,ico,name,right,on,extra='')=>`<button type="button" class="sd-i
 const invCount=()=>(S.list?.invites||[]).length;
 
 function page(){
-  const t=TABS.find(x=>x[0]===S.tab)||TABS[0],c=CAT();
+  const TABS=tabsOn(),t=TABS.find(x=>x[0]===S.tab)||TABS[0],c=CAT();
+  if(S.tab!==t[0])S.tab=t[0];
   const head=`<header class="sheet-head sd-head"><span class="sd-logo" aria-hidden="true">${t[1]}</span><div class="grow"><h2 id="isl-title">${esc(t[2])}</h2></div>
     <span class="sd-wallet" title="Ví">👛 ${fmt(Math.max(0,J().wallet||0))}</span><button class="icon-btn" type="button" data-is="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   if(!c)return head+`<div class="sheet-body sd-body"><p class="sd-empty">⏳</p></div>`;

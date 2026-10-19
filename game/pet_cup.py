@@ -180,10 +180,12 @@ def play(db, week: str, t: float) -> bool:
     return True
 
 
-def standings(db, n: int) -> list:
-    """[(board, rank, sid, score)] of the latest cup played (game/lb_titles.py), in the boards' privacy."""
+def standings(db, n: int, week_max: str | None = None) -> list:
+    """[(board, rank, sid, score)] of the latest cup played (of a week up to `week_max`: game/lb_titles.py heal), in the
+    boards' privacy."""
     from .leaderboard import _VISIBLE
-    last = db.execute("SELECT week FROM pet_cup WHERE status='done' ORDER BY week DESC LIMIT 1").fetchone()
+    last = (db.execute("SELECT week FROM pet_cup WHERE status='done' AND week<=? ORDER BY week DESC LIMIT 1", (week_max,)).fetchone() if week_max
+            else db.execute("SELECT week FROM pet_cup WHERE status='done' ORDER BY week DESC LIMIT 1").fetchone())
     if not last:
         return []
     rows = db.execute('SELECT e.sid, e.score FROM pet_cup_entries e LEFT JOIN accounts a ON a.sid=e.sid LEFT JOIN leaderboard_players p ON p.sid=e.sid '
