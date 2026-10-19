@@ -38,9 +38,13 @@ What a player does
   (never under its lock) the storage layer refreshes a small shared snapshot of the windows on now (once a minute, one
   thread a process) and, every half hour, the player's own windows that already ended (prepare); the command binds
   this save's (bind).
-* 👑 Bang mạnh nhất tuần: points earned in the Vietnam ISO week + facility levels + the week's 🛡️ Bang chiến pet
-  (war_scores: the team ladder's points × C.PET_WAR_SCORE once the war is over); the winner, frozen after the week,
-  gives its members the title for the next week (shown in the tag; leaving drops it). No money prize.
+* 👑 Bang mạnh nhất tuần (owner 21/10, final: "đừng để cống hiến bang tính điểm nhé, hãy tính điểm của pets, công trình
+  và cấp bang làm điểm nhé"): three parts (standings, weights in game/bang_content.py), heaviest first: 🐾 Pets (the
+  week's pet war once its matches were shown, its ⚔️ Thách đấu bang, and 💪 Chiến lực: the strongest pet power of each
+  current member, pet_power), 🏗️ Công trình (facility levels but the hall), ⭐ Cấp bang (the Đại sảnh's level, + the
+  island's when that branch gives one); the sum × the Tượng bang's bonus. Điểm cống hiến never counts (the shop only). The winner, frozen after the week
+  (its chiến lực as it is then), gives its members the title for the next week (shown in the tag; leaving drops it).
+  No money prize.
 
 State in the save: only s['journey']['bang'] = {v, n, sum, last: {n, k, a, at, r?}} (absent until the first paid command;
 journey.validate of every build allows extra keys): the paid commands' counter and the last one's nonce (`r`, optional).
@@ -920,13 +924,13 @@ def _cached(key, fn):
     return out
 
 
-EARN_KINDS = ('give', 'checkin', 'work')
+EARN_KINDS = ('give', 'checkin', 'work', 'chal')   # 🙌 Cống hiến: điểm cống hiến members earn (never what they spend)
 
 
 def war_scores(db, week: str, t: float | None = None) -> dict:
-    """{bang id: score} from that week's 🛡️ Bang chiến pet (game/pet_war.py), once it is over by `t` (its results are
-    fixed at the lock but shown only as the matches play: never sooner here either): the team ladder's points (a win
-    PTS_WIN, the champion PTS_CHAMP more) × C.PET_WAR_SCORE."""
+    """{bang id: points} from that week's 🛡️ Bang chiến pet (game/pet_war.py: its day and hour are pet_war's), once it is
+    over by `t` (its results are fixed at the lock but shown only as the matches play: never sooner here either): the
+    team ladder's points (a win PTS_WIN, the champion PTS_CHAMP more) × C.PET_WAR_SCORE."""
     from . import pet_war
     t = now() if t is None else t
     war = _row(db, "SELECT * FROM pet_war WHERE week=? AND status='done'", (week,))
@@ -936,26 +940,76 @@ def war_scores(db, week: str, t: float | None = None) -> dict:
             for r in _rows(db, "SELECT team_id, pts FROM pet_team_ladder WHERE week=? AND team_kind='bang' AND pts>0", (week,))}
 
 
-def scores(db, week: str) -> list:
-    """[(bang id, score)] of active, shown bangs, best first: the week's points + facility levels + the week's pet war
-    (war_scores), all × Tượng bang's bonus."""
-    pts = {r['bang']: int(r['p']) for r in _rows(db, "SELECT bang, SUM(pts) AS p FROM bang_points WHERE week=? AND pts>0 "
-                                                     "AND kind IN ('give','checkin','work') GROUP BY bang", (week,))}
-    for bid, war in war_scores(db, week).items():
-        pts[bid] = pts.get(bid, 0) + war
+def power(db, bids=None) -> dict:
+    """💪 Chiến lực {bang id: power} now: the sum of the strongest pet power of each current member (the top C.POWER_TOP
+    members), from pet_power (game/pet_arena.py power_commit: refreshed by every jr_pet_* command and arena visit) or
+    the member's pet on the Thách đấu roster when higher. A member who left counts no more at once. One query, no save."""
+    rows = _rows(db, "SELECT m.bang AS bang, GREATEST(COALESCE(p.pw, 0), COALESCE(r.pw, 0)) AS pw FROM bang_members m "
+                     "LEFT JOIN pet_power p ON p.sid=m.sid LEFT JOIN bang_chal_roster r ON r.bang=m.bang AND r.sid=m.sid AND r.ok=1 "
+                     "WHERE m.status='in'" + (' AND m.bang = ANY(?)' if bids is not None else ''), (list(bids),) if bids is not None else ())
+    by: dict = {}
+    for r in rows:
+        by.setdefault(r['bang'], []).append(int(r['pw'] or 0))
+    return {b: sum(sorted(v, reverse=True)[:C.POWER_TOP]) for b, v in by.items()}
+
+
+def _isle_level(db, bid: str) -> int:
+    """⭐ The bang's island level for Cấp bang (owner 21/10): the island branch's `island_level(db, bid)` (or
+    `island_tier`) when this build has it after the merge, else 0 (this branch alone: the Đại sảnh only)."""
+    for name in ('island_level', 'island_tier'):
+        fn = globals().get(name)
+        if callable(fn):
+            try:
+                return max(0, int(fn(db, bid) or 0))
+            except (TypeError, ValueError):
+                return 0
+    return 0
+
+
+def _part(bid: str, war: int, chal: int, pw: int, fac: dict, isle: int = 0) -> dict:
+    """One bang's three parts (game/bang_content.py: the weights) and its score: 🐾 pets, 🏗️ công trình, ⭐ cấp bang."""
+    pets = war + chal + pw // C.POWER_DIV
+    levels = sum(v for k, v in fac.items() if k in C.FACILITIES and k != C.HALL)
+    build = C.FAC_SCORE * levels
+    hall = max(1, int(fac.get(C.HALL, 1) or 1))
+    level = C.LEVEL_SCORE * (hall + isle)
+    tuong = fac.get('tuong', 0)
+    return dict(bang=bid, score=(pets + build + level) * (100 + C.TUONG_BONUS * tuong) // 100, pets=pets, war=war, chal=chal,
+                power=pw, build=build, levels=levels, level=level, hall=hall, island=isle, tuong=C.TUONG_BONUS * tuong)
+
+
+def standings(db, week: str, t: float | None = None) -> list:
+    """👑 Bang mạnh nhất tuần (owner 21/10: "đừng để cống hiến bang tính điểm nhé, hãy tính điểm của pets, công trình và cấp
+    bang làm điểm nhé"): the active, shown bangs founded before the week's end, best first, each with its three parts,
+    heaviest first: 🐾 Pets (the week's pet war once shown + its ⚔️ Thách đấu + 💪 chiến lực), 🏗️ Công trình (facility
+    levels but the hall), ⭐ Cấp bang (the Đại sảnh's level, + the island's); the sum × the Tượng bang's bonus. Điểm cống
+    hiến never counts. Ties: more pets points, then the older bang."""
+    from . import bang_challenge
+    war = war_scores(db, week, t)
+    chal = bang_challenge.chal_scores(db, week)
     fac: dict = {}
     for r in _rows(db, 'SELECT f.bang AS bang, f.fac AS fac, f.level AS level FROM bang_facilities f JOIN bangs b ON b.id=f.bang '
                        "WHERE b.status='active' AND b.hidden=0"):
         fac.setdefault(r['bang'], {})[r['fac']] = int(r['level'])
     live = {r['id']: float(r['created']) for r in _rows(db, "SELECT id, created FROM bangs WHERE status='active' AND hidden=0 AND created<?",
                                                        (week_end(week),))}   # a bang founded after that week is not in it
-    out = []
-    for bid, created in live.items():
-        f = fac.get(bid, {})
-        base = pts.get(bid, 0) + C.FAC_SCORE * sum(v for k, v in f.items() if k in C.FACILITIES)
-        out.append((bid, base * (100 + C.TUONG_BONUS * f.get('tuong', 0)) // 100, created))
-    out.sort(key=lambda x: (-x[1], x[2], x[0]))
-    return [(b, s) for b, s, _ in out]
+    pw = power(db, list(live)) if live else {}
+    out = [dict(_part(b, war.get(b, 0), chal.get(b, 0), pw.get(b, 0), fac.get(b, {}), _isle_level(db, b)), created=c) for b, c in live.items()]
+    out.sort(key=lambda x: (-x['score'], -x['pets'], x['created'], x['bang']))
+    return out
+
+
+def week_of(db, bid: str, week: str, t: float | None = None) -> dict:
+    """One bang's three parts this week (its page: a few small indexed queries)."""
+    from . import bang_challenge
+    fac = {x['fac']: int(x['level']) for x in _rows(db, 'SELECT fac, level FROM bang_facilities WHERE bang=?', (bid,))}
+    return _part(bid, war_scores(db, week, t).get(bid, 0), bang_challenge.chal_scores(db, week).get(bid, 0),
+                 power(db, [bid]).get(bid, 0), fac, _isle_level(db, bid))
+
+
+def scores(db, week: str) -> list:
+    """[(bang id, score)] of standings, best first (the weekly freeze, the lists)."""
+    return [(x['bang'], x['score']) for x in standings(db, week)]
 
 
 def freeze(db, t: float) -> dict | None:
@@ -1052,10 +1106,14 @@ def _unlocked(item: str, lv: dict) -> bool:
     return n is None or lv.get(n[0], 0) >= n[1]
 
 
-def _card(r: dict, n: int, cap: int, score: int = 0, rank: int = 0) -> dict:
+PARTS = ('pets', 'build', 'level', 'power', 'war', 'chal', 'levels', 'hall', 'island', 'tuong')
+
+
+def _card(r: dict, n: int, cap: int, score: int = 0, rank: int = 0, part: dict | None = None) -> dict:
     rules = rules_of(r)
     return dict(id=r['id'], name=r['name'], emoji=r['emoji'], color=r['color'], motto=r['motto'], open=rules['mode'] == 'auto',
-                mode=rules['mode'], req=req_lines(rules), n=n, cap=cap, score=score, rank=rank)
+                mode=rules['mode'], req=req_lines(rules), n=n, cap=cap, score=score, rank=rank,
+                **{k: int((part or {}).get(k) or 0) for k in PARTS})
 
 
 def search(store, sid: str | None, q: str = '') -> list:
@@ -1068,12 +1126,12 @@ def search(store, sid: str | None, q: str = '') -> list:
             rows = _rows(db, "SELECT * FROM bangs WHERE status='active' AND hidden=0")
             counts = {r['bang']: int(r['n']) for r in _rows(db, "SELECT bang, COUNT(*) AS n FROM bang_members WHERE status='in' GROUP BY bang")}
             halls = {r['bang']: int(r['level']) for r in _rows(db, 'SELECT bang, level FROM bang_facilities WHERE fac=?', (C.HALL,))}
-            sc = scores(db, vn_week(t))
-        order = {b: (i + 1, s) for i, (b, s) in enumerate(sc)}
+            sc = standings(db, vn_week(t))
+        order = {x['bang']: (i + 1, x) for i, x in enumerate(sc)}
         out = []
         for r in rows:
-            rank, score = order.get(r['id'], (len(order) + 1, 0))
-            out.append(_card(r, counts.get(r['id'], 0), C.HALL_CAP[min(5, max(1, halls.get(r['id'], 1)))], score, rank))
+            rank, x = order.get(r['id'], (len(order) + 1, dict(score=0)))
+            out.append(_card(r, counts.get(r['id'], 0), C.HALL_CAP[min(5, max(1, halls.get(r['id'], 1)))], x['score'], rank, x))
         out.sort(key=lambda c: (c['rank'], c['name']))
         return out
     cards = _cached(('search', vn_week(t)), run)
@@ -1087,13 +1145,15 @@ def board(store, t: float | None = None) -> dict:
 
     def run():
         with store.connect() as db:
-            sc = scores(db, vn_week(t))[:C.BOARD_TOP]
+            sc = standings(db, vn_week(t))[:C.BOARD_TOP]
             names = {r['id']: r for r in _rows(db, "SELECT id, name, emoji, color FROM bangs WHERE status='active'")}
-        return [dict(rank=i + 1, id=b, name=names[b]['name'], emoji=names[b]['emoji'], color=names[b]['color'], score=s)
-                for i, (b, s) in enumerate(sc) if b in names]
+        return [dict(rank=i + 1, id=x['bang'], name=names[x['bang']]['name'], emoji=names[x['bang']]['emoji'], color=names[x['bang']]['color'],
+                     score=x['score'], **{k: x[k] for k in PARTS})
+                for i, x in enumerate(sc) if x['bang'] in names]
     top = _cached(('board', vn_week(t)), run)
     holder = crown(store, t)
-    return dict(week=vn_week(t), ends=week_start(t) + 7 * 86400, top=top, crown=holder)
+    return dict(week=vn_week(t), ends=week_start(t) + 7 * 86400, top=top, crown=holder,
+                weights=dict(war=C.PET_WAR_SCORE, chal=C.CHAL_WIN, power_div=C.POWER_DIV, fac=C.FAC_SCORE, level=C.LEVEL_SCORE, tuong=C.TUONG_BONUS))
 
 
 def _seen(updated_at) -> float | None:
@@ -1108,7 +1168,7 @@ def _seen(updated_at) -> float | None:
 def _members(db, bid: str, t: float) -> list:
     week = vn_week(t)
     wk = {r['sid']: int(r['p']) for r in _rows(db, "SELECT sid, SUM(pts) AS p FROM bang_points WHERE bang=? AND week=? AND pts>0 "
-                                                  "AND kind IN ('give','checkin','work') GROUP BY sid", (bid, week))}
+                                                  "AND kind IN ('give','checkin','work','chal') GROUP BY sid", (bid, week))}
     rows = _rows(db, "SELECT m.sid, m.pid, m.role, m.joined, m.points, m.earned, m.given, a.display, s.updated_at AS seen FROM bang_members m "
                      "LEFT JOIN accounts a ON a.sid=m.sid LEFT JOIN sessions s ON s.sid=m.sid WHERE m.bang=? AND m.status='in'", (bid,))
     out = [dict(pid=r['pid'], name=str(r['display'])[:24] if r['display'] else GONE, role=r['role'], joined=float(r['joined']),
@@ -1164,7 +1224,9 @@ def page(store, sid: str, bid: str | None = None) -> dict:
     with store.connect() as db:
         lv = levels(db, bid)
         n, cap = _count(db, bid), cap_of(lv)
-        out = dict(bang=_card(r, n, cap), member=bool(mine and mine['bang'] == bid), leader_name=_display(db, r['leader']),
+        wk = week_of(db, bid, vn_week(t), t)
+        out = dict(bang=_card(r, n, cap, wk['score'], 0, wk),
+                   member=bool(mine and mine['bang'] == bid), leader_name=_display(db, r['leader']),
                    levels=lv, color=color(r['color']), created=float(r['created']), status=r['status'])
         if not out['member']:
             ask = _row(db, "SELECT kind FROM bang_asks WHERE bang=? AND sid=? AND status='open'", (bid, sid)) if sid else None
@@ -1184,7 +1246,7 @@ def page(store, sid: str, bid: str | None = None) -> dict:
             members=_members(db, bid, t), facilities=_facilities(db, bid, t),
             shop=[dict(id=i, price=_price(i, lv), unlocked=_unlocked(i, lv), owned=owned.get(i, 0)) for i in C.ITEM_ORDER],
             golden=dict(list=_gh_list(db, bid, t), per_week=_gh_rules(lv)[0], minutes=_gh_rules(lv)[1]),
-            rules=rules_of(r),
+            rules=rules_of(r), chal=_chal_card(db, bid, sid, me['role'], t),
             log=[dict(text=x['text'], at=float(x['at']), kind=x['kind']) for x in _rows(
                 db, 'SELECT text, at, kind FROM bang_log WHERE bang=? ORDER BY id DESC LIMIT ?', (bid, LOG_SHOWN))],
             slots=C.build_slots(lv[C.HALL]), phao_at=float(r['phao_at']))
@@ -1194,6 +1256,14 @@ def page(store, sid: str, bid: str | None = None) -> dict:
                     "AND k.status='open' ORDER BY k.at LIMIT 50", (bid,))]
     out['crowned'] = crown(store, t) == bid
     return out
+
+
+def _chal_card(db, bid: str, sid: str, role: str, t: float) -> dict | None:
+    """⚔️ Thách đấu bang's card on the home tab (game/bang_challenge.py card)."""
+    from . import bang_challenge
+    if bang_challenge.off():
+        return None
+    return bang_challenge.card(db, bid, sid, role, t)
 
 
 def me_view(store, token) -> dict:
@@ -1222,6 +1292,9 @@ def me_view(store, token) -> dict:
                                wear=int(mine['wear']), uniform=mine['uniform'] if mine['uniform'] in C.UNIFORMS else 'polo',
                                points=int(mine['points']), channel=mine['channel'], pet=lv['san_pet'],
                                uniforms=[u for u in C.UNIFORM_ORDER if C.UNIFORMS[u][2] <= lv['xuong_may']])
+            if _rank(mine['role']) >= C.APPROVE_FROM and not mine['hidden']:   # ⚔️ challenges waiting for an answer (the menu's badge)
+                from . import bang_challenge
+                out['mine']['tc_in'] = bang_challenge.incoming_count(db, mine['bang'], t)
     if mine:
         g = gold_now(store, sid, t)
         out['mine']['golden'] = g
@@ -1602,6 +1675,8 @@ def _disband(db, bang: dict, sid: str, t: float, text: str) -> None:
     db.execute("UPDATE bang_stints SET left_at=?, why='disband' WHERE bang=? AND left_at IS NULL", (t, bang['id']))
     db.execute("UPDATE bang_asks SET status='cancelled', answered=? WHERE bang=? AND status='open'", (t, bang['id']))
     db.execute("UPDATE bang_gh SET status='cancelled' WHERE bang=? AND status='set' AND start>?", (bang['id'], t))
+    from . import bang_challenge
+    bang_challenge.cancel_open(db, bang['id'], t)   # ⚔️ its open challenges, both ways
     if bang['channel']:
         db.execute('DELETE FROM chat_members WHERE channel=?', (bang['channel'],))
     _log(db, bang['id'], sid, 'disband', text, t)
@@ -1868,6 +1943,8 @@ def admin_act(store, admin: str, data) -> dict:
         members = _rows(db, "SELECT sid, pid FROM bang_members WHERE bang=? AND status='in'", (bid,))
         if op == 'hide':   # a hidden bang fields nobody in the pet war: its lineup's slots free (the picks go)
             _war_unpick(db, bid, [r['sid'] for r in members], t)
+            from . import bang_challenge
+            bang_challenge.cancel_open(db, bid, t)   # ⚔️ nor in a challenge
         pids = [r['pid'] for r in members]
         _notify(db, pids=pids, bang=bid, ch=bang['channel'])
         _isle(db, 'view', bid)

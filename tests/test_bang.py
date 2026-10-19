@@ -985,18 +985,23 @@ class Weekly(Base):
         a, b = self.player(name='Lan'), self.player(name='Minh')
         x = self.found(a, 'Rồng Đỏ')
         y = self.found(b, 'Hổ Xám')
-        self.give(a, 3_000_000)
-        self.give(b, 1_000_000)
+        self.give(a, 1_000_000)
+        self.give(b, 9_000_000)                  # owner 21/10: điểm cống hiến never counts in the ranking
         self.op(b, 'checkin')
+        self.set_level(x, 'kho', 2)
+        bang._VIEW.clear()
         board = bang.board(self.store)
-        self.assertEqual([(r['id'], r['score']) for r in board['top']], [(x, 3000 + 100), (y, 1020 + 100)])
+        # 👑 (owner 21/10): 🐾 Pets (none yet) + 🏗️ Công trình (Kho bang 2) + ⭐ Cấp bang (Đại sảnh 1)
+        lv, fac = bang.C.LEVEL_SCORE, bang.C.FAC_SCORE
+        self.assertEqual([(r['id'], r['score']) for r in board['top']], [(x, lv + 2 * fac), (y, lv)])
+        self.assertEqual([(r['pets'], r['build'], r['level']) for r in board['top']], [(0, 2 * fac, lv), (0, 0, lv)])
         self.assertIsNone(board['crown'])
         with self.store.connect() as db:
             self.assertNotIn('k', bang.tag_of(self.store, db, self.sid(a)))
         self.t[0] += 7 * 86400                                                    # next week: last week's winner is frozen
         bang._VIEW.clear()
         self.assertEqual(bang.crown(self.store), x)
-        self.assertEqual(self.one('SELECT bang, score FROM bang_week_win'), dict(bang=x, score=3100))
+        self.assertEqual(self.one('SELECT bang, score FROM bang_week_win'), dict(bang=x, score=lv + 2 * fac))
         c = self.player(name='Tú')
         self.op(c, 'join', bang=x)
         with self.store.connect() as db:
@@ -1015,7 +1020,7 @@ class Weekly(Base):
         self.give(a, 1_000_000)
         self.set_level(x, 'tuong', 5)    # +10 %, and 5 more levels
         with self.store.connect() as db:
-            self.assertEqual(bang.scores(db, bang.vn_week(self.t[0])), [(x, (1000 + 600) * 110 // 100)])
+            self.assertEqual(bang.scores(db, bang.vn_week(self.t[0])), [(x, (bang.C.LEVEL_SCORE + 5 * bang.C.FAC_SCORE) * 110 // 100)])
         bang.admin_act(self.store, 'op', dict(op='hide', id=x))
         with self.store.connect() as db:
             self.assertEqual(bang.scores(db, bang.vn_week(self.t[0])), [])

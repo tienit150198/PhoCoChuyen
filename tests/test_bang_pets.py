@@ -135,8 +135,12 @@ class BangPets(Store):
         self.assertNotIn(red if champ == blue else blue, ws, 'the loser of the only match scores nothing')
         with mock.patch.object(bang, 'now', return_value=END):
             with self.store.connect() as db:
-                sc = dict(bang.scores(db, week))
-        self.assertEqual(sc[champ], ws[champ] + (BC.FAC_SCORE * 2 if champ == blue else 0))   # + blue's Sân luyện pet 2
+                st = {x['bang']: x for x in bang.standings(db, week)}
+        # 👑 (owner 21/10): the war is in 🐾 Pets (with the bang's chiến lực), blue's Sân luyện pet 2 in 🏗️ Công trình
+        self.assertEqual(st[champ]['war'], ws[champ])
+        self.assertEqual(st[champ]['pets'], ws[champ] + st[champ]['power'] // BC.POWER_DIV)
+        self.assertEqual(st[blue]['build'], BC.FAC_SCORE * 2)
+        self.assertEqual(st[champ]['score'], st[champ]['pets'] + st[champ]['build'] + st[champ]['level'])
         with mock.patch.object(A, 'now', return_value=END):
             v = self.op(toks[3], 'war')
             self.assertEqual(v['phase'], 'done')

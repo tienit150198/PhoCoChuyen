@@ -8,6 +8,9 @@
  *        its real ladder, a title step in any career, the account's age), set by Phó bang and up (⚙️), shown on its card;
  *        the career ladders come from GET /api/bang?careers=1 when ⚙️ opens.
  *   the commands jr_bang_found (5.000.000 xu) and jr_bang_give (the fund) go through the save like any payment.
+ *   ⚔️ Thách đấu bang (owner 21/10, game/bang_challenge.py): the home tab's card (record, challenges to answer with
+ *        POST /api/arena/tc_answer, the last results) opens the arena's 🛡️ › ⚔️ Thách đấu for the rest (v4/pet-arena.js).
+ *   👑 the week's three parts (owner 21/10): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang; cống hiến never counts (game/bang.py standings).
  * Phone first: one bang a screen, emoji tabs, one main button in the sticky bar. Styles: /css/spend.css + /css/bang.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {qtyBox,QTY,qtyVal} from '../qty-input.js';
@@ -162,6 +165,15 @@ async function onClick(op,d,el){
       await command('jr_bang_give',{bang:S.view.mine.bang,amount:n,confirm:true});S.amount=0;return;}
     case'chat':S.dlg.close();await S.env.act?.('liveChat',{ch:d.ch});return;
     case'island':S.dlg.close();await S.env.act?.('bangIsland',{});return;   // 🏯 Đảo bang (v4/bang-island.js)
+    case'tcopen':S.dlg.close();await S.env.act?.('petArena',{tab:'war',sec:'tc',...(d.find?{find:1}:{})});return;   // ⚔️ Thách đấu (v4/pet-arena.js)
+    case'tcwatch':S.dlg.close();await S.env.act?.('petArena',{tab:'war',sec:'tc',watch:d.id});return;
+    case'tcyes':case'tcno':{
+      if(S.busy)return;S.busy=true;render();let r=null;
+      try{r=await S.env.api.post('/api/arena/tc_answer',{id:d.id,ok:op==='tcyes'});S.flash={text:r?.message||'Xong!',kind:'good'};}
+      catch(e){S.flash={text:e?.message||'Chưa được. Thử lại nhé.',kind:'bad'};}
+      finally{S.busy=false;}
+      if(r?.match){S.dlg.close();await S.env.act?.('petArena',{tab:'war',sec:'tc',watch:r.match});return;}   // played now: watch it
+      await load();render();return;}
     case'sel':S.sel=S.sel===d.pid?'':d.pid;S.arm='';render();return;
     case'role':{if(d.role==='chu'&&!armed('chu:'+d.pid))return;await post('role',{pid:d.pid,role:d.role,...(d.role==='chu'?{confirm:true}:{})});return;}
     case'kick':if(!armed('kick:'+d.pid))return;await post('kick',{pid:d.pid,confirm:true});S.sel='';return;
@@ -312,8 +324,10 @@ function rankTab(){
   const data=b||S.view?.page?.board;
   if(!data)return `<p class="sd-empty">⏳</p>`;
   const top=data.top||[];
-  const rows=top.length?`<ol class="sd-board bg-board">${top.map(x=>`<li class="${x.id===mine?'me':''}"><span>${x.rank===1?'🥇':x.rank===2?'🥈':x.rank===3?'🥉':x.rank}</span><b data-no-translate>${esc(x.emoji)} ${esc(x.name)}${data.crown===x.id?' 👑':''}</b><em>${fmt(x.score)}</em></li>`).join('')}</ol>`:'<p class="tp-note">Tuần này chưa bang nào có điểm.</p>';
-  return `<section class="sd-card"><h3>👑 Bang mạnh nhất tuần</h3><p class="tp-note">Điểm = điểm cống hiến cả bang kiếm trong tuần + cấp công trình + 🛡️ Bang chiến pet. Bang đứng đầu: cả bang mang danh hiệu “👑 Bang mạnh nhất tuần” suốt tuần sau.</p>
+  const rows=top.length?`<ol class="sd-board bg-board">${top.map(x=>`<li class="${x.id===mine?'me':''}"><span>${x.rank===1?'🥇':x.rank===2?'🥈':x.rank===3?'🥉':x.rank}</span><b data-no-translate>${esc(x.emoji)} ${esc(x.name)}${data.crown===x.id?' 👑':''}${parts(x)}</b><em>${fmt(x.score)}</em></li>`).join('')}</ol>`:'<p class="tp-note">Tuần này chưa bang nào có điểm.</p>';
+  const wt=data.weights||{};
+  return `<section class="sd-card"><h3>👑 Bang mạnh nhất tuần</h3><ul class="bg-how"><li>🐾 <b>Pets</b>: Bang chiến pet tuần, ⚔️ Thách đấu bang, 💪 chiến lực bé cả bang</li><li>🏗️ <b>Công trình</b>: mỗi cấp ${fmt(wt.fac||150)} điểm</li><li>⭐ <b>Cấp bang</b>: mỗi cấp Đại sảnh ${fmt(wt.level||500)} điểm</li></ul>
+    <p class="tp-note">🗿 Tượng bang +${wt.tuong||2}%/cấp. Bang đứng đầu: cả bang mang “👑 Bang mạnh nhất tuần” suốt tuần sau.</p>
     <p class="tp-line"><span>Tuần kết thúc sau <b data-bg-until="${data.ends}">${esc(left(data.ends-serverNow()))}</b></span></p>${rows}</section>`;
 }
 const roleIcon=r=>({chu:'👑',pho:'🛡️',lao:'📜',tinh:'⭐',tv:'👤'})[r]||'👤';
@@ -334,13 +348,30 @@ function homeTab(){
   const chips=presets.map(x=>`<button type="button" class="sd-chip${n===x?' on':''}" data-bg="amount" data-n="${x}" aria-pressed="${n===x}">${fmt(x)}</button>`).join('');
   const gold=m.golden?`<p class="bg-gold">⏰ Giờ vàng của bang đang diễn ra: lãi tiệm và quầy ×2, còn <b data-bg-until="${m.golden.ends}">${esc(left(m.golden.ends-serverNow()))}</b></p>`:'';
   const hero=`<section class="sd-card bg-hero" style="--bgc:${hex(c.color)}">${crown}${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
-    <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island?btn('island','🏯 Đảo bang','','btn cream bg-chat'):''}</p></section>`;
+    <p class="tp-line"><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span>${p.channel?btn('chat','💬 Chat bang',` data-ch="${esc(p.channel)}"`,'btn cream bg-chat'):''}${S.env?.api?.content?.bang_island?btn('island','🏯 Đảo bang','','btn cream bg-chat'):''}</p>
+    ${parts(c,true)}</section>`;
   const fund=`<section class="sd-card"><h3>💰 Quỹ bang</h3><div class="tp-money"><b>${fmt(p.fund)}</b><span>/ ${fmt(p.fund_cap)} xu</span></div>${bar(pct)}
     <div class="sd-chips sd-amounts">${chips}<label class="tp-typed">${qtyBox({value:n,min:g.min,max:Math.max(g.min,Math.min(g.max,room()||g.max)),step:g.min,money:true,label:'Góp bao nhiêu xu',go:`data-bg="amount" data-n="${QTY}"`})}<small>xu</small></label></div>
     <p class="tp-note">Chỉ góp, không rút: quỹ chỉ dùng xây công trình bang. ${fmt(g.per_point||1000)} xu = 1 điểm cống hiến.</p></section>`;
   const pts=`<section class="sd-card bg-pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
     <p class="tp-note">Hôm nay ${me.today}/${me.today_max} điểm hoạt động: 📅 điểm danh +${CAT().points?.checkin||20}, mỗi ngày làm việc +${CAT().points?.work||10}. Điểm đổi đồ ở 🛍️.</p></section>`;
-  return gold+hero+fund+pts+goldenCard()+logCard();
+  return gold+hero+chalCard()+fund+pts+goldenCard()+logCard();
+}
+/** 👑 The week's three parts (game/bang.py standings): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang. */
+function parts(x,total=false){
+  if(!x||x.score==null)return '';
+  return `<p class="bg-parts" title="Điểm tuần: Pets + Công trình + Cấp bang"><span>🐾 ${fmt(x.pets)}</span><span>🏗️ ${fmt(x.build)}</span><span>⭐ ${fmt(x.level)}</span>${total?`<b>= ${fmt(x.score)}</b>`:''}</p>`;
+}
+/** ⚔️ Thách đấu bang (game/bang_challenge.py card): record, challenges to answer, the last results; the rest in the arena. */
+function chalCard(){
+  const c=P()?.chal;if(!c)return '';
+  const inc=(c.incoming||[]).map(x=>`<div class="bg-row bg-tc-in"><span class="bg-tc-ico" aria-hidden="true">⚔️</span><div class="grow"><b data-no-translate>${esc(x.vs)}</b><small>thách đấu bang mình · còn ${esc(left(x.expires-serverNow()))}</small></div>${c.officer?btn('tcyes','Nhận',` data-id="${esc(x.id)}"`,'btn primary')+btn('tcno','✕',` data-id="${esc(x.id)}" aria-label="Từ chối"`,'btn cream'):'<small class="bg-tc-wait">Chờ Trưởng lão</small>'}</div>`).join('');
+  const rec=(c.recent||[]).map(x=>`<button type="button" class="bg-tc-res ${esc(x.res||'')}" data-bg="tcwatch" data-id="${esc(x.id)}"><span aria-hidden="true">${{win:'🏅',loss:'💤',draw:'🤝'}[x.res]||''}</span><b data-no-translate>${esc(x.vs)}</b><em>${x.mine===0?`${x.wa}–${x.wb}`:`${x.wb}–${x.wa}`}</em><i aria-label="Xem lại">▶</i></button>`).join('');
+  const note=c.ready<c.min?`Cần ${c.min} bé trong đội hình (đang có ${c.ready}).`:`Đội hình: ${Math.min(c.ready,c.size)}/${c.size} bé ra sân.`;
+  return `<section class="sd-card bg-tc"><h3>⚔️ Thách đấu bang</h3><p class="tp-line"><span>🏆 ${fmt(c.rating)}</span><span>${c.w} thắng · ${c.l} thua${c.d?` · ${c.d} hòa`:''}</span><span>Hôm nay ${c.played}/${c.play_max} trận</span></p>
+    ${inc?`<div class="bg-list">${inc}</div>`:''}${c.outgoing?`<p class="tp-note">⏳ ${c.outgoing} lời thách đấu đang chờ bang kia.</p>`:''}${rec?`<div class="bg-tc-list">${rec}</div>`:''}
+    <p class="tp-note">${esc(note)}${c.mine?'':' Bạn chưa ghi danh bé nào.'}</p>
+    <div class="bg-row bg-tc-acts">${c.officer?btn('tcopen','⚔️ Thách đấu',' data-find="1"','btn primary'):''}${btn('tcopen',c.mine?'🐾 Đội hình':'🐾 Ghi danh bé','',c.officer?'btn cream':'btn primary')}</div></section>`;
 }
 function homeFoot(){
   const me=ME();if(!me)return '';

@@ -98,6 +98,46 @@
 .pa-bar .pa-main{width:100%;min-height:50px}
 .pa-why{text-align:center;color:var(--ink-2);font-weight:700}
 
+/* ---------------------------------------------------------------- ⚔️ Thách đấu bang (the 🛡️ tab's first section) */
+.pa-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 10px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.pa-seg button{min-height:44px;border:0;border-radius:11px;background:transparent;font-weight:800;font-size:.92rem;color:var(--ink-2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-seg button.on{background:var(--surface);color:var(--accent-text);box-shadow:0 1px 3px rgba(0,0,0,.12),inset 0 -3px 0 var(--accent)}
+.pa-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--bad);color:#fff;font-style:normal;font-size:.72rem;font-weight:900;vertical-align:1px}
+.pa-chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.pa-tc-head h3{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-tc-rec{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-size:.95rem}
+.pa-tc-rec b{font-size:1.15rem}
+.pa-tc-rec span{color:var(--ink-2);font-weight:700}
+.pa-modes-l{margin:8px 0 4px!important}
+.pa-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pa-modes .pa-chip{min-height:44px;padding:0 6px;font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-tc-row{display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 8px 6px 10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.pa-tc-row.in{border-color:var(--accent);background:var(--accent-soft)}
+.pa-tc-row.off{opacity:.78}
+.pa-tc-row .grow,.pa-roster .grow{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.pa-tc-row b,.pa-roster b{font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-tc-row small,.pa-roster small{font-size:.76rem;font-weight:700;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-tc-row .btn{flex:none;min-height:42px;min-width:44px;padding:0 12px}
+.pa-why-s{color:var(--bad)!important}
+.pa-wait{flex:none;max-width:34%;text-align:right;white-space:normal!important}
+.pa-crest{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font-size:1.2rem}
+.pa-roster{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:4px}
+.pa-roster li{display:flex;align-items:center;gap:8px;min-height:52px;padding:4px 8px;border-radius:12px;background:var(--surface-2)}
+.pa-roster li.start{background:color-mix(in srgb,var(--good-soft) 70%,var(--surface-2));box-shadow:inset 3px 0 0 var(--good)}
+.pa-roster li.me{outline:1px solid var(--accent);outline-offset:-1px}
+.pa-roster li.off{opacity:.6}
+.pa-roster li>em{flex:none;width:22px;text-align:center;font-style:normal;font-weight:900;color:var(--ink-2)}
+.pa-roster li>svg,.pa-roster li>img,.pa-roster li>.pet-svg{flex:none}
+.pa-roster .pa-tag{flex:none;text-align:right;line-height:1.25}
+.pa-mv{flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:1rem;color:var(--ink);cursor:pointer}
+.pa-mv:disabled{opacity:.35;cursor:default}
+.pa-mypet summary{cursor:pointer;min-height:40px;display:flex;align-items:center;gap:4px;font-weight:800;font-size:.95rem}
+.pa-mypet summary b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:45%}
+.pa-mypet[open] summary{margin-bottom:6px}
+.pa-row.muted{cursor:default;opacity:.7}
+.pa-search{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.pa-search input{flex:1 1 auto;min-width:0;border:0;background:transparent;font-size:1rem;color:var(--ink);outline:none;min-height:44px}
+
 /* ---------------------------------------------------------------- the battle */
 .pa-fight{flex:1 1 auto;display:flex;flex-direction:column;min-height:100%;background:var(--surface)}
 .pa-fight-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}

@@ -183,7 +183,9 @@ function bootLive(m){
   m.live.on('island_ping',f=>import('./v4/island.js').then(a=>a.onIslandPing(env(),f)).catch(e=>console.warn('island:',e)));   // 🏝️ an invitation to a friend's island
   // ⚔️ Bang (v4/bang-tag.js): my bang's tag, uniform, flag and boat paint; read again when the bang changes for me
   const bangMine=(force=false)=>import('./v4/bang-tag.js').then(b=>b.loadMine(api,{force})).catch(e=>console.warn('bang:',e));
-  m.live.on('welcome',()=>bangMine());m.live.on('bang_me',()=>bangMine(true));
+  // ⚔️ Thách đấu bang: challenges waiting for my answer (an officer's me.tc_in) badge ⚔️ Bang; a new one toasts once
+  const tcIn=(x,say)=>{const n=Number(x?.tc_in)||0;if(n>(api.tcIn||0)){if(say)toast('⚔️ Có bang thách đấu bang mình! Mở ⚔️ Bang để nhận lời nhé.','hint');api.bangAlerts=(api.bangAlerts||0)+n-(api.tcIn||0);renderMain();}api.tcIn=n;};
+  m.live.on('welcome',()=>bangMine().then(x=>tcIn(x,false)));m.live.on('bang_me',()=>bangMine(true).then(x=>tcIn(x,true)));
   m.live.on('bang_invite',f=>{toast(`📨 ${f.e||'⚔️'} Bang ${String(f.name||'').slice(0,24)} mời bạn vào bang. Mở ⚔️ Bang để nhận nhé.`,'hint');api.bangAlerts=(api.bangAlerts||0)+1;renderMain();});
   m.liveBoot(env());
 }

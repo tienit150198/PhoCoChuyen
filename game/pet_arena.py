@@ -49,7 +49,8 @@ NPC_X = (85, 100, 118)              # % of the player's own strength: Dễ, Vừ
 NPC_NAMES = ('Dễ', 'Vừa', 'Khó')
 NPC_OWNER = '🐾 Bé nhà Mây'
 RECENT_LIST = 12
-LIGHT = frozenset({'replay', 'ladder', 'cup_board', 'war', 'war_match'})   # server.py: these read no save
+LIGHT = frozenset({'replay', 'ladder', 'cup_board', 'war', 'war_match', 'tc', 'tc_find', 'tc_match', 'tc_unreg', 'tc_order', 'tc_send',
+                   'tc_answer', 'tc_cancel', 'tc_set'})   # server.py: these read no save (⚔️ Thách đấu: game/bang_challenge.py LIGHT)
 DAY = 86400
 
 
@@ -183,9 +184,28 @@ def _sync(db, sid: str, state: dict, display: str, tag: str, t: float, ids=None)
     return _row(db, sid)
 
 
+def best_power(s: dict) -> int:
+    """💪 The power (pet_tiers.power: the five stats) of the player's strongest pet at home or in the kennel, 0 without one."""
+    from . import pet_tiers as px
+    return max((px.power(s, p) for p in candidates(s)), default=0)
+
+
+def power_commit(db, sid: str, s: dict) -> None:
+    """💪 pet_power (SCHEMA_VERSION 61): the player's strongest pet power, the bang ranking's Chiến lực (game/bang.py
+    standings: summed over a bang's members, never a save parsed per request). One primary-key read, a write only
+    when it changed."""
+    pw = best_power(s)
+    r = db.execute('SELECT pw FROM pet_power WHERE sid=?', (sid,)).fetchone()
+    if (int(r['pw']) if r else 0) == pw:
+        return
+    db.execute('INSERT INTO pet_power(sid, pw, at) VALUES(?,?,?) ON CONFLICT (sid) DO UPDATE SET pw=EXCLUDED.pw, at=EXCLUDED.at', (sid, pw, now()))
+
+
 def on_pet_commit(db, sid: str, after: dict) -> None:
     """A jr_pet_* command (game/pets.py command_commit, the save's own transaction): the lineup's snapshot follows the
-    pets (a fusion, training, gear). Nothing for a player who never opened the arena."""
+    pets (a fusion, training, gear). Nothing for a player who never opened the arena. 💪 Their strongest pet's power
+    (pet_power) follows too, for everyone."""
+    power_commit(db, sid, after)
     row = db.execute('SELECT lineup, snap FROM pet_arena WHERE sid=?', (sid,)).fetchone()
     if row:
         ids = _j(row['lineup'], [])
@@ -198,14 +218,19 @@ def on_pet_commit(db, sid: str, after: dict) -> None:
                        (lineup, text, len(snap), sum(f['pw'] for f in snap), sid))
     from . import pet_war
     pet_war.on_pet_commit(db, sid, after)
+    from . import bang_challenge
+    bang_challenge.on_pet_commit(db, sid, after)   # ⚔️ the pet on the bang's Thách đấu roster follows too
 
 
 def forget(db, sid: str) -> None:
     """A player erased their data (game/storage.py delete): their arena rows go; past matches keep the names shown."""
     db.execute('DELETE FROM pet_arena WHERE sid=?', (sid,))
     db.execute('DELETE FROM pet_arena_season WHERE sid=?', (sid,))
+    db.execute('DELETE FROM pet_power WHERE sid=?', (sid,))
     db.execute('DELETE FROM pet_cup_entries WHERE sid=? AND week NOT IN (SELECT week FROM pet_cup)', (sid,))
     db.execute('DELETE FROM pet_war_picks WHERE sid=? AND week NOT IN (SELECT week FROM pet_war)', (sid,))
+    from . import bang_challenge
+    bang_challenge.forget(db, sid)   # ⚔️ their Thách đấu roster rows (played challenges keep the bangs' names only)
 
 
 # ---------------------------------------------------------------- ratings
@@ -371,6 +396,7 @@ def view(store, token, state, ip='') -> dict:
 
     def run(db):
         row = _sync(db, sid, state, display, ip_tag(ip), t)
+        power_commit(db, sid, state)   # 💪 the bang ranking's Chiến lực, fresh from this visit
         rating = season_rating(db, week, sid, int(row['rating']))
         season = dict(db.execute('SELECT * FROM pet_arena_season WHERE week=? AND sid=?', (week, sid)).fetchone())
         recent = [dict(r) for r in db.execute('SELECT * FROM pet_arena_matches WHERE (a=? OR b=?) AND kind IN (\'rank\',\'friend\',\'npc\',\'spar\',\'cup\') '
@@ -666,7 +692,9 @@ def rules() -> dict:
 
 
 OPS = ('view', 'lineup', 'fight', 'friend', 'friends', 'npc', 'replay', 'ladder', 'cup_join', 'cup_leave', 'cup_board',
-       'war', 'war_pick', 'war_unpick', 'war_match')
+       'war', 'war_pick', 'war_unpick', 'war_match',
+       # ⚔️ Thách đấu bang (game/bang_challenge.py, owner 21/10): view, find, replay, roster, order, send, answer, cancel, mode
+       'tc', 'tc_find', 'tc_match', 'tc_reg', 'tc_unreg', 'tc_order', 'tc_send', 'tc_answer', 'tc_cancel', 'tc_set')
 
 
 OFF_TEXT = 'Đấu trường pet đang tạm nghỉ để bảo trì. Quay lại sau nhé!'
@@ -706,6 +734,9 @@ def act(store, token, op: str, data: dict, state, ip: str = '') -> dict:
         return replay(store, token, data)
     if op == 'ladder':
         return ladder(store, token, data)
+    if op.startswith('tc'):
+        from . import bang_challenge
+        return bang_challenge.act(store, token, op, data, state, ip)
     from . import pet_cup, pet_war
     if op.startswith('cup_'):
         return pet_cup.act(store, token, op, data, state, ip)
@@ -753,7 +784,8 @@ def run_housekeeping(store) -> None:
                 sys.stderr.write(f'[pet_arena] archived {n} matches\n')
         except Exception as e:  # noqa: BLE001 - an older schema: no archive table yet
             sys.stderr.write(f'[pet_arena] archive: {type(e).__name__}\n')
-    for name, fn in (('cup', pet_cup.run_due), ('war', pet_war.run_due)):
+    from . import bang_challenge
+    for name, fn in (('cup', pet_cup.run_due), ('war', pet_war.run_due), ('chal', bang_challenge.run_due)):
         try:
             fn(store)
         except Exception as e:  # noqa: BLE001 - housekeeping must never take the server down
