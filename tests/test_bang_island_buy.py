@@ -192,14 +192,22 @@ class Buying(Base):
         self.op(d, 'buy', item='huy', rid='rid-0000001')
         self.assertFalse(self.has())
 
-    def test_the_island_adds_nothing_to_the_weekly_score(self):
-        """21/10: the ranking is the Thách đấu bang branch's (contribution points and pets' power): no island score."""
+    def test_the_island_level_is_part_of_cap_bang(self):
+        """Owner 21/10: the week's score is pets, công trình and cấp bang only; the island's level joins ⭐ Cấp bang
+        (the Đại sảnh's level + the island's, × LEVEL_SCORE) and nothing else."""
+        from game import bang_content as BC
         self.give(self.a, 5_000_000)
+        week = bang.vn_week(self.t[0])
         with self.store.connect() as db:
-            before = dict(bang.scores(db, bang.vn_week(self.t[0])))[self.bid]
+            before = next(x for x in bang.standings(db, week) if x['bang'] == self.bid)
+        self.assertEqual(before['island'], 0)
         self.op(self.a, 'isle', to=1, confirm=True)
         with self.store.connect() as db:
-            self.assertEqual(dict(bang.scores(db, bang.vn_week(self.t[0])))[self.bid], before)
+            after = next(x for x in bang.standings(db, week) if x['bang'] == self.bid)
+            self.assertEqual(dict(bang.scores(db, week))[self.bid], after['score'])
+        self.assertEqual((after['island'], after['level'] - before['level']), (1, BC.LEVEL_SCORE))
+        self.assertEqual((after['pets'], after['build']), (before['pets'], before['build']), 'only ⭐ Cấp bang moves')
+        self.assertEqual(after['score'] - before['score'], BC.LEVEL_SCORE * (100 + after['tuong']) // 100)
 
 
 class Island(Base):

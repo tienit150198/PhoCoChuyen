@@ -1,4 +1,5 @@
-/* ===================================================================   ⚔️ Bang (public/js/v4/bang.js), over /css/spend.css (sd-*) and /css/town-projects.css shapes (tp-bar, tp-note…,
+/* ==========================================================================
+   ⚔️ Bang (public/js/v4/bang.js), over /css/spend.css (sd-*) and /css/town-projects.css shapes (tp-bar, tp-note…,
    repeated here so this sheet stands alone). Theme tokens only; the bang's colour comes as --bgc (fill) / --bgi (ink).
    Phone first (360–390 px): one column, 44 px targets, the main button in the sticky bottom bar; landscape phones
    (844×390) keep the bar and scroll the body.
@@ -152,7 +153,6 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 .bg-tc-in .grow{flex:1 1 0;min-width:0}
 .bg-tc-in small{white-space:normal}
 .bg-tc-in .btn{min-width:44px;padding:0 12px}
-=======
 /* 🏝️ Đảo bang (owner 21/10): the offer before it is bought (first on the home tab), then its card first in 🏗️ */
 .bg-isle-offer{text-align:center;border:2px solid var(--accent);background:var(--surface);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 14%,var(--surface)),var(--surface))}
 .bg-isle-offer h3{margin:0 0 6px;font-size:1.15rem}
@@ -161,3 +161,27 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 .bg-isle-art{font-size:2.6rem;line-height:1;margin:2px 0 4px}
 .bg-isle .bg-fac-head .btn{flex:none}
 .bg-zones{margin:2px 0 8px!important;font-size:.82rem!important}
+/* Smooth taps (owner 21/10 "bang bấm còn giật giật lắm"): the sheet is patched in place (v4/bang.js morph), so these
+   only paint the node that changed. The result line lives in the sticky bottom dock with the main button (it never
+   pushes the cards down); the tapped button alone shows a spinner while its answer is on the way (transform only). */
+.bg-dock{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column}
+.bg-dock .sd-bar{position:static}
+.bg-dock>.sd-flash{margin:0 12px 8px;padding:8px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm,0 2px 8px rgba(0,0,0,.12))}
+.bg-dock>.sd-flash:last-child{margin-bottom:calc(10px + var(--safe-b))}
+.bg-dock>.sd-flash.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.bg-dock>.sd-flash.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.bg-dock>.sd-flash:not(:empty){animation:bg-pop .18s ease-out}
+@keyframes bg-pop{from{opacity:0;transform:translateY(8px)}}
+.bg-sheet .is-pending{cursor:progress}
+.bg-sheet .btn.is-pending::after,.bg-sheet .sd-chip.is-pending::after{content:'';flex:none;width:.95em;height:.95em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:bg-spin .7s linear infinite}
+@keyframes bg-spin{to{transform:rotate(360deg)}}
+.bg-sheet .sd-main.tp-arm{background:var(--warn);border-color:var(--warn)}
+.bg-buy .btn{min-width:8.5em;white-space:nowrap}   /* "Nâng cấp" / "Bấm lần nữa": one width, the row never re-wraps */
+/* ⏰ no Đền vàng yet: the build is the card's main button (owner 21/10) */
+.bg-gold-cta{border-color:#f2c14e;background:var(--surface);background:linear-gradient(180deg,color-mix(in srgb,#f2c14e 14%,var(--surface)),var(--surface))}
+.bg-gold-cta .bg-cta{width:100%;min-height:48px;margin:0 0 6px}
+.bg-short{border-top:0;padding:0}
+.bg-hl{animation:bg-hl 1.2s ease-out}
+@keyframes bg-hl{from{box-shadow:0 0 0 3px var(--accent)}to{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.bg-dock>.sd-flash:not(:empty),.bg-hl,.bg-sheet .is-pending::after{animation:none}}
+.reduce-motion .bg-dock>.sd-flash:not(:empty),.reduce-motion .bg-hl{animation:none}

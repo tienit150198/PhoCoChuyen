@@ -222,6 +222,12 @@ async def run(base, db, problems, checks):
         await tap(lan, '[data-bg="checkin"]')
         await until(lan, "return s.flash.includes('Điểm danh')", 'Lan checks in')
         await shot(lan, '04-lan-home-checked')
+        # ⏰ no Đền vàng yet (owner 21/10 "bang chủ chưa chọn được giờ vàng của bang"): the build is the card's button
+        gold = await lan.page.evaluate("()=>{const c=document.querySelector('dialog.bg-sheet[open] [data-k=golden]');return c?{text:c.innerText,btn:c.querySelector('[data-bg=build][data-id=den_vang]')?.innerText||''}:null;}")
+        check(bool(gold) and 'Xây Đền vàng · 10 triệu · 4 giờ' in gold['btn'] and 'Quỹ còn thiếu 10.000.000 xu' in gold['text'] and 'Góp quỹ' in gold['text'],
+              f'Bang chủ sees "🏗️ Xây Đền vàng · 10 triệu · 4 giờ" with what the fund lacks and 🙌 Góp quỹ ({gold})')
+        await lan.page.evaluate("document.querySelector('dialog.bg-sheet [data-k=golden]')?.scrollIntoView({block:'center'})")
+        await shot(lan, '04b-lan-golden-build')
 
         # ---- Minh finds and joins ----
         await open_bang(minh)
@@ -229,6 +235,8 @@ async def run(base, db, problems, checks):
         await shot(minh, '05-minh-find')
         await tap(minh, '[data-bg="join"]')
         await until(minh, "return s.title.includes('Rồng Đỏ')", 'Minh is in')
+        gold = await minh.page.evaluate("()=>document.querySelector('dialog.bg-sheet[open] [data-k=golden]')?.innerText||''")
+        check('Nhờ Bang chủ/Phó bang xây' in gold and 'den_vang' not in gold, f'a member is told who builds Đền vàng ({gold})')
         await tap(minh, '[data-bg="checkin"]')
         await until(minh, "return s.main.includes('Góp')", 'after the check-in the main button gives')
         await tap(minh, '[data-bg="amount"][data-n="1000000"]')

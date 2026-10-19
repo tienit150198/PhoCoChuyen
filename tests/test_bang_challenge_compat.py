@@ -1,5 +1,6 @@
-"""⚔️ Thách đấu bang and rollbacks: nothing of it is in a save, and the release before it (2.4.64 at a70eaebc) runs on a
-database at SCHEMA_VERSION 61 with challenges played: its startup runs no DDL (same tables, same indexes, the version
+"""⚔️ Thách đấu bang and rollbacks: nothing of it is in a save, and the release live before it (2.4.65 at cfc6eb7e) runs on a
+database at SCHEMA_VERSION 62 (61: the challenge tables, 62: the 🏝️ bangs.isle columns) with challenges played and an
+island bought, an upgrade building and a bang without one: its startup runs no DDL (same tables, same indexes, the version
 never lowered, rows kept), its bang pages, lists and ranking and its arena read the database as they did (the 'chal'
 điểm cống hiến rows and the 'chal' log lines included), and its arena refuses the new ops gracefully."""
 import json
@@ -16,7 +17,7 @@ from game import pg_schema
 from tests.test_bang_challenge import Base
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = 'a70eaebc'   # 2.4.64
+RELEASE = 'cfc6eb7e'   # 2.4.65 (live): schema 60, no challenge tables, no island columns
 
 OLD = '''import json,sys
 from game.storage import Store
@@ -76,13 +77,16 @@ class OldRelease(Base):
             i = sorted(r[0] + ':' + r[1] for r in db.execute('SELECT indexname, indexdef FROM pg_indexes WHERE schemaname=current_schema()').fetchall())
         return t, i
 
-    def test_2_4_64_on_schema_61_with_challenges_played(self):
+    def test_live_release_on_schema_62_with_challenges_played(self):
         a, b, ba, bb = self.two()
         cid = self.send(a[0], bb)['chal']['id']
         self.tc(b[0], 'tc_answer', id=cid, ok=True)
         self.send(b[0], ba)                                             # one still open
         for t in a[:2]:                                                 # 💪 pet_power rows
             self.tc(t, 'view')
+        self.sql('UPDATE bangs SET isle=2, isle_to=3, isle_started=?, isle_ready=?, isle_paid=?, isle_how=? WHERE id=?',
+                 (self.t[0], self.t[0] + 3600, 60_000_000, 'buy', ba))       # 🏝️ one building its next level…
+        self.sql("UPDATE bangs SET isle=0, isle_how='' WHERE id=?", (bb,))  # …one without an island (founded from 21/10)
         before = self.catalog()
         with self.store.connect() as db:
             n = {x: db.execute(f'SELECT COUNT(*) AS n FROM {x}').fetchone()['n'] for x in TABLES}
@@ -90,7 +94,7 @@ class OldRelease(Base):
         saves = {t: self.store.read(t) for t in a + b}
         got = self.run_old(str(self.store.path), a[0], ','.join(TABLES))
         self.assertEqual(int(got['v']), pg_schema.SCHEMA_VERSION)
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 61)
+        self.assertEqual(pg_schema.SCHEMA_VERSION, 62)
         self.assertEqual(got['n'], n, 'rows kept')
         self.assertEqual(self.catalog(), before, 'no table or index changed by the old startup')
         self.assertEqual(len(got['scores']), 2)

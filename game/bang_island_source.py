@@ -160,7 +160,7 @@ class BangIslandSource:
             out = store.transaction(build)
         except BG.BangError as e:
             raise BI.BangIslandError(e.message, e.code, getattr(e, 'status', 400)) from None
-        BG._VIEW.clear()
+        BG._drop_views()
         return out
 
 

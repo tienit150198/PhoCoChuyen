@@ -3,8 +3,8 @@ fixes: the archive tables) to 2.4.60
 (e05bacf5): one save holding every new save key at once (journey.islb, journey.bang, pets that fought and were fielded in
 the bang war, journey.bang.last with its nonce) validates, migrates and takes a command there, the blocks untouched; and
 2.4.60's startup on a database at 59 with rows in every new table (the archive tables too) runs no DDL (same tables, same
-indexes, version never lowered, rows kept). 🏝️ 21/10 (SCHEMA_VERSION 62, bangs.isle…): 2.4.64 starts on it without DDL
-and keeps playing the bangs (its pages, the island's provider, a deposit, a check-in, a founding), and a bang 2.4.64 founds
+indexes, version never lowered, rows kept). 🏝️ 21/10 (SCHEMA_VERSION 62, bangs.isle…): 2.4.65 (live) starts on it without DDL
+and keeps playing the bangs (its pages, the island's provider, a deposit, a check-in, a founding), and a bang 2.4.65 founds
 there (written without the new columns) holds cấp 1 for free on this build."""
 import io
 import json
@@ -31,7 +31,7 @@ from tests.test_lb_titles import at
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = 'e05bacf5'   # 2.4.60
-PREVIOUS = 'a70eaebc'  # 2.4.64: the release live before the bang island purchase (schema 60)
+PREVIOUS = 'cfc6eb7e'  # 2.4.65: the release live before the bang island purchase (schema 60)
 
 PROG = '''import json,sys
 from game.engine import validate_state,migrate_state,apply_action,CAREERS
@@ -166,7 +166,7 @@ store.close_pool()
 
 
 class Previous(Integrated):
-    """🏝️ 2.4.64 on a database at SCHEMA_VERSION 62 (the rollout's mixed window, or a rollback)."""
+    """🏝️ 2.4.65 (live) on a database at SCHEMA_VERSION 62 (the rollout's mixed window, or a rollback)."""
 
     def old_tree(self):
         tmp = tempfile.mkdtemp(prefix='mnl-prev-')
@@ -183,7 +183,7 @@ class Previous(Integrated):
     test_one_save_with_every_new_key_plays_on_2_4_60 = None
     test_2_4_60_starts_on_schema_62_without_ddl = None
 
-    def test_2_4_64_plays_the_bangs_on_schema_62(self):
+    def test_live_release_plays_the_bangs_on_schema_62(self):
         from game import bang
         tok, bid = self.everything()
         newcomer = self.player(name='Hà')
@@ -194,11 +194,11 @@ class Previous(Integrated):
             fund = int(db.execute('SELECT fund FROM bangs WHERE id=?', (bid,)).fetchone()['fund'])
         v, page_fund, page_id, view_id, kind, after, other = self.run_old(OLD_BANG, str(self.store.path), tok, bid, newcomer)
         self.assertEqual((int(v), page_fund, page_id, view_id, kind), (62, fund, bid, bid, 'member'), 'version never lowered, rows read as they are')
-        self.assertEqual(after, fund + 2_000_000, "2.4.64's deposit lands in the fund")
+        self.assertEqual(after, fund + 2_000_000, "2.4.65's deposit lands in the fund")
         with self.store.connect() as db:
             r = dict(db.execute('SELECT isle, isle_how FROM bangs WHERE id=?', (bid,)).fetchone())
             self.assertEqual(r, dict(isle=1, isle_how='buy'), 'the purchase is untouched')
-            self.assertTrue(bang.has_island(db, other), 'a bang 2.4.64 founded holds cấp 1 (the column default: the grant)')
+            self.assertTrue(bang.has_island(db, other), 'a bang 2.4.65 founded holds cấp 1 (the column default: the grant)')
             self.assertEqual(db.execute('SELECT isle_how FROM bangs WHERE id=?', (other,)).fetchone()['isle_how'], 'grant')
             catalog2 = sorted(r[0] for r in db.execute("SELECT column_name FROM information_schema.columns WHERE table_schema=current_schema() "
                                                         "AND table_name='bangs'").fetchall())

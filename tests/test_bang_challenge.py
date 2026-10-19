@@ -628,7 +628,7 @@ class Ranking(Store):
         got = self.part(week)
         self.assertEqual(got[x]['power'], pw[strong[0]] + pw[strong[1]])
         self.assertEqual(got[y]['power'], sum(pw[t] for t in weak))
-        self.assertEqual(got[y]['score'], got[y]['power'] // BC.POWER_DIV + BC.LEVEL_SCORE, 'cống hiến never counts')
+        self.assertEqual(got[y]['score'], got[y]['power'] // BC.POWER_DIV + 2 * BC.LEVEL_SCORE, 'cống hiến never counts')   # hall 1 + the granted island 1
         with self.store.connect() as db:
             self.assertEqual(bang.scores(db, week), [(r['bang'], r['score']) for r in bang.standings(db, week)])
             self.assertEqual(bang.week_of(db, y, week)['score'], got[y]['score'])
