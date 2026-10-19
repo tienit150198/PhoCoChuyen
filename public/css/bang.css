@@ -1,5 +1,4 @@
-/* ==========================================================================
-   ⚔️ Bang (public/js/v4/bang.js), over /css/spend.css (sd-*) and /css/town-projects.css shapes (tp-bar, tp-note…,
+/* ===================================================================   ⚔️ Bang (public/js/v4/bang.js), over /css/spend.css (sd-*) and /css/town-projects.css shapes (tp-bar, tp-note…,
    repeated here so this sheet stands alone). Theme tokens only; the bang's colour comes as --bgc (fill) / --bgi (ink).
    Phone first (360–390 px): one column, 44 px targets, the main button in the sticky bottom bar; landscape phones
    (844×390) keep the bar and scroll the body.
@@ -153,3 +152,12 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 .bg-tc-in .grow{flex:1 1 0;min-width:0}
 .bg-tc-in small{white-space:normal}
 .bg-tc-in .btn{min-width:44px;padding:0 12px}
+=======
+/* 🏝️ Đảo bang (owner 21/10): the offer before it is bought (first on the home tab), then its card first in 🏗️ */
+.bg-isle-offer{text-align:center;border:2px solid var(--accent);background:var(--surface);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 14%,var(--surface)),var(--surface))}
+.bg-isle-offer h3{margin:0 0 6px;font-size:1.15rem}
+.bg-isle-offer .tp-line{justify-content:center;gap:14px;font-weight:800}
+.bg-isle-offer .btn.big{width:100%;margin:2px 0 4px}
+.bg-isle-art{font-size:2.6rem;line-height:1;margin:2px 0 4px}
+.bg-isle .bg-fac-head .btn{flex:none}
+.bg-zones{margin:2px 0 8px!important;font-size:.82rem!important}

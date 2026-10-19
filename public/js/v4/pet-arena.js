@@ -109,6 +109,7 @@ async function onClick(op,data){
   if(op==='close'){close();return;}
   if(op==='pets'){close();S.env.act?.('pets',{tab:'adopt'});return;}
   if(op==='bang'){close();S.env.act?.('bang',{});return;}   // ⚔️ no bang yet: v4/bang.js (find or found one)
+  if(op==='isle'){close();S.env.act?.('bang',{tab:'home',isle:1});return;}   // 🏝️ the bang's island offer (v4/bang.js)
   if(op==='tab'){S.tab=data.tab;S.sub='';S.flash=null;render();loadTab();return;}
   if(op==='back'){S.sub='';S.tcsub='';render();return;}
   if(op==='wsec'){S.wsec=data.sec;S.tcsub='';S.flash=null;render();return;}
@@ -214,7 +215,7 @@ function page(){
   let inner;
   if(!v)inner='<p class="pa-empty">⏳</p>';
   else if(v.error)inner=`<p class="pa-empty">${esc(v.error)}</p>`;
-  else if(v.locked)inner=locked(v.locked);
+  else if(v.locked)inner=locked(v.locked,v.island);
   else if(S.sub==='team')inner=teamPicker(v);
   else if(S.sub==='friends')inner=friendsList();
   else if(sub==='find')inner=findView();
@@ -225,7 +226,9 @@ function page(){
   const flash=`<p class="pa-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
   return head+tabs+`<div class="sheet-body pa-body">${flash}${inner}</div>`+bar;
 }
-function locked(why){
+function locked(why,isle){
+  // 🏝️ 21/10: a bang plays here once it holds its island: an officer buys it, a member asks one
+  if(why==='island')return `<div class="pa-locked"><span aria-hidden="true">🏝️</span><p>${isle?.officer?`Bang cần có Đảo bang mới ra trận được. Mua đảo bằng quỹ bang (${esc(fmt(isle.cost||1000000))} xu).`:'Bang cần có Đảo bang mới ra trận được. Nhờ Bang chủ hoặc Phó bang mua đảo nhé!'}</p><button type="button" class="btn primary" data-pa="isle">${isle?.officer?'🏝️ Mua Đảo bang':'⚔️ Mở Bang'}</button></div>`;
   const [e,t,a]=why==='account'?['🔐','Tạo tài khoản để vào đấu trường nhé.','']:why==='story'?['📖','Đấu trường có trong hành trình.','']:
     why==='bang'?['🏯','Đấu trường chỉ dành cho thành viên bang. Vào một bang để cùng đồng đội ra trận nhé!','<button type="button" class="btn primary" data-pa="bang">⚔️ Tìm bang</button>']:
     ['🐶','Nuôi một bé đã nhé, rồi cho bé ra đấu trường.','<button type="button" class="btn primary" data-pa="pets">🐾 Nhận nuôi</button>'];

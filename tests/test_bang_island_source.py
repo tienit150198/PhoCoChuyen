@@ -32,6 +32,7 @@ class Source(Base):
         super().setUp()
         self.a = self.player(name='Lan')
         self.bid = self.found(self.a)
+        self.set_isle(self.bid)            # 🏝️ bought (tests/test_bang_island_buy.py: before that)
         self.p = SRC.PROVIDER
         BI.register(None)
         BI._looked = False
@@ -90,8 +91,8 @@ class Source(Base):
         b, c, d = self.player(name='Minh'), self.player(name='Tú'), self.player(name='Hà')
         self.op(b, 'join', bang=self.bid)
         self.assertEqual(self.p.bang_of(self.store, self.sid(b)), self.bid)
-        self.assertEqual(self.p.access(self.store, self.sid(self.a), self.bid), dict(kind='member', role='bang_chu'))
-        self.assertEqual(self.p.access(self.store, self.sid(b), self.bid), dict(kind='member', role='thanh_vien'))
+        self.assertEqual(self.p.access(self.store, self.sid(self.a), self.bid), dict(kind='member', role='bang_chu', isle=1, cap=30))
+        self.assertEqual(self.p.access(self.store, self.sid(b), self.bid), dict(kind='member', role='thanh_vien', isle=1, cap=30))
         self.assertIsNone(self.p.access(self.store, self.sid(c), self.bid))
         self.assertIsNone(self.p.bang_of(self.store, self.sid(c)))
         self.assertTrue(self.isle('join'))
@@ -101,12 +102,12 @@ class Source(Base):
         self.assertTrue(any(e.get('sid') == self.sid(b) for e in self.isle('role')))
         # a guest: an open invitation
         self.op(self.a, 'invite', code=mr.ensure_person(self.store, self.sid(d))['code'])
-        self.assertEqual(self.p.access(self.store, self.sid(d), self.bid), dict(kind='guest', role=None))
+        self.assertEqual(self.p.access(self.store, self.sid(d), self.bid), dict(kind='guest', role=None, isle=1, cap=30))
         self.assertTrue(any(e.get('sid') == self.sid(d) for e in self.isle('guest')))
         db = AsyncDb(self.store)
         run = asyncio.run
-        self.assertEqual(run(self.p.access_live(db, self.sid(d), self.bid)), dict(kind='guest', role=None))
-        self.assertEqual(run(self.p.access_live(db, self.sid(b), self.bid)), dict(kind='member', role='pho_bang'))
+        self.assertEqual(run(self.p.access_live(db, self.sid(d), self.bid)), dict(kind='guest', role=None, isle=1, cap=30))
+        self.assertEqual(run(self.p.access_live(db, self.sid(b), self.bid)), dict(kind='member', role='pho_bang', isle=1, cap=30))
         self.assertIsNone(run(self.p.access_live(db, self.sid(c), self.bid)))
         self.op(d, 'decline', bang=self.bid)
         self.assertIsNone(self.p.access(self.store, self.sid(d), self.bid))

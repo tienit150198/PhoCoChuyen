@@ -55,11 +55,13 @@ export function openBangIsland(env,{bang=''}={}){
       const [{stylesheet},scene]=await Promise.all([import('../lazy.js'),import('./bang-island-scene.js')]);
       await stylesheet('/css/bang-island.css');
       const isle=await load(env,bang);
+      // 🏝️ the bang has not bought its island (21/10): the Bang sheet's island card (buy it, or ask an officer to)
+      if(!isle?.bang&&isle?.offer){active=null;env.act?.('bang',{tab:'home',isle:1});return null;}
       if(!isle?.bang){active=null;env.toast?.(isle?.why||'Bạn chưa vào bang nào.');env.act?.('bang',{});return null;}   // in no bang: the Bang sheet (find or found one)
-      const id=isle.bang.id,L=layout();
+      const id=isle.bang.id;
       const session=scene.createBangIslandSession(env,{isle,view:scene.createView(),
         actions:{run:(facility,op)=>act(env,id,facility,op),refresh:()=>load(env,id)},
-        loadRenderer:(view,looks)=>scene.loadRendererFor(env,view,L,looks),
+        loadRenderer:(view,looks,L)=>scene.loadRendererFor(env,view,L||layout(),looks),
         loadLive:async()=>{const network=await import('./live.js');env.bootLive?.(network);return network.live;},
         onClose:()=>{active=null;}});
       await session.start();return session;

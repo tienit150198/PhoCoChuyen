@@ -76,9 +76,14 @@ class BangIsland(LiveCase):
         calls = CountingStub.calls
         for i in range(4):
             await b.send(t='bisl_mv', p=[[.5, .6], [.5 + i / 100, .5]], ms=500)
-        for i in range(4):
-            mv = await self.ev(a, 'mv')
+        # 21/10: a room's walks go out together every MV_FLUSH seconds, each walker's latest move (one frame, not four)
+        f = await a.expect('bisl')
+        self.assertEqual([e['k'] for e in f['ev']], ['mv'])
+        mv = f['ev'][0]
         self.assertEqual((mv['pid'], mv['p'], mv['ms']), (b.pid, [[.5, .6], [.53, .5]], 500))
+        await a.nothing('bisl', wait=.4)
+        own = await b.expect('bisl')                       # the walker gets the same frame (the client skips its own move)
+        self.assertEqual([e['pid'] for e in own['ev']], [b.pid])
         self.assertEqual(CountingStub.calls, calls, 'walking never asks the contract')
         await a.send(t='bisl_emote', e='bow')
         self.assertEqual((await self.ev(b, 'emote'))['e'], 'bow')
@@ -175,6 +180,66 @@ class BangIsland(LiveCase):
         await a.nothing('bisl', wait=.3)
         await b.send(t='bisl_say', text='alo')
         await a.nothing('bisl', wait=.3)
+
+
+class IsleStub(CountingStub):
+    """🏝️ The real provider's answer since 21/10: the island's level (0: not bought) and its cap."""
+    isle, cap = 1, 2
+
+    async def access_live(self, db, sid, bang_id):
+        acc = await super().access_live(db, sid, bang_id)
+        return dict(acc, isle=type(self).isle, cap=type(self).cap) if acc else acc
+
+
+class IslandLevels(LiveCase):
+    cfg_extra = dict(bisle=True)
+    enter, ev = BangIsland.enter, BangIsland.ev
+
+    async def asyncTearDown(self):
+        BI.register(None)
+        BI._looked = False
+        await super().asyncTearDown()
+
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
+        self.a, self.asid = self.account('Bang Chu')
+        self.b, self.bsid = self.account('De Tu')
+        self.g, self.gsid = self.account('Khach Moi')
+        IsleStub.isle, IsleStub.cap, IsleStub.fail = 1, 2, False
+        self.stub = IsleStub(views={'b1': BI.stub_view('b1')}, members={self.asid: ('b1', 'bang_chu'), self.bsid: ('b1', 'thanh_vien')},
+                             guests={self.gsid: {'b1'}})
+        BI.register(self.stub)
+
+    async def test_the_room_cap_is_the_island_level_s_and_grows(self):
+        a = await self.enter(self.a)
+        self.assertEqual(a.room['cap'], 2)
+        await self.enter(self.b)
+        c = await self.connect(self.g)
+        await c.send(t='bisl_in', bang='b1', look=LOOK)
+        self.assertEqual((await c.expect('error'))['code'], 'full')
+        IsleStub.cap = 3                                     # the island grew: the next join opens the room wider
+        await c.send(t='bisl_in', bang='b1', look=LOOK)
+        self.assertEqual((await c.expect('bisl_room'))['cap'], 3)
+
+    async def test_a_bang_without_its_island_has_no_room(self):
+        IsleStub.isle = 0
+        c = await self.connect(self.a)
+        await c.send(t='bisl_in', bang='b1', look=LOOK)
+        self.assertEqual((await c.expect('error'))['code'], 'no_bang_island')
+
+    async def test_a_room_of_many_walkers_sends_one_frame_a_flush(self):
+        IsleStub.cap = 40
+        a = await self.enter(self.a)
+        b = await self.enter(self.b)
+        g = await self.enter(self.g)
+        await self.ev(a, 'in')
+        await self.ev(a, 'in')
+        await self.ev(b, 'in')
+        for c, x in ((b, .4), (g, .6), (b, .45)):
+            await c.send(t='bisl_mv', p=[[.5, .5], [x, .5]], ms=300)
+        f = await a.expect('bisl')
+        self.assertEqual(sorted((e['k'], e['pid'], e['p'][1][0]) for e in f['ev']), sorted([('mv', g.pid, .6), ('mv', b.pid, .45)]), 'each walker\'s latest')
+        await a.nothing('bisl', wait=.4)
 
 
 class Off(LiveCase):

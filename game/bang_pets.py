@@ -4,7 +4,10 @@
   or disbanded bang fields nobody; its picks drop out at the lock, game/pet_war.py play re-reads every pick's team).
 * name: '<emoji> <name>' of the bang (what the bracket, the ladder and the titles show).
 * can_pick: any member fields their own pet ("mỗi người chọn 1 pet", owner 19/10): one pet a member, the first
-  pet_war.SIZE members to pick fill the five slots (pet_war counts them under its team lock). No officer step.
+  pet_war.SIZE members to pick fill the five slots (pet_war counts them under its team lock). No officer step. 🏝️ Only
+  while the bang holds its island (owner 21/10 "phải có mua đảo bang thì mới chơi được": game/bang.py has_island): a
+  bang without one fields nobody (its members still see the war; team_of stays, so their page names their bang). An
+  island is never taken back, so a pick made stays valid until the lock.
 * facility(TRAINING_KEY): the level of the bang's 🐾 Sân luyện pet ('san_pet'), counting a build whose time is up even if
   nobody opened the bang page since (read only: finish_builds writes it later). pet_war turns it into +1 %/level of the
   fighters' stats in the war, at most pet_war.TRAINING_MAX.
@@ -45,7 +48,7 @@ class BangTeams(PW.TeamProvider):
 
     def can_pick(self, db, team_id: str, sid: str) -> bool:
         r = _member(db, sid)
-        return bool(r) and str(r['bang']) == str(team_id)
+        return bool(r) and str(r['bang']) == str(team_id) and BG.has_island(db, str(team_id))
 
     def facility(self, db, team_id: str, key: str) -> int:
         if key != PW.TRAINING_KEY:

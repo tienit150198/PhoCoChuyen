@@ -3,9 +3,11 @@
  * the new interface, so the gate and the pier face the viewer. Each facility is a front view whose size, colours and
  * roofs change with its level band (1: wood, 2: stone, 3: gold), with bamboo scaffolding while it is being built and
  * a staked plot before level 1. Same renderer contract as client/isometric/bang-island.ts: frame(model),
- * setBang(bang), toMap(clientX, clientY), toScreen(x, y, lift), anchor(id), personHeight, resize(), destroy(). */
+ * setBang(bang), toMap(clientX, clientY), toScreen(x, y, lift), anchor(id), personHeight, resize(), destroy().
+ * 🏝️ The island's level (21/10) is the layout's: its zones (Võ đường, Trà đình, Bảo tháp, Hải đăng, gold lanterns) and,
+ * while the next level is built, its raw sand bank with stakes, scaffolding and a crane (L.site). */
 import {figureOf,paintPlayer,CANVAS} from './look.js';
-import {inPoly,band as bandOf,gatePosts} from '../bang-island-layout.js';
+import {inPoly,band as bandOf,gatePosts,screenOf} from '../bang-island-layout.js';
 
 const FLAT=.62,R2=Math.SQRT1_2,FIG_H=160,FIG_W=110;
 function inset(shore,by){
@@ -16,11 +18,12 @@ function seeded(seed){let s=seed>>>0||1;return ()=>((s=Math.imul(s^(s>>>15),2246
 function darker(hex,k){const n=parseInt(String(hex).slice(1),16);if(!Number.isFinite(n))return hex;const c=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${c((n>>16)&255)},${c((n>>8)&255)},${c(n&255)})`;}
 const safeColor=c=>/^#[0-9a-f]{6}$/i.test(String(c||''))?c:'#c2410c';
 
-/** The camera for a stage of w×h CSS pixels: px per map unit S and the offset; a phone follows `focus`. */
-export function walkCamera(w,h,focus=[.5,.5],shift=0){
+/** The camera for a stage of w×h CSS pixels: px per map unit S and the offset; a phone follows `focus`. `ext`: how far
+ * the island reaches left and right on screen (a bigger island's capes, 21/10). */
+export function walkCamera(w,h,focus=[.5,.5],shift=0,ext={a0:-.56,a1:.56}){
   const S=Math.max(h<450?720:900,Math.min(1450,Math.min(w/1.0,h/(FLAT*1.16))));
   const u=(focus[0]-focus[1])*R2,v=(focus[0]+focus[1])*R2,clamp=(x,lo,hi)=>lo>hi?(lo+hi)/2:Math.max(lo,Math.min(hi,x));
-  const ox=clamp(w/2-u*S,w-.56*S,.56*S),oy=clamp(h/2-shift-v*S*FLAT,h-1.3*S*FLAT,-.02*S*FLAT);
+  const ox=clamp(w/2-u*S,w-ext.a1*S,-ext.a0*S),oy=clamp(h/2-shift-v*S*FLAT,h-1.3*S*FLAT,-.02*S*FLAT);
   return {S,ox,oy,fs:S/1800};
 }
 /** How tall each facility stands per band, in units of k (S/900 px): the labels sit above it. */
@@ -32,7 +35,9 @@ export function createBangWalkRenderer(canvas,L,bang){
   for(let i=0;i<70;i++){const x=rand()*1.3-.15,y=rand()*1.3-.15;if(!inPoly(inset(L.shore,-.05),x,y))swells.push([x,y,8+rand()*14,rand()*6]);}
   for(let i=0;i<160;i++){const x=rand(),y=rand();if(inPoly(grass,x,y))dots.push([x,y,4+rand()*6]);}
   const palms=L.palms.map(([x,y])=>[x,y,(rand()-.5)*.5,70+rand()*24,rand()*6]);
-  let w=1,h=1,dpr=1,cam=walkCamera(1,1),focus=L.plaza.c,destroyed=false,B=bang;
+  const reach=[...L.shore,...(L.site?.shore||[])].map(([x,y])=>screenOf(x,y)[0]);
+  const ext={a0:Math.min(-.56,Math.min(...reach)-.11),a1:Math.max(.56,Math.max(...reach)+.11)};
+  let w=1,h=1,dpr=1,cam=walkCamera(1,1,undefined,0,ext),focus=L.plaza.c,destroyed=false,B=bang;
   const P=(x,y)=>[cam.ox+(x-y)*R2*cam.S,cam.oy+(x+y)*R2*cam.S*FLAT];
   const K=()=>cam.S/900;
   function poly(list,fill,dy=0){ctx.beginPath();list.forEach(([x,y],i)=>{const [a,b]=P(x,y);i?ctx.lineTo(a,b+dy):ctx.moveTo(a,b+dy);});ctx.closePath();ctx.fillStyle=fill;ctx.fill();}
@@ -40,6 +45,7 @@ export function createBangWalkRenderer(canvas,L,bang){
   const fac=id=>B.facilities.find(f=>f.id===id)||{id,level:0,state:'done'};
   function ground(t){
     ctx.fillStyle=L.deep;ctx.fillRect(0,0,w,h);
+    if(L.site){poly(inset(L.site.shore,-.09),L.sea);poly(L.site.shore,'#b89a68',8);poly(L.site.shore,'#d9c08e');}   // 🏝️ the next level's sand bank
     poly(inset(L.shore,-.09),L.sea);
     ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=2;
     for(const [x,y,r,ph] of swells){const [a,b]=P(x,y),dx=Math.sin(t/1600+ph)*4;ctx.beginPath();ctx.arc(a+dx,b,r*cam.S/800,Math.PI*1.15,Math.PI*1.85);ctx.stroke();}
@@ -54,6 +60,8 @@ export function createBangWalkRenderer(canvas,L,bang){
     for(let i=1;i<18;i++){const t=i/18,[a,b]=P(d0[0]+(d1[0]-d0[0])*t,d0[1]+(d1[1]-d0[1])*t),[c,e]=P(d3[0]+(d2[0]-d3[0])*t,d3[1]+(d2[1]-d3[1])*t);ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,e);ctx.stroke();}
     for(const p of L.plots){
       if(p.kind==='flowers'){poly(diamond(p),'#7a5a3a');const r=seeded(5);ctx.fillStyle='#fff';for(let i=0;i<22;i++){const [a,b]=P(p.x+(r()-.5)*p.w*.9,p.y+(r()-.5)*p.h*.9);ctx.fillStyle=['#ff6f91','#ffd166','#f8f4ff','#c77dff'][i%4];ctx.beginPath();ctx.arc(a,b,3*K(),0,Math.PI*2);ctx.fill();}}
+      if(p.kind==='ring'){poly(diamond({...p,w:p.w*1.08,h:p.h*1.08}),'#6e4a2a',5);poly(diamond(p),'#c99a58');poly(diamond({...p,w:p.w*.7,h:p.h*.7}),'#d9ad6a');}
+      if(p.kind==='teahouse'){const q={...p,w:p.w*1.5,h:p.h*1.5};poly(diamond(q),L.stoneDark,2);poly(diamond({...q,w:q.w*.94,h:q.h*.94}),'#3f9fbf');}
       if(p.kind==='pond'){poly(diamond({...p,w:p.w*1.12,h:p.h*1.12}),L.stoneDark);poly(diamond(p),'#3f9fbf');const r=seeded(9);for(let i=0;i<6;i++){const [a,b]=P(p.x+(r()-.5)*p.w*.7,p.y+(r()-.5)*p.h*.7);ctx.fillStyle='#4f9a4a';ctx.beginPath();ctx.ellipse(a,b,7*K(),3.5*K(),0,0,Math.PI*2);ctx.fill();if(i%2){ctx.fillStyle='#ff9ec0';ctx.beginPath();ctx.arc(a,b-2,2.6*K(),0,Math.PI*2);ctx.fill();}}}
     }
     // The training yard's floor (people walk on it).
@@ -179,8 +187,27 @@ export function createBangWalkRenderer(canvas,L,bang){
       if(p.kind==='lanterns')out.push([p.x+p.y,()=>{for(let i=-1;i<=1;i++){const [a,b]=P(p.x+i*.03,p.y-i*.03);ctx.fillStyle='#6e4a2a';ctx.fillRect(a-1.5*k,b-46*k,3*k,46*k);ctx.fillStyle='#c8312f';ctx.beginPath();ctx.ellipse(a+10*k,b-36*k,6*k,8*k,0,0,Math.PI*2);ctx.fill();}}]);
       if(p.kind==='pines')out.push([p.x+p.y+p.w,()=>{const [a,b]=P(p.x,p.y);ctx.fillStyle='#5c9a4a';ctx.beginPath();ctx.ellipse(a,b,40*k,16*k,0,0,Math.PI*2);ctx.fill();
         for(const [ox,hh] of [[-22,50],[0,64],[22,48]]){ctx.fillStyle='#2f6b3a';ctx.beginPath();ctx.moveTo(a+ox*k-14*k,b-6*k);ctx.lineTo(a+ox*k+14*k,b-6*k);ctx.lineTo(a+ox*k,b-hh*k);ctx.fill();}}]);
+      if(p.kind==='ring')out.push([p.x+p.y+p.w,()=>{const pts=diamond(p).map(([x,y])=>P(x,y));ctx.fillStyle='#6e4a2a';for(const [a,b] of pts)ctx.fillRect(a-2.5*k,b-30*k,5*k,30*k);
+        ctx.strokeStyle='#c8312f';ctx.lineWidth=2.5*k;for(const lift of [14,24]){ctx.beginPath();pts.forEach(([a,b],i)=>i?ctx.lineTo(a,b-lift*k):ctx.moveTo(a,b-lift*k));ctx.closePath();ctx.stroke();}}]);
+      if(p.kind==='teahouse')out.push([p.x+p.y+p.w*.6,()=>{const [a,b]=P(p.x+p.w*.3,p.y+p.h*.3),wd=(p.w+p.h)*R2*cam.S*.8;
+        pavilion(a,b,wd,[{h:34,wall:'rgba(0,0,0,0)',roof:'#2f6d55',roofH:20,pillars:'#a3242a',tips:'#e7b726',k:.8}],k);
+        for(let i=0;i<3;i++){const [fa,fb]=P(p.x-p.w*(.55-i*.2),p.y+p.h*(.6-i*.15));ctx.fillStyle=i%2?'#ffffff':'#ff7a2f';ctx.beginPath();ctx.ellipse(fa,fb,6*k,3*k,0,0,Math.PI*2);ctx.fill();}}]);
+      if(p.kind==='pagoda')out.push([p.x+p.y+p.w,()=>{const [a,b]=P(p.x+p.w*.4,p.y+p.h*.4),wd=(p.w+p.h)*R2*cam.S*.9;
+        pavilion(a,b,wd,[{h:26,wall:'#f2e4c4',roof:'#b04a35',roofH:12,door:'#a3242a',tips:'#e7b726',k:.8},{h:20,wall:'#f2e4c4',roof:'#b04a35',roofH:11,tips:'#e7b726',k:.66},
+          {h:18,wall:'#f2e4c4',roof:'#b04a35',roofH:10,tips:'#e7b726',k:.54},{h:16,wall:'#f2e4c4',roof:'#b04a35',roofH:10,tips:'#e7b726',k:.44},{h:14,wall:'#f2e4c4',roof:'#e7b726',roofH:22,tips:'#c8312f',k:.34}],k);}]);
+      if(p.kind==='lighthouse')out.push([p.x+p.y+p.w,()=>{const [a,b]=P(p.x+p.w*.3,p.y+p.h*.3),ht=150*k;
+        ctx.fillStyle='#6b6b6b';ctx.beginPath();ctx.ellipse(a,b,22*k,8*k,0,0,Math.PI*2);ctx.fill();
+        for(let i=0;i<6;i++){const y0=b-ht*i/6,y1=b-ht*(i+1)/6,w0=16*k-i*1.4*k,w1=16*k-(i+1)*1.4*k;ctx.fillStyle=i%2?'#c8312f':'#fbf7ee';ctx.beginPath();ctx.moveTo(a-w0,y0);ctx.lineTo(a+w0,y0);ctx.lineTo(a+w1,y1);ctx.lineTo(a-w1,y1);ctx.fill();}
+        ctx.fillStyle='#3d3e46';ctx.fillRect(a-10*k,b-ht-16*k,20*k,16*k);ctx.fillStyle=`rgba(255,227,122,${.75+.25*Math.sin(t/400)})`;ctx.fillRect(a-7*k,b-ht-14*k,14*k,11*k);
+        ctx.fillStyle='#c8312f';ctx.beginPath();ctx.moveTo(a-12*k,b-ht-16*k);ctx.lineTo(a+12*k,b-ht-16*k);ctx.lineTo(a,b-ht-30*k);ctx.fill();
+        ctx.fillStyle=`rgba(255,240,170,${.16+.1*Math.sin(t/400)})`;ctx.beginPath();ctx.moveTo(a,b-ht-9*k);ctx.lineTo(a+150*k,b-ht-40*k);ctx.lineTo(a+150*k,b-ht+20*k);ctx.fill();}]);
       if(p.kind==='dummies')out.push([p.x+p.y,()=>{const [a,b]=P(p.x,p.y);for(const ox of [-10,12]){ctx.fillStyle='#9a6a3c';ctx.fillRect(a+ox*k-2*k,b-40*k,5*k,40*k);ctx.fillRect(a+ox*k-12*k,b-32*k,24*k,4*k);ctx.fillStyle='#d6ad55';ctx.beginPath();ctx.ellipse(a+ox*k,b-22*k,7*k,10*k,0,0,Math.PI*2);ctx.fill();}}]);
     }
+    for(const [x,y] of L.lamps||[])out.push([x+y,()=>{const [a,b]=P(x,y);ctx.fillStyle='#3d3e46';ctx.fillRect(a-1.5*k,b-40*k,3*k,40*k);
+      ctx.fillStyle='#e7b726';ctx.beginPath();ctx.ellipse(a,b-44*k,6*k,8*k,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=`rgba(255,227,122,${.35+.15*Math.sin(t/600+x*9)})`;ctx.beginPath();ctx.arc(a,b-44*k,12*k,0,Math.PI*2);ctx.fill();}]);
+    if(L.site){const r=L.site;out.push([r.x+r.y+r.w,()=>{const [a,b]=P(r.x+r.w*.42,r.y+r.h*.42),wd=(r.w+r.h)*R2*cam.S*.82;stakes(r,k);scaffold(a,b,wd,60*k,k);
+      ctx.strokeStyle='#e7b726';ctx.lineWidth=4*k;ctx.beginPath();ctx.moveTo(a+wd*.7,b);ctx.lineTo(a+wd*.7,b-120*k);ctx.lineTo(a-wd*.5,b-112*k);ctx.stroke();
+      ctx.strokeStyle='#3d3e46';ctx.lineWidth=1.5*k;ctx.beginPath();ctx.moveTo(a-wd*.3,b-113*k);ctx.lineTo(a-wd*.3,b-70*k);ctx.stroke();ctx.fillStyle='#c99a58';ctx.fillRect(a-wd*.3-7*k,b-70*k,14*k,10*k);}]);}
     for(const id of Object.keys(L.slots)){const r=L.slots[id];const d=id==='cong_bang'?r.x+r.y:r.x+r.y+(r.w+r.h)/2*.84;out.push([d,()=>facility(id,t)]);}
     // The bang's boat beside the pier, its sail in the bang's colour.
     const [bx,by]=[.5+(.075+.5)*R2,.5+(.5-.075)*R2];out.push([bx+by,()=>{const [a,b]=P(bx,by),bob=Math.sin(t/800)*2;
@@ -210,7 +237,7 @@ export function createBangWalkRenderer(canvas,L,bang){
   }
   function resize(){
     const r=canvas.getBoundingClientRect();dpr=Math.min(2,globalThis.devicePixelRatio||1);w=Math.max(1,r.width);h=Math.max(1,r.height);
-    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);cam=walkCamera(w,h,focus);
+    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);cam=walkCamera(w,h,focus,0,ext);
   }
   resize();
   const ro=typeof ResizeObserver==='function'?new ResizeObserver(()=>resize()):null;ro?.observe(canvas.parentElement||canvas);
@@ -220,7 +247,7 @@ export function createBangWalkRenderer(canvas,L,bang){
     setBang(next){B=next;},
     frame(model,t=performance.now()){
       if(destroyed)return;
-      if(model.focus){focus=model.focus;cam=walkCamera(w,h,focus,model.shift||0);}
+      if(model.focus){focus=model.focus;cam=walkCamera(w,h,focus,model.shift||0,ext);}
       ctx.setTransform(dpr,0,0,dpr,0,0);ground(t);
       const list=standing(t);
       for(const p of model.people)list.push([p.x+p.y,()=>person(p,t)]);

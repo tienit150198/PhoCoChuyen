@@ -123,6 +123,32 @@ function localWritesBefore(identifier,node,parents){
   });
   return declared?values:[];
 }
+/** Phaser's TweenManager.existing(tween): `return this.has(t)||this.tweens.push(t.reset()),this` (21/10: the minifier
+ * may name that parameter c or g, like a canvas context). Require the guard this.has(same) on the left of the `||`,
+ * the push into this.tweens and the receiver being a parameter of that function. */
+function existingTweenReset(n,parents){
+  const push=parents.at(-1),or=parents.at(-2),id=n.callee.object;
+  if(id?.type!=='Identifier'||push?.type!=='CallExpression'||!member(push.callee,'push')||push.arguments.length!==1||push.arguments[0]!==n)return false;
+  if(!(member(push.callee.object,'tweens')&&push.callee.object.object.type==='ThisExpression'))return false;
+  if(or?.type!=='LogicalExpression'||or.operator!=='||'||or.right!==push)return false;
+  const has=or.left;
+  if(has?.type!=='CallExpression'||!member(has.callee,'has')||has.callee.object.type!=='ThisExpression'||has.arguments[0]?.type!=='Identifier'||has.arguments[0].name!==id.name)return false;
+  const fn=parents.findLast(functionNode);
+  return Boolean(fn)&&fn.params.some(p=>p.type==='Identifier'&&p.name===id.name);
+}
+/** Phaser's TweenChain.add: `for(var u=this.data,…){var c=l[f];c.parent=this,u.push(c.reset())}` (each of the chain's
+ * tweens, built by this.parent.create). Require the alias of this.data as the destination and `c.parent=this` just
+ * before, in the same sequence. */
+function chainReset(n,parents){
+  const push=parents.at(-1),seq=parents.at(-2),id=n.callee.object;
+  if(id?.type!=='Identifier'||push?.type!=='CallExpression'||!member(push.callee,'push')||push.arguments[0]!==n||push.callee.object.type!=='Identifier')return false;
+  if(seq?.type!=='SequenceExpression')return false;
+  const prev=seq.expressions[seq.expressions.indexOf(push)-1];
+  if(prev?.type!=='AssignmentExpression'||prev.left.type!=='MemberExpression'||!member(prev.left,'parent')||prev.left.object.type!=='Identifier'
+    ||prev.left.object.name!==id.name||prev.right.type!=='ThisExpression')return false;
+  const dest=localWritesBefore(push.callee.object.name,n,parents);
+  return dest.length===1&&member(dest[0],'data')&&dest[0].object.type==='ThisExpression';
+}
 /** TweenManager pushes a locally built tween's reset result into this.tweens.
  * Require both the builder(owner, ...) and the destination collection: a canvas
  * reset nearby, or even a canvas accidentally pushed into that list, still fails. */
@@ -192,7 +218,7 @@ export function checkSource(src,{module=true,polyfilled=new Set()}={}){
     }
     for(const api of APIS){
       if(!api.match(n,parents))continue;
-      if(api.name==='ctx.reset()'&&(loaderReset(n,parents)||tweenReset(n,parents)))continue;
+      if(api.name==='ctx.reset()'&&(loaderReset(n,parents)||tweenReset(n,parents)||existingTweenReset(n,parents)||chainReset(n,parents)))continue;
       if(api.poly&&polyfilled.has(api.poly))continue;
       if(guarded(n,parents,api.name.replace(/^.*[.#]|\(\)$/g,''),src))continue;
       at(n,`${api.name} ${api.why||`needs Safari ${api.min}+`}: guard it${api.poly?' or load the page with boot.js polyfills':''}`);

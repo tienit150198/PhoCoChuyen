@@ -123,6 +123,17 @@ for(const source of [
   'function f(){var m=this.tweens;}function g(){var c=buildTween(this,config);m.push(c.reset());}',
 ])assert.match(msgs(source)[0],/canvas reset/,'tween exemption requires local builder and collection evidence: '+source);
 assert.match(msgs(tweenManager+'ctx.reset();')[0],/canvas reset/,'tween code cannot exempt another reset in the same bundle');
+// 21/10: TweenManager.existing and TweenChain.add, as the minifier may name them (c, g)
+assert.deepEqual(msgs('var o={existing:function(c){return this.has(c)||this.tweens.push(c.reset()),this}};'),[],'TweenManager.existing');
+assert.deepEqual(msgs('var o={add:function(r){var l=this.parent.create(r);for(var u=this.data,f=0;f<l.length;f++){var c=l[f];c.parent=this,u.push(c.reset())}return this}};'),[],'TweenChain.add');
+for(const source of [
+  'var o={existing:function(c){return this.tweens.push(c.reset()),this}};',
+  'var o={existing:function(x){var c=canvas.getContext("2d");return this.has(c)||this.tweens.push(c.reset()),this}};',
+  'var o={existing:function(c){return this.has(c)||list.push(c.reset()),this}};',
+  'var o={add:function(r){for(var u=this.data,f=0;f<3;f++){var c=canvas.getContext("2d");u.push(c.reset())}}};',
+  'var o={add:function(r){for(var u=contexts,f=0;f<3;f++){var c=l[f];c.parent=this,u.push(c.reset())}}};',
+  'var o={add:function(r){for(var u=this.data,f=0;f<3;f++){var c=l[f];g.parent=this,u.push(c.reset())}}};',
+])assert.match(msgs(source)[0],/canvas reset/,'tween exemptions need their exact shape: '+source);
 assert.match(msgs('g.reset(),other.addPack({});')[0],/canvas reset/,'a different receiver does not exempt canvas reset');
 assert.match(msgs('g.reset(),g.addPack({});ctx.reset();')[0],/canvas reset/,'the rest of a bundle is still checked');
 assert.deepEqual(msgs('form.reset();edit().reset();'),[],'reset() of a form or a helper is not the canvas one');

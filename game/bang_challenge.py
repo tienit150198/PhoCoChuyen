@@ -109,9 +109,8 @@ NO_ISLAND = 'Bang cần mua Đảo bang để thách đấu.'
 
 def has_island(db, bid: str) -> bool:
     """🏝️ Owner 21/10 "phải có mua đảo bang thì mới chơi được": a bang plays only once it owns its Đảo bang
-    (game/bang.py has_island, from the island branch). Without that function (this branch alone): every bang may."""
-    fn = getattr(BG, 'has_island', None)
-    return True if fn is None else bool(fn(db, bid))
+    (game/bang.py has_island: bangs.isle ≥ 1, bought from the fund or granted to the bangs from before 21/10)."""
+    return bool(BG.has_island(db, bid))
 
 
 def _rank(role: str) -> int:

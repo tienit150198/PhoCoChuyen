@@ -9,7 +9,10 @@ object (access_live).
   as done before anybody opened the bang's page (read only: bang.finish_builds writes it on the next write).
   A disbanded bang has no island (404); a bang an operator hid keeps it for its members only (like its page).
 * access: a member (role mapped onto the island's role ids) or a guest: a player the bang invited (an open invitation,
-  bang_asks kind 'invite'): they may look around before they accept. Anyone else: None.
+  bang_asks kind 'invite'): they may look around before they accept. Anyone else: None. 🏝️ 21/10: with the island's
+  level (`isle`, 0 while the bang has not bought it: a member gets the offer, the live room refuses; a guest of such a
+  bang is nobody) and the room's cap (C.isle_cap). The view carries `isle` {level, max, state, ready_at, cap}.
+* offer: what a member sees before the island is bought (the price, the fund, whether they may buy it).
 * act: the facility buttons that change something on the server: ⬆️ Nâng cấp = the bang's own build command
   (bang.OPS['build'], Phó bang and up, paid from the fund, the same checks and log), asked to confirm first
   ({confirm: {title, text, label}}: the client asks, then sends {confirm: true}). The buttons that open a sheet
@@ -28,18 +31,23 @@ FAC = {'dai_sanh': 'dai_sanh', 'kho': 'kho_bang', 'xuong_may': 'xuong_may', 'san
 ISLE = {v: k for k, v in FAC.items()}
 ROLE = {'chu': 'bang_chu', 'pho': 'pho_bang', 'lao': 'truong_lao', 'tinh': 'tinh_anh', 'tv': 'thanh_vien'}
 
-MEMBER_SQL = ("SELECT m.role AS role FROM bang_members m JOIN bangs b ON b.id=m.bang "
+ISLE_COLS = 'b.isle AS isle, b.isle_to AS isle_to, b.isle_ready AS isle_ready'
+MEMBER_SQL = (f"SELECT m.role AS role, {ISLE_COLS} FROM bang_members m JOIN bangs b ON b.id=m.bang "
               "WHERE m.sid=? AND m.bang=? AND m.status='in' AND b.status='active'")
-GUEST_SQL = ("SELECT 1 AS x FROM bang_asks k JOIN bangs b ON b.id=k.bang WHERE k.sid=? AND k.bang=? AND k.kind='invite' "
+GUEST_SQL = (f"SELECT 1 AS x, {ISLE_COLS} FROM bang_asks k JOIN bangs b ON b.id=k.bang WHERE k.sid=? AND k.bang=? AND k.kind='invite' "
              "AND k.status='open' AND b.status='active' AND b.hidden=0")
 
 
 def _answer(member, guest) -> BI.Access | None:
+    row = member or guest
+    if not row:
+        return None
+    lv = BG.island_of(dict(row), BG.now())['level']
     if member:
-        return BI.Access(kind='member', role=ROLE.get(member['role'], 'thanh_vien'))
-    if guest:
-        return BI.Access(kind='guest', role=None)
-    return None
+        return BI.Access(kind='member', role=ROLE.get(member['role'], 'thanh_vien'), isle=lv, cap=C.isle_cap(lv))
+    if lv < 1:                     # 🏝️ nothing to look around yet
+        return None
+    return BI.Access(kind='guest', role=None, isle=lv, cap=C.isle_cap(lv))
 
 
 def _note(fac: str, level: int) -> str:
@@ -56,8 +64,12 @@ class BangIslandSource:
     def view(self, store, bang_id):
         t = BG.now()
         with store.connect() as db:
-            b = db.execute("SELECT id, name, emoji, color FROM bangs WHERE id=? AND status='active'", (bang_id,)).fetchone()
+            b = db.execute("SELECT id, name, emoji, color, isle, isle_to, isle_ready FROM bangs WHERE id=? AND status='active'",
+                           (bang_id,)).fetchone()
             if not b:
+                return None
+            il = BG.island_of(dict(b), t)
+            if il['level'] < 1:          # 🏝️ not bought: no island to draw (access answers the offer first)
                 return None
             rows = {r['fac']: r for r in db.execute('SELECT fac, level, target, ready_at FROM bang_facilities WHERE bang=?',
                                                     (bang_id,)).fetchall()}
@@ -81,8 +93,12 @@ class BangIslandSource:
                 one['note'] = _note(fac, lv + 1)
             facilities.append(one)
         color = (C.COLORS.get(b['color']) or C.COLORS['do'])[1]
+        lv = il['level']
+        isle_view = dict(level=lv, max=C.ISLE_MAX, state='done', ready_at=None, cap=C.isle_cap(lv))
+        if il['to'] is not None and lv < C.ISLE_MAX:
+            isle_view.update(state='building', ready_at=float(il['ready']))
         return dict(bang_id=str(b['id']), name=str(b['name'])[:BI.NAME_MAX], emoji=str(b['emoji'])[:BI.EMOJI_MAX] or '⚔️',
-                    color=color, level=max(1, min(BI.BANG_LEVEL_MAX, hall)), facilities=facilities)
+                    color=color, level=max(1, min(BI.BANG_LEVEL_MAX, hall)), facilities=facilities, isle=isle_view)
 
     def access(self, store, sid, bang_id):
         if not sid:
@@ -98,6 +114,16 @@ class BangIslandSource:
         member = await db.fetchrow(MEMBER_SQL, (sid, bang_id))
         guest = None if member else await db.fetchrow(GUEST_SQL, (sid, bang_id))
         return _answer(member, guest)
+
+    def offer(self, store, sid, bang_id):
+        """🏝️ Before the island is bought: its price, the fund, whether this member may buy it (Phó bang and up)."""
+        with store.connect() as db:
+            b = db.execute('SELECT fund FROM bangs WHERE id=?', (bang_id,)).fetchone()
+            m = db.execute(MEMBER_SQL, (sid, bang_id)).fetchone()
+        xu, _ = C.isle_cost(1)
+        officer = bool(m) and C.ROLES.get(m['role'], C.ROLES['tv'])[3] >= C.BUILD_FROM
+        return dict(cost=xu, fund=int(b['fund']) if b else 0, officer=officer, cap=C.isle_cap(1), zone=C.ISLE_ZONES[0],
+                    top=C.ISLE_MAX, top_cost=sum(C.ISLE_PRICES), top_cap=C.isle_cap(C.ISLE_MAX))
 
     def act(self, store, sid, bang_id, facility, op, data):
         acc = self.access(store, sid, bang_id)

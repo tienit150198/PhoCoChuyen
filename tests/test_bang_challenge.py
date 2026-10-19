@@ -480,7 +480,13 @@ class Island(Base):
 
     def test_has_island_gate(self):
         a, b, ba, bb = self.two()
-        self.assertTrue(TC.has_island(None, ba) if not hasattr(bang, 'has_island') else True)
+        with self.store.connect() as db:
+            self.assertTrue(TC.has_island(db, ba), 'a bang from before 21/10 holds cấp 1 (the column default)')
+        self.sql('UPDATE bangs SET isle=0 WHERE id=?', (ba,))       # the real column: not bought
+        e = self.refused('no_island', self.send, a[0], bb)
+        self.assertEqual(str(e), TC.NO_ISLAND)
+        self.refused('their_island', self.send, b[0], ba)
+        self.sql('UPDATE bangs SET isle=1 WHERE id=?', (ba,))
         owns = {ba: True, bb: True}
         with mock.patch.object(bang, 'has_island', lambda db, bid: owns[bid], create=True):
             owns[ba] = False
@@ -553,6 +559,7 @@ class Ranking(Store):
         champ = self.mkbang('b00000000d1', 'Vô Địch', toks[:1])
         donor = self.mkbang('b00000000d2', 'Nhà Giàu', toks[1:2], emoji='💰')
         builder = self.mkbang('b00000000d3', 'Thợ Xây', toks[2:3], emoji='🏗️')
+        self.sql('UPDATE bangs SET isle=0 WHERE id = ANY(?)', ([champ, donor, builder],))   # no 🏝️ Đảo bang yet: the hall only
         week = bang.vn_week(self.t[0])
         self.points(donor, toks[1], 500_000, kind='give')                        # 500 million xu given this week…
         self.points(donor, toks[1], 350, kind='checkin')
@@ -592,10 +599,19 @@ class Ranking(Store):
         self.assertEqual((card['build'], card['levels'], card['level']), (b['build'], 30, b['level']))
         page = bang.page(self.store, self.sid(toks[2]))
         self.assertEqual((page['bang']['score'], page['bang']['pets']), (b['score'], b['pets']))
-        # ⭐ an island level from the island branch (when merged) joins the hall's
-        with mock.patch.object(bang, 'island_level', lambda db, bid: 2 if bid == builder else 0, create=True):
-            self.assertEqual(self.part(week)[builder]['level'], (5 + 2) * BC.LEVEL_SCORE)
-            self.assertEqual(self.part(week)[donor]['level'], BC.LEVEL_SCORE)
+        # ⭐ the 🏝️ Đảo bang's level (bangs.isle) joins the hall's; an upgrade whose time is up counts at once
+        self.sql('UPDATE bangs SET isle=2 WHERE id=?', (builder,))
+        self.sql('UPDATE bangs SET isle=0, isle_to=1, isle_started=?, isle_ready=? WHERE id=?', (self.t[0] - 120, self.t[0] - 60, donor))
+        self.sql('UPDATE bangs SET isle=1, isle_to=2, isle_started=?, isle_ready=? WHERE id=?', (self.t[0] - 60, self.t[0] + 3600, champ))
+        got = self.part(week)
+        self.assertEqual((got[builder]['level'], got[builder]['island']), ((5 + 2) * BC.LEVEL_SCORE, 2))
+        self.assertEqual((got[donor]['level'], got[donor]['island']), (2 * BC.LEVEL_SCORE, 1), 'cấp 1 built: counts')
+        self.assertEqual((got[champ]['level'], got[champ]['island']), (2 * BC.LEVEL_SCORE, 1), 'cấp 2 still building: not yet')
+        self.assertEqual(got[builder]['score'], (got[builder]['pets'] + got[builder]['build'] + got[builder]['level']) * 110 // 100)
+        with self.store.connect() as db:
+            self.assertEqual(bang.week_of(db, builder, week, self.t[0])['level'], (5 + 2) * BC.LEVEL_SCORE)
+        page = bang.page(self.store, self.sid(toks[2]))
+        self.assertEqual((page['bang']['island'], page['bang']['level'], page['bang']['isle']), (2, 7 * BC.LEVEL_SCORE, 2))
 
     def test_power_ties_and_leaving(self):
         from game import bang_content as BC

@@ -9,7 +9,11 @@ import {getCharacterStamp} from '/js/isometric/character-art.js';
  * The bang's colour flies on the gate, the hall, the arena and the bang's own boat; its emoji hangs on the banners.
  * The scene controller (public/js/v4/bang-island-scene.js) owns walking, the live room, the overlays and the panels;
  * this only paints. Static art is baked into textures once (the canvas renderer would replay every shape each
- * frame); only flags, flames, glows, palms and people move. Map positions are fractions of the island's square. */
+ * frame); only flags, flames, glows, palms and people move. Map positions are fractions of the island's square.
+ * 🏝️ The island's level (21/10) is the layout's (public/js/bang-island-layout.js layout(level, building)): its coast
+ * with the zones' capes, their plots (🥋 a sparring ring, 🍵 a tea pavilion over a koi pond, 🛕 a five-roof pagoda,
+ * 🗼 a lighthouse), gold lanterns at level 5, and while the next level is built its raw sand bank with stakes,
+ * scaffolding and a crane (`site`). */
 type Pt=[number,number];
 type Facing='se'|'sw'|'ne'|'nw';
 interface Rect {x:number;y:number;w:number;h:number}
@@ -18,6 +22,7 @@ export interface BangIslandLayout {
   shore:Pt[];sandWidth:number;plaza:{c:Pt;r:number};roads:Pt[][];dock:Pt[];gate:{a:number;b:number;half:number;post:number};
   slots:Record<string,Rect&{id:string;solid:boolean;door:Pt}>;plots:Array<Rect&{id:string;kind:string}>;
   spots:Array<{id:string;emoji:string;x:number;y:number}>;palms:Pt[];trees:Pt[];
+  level?:number;lamps?:Pt[];site?:Rect&{id:string;kind:string;level:number;shore:Pt[]};
 }
 export interface BangFacilityLook {id:string;level:number;band?:number;state:string}
 export interface BangLook {name:string;emoji:string;color:string;facilities:BangFacilityLook[]}
@@ -237,6 +242,10 @@ export class BangIslandRenderer {
     // The sea and the island in one baked ground: the shelf, the cliff, the beach, grass, roads, the plaza, the pier.
     const ground=this.bake(.5,.5,k=>{
       const r=seeded(31),pts=(list:Pt[],z=0)=>list.map(([x,y])=>k.p(x,y,z));
+      if(L.site){   // 🏝️ the next level's land, a raw sand bank still under work
+        k.poly(pts(inset(L.site.shore,-.085)),hex(L.sea),1);k.poly(pts(L.site.shore,-12),0xa88a5c);k.poly(pts(L.site.shore),0xd9c08e);
+        for(let i=0;i<40;i++){const x=r(),y=r();if(inside(L.site.shore,x,y)&&!inside(L.shore,x,y))k.ellipse(k.p(x,y),8+r()*8,3+r()*2,0xb89a68,.5);}
+      }
       k.poly(pts(inset(L.shore,-.085)),hex(L.sea),1);
       k.poly(pts(inset(L.shore,-.03)),shade(hex(L.sea),1.08),1);
       k.poly(pts(L.dock.map(([x,y])=>[x,y] as Pt),-10),0x4a3423,.25);
@@ -257,8 +266,12 @@ export class BangIslandRenderer {
       const [d0,d1,d2,d3]=L.dock;k.poly(pts(L.dock,-8),0x6e4a2e);k.poly(pts(L.dock),0xb5844f);
       for(let i=1;i<20;i++){const t=i/20;k.line(k.p(d0[0]+(d1[0]-d0[0])*t,d0[1]+(d1[1]-d0[1])*t),k.p(d3[0]+(d2[0]-d3[0])*t,d3[1]+(d2[1]-d3[1])*t),0x8b6038,1.5,.8);}
       for(const [x,y] of [d1,d2])k.ellipse(k.p(x,y),10,6,0x5a3c25);
-      // Flat plots: the flower bed, the lotus pond, the yard's floor.
+      // Flat plots: the flower bed, the lotus pond, the yard's floor, the sparring ring's boards, the tea pavilion's pond.
       for(const p of L.plots){
+        if(p.kind==='ring'){k.box(sub(p,1.06),-2,10,C.woodD,C.crate);const in2=sub(p,.72),c=k.corners(in2,10);k.poly([c.A,c.B,c.Cc,c.D],0xd9ad6a);
+          for(let i=1;i<8;i++){const t=i/8;k.line(k.p(p.x-p.w*.53+p.w*1.06*t,p.y-p.h*.53,10),k.p(p.x-p.w*.53+p.w*1.06*t,p.y+p.h*.53,10),C.woodD,1,.5);}}
+        if(p.kind==='teahouse'){const q=sub(p,1.55);k.box(q,-2,3,hex(L.stoneDark),hex(L.stone));const c=k.corners(sub(q,.92),3);k.poly([c.A,c.B,c.Cc,c.D],0x3f9fbf);
+          for(let i=0;i<5;i++)k.ellipse(k.p(q.x+(r()-.5)*q.w*.8,q.y+(r()-.5)*q.h*.8,3),9,4,i%2?0xffffff:0xff7a2f,.9);}
         if(p.kind==='flowers'){const q=sub(p,1.1);k.box(q,0,6,hex(L.stoneDark),0x7a5a3a);
           for(let i=0;i<34;i++){const fx=p.x+(r()-.5)*p.w,fy=p.y+(r()-.5)*p.h;k.circle(k.p(fx,fy,7),2.6+r()*1.6,[0xff6f91,0xffd166,0xf8f4ff,0xc77dff,0xff9f43][i%5]);}}
         if(p.kind==='pond'){const q=sub(p,1.12);k.box(q,-2,4,hex(L.stoneDark),hex(L.stone));const {A,B,Cc,D}=k.corners(sub(p,.96),3);k.poly([A,B,Cc,D],0x3f9fbf);
@@ -273,6 +286,8 @@ export class BangIslandRenderer {
     s.tweens.add({targets:swell.image,alpha:{from:.45,to:1},duration:2400,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
     for(const id of Object.keys(L.slots))this.paintFacility(id);
     for(const p of L.plots)this.paintPlot(p,rand);
+    for(const [x,y] of L.lamps||[])this.lantern(x,y,rand);
+    if(L.site)this.worksite(L.site);
     for(const [x,y] of L.palms)this.palm(x,y,rand);
     for(const [x,y] of L.trees)this.tree(x,y,rand);
     this.paintBoat();
@@ -281,7 +296,7 @@ export class BangIslandRenderer {
       const icon=s.add.text(a,b-30,sp.emoji,{fontSize:'24px'}).setOrigin(.5,1).setDepth(b+1);
       s.tweens.add({targets:icon,y:b-38,duration:1400+rand()*500,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
     // The camera stays over the island: never more than a strip of open sea around it.
-    const edge=[...inset(L.shore,-.03),...L.dock].map(([x,y])=>this.iso(x,y));
+    const edge=[...inset(L.shore,-.03),...(L.site?inset(L.site.shore,-.03):[]),...L.dock].map(([x,y])=>this.iso(x,y));
     this.bounds={minX:Math.min(...edge.map(p=>p[0])),maxX:Math.max(...edge.map(p=>p[0])),minY:Math.min(...edge.map(p=>p[1]))-220,maxY:Math.max(...edge.map(p=>p[1]))+30};
     const [cx,cy]=this.iso(...L.plaza.c);s.cameras.main.centerOn(cx,cy);this.clamp();
   }
@@ -564,6 +579,7 @@ export class BangIslandRenderer {
 
   private paintPlot(p:Rect&{id:string;kind:string},rand:()=>number){
     if(p.kind==='flowers'||p.kind==='pond')return;
+    if(['ring','teahouse','pagoda','lighthouse'].includes(p.kind)){this.zone(p);return;}
     const seed=Math.round(rand()*1e6);
     if(p.kind==='bamboo')this.bake(p.x,p.y,k=>{const r=seeded(seed);for(let i=0;i<9;i++){const x=p.x+(r()-.5)*p.w,y=p.y+(r()-.5)*p.h,h=60+r()*40;k.bar(x,y,0,h,4,0x7fae4a);
       for(let j=1;j<4;j++)k.line(k.p(x,y,h*j/4),k.s(x,y,h*j/4,8,-6),0x5d8f35,1.5);
@@ -574,6 +590,39 @@ export class BangIslandRenderer {
       for(let i=0;i<5;i++){const x=p.x+(r()-.5)*p.w*1.4,y=p.y+(r()-.5)*p.h*1.4,h=46+r()*20;k.bar(x,y,0,14,5,0x6b4a2b);for(let j=0;j<3;j++){const b=k.s(x,y,10+j*h*.26,0,0),wd=24-j*6;k.poly([new Phaser.Geom.Point(b.x-wd,b.y),new Phaser.Geom.Point(b.x+wd,b.y),new Phaser.Geom.Point(b.x,b.y-h*.42)],j%2?0x2f6b3a:0x377a42);}}},this.iso(p.x+p.w/2,p.y+p.h/2)[1]);
     if(p.kind==='dummies')this.bake(p.x,p.y,k=>{for(const [dx,dy] of [[-.012,.012],[.016,-.016]] as const){const x=p.x+dx,y=p.y+dy;k.bar(x,y,0,42,5,C.wood);k.poly([k.s(x,y,34,-14,0),k.s(x,y,34,14,0),k.s(x,y,30,14,0),k.s(x,y,30,-14,0)],C.woodD);
       k.ellipse(k.s(x,y,24,0,0),16,22,C.thatch);k.circle(k.s(x,y,46,0,0),7,C.thatch);}},this.iso(p.x+p.w/2,p.y+p.h/2)[1]);
+  }
+  /** 🏝️ The zones of the island's levels (21/10): a ring, a tea pavilion, a pagoda, a lighthouse. */
+  private zone(p:Rect&{id:string;kind:string}){
+    const s=this.scene!,depth=this.iso(p.x+p.w/2,p.y+p.h/2)[1];
+    if(p.kind==='ring')this.bake(p.x,p.y,k=>{const q=sub(p,1.02),xs=[q.x-q.w/2,q.x+q.w/2],ys=[q.y-q.h/2,q.y+q.h/2];
+      for(const x of xs)for(const y of ys){k.bar(x,y,10,40,5,C.lacq);k.circle(k.p(x,y,42),4,C.gold);}
+      for(const z of [24,34]){const c=k.corners(q,z);k.line(c.A,c.B,C.red,2);k.line(c.B,c.Cc,C.red,2);k.line(c.Cc,c.D,C.red,2);k.line(c.D,c.A,C.red,2);}},depth);
+    if(p.kind==='teahouse')this.bake(p.x,p.y,k=>{const q=sub(p,.9);k.shadow(q);k.box(sub(q,1.1),0,6,C.woodD,C.wood);k.pillars(sub(q,.86),6,34,2,C.lacq,5);
+      k.roof(sub(q,.86),34,22,C.jade,.012,C.gold);},depth);
+    if(p.kind==='pagoda')this.bake(p.x,p.y,k=>{let r:Rect=sub(p,1),z=0;k.shadow(r);k.box(sub(r,1.15),0,8,C.stoneD,C.stone);z=8;
+      for(let i=0;i<5;i++){const wall=sub(r,.72),h=i?16:22;k.box(wall,z,z+h,C.cream);k.face(wall,'sw',.4,.6,z,z+h*.8,C.lacq);z+=h;
+        const nxt=sub(r,.78);if(i<4)k.skirt(r,nxt,z,9,C.tile,.008,C.gold);else k.roof(nxt,z,28,C.gold,.006,C.red);z+=9;r=nxt;}
+      k.bar(p.x,p.y,z+26,z+48,3,C.gold);},depth);
+    if(p.kind==='lighthouse'){const o=this.bake(p.x,p.y,k=>{const q=sub(p,1);k.shadow(q,1.4);k.box(sub(q,1.3),0,10,0x6b6b6b,0x8a8a8a);
+      for(let i=0;i<6;i++){const a=sub(q,.8-i*.06),z0=10+i*24;k.box(a,z0,z0+24,i%2?C.red:C.white);}
+      const top=sub(q,.5);k.box(top,154,170,C.iron,0xffe37a);k.roof(top,170,16,C.red,.004);},depth);
+      const [a,b]=this.iso(p.x,p.y),glow=s.add.ellipse(a,b-162,46,30,0xfff0aa,.5).setDepth(depth+.1);
+      s.tweens.add({targets:glow,alpha:{from:.25,to:.75},scaleX:{from:.8,to:1.25},duration:1200,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});void o;}
+  }
+  /** A gold lantern on a post along the roads (level 5). */
+  private lantern(x:number,y:number,rand:()=>number){
+    const s=this.scene!;this.bake(x,y,k=>{k.ellipse(k.s(x,y,0,4,2),18,6,0x000000,.14);k.bar(x,y,0,40,3,C.iron);k.ellipse(k.s(x,y,44,0,0),12,16,C.gold);k.ellipse(k.s(x,y,51,0,0),8,3,C.goldD);});
+    const [a,b]=this.iso(x,y),glow=s.add.ellipse(a,b-44,26,26,0xffe37a,.35).setDepth(b+.2);
+    s.tweens.add({targets:glow,alpha:{from:.15,to:.45},duration:1500+rand()*700,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+  }
+  /** 🏝️ The next level's work site: a staked plot, scaffolding with its net, a crane and crates on the raw sand bank. */
+  private worksite(r:Rect&{id:string;kind:string}){
+    const depth=this.iso(r.x+r.w/2,r.y+r.h/2)[1];
+    this.bake(r.x,r.y,k=>{this.plot(k,r,true);k.scaffold(sub(r,.8),56,true);},this.iso(r.x-r.w/2,r.y-r.h/2)[1]+1);
+    this.bake(r.x,r.y,k=>{k.scaffold(sub(r,.8),56,false);const bx=r.x+r.w*.62,by=r.y-r.h*.1;
+      k.bar(bx,by,0,128,6,C.gold);k.line(k.s(bx,by,124,0,0),k.s(bx,by,120,-80,0),C.goldD,4);k.line(k.s(bx,by,122,-60,0),k.s(bx,by,80,-60,0),C.iron,1.5);
+      const hook=k.s(bx,by,80,-60,0);k.poly([new Phaser.Geom.Point(hook.x-7,hook.y),new Phaser.Geom.Point(hook.x+7,hook.y),new Phaser.Geom.Point(hook.x+7,hook.y+10),new Phaser.Geom.Point(hook.x-7,hook.y+10)],C.crate);
+      for(let i=0;i<3;i++)k.box({x:r.x-r.w*.55+i*.012,y:r.y+r.h*.55,w:.011,h:.011},0,8+i*3,C.crate);},depth);
   }
   private palm(x:number,y:number,rand:()=>number){
     const lean=(rand()-.5)*30,h=88+rand()*26,leaves:Array<[number,number]>=[];for(let k=0;k<7;k++)leaves.push([40+rand()*10,rand()]);

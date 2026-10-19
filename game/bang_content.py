@@ -50,13 +50,21 @@ REQ_DAYS_MAX = 365             # a requirement on the account's age, in days, at
 REQ_RANK_MAX = 7               # the longest promotion ladder (game/promotion.py top)
 
 # ---------------------------------------------------------------- the fund (Quỹ bang): deposits only
-GIVE_MIN = 1_000
-GIVE_MAX = 10_000_000          # one deposit = one wallet history row at most (every build validates ±10 M)
-GIVE_PRESETS = (100_000, 500_000, 1_000_000, 5_000_000)
-FUND_BASE_CAP = 20_000_000     # without a Kho bang
+# Owner 21/10: "quỹ bang cho k giới hạn", "góp 1 lần không giới hạn tiền": no fund cap, no per-gift cap but what the
+# player has (wallet then bank; the wallet's part in Sổ ví rows of at most 10 M, game/bang.py _take). GIVE_MAX and
+# FUND_MAX are only technical ceilings far above anything reachable (a wallet and a bank account hold 1 tỷ each at most):
+# GIVE_MAX = game/bang.py BIG, the bound every build since 2.4.63 validates journey.bang.last.a with.
+GIVE_MIN = 1_000               # whole thousands
+GIVE_MAX = 10**12
+GIVE_PRESETS = (1_000_000, 10_000_000, 100_000_000)   # the client adds "Tất cả" (everything the player has)
+FUND_MAX = 10**15              # bangs.fund is a bigint: never near it
+FUND_BASE_CAP = 20_000_000     # before 21/10: the fund's cap without a Kho bang (KHO_CAP below), no longer applied
 
 # ---------------------------------------------------------------- điểm cống hiến
 XU_PER_POINT = 1_000           # 1 point per 1.000 xu given (plus the Kho bang's bonus)
+GIVE_PTS_DAY = 50_000          # points from gifts a player earns a Vietnam day at most, every bang together (21/10: with no
+                               # fund cap a huge gift still gives its xu, but its points stop here: the shop and the
+                               # contribution ranking stay a matter of days, not of one deposit)
 CHECKIN_POINTS = 20            # 📅 Điểm danh, once a Vietnam day
 WORK_POINTS = 10               # a work day closed (end_day) ...
 WORK_DAYS = 3                  # ... at most this many a Vietnam day
@@ -70,7 +78,7 @@ FACILITIES = {
     'dai_sanh': dict(name='Đại sảnh', emoji='🏯', blurb='Nhà chính của bang: thêm chỗ cho thành viên.',
                      levels=[(0, 0), (20_000_000, 6), (50_000_000, 12), (100_000_000, 24), (200_000_000, 48)],
                      start=1),
-    'kho': dict(name='Kho bang', emoji='🏦', blurb='Quỹ chứa được nhiều hơn, góp xu được thêm điểm cống hiến.',
+    'kho': dict(name='Kho bang', emoji='🏦', blurb='Góp quỹ được thêm điểm cống hiến.',
                 levels=[(2_000_000, 1), (4_000_000, 2), (7_000_000, 3), (12_000_000, 5), (20_000_000, 8), (32_000_000, 12),
                         (50_000_000, 16), (75_000_000, 24), (110_000_000, 36), (160_000_000, 48)]),
     'xuong_may': dict(name='Xưởng may', emoji='🧵', blurb='May đồng phục màu bang, giảm giá đồ may ở cửa hàng.',
@@ -90,7 +98,8 @@ FAC_ORDER = ('dai_sanh', 'kho', 'xuong_may', 'den_vang', 'cong', 'tuong', 'san_p
 HALL_CAP = (0, 10, 15, 20, 25, 30)      # members by hall level (start 10, up to 30)
 KHO_CAP = (FUND_BASE_CAP, 30_000_000, 50_000_000, 80_000_000, 120_000_000, 180_000_000, 260_000_000, 360_000_000,
            500_000_000, 700_000_000, 1_000_000_000)
-KHO_BONUS = 2                  # +2 % points on deposits per Kho bang level
+# KHO_CAP: the fund's cap per Kho bang level before 21/10 (kept for the record; the fund has no cap now).
+KHO_BONUS = 5                  # +5 % points on deposits per Kho bang level (21/10: was +2 %, the Kho no longer raises a cap)
 XUONG_OFF = 5                  # −5 % on the uniform, the badge and the boat paint per Xưởng may level
 # 👑 Bang mạnh nhất tuần (owner 21/10, final: "đừng để cống hiến bang tính điểm nhé, hãy tính điểm của pets, công trình và
 # cấp bang làm điểm nhé"): three parts, heaviest first (game/bang.py standings), the sum × the Tượng bang's bonus. Điểm cống
@@ -101,8 +110,8 @@ XUONG_OFF = 5                  # −5 % on the uniform, the badge and the boat p
 #      the top POWER_TOP: 20 members with A-rank pets ≈ 6.000 → 3.000);
 #   🏗️ Công trình = Σ levels of the facilities but the Đại sảnh × FAC_SCORE (all 45 levels 6.750, a usual bang 10–20 levels
 #      1.500–3.000);
-#   ⭐ Cấp bang = the Đại sảnh's level (the bang's level: its member cap), + its island's level when the island branch
-#      gives one (game/bang.py island_level), × LEVEL_SCORE (level 1 → 500, level 5 → 2.500).
+#   ⭐ Cấp bang = (the Đại sảnh's level (the bang's level: its member cap) + its 🏝️ Đảo bang's level, bangs.isle 0–5:
+#      game/bang.py _isle_level) × LEVEL_SCORE (hall 1 with no island → 500, hall 5 + island 5 → 5.000).
 # So pets weigh most (the champion, 7.500 with its level 1, beats a level-5 bang of 25 facility levels, 6.250); a bang
 # that only gave xu (no pets, no buildings) ranks low.
 PET_WAR_SCORE = 500
@@ -143,7 +152,7 @@ def perk(fac: str, level: int) -> str:
     if fac == 'dai_sanh':
         return f'{HALL_CAP[level]} thành viên' + (', 2 công trình xây cùng lúc' if build_slots(level) > 1 else '')
     if fac == 'kho':
-        return f'Quỹ chứa {KHO_CAP[level] // 1_000_000} triệu xu, +{KHO_BONUS * level}% điểm khi góp'
+        return f'+{KHO_BONUS * level}% điểm cống hiến khi góp quỹ'
     if fac == 'xuong_may':
         styles = [UNIFORMS[k][0] for k in UNIFORM_ORDER if UNIFORMS[k][2] <= level]
         out = f'Đồng phục: {", ".join(styles)}; đồ may −{XUONG_OFF * level}%'
@@ -197,3 +206,44 @@ UNIFORM_ORDER = ('polo', 'hoodie', 'aodai')
 # ---------------------------------------------------------------- 👑 Bang mạnh nhất tuần
 WEEK_TITLE = '👑 Bang mạnh nhất tuần'
 BOARD_TOP = 10
+
+
+# ---------------------------------------------------------------- 🏝️ Đảo bang: bought and upgraded from the fund (owner 21/10)
+# "đảo bang bắt phải mua nhé … sau mở rộng lên được", "mua giá như giá đảo", "có mức rẻ hơn cho đảo bang là 1m",
+# "muốn lên thì nâng cấp tiếp, 30m thì được cấp 2". One ladder: cấp 1 is bought for ISLE_BUY (at once); cấp 2…5 cost the
+# private islands' prices (game/island_content.py ISLANDS, in their order: Đảo Dừa, San Hô, Mây Đá, Hoàng Hôn; those are
+# written as paid, never through game/price_index.py, so no multiplier here either) and take a real-time build. Paid
+# from the fund only (a pure sink, ledger kind 'build', id 'i:<bang>:<level>'), by Phó bang and up, under the bang row's
+# lock. Each level enlarges the island's map (public/js/bang-island-layout.js: a new zone), raises the live room's cap
+# and lets the facilities climb further (isle_needed). A bang that has not bought it plays nothing on the island (no
+# visit, no pet arena, no Bang chiến): game/bang.py has_island. Bangs from before this release hold cấp 1 for free.
+from . import island_content as _IC
+
+ISLE_BUY = 1_000_000
+ISLE_PRICES = (ISLE_BUY,) + tuple(int(i['price']) for i in _IC.ISLANDS)   # cấp 1…5
+ISLE_HOURS = (0, 6, 12, 24, 48)                 # build hours to reach cấp 1…5 (cấp 1: at once)
+ISLE_CAP = (0, 30, 40, 50, 60, 80)              # people on the island at once by level (the live room's cap)
+ISLE_MAX = len(ISLE_PRICES)
+# What each level adds to the map (the zone of public/js/bang-island-layout.js ZONES, same order).
+ISLE_ZONES = ('🏯 Đảo nhỏ: đại sảnh, quảng trường, bến tàu', '🥋 Võ đường bên bờ đông', '🍵 Trà đình bên hồ cá bờ tây',
+              '🛕 Bảo tháp trên đồi thông', '🗼 Hải đăng và đèn lồng vàng khắp đảo')
+# A facility's level n needs the island at isle_needed(fac, n): on the ten-level scale (a 5-level facility counts double)
+# levels 1–4 need nothing (they work without the island, as before 21/10), 5–6 cấp 2, 7–8 cấp 3, 9 cấp 4, 10 cấp 5.
+# Levels already built stay (only further upgrades wait).
+ISLE_GATE = (0, 0, 0, 0, 0, 2, 2, 3, 3, 4, 5)
+
+
+def isle_cost(level: int) -> tuple[int, int]:
+    """(xu, build seconds) to reach island level `level` (1-based)."""
+    return ISLE_PRICES[level - 1], ISLE_HOURS[level - 1] * 3600
+
+
+def isle_cap(level: int) -> int:
+    return ISLE_CAP[max(0, min(ISLE_MAX, level))]
+
+
+def isle_needed(fac: str, level: int) -> int:
+    """The island level a facility's level `level` needs (0: none)."""
+    top = max_level(fac)
+    scaled = -(-level * 10 // top) if top != 10 else level
+    return ISLE_GATE[max(0, min(10, scaled))]

@@ -360,10 +360,27 @@ def bang_of(db, sid: str):
     return str(r['bang']) if r else None
 
 
-def need_bang(store, sid: str) -> str:
+NO_ISLAND = 'Bang chưa có 🏝️ Đảo bang. Bang chủ hoặc Phó bang mua đảo bằng quỹ bang (mục ⚔️ Bang) để cả bang ra trận nhé!'
+
+
+def island_lock(db, sid: str, bang_id: str) -> dict | None:
+    """🏝️ owner 21/10 "phải có mua đảo bang thì mới chơi được": None when the bang holds its island, else what the
+    locked page shows (officer: the player may buy it; cost: cấp 1's price)."""
+    from . import bang as BG
+    from . import bang_content as BC
+    if BG.has_island(db, bang_id):
+        return None
+    r = db.execute("SELECT role FROM bang_members WHERE sid=? AND bang=? AND status='in'", (sid, bang_id)).fetchone()
+    officer = bool(r) and BC.ROLES.get(r['role'], BC.ROLES['tv'])[3] >= BC.BUILD_FROM
+    return dict(officer=officer, cost=BC.isle_cost(1)[0])
+
+
+def need_bang(store, sid: str, island: bool = False) -> str:
     with store.connect() as db:
         b = bang_of(db, sid)
-    need(b or not BANG_ONLY, NO_BANG, 'no_bang', 403)
+        need(b or not BANG_ONLY, NO_BANG, 'no_bang', 403)
+        if b and island:
+            need(island_lock(db, sid, b) is None, NO_ISLAND, 'no_island', 403)
     return b
 
 
@@ -390,8 +407,13 @@ def view(store, token, state, ip='') -> dict:
         return out
     if BANG_ONLY:
         with store.connect() as db:
-            if not bang_of(db, sid):
+            b = bang_of(db, sid)
+            if not b:
                 out['locked'] = 'bang'
+                return out
+            lock = island_lock(db, sid, b)   # 🏝️ 21/10: a bang plays here once it holds its island
+            if lock:
+                out.update(locked='island', island=lock)
                 return out
 
     def run(db):
@@ -717,9 +739,15 @@ def act(store, token, op: str, data: dict, state, ip: str = '') -> dict:
     # 21/10 owner: "chỉ mở cho các bang hội đánh nhau thôi": no 1v1 ranked or friendly fights while BANG_ONLY
     need(not (BANG_ONLY and op in ('fight', 'friend', 'friends')), 'Đấu trường giờ dành cho bang đánh với bang: vào 🛡️ Bang chiến nhé.', 'bang_only', 409)
     if BANG_ONLY and (op in ('lineup', 'npc') or (op.startswith('cup_') and op != 'cup_board')):
-        # 21/10: only bang members play; the weekly cup (open to the whole town) is closed while BANG_ONLY
+        # 21/10: only bang members play, once their bang holds its 🏝️ island; the weekly cup (open to the whole town) is
+        # closed while BANG_ONLY
         need(not op.startswith('cup_'), 'Giải tuần đang đóng: đấu trường giờ chỉ dành cho bang.', 'cup_closed', 409)
-        need_bang(store, _who(store, token)[0])
+        need_bang(store, _who(store, token)[0], island=True)
+    if op == 'war_pick':   # 🏝️ a bang member's pick: the island first (game/bang_pets.py can_pick refuses too; other teams: pet_war)
+        with store.connect() as db:
+            sid = _who(store, token)[0]
+            b = bang_of(db, sid) if sid else None
+            need(not b or island_lock(db, sid, b) is None, NO_ISLAND, 'no_island', 403)
     if op == 'lineup':
         return set_lineup(store, token, state, data, ip)
     if op == 'fight':
