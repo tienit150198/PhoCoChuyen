@@ -239,7 +239,8 @@ function lineCard(t,l,x,sel){
   const inner=`<span class="ga-lrow"><b class="ga-ref">${x.esc(l.ref)}</b><b class="ga-lamt">${money(l)}</b></span><span class="ga-ltext"${said!==l.text?` title="${x.esc(l.text)}"`:''}>${x.esc(l.date)}${said?` · ${x.esc(said)}`:''}</span>${badge}`;
   if(st)return `<li class="ga-line done ${st.k}">${inner}</li>`;
   const on=sel[l.side]===l.id;
-  return `<li>${btn(x,inner,'car:msel',{task:t.id,line:l.id,side:l.side},`ga-line ${on?'on':''} ${l.hinted?'hinted':''}`).replace('<button ',`<button aria-pressed="${on}" `)}</li>`;
+  // data-tap-guard (ui-kit tapSlip, #440): a touch that ends a scroll of the long list does not pick the card.
+  return `<li>${btn(x,inner,'car:msel',{task:t.id,line:l.id,side:l.side},`ga-line ${on?'on':''} ${l.hinted?'hinted':''}`).replace('<button ',`<button aria-pressed="${on}" data-tap-guard `)}</li>`;
 }
 function meterBox(t,x){
   const m=t.meter||{},n=t.names||{},pct=m.total?Math.round(100*m.resolved/m.total):0;
@@ -256,7 +257,10 @@ function meterBox(t,x){
 }
 function evidence(t,x){
   const docs=t.docs||[];if(!docs.length)return '';
-  return fold(clean()?`🔎 <small>${docs.length}</small>`:`🔎 Bằng chứng <small>${docs.length} tờ</small>`,`<ul class="ga-evid">${docs.map(d=>`<li><b>${x.esc(d.title)}</b><small>${x.esc(d.source)}</small><p>${x.esc(d.text||'')}</p></li>`).join('')}</ul>`,false,'ga-evid-fold');
+  const list=`<ul class="ga-evid">${docs.map(d=>`<li><b>${x.esc(d.title)}</b><small>${x.esc(d.source)}</small><p>${x.esc(d.text||'')}</p></li>`).join('')}</ul>`;
+  // Full layout (the per-career "Giao diện đầy đủ", #440 "hiện hết như mấy bản cũ"): the papers lie open under the ledgers.
+  if(!clean())return `<section class="ga-evid-open"><h3 class="ok-h">🔎 Bằng chứng <small>${docs.length} tờ</small></h3>${list}</section>`;
+  return fold(`🔎 <small>${docs.length}</small>`,list,false,'ga-evid-fold');
 }
 function boardDoc(t,x){
   const sel=msel(x,t),L=Object.fromEntries((t.lines||[]).map(l=>[l.id,l]));

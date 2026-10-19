@@ -33,8 +33,38 @@ export function blocker(env=E,doc=document){
   return why(dlg,{strict:false},doc);
 }
 
+const short=c=>c%1e6===0?`${c/1e6}tr`:`${c/1000}k`;
+/** 🎡 a wheel gift (system_gift WHEEL, 20/10): the slots round the wheel, the amount hidden until it stops. */
+function wheelHTML(g,more){
+  const sl=g.wheel.slots,n=sl.length,deg=360/n;
+  const seg=sl.map((x,i)=>`<span class="gf-seg" style="--a:${i*deg+deg/2}deg"><b>${esc(short(x.coins))}</b></span>`).join('');
+  return `${more}<div class="gf-top"><p class="gf-title" id="gfTitle">${esc(g.title)}</p>`+
+    `<div class="gf-wheel-wrap"><i class="gf-pin" aria-hidden="true">▼</i><div class="gf-wheel" style="--n:${n}" aria-hidden="true">${seg}</div></div>`+
+    `<p class="gf-amount gf-hide" aria-live="polite"><span>+${fmt(g.coins)} xu</span></p><p class="gf-note gf-hide"></p></div>`+
+    `<p class="gf-text gf-wish" id="gfText">💌 ${esc(g.wheel.wish||g.text)}</p>`+
+    `<div class="gf-foot"><button type="button" class="btn primary big full" data-gf="spin">🎡 Quay ngay</button></div>`;
+}
+let spinning=false;
+function spin(){
+  const g=queue[0],w=dlg?.querySelector('.gf-wheel');if(!g?.wheel||!w||spinning)return;
+  spinning=true;
+  const sl=g.wheel.slots,deg=360/sl.length,i=Math.max(0,sl.findIndex(x=>x.coins===g.coins));
+  const calmMo=matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.classList.contains('reduce-motion');
+  const jitter=(Math.random()-.5)*deg*.6,ms=calmMo?50:4200;
+  w.style.transition=`transform ${ms}ms cubic-bezier(.17,.67,.12,1)`;
+  w.style.transform=`rotate(${360*6-(i*deg+deg/2)+jitter}deg)`;
+  const b=dlg.querySelector('[data-gf="spin"]');if(b){b.disabled=true;b.textContent='🎡 Đang quay…';}
+  setTimeout(()=>{
+    spinning=false;if(queue[0]!==g)return;
+    dlg.querySelector('.gf-amount')?.classList.remove('gf-hide');
+    const note=dlg.querySelector('.gf-note');if(note){note.textContent=`${sl[i]?.note||''} · Đã vào ví của bạn 👛`;note.classList.remove('gf-hide');}
+    if(b){b.disabled=false;b.dataset.gf='ok';b.textContent='Nhận quà 💛';b.focus({preventScroll:true});}
+  },ms+150);
+}
+
 function html(g){
   const more=queue.length>1?`<p class="gf-count" aria-hidden="true">1/${queue.length}</p>`:'';
+  if(g.wheel?.slots?.length)return wheelHTML(g,more);
   return `${more}<div class="gf-top"><p class="gf-title" id="gfTitle">${esc(g.title)}</p>`+
     `<p class="gf-amount"><span class="gf-box" aria-hidden="true">🎁</span><span>+${fmt(g.coins)} xu</span></p>`+
     `<p class="gf-where">Đã vào ví của bạn 👛</p></div>`+
@@ -52,9 +82,10 @@ function build(){
     const b=e.target.closest('button');if(!b||!dlg.contains(b))return;
     if(performance.now()-openedAt<450){e.preventDefault();return;}   // a tap already on its way when the card popped up
     if(b.dataset.gf==='ok')accept();
+    else if(b.dataset.gf==='spin')spin();
   });
-  dlg.addEventListener('cancel',e=>{e.preventDefault();accept();});   // Esc
-  dlg.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();dlg.querySelector('[data-gf="ok"]')?.focus();}});   // one button
+  dlg.addEventListener('cancel',e=>{e.preventDefault();if(dlg.querySelector('[data-gf="spin"]'))spin();else accept();});   // Esc (a wheel spins first)
+  dlg.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();dlg.querySelector('.gf-foot button')?.focus();}});   // one button
   return dlg;
 }
 

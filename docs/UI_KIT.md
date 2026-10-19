@@ -319,6 +319,15 @@ bowl / bouquet order, "Không sữa bò", the guest's quote and temper, the occa
 `v4/shell.js applyClean` sets it.
 - **Player:** Cài đặt → Giao diện → "Giao diện gọn": Tự động (phones only, the default), Bật (every size) or Tắt.
   It is stored in `localStorage['mnl.clean']`.
+- **Per career (owner 19/10, #440):** every work sheet's ⋯ menu (`app.js sideItems`, on the task, the empty desk and
+  the done screen) offers the other side: "📋 Giao diện đầy đủ (cũ)" or "✨ Giao diện gọn (mới)", plus "↩️ Theo cài đặt
+  chung" once one is picked. Stored in `localStorage['mnl.clean.c']` (`{career: 'on'|'off'}`); it wins over the global
+  pref while that career is current (`setCleanCareer`, called by renderMain/renderSheet). Cài đặt → Giao diện can clear
+  them all.
+- **Both sides, every career:** the full side shows what the compact side folds, shortens or moves to "?" (as before
+  the waves); the compact side never drops a deciding cue. A new career is built with `clean()`/`tip()` from the start.
+  Long tappable lists and sideways chip rows take `data-tap-guard` (or sit in `.ui-bar-top`): ui-kit `tapSlip` drops
+  the touch that ends a scroll or lands on a gliding list.
 - **Server kill switch:** `MNL_CLEAN_UI=off` in the server environment, then restart. Bootstrap sends
   `ui.clean=false` and every page turns the layout off at its next load.
 - **What the switch gates:**

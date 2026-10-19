@@ -56,7 +56,7 @@ function openClean(t,x){
       :`<div class="hb-chans" role="group" aria-label="Báo cho ai">${Object.entries(chan).map(([k,[e,l]])=>x.cmd(`${x.esc(e)} ${x.esc(CHAN_WORD[k]||l)}`,'hb_rep',{task:t.id,what:r.id,to:k},'ghost small').replace('<button ',`<button aria-label="${x.esc(l)}" `)).join('')}</div>`;
     return `<li class="seen fault">⚠️ <b>${x.esc(r.label)}:</b> ${x.esc(r.text)}<div class="hb-row">${fix}</div>${rep}</li>`;}).join('');
   const done=rows.filter(r=>r.state).length,all=done===rows.length;
-  const decide=pane(x,`gate-${t.id}`,'🚪 <b>Mở cổng?</b>',`<div class="sk-opts">${opt(x,'🔓 Mở cổng đón khách','mọi thứ đã an toàn','hb_open',{task:t.id,decision:'open'})}${opt(x,'⏳ Hoãn mở, chờ kỹ thuật','khách chờ ngoài cổng','hb_open',{task:t.id,decision:'delay'})}</div>`,all);
+  const decide=pane(x,`gate-${t.id}`,'🚪 <b>Mở cổng?</b>',`<div class="sk-opts">${opt(x,'🔓 Mở cổng đón khách','mọi thứ đã an toàn','hb_open',{task:t.id,decision:'open'})}${opt(x,'⏳ Hoãn mở, chờ kỹ thuật','khách chờ ngoài cổng','hb_open',{task:t.id,decision:'delay'})}</div>`,all||!clean());   // full layout: in sight from the start, as before UI wave 2
   return `<section class="card hb-open"><h4 aria-label="Danh sách mở hồ">🧪 <small class="muted">${done}/${rows.length}</small></h4><div class="tile-grid hb-tiles">${tiles}</div>${faults?`<ul class="hb-checklist">${faults}</ul>`:''}</section>${n.strip?logForm(t,x):''}
     <section class="card hb-decide">${decide}</section>`;
 }

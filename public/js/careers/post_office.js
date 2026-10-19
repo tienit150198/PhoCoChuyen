@@ -1,5 +1,6 @@
 /** Cánh Thư: read the evidence, record each parcel, then file its handover proof. */
 import {data,cc,person,askCard,introCard,kitActions,amountBox,kitInput,notesPage} from './street_kit.js';
+import {clean,tip} from '../ui-kit.js';
 
 const current=t=>t.needs?.steps?.[t.at];
 const modeName={send:'Gửi đi',collection:'Nhận tại quầy',return:'Hàng hoàn'};
@@ -11,7 +12,7 @@ function tariffBoard(x){
     <p>Giá vùng + 3 xu × số khối 500 g làm tròn lên + dịch vụ + 5 xu nếu cạnh dài trên 60 cm.</p>
     <dl>${(c.zones||[]).map(z=>`<div><dt>${x.esc(z.label)} · tuyến ${x.esc(z.route)}</dt><dd>${x.fmt(z.base)} xu</dd></div>`).join('')}</dl>
     <ul>${(c.services||[]).map(s=>`<li>${x.esc(s.label)} · ${s.id==='stored'||s.id==='return'?'không thu thêm':`+${x.fmt(s.extra)} xu`}</li>`).join('')}</ul>
-    <p class="small">Cước thuộc bưu điện. Lương theo hợp đồng; thưởng chất lượng 4–9 xu/phiếu.</p></section>`;
+    ${tip('Cước thuộc bưu điện. Lương theo hợp đồng; thưởng chất lượng 4–9 xu/phiếu.','','p','small')}</section>`;
 }
 
 function progress(x){
@@ -61,7 +62,8 @@ export default {
       (t.lines?.length?`<p class="post-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'')+
       `<details class="post-notebook"><summary>Bảng quy tắc bưu điện</summary>${notebook(x)}</details>`+progress(x));
   },
-  idle(x){return wrap(introCard(x,'post_intro','✉️')+progress(x)+notebook(x));},
+  // Compact layout: the tariff and the rules fold like on the work screen (the full layout keeps them open).
+  idle(x){return wrap(introCard(x,'post_intro','✉️')+progress(x)+(clean()?`<details class="post-notebook"><summary>Bảng quy tắc bưu điện</summary>${notebook(x)}</details>`:notebook(x)));},
   input(el,x){return kitInput(el,x);},
   page(view,x){return view==='car:notes'?notesPage(x,{cls:'post-office',eyebrow:'Bưu điện Cánh Thư',title:'Bảng cước & bàn giao',body:notebook(x)}):'';},
   actions:{...kitActions,

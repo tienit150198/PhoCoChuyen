@@ -1,6 +1,7 @@
 /** Khách sạn Sông Mây: one post of the shift per job (desk, rooms, laundry, breakfast, repairs, decor), one step at a
  * time. The server grades each step; a wrong one stays open to fix and lowers the job's quality. */
 import {data,cc,person,askCard,introCard,deskCard,kitActions,amountBox,kitInput,notesPage,act} from './street_kit.js';
+import {clean,tip} from '../ui-kit.js';
 
 const wrap=body=>`<div class="career-job sk hotel">${body}</div>`;
 const stepsOf=t=>t.needs?.steps||[];
@@ -62,7 +63,7 @@ function pickStep(t,st,x,ordered){
   const ready=ordered?seq.length===(st.options||[]).length:true;
   const value=ordered?seq:[...seq].sort();
   const send=x.cmd(ordered?'Xác nhận thứ tự':'Xác nhận lựa chọn','ht_step',{task:t.id,step:st.id,value},'primary ht-send',!ready);
-  return `<p class="small">${ordered?'Bấm lần lượt theo thứ tự; bấm lại để bỏ.':'Bấm để chọn hoặc bỏ chọn từng món.'}</p><div class="ht-picks">${opts}</div>
+  return `${tip(ordered?'Bấm lần lượt theo thứ tự; bấm lại để bỏ.':'Bấm để chọn hoặc bỏ chọn từng món.','','p','small')}<div class="ht-picks">${opts}</div>
     <div class="ht-row">${act(x,'Làm lại','htClear',{key},'ghost')}${send}</div>`;
 }
 
@@ -107,7 +108,8 @@ export default {
       (t.lines?.length?`<p class="ht-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'')+
       `<details class="ht-notebook"><summary>Sổ quy trình Sông Mây</summary>${notebook(x)}</details>`+progress(x));
   },
-  idle(x){return wrap(top(x)+seasonBanner(x,data(x).season)+progress(x)+notebook(x));},
+  // Compact layout: the notebook folds like on the work screen (the full layout keeps it open, as before).
+  idle(x){return wrap(top(x)+seasonBanner(x,data(x).season)+progress(x)+(clean()?`<details class="ht-notebook"><summary>Sổ quy trình Sông Mây</summary>${notebook(x)}</details>`:notebook(x)));},
   input(el,x){
     const key=el.dataset?.htCnt;
     if(key){((x.ui.htCnt??={})[key]??={})[el.dataset.field]=el.value===''?'':Math.floor(Number(el.value)||0);return true;}

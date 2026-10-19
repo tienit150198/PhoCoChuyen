@@ -2,6 +2,7 @@
  * hygiene and closing power-off checklists, then one job slip at a time, one step at a time. The server grades each step;
  * a wrong one stays open to fix and lowers the job's quality. */
 import {data,cc,person,askCard,introCard,deskCard,kitActions,amountBox,kitInput,notesPage,act} from './street_kit.js';
+import {clean,tip} from '../ui-kit.js';
 
 const wrap=body=>`<div class="career-job sk banquet">${body}</div>`;
 const stepsOf=t=>t.needs?.steps||[];
@@ -49,7 +50,7 @@ function pickStep(id,st,x,ordered,cmd,payload){
   const ready=ordered?seq.length===(st.options||[]).length:true;
   const value=ordered?seq:[...seq].sort();
   const send=x.cmd(ordered?'Xác nhận thứ tự':'Xác nhận lựa chọn',cmd,{...payload,step:st.id,value},'primary bq-send',!ready);
-  return `<p class="small">${ordered?'Bấm lần lượt theo thứ tự; bấm lại để bỏ.':'Bấm để chọn hoặc bỏ chọn từng món.'}</p><div class="bq-picks">${opts}</div>
+  return `${tip(ordered?'Bấm lần lượt theo thứ tự; bấm lại để bỏ.':'Bấm để chọn hoặc bỏ chọn từng món.','','p','small')}<div class="bq-picks">${opts}</div>
     <div class="bq-row">${act(x,'Làm lại','bqClear',{key},'ghost')}${send}</div>`;
 }
 
@@ -139,7 +140,8 @@ export default {
       (t.lines?.length?`<p class="bq-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'')+
       `<details class="bq-notebook"><summary>Sổ bếp và sổ sảnh Hồng Mây</summary>${notebook(x)}</details>`+progress(x));
   },
-  idle(x){return wrap(top(x)+rushBanner(x,data(x).rush)+rolePicker(x)+shiftCard(x,null)+progress(x)+notebook(x));},
+  // Compact layout: the notebook folds like on the work screen (the full layout keeps it open, as before).
+  idle(x){return wrap(top(x)+rushBanner(x,data(x).rush)+rolePicker(x)+shiftCard(x,null)+progress(x)+(clean()?`<details class="bq-notebook"><summary>Sổ bếp và sổ sảnh Hồng Mây</summary>${notebook(x)}</details>`:notebook(x)));},
   input(el,x){return kitInput(el,x);},
   page(view,x){return view==='car:notes'?notesPage(x,{cls:'banquet',eyebrow:'Nhà hàng tiệc Hồng Mây',title:'Sổ bếp và sổ sảnh',body:notebook(x)}):'';},
   actions:{...kitActions,

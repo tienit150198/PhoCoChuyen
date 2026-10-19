@@ -120,7 +120,77 @@ BROADCASTS = (
          title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
     dict(prefix='fair1005', coins=300, until=1791727200,
          title='300 xu chơi chợ đen 🎪', text='Phố gửi bạn 300 xu vào ví để vui chợ đen! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛'),
+    # 🎡 20/10 (owner 19/10 "vòng quay từ 100k -> 1m … mốc 666k 888k, 1314, 520 cho có ý nghĩa", "tài khoản mới/cũ,
+    # miễn sao trong 20/10 vào là được tặng"): every save that loads on 20/10 (VN) gets one spin. The server draws
+    # the slot (WHEEL, by weight, from the save's own hash: the same save always lands on the same slot), pays it
+    # like any gift, and the card (v4/gift.js) spins the wheel onto it before "Nhận quà". Mean ≈ 360k.
+    dict(prefix='wheel2010', since=1792429200, until=1792515600,   # 20/10 00:00 → 21/10 00:00 (VN)
+         wheel=True, title='Vòng quay mừng 20/10 🎡',
+         text='Chúc mừng ngày Phụ nữ Việt Nam 20/10! Phố Có Chuyện gửi bạn một lượt quay may mắn. Chúc bạn và những người phụ nữ bạn thương luôn vui, khỏe và thật nhiều niềm vui 💐'),
 )
+# 🎡 the wheel's slots (coins, weight, the meaning under the number), in the wheel's order
+WHEEL = (
+    (100_000, 30, 'Lộc đầu tuần'),
+    (520_000, 12, '520 · Anh yêu em'),
+    (168_000, 20, '168 · Nhất lộ phát'),
+    (666_000, 9, '666 · Thuận buồm xuôi gió'),
+    (200_000, 15, 'Lộc đôi'),
+    (888_000, 7, '888 · Phát phát phát'),
+    (1_000_000, 5, 'Tròn một triệu'),
+    (1_314_000, 2, '1314 · Trọn đời trọn kiếp'),
+)
+# 💌 each player's own 20/10 wish (owner 19/10 "mỗi người 1 lời chúc khác nhau"): one line of each, picked from the gift
+# id's hash, 10 × 16 × 8 = 1280 different wishes; computed when shown, so a gift queued before this text existed has one too
+WISH_A = (
+    'Chúc mừng ngày Phụ nữ Việt Nam 20/10!', 'Mừng 20/10, Phố Có Chuyện gửi bạn một lời chúc nhỏ!', '20/10 vui thật vui nha!',
+    'Hôm nay là 20/10, ngày của những bông hoa!', 'Cả phố chúc mừng 20/10!', 'Một ngày 20/10 thật đặc biệt gửi tới bạn!',
+    'Phố lên đèn mừng 20/10!', 'Gửi bạn một bó hoa 20/10 thật xinh!', 'Ngày 20/10 đến rồi!', 'Nhân ngày 20/10, cả phố gửi bạn lời chúc nè!',
+)
+WISH_B = (
+    'Chúc bạn luôn xinh đẹp, rạng rỡ và được yêu thương thật nhiều.',
+    'Chúc những người phụ nữ bạn thương luôn khỏe mạnh, bình an và hạnh phúc.',
+    'Chúc bạn có một ngày ngập tràn hoa, quà và những nụ cười.',
+    'Chúc mẹ, chị, em và người thương của bạn luôn vui như hôm nay.',
+    'Chúc bạn làm gì cũng thuận, tiệm đông khách và ví luôn đầy.',
+    'Chúc bạn luôn tự tin, mạnh mẽ và tỏa sáng theo cách của riêng mình.',
+    'Chúc bạn được nuông chiều cả ngày, không phải lo nghĩ gì hết.',
+    'Chúc trái tim bạn luôn ấm áp và có người bên cạnh sẻ chia.',
+    'Chúc bạn một năm bình yên, sức khỏe dồi dào, tình cảm vẹn tròn.',
+    'Chúc mọi ước mơ của bạn đều nở hoa như những đóa hồng hôm nay.',
+    'Chúc bạn luôn được trân trọng, ở trong game lẫn ngoài đời.',
+    'Chúc bạn cười thật nhiều, vì nụ cười của bạn làm cả phố sáng lên.',
+    'Chúc gia đình bạn luôn đầm ấm, tiếng cười rộn ràng mỗi ngày.',
+    'Chúc bạn đủ dịu dàng để yêu thương và đủ mạnh mẽ để vượt mọi khó khăn.',
+    'Chúc bạn gặp toàn điều may, làm toàn việc vui, quen toàn người tốt.',
+    'Chúc bạn luôn trẻ trung, yêu đời và hạnh phúc như tuổi đôi mươi.',
+)
+WISH_C = ('💐', '🌸 Chơi vui nha!', '💖 Thương bạn!', '🌷 Cảm ơn bạn đã ở cùng phố!', '🌹 Mãi xinh nha!', '🎀 Hạnh phúc nhé!',
+          '💛 Cả phố yêu bạn!', '🌼 Chúc bạn một ngày thật đẹp!')
+
+
+def wish_of(gid: str) -> str:
+    h = int(hashlib.sha256(f'wish{gid}'.encode()).hexdigest()[:12], 16)
+    a, h = h % len(WISH_A), h // len(WISH_A)
+    b, h = h % len(WISH_B), h // len(WISH_B)
+    return f'{WISH_A[a]} {WISH_B[b]} {WISH_C[h % len(WISH_C)]}'
+
+
+def wheel_slot(prefix: str, sid: str) -> int:
+    """The save's slot on the wheel: by weight, from a hash of the prefix and the sid (no state, the same each time)."""
+    n = int(hashlib.sha256(f'{prefix}\x1f{sid}'.encode()).hexdigest()[:12], 16) % sum(x[1] for x in WHEEL)
+    for i, x in enumerate(WHEEL):
+        w = x[1]
+        if n < w:
+            return i
+        n -= w
+    return 0
+
+
+def wheel_of(gid: str) -> dict | None:
+    """The card's wheel for a wheel gift id ({slots: [{coins, note}], wish}), None for any other gift."""
+    if not any(b.get('wheel') and gid.startswith(b['prefix'] + '-') for b in BROADCASTS):
+        return None
+    return dict(slots=[dict(coins=c, note=t) for c, _, t in WHEEL], wish=wish_of(gid))
 
 
 def _broadcast_id(prefix: str, sid: str) -> str:
@@ -133,13 +203,14 @@ def _broadcasts(store, sid: str) -> None:
         return
     t = now()
     for b in BROADCASTS:
-        if t >= b['until']:
+        if t >= b['until'] or t < b.get('since', 0):
             continue
         gid = _broadcast_id(b['prefix'], sid)
         with store.connect() as db:
             if db.execute('SELECT 1 FROM system_gifts WHERE id=?', (gid,)).fetchone():
                 continue
-        grant(store, sid, b['coins'], b['title'], b['text'], gid=gid)
+        coins = WHEEL[wheel_slot(b['prefix'], sid)][0] if b.get('wheel') else b['coins']
+        grant(store, sid, coins, b['title'], b['text'], gid=gid)
 
 
 def on_load(store, token: str, state: dict | None) -> tuple[bool, list]:
@@ -170,7 +241,11 @@ def on_load(store, token: str, state: dict | None) -> tuple[bool, list]:
             "UPDATE system_gifts SET status='applied',applied_at=? WHERE id=? AND sid=? AND status='pending'", (t, gid, sid)))
         r['status'] = 'applied'
         changed = True
-    shown = [dict(id=r['id'], coins=int(r['coins']), title=r['title'], text=r['text']) for r in rows if r['status'] == 'applied']
+    shown = []
+    for r in rows:
+        if r['status'] == 'applied':
+            g, w = dict(id=r['id'], coins=int(r['coins']), title=r['title'], text=r['text']), wheel_of(r['id'])
+            shown.append(dict(g, wheel=w) if w else g)
     return changed, shown[:SHOWN]
 
 

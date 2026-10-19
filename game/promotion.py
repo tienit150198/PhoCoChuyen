@@ -964,6 +964,8 @@ def _org_action(s: dict, c: dict, career: str, rec: dict, x: dict, name: str, p:
             need(False, 'Cấp bậc hàm theo quy định, không xin lương.')
         if name == 'pm_org_aim':
             return ORG.set_aim(x, p, need)
+        if name == 'pm_org_clear':
+            return dict(message=ORG.clear_one(s, x, career, need))
         if name == 'pm_org_own':
             need(ORG.can_own(x, c), 'Không có phong bì nào cần tự giác nộp lại hôm nay.')
             return dict(message=ORG.own(x, s, c, ORG.ext_of(rec, x)))
@@ -1272,6 +1274,7 @@ def _org_public(s: dict, c: dict, career: str, rec: dict | None) -> dict | None:
     nv = ORG.svc_count(s, career)
     ov = ORG.public(x, c, rec.get('cx') if isinstance(rec.get('cx'), dict) else None, nv)
     ov['svc'] = nv   # 📁 hồ sơ công tác: violations over the whole service (owner spec 14/10)
+    ov['clear'] = ORG.clear_view(s, x, career)   # 🧹 one violation off the record for good work and a fine
     v = dict(track='emp', rank=min(_rank(rec), TOP), top=TOP, title=ov['title'], pct=ov['pct'], next=_org_next(x, rec, nv), mgr=can_manage(s, c, career),
              team=TEAM.get(min(max(_rank(rec), MGR_FROM), TOP)), due=None, log=[], shifts=rec['mgr']['n'], pcts=[], org=ov)
     if x['due']:

@@ -1,3 +1,5 @@
+// Compact layout (owner 19/10: every career has both sides): the studio's guide and the ticket's pay rule go to "?".
+import {clean,tip} from '../ui-kit.js';
 const NAMES={layout:'Bố cục',palette:'Bảng màu',medium:'Chất liệu'};
 const PALETTE={warm:['#f9df99','#bd6748','#704934'],cool:['#d2eeee','#629db1','#326972'],muted:['#e6dbca','#a99480','#655d58'],bright:['#ffe493','#f08585','#5e93c3']};
 const data=x=>x.room.data||{};
@@ -19,9 +21,9 @@ function job(t,x){
   body=`<h4>Kiểm trước khi giao</h4><div class="art-options">${[['brief','Đối chiếu yêu cầu'],['surface','Kiểm bề mặt và mép tranh'],['signature','Ký tên và ghi nguồn mẫu']].map(([id,label])=>x.button(`${checks.includes(id)?'✓ ':''}${label}`,'car:artCheck',{task:t.id,key:id},checks.includes(id)?'primary':'ghost')).join('')}</div>${x.cmd('Chốt kiểm tranh','art_proof',{task:t.id,checks},'primary',checks.length!==3)}`;
  }
  if(stage==='deliver')body=`<h4>Giao theo phiếu nhận</h4><div class="art-options">${x.cc.recipients.map(recipient=>x.cmd(x.esc(recipient),'art_deliver',{task:t.id,recipient},'ghost')).join('')}</div>`;
- return `<div class="career-job art-studio"><header><span class="eyebrow">XƯỞNG VẼ MÀU NẮNG</span><h3>${x.esc(t.title)}</h3><p>${x.esc(n.brief)}</p></header><div class="art-ticket"><b>Người nhận: ${x.esc(n.recipient)}</b><p>${x.esc(n.layout)} · ${x.esc(n.palette)} · ${x.esc(n.medium)}</p><small>Công tối đa ${n.gross} xu · vật tư ${n.cost} xu. Làm khác yêu cầu giảm tiền công.</small></div>${painting(t,x)}<section class="art-work" aria-label="Bước làm tranh">${body}</section>${journey(x)}</div>`;
+ return `<div class="career-job art-studio"><header><span class="eyebrow">XƯỞNG VẼ MÀU NẮNG</span><h3>${x.esc(t.title)}</h3><p>${x.esc(n.brief)}</p></header><div class="art-ticket"><b>Người nhận: ${x.esc(n.recipient)}</b><p>${x.esc(n.layout)} · ${x.esc(n.palette)} · ${x.esc(n.medium)}</p>${clean()?`<small>💰 ${n.gross} xu · 🎨 −${n.cost} xu</small>`:`<small>Công tối đa ${n.gross} xu · vật tư ${n.cost} xu. Làm khác yêu cầu giảm tiền công.</small>`}</div>${painting(t,x)}<section class="art-work" aria-label="Bước làm tranh">${body}</section>${journey(x)}</div>`;
 }
-export default {id:'art_studio',css:true,job,idle:x=>`<div class="career-job art-studio"><h3>Xưởng vẽ Màu Nắng</h3><p>${x.esc(x.cc.guide)}</p>${journey(x)}</div>`,
+export default {id:'art_studio',css:true,job,idle:x=>`<div class="career-job art-studio"><h3>Xưởng vẽ Màu Nắng</h3>${tip(x.esc(x.cc.guide),'Xưởng vẽ Màu Nắng','p')}${journey(x)}</div>`,
  next:t=>!t.known?'Đọc phiếu đặt tranh':({plan:'Chọn bố cục, màu và chất liệu',paint:'Vẽ lớp tiếp theo',proof:'Kiểm và ký tranh',deliver:'Giao đúng người nhận'})[t.stage]||'Tranh đã giao',
  actions:{artCheck(d,el,x){const by=x.ui.artChecks??={},s=new Set(by[d.task]||[]);if(s.has(d.key))s.delete(d.key);else s.add(d.key);by[d.task]=[...s];x.render();}},
  summary:(s,x)=>`<p>${x.esc(s.note||'')}</p>`,dock:[]};

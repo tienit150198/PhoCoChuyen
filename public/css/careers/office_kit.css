@@ -480,6 +480,11 @@ html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-ca
   .career-job.ok>.ui-bar.bare>.ui-bar-main{display:none}
   .career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always)>.ui-bar-top{display:flex}
 }
+/* Full layout on a phone (the per-career "Giao diện đầy đủ (cũ)", #440): the bar's line is read whole on a row of its own
+   ("HĐ-93 · 840 xu — chạm dòng bên bán để ghép, hoặc chọn lý do"), the buttons under it, as before UI wave 3. */
+html[data-layout="phone"]:not([data-clean]) .career-job.ok>.ui-bar>.ui-bar-next:has(.ok-next){flex:1 1 100%}
+html[data-layout="phone"]:not([data-clean]) .career-job.ok>.ui-bar>.ui-bar-next:has(.ok-next)~.ui-bar-main{flex:1 1 100%;max-width:none}
+html[data-layout="phone"]:not([data-clean]) .career-job.ok>.ui-bar .ok-next{display:block;-webkit-line-clamp:unset;overflow:visible}
 /* Clean layout: tabs show their icon (and badge); the open tab keeps its word. A sender's role, the "· from" of a one-line
    message and the "Đang mở" tag go (the words stay for screen readers). */
 html[data-clean] .career-job.ok .ok-tab{min-height:48px}

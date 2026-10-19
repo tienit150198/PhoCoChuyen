@@ -7,7 +7,8 @@
 import {stepRows,nextHint} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {data,cc,act,pane,introCard,askCard,bottom,kitActions} from './street_kit.js';
-import {boardSVG} from '../v4/insignia.js';   // 🎖️ cấp hiệu (game/org.py)
+import {boardSVG} from '../v4/insignia.js';
+import {tip} from '../ui-kit.js';   // compact layout: the how-to lines go to "?" (owner 19/10: every career has both sides)   // 🎖️ cấp hiệu (game/org.py)
 
 const KIND={lane:['🚦','Phân luồng, kiểm tra'],smuggle:['🔦','Chống buôn lậu'],tax:['🧮','Thuế xuất nhập khẩu'],control:['🛡️','Kiểm soát']};
 const NUMERIC=new Set(['duty','vat']);
@@ -57,7 +58,7 @@ function complaints(x){
       :`<p class="small">${x.esc(r.kind||'')} · ${x.esc(r.out)}</p>`}</li>`;
   return `<section class="card hq-cmps"><h4>📮 Phản ánh của người dân${open.length?` <span class="tag amber">${open.length} mới</span>`:''}</h4>
     <ul class="hq-cmp-list">${[...open,...rows.filter(r=>r.st!=='open').slice(-3)].map(li).join('')}</ul>
-    <p class="small muted">Phản ánh đúng thì ghi nhận; không liên quan thì gỡ; đòi tiền, dọa bóc phốt thì gửi Công an Thành phố. Gỡ hay tố cáo một phản ánh đúng là vi phạm.</p></section>`;
+    ${tip('Phản ánh đúng thì ghi nhận; không liên quan thì gỡ; đòi tiền, dọa bóc phốt thì gửi Công an Thành phố. Gỡ hay tố cáo một phản ánh đúng là vi phạm.','📮 Phản ánh','p','small muted')}</section>`;
 }
 function rankLine(x){
   const o=x.room.promo?.org;if(!o?.grade)return '';
@@ -66,7 +67,7 @@ function rankLine(x){
 }
 function inspectCard(x){
   const o=x.room.promo?.org;if(!o||o.susp||!o.post?.id||o.post.id==='hq_ts')return '';
-  return `<section class="card hq-inspect"><h4>🏪 Kiểm tra kho cửa hàng</h4><p class="small">Đọc sổ thuế, kho hàng của các cửa hàng trên phố; đề xuất biện pháp có căn cứ, qua cấp trên duyệt.</p>${act(x,'🔎 Mở danh sách','desk',{},'primary full')}</section>`;
+  return `<section class="card hq-inspect"><h4>🏪 Kiểm tra kho cửa hàng</h4>${tip('Đọc sổ thuế, kho hàng của các cửa hàng trên phố; đề xuất biện pháp có căn cứ, qua cấp trên duyệt.','🏪 Kiểm tra kho','p','small')}${act(x,'🔎 Mở danh sách','desk',{},'primary full')}</section>`;
 }
 
 /* ------------------------------------------------------------ the guide */
@@ -100,7 +101,7 @@ export default {
     const tiles=[[td.jobs||0,'hồ sơ'],[td.clean||0,'không sai sót'],[td.seized||0,'vụ tạm giữ đúng'],[x.fmt(td.duty||0),'xu thu ngân sách']];
     const ms=(d.progress?.milestones||[]).map(m=>`<li>${m.achieved?'🏅':'▫️'} ${x.esc(m.label)} <small class="muted">${m.jobs} hồ sơ đạt, ${m.days} ngày</small></li>`).join('');
     return `<div class="career-job sk hq">${head}<section class="card hq-today"><h4>🛃 Ca hôm nay</h4><div class="hq-tiles">${tiles.map(([v,l])=>`<div><b>${x.esc(v)}</b><small>${x.esc(l)}</small></div>`).join('')}</div>
-      <p class="small muted">Cả nghề: ${x.fmt(st.jobs||0)} hồ sơ · ${x.fmt(st.clean||0)} hồ sơ đạt · ${x.fmt(st.active_days||0)} ngày làm tốt</p></section>
+      ${tip(`Cả nghề: ${x.fmt(st.jobs||0)} hồ sơ · ${x.fmt(st.clean||0)} hồ sơ đạt · ${x.fmt(st.active_days||0)} ngày làm tốt`,'','p','small muted')}</section>
       ${complaints(x)}${inspectCard(x)}${ms?`<section class="card"><h4>🎖️ Mốc nghề</h4><ul class="small">${ms}</ul></section>`:''}${notebook(x)}${rulesCard(x)}</div>`;
   },
   tick(root){keepBarAboveFooter(root);},

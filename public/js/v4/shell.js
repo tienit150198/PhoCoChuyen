@@ -47,8 +47,27 @@ const CLEAN_KEY='mnl.clean',CLEAN_SRV='mnl.clean.srv';
 export const cleanPref=()=>{try{return localStorage.getItem(CLEAN_KEY)||'auto';}catch{return 'auto';}};
 let cleanServer=true;
 try{cleanServer=localStorage.getItem(CLEAN_SRV)!=='off';}catch{/* storage blocked */}
+/* Per career (owner 19/10, #440 "cho về giao diện cũ cái ngành này"): the work sheet's ⋯ menu picks "Giao diện đầy đủ (cũ)"
+ * (off) or "Giao diện gọn (mới)" (on) for the current career only; it wins over the global pref while that career is
+ * current. mnl.clean.c = {"group_accounting":"off",…}; absent = follow Cài đặt (careerCleanPref → ''). */
+const CLEAN_CAREER_KEY='mnl.clean.c';
+let cleanCareer='';
+const careerPrefs=()=>{try{const v=JSON.parse(localStorage.getItem(CLEAN_CAREER_KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch{return {};}};
+export const careerCleanPref=(cid=cleanCareer)=>{const v=cid?careerPrefs()[cid]:'';return v==='on'||v==='off'?v:'';};
+/** The current career (app.js renderMain/renderSheet): its own choice applies at once. */
+export function setCleanCareer(cid){cid=String(cid||'');if(cid!==cleanCareer){cleanCareer=cid;applyClean();}}
+/** v: 'on' | 'off' | '' (back to the global setting). */
+export function setCareerCleanPref(cid,v){
+  if(!cid)return;const all=careerPrefs();
+  if(v==='on'||v==='off')all[cid]=v;else delete all[cid];
+  try{if(Object.keys(all).length)localStorage.setItem(CLEAN_CAREER_KEY,JSON.stringify(all));else localStorage.removeItem(CLEAN_CAREER_KEY);}catch{/* storage blocked */}
+  applyClean();
+}
+/** How many careers have their own side (Cài đặt → Giao diện lists it with a way back). */
+export const careerCleanCount=()=>Object.keys(careerPrefs()).length;
+export function clearCareerClean(){try{localStorage.removeItem(CLEAN_CAREER_KEY);}catch{/* storage blocked */}applyClean();}
 export function applyClean(){
-  const root=document.documentElement,pref=cleanPref();
+  const root=document.documentElement,mine=careerCleanPref(),pref=mine||cleanPref();
   const on=cleanServer&&(pref==='on'||(pref==='auto'&&(root.dataset.layout==='phone'||root.dataset.game==='isometric')));
   if(root.hasAttribute('data-clean')!==on)root.toggleAttribute('data-clean',on);
 }
@@ -194,6 +213,15 @@ export const shell={
     switch(action){
       case'v4Layout':setLayoutPref(data.value);env.renderSheet();return true;
       case'v4Clean':setCleanPref(data.value);env.renderSheet();return true;
+      case'v4CleanReset':clearCareerClean();env.renderMain();env.renderSheet();return true;
+      case'uiSide':{   // ⋯ → this career's interface (app.js sideItems)
+        // data can be the button's live dataset: the re-render below morphs that same button to the other side.
+        const cid=data.career||env.api.state?.current,v=data.value||'';if(!cid)return true;
+        setCleanCareer(cid);setCareerCleanPref(cid,v);
+        env.renderMain();env.renderSheet();
+        env.toast(v==='off'?'✓ Giao diện đầy đủ':v==='on'?'✓ Giao diện gọn':'✓ Theo cài đặt chung','good');
+        return true;
+      }
       case'v4Menu':document.documentElement.classList.toggle('menu-open');syncMenu();return true;
       case'homeCat':env.ui.homeCat=data.cat;env.renderSheet();return true;
       case'v4Setting':{

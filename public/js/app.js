@@ -30,7 +30,7 @@ import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/1
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {tvButton} from './v4/bonus-button.js';   // 📺 📦 hàng về ngay at the stock desk (game/ads.py)
 import {setLanguage,t as i18nT} from './v4/i18n.js';
-import {shell} from './v4/shell.js';
+import {shell,setCleanCareer,careerCleanPref} from './v4/shell.js';
 import {workplaceAway,awayFresh,awayToast} from './away-report.js';   // B4: 🧾 Lúc bạn vắng
 import {keepRow} from './keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
@@ -276,6 +276,12 @@ function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}<
 /** ⋯ in a work sheet's header: the rarely used ways out ("Để lát nữa", "Xem các việc khác") that used to take a
  * whole footer row under the career's action bar. data-auto: every re-render shuts it again. */
 function headMenu(items){return `<details class="head-more" data-auto><summary class="icon-btn" aria-label="Thêm lựa chọn" title="Thêm lựa chọn"><span aria-hidden="true">⋯</span></summary><div class="head-menu">${items}</div></details>`;}
+/** ⋯ → this career's interface (owner 19/10, #440): every work screen offers the other side, "📋 Giao diện đầy đủ (cũ)"
+ * or "✨ Giao diện gọn (mới)", kept per career (v4/shell.js setCareerCleanPref); "↩️ Theo cài đặt chung" once one is picked. */
+function sideItems(){
+  const cid=career(),on=uiClean(),mine=careerCleanPref(cid),b=(label,value)=>`<button type="button" class="btn ghost ui-side" data-action="uiSide" data-career="${esc(cid)}" data-value="${value}">${label}</button>`;
+  return (on?b('📋 Giao diện đầy đủ (cũ)','off'):b('✨ Giao diện gọn (mới)','on'))+(mine?b('↩️ Theo cài đặt chung',''):'');
+}
 document.addEventListener('click',e=>{for(const d of document.querySelectorAll('details.head-more[open]'))if(!d.contains(e.target)||e.target.closest?.('.head-menu [data-action],.head-menu [data-command]'))d.open=false;},true);
 function setPaused(value){ui.paused=value;world.paused=value;$('#pauseOverlay').hidden=!value;renderMain();if(value)sound.stopMusic();else sound.configure(api.state.settings);}
 function draft(t){return ui.drafts[t.id]??={paper:t.pack?.paper||'cream',ribbon:t.pack?.ribbon||'gold',card:t.pack?.card||'Gửi bạn một ngày dịu dàng.',checks:[]};}
@@ -634,7 +640,7 @@ function renderMain(){
   // The fair owns its visible HUD. Rebuilding the obscured workplace also marks its
   // canvas dirty, competing with the last throw/result frame on mobile devices.
   if(document.querySelector('dialog.fh-sheet[open]')){mainDeferred=true;return;}
-  mainDeferred=false;const c=room(),m=meta();
+  mainDeferred=false;setCleanCareer(career());const c=room(),m=meta();
   document.body.classList.toggle('reduce-motion',api.state.settings.reduceMotion);document.body.classList.toggle('large-text',api.state.settings.largeText);shell.career(m);
   setHTML($('#topbar'),hudHTML(c,m));
   setHTML($('#rail'),railHTML(c));
@@ -666,7 +672,7 @@ function watchHead(dialog){
 }
 if(headWatch.ro){headWatch.ro.observe($('#sheet'));$('#sheet').addEventListener('animationend',e=>{if(e.target===$('#sheet'))headMeasure();});}
 function renderSheet(preserve=true){
-  if(!ui.view)return;const dialog=$('#sheet');
+  if(!ui.view)return;if(api.state)setCleanCareer(career());const dialog=$('#sheet');
   // Class names are collected off-DOM and written once, only when they differ (no style invalidation per render).
   let html;const cls=document.createElement('i');cls.className='sheet';
   {const dialog=cls;switch(ui.view){
@@ -757,7 +763,7 @@ function jobView(){
   if(!t){
     // Between customers there is always one clear way on: the next customer (unless the career's own panel offers it).
     const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse way-end'):c.open&&(moreGate(c)||!idle.includes('data-command="more_work"'))?moreWay(c,icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn))):'';
-    return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${c.open?'':closedBar()}${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button(esc(wordsFor(career()).queue_btn),'queue',{},more||idle.includes('more_work')?'ghost':'primary')}${mod?.noDecor?'':button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
+    return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.','MỘT NGÀY LÀM NGHỀ',headMenu(sideItems()))+`<div class="sheet-body">${c.open?'':closedBar()}${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button(esc(wordsFor(career()).queue_btn),'queue',{},more||idle.includes('more_work')?'ghost':'primary')}${mod?.noDecor?'':button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
   }
   if(ended(t)){
     // Task done: the thank-you and one clear way on, named for what is really next (nobody waiting: take one
@@ -768,18 +774,18 @@ function jobView(){
     const ways=`${c.open?'':closedBar()}<div class="row wrap space-top done-ways" style="justify-content:center">${way}${button('Đọc lời nhắn','phone',{},'ghost small')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream small'):''}</div>`;
     const open=Boolean(c.data?.desk?.ev)||/data-idle-open|class="fk-event"/.test(idle)||ui.idleOpen===t.id;
     const fold=idle?`<details class="idle-fold space-top" data-auto data-idle-task="${esc(t.id)}"${open?' open':''}><summary>${icon('clipboard',16)}<b>${deskWork()?'Bàn làm việc':'Việc giữa ca'}</b></summary>${idle}</details>`:'';
-    if(t.desk)return header('Hồ sơ đã đóng dấu',esc(t.title),'KẾT QUẢ HỒ SƠ')+`<div class="sheet-body">${L.desk.use()?L.desk.m.deskDone(t,env()):skeleton()}${ways}${fold}</div>`;
+    if(t.desk)return header('Hồ sơ đã đóng dấu',esc(t.title),'KẾT QUẢ HỒ SƠ',headMenu(sideItems()))+`<div class="sheet-body">${L.desk.use()?L.desk.m.deskDone(t,env()):skeleton()}${ways}${fold}</div>`;
     // A task that went wrong (a case failed or an envelope taken, a safety slip such as a lost child handed to the
     // wrong adult) is closed, not thanked for.
-    if(t.status==='cancelled'||t.result==='failed'||(t.slips||[]).some(r=>r?.safety))return header('Việc đã khép lại',t.title,'KẾT QUẢ HÔM NAY')+`<div class="sheet-body center done-body"><div class="celebration">${icon('clipboard',55)}</div><h2>Lần này chưa trọn.</h2>${ways}${fold}</div>`;
-    return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY')+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${ways}${fold}</div>`;
+    if(t.status==='cancelled'||t.result==='failed'||(t.slips||[]).some(r=>r?.safety))return header('Việc đã khép lại',t.title,'KẾT QUẢ HÔM NAY',headMenu(sideItems()))+`<div class="sheet-body center done-body"><div class="celebration">${icon('clipboard',55)}</div><h2>Lần này chưa trọn.</h2>${ways}${fold}</div>`;
+    return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY',headMenu(sideItems()))+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${ways}${fold}</div>`;
   }
   ui.task=t.id;let inner;
   if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=L.desk.use()?L.desk.m.deskJob(t,env()):skeleton();else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);
   // A workplace with its own workbench whose code or data part did not come (a weak network): a skeleton while it is
   // asked for again (ensureCareerUI), never the customer-care view, which read its task as a ticket and threw.
   else if(CAREER_MODULES.includes(career())){ensureCareerUI();inner=skeleton();}else inner=supportJob(t);
-  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${customerTaskBanner(t)}${inner}</div>`;
+  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')+sideItems()))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${customerTaskBanner(t)}${inner}</div>`;
 }
 /* The done screen's "Việc giữa ca" fold remembers that the player opened it (for this task): its data-auto
  * markup is redrawn on every render, so the state lives here. */

@@ -187,6 +187,15 @@
 }
 
 /* The bar's choices (the reasons for a gap, the tags of a single line): one row that scrolls sideways on a phone, so
-   the bar stays low (UI wave 3: header + bar ≤ ~20% of the screen). */
-html[data-layout="phone"] .career-job.ga>.ui-bar>.ui-bar-top{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
-html[data-layout="phone"] .career-job.ga>.ui-bar>.ui-bar-top>.btn{flex:0 0 auto;white-space:nowrap}
+   the bar stays low (UI wave 3: header + bar ≤ ~20% of the screen). Compact layout only: the full layout ("Giao diện đầy
+   đủ", #440) wraps them, every reason a button in sight, nothing to swipe for. */
+html[data-layout="phone"][data-clean] .career-job.ga>.ui-bar>.ui-bar-top{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+html[data-layout="phone"][data-clean] .career-job.ga>.ui-bar>.ui-bar-top>.btn{flex:0 0 auto;white-space:nowrap}
+html:not([data-clean]) .career-job.ga>.ui-bar>.ui-bar-top>.btn{flex:1 1 calc(50% - var(--sp-1));min-width:0;white-space:normal;line-height:var(--lh-btn,1.2)}
+
+/* #440: a long card list scrolled with a thumb. A real tap picks a card (ui-kit tapSlip ignores the touch that ends a
+   scroll); cards stand a little apart and answer a tap at once (no double-tap zoom wait). */
+.career-job.ga .ga-cols{gap:var(--sp-3)}
+.career-job.ga .ga-lines{gap:var(--sp-3)}
+.career-job.ga .ga-line,.career-job.ga>.ui-bar>.ui-bar-top>.btn{touch-action:manipulation}
+.career-job.ga .ga-evid-open{display:grid;gap:var(--sp-2);min-width:0}

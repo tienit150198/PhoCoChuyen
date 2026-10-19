@@ -37,3 +37,17 @@
 @keyframes gf-hop{0%{transform:scale(.6) rotate(-8deg)}60%{transform:scale(1.08) rotate(4deg)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.gf-dialog[open],.gf-dialog[open] .gf-box{animation:none}}
 .reduce-motion .gf-dialog[open],.reduce-motion .gf-dialog[open] .gf-box{animation:none}
+
+/* 🎡 the 20/10 wheel (gift.js wheelHTML): 8 slots, a pin on top; the amount shows once it stops. */
+.gf-wheel-wrap{position:relative;width:min(240px,62vw);aspect-ratio:1;margin:4px auto 10px}
+.gf-pin{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:2;font-style:normal;font-size:1.6rem;line-height:1;color:#d6336c;text-shadow:0 1px 2px #0004}
+.gf-wheel{position:absolute;inset:0;border-radius:50%;border:5px solid #f2b632;box-shadow:var(--shadow-sm);
+  background:conic-gradient(#ffd6e0 0 45deg,#fff1b8 0 90deg,#d3f9d8 0 135deg,#ffe3c2 0 180deg,#d0ebff 0 225deg,#f3d9fa 0 270deg,#fff1b8 0 315deg,#ffc9c9 0 360deg)}
+.gf-seg{position:absolute;inset:0;transform:rotate(var(--a));display:flex;justify-content:center;padding-top:9%}
+.gf-seg b{font-size:.92rem;font-weight:800;color:#3b2a1a;font-variant-numeric:tabular-nums}
+.gf-hide{visibility:hidden}
+.gf-amount.gf-hide{height:0;margin:0;overflow:hidden}
+.gf-note{margin:6px 0 0;font-size:.95rem;font-weight:700;color:var(--muted)}
+.gf-note.gf-hide{display:none}
+@media (max-height:520px){.gf-wheel-wrap{width:min(160px,40vh)}}
+.gf-wish{margin:6px 16px 0;padding:12px 14px;border-radius:14px;background:var(--accent-soft);font-weight:600;color:var(--ink)}

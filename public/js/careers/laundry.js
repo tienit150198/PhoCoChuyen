@@ -1,11 +1,13 @@
 /** Nếp Thơm: one batch stage on screen; server grades every choice and receipt. */
+// Compact layout (owner 19/10: every career has both sides): the how-to lines go to "?"; every label and choice stays.
+import {clean,tip} from '../ui-kit.js';
 const STAGES=['inspect','sort','treat','wash','dry','finish','check','deliver'];
 const NAMES={inspect:'Kiểm nhãn',sort:'Tách giỏ',treat:'Xử lý vết',wash:'Giặt',dry:'Làm khô',finish:'Ủi / gấp',check:'Kiểm đồ',deliver:'Trả khách'};
 const CHECKS={count:'Đủ số món trên phiếu',stains:'Đã xử lý vết bẩn',dry:'Đồ đã khô đúng cách',finish:'Nếp ủi và gấp / treo đúng',tag:'Tem mỗi món khớp phiếu'};
 const draft=(x,id,stage)=>(x.ui.laundry??={})[`${id}:${stage}`]??={};
 const rules=x=>`<ul class="ld-rules">${(x.cc.rules||[]).map(s=>`<li>${x.esc(s)}</li>`).join('')}</ul>`;
 const book=x=>`<details class="ld-book"><summary>Bảng chăm vải và tiến trình nghề</summary>${rules(x)}</details>`;
-const stats=x=>{const s=x.room.data?.stats||{};return `<div class="ld-stats"><b>${s.good||0} / 100 phiếu đạt · ${s.active_days||0} / 30 ngày làm</b><span>Thợ vững tay cần đủ cả hai mốc. Nghệ nhân: 180 phiếu đạt và 45 ngày có trả đồ.</span></div>`;};
+const stats=x=>{const s=x.room.data?.stats||{};return `<div class="ld-stats"><b>${s.good||0} / 100 phiếu đạt · ${s.active_days||0} / 30 ngày làm</b>${tip('Thợ vững tay cần đủ cả hai mốc. Nghệ nhân: 180 phiếu đạt và 45 ngày có trả đồ.','','span')}</div>`;};
 const button=(x,t)=>`<button type="button" class="btn primary ld-submit" data-action="car:send" data-task="${x.esc(t.id)}" data-stage="${x.esc(t.stage)}">${t.stage==='deliver'?'Đối chiếu và trả đồ':'Xác nhận '+x.esc(NAMES[t.stage]||'bước này')}</button>`;
 function control(x,t,g){
   const state=draft(x,t.id,t.stage),id=`ld-${t.id}-${t.stage}-${g.id}`;
@@ -29,13 +31,13 @@ export default {
   id:'laundry',css:true,
   next(t){return !t.known?'Hỏi khách và nhận phiếu':NAMES[t.stage]||'Phiếu đã xong';},
   job(t,x){
-    if(!t.known)return `<div class="career-job ld"><article class="card"><h3>🧺 Tiệm Nếp Thơm</h3><p>Nghe khách dặn, nhận số phiếu rồi kiểm từng món.</p>${x.cmd('Hỏi khách và nhận phiếu','ask',{task:t.id},'primary')}</article>${book(x)}</div>`;
+    if(!t.known)return `<div class="career-job ld"><article class="card"><h3>🧺 Tiệm Nếp Thơm</h3>${tip('Nghe khách dặn, nhận số phiếu rồi kiểm từng món.','','p')}${x.cmd('Hỏi khách và nhận phiếu','ask',{task:t.id},'primary')}</article>${book(x)}</div>`;
     const n=t.needs,at=STAGES.indexOf(t.stage);
     const progress=`<ol class="ld-progress" aria-label="Các bước giặt ủi">${STAGES.map((s,i)=>`<li class="${i===at?'now':i<at?'done':''}"${i===at?' aria-current="step"':''}>${i<at?'✓':i+1} ${x.esc(NAMES[s])}</li>`).join('')}</ol>`;
     const garments=n.garments.map(g=>`<article class="ld-garment"><div class="ld-garment-head"><span aria-hidden="true">👕</span><h4>${x.esc(g.name)}</h4></div><p>${x.esc(g.description)}</p><p class="ld-label"><b>Nhãn chăm vải</b> ${x.esc(g.label)}</p><p><b>Khách dặn:</b> ${x.esc(g.packing)} · <b>Tem:</b> ${x.esc(g.tag)}</p>${control(x,t,g)}</article>`).join('');
     return `<div class="career-job ld"><header class="ld-ticket"><span>PHIẾU GIẶT · ${x.esc(n.tag)}</span><h3>${x.esc(t.title||'Tiệm Nếp Thơm')}</h3><p>${n.quantity} món · Chất lượng ${t.quality}% · Công chuẩn ${n.net} xu sau ${n.cost} xu vật tư</p></header>${progress}<section class="ld-stage" data-stage="${x.esc(t.stage)}"><h3>${x.esc(x.cc.stages?.[t.stage]||NAMES[t.stage]||'Đã hoàn tất')}</h3><p>${x.esc(t.instruction||'')}</p>${t.last_issue?`<p class="ld-repair" role="status">${x.esc(t.last_issue)}</p>`:''}<div class="ld-garments">${garments}</div>${t.stage==='check'?checks(x,t):t.stage==='deliver'?tags(x,t):''}${t.stage!=='done'?button(x,t):''}</section>${book(x)}${stats(x)}</div>`;
   },
-  idle(x){return `<div class="career-job ld"><article class="card"><h3>🧺 Tiệm giặt ủi Nếp Thơm</h3><p>Nhận phiếu 2–4 món, đọc nhãn, tách màu và vải, xử lý vết, giặt, làm khô rồi ủi / gấp. Đối chiếu tem trước khi trả đồ.</p><p>Tiệm ứng vật tư theo phiếu, trừ một lần khi thu tiền. Sai thì sửa ngay tại bước hiện tại; công giảm theo chất lượng.</p></article>${stats(x)}${book(x)}</div>`;},
+  idle(x){return `<div class="career-job ld"><article class="card"><h3>🧺 Tiệm giặt ủi Nếp Thơm</h3>${tip('Nhận phiếu 2–4 món, đọc nhãn, tách màu và vải, xử lý vết, giặt, làm khô rồi ủi / gấp. Đối chiếu tem trước khi trả đồ.','','p')}${tip('Tiệm ứng vật tư theo phiếu, trừ một lần khi thu tiền. Sai thì sửa ngay tại bước hiện tại; công giảm theo chất lượng.','','p')}</article>${stats(x)}${book(x)}</div>`;},
   input(el,x){
     const d=el.dataset||{};if(!d.ldField)return false;
     draft(x,d.ldTask,d.ldStage)[d.ldField]=el.type==='checkbox'?el.checked:el.value;

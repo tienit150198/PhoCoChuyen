@@ -559,6 +559,60 @@ def svc_add(s: dict, x: dict) -> None:
     b[career] = min(SVC_MAX, b[career] + 1)
 
 
+# 🧹 Xóa một vi phạm khỏi hồ sơ công tác (owner 19/10 "cho người ta làm việc tốt … và phạt nặng gì đó để được xóa tội"):
+# while serving on a state ladder, not suspended, CLEAR_RUN worked days in a row without a violation (x['clean']) and
+# ★ ≥ CLEAR_STARS, the officer pays a fine (CLEAR_FINE × the n-th clearing, from the 👛 wallet) and one violation leaves
+# the record (this career's first, else the career with the most). The good run starts again from 0. journey[SVC_KEY]
+# ['pd'] counts the clearings (the fine grows); a khai trừ (gov_ban) is never cleared: there is no ladder to serve on.
+CLEAR_RUN = 10
+CLEAR_STARS = 40
+CLEAR_FINE = 500_000
+PD_MAX = 999
+
+
+def clear_fee(s: dict) -> int:
+    b = (s.get('journey') or {}).get(SVC_KEY)
+    n = b.get('pd') if isinstance(b, dict) and type(b.get('pd')) is int else 0
+    return CLEAR_FINE * (n + 1)
+
+
+def clear_view(s: dict, x: dict, career: str) -> dict | None:
+    """{total, fee, rows, ok} while the record has a violation, else None."""
+    total = svc_total(s)
+    if total <= 0:
+        return None
+    fee, st, wallet = clear_fee(s), stars(x), int((s.get('journey') or {}).get('wallet') or 0)
+    rows = [dict(id='susp', met=not suspended(x), label='Không trong thời gian tạm đình chỉ'),
+            dict(id='run', met=x['clean'] >= CLEAR_RUN, label=f'{min(x["clean"], CLEAR_RUN)}/{CLEAR_RUN} ngày làm liên tục không vi phạm'),
+            dict(id='stars', met=st is not None and st >= CLEAR_STARS, label=f'★ trung bình từ {CLEAR_STARS / 10:.1f} ({(st or 0) / 10:.1f} hiện tại)'),
+            dict(id='fine', met=wallet >= fee, label=f'Nộp phạt {fee:,} xu từ ví (ví đang có {wallet:,})'.replace(',', '.'))]
+    return dict(total=total, fee=fee, rows=rows, ok=all(r['met'] for r in rows))
+
+
+def clear_one(s: dict, x: dict, career: str, need) -> str:
+    """pm_org_clear: pay the fine, take one violation off the record (see CLEAR_RUN)."""
+    from . import journey as jr
+    v = clear_view(s, x, career)
+    need(v, 'Hồ sơ công tác không có vi phạm nào để xóa.')
+    bad = next((r for r in v['rows'] if not r['met']), None)
+    need(bad is None, f'Chưa đủ điều kiện xóa vi phạm: {bad["label"] if bad else ""}.', 'not_ready')
+    j = s['journey']
+    b = j.get(SVC_KEY)
+    if not isinstance(b, dict) or b.get('v') != 1:
+        b = j[SVC_KEY] = dict(v=1)
+    for cid in OC.CAREER_ORG:   # every count written down first (a career not counted yet reads its log)
+        if type(b.get(cid)) is not int:
+            b[cid] = svc_count(s, cid)
+    cid = career if b.get(career, 0) > 0 else max(OC.CAREER_ORG, key=lambda k: b.get(k, 0))
+    b[cid] -= 1
+    b['pd'] = min(PD_MAX, (b.get('pd') if type(b.get('pd')) is int else 0) + 1)
+    jr._wallet(j, -v['fee'], 'incident', '🧹 Nộp phạt xóa 1 vi phạm hồ sơ công tác')
+    x['clean'] = 0
+    left = svc_total(s)
+    return (f'🧹 Đã nộp phạt {v["fee"]:,} xu. Hồ sơ công tác xóa 1 vi phạm, còn {left}. '.replace(',', '.') +
+            f'Chuỗi ngày làm tốt tính lại từ đầu; lần xóa sau phạt {clear_fee(s):,} xu.'.replace(',', '.'))
+
+
 def _grade_index(o: dict, gid) -> int:
     return next((i for i, g in enumerate(o['grades']) if g['id'] == gid), -1)
 
@@ -602,9 +656,11 @@ def validate_svc(j: dict, need, integer, bad: str) -> None:
     b = j.get(SVC_KEY)
     if b is None:
         return
-    need(isinstance(b, dict) and b.get('v') == 1 and set(b) - {'v', 'top'} <= set(OC.CAREER_ORG), bad, 'invalid_save')
+    need(isinstance(b, dict) and b.get('v') == 1 and set(b) - {'v', 'top', 'pd'} <= set(OC.CAREER_ORG), bad, 'invalid_save')
     for k, v in b.items():
-        if k == 'top':
+        if k == 'pd':   # 🧹 clearings paid (clear_one)
+            integer(v, 0, PD_MAX)
+        elif k == 'top':
             need(isinstance(v, dict) and set(v) <= set(OC.CAREER_ORG), bad, 'invalid_save')
             for cid, gi in v.items():
                 integer(gi, 0, len(OC.ORGS[OC.CAREER_ORG[cid][0]]['grades']) - 1)

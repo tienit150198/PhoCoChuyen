@@ -63,7 +63,7 @@ test('new mode loads only the island shell and its styles, leaving legacy scene 
 });
 
 test('Settings offers the named accessible switch and routes it through the mode saver',async()=>{
-  const calls=[];const context=vm.createContext({icon:()=>'',esc:String,layoutPref:()=> 'auto',cleanPref:()=> 'auto',townOK:()=>false,
+  const calls=[];const context=vm.createContext({icon:()=>'',esc:String,layoutPref:()=> 'auto',cleanPref:()=> 'auto',careerCleanCount:()=>0,townOK:()=>false,
     document:{documentElement:{dataset:{layout:'phone'}}},newInterface:s=>s.settings.newInterface!==false,
     saveInterface:async(_env,on)=>calls.push(on)});
   vm.runInContext(read('public/js/v4/settings.js').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'')+'\nglobalThis.m={settingsView,settingsChange};',context);

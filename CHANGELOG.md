@@ -79,6 +79,20 @@ Sửa theo hai lượt review (19/10); SCHEMA_VERSION 59 (chỉ thêm bảng/ind
 - ⚙️ Cài đặt bang › 🚪 Cách nhận người (Bang chủ và Phó bang): 🚫 Đóng (không ai vào/xin vào; người được mời vẫn vào, đơn đang chờ vẫn duyệt được), 🔒 Cần duyệt (đơn chờ Trưởng lão trở lên), 🚪 Tự động duyệt (đủ yêu cầu là vào ngay, chưa đủ thì báo rõ thiếu gì). Cột `open` vẫn giữ khớp (1 = tự động duyệt) cho mã cũ.
 - 📋 Yêu cầu tùy chọn, áp dụng cùng lúc: một nghề từ một chức danh thật của thang thăng tiến (vd. Tiệm trà sữa từ Chủ tiệm có tiếng, bậc 2), chức danh bậc X ở nghề bất kỳ, tuổi tài khoản tối thiểu (ngày). Máy chủ kiểm từ bản lưu thật (đọc trước giao dịch, chỉ khi bang có yêu cầu) khi vào, khi xin, khi nhận lời mời và khi duyệt; đổi yêu cầu không mời ra người đã ở trong bang. Thẻ bang ở 🔎 Tìm bang và trang bang hiện cách nhận người và yêu cầu.
 - 👥 Danh sách thành viên: chức, ngày vào, điểm cống hiến tuần này / tổng, lần chơi gần nhất (theo ngày); Bang chủ phong/giáng chức và mời ra bất kỳ ai, Phó bang mời ra Trưởng lão/Tinh anh/Thành viên, không ai mời ra người cùng hoặc cao chức hơn; ghế: Bang chủ 1, Phó bang 2, Trưởng lão 3, Tinh anh 5.
+# v2.4.62 — 2026-10-20
+
+🖥️ #440 (chủ game 19/10 "các nghề đều phải có cả 2 bên"): mỗi nghề chọn riêng Giao diện đầy đủ (cũ) / gọn (mới) ở nút ⋯ màn làm việc (mnl.clean.c, v4/shell.js setCleanCareer), "↩️ Theo cài đặt chung" để bỏ; thêm bản gọn cho khách sạn, tiệc, bưu điện, xưởng vẽ, luật sư, giặt ủi, hải quan; trả bản đầy đủ cho cứu hộ, y tá, công an, cà phê, quần áo, tạp hóa, kho.
+📋 Đối chiếu nội bộ: bản đầy đủ mở sẵn chứng từ, chip xuống dòng; ui-kit tapSlip chặn chạm nhầm khi lướt ([data-tap-guard]).
+🧹 #447 (chủ game 19/10 "làm việc tốt và phạt nặng gì đó để được xóa tội"): org.clear_one / pm_org_clear: đang công tác (không đình chỉ), CLEAR_RUN 10 ngày liên tục không vi phạm (x.clean), ★ ≥ 4.0, nộp phạt CLEAR_FINE 500k × lần thứ n từ ví → hồ sơ công tác −1 vi phạm, chuỗi ngày tốt về 0; journey.svc.pd đếm số lần (bản cũ không đọc được khóa pd: rollback dưới 2.4.62 từ chối save đã xóa vi phạm). Hải quan từ chối vì vi phạm thì chỉ cách xóa; 🎖️ Cấp bậc → Xem thêm có ô 🧹.
+💌 Vòng quay 20/10: lời chúc riêng mỗi người (wish_of: 10 × 16 × 8 câu ghép theo mã quà), hiện thay đoạn chữ chung.
+Có gì mới 2.4.62: 4 dòng.
+
+# v2.4.61 — 2026-10-19
+
+🎡 Quà 20/10 (chủ game 19/10 "vòng quay từ 100k -> 1m", "mốc 666k 888k, 1314, 520 cho có ý nghĩa", "tài khoản mới/cũ, miễn sao trong 20/10 vào là được tặng"): system_gift BROADCASTS wheel2010 (since/until 20/10 00:00 → 21/10 00:00 VN), ô quay WHEEL 100k·168k·200k·520k·666k·888k·1tr·1.314k theo trọng số (trung bình ≈ 360k), chọn theo hash sid; thẻ quà (gift.js) quay bánh xe rồi mới hiện số.
+🛃 #441 Hải quan: lời từ chối vì cấp bậc Công an chỉ đường Binh nhì → Binh nhất → Hạ sĩ.
+🐾 #446: nút ✓ Đổi tên bé bật ngay khi gõ (trước đó vẫn mờ tới lần vẽ lại).
+Có gì mới 2.4.61: 3 dòng.
 
 # v2.4.60 — 2026-10-19
 

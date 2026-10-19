@@ -11,6 +11,7 @@ const context=vm.createContext({api,mainDeferred:false,document:{body:element,qu
 context.env=()=>({api});context.updateIsometricShell=()=>{};context.iso={booted:()=>false};   // the 2.5D HUD is not up in this slice
 context.otChip=()=>'';   // the overtime badge is outside this render/defer fixture
 context.workplaceAway=()=>null;context.career=()=> 'cafe_bakery';   // no away toast in this fixture
+context.setCleanCareer=()=>{};   // the per-career interface side (v4/shell.js) is outside this fixture
 vm.runInContext(src.slice(a,b),context);
 for(let i=1;i<=50;i++){api.state={...api.state,seq:i};vm.runInContext('renderMain()',context);}
 assert.equal(worldUpdates,0,'confirmed fair states must not repeatedly rebuild/repaint the obscured workplace');
