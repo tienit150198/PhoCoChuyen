@@ -31,7 +31,8 @@ function stageBody(x,t){
   if(t.stage==='fix')return `<div class="rs-list" data-coach="restore-fix">${(t.found||[]).map(f=>`<article class="rs-row">${select(x,t,f.id,f.name,t.options,'Chọn cách phục hồi…')}</article>`).join('')}</div>`;
   if(t.stage==='finish'){
     const asked=(t.work?.talk&&n.demands.length)?`<p class="rs-note">🌀 Đã chốt với khách: ${n.demands.map(d=>x.esc(d.options.find(o=>o.id===t.work.talk[d.id])?.label||'')).join(' · ')}</p>`:'';
-    return `<fieldset class="rs-row" data-coach="restore-finish"><legend>✨ Hoàn thiện</legend>${asked}${radios(x,t,'choice',t.options,`rs-${t.id}-finish`)}</fieldset>`;
+    const surface=n.surface?`<p class="rs-note">🔍 Bề mặt: <b>${x.esc(n.surface)}</b>${n.surface_kind?` · ${x.esc(n.surface_kind)}`:''}</p>`:'';
+    return `<fieldset class="rs-row" data-coach="restore-finish"><legend>✨ Hoàn thiện</legend>${surface}${asked}${radios(x,t,'choice',t.options,`rs-${t.id}-finish`)}</fieldset>`;
   }
   if(t.stage==='check'){const st=draft(x,t.id,t.stage);return `<fieldset class="rs-row" data-coach="restore-checks"><legend>🔎 Kiểm lần cuối</legend>${Object.entries(CHECKS).map(([k,v])=>`<label class="rs-tick"><input type="checkbox" ${attrs(x,t,k)}${st[k]?' checked':''}>${x.esc(v)}</label>`).join('')}</fieldset>`;}
   if(t.stage==='deliver'){
@@ -48,7 +49,7 @@ export default {
     if(!t.known)return `<div class="career-job rs"><article class="card rs-intro"><h3>🧰 Xưởng phục chế Hồn Xưa</h3><p>${x.esc(t.opening||'')}</p>${tip('Nghe khách kể, nhận phiếu rồi đọc từng dấu hiệu hư hỏng.','','p')}${x.cmd('Hỏi khách và nhận phiếu','ask',{task:t.id},'primary')}</article>${book(x)}${desk(x)}</div>`;
     const n=t.needs,at=STAGES.indexOf(t.stage);
     const progress=`<ol class="rs-progress" aria-label="Các bước phục chế">${STAGES.map((s,i)=>`<li class="${i===at?'now':i<at?'done':''}"${i===at?' aria-current="step"':''}>${i<at?'✓':i+1} ${x.esc(NAMES[s])}</li>`).join('')}</ol>`;
-    const head=`<header class="rs-ticket"><span>PHIẾU PHỤC CHẾ · ${x.esc(n.tag)}</span><h3>${x.esc(n.item)}</h3><p class="rs-chips"><span class="tag">${x.esc(n.material_name)}</span><span class="tag">${n.damages} chỗ hư</span><span class="tag">${n.demands.length} yêu cầu khách</span><span class="tag">Chất lượng ${t.quality}%</span><span class="tag">Công ${n.net} xu sau ${n.cost} xu vật tư</span></p></header>`;
+    const head=`<header class="rs-ticket"><span>PHIẾU PHỤC CHẾ · ${x.esc(n.tag)}</span><h3>${x.esc(n.item)}</h3><p class="rs-chips"><span class="tag">${x.esc(n.material_name)}</span>${n.surface?`<span class="tag">${x.esc(n.surface)}</span>`:''}<span class="tag">${n.damages} chỗ hư</span><span class="tag">${n.demands.length} yêu cầu khách</span><span class="tag">Chất lượng ${t.quality}%</span><span class="tag">Công ${n.net} xu sau ${n.cost} xu vật tư</span></p></header>`;
     const issue=t.last_issue?`<p class="rs-repair" role="status">${x.esc(t.last_issue)}</p>`:'';
     const stage=t.stage==='done'?'':`<section class="rs-stage" data-stage="${x.esc(t.stage)}"><h3>${x.esc(x.cc.stages?.[t.stage]||NAMES[t.stage])}</h3>${tip(t.instruction||'','','p')}${issue}${stageBody(x,t)}${button(x,t)}</section>`;
     return `<div class="career-job rs">${head}${progress}${stage}${book(x)}${stats(x)}${desk(x)}</div>`;

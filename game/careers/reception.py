@@ -19,6 +19,10 @@ are kept (data['trial']).
 relations with the shift lead, the credit-stealing colleague, the new hire, the housekeeper and the regular guest
 (data['rel']), what the choices cost the hotel (house) and keepsakes kept in the Sổ nghề (data['keeps']).
 
+A job about a passing guest (a check-in, a check-out, a complaint, a lost thing) carries that guest in needs['guest']
+(name, gender, a drawn face code; guest_of): the card, the 2D scene and the feed review show them, the job is filed
+under the generic Khách lưu trú NPC, and the lines they say fit their voice and their party (reception_content.says).
+
 After the second promotion the clerk picks a branch (chăm sóc khách, điều hành, sự kiện, tự kinh doanh): the jobs of
 that branch pay ×1.25 (×1.1 for every job when going self-employed, with a door to the homestay career). A task
 carries the branch it was taken under (`branch`, set by on_task), so its bonus stays checkable.
@@ -77,11 +81,43 @@ def _near(a: str, b: str) -> bool:
     return (a, b) in rc.NEAR or (b, a) in rc.NEAR
 
 
+# ---------------------------------------------------------------- the guest of a job
+_FACE_HAIR = dict(male=('ngan', 'dinh', 'lech', 'dung', 'hoi'), female=('bob', 'dai', 'bui', 'duoi', 'song', 'tet', 'bui_thap'))
+_FACE_ORDER = ('skin', 'shape', 'age', 'hair', 'hc', 'expr', 'glasses', 'head', 'hwc', 'beard', 'freckles', 'extra', 'bg', 'shirt')
+
+
+def guest_face(name: str, gender: str, age: str = 'lon') -> str:
+    """A drawn face code for a guest (the chat avatar's 'f1' code, public/js/v4/face-code.js): the same name always
+    has the same face, a woman's hair for a woman."""
+    r = kit.rng(ID, 'face', name)
+    f = dict(skin=r.choice(('s1', 's2', 's3', 's4', 's5')), shape=r.choice(('tron', 'oval', 'vuong', 'tim')), age=age,
+             hair=r.choice(_FACE_HAIR['female' if gender == 'female' else 'male']),
+             hc=('xam' if age == 'gia' else r.choice(('den', 'den', 'nau', 'mat_ong'))), expr=r.choice(('cuoi', 'toe', 'diu', 'ngac')),
+             glasses=r.choice(('0', '0', '0', 'tron', 'vuong')), head='0', hwc='do',
+             beard=(r.choice(('0', '0', 'ria', 'lun')) if gender == 'male' else '0'), freckles='0', extra='0',
+             bg=r.choice(('kem', 'hong', 'dao', 'vang', 'mint', 'xanh', 'lavender')),
+             shirt=r.choice(('navy', 'nau', 'mint', 'trang', 'do', 'vang', 'lavender')))
+    return '.'.join(['f1'] + [f[k] for k in _FACE_ORDER] + ['f' if gender == 'female' else 'm', 'ao_quen', '0', 'pk_khong', '0'])
+
+
+def guest_of(name: str, gender: str | None = None, age: str = 'lon') -> dict:
+    """The person a job is about when it is not one of the desk's people: name, gender, face (task needs['guest'];
+    the card, the 2D scene and the review show them, not the NPC the job is filed under)."""
+    gender = gender or rc.GUEST_GENDER.get(name, 'female')
+    return dict(name=name, gender=gender, fc=guest_face(name, gender, age))
+
+
+def _call(gender: str) -> str:
+    """How the desk calls a guest (anh / chị)."""
+    return 'chị' if gender == 'female' else 'anh'
+
+
 # ---------------------------------------------------------------- Nhận khách (arrival)
 def _card(r, cid, room, people, tags, name, items, asks):
-    said = [r.choice(rc.SAYS[t]) for t in tags]
+    gender = rc.GUEST_GENDER.get(name, 'female')
+    said = [r.choice(rc.says(t, gender, people)) for t in tags]   # the guest's own voice and party size
     if r.random() < 0.7:
-        said.insert(r.randrange(len(said) + 1), r.choice(rc.CHATTER))
+        said.insert(r.randrange(len(said) + 1), r.choice(rc.chatter(gender)))
     return dict(id=cid, name=name, people=people, tags=sorted(tags), said=said, items=items, asks=asks, room=room)
 
 
@@ -112,7 +148,7 @@ def _arrival(r, day, slot, variant=None):
             own = [t for t in rc.TAG_IDS if t != 'near' and _fits(room, t)]
             tags = r.sample(own, 1) + ['near']
             people = r.randint(1, room['cap'])
-            cards.append(dict(no=no, people=people, tags=tags, name=names[i] if i == 0 else f'{names[1]} (đi cùng)'))
+            cards.append(dict(no=no, people=people, tags=tags, name=names[i]))
     else:
         if regular:
             room = rc.ROOM['102']
@@ -163,7 +199,7 @@ def _arrival(r, day, slot, variant=None):
         true_ids.append(nid)
     for did, line in r.sample(rc.DONE_LINES, 2):
         notes.append((f'{did}-g1', line.format(name=cards[0]['name'])))
-    who = ' và '.join(f'{c["name"]} ({c["people"]} người)' for c in cards)
+    who = ' và '.join(f'{c["name"]} ({c["people"]} người{", đi cùng" if i else ""})' for i, c in enumerate(cards))
     heard = ' '.join(f'“{x}”' for c in out_cards for x in c['said'])
     steps = [
         _step('arrival', 'need', 'multi', 'Hiểu khách cần gì', f'{who} nói: {heard} Chọn mọi yêu cầu khách vừa nói (không chọn điều khách không nói).',
@@ -203,8 +239,11 @@ def _arrival(r, day, slot, variant=None):
         key['arrival.early'] = 'hold'
     for c in out_cards:
         c.pop('room')
-    needs = dict(variant=variant or ('group' if group else 'normal'), cards=out_cards, board=board, items=items, regular=regular, steps=steps)
-    npc = 4 if regular else 6 if group else (5 if 'quiet' in key['arrival.need'] else 7 if day % 3 == 0 else 5)
+    # The guest at the desk is the first card's person (Ông Tư Bến is one of the desk's people: his own portrait).
+    guest = None if regular else guest_of(cards[0]['name'])
+    needs = dict(variant=variant or ('group' if group else 'normal'), cards=out_cards, board=board, items=items, regular=regular, steps=steps,
+                 guest=guest)
+    npc = 4 if regular else rc.GUEST_NPC
     title = 'Đoàn khách tới quầy' if group else f'Khách tới quầy: {cards[0]["name"]}'
     first = out_cards[0]['said'][0] if out_cards[0]['said'] else ''
     opening = f'{who} tới quầy: “{first}”' if first else f'{who} tới quầy.'
@@ -274,6 +313,7 @@ def _checkout(r, day, slot):
     bill = total - deposit
     back = r.choice(rc.KEY_BACK)
     name = r.choice(rc.GUESTS)
+    guest = guest_of(name)
     minilist = ', '.join(f'{label} {used[k]} ({"miễn phí" if p == 0 else f"{p} xu"})' for k, label, p in rc.MINIBAR if used[k])
     steps = [
         _step('checkout', 'key', 'choice', 'Nhận lại chìa', back[1].format(no=no), options=_opts(r, rc.KEY_OPTIONS)),
@@ -284,8 +324,8 @@ def _checkout(r, day, slot):
               options=_opts(r, rc.HOLD_OPTIONS)),
     ]
     key = {'checkout.key': back[2], 'checkout.bill': bill, 'checkout.hold': 'tag'}
-    needs = dict(room=no, name=name, nights=nights, price=price, deposit=deposit, late=late, steps=steps)
-    return needs, key, f'Trả phòng {no}', f'{name} trả phòng {no}. “Nhanh giùm nha em, xe tới rồi.”', 5 if day % 2 else 6
+    needs = dict(room=no, name=name, nights=nights, price=price, deposit=deposit, late=late, steps=steps, guest=guest)
+    return needs, key, f'Trả phòng {no}', f'{name} trả phòng {no}. “Nhanh giùm nha em, xe tới rồi.”', rc.GUEST_NPC
 
 
 # ---------------------------------------------------------------- Điều phối dọn phòng (rooms)
@@ -310,7 +350,7 @@ def _rooms(r, day, slot):
     ]
     key = {'rooms.order': order, 'rooms.check': rep[2], 'rooms.help': 'na'}
     needs = dict(plan=plan, report=rep[0], steps=steps)
-    return needs, key, 'Lịch dọn phòng sáng nay', 'Chị Quyên đưa bảng: “Bốn phòng chưa dọn, cô Lài một mình. Em xếp giùm chị phòng nào dọn trước.”', 3
+    return needs, key, 'Lịch dọn phòng sáng nay', 'Chị Quyên đưa bảng: “Bốn phòng chưa dọn, cô Lài một mình. Em xếp giùm chị phòng nào dọn trước.”', 0
 
 
 # ---------------------------------------------------------------- Lịch dịch vụ (services)
@@ -322,7 +362,8 @@ def _services(r, day, slot):
     air = r.choice([m for m in grid if 5 * 60 + 15 <= m <= 7 * 60 + 30])
     travel = r.choice((30, 45, 60))
     flight = air + 90 + travel
-    has_bus = r.random() < 0.75
+    r.random()          # (kept: the draws after it stay as they were)
+    has_bus = True      # the clash step is about two car trips: there is always a bus trip besides the airport one
     reqs = [dict(id='wake', room=rooms[0], text=f'Phòng {rooms[0]} nhờ gọi báo thức lúc {hhmm(wake)}.'),
             dict(id='tray', room=rooms[0], text=f'Phòng {rooms[0]} muốn {trays} khay ăn sáng mang lên phòng ngay sau báo thức.'),
             dict(id='air', room=rooms[1], text=f'Phòng {rooms[1]} bay chuyến {hhmm(flight)}, ra sân bay mất {travel} phút.')]
@@ -362,8 +403,9 @@ def _complaint(r, day, slot):
     cid = sorted(rc.COMPLAINTS)[r.randrange(len(rc.COMPLAINTS))]
     issue, rant, verify, (yes, no), pct, unit = rc.COMPLAINTS[cid]
     fault = r.random() < 0.65
-    rate = r.choice(rc.RATES)
+    r.choice(rc.RATES)  # (kept: the draws after it stay as they were)
     room = r.choice(rc.ROOMS)['no']
+    rate = rc.ROOM[room]['price']   # the compensation is a share of this room's own night
     comp = (8 if cid == 'charge' else rate * pct // 100) if fault else 0
     others = [rc.COMPLAINTS[k][0] for k in sorted(rc.COMPLAINTS) if k != cid]
     hear = [(cid, issue)] + [(f'x{i}', t) for i, t in enumerate(r.sample(others, 2))] + [('stairs', 'Cầu thang bộ xấu')]
@@ -373,14 +415,15 @@ def _complaint(r, day, slot):
         _step('complaint', 'verify', 'choice', 'Kiểm lại cho chắc', 'Trước khi hứa gì, kiểm đúng chỗ.', options=_opts(r, rc.VERIFY_OPTIONS)),
         _step('complaint', 'result', 'choice', 'Kết quả kiểm', yes if fault else no, options=_opts(r, rc.RESULT_OPTIONS)),
         _step('complaint', 'comp', 'number', 'Bù theo chính sách',
-              f'Giá phòng {rate} xu/đêm. Chính sách: ồn 10%, nước nóng 20%, khăn 10%, wifi 10% một đêm; minibar tính sai thì trả lại đúng số đã tính '
-              f'(2 lon × 4 xu); không phải lỗi khách sạn thì 0.', unit='xu'),
+              f'Phòng {room} giá {rate} xu/đêm. Chính sách: ồn 10%, nước nóng 20%, khăn 10%, wifi 10% một đêm (lẻ thì bỏ phần lẻ); '
+              f'minibar tính sai thì trả lại đúng số đã tính (2 lon × 4 xu); không phải lỗi khách sạn thì 0.', unit='xu'),
         _step('complaint', 'log', 'choice', 'Ghi lại', f'Việc cần báo: {unit.lower()}.', options=_opts(r, rc.LOG_OPTIONS)),
     ]
     key = {'complaint.hear': cid, 'complaint.verify': verify, 'complaint.result': 'fault' if fault else 'nofault',
            'complaint.comp': comp, 'complaint.log': 'log'}
-    needs = dict(room=room, issue=cid, rate=rate, steps=steps)
-    return needs, key, f'Phòng {room} xuống quầy phàn nàn', f'Khách phòng {room} đập tay lên quầy: “{rant}”', 5
+    guest = guest_of(r.choice(rc.GUESTS))
+    needs = dict(room=room, issue=cid, rate=rate, steps=steps, guest=guest)
+    return needs, key, f'Phòng {room} xuống quầy phàn nàn', f'{guest["name"]}, khách phòng {room}, đập tay lên quầy: “{rant}”', rc.GUEST_NPC
 
 
 # ---------------------------------------------------------------- Đồ thất lạc (lost)
@@ -410,8 +453,15 @@ def _lost(r, day, slot):
         _step('lost', 'owner', 'choice', 'Trả đồ cho đúng người', 'Một người khác cũng ghé quầy hỏi đồ y như vậy.', options=_opts(r, owners)),
     ]
     key = {'lost.where': search, 'lost.match': next(e['id'] for e in entries if e['ok']), 'lost.owner': 'hidden'}
-    needs = dict(item=item, name=name, colour=colour, route=[dict(id=p[0], label=p[1], at=hhmm(t)) for p, t in zip(route, times)], seen=k, steps=steps)
-    return needs, key, f'Khách tìm {name.lower()}', f'“Em ơi, {name.lower()} {colour} của chị đâu mất rồi, sáng còn chụp hình với nó mà!”', 7 if item == 'gau' else 5
+    if item == 'gau':   # Bé Su's own teddy: the child asks (one of the desk's people, her own portrait)
+        guest = None
+        opening = f'Bé Su mếu máo: “Cô chú ơi, {name.lower()} {colour} của con đâu mất rồi, sáng còn chụp hình với nó mà!”'
+    else:
+        guest = guest_of(r.choice(rc.GUESTS))
+        opening = f'{guest["name"]}: “Em ơi, {name.lower()} {colour} của {_call(guest["gender"])} đâu mất rồi, sáng còn chụp hình với nó mà!”'
+    needs = dict(item=item, name=name, colour=colour, route=[dict(id=p[0], label=p[1], at=hhmm(t)) for p, t in zip(route, times)], seen=k, steps=steps,
+                 guest=guest)
+    return needs, key, f'Khách tìm {name.lower()}', opening, 7 if item == 'gau' else rc.GUEST_NPC
 
 
 BUILD = dict(arrival=_arrival, checkout=_checkout, rooms=_rooms, services=_services, complaint=_complaint, lost=_lost)
@@ -693,9 +743,22 @@ def _finish(s: dict, c: dict, d: dict, t: dict) -> dict:
     if t.get('trial') in rc.TRIALS:
         extra = ' ' + _trial_done(s, c, d, t)
     kit.complete(s, c, t, bonus, f'Xong việc {post[0].lower()}: chất lượng {t["quality"]}%.')
+    _guest_review(c, t)
     result = dict(message=f'Xong việc {post[0].lower()}. Chất lượng {t["quality"]}%, thưởng {bonus} xu.{extra}'.strip(), correct=good, celebrate=good)
     _after(s, c, d, result)
     return result
+
+
+def _guest_review(c: dict, t: dict) -> None:
+    """A job about a passing guest: the review on the feed is signed by that guest (not by the NPC the job is filed
+    under), and a passer-by does not come back tomorrow as that NPC (the engine's return note is dropped)."""
+    g = _active(t)[0].get('guest')
+    if not (isinstance(g, dict) and g.get('name')):
+        return
+    for post in c['feed']:
+        if post.get('source') == t['id'] and post.get('kind') == 'review':
+            post['author'] = g['name']
+    c['pending'] = [x for x in c['pending'] if not (x.get('kind') == 'return_note' and x.get('ref') == t['id'])]
 
 
 def trial_misses(t: dict) -> list[str]:
@@ -838,6 +901,11 @@ def public_task(t: dict) -> dict:
     if t.get('trial') in rc.TRIALS:   # a trial check-in shows its own guest (the stored job keeps its slot's facts)
         brief, _, _ = _active(t)
         v['title'], v['opening'], v['npc'] = brief['title'], brief['opening'], brief['npc']
+    g = _active(t)[0].get('guest')
+    v['guest'] = deepcopy(g) if isinstance(g, dict) else None
+    if v['needs']:
+        for k in ('issue', 'seen'):   # the complaint's real issue and where the lost thing was last seen are step answers
+            v['needs'].pop(k, None)
     post = rc.POSTS[kind]
     v['post'] = dict(id=kind, label=post[0], emoji=post[1], work=post[2])
     v['trial_info'] = dict(id=t['trial'], title=rc.TRIALS[t['trial']][0], note=rc.TRIALS[t['trial']][1]) if t.get('trial') in rc.TRIALS else None

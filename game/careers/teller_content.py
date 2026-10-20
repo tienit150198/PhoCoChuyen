@@ -122,9 +122,11 @@ LIST_OPTS = [('list', 'Ghi bảng kê đổi tiền: tiền nhận, từng cọc
 
 # ---------------------------------------------------------------- 🔁 Chuyển tiền
 TRANSFER_NPC = (THO, HUNG, BAY, KHANG, LAM)
-FACES_M = ('👨🏻‍🦱', '👴🏻', '🧔🏻', '👦🏻', '👨🏻‍🦲')
-FACES_F = ('👩🏻', '👱🏻‍♀️', '👩🏻‍🦳', '👵🏻', '👧🏻')
+FACES_M = ('👨🏻‍🦱', '👴🏻', '🧔🏻', '👨🏻‍🦲')       # grown-ups only: every account holder and payee is an adult
+FACES_F = ('👩🏻', '👱🏻‍♀️', '👩🏻‍🦳', '👵🏻')
 FACES = FACES_M + FACES_F
+# The face on a person's own slip and ID card (PEOPLE order): a woman's face for a woman, an old face for the old.
+NPC_FACE = ('👩🏻', '👨🏻‍🦱', '👵🏻', '👩🏻', '👴🏻', '👴🏻', '👱🏻‍♀️', '🧔🏻', '👨🏻‍🦲', '👩🏻', '👵🏻')
 NAMES = ('Nguyễn Văn An', 'Trần Thị Hoa', 'Lê Minh Tuấn', 'Phạm Thu Hà', 'Đỗ Văn Nam', 'Vũ Thị Lan')
 NEAR = {'Nguyễn Văn An': 'Nguyễn Văn Ân', 'Trần Thị Hoa': 'Trần Thị Hòa', 'Lê Minh Tuấn': 'Lê Minh Tú',
         'Phạm Thu Hà': 'Phạm Thu Hằng', 'Đỗ Văn Nam': 'Đỗ Văn Năm', 'Vũ Thị Lan': 'Vũ Thị Lam'}

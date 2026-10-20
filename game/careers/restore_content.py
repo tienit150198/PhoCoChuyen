@@ -29,11 +29,12 @@ DAMAGES = {
     'chip': ('Mẻ', 'mẻ một miếng nhỏ ở miệng'),
     'loose': ('Tuột sợi', 'sợi đan tuột, mặt đan lỏng lẻo'),
     'wire': ('Hỏng dây điện', 'dây điện chảy nhựa, bật lên chập chờn'),
+    'stain': ('Ố mốc', 'lấm tấm đốm ố vàng, có mùi ẩm mốc'),
 }
 # The right technique for each damage (the fix stage) and the tempting wrong ones.
 FIXES = {
     'crack': 'glue_clamp', 'rust': 'derust', 'worm': 'worm_fill', 'flake': 'consolidate', 'joint': 'tenon',
-    'tear': 'patch', 'seized': 'service', 'chip': 'fill_paint', 'loose': 'reweave', 'wire': 'rewire',
+    'tear': 'patch', 'seized': 'service', 'chip': 'fill_paint', 'loose': 'reweave', 'wire': 'rewire', 'stain': 'spot_clean',
 }
 FIX_OPTIONS = [
     ('glue_clamp', 'Keo chuyên dụng, kẹp giữ 24 giờ'), ('derust', 'Tẩy gỉ nhẹ, phủ dầu chống gỉ'),
@@ -41,6 +42,7 @@ FIX_OPTIONS = [
     ('tenon', 'Làm lại mộng gỗ, không bắn đinh'), ('patch', 'Vá lót mặt sau, khâu chỉ cùng màu'),
     ('service', 'Tháo máy, lau sạch, tra dầu'), ('fill_paint', 'Trám keo sứ, vẽ dặm men'),
     ('reweave', 'Đan lại sợi tuột theo lối cũ'), ('rewire', 'Thay dây điện mới, giữ vỏ cũ'),
+    ('spot_clean', 'Hong khô chỗ râm, chấm khử ố từng đốm, không ngâm nước'),
     ('nails', 'Bắn đinh cho nhanh'), ('superglue', 'Đổ keo 502 cho chắc'), ('tape', 'Quấn băng keo cho kín'),
 ]
 # Cleaning by material (the clean stage).
@@ -81,12 +83,27 @@ ITEMS = (
     ('suitcase', 'Va li da ngày nhập học', 10, 'leather', ('tear', 'rust'), 'oil', ('khóa số', 'quai xách')),
     ('lamp', 'Đèn dầu thắp đêm mất điện', 10, 'metal', ('rust', 'crack'), 'touch', ('bóng thủy tinh', 'bấc đèn')),
     ('fan', 'Quạt con cóc', 10, 'metal', ('wire', 'seized', 'rust'), 'touch', ('cánh quạt', 'tụ điện')),
-    ('genealogy', 'Cuốn gia phả chép tay', 20, 'paper', ('tear', 'flake'), 'archive', ('bìa da',)),
-    ('aodai', 'Áo dài cưới của mẹ', 20, 'fabric', ('tear', 'flake'), 'archive', ('khuy bấm', 'chỉ thêu')),
+    ('genealogy', 'Cuốn gia phả chép tay', 20, 'paper', ('tear', 'stain'), 'archive', ('bìa da',)),
+    ('aodai', 'Áo dài cưới của mẹ', 20, 'fabric', ('tear', 'stain'), 'archive', ('khuy bấm', 'chỉ thêu')),
     ('bicycle', 'Xe đạp cọc cạch của ông', 20, 'metal', ('rust', 'seized', 'flake'), 'touch', ('xích', 'chuông', 'yên da')),
     ('altar', 'Tủ thờ gỗ gụ', 40, 'wood', ('worm', 'flake', 'crack'), 'wax', ('tay nắm đồng', 'ván hậu')),
     ('camera', 'Máy ảnh phim của ba', 40, 'metal', ('seized', 'rust'), 'oil', ('lò xo màn trập', 'nắp ống kính')),
 )
+
+# The surface of each piece, written on the ticket: what the finish follows (FINISH_BY_SURFACE, one rule in RULES), so the
+# right finish is read off the piece and not guessed. surface id: (words on the ticket).
+SURFACES = dict(wood='Gỗ mộc, đánh sáp xưa', oiled='Mây tre, da hay bộ máy kim loại trần', painted='Bề mặt sơn màu hay tráng men',
+                archive='Giấy, vải: đồ mềm, dễ rách')
+FINISH_BY_SURFACE = dict(wood='wax', oiled='oil', painted='touch', archive='archive')
+SURFACE = dict(clock=('wood', 'Hộp gỗ đánh sáp, mặt số tráng men'), chair=('oiled', 'Mây tre đan'),
+               radio=('painted', 'Vỏ sắt sơn màu kem'), sewing=('oiled', 'Thân gang trần, bộ máy tra dầu'),
+               vase=('painted', 'Gốm tráng men lam'), trunk=('wood', 'Gỗ mít mộc, đánh sáp'), suitcase=('oiled', 'Da bò thuộc'),
+               lamp=('painted', 'Thân đồng sơn xanh, bóng thủy tinh'), fan=('painted', 'Vỏ sắt sơn xanh ngọc'),
+               genealogy=('archive', 'Giấy dó chép tay'), aodai=('archive', 'Lụa tơ tằm thêu tay'),
+               bicycle=('painted', 'Khung sắt sơn đen'), altar=('wood', 'Gỗ gụ đánh sáp'), camera=('oiled', 'Thân kim loại trần, bộ máy tinh'))
+# Who brings each kind of piece (PEOPLE indices; Chú Khải, the owner, never brings one).
+OWNERS = dict(clock=(5, 1), chair=(1,), radio=(5,), sewing=(1, 3), vase=(2, 1), trunk=(3,), suitcase=(4, 5), lamp=(1, 2),
+              fan=(4, 1), genealogy=(5,), aodai=(3,), bicycle=(4,), altar=(1, 5), camera=(4, 2))
 
 # 🌀 The awkward demands ("oái oăm"). id: (from day, the customer's words, options [(id, words)], the right option,
 # what it changes: finish=<id> the right finish, part='make' a part is missing, only=<materials> the pieces it fits).
@@ -138,12 +155,12 @@ DEMANDS = {
 DEMAND_ORDER = tuple(DEMANDS)
 
 RULES = [
-    'Đọc dấu hiệu trên phiếu rồi gọi đúng tên từng hư hỏng: nứt, gỉ, mọt, bong sơn, lỏng mộng, rách, kẹt máy, mẻ, tuột sợi, hỏng dây điện.',
+    'Đọc dấu hiệu trên phiếu rồi gọi đúng tên từng hư hỏng: nứt, gỉ, mọt, bong sơn, lỏng mộng, rách, kẹt máy, mẻ, tuột sợi, hỏng dây điện, ố mốc.',
     'Chốt yêu cầu oái oăm của khách trước khi đụng vào đồ: nói thật, ghi phiếu, không làm giả, không giấu khách.',
     'Linh kiện: còn trong ngăn thì lấy, thiếu thì chế lại từ vật liệu cùng loại và ghi phiếu. Không bao giờ tháo đồ của khách khác.',
     'Làm sạch theo chất liệu: gỗ lau dầu, kim loại chải mềm, gốm nước ấm, vải hút bụi nhẹ, giấy chổi khô, da xà phòng da, mây chải ẩm.',
     'Mỗi hư hỏng một cách phục hồi đúng; đinh, keo 502 và băng keo làm hỏng hồn món đồ.',
-    'Hoàn thiện theo món đồ, trừ khi khách đã chốt khác: giữ vết xước kỷ niệm, hay ký phiếu làm mới.',
+    'Hoàn thiện theo bề mặt ghi trên phiếu: gỗ mộc phủ sáp ong; mây tre, da và máy kim loại trần lau dầu mỏng; đồ sơn màu hay tráng men dặm màu, giữ nước gốc; giấy, vải ép phẳng cất hộp không axit. Khách đã chốt khác thì theo khách: giữ vết xước kỷ niệm, hay ký phiếu làm mới.',
     'Chương 1 ngày 1: đồng hồ, ghế mây, đài; ngày 4: máy khâu, bình gốm, rương; ngày 10: va li, đèn dầu, quạt; ngày 20: gia phả, áo dài, xe đạp; ngày 40: tủ thờ, máy ảnh phim.',
     'Thợ phục chế vững tay: 100 phiếu đạt từ 90% và 30 ngày có trả đồ. Nghệ nhân Hồn Xưa: 180 phiếu đạt và 45 ngày. Ca rỗng không được tính.',
 ]

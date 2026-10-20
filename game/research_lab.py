@@ -70,7 +70,7 @@ JOB = dict(giong='cross', mon='scale', may='proto')
 SERVICES = {
     'giong': dict(name='Giống cây cải tiến', icon='🌱', base=40, unit='lô giống', duration=60,
                   desc=f'Vườn mới (ớt, lúa, thanh long, dâu tây, xoài): +{SEED_ADD} sản lượng mỗi vụ thu, {SEED_HARVESTS} vụ tới (trong {SEED_DAYS} ngày).',
-                  note_hint='Trồng gì nhiều nhất? (vd: dưa hấu, cà phê)'),
+                  note_hint='Trồng gì nhiều nhất? (vd: ớt hiểm, thanh long, dâu tây)'),
     'mon': dict(name='Công thức món mới', icon='🍳', base=40, unit='công thức', duration=60,
                 desc=f'Quán ăn của bạn: khách trả thêm {RECIPE_PCT}% (tối đa {RECIPE_PER} xu một đơn), {RECIPE_USES} đơn tới, tổng tối đa {RECIPE_CAP} xu (trong {RECIPE_DAYS} ngày).',
                 note_hint='Quán gì, món nào? (vd: quán phở, muốn nước dùng thơm hơn)'),
@@ -420,7 +420,8 @@ def _on_buyer(service):
             new = dict(o=order['id'], n=n, pct=RECIPE_PCT, per=RECIPE_PER, left=RECIPE_CAP, until=t + RECIPE_DAYS * DAY, by=by, name=name)
             cur = lab['recipe']
             if _live(cur, t):
-                new = dict(new, n=max(cur['n'], n), left=max(cur['left'], RECIPE_CAP), until=max(cur['until'], new['until']))
+                # merging into a running recipe never refills what it has already paid out (its xu left stays)
+                new = dict(new, n=max(cur['n'], n), left=cur['left'], until=max(cur['until'], new['until']))
             lab['recipe'] = new if new['n'] > 0 else cur
         else:
             kinds = {g[0] for g in _rs().rc.GADGETS}
@@ -511,10 +512,19 @@ def _step(store, sid: str, data: dict) -> dict:
         st = steps[row['at']]
         need(data.get('step') == st['id'], 'Làm theo bước đang mở nhé.', 'stale_step', 409)
         value = _rs()._value(st, data.get('value'))
-        if not _rs()._same(value, key[st['id']]):
-            db.execute('UPDATE research_jobs SET wrong=wrong+1, updated_at=? WHERE order_id=? AND at=?', (t, oid, row['at']))
-            how = _rs().HOW.get(st['id'], 'Đọc lại phiếu rồi làm lại bước này.')
-            out.update(correct=False, message=f'Chưa đúng: {st["title"].lower()}. {how}')
+        if not _rs().correct(st, value, key[st['id']]):
+            # The career's rule: the way to work it out first, the answer itself from the REVEAL_AFTER-th wrong try on the
+            # same step (so a paid order never stalls until the market's refund). Tries are kept in the row's data.
+            from .careers import kit
+            meta = json.loads(row['data'] or '{}')
+            tries = (meta.get('tries', 0) if meta.get('tries_at') == row['at'] else 0) + 1
+            meta.update(tries=tries, tries_at=row['at'])
+            db.execute('UPDATE research_jobs SET wrong=wrong+1, data=?, updated_at=? WHERE order_id=? AND at=?', (_json(meta), t, oid, row['at']))
+            if tries >= kit.REVEAL_AFTER:
+                how = f'Chị Nhàn chỉ: {kit.answer_text(st, key[st["id"]]).rstrip(".")}.'
+            else:
+                how = _rs().HOW.get(st['id'], 'Đọc lại phiếu rồi làm lại bước này.')
+            out.update(correct=False, message=f'Chưa đúng: {st["title"].lower()}. {how}', revealed=tries >= kit.REVEAL_AFTER)
             return
         at = row['at'] + 1
         done = at >= len(steps)

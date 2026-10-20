@@ -69,6 +69,21 @@ for(const [kind,task] of Object.entries(tasks)){
   });
 }
 
+test('a job about a passing guest shows that guest, not the NPC it is filed under',()=>{
+  for(const kind of ['checkout','complaint','trial_normal']){
+    const t=tasks[kind];
+    assert.ok(t.guest?.name&&t.guest.fc?.startsWith('f1.'),`${kind} carries its guest`);
+    let seen=null;const x={...harness(),portrait:p=>{seen=p;return '';}};
+    const html=career.job({...t,at:0},x);
+    assert.match(html,new RegExp(`<h3>${esc(t.guest.name)}</h3>`),`${kind}: the card is the guest's`);
+    assert.doesNotMatch(html,/<h3>Chị Quyên<\/h3>/);
+    assert.equal(seen.visit,true);assert.equal(seen.fc,t.guest.fc);
+    const ask=career.job({...t,known:false},x);
+    assert.match(ask,new RegExp(`<h3>${esc(t.guest.name)}</h3>`),`${kind}: the ask card too`);
+  }
+  assert.equal(tasks.rooms.guest,null,'the cleaning plan is Chị Quyên\'s own');
+});
+
 test('the guests\' tags show only after the need step',()=>{
   const t=tasks.trial_group,x=harness();
   assert.ok(t.needs.cards.every(c=>c.tags.length===0),'what the guest needs is read from what they say');

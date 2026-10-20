@@ -81,20 +81,21 @@ READ_ORDER = ('urgent', 'service', 'event')
 JINGLE = (8, 10, 12)       # seconds of the bulletin's jingle
 PER_ITEM = (20, 25, 30)    # seconds a news item takes to read
 SIGN_OFF = (5, 10, 15)     # seconds of the closing line
+# (the news item tonight's bulletin must carry for this to happen, or None; situation, right, wrongs)
 BULLETIN_FIX = [
-    ('Bà Tư chạy vào giơ tờ giấy: giờ cúp điện khu chợ đổi từ 13 giờ sang 14 giờ, mà bạn vừa đọc xong tin đó.',
+    ('dien', 'Bà Tư chạy vào giơ tờ giấy: giờ cúp điện khu chợ đổi từ 13 giờ sang 14 giờ, mà bạn vừa đọc xong tin đó.',
      'Cuối bản tin đọc đính chính: “Xin đính chính, khu chợ cúp điện từ 14 giờ”, rồi ghi vào sổ',
      ('Thôi kệ, ai nghe nhầm thì chịu', 'Đọc lại cả bản tin từ đầu, bỏ khung quảng cáo', 'Sửa trong sổ, không nói lên sóng')),
-    ('Bạn vừa đọc nhầm “đường Lê Lai” thành “đường Lê Lợi” trong tin ngập nước.',
-     'Nói ngay: “Xin lỗi, xin đọc lại cho đúng: đường Lê Lai”, rồi đọc tiếp',
+    ('ngap', 'Bạn vừa đọc nhầm “đường Bến Mây” thành “đường Bến Mới” trong tin ngập nước.',
+     'Nói ngay: “Xin lỗi, xin đọc lại cho đúng: đường Bến Mây”, rồi đọc tiếp',
      ('Đọc tiếp như không có gì', 'Tắt mic, mở một bài hát cho qua', 'Cười trừ trên sóng rồi đọc tiếp')),
-    ('Chị Hoa giơ bảng qua lớp kính: tin tiêm chủng mới đổi sang chiều thứ bảy.',
+    ('tiem', 'Chị Hoa giơ bảng qua lớp kính: tin tiêm chủng mới đổi sang chiều thứ bảy.',
      'Đọc tin theo giờ mới chị Hoa ghi, nói rõ “lịch mới cập nhật”',
      ('Đọc theo giờ cũ đã in sẵn cho đúng kịch bản', 'Đọc cả hai giờ để bà con tự chọn', 'Bỏ hẳn tin đó cho chắc')),
-    ('Một thính giả nhắn vào đài: “Đọc tin ngập nhanh lên, đang kẹt xe ngoài đó!”',
+    ('ngap', 'Một thính giả nhắn vào đài: “Đọc tin ngập nhanh lên, đang kẹt xe ngoài đó!”',
      'Giữ đúng thứ tự bản tin, đọc tin ngập nước rõ ràng, nhắc lại đường vòng ở cuối bản tin',
      ('Bỏ hết tin khác, chỉ đọc tin ngập', 'Đọc nhanh gấp đôi cho xong', 'Đọc tên người nhắn lên sóng để cảm ơn')),
-    ('Đang bản tin thì ông Lực gõ cửa kính, đòi chen quảng cáo tủ lạnh vào giữa tin cảnh báo.',
+    (None, 'Đang bản tin thì ông Lực gõ cửa kính, đòi chen quảng cáo tủ lạnh vào giữa tin cảnh báo.',
      'Ra hiệu chờ, đọc hết bản tin; quảng cáo vào đúng khung quảng cáo sau bản tin',
      ('Ngắt tin cảnh báo, đọc quảng cáo trước', 'Đọc quảng cáo xen giữa hai tin cho ông vui', 'Bỏ khung quảng cáo của ông hôm nay')),
 ]
@@ -103,7 +104,9 @@ BULLETIN_FIX = [
 SPONSORS = [('lucphat', 'Điện máy Lực Phát', 'tủ lạnh'), ('banam', 'Sữa đậu nành Bà Năm', 'sữa đậu'),
             ('kimhanh', 'Tiệm vàng Kim Hạnh', 'nhẫn cưới'), ('canhdieu', 'Nhà sách Cánh Diều', 'sách giáo khoa'),
             ('gaomay', 'Gạo Mây Trắng', 'gạo mới'), ('xedap', 'Xe đạp Gió Lành', 'xe đạp trẻ em')]
-SPONSOR_NPC = dict(lucphat=2, banam=6, kimhanh=3, canhdieu=6, gaomay=3, xedap=2)
+# The slip's speaker: Ông Lực for his own shop; any other sponsor's slip is handed over by Chị Hoa (the sponsor is not a
+# person of the station, and the spot never calls them "ông": bà Năm is a woman). The spot's words say "nhà tài trợ".
+SPONSOR_NPC = dict(lucphat=2, banam=0, kimhanh=0, canhdieu=0, gaomay=0, xedap=0)
 # A script's lines: ok ones a spot may say, and claims the station never reads (misleading, unprovable, frightening).
 SPOT_OK = ['Giảm 10% cho khách mua trong tuần này', 'Giao hàng tận nhà trong phường', 'Mở cửa từ 7 giờ sáng đến 9 giờ tối',
            'Có chỗ để xe trước cửa', 'Đổi trả trong 7 ngày nếu còn hóa đơn', 'Ghé xem hàng không mua cũng được']
@@ -112,9 +115,9 @@ SPOT_BAD = ['Tốt nhất thế giới, không đâu sánh bằng', 'Dùng là k
 WORDS_PER_S = (2, 3)       # reading speed the station uses, words a second
 SPONSOR_JINGLE = (3, 4, 5)
 SPOT_DEMANDS = [
-    ('Ông Lực gọi điện: “Đọc tên cửa hàng năm lần liên tục cho người ta nhớ!”',
-     'Giữ đúng hợp đồng (tên đọc hai lần), mời ông báo chị Hoa nếu muốn đổi hợp đồng',
-     ('Đọc năm lần cho ông vui', 'Đọc mười lần, tặng thêm', 'Cúp máy, không đọc nữa')),
+    ('Nhà tài trợ gọi điện: “Đọc tên cửa hàng năm lần liên tục cho người ta nhớ!”',
+     'Giữ đúng hợp đồng (tên đọc hai lần), mời nhà tài trợ báo chị Hoa nếu muốn đổi hợp đồng',
+     ('Đọc năm lần cho nhà tài trợ vui', 'Đọc mười lần, tặng thêm', 'Cúp máy, không đọc nữa')),
     ('Nhà tài trợ đòi đọc nhanh gấp đôi để nhét thêm ba câu vào spot 30 giây.',
      'Đọc đúng tốc độ của đài; bớt câu hoặc mua thêm thời lượng, báo chị Hoa',
      ('Đọc như súng liên thanh cho đủ chữ', 'Tự kéo spot dài ra, lấn sang bản tin', 'Bỏ nhạc hiệu nhà tài trợ cho đủ giờ')),
@@ -146,16 +149,26 @@ NAME_ASK = [
     ('Le Thi Nga', ('Nga', 'Ngà', 'Ngã')), ('Pham Duc Hai', ('Hải', 'Hai', 'Hài')),
     ('Vo Thanh Tam', ('Tâm', 'Tám', 'Tấm')), ('Do Minh Tri', ('Trí', 'Trị', 'Trì')),
 ]
+# (the wish it slips on, which tonight's box must carry; situation, right, wrongs)
 WISH_SLIPS = [
-    ('Bạn lỡ đọc “chúc ông Tám 80 tuổi” thành “chúc ông Tám 18 tuổi”, cả phòng máy bật cười.',
+    ('sn', 'Bạn lỡ đọc “chúc ông Tám 80 tuổi” thành “chúc ông Tám 18 tuổi”, cả phòng máy bật cười.',
      'Xin lỗi ngay trên sóng, đọc lại cho đúng: “ông Tám 80 tuổi”',
      ('Cười theo rồi đọc tiếp', 'Tắt mic, mở bài hát cho qua', 'Nói người gửi viết sai')),
-    ('Bạn đọc nhầm tên “chị Thảo” thành “chị Thủy” trong lời chúc đám cưới.',
+    ('cuoi', 'Bạn đọc nhầm tên “chị Thảo” thành “chị Thủy” trong lời chúc đám cưới.',
      'Xin lỗi cô dâu chú rể, đọc lại lời chúc với đúng tên “chị Thảo”',
      ('Thôi, ai cũng hiểu mà', 'Đọc lại cả chương trình từ đầu', 'Đổi sang lời chúc khác cho khỏi ngại')),
-    ('Bạn đọc “lớp 9A” thành “lớp 9B”, mấy phút sau cả lớp 9A gọi điện vào đài.',
+    ('thi', 'Bạn đọc “lớp 9A” thành “lớp 9B”, mấy phút sau cả lớp 9A gọi điện vào đài.',
      'Cảm ơn các em đã gọi, xin lỗi và đọc lại lời chúc gửi đúng lớp 9A',
      ('Bảo các em đừng gọi nữa, đang bận', 'Đọc lời chúc cho cả 9A lẫn 9B cho công bằng', 'Bỏ qua, chương trình đã sang mục khác')),
+    ('me', 'Bạn đọc “Tết này con về” thành “Tết này con không về”, mấy phút sau mẹ ở quê gọi lên đài hỏi.',
+     'Xin lỗi ngay trên sóng, đọc lại cho đúng: “Tết này con về”',
+     ('Bảo bà cụ nghe nhầm', 'Đọc tiếp lời chúc khác cho qua', 'Tắt mic, mở một bài hát')),
+    ('co', 'Bạn đọc “cô Ba gánh xôi” thành “cô Bảy gánh xôi”, cả xóm nhắn vào đài.',
+     'Xin lỗi cô Ba và cả xóm, đọc lại lời cảm ơn với đúng tên “cô Ba”',
+     ('Cô Ba hay cô Bảy cũng vậy thôi', 'Nói người gửi viết khó đọc', 'Bỏ qua, chương trình đã sang mục khác')),
+    ('ban', 'Bạn đọc “chúc bạn Na” thành “chúc bạn Nga” trong lời chúc đi du học.',
+     'Xin lỗi, đọc lại lời chúc với đúng tên “bạn Na”',
+     ('Thôi, Na hay Nga ai cũng hiểu', 'Đọc lời chúc cho cả Na lẫn Nga', 'Cười trừ trên sóng rồi đọc tiếp')),
 ]
 
 # ---------------------------------------------------------------- 🎵 Khách gọi xin bài

@@ -72,8 +72,11 @@ def make_task(day, slot, serial):
     )
     cost = 2 + len(part_rows) + (1 if missing else 0)
     net = 14 + 3 * len(damages) + 2 * len(demands) + level
-    who = (slot + day) % len(PEOPLE)
+    owners = C.OWNERS[kind]
+    who = owners[(slot + day) % len(owners)]   # a customer who would own this piece (never Chú Khải, the owner)
+    surface, surface_words = C.SURFACE[kind]
     needs = dict(item=title, material=material, material_name=C.MATERIALS[material][0], signs=signs, demands=talk,
+                 surface=surface_words, surface_kind=C.SURFACES[surface],
                  parts=part_rows, tag=tag, tag_options=[tag, f'HX-{day:04d}-{slot + 1:02d}', f'HX-{day:04d}-{slot + 2:02d}'],
                  cost=cost, gross=cost + net, net=net, damages=len(damages),
                  note='Vật tư và linh kiện được xưởng ứng theo phiếu, trừ một lần khi trả đồ. Sai thì sửa ngay tại bước đó, công giảm theo chất lượng.')
