@@ -1,5 +1,10 @@
 {
   "strings": {
+  "Phố dịch vụ đang tạm nghỉ nhận đơn mới. Đơn đã đặt vẫn được làm, thanh toán hoặc hoàn tiền như thường.": "Service Street is not taking new orders for now. Orders already placed are still done, paid or refunded as usual.",
+  "🛎️ Ví và tài khoản của bạn đã đầy nên tiền đơn Phố dịch vụ đang chờ. Tiêu bớt rồi tiền sẽ tự về nhé.": "🛎️ Your wallet and bank account are full, so your Service Street money is waiting. Spend a little and it will arrive by itself.",
+  "Dòng này khách đã trả tiền lên sóng: chỉ khách hoặc quản trị gỡ được. Có vấn đề thì báo quản trị nhé.": "The customer paid to put this line on air: only the customer or an admin can take it down. If something is wrong, tell an admin.",
+  "Đặt phòng sinh và nhận nuôi đang tạm nghỉ. Lượt đã đặt vẫn nhận phòng, đón bé hoặc hủy để hoàn tiền như thường.": "Birth room bookings and adoptions are paused. Existing bookings can still check in, welcome the baby or cancel for a refund as usual.",
+  "🏨 Sổ phòng tạm đóng để bảo trì: lượt đặt phòng của bạn được hủy, tiền phòng hoàn đủ.": "🏨 The room book is closed for maintenance: your booking was cancelled and the room price refunded in full.",
   "Chỗ làm chưa mở cho mọi người: chọn “Mọi người” ở chỗ làm để hiện ở Phố dịch vụ.": "Your workplace isn't open to everyone: choose “Everyone” at your workplace to show up in Service Street.",
   "Cần sở hữu homestay (quy mô nghề Homestay từ cấp 1) để mở phòng sinh.": "You need to own a homestay (Homestay career scale level 1 or higher) to open a birth room.",
   "Dịch vụ này cài giá và mở / đóng ở mục riêng của nghề.": "This service's price and open / closed are set in its career's own section.",
@@ -34781,6 +34786,7 @@
   "Bang chủ rời bang bằng cách giải tán bang (không cần trao chức).": "A guild leader leaves by disbanding the guild (no need to hand over)."
   },
   "patterns": {
+  "🏥 Phòng sinh tạm đóng để bảo trì: lượt đặt được hủy, $1 xu hoàn đủ cho người trả.": "🏥 Birth rooms are closed for maintenance: the booking was cancelled and $1 xu refunded in full to the payer.",
   "Tiệc do $1 phục vụ": "Catering by $1",
   "Hoa do $1 cắm": "Flowers by $1",
   "Váy & vest do $1 chuẩn bị": "Dress & suit by $1",

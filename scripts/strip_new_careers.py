@@ -36,6 +36,8 @@ Usage
   # written only if nobody saved it meanwhile (WHERE revision = the one read). The archive line is flushed to disk
   # before the row is updated.
   python scripts/strip_new_careers.py strip --careers zpop --db --archive removed.jsonl [--write]
+  # a rollback to 2.4.68 (the default --careers): docs/SERVICE_MARKET.md "Rollback runbook", scripts/svc_drain.py first
+  python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio --db --archive removed.jsonl [--write]
   python scripts/strip_new_careers.py restore --db --archive removed.jsonl [--write]
 
 Restoring puts a career back only when the save has no record for it, or the record is still the fresh one a newer
@@ -57,6 +59,7 @@ import sys
 
 # Certificate groups added together with a career (an older build validates journey.certificates, journey.study and
 # the worn 'cert:<group>' against its own groups): taken out with that career and put back by restore.
+DEFAULT_CAREERS = 'reception,teller,restore,research,radio'   # tests/helpers.py NEWER_THAN_LIVE: a rollback to 2.4.68 (docs/SERVICE_MARKET.md)
 CERTS = {'reception': ('reception_service',), 'teller': ('teller_service',), 'research': ('research_basics',), 'radio': ('radio_basics',)}
 # Lists outside the careers that name career ids and that older validators check against their own CAREERS.
 ID_LISTS = (('journey', 'unlocked'), ('journey', 'board', 'touched'))
@@ -367,7 +370,8 @@ def db(a) -> int:
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     p.add_argument('cmd', choices=('strip', 'restore'))
-    p.add_argument('--careers', default='zpop', help='comma-separated career ids (strip), default zpop')
+    p.add_argument('--careers', default=DEFAULT_CAREERS,
+                   help=f'comma-separated career ids (strip), default {DEFAULT_CAREERS} (the careers live 2.4.68 does not know)')
     p.add_argument('--archive', required=True, help='JSON lines: what strip took out, what restore puts back')
     p.add_argument('--db', action='store_true', help='PostgreSQL sessions at DATABASE_URL instead of files')
     p.add_argument('--write', action='store_true', help='with --db: really update the rows')

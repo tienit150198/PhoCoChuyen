@@ -55,7 +55,9 @@ studio's price and record, and its button opens this file's order sheet for that
 escrow (photo_orders), the session and the payout stay here: the market refuses to order, negotiate or set up these
 services itself (one payment path, never a second escrow). Prices (×1–×5 of the NPC base) and open / closed are set
 in 📸 Khách đặt chụp (set_studio). MNL_PHOTO_DIRECT_OFF=1 stops new orders while the open ones finish. 🛑
-MNL_PHOTO_OFF=1: everything refused gracefully, nothing of any save changes.
+MNL_PHOTO_OFF=1 (1 / true / yes / on): everything refused gracefully except the way out of an order already paid: the
+buyer's 🗂️ album and the photographer's queue (read), cancel (the buyer), decline (the photographer) and the housekeeping
+sweep keep refunding in full (review 22/10: an off switch never strands escrow).
 
 Tables (game/pg_schema.py, SCHEMA_VERSION 66): photo_studios, photo_orders, photos, photo_pfp. Save: no root key;
 journey['photo_wall'] optional; wallet rows of kind 'life'; 'photo' live_effects rows (an older build leaves them
@@ -253,13 +255,25 @@ _MARKET_SQL = ('SELECT p.id, p.owner, p.visibility, p.updated_at, s.open, s.pric
                "WHERE p.kind='career' AND p.target=? ")
 
 
+def _market_rows(db, limit: int, offset: int, t: float) -> list:
+    """The listed studios (one query), kept on this checkout of the connection: the directory asks once per package and
+    every package lists the same studios (review 22/10: one query a page, not one per package)."""
+    key = ('_photo_market', int(limit), int(offset))
+    memo = getattr(db, '__dict__', None)
+    if memo is not None and key in memo:
+        return memo[key]
+    cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t - ACCOUNT_DAYS * DAY))
+    got = _rows(db, _MARKET_SQL + "AND p.visibility='public' AND COALESCE(s.open,1)=1 AND a.created_at<=? "
+                'ORDER BY p.updated_at DESC, p.id LIMIT ? OFFSET ?', (CAREER, cut, int(limit), int(offset)))
+    if memo is not None:
+        memo[key] = got
+    return got
+
+
 def _providers(pkg: str):
     def rows(db, limit, offset):
         t = now()
-        cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t - ACCOUNT_DAYS * DAY))
-        got = _rows(db, _MARKET_SQL + "AND p.visibility='public' AND COALESCE(s.open,1)=1 AND a.created_at<=? "
-                    'ORDER BY p.updated_at DESC, p.id LIMIT ? OFFSET ?', (CAREER, cut, int(limit), int(offset)))
-        return [_market_row(r, pkg, t) for r in got]
+        return [_market_row(r, pkg, t) for r in _market_rows(db, limit, offset, t)]
     return rows
 
 
@@ -634,8 +648,12 @@ def _photo_view(r: dict, me: str | None = None, full: bool = True) -> dict:
 
 
 # ---------------------------------------------------------------- GET /api/photo/<sub>
+OFF_OPEN = frozenset(('cancel', 'decline'))   # 🛑 while MNL_PHOTO_OFF: the refunds of orders already paid
+OFF_READ = frozenset(('album', 'studio'))     # … and the sheets that show those buttons
+
+
 def get(store, token, state, sub: str, q: dict) -> dict:
-    need(not off(), OFF_TEXT, 'off', 503)
+    need(not off() or sub in OFF_READ, OFF_TEXT, 'off', 503)
     if sub == 'catalog':
         return dict(ok=True, catalog=catalog())
     if sub == 'one':   # a photo's render data by id (home frames, profile cards): ids are random and unguessable
@@ -731,7 +749,7 @@ OPS = ('order', 'cancel', 'accept', 'decline', 'shot', 'deliver', 'studio', 'pfp
 
 
 def post(store, token, state, op: str, d: dict, ip: str = '') -> dict:
-    need(not off(), OFF_TEXT, 'off', 503)
+    need(not off() or op in OFF_OPEN, OFF_TEXT, 'off', 503)
     need(op in OPS, 'Thao tác không hợp lệ.', 'unknown', 404)
     need(isinstance(d, dict), 'Thông tin không hợp lệ.', 'bad')
     sid, display = _who(store, token)
@@ -779,8 +797,10 @@ def _take(s: dict, amount: int, label: str) -> None:
 
 
 def _credit(s: dict, amount: int, label: str) -> None:
-    from . import journey as jr
-    jr._wallet(s['journey'], amount, KIND, label[:120])
+    """Into the wallet up to its maximum, the rest into the bank account (the escrow came from both: _take), so a
+    wallet near its maximum never wedges a refund or a pay-out (service_market.credit; rows ≤ 10 M)."""
+    from . import service_market as sm
+    sm.credit(s, amount, label[:120], KIND)
 
 
 def order(store, token, sid: str, d: dict, ip: str = '') -> dict:
@@ -1187,7 +1207,7 @@ def refund_waiting(store, token) -> bool:
 
 def run_housekeeping(store) -> None:
     t = now()
-    if t - _SWEEP['at'] < SWEEP_EVERY or off():
+    if t - _SWEEP['at'] < SWEEP_EVERY:   # 🛑 MNL_PHOTO_OFF too: orders past their time are still refunded
         return
     _SWEEP['at'] = t
     sweep(store, t)

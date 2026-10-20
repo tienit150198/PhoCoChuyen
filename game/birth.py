@@ -40,6 +40,16 @@ Tables (game/pg_schema.py, SCHEMA_VERSION 65): birth_rooms (one per provider sav
 booking or adoption: proposed → booked → staying → born, or declined / cancelled / refunded; at most one of
 proposed/booked/staying per couple). No save key. 2.4.66 never reads them.
 
+Anti-laundering (review 22/10): a player room is a payment from one player to another, so the acceptance runs Phố dịch
+vụ's guard (service_market.guard, money=True, inside the transaction that takes the price): never the same network
+(the accepting spouse's request address included), the pair caps (a room counts in service_market.pair_usage), the
+new-account day cap shared with every route (bank_xfer.count_out). The proposal checks it too (money=False) for a
+clear answer. The NPC hospital and the adoption fee pay nobody: no guard.
+
+🛑 MNL_BIRTH_OFF=1 (1 / true / yes / on): no new booking or adoption (proposing and accepting are refused, rooms are
+not listed and cannot be opened); everything already booked keeps its way out: decline, cancel (a full refund),
+check-in, the birth, ratings, the relationship-end refunds.
+
 🛎️ Phố dịch vụ (game/service_market.py, SCHEMA 63) LISTS the player birth rooms: `install()` registers
 ('homestay' | 'hotel', 'phong_sinh') as an own-flow listing (spec `open`): the directory card shows the room, its
 price and rating, and opens Nhà & Gia đình › 👶 Đón con chung with that room preselected. The booking, the
@@ -53,6 +63,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import re
 
 from . import marriage as mr
@@ -100,6 +111,14 @@ def _today() -> str:
     return datetime.datetime.fromtimestamp(mr.now(), VN).date().isoformat()
 
 
+OFF_TEXT = 'Đặt phòng sinh và nhận nuôi đang tạm nghỉ. Lượt đã đặt vẫn nhận phòng, đón bé hoặc hủy để hoàn tiền như thường.'
+
+
+def off() -> bool:
+    """🛑 MNL_BIRTH_OFF: no new booking; what is booked keeps its way out (cancel, refunds, the birth)."""
+    return os.environ.get('MNL_BIRTH_OFF', '').strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 # ---------------------------------------------------------------- the marketplace seam
 def market():
     """game/service_market.py when it is installed (another branch), else None."""
@@ -119,6 +138,8 @@ def _market_row(r: dict, busy: int = 0) -> dict:
 
 def _providers(career: str):
     def rows(db, limit, offset):
+        if off():
+            return []
         return [_market_row(r) for r in mr._rows(db, 'SELECT id,sid,name,price,open,stars,rated,born,at FROM birth_rooms WHERE career=? AND open '
                                                      'ORDER BY price,id LIMIT ? OFFSET ?', (career, int(limit), int(offset)))]
     return rows
@@ -492,7 +513,23 @@ def apply(db, sid: str, c: dict | None, states: dict, op: str, p: dict, rid: str
     return f'Cảm ơn bạn đã chấm {stars} sao.'
 
 
+def _guard(db, payer: str, provider: str, price: int, career: str, actor: str, money: bool, t: float) -> None:
+    """Phố dịch vụ's anti-laundering for a player room (payer → provider): service_market.guard, and the accepting
+    spouse's own network when they are not the payer (never paired with the provider through the couple)."""
+    sm = market()
+    if sm is None:
+        return
+    ip = mr.request_ip()
+    spec = sm.get_spec(career, SERVICE) or market_spec(career)
+    if money:
+        sm.record_net(db, actor, ip, t)
+    sm.guard(db, payer, provider, price, spec, ip, actor, money=money, t=t)
+    if actor != payer and not sm._spouses(db, actor, provider):
+        sm.need(not sm.same_net(db, actor, provider, ip, actor, t), 'Hai tài khoản cùng một mạng không giao dịch với nhau được.', 'same_net', 403)
+
+
 def _book(db, sid, other, c, states, p, t) -> str:
+    _need(not off(), OFF_TEXT, 'birth_off', 503)
     kind = p.get('kind')
     _need(kind in ('birth', 'adopt'), 'Chọn sinh con hoặc nhận nuôi.')
     _need(all(ready(s) for s in states.values()), 'Cả hai mở hành trình đến ngày sống 10 trước nhé.', 'locked')
@@ -522,6 +559,8 @@ def _book(db, sid, other, c, states, p, t) -> str:
         where, emoji = f'{r["name"]} ({mr._clean_name(r["display"] or "Chủ homestay")})', '🏡'
         _need(FLOOR <= price <= ROOM_MAX, 'Giá phòng không hợp lệ.', 'stale_room', 409)
     _need(type(seen) is int and seen == price, f'Giá đã đổi thành {_fmt(price)} xu. Xem lại rồi đặt nhé.', 'price_changed', 409)
+    if provider == 'room':   # a clear answer now; the acceptance checks it again where the money moves
+        _guard(db, payer_sid, provider_sid, price, r['career'], sid, False, t)
     if payer_sid == sid:
         _need(have(states[sid]) >= price and states[sid]['journey']['wallet'] >= 0,
               f'Bạn cần {_fmt(price)} xu (tiền mặt + tài khoản). Còn thiếu {_fmt(max(0, price - have(states[sid])))} xu.', 'not_enough')
@@ -542,6 +581,7 @@ def _answer(db, sid, c, states, r, p, t, changed) -> str:
     _need(r['to_sid'] == sid, 'Chỉ người được mời mới trả lời.', 'forbidden', 403)
     answer = p.get('answer')
     _need(answer in ('accept', 'decline'), 'Chọn đồng ý hoặc từ chối.')
+    _need(answer == 'decline' or not off(), OFF_TEXT, 'birth_off', 503)
     if answer == 'decline':
         db.execute("UPDATE birth_stays SET status='declined',done=? WHERE id=?", (t, r['id']))
         mr._notice(db, r['from_sid'], '🏥 Người ấy chưa đồng ý lời mời. Không ai bị trừ tiền.')
@@ -550,11 +590,13 @@ def _answer(db, sid, c, states, r, p, t, changed) -> str:
     _no_child(db, c)
     data = json.loads(r['data'] or '{}')
     if r['provider'] == 'room':   # the room must still be offered at the price both saw
-        room = mr._row(db, 'SELECT open,price FROM birth_rooms WHERE id=?', (r['room'],))
+        room = mr._row(db, 'SELECT open,price,career FROM birth_rooms WHERE id=?', (r['room'],))
         if not room or not room['open'] or int(room['price']) != int(r['price']):
             db.execute("UPDATE birth_stays SET status='cancelled',done=? WHERE id=?", (t, r['id']))
             mr._notice(db, r['from_sid'], '🏥 Phòng sinh đã đổi giá hoặc đóng, lời mời được hủy. Chưa ai bị trừ tiền.')
             return 'Phòng đã đổi giá hoặc đóng nên lời mời được hủy. Chưa ai bị trừ tiền; đặt lại nhé.'
+        # 🛎️ the market's anti-laundering where the money moves: same network, pair caps, the new-account day cap
+        _guard(db, r['payer'], r['provider_sid'], int(r['price']), room['career'], sid, True, t)
     payer = states[r['payer']]
     label = (f'🏥 Phòng sinh · {data.get("where", "")}' if r['kind'] == 'birth' else f'📄 Phí nhận nuôi · {AGENCY["name"]}')
     paid = take(payer, int(r['price']), label)
@@ -582,6 +624,7 @@ def _room_set(db, sid, state, p, t) -> str:
     _need(price <= ROOM_MAX, f'Giá phòng sinh tối đa {_fmt(ROOM_MAX)} xu.', 'above_max')
     is_open = p.get('open', True)
     _need(type(is_open) is bool, 'Chọn mở hoặc đóng phòng.')
+    _need(not is_open or not off(), OFF_TEXT, 'birth_off', 503)
     db.execute('INSERT INTO birth_rooms(sid,career,name,price,open,at) VALUES(?,?,?,?,?,?) '
                'ON CONFLICT (sid) DO UPDATE SET career=EXCLUDED.career,name=EXCLUDED.name,price=EXCLUDED.price,open=EXCLUDED.open,at=EXCLUDED.at',
                (sid, career, name, price, is_open, t))

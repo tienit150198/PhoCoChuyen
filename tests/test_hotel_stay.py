@@ -228,6 +228,28 @@ class Flow(HotelBase):
         # a guest holds one booking at a time
         self.refused('requirement', self.order, g, h)
 
+    def test_one_lock_order_hotel_stays_then_svc_orders(self):
+        """Review 22/10: the generic "Xong việc" on a stay locked svc_orders, then hotel_stays FOR UPDATE in the deliver
+        hook, while _step / the check-out lock hotel_stays, then svc_orders (a deadlock). It is refused before any lock,
+        and the hook reads the stay without FOR UPDATE."""
+        import inspect
+        h, g = self.host('lk_h'), self.guest('lk_g')
+        self.sell(h)
+        o = self.order(g, h)
+        sm.post(self.store, h, None, 'take', dict(order=o['id']))
+        with patch.object(sm, '_deliver_db', side_effect=AssertionError('svc_orders locked for a stay')):
+            self.refused('use_hotel_book', sm.post, self.store, h, None, 'done', dict(order=o['id']))
+        self.assertNotIn('order_id=? FOR UPDATE', inspect.getsource(hs._deliver))
+        # the check-out still delivers through the hook (the stay row read plainly) and pays once
+        self.do(g, 'arrive', order=o['id'])
+        st = self.stay(h, o['id'])
+        self.do(h, 'checkin', order=o['id'], room=next(r['id'] for r in st['rooms'] if not r['busy'] and not r['cost']),
+                pick=st['quirk']['opts'][0]['id'])
+        self.clock.t += 4 * H   # past its end and the grace: the system checks out (hotel_stays, then svc_orders)
+        hs._swept[0] = 0.0
+        hs.run_housekeeping(self.store)
+        self.assertEqual(self.svc(o['id'])['status'], 'done')
+
     def test_guest_requests_late_checkout_and_limits(self):
         h, g = self.host('rq_h'), self.guest('rq_g')
         self.sell(h, service='stay_hours')

@@ -6,6 +6,7 @@ portfolio, PAY_PCT % to the photographer, BURN_PCT % burned: buyer debit = pay +
 never deleted), the profile photo on the profile card, the framed photo at home, and the id lists shared with the
 client."""
 import re
+import time
 from pathlib import Path
 from unittest import mock
 
@@ -181,6 +182,30 @@ class Flow(Base):
         lfx.on_load(self.store, by, self.state(by))
         self.assertEqual(self.wallet(by), w)
         self.refused('gone', self.op, sh, 'shot', id=c['id'], set={}, el=4.0)
+
+
+    def test_the_off_switch_still_refunds_cancels_declines_and_sweeps(self):
+        """Review 22/10: MNL_PHOTO_OFF refused everything, the sweep included: paid orders were stranded."""
+        import os
+        sh, by = self.shooter(), self.buyer()
+        w = self.wallet(by)
+        a = self.order(by, sh)['order']
+        with mock.patch.object(P, 'PAIR_DAY', 10):
+            b = self.order(by, sh)['order']
+            c = self.order(by, sh)['order']
+        self.op(sh, 'accept', id=c['id'])
+        with mock.patch.dict(os.environ, {'MNL_PHOTO_OFF': 'true'}):
+            self.refused('off', self.order, by, sh)
+            self.refused('off', self.op, sh, 'accept', id=b['id'])
+            self.assertTrue(P.get(self.store, by, None, 'album', {})['ok'])
+            P.post(self.store, by, None, 'cancel', dict(id=a['id']))
+            self.op(sh, 'decline', id=b['id'])
+            P._SWEEP['at'] = 0.0
+            with mock.patch.object(P, 'now', lambda: time.time() + P.SHOOT_HOURS * 3600 + 5):
+                P.run_housekeeping(self.store)
+        self.assertEqual([self.row(x['id'])['status'] for x in (a, b, c)], ['cancelled', 'declined', 'expired'])
+        lfx.on_load(self.store, by, self.state(by))
+        self.assertEqual(self.wallet(by), w, 'every price back')
 
 
 class Rules(Base):

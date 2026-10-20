@@ -22,7 +22,10 @@ marks the work done) checks the bench is finished and closes the ticket (done) w
 the buyer's save, once: the market flips the order ready → done exactly once, and the mark carries the order id.
 A ticket bound to an order that ended without delivery (refunded, cancelled…) opens again by itself.
 
-Kill switch: MNL_RESTORE_OFF=1 — no new ticket, order, provider or delivery (orders already paid run out their
+Prices never undercut the game's own repair (review 22/10): each service's floor is repair_floor (the dearest repair of
+its class): at today's prices the lowest 🚗 ô tô price is 1 440 xu, not 500, and ⛵ thuyền / máy bay 7 800 xu, not 2 500.
+
+Kill switch: MNL_RESTORE_OFF=1 (1 / true / yes / on) — no new ticket, order, provider or delivery (orders already paid run out their
 timers and are refunded in full by the market); a delivery already settling still lands in the buyer's save.
 Table: restore_tickets (game/pg_schema.py SCHEMA_VERSION 72).
 """
@@ -30,7 +33,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import re
 import secrets
 import time
@@ -86,7 +88,24 @@ BENCH = {
 
 
 def off() -> bool:
-    return os.environ.get('MNL_RESTORE_OFF', '') not in ('', '0')
+    return sm.env_on('MNL_RESTORE_OFF')
+
+
+def repair_floor(service: str) -> int:
+    """The lowest unit price of `service` (its registry floor): the most the game's own repair of one thing of that class
+    costs (review 22/10), so a restore never undercuts the repair sink it replaces. 🛵/🚗/⛵ the dearest vehicle of its
+    groups at rui.XE_PCT (what a 🎲 broken vehicle costs at jr_rui_fix, before insurance); 🏚️ the dearest reno part at
+    0 % in the biggest home (jr_reno_fix; a 🎲 broken-home entry is cleared only when the price covers it: apply);
+    🪑 cosmetic: none."""
+    sp = SERVICES[service]
+    if sp['kind'] == 'xe':
+        from . import garage as gr
+        from . import rui
+        return max([int(v['price']) * rui.XE_PCT // 10000 for v in gr.VEHICLES.values() if v['group'] in sp['groups']] or [0])
+    if sp['kind'] == 'nha':
+        from . import reno as rn
+        return max(rn.fix_cost(k, part, 0) for k in rn.HOUSES for part in rn.PARTS)
+    return 0
 
 
 OFF_LINE = 'Xưởng phục chế đang tạm nghỉ, quay lại sau nhé.'
@@ -217,8 +236,9 @@ def _mark(s: dict, key: str, by: str, service: str, grade: int, oid: str) -> Non
         its.pop(next(iter(its)))
 
 
-def apply(s: dict, result: dict, oid: str) -> bool:
-    """The restoration onto the buyer's save (False: nothing to do — already applied, or the thing is gone)."""
+def apply(s: dict, result: dict, oid: str, price: int | None = None) -> bool:
+    """The restoration onto the buyer's save (False: nothing to do — already applied, or the thing is gone). `price`: what
+    the order paid; a 🎲 broken-home entry (rui) whose own repair bill is higher stays (jr_rui_fix still asks for it)."""
     if not isinstance(result, dict) or result.get('svc') not in SERVICES or not isinstance(result.get('ref'), str):
         return False
     service, ref = result['svc'], result['ref']
@@ -245,7 +265,8 @@ def apply(s: dict, result: dict, oid: str) -> bool:
         r['parts'][part]['c'] = 100
         b = rui.get(s)
         hk = r['hid']
-        if b and hk in b['broken'].get('nha', {}) and b['broken']['nha'][hk].get('p') == part:
+        if b and hk in b['broken'].get('nha', {}) and b['broken']['nha'][hk].get('p') == part \
+                and (price is None or int(price) >= int(b['broken']['nha'][hk].get('c') or 0)):
             b['broken']['nha'].pop(hk)
     else:
         r = rn.get(s)
@@ -292,7 +313,7 @@ def _deliver(db, provider, buyer, order) -> dict:
 
 def _on_buyer(state, order) -> None:
     try:
-        apply(state, order.get('result') or {}, str(order.get('id') or ''))
+        apply(state, order.get('result') or {}, str(order.get('id') or ''), int(order.get('price') or 0))
     except Exception:  # noqa: BLE001  (never block the restorer's pay: a thing that changed shape stays as it is)
         pass
 
@@ -300,7 +321,7 @@ def _on_buyer(state, order) -> None:
 def install() -> None:
     """Register the services with Phố dịch vụ (idempotent; called at import and by tests after a registry reset)."""
     for sid, sp in SERVICES.items():
-        sm.register(CAREER, sid, dict(name=sp['name'], icon=sp['icon'], desc=sp['desc'], base=sp['base'], unit=sp['unit'],
+        sm.register(CAREER, sid, dict(name=sp['name'], icon=sp['icon'], desc=sp['desc'], base=sp['base'], unit=sp['unit'], floor=repair_floor(sid),
                                       duration=60, work_hours=72, deliver=_deliver, on_buyer=_on_buyer, confirm='auto',
                                       requires=dict(story=True), check=_check(sid), can_provide=_can_provide,
                                       note_hint='Dặn thợ thêm (giữ vết nào, màu gì…)'))

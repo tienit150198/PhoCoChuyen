@@ -334,16 +334,19 @@ class Stamps(FairBase):
 class Board(FairBase):
     def test_board_settles_once_and_grants_booth_titles(self):
         a, f, v, w = self.provider('bd_a'), self.provider('bd_f', 'florist'), self.user('bd_v', wallet=50000), self.user('bd_w', wallet=50000)
+        x = self.user('bd_x', wallet=50000)
+        with self.store.connect() as db:   # a rating counts from an account 3 days old (svc_reviews.counted)
+            db.execute("UPDATE accounts SET created_at='2000-01-01 00:00:00' WHERE sid=?", (self.sid(w),))
         self.fpost(a, 'open', career='milk_tea', pct=20)
         self.fpost(f, 'open', career='florist', pct=20)
-        for buyer in (v, w, v):
+        for buyer in (v, w, x, v):
             self.complete(buyer, a)
         o = self.complete(w, f, 'florist')
         sm.post(self.store, w, None, 'rate', dict(order=o['id'], stars=5))
         tf._stale()   # the live board is cached a few seconds
         live = tf.board(self.store)
         self.assertEqual([r['who']['name'] for r in live['served']], ['Bd_A', 'Bd_F'])
-        self.assertEqual(live['served'][0]['served'], 3)
+        self.assertEqual(live['served'][0]['served'], 3, 'distinct customers: v came twice')
         self.assertFalse(live['event']['final'])
         # not before the settle time
         self.clock.t = self.ev['ends'] + 1
@@ -355,7 +358,7 @@ class Board(FairBase):
         self.assertEqual(tf.run_housekeeping(self.store), 0)
         snap = tf.board(self.store, self.ev['id'])
         self.assertTrue(snap['event']['final'])
-        self.assertEqual((snap['served'][0]['served'], snap['booths'], snap['orders']), (3, 2, 4))
+        self.assertEqual((snap['served'][0]['served'], snap['booths'], snap['orders']), (3, 2, 5))
         self.assertEqual(snap['rated'][0]['who']['name'], 'Bd_F', '5 stars lift the florist above')
         self.load(a)
         self.load(f)
@@ -378,3 +381,26 @@ class Board(FairBase):
         with self.store.connect() as db:
             rows = db.execute("SELECT ref FROM news WHERE kind='tfair'").fetchall()
         self.assertEqual([r['ref'] for r in rows], ['tfair:open:' + self.ev['id']])
+
+
+class BoardRules(FairBase):
+    def test_served_counts_distinct_customers_never_a_spouse_and_only_counted_stars(self):
+        """Review 22/10: ⭐ used every rating (svc_reviews.counted ignored) and 'served' counted orders, a spouse's
+        included: a couple could farm the board."""
+        a, wife, v = self.provider('br_a'), self.user('br_wife', wallet=50000), self.user('br_v', old=False, wallet=50000)
+        sa, sw = self.sid(a), self.sid(wife)
+
+        def wed(db):
+            cid = db.execute("INSERT INTO couples(a,b,status,since) VALUES(?,?,'married',1) RETURNING id", (sa, sw)).fetchone()['id']
+            for s in (sa, sw):
+                db.execute('INSERT INTO marriage_bonds(sid,couple) VALUES(?,?)', (s, cid))
+        self.store.transaction(wed)
+        self.fpost(a, 'open', career='milk_tea', pct=20)
+        for buyer in (wife, wife, v, v):
+            o = self.complete(buyer, a)
+        sm.post(self.store, v, None, 'rate', dict(order=o['id'], stars=1))   # a fresh account: not counted
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT counted FROM svc_reviews WHERE order_id=?', (o['id'],)).fetchone()['counted'], 0)
+        tf._stale()
+        row = tf.board(self.store)['served'][0]
+        self.assertEqual((row['served'], row['n']), (1, 0), 'one customer who is not the spouse; the uncounted star ignored')

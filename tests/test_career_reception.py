@@ -540,7 +540,7 @@ class Hiring(unittest.TestCase):
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_REF = '5ba2e147'   # 2.4.67 (live), a release without the reception desk (2.4.66 a808cb79 neither)
+BASE_REF = '289df99d'   # 2.4.68 (live), a release without the reception desk (2.4.67 5ba2e147, 2.4.66 a808cb79 neither)
 OLD_LOAD = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action;'
             's=migrate_state(json.load(sys.stdin));validate_state(s);'
             's,_=apply_action(s,"milk_tea","select_career",{});s,_=apply_action(s,"milk_tea","start_day",{});'

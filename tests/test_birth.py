@@ -43,7 +43,16 @@ class BirthBase(CoupleBase):
         for token in (self.a, self.b):
             mr._mutate(self.store, {self.sid(token): lambda s: s['journey'].__setitem__('life_day', 12)})
             self.fund(token, 1_000_000)
+        self.age(self.a, self.b)   # a player room is a payment to another player: the new-account day cap applies (review 22/10)
         self.n = 0
+
+    def age(self, *toks, days=30):
+        """Accounts older than bank_xfer.NEW_DAYS (a fresh one pays at most 500 000 xu a day to other players)."""
+        import time as _t
+        at = _t.strftime('%Y-%m-%d %H:%M:%S', _t.gmtime(_t.time() - days * 86400))
+        with self.store.connect() as db:
+            for tok in toks:
+                db.execute('UPDATE accounts SET created_at=? WHERE sid=?', (at, self.sid(tok)))
 
     def rid(self):
         self.n += 1
@@ -362,6 +371,62 @@ class Providers(BirthBase):
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM svc_orders').fetchone()['n'], 0)
 
+    def test_player_room_runs_the_markets_anti_laundering(self):
+        """Review 22/10: a player room is a payment to another player: same network, the pair caps (the room counts in
+        service_market.pair_usage) and the new-account day cap, where the money moves; nothing charged on a refusal."""
+        from game import service_market as sm
+        self.book(where=self.room['id'], price=600_000)
+        before = self.wallet(self.a)
+        with self.store.connect() as db:   # the payer and the room's owner seen on one network
+            sm.record_net(db, self.sid(self.a), '10.1.2.3', mr.now())
+            sm.record_net(db, self.sid(self.cuc), '10.1.2.3', mr.now())
+        with self.assertRaises(mr.MarriageError) as e:
+            self.accept()
+        self.assertEqual(e.exception.code, 'same_net')
+        self.assertEqual((self.wallet(self.a), self.stay(self.a)['status']), (before, 'proposed'))
+        with self.store.connect() as db:
+            db.execute('DELETE FROM svc_net WHERE sid IN (?,?)', (self.sid(self.a), self.sid(self.cuc)))
+        # the accepting spouse's own address counts too (mr.act passes the request's ip)
+        with self.store.connect() as db:
+            sm.record_net(db, self.sid(self.cuc), '10.4.5.6', mr.now())
+        with self.assertRaises(mr.MarriageError) as e:
+            mr.act(self.store, self.b, 'family_birth_answer', dict(id=self.stay(self.b)['id'], answer='accept', rid=self.rid()), ip='10.4.5.6')
+        self.assertEqual(e.exception.code, 'same_net')
+        with self.store.connect() as db:
+            db.execute('DELETE FROM svc_net WHERE sid=?', (self.sid(self.cuc),))
+        # a fresh payer account: 600 000 is over the day cap shared with every route
+        self.age(self.a, days=0)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.accept()
+        self.assertEqual(e.exception.code, 'day_cap')
+        self.assertEqual(self.wallet(self.a), before)
+        self.age(self.a)
+        self.accept()
+        self.assertEqual(self.wallet(self.a), before - 600_000)
+        with self.store.connect() as db:
+            use = sm.pair_usage(db, self.sid(self.a), self.sid(self.cuc))
+        self.assertEqual((use['day'], use['week']), (1, 600_000), 'the room counts toward the pair caps')
+
+    def test_kill_switch_stops_new_bookings_not_the_refunds(self):
+        import os
+        from unittest.mock import patch
+        self.book(where=self.room['id'], price=600_000)
+        self.accept()
+        before = self.wallet(self.a)
+        with patch.dict(os.environ, {'MNL_BIRTH_OFF': 'yes'}):
+            from game import service_market as sm
+            self.assertEqual([x for x in sm.get(self.store, self.b, None, 'dir', dict(career='homestay', service='phong_sinh'))['items']
+                              if x.get('own')], [], 'not listed while off')
+            with self.assertRaises(mr.MarriageError) as e:
+                self.book(kind='adopt')
+            self.assertEqual(e.exception.code, 'birth_off')
+            with self.assertRaises(mr.MarriageError) as e:
+                self.do(self.cuc, 'family_room_set', name='Phòng Đồi Thông', price=600_000, open=True)
+            self.assertEqual(e.exception.code, 'birth_off')
+            self.do(self.cuc, 'family_room_set', name='Phòng Đồi Thông', price=600_000, open=False)   # closing is fine
+            self.do(self.a, 'family_birth_cancel', id=self.stay(self.a)['id'])
+        self.assertEqual(self.wallet(self.a), before + 600_000, 'the refund works while off')
+
     def test_player_room_escrow_rating_and_capacity(self):
         self.book(where=self.room['id'], price=600_000)
         self.accept()
@@ -514,6 +579,28 @@ class OldChildren(BirthBase):
         self.book()
         self.act(self.b, 'seen')
         self.assertEqual(mr.alerts(self.store, self.sid(self.b))['alerts'], before + 1)
+
+
+class CoupleOnly(BirthBase):
+    def test_child_parameter_never_skips_the_married_check(self):
+        """Review 22/10: `child` ('copy:N' is a personal custody copy) used to turn the couple check off for every op: an
+        engaged pair adopted, a single player hit a 500. A booking is the married couple's whatever `child` says."""
+        d, e, solo = self.user('dung', 2_000_000), self.user('em', 2_000_000), self.user('mot', 2_000_000)
+        self.engage(d, e)
+        for tok in (d, solo):
+            for child in ('copy:1', 'x', 7):
+                with self.assertRaises(mr.MarriageError) as cm:
+                    self.do(tok, 'family_birth_book', kind='adopt', where='agency', name='Bông', price=bt.ADOPT_FEE, payer='me', child=child)
+                self.assertEqual(cm.exception.code, 'not_married', (tok, child))
+                with self.assertRaises(mr.MarriageError) as cm:
+                    self.do(tok, 'family_birth_answer', id=1, answer='accept', child=child)
+                self.assertEqual(cm.exception.code, 'not_married')
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM birth_stays').fetchone()['n'], 0)
+        # a personal copy's care still needs no couple (a clean refusal: there is no such copy)
+        with self.assertRaises(mr.MarriageError) as cm:
+            self.do(solo, 'family_child_care', child='copy:1', act=next(iter(__import__('game.household', fromlist=['ACTS']).ACTS)))
+        self.assertNotEqual(cm.exception.code, 'not_married')
 
 
 class BrowserUnits(unittest.TestCase):

@@ -204,6 +204,15 @@ class TakeDown(Base):
                 self.air(d, o)
                 line = [x for x in self.lines() if x['order_id'] == o['id']][0]
                 tb = self.total(b)
+                if who == 'dj':   # review 22/10: paid to air it, the DJ never takes it down (an admin does)
+                    self.refused('dj_hide', rs.post, self.store, d, None, 'hide', dict(line=line['id']))
+                    self.assertEqual([x for x in self.lines() if x['id'] == line['id']][0]['hidden'], 0)
+                    mine = rs.get(self.store, d, None, 'mine', {})['mine']
+                    self.assertFalse([x for x in mine if x['id'] == line['id']][0]['can_hide'])
+                    self.assertTrue([x for x in rs.get(self.store, b, None, 'mine', {})['mine'] if x['id'] == line['id']][0]['can_hide'])
+                    with self.store.connect() as db:
+                        db.execute("UPDATE radio_lines SET day='2000-01-01', hidden=1, hidden_by='admin' WHERE id=?", (line['id'],))
+                    continue
                 if who == 'admin':
                     rs.admin_act(self.store, 'admin', dict(op='hide', line=line['id']))
                 else:

@@ -22,8 +22,9 @@ BUYER_DAY lines a buyer a Vietnam day (orders still open count too), at most DJ_
 serialised by an advisory lock so two DJs cannot both take the last slot. The ticker (marriage.news → `radio`) reads the live lines
 once per CACHE_S per store (one small dict, at most CACHE_STORES entries); an older page ignores the key.
 
-Taking a line down: its buyer, its DJ or an admin (GET/POST /api/admin/radio) hides it; nothing is refunded (it aired), nothing
-is deleted. A deleted account's lines are hidden (forget).
+Taking a line down: its buyer or an admin (GET/POST /api/admin/radio) hides it; nothing is refunded (it aired), nothing is
+deleted. The DJ never hides a line they were paid to air (review 22/10: paid, then hidden at once); a line that should not
+be on air goes to an admin. A deleted account's lines are hidden (forget).
 
 🛑 MNL_RADIO_OFF=1: no new orders, no deliveries, nothing on the ticker; open orders wait (the buyer may cancel for a full refund,
 or the market refunds them after their hours). The career itself (game/careers/radio.py) keeps working.
@@ -71,7 +72,7 @@ def need(cond, message: str, code: str = 'radio_error', status: int = 400):
 
 
 def off() -> bool:
-    return os.environ.get('MNL_RADIO_OFF', '').strip() in ('1', 'true', 'yes', 'on')
+    return os.environ.get('MNL_RADIO_OFF', '').strip().lower() in ('1', 'true', 'yes', 'on')
 
 
 def now() -> float:
@@ -314,7 +315,7 @@ def _line_view(db, r: dict, me: str, t: float) -> dict:
     role = 'buyer' if r['buyer'] == me else 'dj' if r['provider'] == me else ''
     return dict(id=r['id'], kind=r['kind'], text=r['text'], live=bool(not r['hidden'] and r['start_at'] <= t < r['end_at']),
                 hidden=bool(r['hidden']), hidden_by=r['hidden_by'], start=int(r['start_at']), until=int(r['end_at']),
-                slot=_slot(r['start_at'], r['end_at']), role=role, can_hide=bool(role) and not r['hidden'] and r['end_at'] > t)
+                slot=_slot(r['start_at'], r['end_at']), role=role, can_hide=role == 'buyer' and not r['hidden'] and r['end_at'] > t)
 
 
 def desk(store, sid: str) -> dict:
@@ -322,7 +323,7 @@ def desk(store, sid: str) -> dict:
     from . import service_market as sm
     _ensure()
     t = now()
-    sm.settle_for(store, sid)
+    sm.settle_quiet(store, sid)
     with store.connect() as db:
         orders = []
         for o in sm.open_orders(db, sid, CAREER):
@@ -376,7 +377,8 @@ def air(store, token, sid: str, data: dict, ip: str = '') -> dict:
 
 
 def hide(store, sid: str, data: dict, by: str = '') -> dict:
-    """Take a line off the ticker: its buyer, its DJ (by=''), or an admin (by='admin'). Never refunded, never deleted."""
+    """Take a line off the ticker: its buyer (by=''), or an admin (by='admin'). Never refunded, never deleted. The DJ who
+    aired it (and was paid for it) cannot: they ask an admin."""
     need(set(data) <= {'line', 'op', 'note'}, 'Thông tin không hợp lệ.')
     lid = data.get('line')
     need(isinstance(lid, str) and ID_RX.fullmatch(lid), 'Không tìm thấy dòng này.', 'not_found', 404)
@@ -387,6 +389,8 @@ def hide(store, sid: str, data: dict, by: str = '') -> dict:
         need(r, 'Không tìm thấy dòng này.', 'not_found', 404)
         who = 'admin' if by == 'admin' else 'buyer' if r['buyer'] == sid else 'dj' if r['provider'] == sid else ''
         need(who, 'Không tìm thấy dòng này.', 'not_found', 404)
+        need(who != 'dj' or show, 'Dòng này khách đã trả tiền lên sóng: chỉ khách hoặc quản trị gỡ được. Có vấn đề thì báo quản trị nhé.',
+             'dj_hide', 403)
         if show:
             db.execute("UPDATE radio_lines SET hidden=0, hidden_by='', hidden_at=NULL WHERE id=?", (lid,))
         elif not r['hidden']:

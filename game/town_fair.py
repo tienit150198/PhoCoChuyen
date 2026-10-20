@@ -30,7 +30,8 @@ Visitors
   game/live_effects.py; 2.4.66 leaves such a row pending).
 
 Leaderboard
-* 🛎️ Phục vụ nhiều nhất (completed fair orders) and ⭐ Điểm gian hàng (mood ± the customers' stars of those orders),
+* 🛎️ Phục vụ nhiều nhất (distinct customers of completed fair orders, a spouse not counted) and ⭐ Điểm gian hàng (mood
+  ± the counted stars of those orders: svc_reviews.counted),
   while the fair runs and until SETTLE_HOURS after it (late orders still count); then the housekeeping freezes it into
   fair_events.board (status final, archived, never deleted) and grants once: a booth that served HOST_SERVED → 🎪 Chủ gian
   hội chợ, the top TOP of each board → their title (served ≥ 1).
@@ -400,7 +401,8 @@ def _stars(db, ids: list) -> dict:
     for i in range(0, len(ids), 500):
         part = ids[i:i + 500]
         marks = ','.join('?' * len(part))
-        for r in db.execute(f'SELECT order_id, stars FROM svc_reviews WHERE order_id IN ({marks})', tuple(part)).fetchall():
+        # only ratings that moved a reputation (svc_reviews.counted: one a week per buyer and provider, accounts ≥ 3 days)
+        for r in db.execute(f'SELECT order_id, stars FROM svc_reviews WHERE order_id IN ({marks}) AND counted=1', tuple(part)).fetchall():
             out[r['order_id']] = int(r['stars'])
     return out
 
@@ -413,16 +415,32 @@ def score_of(mood: int, stars: list) -> int:
     return max(0, min(100, s))
 
 
+def _spouses(db, sids) -> dict:
+    """{sid: their husband or wife} for these players (married couples only)."""
+    sids = sorted(sids)
+    if not sids:
+        return {}
+    marks = ','.join('?' * len(sids))
+    out = {}
+    for r in db.execute(f"SELECT a, b FROM couples WHERE status='married' AND (a IN ({marks}) OR b IN ({marks}))", (*sids, *sids)).fetchall():
+        out[r['a']], out[r['b']] = r['b'], r['a']
+    return out
+
+
 def _compute_board(db, ev: dict) -> dict:
     booths = [dict(r) for r in db.execute('SELECT sid, pid, career, mood, shows, watchers, handled, missed, opened_at FROM fair_booths '
                                           'WHERE event=? ORDER BY opened_at LIMIT ?', (ev['id'], BOOTHS_MAX * 4)).fetchall()]
     orders = _fair_orders(db, ev)
     stars = _stars(db, [o[0] for o in orders])
+    spouse = _spouses(db, {b['sid'] for b in booths})
     served, st = {}, {}
-    for oid, prov, _, _ in orders:
-        served[prov] = served.get(prov, 0) + 1
+    for oid, prov, buyer, _ in orders:
+        if buyer == spouse.get(prov):   # a husband or wife buying from the booth serves nobody new
+            continue
+        served.setdefault(prov, set()).add(buyer)   # 🧑‍🤝‍🧑 distinct customers, not orders
         if oid in stars:
             st.setdefault(prov, []).append(stars[oid])
+    served = {k: len(v) for k, v in served.items()}
     rows = []
     for b in booths:
         s = st.get(b['sid'], [])

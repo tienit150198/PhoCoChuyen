@@ -29,7 +29,7 @@ a save (a host's cost, the partner's rest) runs in marriage._mutate with that ch
 check-out marks the market order delivered in the same transaction (service_market.deliver_in_commit), so the
 market's own status guard pays the host once.
 
-🛑 MNL_HOTEL_OFF=1: no new booking (the services refuse buyers and providers), the sheet says so; stays already paid
+🛑 MNL_HOTEL_OFF=1 (1 / true / yes / on): no new booking (the services refuse buyers and providers), the sheet says so; stays already paid
 keep their way out (cancel, check-out, the housekeeping) so no money is stuck. No in-memory cache.
 Tables (game/pg_schema.py SCHEMA_VERSION 68): hotel_stays, hotel_hosts, hotel_rest.
 """
@@ -37,7 +37,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import random
 
 from . import hotel_stay_content as hc
@@ -73,7 +72,7 @@ HOUR, MIN = 3600, 60
 
 
 def off() -> bool:
-    return os.environ.get('MNL_HOTEL_OFF') == '1'
+    return sm.env_on('MNL_HOTEL_OFF')
 
 
 def now() -> float:
@@ -136,8 +135,10 @@ def _check(service):
 
 
 def _deliver(db, provider, buyer, order):
-    """The market's deliver hook: only the check-out here delivers (the generic "Xong việc" is refused)."""
-    r = db.execute('SELECT stage,result FROM hotel_stays WHERE order_id=? FOR UPDATE', (order['id'],)).fetchone()
+    """The market's deliver hook: only the check-out here delivers (the generic "Xong việc" is refused, also earlier in
+    service_market._done). A plain read, never FOR UPDATE: the market holds svc_orders here, and every stay step locks
+    hotel_stays first, then svc_orders (_step, _checkout_db → deliver_in_commit): one lock order, no deadlock."""
+    r = db.execute('SELECT stage,result FROM hotel_stays WHERE order_id=?', (order['id'],)).fetchone()
     need(r and r['stage'] == 'out', 'Trả phòng cho khách ở 🏨 Sổ phòng nhé.', 'use_hotel_book', 409)
     return _load(r['result'], {})
 
@@ -351,7 +352,7 @@ def _checkout_db(db, r: dict, t: float, pick: str | None, auto: bool) -> tuple:
 
 
 def _after_out(store, r: dict, partner: str) -> None:
-    sm.settle_for(store, r['host'], r['order_id'])     # host paid 95 %, 5 % burned, the guest's rest (on_buyer)
+    sm.settle_quiet(store, r['host'], r['order_id'])   # host paid 95 %, 5 % burned, the guest's rest (on_buyer)
     if partner:
         settle_partner(store, partner)
 
@@ -441,7 +442,7 @@ def _step(store, oid: str) -> int:
     if out.get('row'):
         _after_out(store, out['row'], out.get('partner') or '')
     elif out.get('refund'):
-        sm.settle_for(store, None, oid)
+        sm.settle_quiet(store, None, oid)
     return int(n or 0)
 
 
@@ -676,7 +677,7 @@ def _decline(store, sid, oid, data, t) -> str:
         _refund_db(db, r, 'decline', t)
         mr._notice(db, r['guest'], '🏨 Chủ nhà đã hủy phòng của bạn. Đã hoàn đủ tiền phòng.')
     store.transaction(run)
-    sm.settle_for(store, sid, oid)
+    sm.settle_quiet(store, sid, oid)
     return 'Đã hủy lượt đặt. Tiền đã hoàn đủ cho khách.'
 
 
@@ -688,7 +689,7 @@ def _cancel(store, sid, oid, data, t) -> str:
         _refund_db(db, r, 'cancel', t)
         mr._notice(db, r['host'], '🏨 Khách đã hủy đặt phòng (được hoàn tiền theo luật Phố dịch vụ).')
     store.transaction(run)
-    sm.settle_for(store, sid, oid)
+    sm.settle_quiet(store, sid, oid)
     return 'Đã hủy. Tiền phòng đã hoàn đủ về ví của bạn.'
 
 

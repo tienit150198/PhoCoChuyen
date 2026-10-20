@@ -38,6 +38,7 @@ applied to each save; confirmation takes both deposits in one transaction.
 """
 from __future__ import annotations
 
+import contextvars
 import datetime
 import json
 import random
@@ -931,26 +932,26 @@ def alerts(store, sid: str) -> dict | None:
                     target = w['target_' + side]
                 if w['status'] == 'done' and not w['seen_' + side]:
                     n += 1
-    svc = 0
-    try:   # 🛎️ Phố dịch vụ: what waits for my answer (game/service_market.py); 0 on a database without its tables
+    svc = wsv = 0
+    try:   # one pooled connection for the three badges (autocommit: a failing one leaves the others' statements alone)
         with store.connect() as db:
-            from .service_market import alert_count
-            svc = alert_count(db, sid)
-    except Exception:
-        svc = 0
-    try:   # 🏨 a guest at the desk, a situation, a check-out (game/hotel_stay.py); 0 on a database without its table
-        with store.connect() as db:
-            from .hotel_stay import alerts as hotel_alerts
-            svc += hotel_alerts(db, sid)
-    except Exception:
+            try:   # 🛎️ Phố dịch vụ: what waits for my answer (game/service_market.py); 0 on a database without its tables
+                from .service_market import alert_count
+                svc = alert_count(db, sid)
+            except Exception:  # noqa: BLE001
+                svc = 0
+            try:   # 🏨 a guest at the desk, a situation, a check-out (game/hotel_stay.py); 0 on a database without its table
+                from .hotel_stay import alerts as hotel_alerts
+                svc += hotel_alerts(db, sid)
+            except Exception:  # noqa: BLE001
+                pass
+            try:   # 💒 Dịch vụ cưới từ người chơi: wedding orders waiting for this provider's work (game/wed_services.py)
+                from .wed_services import alerts as wed_alerts
+                wsv = wed_alerts(db, sid)
+            except Exception:  # noqa: BLE001
+                wsv = 0
+    except Exception:  # noqa: BLE001  (no connection free: the badges wait for the next poll)
         pass
-    wsv = 0
-    try:   # 💒 Dịch vụ cưới từ người chơi: wedding orders waiting for this provider's work (game/wed_services.py)
-        with store.connect() as db:
-            from .wed_services import alerts as wed_alerts
-            wsv = wed_alerts(db, sid)
-    except Exception:
-        wsv = 0
     return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer, svc=svc, wedsvc=wsv)
 
 
@@ -1290,8 +1291,25 @@ def _rid(d: dict) -> str:
     return secrets.token_hex(8)
 
 
-def act(store, token: str, op: str, d: dict) -> dict:
-    """POST /api/marriage/<op>. Returns {message, changed}."""
+_REQUEST_IP = contextvars.ContextVar('marriage_request_ip', default='')
+
+
+def request_ip() -> str:
+    """The address of the POST /api/marriage/<op> being handled ('' elsewhere): 🏥 a player birth room's anti-laundering
+    (game/birth.py → service_market.guard) reads it. Set by act() for the call, never stored."""
+    return _REQUEST_IP.get()
+
+
+def act(store, token: str, op: str, d: dict, ip: str = '') -> dict:
+    """POST /api/marriage/<op>. Returns {message, changed}. `ip`: the request's address (request_ip())."""
+    mark = _REQUEST_IP.set(str(ip or ''))
+    try:
+        return _act(store, token, op, d)
+    finally:
+        _REQUEST_IP.reset(mark)
+
+
+def _act(store, token: str, op: str, d: dict) -> dict:
     need(isinstance(d, dict), 'Dữ liệu không hợp lệ.')
     if op == 'quote':
         sid, _ = whoami(store, token)

@@ -457,7 +457,7 @@ def invite_svc(db, couple_id) -> list:
 
 def roll_plan(db, couple: dict, plan: dict) -> tuple:
     """The wedding day (game/marriage.py resolve): (the plan the guests' roll uses, the delivered credits). A delivered service of
-    3 stars or more counts as its NPC extra; a 4-star banquet raises the menu one level. No player service: the plan
+    3 stars or more counts as its NPC extra; a 4-star banquet serving at least the plan's tables raises the menu one level. No player service: the plan
     as it is."""
     if off():
         return plan, []
@@ -470,7 +470,8 @@ def roll_plan(db, couple: dict, plan: dict) -> tuple:
         if x['key'] == 'anh' or x['stars'] >= 3:
             if extra and extra in W.EXTRA_INDEX and extra not in extras:
                 extras.append(extra)
-        if x['key'] == 'tiec' and x['stars'] >= 4:
+        # the menu goes up only for a banquet that serves every table of the plan (a 1-table order never upgrades 30)
+        if x['key'] == 'tiec' and x['stars'] >= 4 and int(x.get('tables') or 0) >= int(plan.get('tables') or 0):
             ids = [m['id'] for m in W.MENUS]
             if menu in ids and ids.index(menu) + 1 < len(ids):
                 menu = ids[ids.index(menu) + 1]
@@ -522,7 +523,7 @@ def _photographers(db, sid: str) -> list:
 def couple_view(store, sid: str, state: dict | None) -> dict:
     """GET /api/wedsvc/couple: the couple's wedding, the services (NPC price, the providers listed in Phố dịch vụ), the
     orders of both spouses, the credits and the photographers."""
-    sm.settle_for(store, sid)
+    sm.settle_quiet(store, sid)
     t = now()
     with store.connect() as db:
         cx = ctx(db, sid, t)
@@ -560,7 +561,7 @@ def couple_view(store, sid: str, state: dict | None) -> dict:
 # ---------------------------------------------------------------- the provider's sheet
 def work_view(store, sid: str, state: dict | None) -> dict:
     """GET /api/wedsvc/work: my wedding services (can I sell them, are they on), my wedding orders and their jobs."""
-    sm.settle_for(store, sid)
+    sm.settle_quiet(store, sid)
     if state is None:
         got = mr._read_state(store, sid)
         state = got[0] if got else {}

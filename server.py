@@ -1131,7 +1131,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/" or route.startswith("/api/townfair/") or route=="/api/admin/radio") or route=="/api/admin/townfair")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1302,7 +1302,7 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/marriage/"):  # Hôn nhân: ring, proposal, plan, confirm, divorce… (game/marriage.py)
                 env=route=="/api/marriage/envelope"   # 🧧 "cho gửi thoải mái": only an anti-flood (5 a second), not the 60 a minute
                 if not (self.server.rate_limit("wedenv:"+token,10,2) if env else self.server.rate_limit("marriage:"+token,60)):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
-                out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)
+                out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data,ip=self.client_ip())  # 🏥 the address: a player birth room's anti-laundering (game/birth.py)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 if not out.pop("quiet",False):out["view"]=marriage.view(self.server.store,token,state)
                 self.json(200,out,known=FULL);return
@@ -1941,10 +1941,10 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         bang.run_housekeeping(store)  # 🗄️ ⚔️ old bang_log / bang_points / closed bang_stints rows to their archive tables (batched, off-peak, never dropped)
         from game import service_market
         step("hotel",lambda:hotel_stay.run_housekeeping(store))  # 🏨 no-shows refunded, the night's situations, overdue check-outs paid (row locks: exactly once)
-        service_market.run_housekeeping(store)  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
+        step("svc",lambda:service_market.run_housekeeping(store))  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
         step("townfair",lambda:town_fair.run_housekeeping(store))  # 🎪 Hội chợ việc làm: its ticker line once, then settle, archive and grant a fair's titles (status-guarded: exactly once)
-        photo_studio.run_housekeeping(store)  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
+        step("photo",lambda:photo_studio.run_housekeeping(store))  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
 
 
 def tune_gc()->None:

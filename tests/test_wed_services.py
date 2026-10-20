@@ -353,3 +353,20 @@ class Live(WedBase):
             rows = db.execute(C.CREDITS_SQL, ('a', 'b', 0)).fetchall()
             photos = db.execute(C.PHOTO_SQL, ('a', 'b', 0)).fetchall()
         self.assertEqual((list(rows), list(photos)), ([], []))
+
+
+class BanquetTables(WedBase):
+    def test_only_a_banquet_for_every_table_raises_the_menu(self):
+        """Review 22/10: a 1-table 5-star banquet upgraded the menu of all the plan's tables."""
+        plan = dict(json.loads(self.row('SELECT plan FROM weddings WHERE id=?', self.wid)['plan']), tables=12)
+        ids = [m['id'] for m in W.MENUS]
+        plan['menu'] = ids[0]
+        c = self.row('SELECT * FROM couples WHERE id=(SELECT couple FROM weddings WHERE id=?)', self.wid)
+        tiec = dict(key='tiec', icon='', label='', line='', name='Bep', state='done', stars=5, detail='')
+        with self.store.connect() as db:
+            with patch.object(ws, 'credits', return_value=[dict(tiec, tables=1)]):
+                played, _ = ws.roll_plan(db, c, plan)
+            self.assertEqual(played['menu'], ids[0], 'one table served: the plan keeps its menu')
+            with patch.object(ws, 'credits', return_value=[dict(tiec, tables=12)]):
+                played, _ = ws.roll_plan(db, c, plan)
+            self.assertEqual(played['menu'], ids[1], 'every table served: one level up')

@@ -234,3 +234,33 @@ class Marks(unittest.TestCase):
             s['journey'][rs.KEY] = bad
             with self.assertRaises(GameError):
                 rs.validate(s)
+
+
+class Floors(unittest.TestCase):
+    def test_prices_never_undercut_the_games_own_repair(self):
+        """Review 22/10: 🚗 500 vs a 1 440 repair, ⛵ 2 500 vs 7 800: a pair could dodge the repair sink. The lowest unit
+        price of each service is now the dearest in-game repair of its class."""
+        from game import garage as gr
+        rs.install()
+        for sid, sp in rs.SERVICES.items():
+            spec = sm.get_spec(rs.CAREER, sid)
+            lo = sm.bounds(spec, sm.base_of(spec, None, ''), 1)[0]
+            if sp['kind'] == 'xe':
+                worst = max(v['price'] * rui.XE_PCT // 10000 for v in gr.VEHICLES.values() if v['group'] in sp['groups'])
+                self.assertGreaterEqual(lo, worst, sid)
+            elif sp['kind'] == 'nha':
+                worst = max(rn.fix_cost(k, part, 0) for k in rn.HOUSES for part in rn.PARTS)
+                self.assertGreaterEqual(lo, worst, sid)
+        self.assertEqual((rs.repair_floor('oto'), rs.repair_floor('tau')), (1440, 7800), 'at today\'s price index')
+
+    def test_a_broken_home_entry_dearer_than_the_order_stays(self):
+        s = {'journey': {'life_day': 5}}
+        with patch.object(rn, 'get', return_value=dict(hid='h1', parts=dict(wall=dict(c=40)))), \
+                patch.object(rui, 'get', return_value=dict(broken=dict(nha=dict(h1=dict(p='wall', c=1800, d=3)), xe={}))) as g:
+            self.assertTrue(rs.apply(s, dict(svc='nha', ref='h1:wall', by='Thợ', grade=3), 'sv_' + 'a' * 24, price=600))
+            self.assertIn('h1', g.return_value['broken']['nha'], 'a 1 800 xu repair bill is not paid by a 600 xu order')
+        s = {'journey': {'life_day': 5}}
+        with patch.object(rn, 'get', return_value=dict(hid='h1', parts=dict(wall=dict(c=40)))), \
+                patch.object(rui, 'get', return_value=dict(broken=dict(nha=dict(h1=dict(p='wall', c=500, d=3)), xe={}))) as g:
+            self.assertTrue(rs.apply(s, dict(svc='nha', ref='h1:wall', by='Thợ', grade=3), 'sv_' + 'b' * 24, price=600))
+            self.assertNotIn('h1', g.return_value['broken']['nha'])

@@ -24,7 +24,7 @@ from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 as the 
 from tests.test_town_fair import FairBase, H
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = '5ba2e147'   # 2.4.67 (live; 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
+RELEASE = '289df99d'   # 2.4.68 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 TABLES = ('fair_events', 'fair_booths', 'fair_stamps', 'fair_rewards', 'fair_config', 'svc_orders', 'live_effects')
 
 STARTUP = '''import json,sys
@@ -96,7 +96,7 @@ class Rollback(FairBase):
         for tok, c in zip(ps, ('milk_tea', 'florist', 'salon')):
             self.complete(v, tok, c)
         self.complete(w, ps[0])
-        self.complete(w, ps[0])
+        self.complete(self.user('rb_x', wallet=50000), ps[0])   # three distinct customers (a repeat buyer counts once)
         self.order(w, ps[1], 'florist')       # paid, waiting: an open escrow row during the rollback
         self.fpost(v, 'claim', event=self.ev['id'], tier=1)
         self.cmd(v, 'jr_spend_wear', kind='title', id='t_hc_khach')

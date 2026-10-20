@@ -160,3 +160,35 @@ reads the new rows, and settles a ready legacy order at its own terms (100 %, no
 2.4.66 has not accepted is refused there as a changed offer (`stale_offer` / `service_unavailable`); the buyer cancels it
 for a full refund. Generic `svc_orders` are invisible to 2.4.66: their escrow waits in the table and settles when this
 build is back. (`tests/test_service_market_compat.py`)
+
+## Rollback runbook (to 2.4.68, live)
+
+2.4.68 (289df99d) knows none of this release's tables or careers. Its startup runs no DDL on a database at 75 and every
+table here stays (nothing is dropped), but it must never meet money this build still holds:
+
+* a legacy workplace order made here (`work_service_orders.data.market = 1`, priced ×3…×10 of the NPC price) would be
+  settled by 2.4.68 at its own terms: paid in full **and** the 40 % staff profit bonus computed on the whole price
+  (`work_visits.py` → `player_service_tasks.credit_staff_bonus` without `base`);
+* `svc_orders`, `photo_orders`, `birth_stays`, `hotel_stays` escrow is invisible to 2.4.68 (frozen until a roll forward),
+  and a pending `live_effects` row of kind `photo` stays pending there.
+
+Steps, in order, on this build:
+
+1. Stop new money coming in: set `MNL_SVC_OFF=1`, `MNL_BIRTH_OFF=1`, `MNL_HOTEL_OFF=1`, `MNL_PHOTO_DIRECT_OFF=1` (also
+   `MNL_WEDSVC_OFF`, `MNL_RADIO_OFF`, `MNL_RESTORE_OFF`, `MNL_RESEARCH_OFF`, `MNL_FAIR_OFF` if wanted; use `1`, which every
+   switch reads as on) and restart. Paid orders keep settling and refunding meanwhile.
+2. Look: `python scripts/svc_drain.py` (dry run: what is held, per table and status, in xu).
+3. Drain: `python scripts/svc_drain.py --write`. Hotel stays are refunded through `hotel_stay._refund_db`; talks
+   cancelled; held / working orders refunded in full; delivered work confirmed and paid (95 % / 5 % burned); every ready
+   and refund row settled now; this build's legacy market orders refunded (requested / accepted) or settled at 95 / 5
+   with the real-margin bonus (ready); photo orders declined with the price back and every pending `photo` refund paid
+   into its save; birth bookings refunded to the payer (a `marriage_effects` 'wallet' row, which 2.4.68 applies). It
+   prints the counts again: everything should be 0 (exit code 1 otherwise, with the rows that refused in `log`; run
+   it again, a busy save just retries).
+4. Strip the new careers from the saves (an older build refuses a save with a career it does not know):
+   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio --db --archive removed.jsonl`
+   (counts), then the same with `--write` (that list is the script's default). Keep `removed.jsonl`: `restore` puts it
+   back after rolling forward.
+5. Deploy 2.4.68.
+
+Rolling forward again: deploy this build, then `python scripts/strip_new_careers.py restore --db --archive removed.jsonl --write`.

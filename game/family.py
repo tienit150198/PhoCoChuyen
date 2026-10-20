@@ -145,7 +145,10 @@ def act(store, sid, op, p):
         snapshot = mr._bond(db,sid)
     shared = p.get('child','shared') == 'shared'
     solo = op in bt.SOLO   # 🏥 a provider's room, a nurse joining a birth: their own save only
-    needs_couple = not solo and (op in ('family_child_request','family_home_request','family_answer','family_cancel','family_home_leave') or shared)
+    # 🏥 a booking or an adoption is the married couple's whatever `child` says (an engaged pair never adopts); only the
+    # care of a personal custody copy ('copy:N') needs no couple
+    needs_couple = not solo and (op in ('family_child_request','family_home_request','family_answer','family_cancel','family_home_leave')
+                                 or op in bt.COUPLE or shared)
     if needs_couple:
         _need(snapshot and snapshot['status']=='married', 'Cần kết hôn để dùng gia đình chung.', 'not_married',409)
     members = sorted({sid, mr._other(snapshot,sid)} if snapshot and snapshot['status']=='married' and not solo else {sid})

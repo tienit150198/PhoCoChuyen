@@ -14,7 +14,8 @@ Owner's numbers (21/10)
 Money (exactly once, never debt)
 * Escrow comes from the wallet, then the bank account; a wallet in debt or not enough money refuses. Wallet history
   rows are at most ROW_MAX (10 M) each (every build validates that). Pay-outs go to the wallet (rows ≤ 10 M, the bank
-  account past the wallet's maximum), or to the career's fund (spec pay_to='career'). Refunds go to the wallet.
+  account past the wallet's maximum), or to the career's fund (spec pay_to='career'). Refunds go to the wallet,
+  then the bank account past its maximum (legacy and 📸 photo refunds too).
 * Every money move is one transaction: the save(s) under their revision guard (marriage._mutate) and the order row's
   status flip guarded by its old status (UPDATE … WHERE status=…: a second worker finds nothing and rolls back).
   Status changes that move no money are a DB-only transaction; the money step follows (ready → done, refund →
@@ -55,19 +56,37 @@ module's price and rating and opens the module's own sheet (`open`: a client act
 through this market are refused (ServiceError 'own_flow' / 'own_settings'), so there is one payment path and one
 escrow per booking. The provider sets price and open/closed in the module (`setup`).
 
-Tables (game/pg_schema.py SCHEMA_VERSION 63): svc_settings, svc_orders, svc_reviews, svc_rep, svc_flags, svc_net,
-work_service_orders.fee. Nothing in any save.
+Money steps never wedge (review 22/10): every timer and settlement of the housekeeping and of a player's poll runs one
+row at a time; a row whose step fails (a hook raising, a save that refuses, a wallet and bank account both full) is
+logged, its due_at pushed back (RETRY_BASE_S × 2^tries, at most RETRY_MAX_S) and the next row goes on; a GET never
+raises because of a settlement. A provider whose wallet and account are full is paid into the career's fund instead
+(started careers); otherwise the payee is told once (notice) and the row retries. A 'ready' row of a service this build
+does not know (get_spec None: a newer build registered it) is left for a build that knows it (its hooks), never paid.
+
+🛑 MNL_SVC_OFF=1 (1 / true / yes / on): no new order, offer, counter-offer or accepted price; everything already paid
+keeps going (take, deliver, confirm, cancel, decline, the timers, settlements and refunds). Rollback: docs/SERVICE_MARKET.md
+"Rollback runbook" (scripts/svc_drain.py first).
+
+Tables (game/pg_schema.py SCHEMA_VERSION 63, indexes 75): svc_settings, svc_orders, svc_reviews, svc_rep, svc_flags,
+svc_net, work_service_orders.fee. Nothing in any save.
 """
 from __future__ import annotations
 
 import copy
 import hashlib
+import heapq
+import itertools
 import json
+import logging
+import os
 import re
 import secrets
+import threading
 import time
 
 from . import marriage as mr
+
+LOG = logging.getLogger(__name__)
 
 FEE_PCT = 5                    # burned on each completed deal (rounded up)
 DEFAULT_MULT = 3               # NPC price × 3 for a player buyer
@@ -105,6 +124,14 @@ RID_RX = re.compile(r'[A-Za-z0-9_-]{8,80}')
 ID_RX = re.compile(r'(?:sv|wo)_[0-9a-f]{24}')
 OWN_TEXT = 'Dịch vụ này đặt ở mục riêng của nghề: bấm “Mở” trên thẻ dịch vụ nhé.'
 OWN_SETUP_TEXT = 'Dịch vụ này cài giá và mở / đóng ở mục riêng của nghề.'
+OFF_TEXT = 'Phố dịch vụ đang tạm nghỉ nhận đơn mới. Đơn đã đặt vẫn được làm, thanh toán hoặc hoàn tiền như thường.'
+FULL_TEXT = '🛎️ Ví và tài khoản của bạn đã đầy nên tiền đơn Phố dịch vụ đang chờ. Tiêu bớt rồi tiền sẽ tự về nhé.'
+RETRY_BASE_S = 60              # a money step that failed waits this long, doubled each time …
+RETRY_MAX_S = 6 * 3600         # … at most this long, then tries again
+OFFSET_MAX = 2000              # the directory's deepest page
+TOUCH_S = 600                  # a network tag of a GET poll is written at most this often per player and network
+REG_TTL = 120.0                # 🤝 khách quen counts kept this long per provider …
+REG_MAX = 2000                 # … for at most this many providers
 
 
 class ServiceError(mr.MarriageError):
@@ -114,6 +141,16 @@ class ServiceError(mr.MarriageError):
 def need(cond, message: str, code: str = 'svc_error', status: int = 400):
     if not cond:
         raise ServiceError(message, code, status)
+
+
+def env_on(name: str) -> bool:
+    """A kill switch in the environment: 1 / true / yes / on (any case, spaces ignored) turns it on."""
+    return os.environ.get(name, '').strip().lower() in ('1', 'true', 'yes', 'on')
+
+
+def off() -> bool:
+    """🛑 MNL_SVC_OFF: no new orders or talks; what is already paid keeps settling and refunding."""
+    return env_on('MNL_SVC_OFF')
 
 
 def now() -> float:
@@ -497,11 +534,40 @@ def decorate_offers(db, owner: str, kind: str, career: str, offers: list, cache:
 
 
 # ---------------------------------------------------------------- people
+GONE = dict(pid='', name='Người chơi đã rời', code='', avatar='🙂', fc='')
+
+
 def _person(db, sid: str) -> dict:
     from . import work_visits
     if not db.execute('SELECT 1 FROM sessions WHERE sid=?', (sid,)).fetchone():
-        return dict(pid='', name='Người chơi đã rời', code='', avatar='🙂', fc='')
+        return dict(GONE)
     return work_visits._person(db, sid)
+
+
+def _people(db, sids, into: dict | None = None) -> dict:
+    """{sid: _person(db, sid)} for many players in three queries (a page of cards or orders), the same dicts."""
+    out = {} if into is None else into
+    want = sorted({s for s in sids if s and s not in out})
+    if not want:
+        return out
+    marks = ','.join('?' * len(want))
+    rows = {r['sid']: dict(r) for r in db.execute(
+        f'SELECT s.sid, p.name, p.avatar, m.code, a.sid AS asid, a.display FROM sessions s LEFT JOIN profiles p ON p.sid=s.sid '
+        f'LEFT JOIN marriage_people m ON m.sid=s.sid LEFT JOIN accounts a ON a.sid=s.sid WHERE s.sid IN ({marks})', tuple(want)).fetchall()}
+    pids = {s: _pid(s) for s in rows}
+    faces = {}
+    if pids:
+        pm = ','.join('?' * len(pids))
+        faces = {r['pid']: r['code'] for r in db.execute(f'SELECT pid, code FROM chat_faces WHERE pid IN ({pm})', tuple(pids.values())).fetchall()}
+    for s in want:
+        r = rows.get(s)
+        if r is None:
+            out[s] = dict(GONE)
+            continue
+        shown = mr._clean_name(r['display']) if r['asid'] else 'Một người chơi'
+        out[s] = dict(pid=pids[s], name=str(r['name'] or shown)[:40], code=r['code'] or '', avatar=str(r['avatar'] or '🙂')[:80],
+                      fc=str(faces.get(pids[s]) or '')[:100])
+    return out
 
 
 def _resolve(db, pid) -> str | None:
@@ -597,7 +663,10 @@ def pair_usage(db, buyer: str, provider: str, t=None) -> dict:
                    f'WHERE buyer=? AND provider=? AND kind=\'svc\' AND held_at>=? AND status IN ({m1})', (d0, buyer, provider, w0, *MONEY)).fetchone()
     b = db.execute(f'SELECT COUNT(*) FILTER (WHERE created_at>=?) AS n, COALESCE(SUM(price),0) AS xu FROM work_service_orders '
                    f'WHERE customer=? AND provider=? AND created_at>=? AND status IN ({m2})', (d0, buyer, provider, w0, *WO_MONEY)).fetchone()
-    return dict(day=int(a['n'] or 0) + int(b['n'] or 0), week=int(a['xu'] or 0) + int(b['xu'] or 0))
+    # 🏥 a player birth room paid by this buyer (game/birth.py: its own escrow; booked, staying or born count)
+    c = db.execute("SELECT COUNT(*) FILTER (WHERE at>=?) AS n, COALESCE(SUM(price),0) AS xu FROM birth_stays WHERE payer=? AND provider_sid=? "
+                   "AND provider='room' AND at>=? AND status IN ('booked','staying','born')", (d0, buyer, provider, w0)).fetchone()
+    return dict(day=int(a['n'] or 0) + int(b['n'] or 0) + int(c['n'] or 0), week=int(a['xu'] or 0) + int(b['xu'] or 0) + int(c['xu'] or 0))
 
 
 def week_cap(spec: dict | None) -> int:
@@ -671,27 +740,34 @@ def credit(s: dict, amount: int, label: str, kind: str = IN_KIND, career: str | 
     need(j is not None and 'wallet' in j, 'Không tìm thấy ví của người chơi.', 'no_wallet', 409)
     room = max(0, jr.WALLET_MAX - j['wallet'])
     cash = min(room, amount)
+    rest = amount - cash
+    b = bk.get(s) if rest else None
+    # checked before anything moves: a refusal leaves the save exactly as it was (a caller may fall back elsewhere)
+    need(not rest or (b is not None and b['balance'] + rest <= bk.BAL_MAX), 'Ví và tài khoản đã đầy. Tiêu bớt rồi nhận tiền nhé.', 'full', 409)
     left = cash
     while left > 0:
         part = min(left, ROW_MAX)
         jr._wallet(j, part, kind, label[:120], career)
         left -= part
-    rest = amount - cash
     if rest:
-        b = bk.get(s)
-        need(b is not None and b['balance'] + rest <= bk.BAL_MAX, 'Ví và tài khoản đã đầy. Tiêu bớt rồi nhận tiền nhé.', 'full', 409)
         b['balance'] += rest
         bk._log(b, j['life_day'], 'acc', label[:120], rest)
 
 
 def _pay_provider(s: dict, spec: dict | None, order: dict, paid: int, label: str) -> None:
-    if spec and spec['pay_to'] == 'career':
-        c = (s.get('careers') or {}).get(order['career'])
-        if isinstance(c, dict) and c.get('started'):
-            from . import engine
-            engine.money(s, c, paid, label, order['id'], 'revenue')
-            return
-    credit(s, paid, label, IN_KIND, order['career'] if order['career'] in (s.get('careers') or {}) else None)
+    c = (s.get('careers') or {}).get(order['career'])
+    started = isinstance(c, dict) and bool(c.get('started'))
+    if spec and spec['pay_to'] == 'career' and started:
+        from . import engine
+        engine.money(s, c, paid, label, order['id'], 'revenue')
+        return
+    try:
+        credit(s, paid, label, IN_KIND, order['career'] if order['career'] in (s.get('careers') or {}) else None)
+    except ServiceError as e:
+        if e.code != 'full' or not started:
+            raise
+        from . import engine   # the wallet and the bank account are full: the career's fund takes it (never lost, never stuck)
+        engine.money(s, c, paid, label, order['id'], 'revenue')
 
 
 def _requires_why(spec: dict, state: dict, db=None, buyer: str = '') -> str:
@@ -741,7 +817,19 @@ def _actions(row: dict, me: str, t: float, rated: bool, flagged: bool) -> list:
     return []
 
 
-def _view(db, row: dict, me: str, people: dict | None = None, t=None) -> dict:
+def _marks(db, ids) -> tuple:
+    """(rated ids, flagged ids) among these orders: two queries for a whole inbox page."""
+    ids = [i for i in ids if i]
+    if not ids:
+        return set(), set()
+    marks = ','.join('?' * len(ids))
+    rated = {r['order_id'] for r in db.execute(f'SELECT order_id FROM svc_reviews WHERE order_id IN ({marks})', tuple(ids)).fetchall()}
+    flagged = {r['order_id'] for r in db.execute(f'SELECT order_id FROM svc_flags WHERE order_id IN ({marks})', tuple(ids)).fetchall()}
+    return rated, flagged
+
+
+def _view(db, row: dict, me: str, people: dict | None = None, t=None, marks: tuple | None = None) -> dict:
+    """An order as `me` sees it. `people` ({sid: person}) and `marks` (_marks of the page) spare the per-row queries."""
     t = now() if t is None else t
     d = _data(row)
     spec = get_spec(row['career'], row['service'])
@@ -750,8 +838,9 @@ def _view(db, row: dict, me: str, people: dict | None = None, t=None) -> dict:
     people = {} if people is None else people
     if other not in people:
         people[other] = _person(db, other)
-    rated = bool(db.execute('SELECT 1 FROM svc_reviews WHERE order_id=?', (row['id'],)).fetchone())
-    flagged = bool(db.execute('SELECT 1 FROM svc_flags WHERE order_id=?', (row['id'],)).fetchone())
+    if marks is None:
+        marks = _marks(db, [row['id']])
+    rated, flagged = row['id'] in marks[0], row['id'] in marks[1]
     return dict(id=row['id'], kind=row['kind'], career=row['career'], service=row['service'], name=d.get('name') or (spec or {}).get('name', ''),
                 icon=d.get('icon') or (spec or {}).get('icon', '🛎️'), unit=d.get('unit') or (spec or {}).get('unit', ''),
                 label=d.get('label', ''), qty=int(row['qty']), status=row['status'], role=role, other=people[other],
@@ -760,7 +849,8 @@ def _view(db, row: dict, me: str, people: dict | None = None, t=None) -> dict:
                 paid=int(row['paid']), lo=int(d.get('lo') or 0), hi=int(d.get('hi') or 0), note=d.get('note', ''),
                 result=d.get('result') if isinstance(d.get('result'), dict) else None, why=d.get('why', ''),
                 created_at=row['created_at'], updated_at=row['updated_at'], due_at=row['due_at'], link=row['link'],
-                actions=_actions(row, me, t, rated, flagged), rated=rated, flagged=flagged)
+                actions=_actions(row, me, t, rated, flagged), rated=rated, flagged=flagged,
+                stuck=str(d.get('stuck') or '') if row['status'] in ('ready', 'refund') else '')
 
 
 def _rep_row(db, provider: str) -> dict:
@@ -782,6 +872,8 @@ def _rep_save(db, row: dict) -> None:
 
 def _rep_add(db, provider: str, deals: int = 0, xu: int = 0, stars: int | None = None) -> None:
     db.execute('SELECT pg_advisory_xact_lock(hashtextextended(?,0))', ('svc-rep:' + provider,))
+    if deals:
+        _regs_forget(provider)
     row = _rep_row(db, provider)
     row.update(deals=row['deals'] + deals, xu=row['xu'] + xu, updated_at=now())
     if stars is not None:
@@ -793,16 +885,45 @@ def rep_legacy_done(db, provider: str, price: int) -> None:
     """A legacy workplace order just completed (work_visits._settle_one, its transaction): one more deal. A provider
     with no reputation row yet gets one counted from the legacy tables, this order included."""
     db.execute('SELECT pg_advisory_xact_lock(hashtextextended(?,0))', ('svc-rep:' + provider,))
+    _regs_forget(provider)
     if db.execute('SELECT 1 FROM svc_rep WHERE provider=?', (provider,)).fetchone():
         _rep_add(db, provider, deals=1, xu=int(price))
     else:
         _rep_save(db, _rep_row(db, provider))
 
 
-def rep_view(db, provider: str) -> dict:
+_regs: dict = {}
+_regs_lock = threading.Lock()
+
+
+def _regs_forget(provider: str) -> None:
+    """A deal of this provider completed in this process: its khách quen count is read again next time."""
+    with _regs_lock:
+        _regs.pop(provider, None)
+
+
+def regulars_count(db, provider: str, t=None) -> int:
+    """How many khách quen (at most 50), kept REG_TTL seconds per provider (at most REG_MAX providers): the
+    aggregate walks every completed order of the provider, too heavy for each card view."""
+    t = now() if t is None else t
+    with _regs_lock:
+        hit = _regs.get(provider)
+        if hit and 0 <= t - hit[0] < REG_TTL:
+            return hit[1]
+    n = len(regulars(db, provider, 50))
+    with _regs_lock:
+        if len(_regs) >= REG_MAX:
+            for k in sorted(_regs, key=lambda k: _regs[k][0])[:REG_MAX // 4]:   # the oldest quarter goes
+                _regs.pop(k, None)
+        _regs[provider] = (t, n)
+    return n
+
+
+def rep_view(db, provider: str, regs: int | None = None) -> dict:
     r = _rep_row(db, provider)
     n = int(r['n'])
-    return dict(n=n, avg=round(r['stars'] / n, 2) if n else 0.0, deals=int(r['deals']), regulars=len(regulars(db, provider, 50)))
+    return dict(n=n, avg=round(r['stars'] / n, 2) if n else 0.0, deals=int(r['deals']),
+                regulars=regulars_count(db, provider) if regs is None else regs)
 
 
 def regulars(db, provider: str, limit: int = 10) -> list:
@@ -866,8 +987,13 @@ def _due_step(store, row: dict, t: float) -> bool:
     return bool(store.transaction(run))
 
 
+class _Later(Exception):
+    """Not this build's to settle now (a service it does not know): the row waits, pushed back."""
+
+
 def _settle_one(store, row: dict) -> bool:
-    """The money step of a 'ready' (pay the provider, burn the fee) or 'refund' (the buyer's whole price back) order."""
+    """The money step of a 'ready' (pay the provider, burn the fee) or 'refund' (the buyer's whole price back) order.
+    A provider whose save is gone delivered the work: the buyer keeps it (on_buyer runs) and the payout is burned."""
     st = row['status']
     if st not in ('ready', 'refund') or row['kind'] != 'svc':
         return False
@@ -876,27 +1002,34 @@ def _settle_one(store, row: dict) -> bool:
     order = _order_dict(row)
     price = int(row['price'])
     if st == 'ready':
+        if spec is None:   # a newer build's service: its hooks (on_buyer…) are unknown here, never pay without them
+            raise _Later()
         payee = row['provider']
-        if not mr._read_state(store, payee):     # the provider left: the buyer gets the money back
-            store.transaction(lambda db: _flip(db, row['id'], 'ready', 'refund', t, due_at=t))
-            return False
-        fee = fee_of(price)
+        gone = not mr._read_state(store, payee)
+        fee = price if gone else fee_of(price)
         paid = price - fee
         order.update(fee=fee, paid=paid)
-        label = f'🛎️ Phố dịch vụ · {(spec or {}).get("name") or row["service"]}'
+        label = f'🛎️ Phố dịch vụ · {spec.get("name") or row["service"]}'
 
         def pay(s):
             _pay_provider(s, spec, order, paid, label)
-            if spec and spec['on_provider']:
+            if spec['on_provider']:
                 spec['on_provider'](s, copy.deepcopy(order))
-        fns = {payee: pay}
-        if spec and spec['on_buyer'] and row['buyer'] != payee and mr._read_state(store, row['buyer']):
+        fns = {} if gone else {payee: pay}
+        if spec['on_buyer'] and row['buyer'] != payee and mr._read_state(store, row['buyer']):
             fns[row['buyer']] = lambda s: spec['on_buyer'](s, copy.deepcopy(order))
 
         def finish(db):
             if not _flip(db, row['id'], 'ready', 'done', t, fee=fee, paid=paid, done_at=t, due_at=None):
                 raise _Replay()
-            _rep_add(db, payee, deals=1, xu=price)
+            if not gone:
+                _rep_add(db, payee, deals=1, xu=price)
+        if not fns:
+            try:
+                store.transaction(finish)
+            except _Replay:
+                return False
+            return True
     else:
         payee = row['buyer']
         d = _data(row)
@@ -916,8 +1049,46 @@ def _settle_one(store, row: dict) -> bool:
     return True
 
 
+def _backoff(store, row: dict, code: str, later: bool = False) -> None:
+    """A money step that failed (or is not this build's): the row waits RETRY_BASE_S × 2^tries (≤ RETRY_MAX_S) and the
+    next rows go on. A full wallet and account: the payee is told once. Never raises."""
+    d = _data(row)
+    tries = int(d.get('tries') or 0) + 1
+    d.update(tries=tries, stuck=code)
+    wait = RETRY_MAX_S if later else min(RETRY_MAX_S, RETRY_BASE_S * 2 ** min(tries - 1, 12))
+    payee = row['provider'] if row['status'] == 'ready' else row['buyer']
+
+    def run(db):
+        n = db.execute('UPDATE svc_orders SET due_at=?,data=? WHERE id=? AND status=? AND data=?',
+                       (now() + wait, _json(d), row['id'], row['status'], row['data'])).rowcount
+        if n and code == 'full' and tries == 1:
+            mr._notice(db, payee, FULL_TEXT)
+    try:
+        store.transaction(run)
+    except Exception:  # noqa: BLE001 - the next pass tries again
+        LOG.exception('🛎️ svc backoff %s', row.get('id'))
+
+
+def _guarded(store, row: dict, step) -> int:
+    """One row's timer or money step; a failure is logged and pushed back, never raised (one bad row never blocks the rest)."""
+    try:
+        return int(bool(step(store, row)))
+    except _Later:
+        _backoff(store, row, 'unknown_service', later=True)
+    except mr.MarriageError as e:
+        if e.code == 'busy':   # the save moved on and on: simply the next pass
+            return 0
+        LOG.warning('🛎️ svc %s %s: %s %s', row.get('status'), row.get('id'), e.code, e)
+        _backoff(store, row, e.code)
+    except Exception as e:  # noqa: BLE001
+        LOG.exception('🛎️ svc %s %s failed', row.get('status'), row.get('id'))
+        _backoff(store, row, type(e).__name__[:40])
+    return 0
+
+
 def settle_for(store, sid: str | None = None, order_id: str | None = None, limit: int = 20) -> int:
-    """Run the due timers and the money steps of this player's orders (all players' when sid is None)."""
+    """Run the due timers and the money steps of this player's orders (all players' when sid is None). Row by row: a
+    row that fails is logged and pushed back (_backoff), the others go on."""
     t = now()
     with store.connect() as db:
         where, args = 'due_at<=?', [t]
@@ -932,13 +1103,22 @@ def settle_for(store, sid: str | None = None, order_id: str | None = None, limit
     n = 0
     for r in rows:
         if r['status'] in ('talk', 'held', 'working', 'delivered'):
-            n += _due_step(store, r, t)
+            n += _guarded(store, r, lambda st, x: _due_step(st, x, t))
     with store.connect() as db:
         rows = [dict(r) for r in db.execute(f"SELECT * FROM svc_orders WHERE {where} AND status IN ('ready','refund') ORDER BY due_at,id LIMIT ?",
                                             (*args, limit)).fetchall()]
     for r in rows:
-        n += _settle_one(store, r)
+        n += _guarded(store, r, _settle_one)
     return n
+
+
+def settle_quiet(store, sid: str | None = None, order_id: str | None = None, limit: int = 20) -> int:
+    """settle_for for a read or after a step that already succeeded: never raises (a database hiccup is logged)."""
+    try:
+        return settle_for(store, sid, order_id, limit)
+    except Exception:  # noqa: BLE001
+        LOG.exception('🛎️ svc settle (%s, %s)', sid, order_id)
+        return 0
 
 
 _swept = [0.0]
@@ -950,7 +1130,7 @@ def run_housekeeping(store, every: float = 60.0) -> int:
     if t - _swept[0] < every:
         return 0
     _swept[0] = t
-    return settle_for(store, None, None, 50)
+    return settle_quiet(store, None, None, 50)
 
 
 # ---------------------------------------------------------------- reading
@@ -1053,7 +1233,7 @@ def directory(store, sid: str, query: dict) -> dict:
     career, service = str(query.get('career') or '')[:40], str(query.get('service') or '')[:40]
     sort = query.get('sort') if query.get('sort') in SORTS else 'rating'
     try:
-        offset = max(0, min(10000, int(query.get('offset') or 0)))
+        offset = max(0, min(OFFSET_MAX, int(query.get('offset') or 0)))
     except (TypeError, ValueError):
         offset = 0
     from .wedding_live import vn_day
@@ -1083,12 +1263,15 @@ def directory(store, sid: str, query: dict) -> dict:
                 n = sum(1 for g in got if g[0] is sp)
                 if n:
                     own_counts.append(dict(career=sp['career'], service=sp['service'], n=n))
-            merged = sorted(
-                [(None, r) for r in rows] + got,
-                key=lambda m: _rank(sort, _score(m[1].get('rs'), m[1].get('rn')), int(m[1]['price'] or 0), int(m[1].get('rd') or 0),
-                                    (m[1].get('last_at') or 0) > t - ONLINE_SECONDS, float(m[1]['updated_at'] or 0)) if m[0] is None
-                else _rank(sort, _score(m[1]['stars'], m[1]['rated']), m[1]['price'], m[1]['deals'], m[1]['sid'] in on_now, m[1]['at']))
-            merged = merged[offset:offset + PAGE + 1]
+            # the svc rows come sorted by SQL in this same order: only the own-flow rows are sorted, then one lazy merge
+            # up to the page's end (never a sort of every row before the page)
+            def svc_key(r):
+                return _rank(sort, _score(r.get('rs'), r.get('rn')), int(r['price'] or 0), int(r.get('rd') or 0),
+                             (r.get('last_at') or 0) > t - ONLINE_SECONDS, float(r['updated_at'] or 0))
+            own = sorted(((_rank(sort, _score(x['stars'], x['rated']), x['price'], x['deals'], x['sid'] in on_now, x['at']), i, (sp, x))
+                          for i, (sp, x) in enumerate(got)), key=lambda e: (e[0], e[1]))
+            lazy = heapq.merge(((svc_key(r), -1, (None, r)) for r in rows), own, key=lambda e: e[0])
+            merged = [e[2] for e in itertools.islice(lazy, offset, offset + PAGE + 1)]
         more = len(merged) > PAGE
         merged = merged[:PAGE]
         sids = [m[1]['provider'] if m[0] is None else m[1]['sid'] for m in merged]
@@ -1100,15 +1283,13 @@ def directory(store, sid: str, query: dict) -> dict:
             marks = ','.join('?' * len(owners))
             for p in db.execute(f'SELECT * FROM work_visit_places WHERE owner IN ({marks})', tuple(owners)).fetchall():
                 places.setdefault(p['owner'], []).append(dict(p))
-        people, out = {}, []
+        people, out = _people(db, sids), []
         for who, (sp, r) in zip(sids, merged):
             if who != sid and _blocked(db, sid, who):
                 continue
             item = _listing(db, r, sid, t, online, places) if sp is None else _own_item(sp, r, sid, online)
             if not item:
                 continue
-            if who not in people:
-                people[who] = _person(db, who)
             item['who'] = people[who]
             out.append(item)
         counts = [dict(career=r['career'], service=r['service'], n=int(r['n'])) for r in
@@ -1121,7 +1302,8 @@ def directory(store, sid: str, query: dict) -> dict:
                 if n:
                     own_counts.append(dict(career=c, service=v, n=n))
         counts += own_counts
-    return dict(items=out, next=offset + PAGE if more else None, sort=sort, career=career, service=service, counts=counts)
+    return dict(items=out, next=offset + PAGE if more and offset + PAGE <= OFFSET_MAX else None, sort=sort, career=career, service=service,
+                counts=counts, off=off())
 
 
 def provider_view(store, sid: str, pid: str) -> dict:
@@ -1139,23 +1321,25 @@ def provider_view(store, sid: str, pid: str) -> dict:
         for (_c, _v), sp in sorted(specs().items()):   # own-flow listings of this provider (🏥 a birth room, 📸 a studio)
             if is_own(sp):
                 items += [_own_item(sp, x, sid, online) for x in _own_rows(sp, db, provider) if x['on']]
-        reviews = []
-        for r in db.execute('SELECT * FROM svc_reviews WHERE provider=? ORDER BY created_at DESC LIMIT 10', (provider,)).fetchall():
-            if not _blocked(db, sid, r['buyer']):
-                reviews.append(dict(stars=int(r['stars']), comment=r['comment'], reply=r['reply'], at=r['created_at'], who=_person(db, r['buyer'])))
-        regs = [dict(_person(db, x['sid']), n=x['n']) for x in regulars(db, provider, 10)] if provider == sid else []
-        return dict(who=_person(db, provider), online=provider in online, rep=rep_view(db, provider), items=items, reviews=reviews,
-                    regulars=regs, mine=provider == sid)
+        revs = [dict(r) for r in db.execute('SELECT * FROM svc_reviews WHERE provider=? ORDER BY created_at DESC LIMIT 10', (provider,)).fetchall()]
+        mine_regs = regulars(db, provider, 50) if provider == sid else None   # my own card: the list, its count from the same query
+        people = _people(db, [provider] + [r['buyer'] for r in revs] + [x['sid'] for x in (mine_regs or [])[:10]])
+        reviews = [dict(stars=int(r['stars']), comment=r['comment'], reply=r['reply'], at=r['created_at'], who=people[r['buyer']])
+                   for r in revs if not _blocked(db, sid, r['buyer'])]
+        regs = [dict(people[x['sid']], n=x['n']) for x in (mine_regs or [])[:10]]
+        return dict(who=people[provider], online=provider in online, rep=rep_view(db, provider, len(mine_regs) if mine_regs is not None else None),
+                    items=items, reviews=reviews, regulars=regs, mine=provider == sid)
 
 
 def inbox(store, sid: str) -> dict:
     """My talks and orders, both sides (and the legacy workplace orders, read only), newest first."""
-    settle_for(store, sid)
+    settle_quiet(store, sid)
     t = now()
     with store.connect() as db:
         rows = [dict(r) for r in db.execute('SELECT * FROM svc_orders WHERE buyer=? OR provider=? ORDER BY updated_at DESC, id LIMIT 80', (sid, sid)).fetchall()]
-        people = {}
-        items = [_view(db, r, sid, people, t) for r in rows]
+        people = _people(db, [r['provider'] if r['buyer'] == sid else r['buyer'] for r in rows])
+        marks = _marks(db, [r['id'] for r in rows])
+        items = [_view(db, r, sid, people, t, marks) for r in rows]
         legacy = []
         for r in db.execute('SELECT * FROM work_service_orders WHERE customer=? OR provider=? ORDER BY updated_at DESC LIMIT 30', (sid, sid)).fetchall():
             r = dict(r)
@@ -1165,7 +1349,7 @@ def inbox(store, sid: str) -> dict:
             legacy.append(dict(id=r['id'], kind='wo', status=r['status'], role=role, price=int(r['price']), fee=int(r.get('fee') or 0),
                                name=(d.get('offer') or {}).get('label', ''), place_name=d.get('place_name', ''), other=other,
                                market=bool(d.get('market')), created_at=r['created_at'], updated_at=r['updated_at']))
-        return dict(items=items, legacy=legacy, alerts=alert_count(db, sid), rules=rules())
+        return dict(items=items, legacy=legacy, alerts=alert_count(db, sid), rules=rules(), off=off())
 
 
 def mine(store, sid: str, state: dict | None) -> dict:
@@ -1203,7 +1387,7 @@ def get(store, token, state, sub: str, query: dict, ip: str = '') -> dict:
     sid = _actor(store, token)
     query = query or {}
     if sub == 'inbox':
-        _touch(store, sid, ip)
+        _touch(store, sid, ip, TOUCH_S)
     if sub in ('', 'dir'):
         return directory(store, sid, query)
     if sub == 'provider':
@@ -1274,6 +1458,16 @@ def _check_buyer(store, sid: str, spec: dict, price: int) -> dict:
     return state
 
 
+def _check_in(db, spec: dict | None, buyer: str, state: dict | None) -> None:
+    """spec['check'] once more inside the transaction that takes the money (one open order, a cooldown, a day cap…),
+    serialised per buyer and career by an advisory lock: two orders sent together never both pass it."""
+    if not spec or not spec.get('check') or state is None:
+        return
+    db.execute('SELECT pg_advisory_xact_lock(hashtextextended(?,0))', ('svc-check:' + buyer + '|' + spec['career'],))
+    why = spec['check'](db, buyer, state)
+    need(not why, str(why or '')[:200], 'requirement')
+
+
 def _check_provider(store, provider: str, spec: dict) -> None:
     loaded = mr._read_state(store, provider)
     need(loaded, 'Người này đã rời phố.', 'not_found', 404)
@@ -1303,6 +1497,7 @@ def _order(store, sid: str, data: dict, ip: str) -> dict:
         if old:
             need(old['fingerprint'] == fp, 'Mã thao tác đã dùng cho nội dung khác.', 'rid_conflict', 409)
             return dict(order=_view(db, old, sid), changed=False)
+        need(not off(), OFF_TEXT, 'svc_off', 503)
         provider, spec, row = _target(db, data, sid)
         if spec['note_check']:
             why = spec['note_check'](note)
@@ -1326,14 +1521,17 @@ def _order(store, sid: str, data: dict, ip: str) -> dict:
     t = now()
     oid = 'sv_' + secrets.token_hex(12)
     body = dict(note=note, name=spec['name'], icon=spec['icon'], unit=spec['unit'], lo=q['lo'], hi=q['hi'])
+    box = {}
 
     def pay(s):
+        box['state'] = s
         debit(s, price, f'🛎️ Giữ tiền Phố dịch vụ · {spec["name"]}')
 
     def insert(db):
         if _by_rid(db, sid, rid):
             raise _Replay()
         record_net(db, sid, ip, t)
+        _check_in(db, spec, sid, box.get('state'))
         guard(db, sid, provider, price, spec, ip, sid, money=True, t=t)
         _open_counts(db, sid, provider)
         db.execute('INSERT INTO svc_orders(id,buyer,provider,career,service,kind,status,qty,price,ask,ask_by,rounds,base,mult,request_id,fingerprint,'
@@ -1359,6 +1557,7 @@ def _offer(store, sid: str, data: dict, ip: str) -> dict:
         if old:
             need(old['fingerprint'] == fp, 'Mã thao tác đã dùng cho nội dung khác.', 'rid_conflict', 409)
             return dict(order=_view(db, old, sid), changed=False)
+        need(not off(), OFF_TEXT, 'svc_off', 503)
         provider, spec, row = _target(db, data, sid)
         if spec['note_check']:
             why = spec['note_check'](note)
@@ -1427,6 +1626,7 @@ def _answer(store, sid: str, data: dict, ip: str) -> dict:
         store.transaction(lambda db: _flip(db, row['id'], 'talk', 'declined' if op == 'decline' else 'cancelled', t, due_at=None))
         with store.connect() as db:
             return dict(order=_view(db, _row(db, row['id']), sid), changed=True, message='Đã dừng trả giá.')
+    need(not off(), OFF_TEXT, 'svc_off', 503)   # 🛑 a talk may still be stopped (decline / cancel above), never sealed
     need(row['ask_by'] != role, 'Đang chờ người kia trả lời.', 'not_your_turn', 409)
     if 'ask' in data:
         need(data['ask'] == row['ask'], 'Giá vừa đổi. Xem lại nhé.', 'ask_changed', 409)
@@ -1458,13 +1658,17 @@ def _answer(store, sid: str, data: dict, ip: str) -> dict:
             guard(db, row['buyer'], row['provider'], price, spec, ip, sid, money=False)
         _check_buyer(store, row['buyer'], spec, price)
 
+    box = {}
+
     def pay(s):
+        box['state'] = s
         debit(s, price, f'🛎️ Giữ tiền Phố dịch vụ · {(spec or {}).get("name") or row["service"]}')
 
     def lock(db):
         cur = db.execute('SELECT * FROM svc_orders WHERE id=? FOR UPDATE', (row['id'],)).fetchone()
         need(cur and cur['status'] == 'talk' and cur['rounds'] == row['rounds'] and cur['ask'] == price, 'Giá vừa đổi. Xem lại nhé.', 'ask_changed', 409)
         record_net(db, sid, ip, t)
+        _check_in(db, spec, row['buyer'], box.get('state'))
         guard(db, row['buyer'], row['provider'], price, spec, ip, sid, money=True, t=t)
         hours = (spec or {}).get('work_hours') or WORK_HOURS
         if not _flip(db, row['id'], 'talk', 'working', t, price=price, mult=0, held_at=t, due_at=t + hours * HOUR):
@@ -1495,7 +1699,7 @@ def _simple(store, sid: str, data: dict, sub: str, ip: str) -> dict:
         done = dict(take=('working', 'delivered', 'ready', 'done'), decline=('refund', 'refunded'), cancel=('refund', 'refunded'),
                     confirm=('ready', 'done'))[sub]
         need(row['status'] in done, 'Đơn đã sang bước khác.', 'gone', 409)
-        settle_for(store, sid, row['id'])
+        settle_quiet(store, sid, row['id'])
         with store.connect() as db:
             return dict(order=_view(db, _row(db, row['id']), sid), changed=False)
 
@@ -1517,7 +1721,7 @@ def _simple(store, sid: str, data: dict, sub: str, ip: str) -> dict:
         store.transaction(step)
     except _Replay:
         pass
-    settle_for(store, sid, row['id'])
+    settle_quiet(store, sid, row['id'])
     msg = dict(take='Đã nhận đơn. Làm xong bấm Xong việc nhé.', decline='Đã từ chối. Tiền đã hoàn về ví khách.',
                cancel='Đã hủy. Tiền đã hoàn về ví của bạn.', confirm='Đã xác nhận. Người bán đã nhận tiền.')[sub]
     with store.connect() as db:
@@ -1558,7 +1762,7 @@ def deliver(store, provider_sid: str, order_id: str, result: dict | None = None)
         store.transaction(lambda db: _deliver_db(db, provider_sid, order_id, result, t))
     except _Replay:
         pass
-    settle_for(store, provider_sid, order_id)
+    settle_quiet(store, provider_sid, order_id)
     with store.connect() as db:
         return _view(db, _row(db, order_id), provider_sid)
 
@@ -1617,6 +1821,8 @@ def _done(store, sid, data, ip) -> dict:
     with store.connect() as db:
         row = _row(db, data.get('order'))
         need(_mine(row, sid) == 'provider', 'Thao tác không hợp lệ.', 'forbidden', 403)
+    from . import hotel_stay   # 🏨 a stay is delivered by its check-out only (one lock order: hotel_stays, then svc_orders)
+    need(not hotel_stay.is_stay(row['career'], row['service']), 'Trả phòng cho khách ở 🏨 Sổ phòng nhé.', 'use_hotel_book', 409)
     view = deliver(store, sid, row['id'], data.get('result') if isinstance(data.get('result'), dict) else None)
     return dict(order=view, changed=True, message='Đã giao. Khách xác nhận là bạn nhận tiền.' if view['status'] == 'delivered' else 'Đã giao và nhận tiền.')
 
@@ -1731,13 +1937,29 @@ def _settings(store, sid, state, data, ip) -> dict:
     return dict(changed=True, message='Đã lưu. Dịch vụ đang mở cho khách.' if on else 'Đã tắt dịch vụ này.', mine=mine(store, sid, state))
 
 
-def _touch(store, sid: str, ip: str) -> None:
-    """The network this request came from (a keyed tag), kept even when the request is refused."""
-    if ip and net_tags(ip)[0]:
-        try:
-            store.transaction(lambda db: record_net(db, sid, ip))
-        except Exception:
-            pass
+_touched: dict = {}
+_touch_lock = threading.Lock()
+
+
+def _touch(store, sid: str, ip: str, every: float = 0.0) -> None:
+    """The network this request came from (a keyed tag), kept even when the request is refused. every > 0 (a GET poll):
+    one write per player and network in that many seconds at most (svc_net keeps NET_DAYS; minutes do not matter)."""
+    tag = net_tags(ip)[0] if ip else ''
+    if not tag:
+        return
+    t = now()
+    if every:
+        key = (sid, tag)
+        with _touch_lock:
+            if t - _touched.get(key, 0.0) < every:
+                return
+            if len(_touched) > 20000:
+                _touched.clear()
+            _touched[key] = t
+    try:
+        store.transaction(lambda db: record_net(db, sid, ip, t))
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def post(store, token, state, sub: str, data: dict, ip: str = '') -> dict:
@@ -1767,15 +1989,18 @@ def post(store, token, state, sub: str, data: dict, ip: str = '') -> dict:
 
 # ---------------------------------------------------------------- account deletion, admin
 def forget(db, sid: str) -> None:
-    """Store.delete (the save goes in this transaction): their talks end; paid orders they sell are refunded to the
-    buyers (the money step follows); paid orders they bought that were never taken are discarded with the save;
+    """Store.delete (the save goes in this transaction): their talks end; paid orders they sell and never delivered are
+    refunded to the buyers (the money step follows); work they already delivered (delivered, ready) is earned: the
+    buyer keeps the result (on_buyer runs at the settlement) and the payout is burned (_settle_one, the provider's save
+    gone), never refunded on top of it. Paid orders they bought that were never taken are discarded with the save;
     orders already in work stay so the provider can finish and be paid. Their offers and network tags go."""
     t = now()
     db.execute("UPDATE svc_orders SET status='cancelled',updated_at=?,due_at=NULL WHERE (buyer=? OR provider=?) AND status='talk'", (t, sid, sid))
-    for r in db.execute("SELECT id,data FROM svc_orders WHERE provider=? AND status IN ('held','working','delivered','ready')", (sid,)).fetchall():
+    for r in db.execute("SELECT id,status,data FROM svc_orders WHERE provider=? AND status IN ('held','working','delivered','ready')", (sid,)).fetchall():
         d = _data(dict(r))
         d['why'] = 'left'
-        db.execute("UPDATE svc_orders SET status='refund',data=?,updated_at=?,due_at=? WHERE id=?", (_json(d), t, t, r['id']))
+        new = 'ready' if r['status'] in ('delivered', 'ready') else 'refund'
+        db.execute('UPDATE svc_orders SET status=?,data=?,updated_at=?,due_at=? WHERE id=?', (new, _json(d), t, t, r['id']))
     db.execute("UPDATE svc_orders SET status='refunded',updated_at=?,due_at=NULL,done_at=? WHERE buyer=? AND status IN ('held','refund')", (t, t, sid))
     db.execute('DELETE FROM svc_settings WHERE provider=?', (sid,))
     db.execute('DELETE FROM svc_net WHERE sid=?', (sid,))

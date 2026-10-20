@@ -333,16 +333,15 @@ def _settle_one(store, order):
             if exists:
                 _bridge().credit_visit(state, data['target'], order['id'], order['price'], **extra)
             else:
-                journey._wallet(state['journey'], paid, 'salary', 'Thanh toán đơn đã phục vụ tại quầy đã đóng', data.get('career'))
+                sm.credit(state, paid, 'Thanh toán đơn đã phục vụ tại quầy đã đóng', 'salary', data.get('career'))
         elif status == 'ready':
             from . import engine
             c = state['careers'][data['career']]
             engine.money(state, c, paid, 'Thanh toán đơn khách thật', order['id'], 'revenue')
             credit_bonus = getattr(_bridge(), 'credit_staff_bonus', None)
             if credit_bonus: credit_bonus(state, data['career'], order['id'], order['price'], **(dict(extra, base=data.get('base', order['price'])) if fee else {}))
-        else:
-            journey._wallet(state['journey'], order['price'], 'draw',
-                            'Thanh toán đơn khách thật' if status == 'ready' else 'Hoàn tiền đơn chỗ làm', data.get('career'))
+        else:   # 🛎️ a refund: the wallet up to its maximum, then the bank account (the escrow came from both: sm.debit)
+            sm.credit(state, order['price'], 'Hoàn tiền đơn chỗ làm', 'draw', data.get('career'))
         if status == 'ready':
             _ack(state, order['id'])
         state_box['state'] = state
@@ -357,6 +356,10 @@ def _settle_one(store, order):
         callbacks = {recipient: change}
         if status == 'refund_pending' and order['provider'] != recipient and mr._read_state(store, order['provider']):
             callbacks[order['provider']] = lambda s: _ack(s, order['id'], cancelled=True)
+        if status == 'ready' and data.get('career') == 'pet_care' and data.get('market') and order['customer'] != recipient \
+                and mr._read_state(store, order['customer']):
+            from . import pets   # 🐾 the service done: the customer's pets come back clean now (no money here)
+            callbacks[order['customer']] = lambda s: pets.groom_by_player(s)
         mr._mutate_retry(store, callbacks, finish)
     except _Replay:
         return False
@@ -561,9 +564,7 @@ def _create(store, sid, data, ip='', talk=None):
             raise _Replay()
         need(s.get('journey', {}).get('story'), 'Dịch vụ khách thật dùng ví hành trình.', 'not_story')
         sm.debit(s, price, 'Giữ tiền đơn chỗ làm')   # the wallet, then the bank account; never into debt
-        if body['career'] == 'pet_care':   # 🐾 the pets at home go to the groomer (game/pets.py); no money moves here
-            from . import pets
-            pets.groom_by_player(s)
+        # 🐾 a pet_care order grooms the pets when it completes (_settle_one), never at the order: a cancel refunds it
     def insert(db):
         previous = _row(db, 'SELECT * FROM work_service_orders WHERE customer=? AND request_id=?', (sid, rid))
         if previous:

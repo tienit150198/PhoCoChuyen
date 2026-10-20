@@ -311,3 +311,33 @@ class WorkVisits(Base):
             bonus=max(0,min(paid,order['base'])-job['wage']-job['materials']-job['goods'])*40//100
             self.assertEqual(c['money'],cash+paid+bonus)
             self.assertTrue(c['player_service_jobs'][0]['settled'])
+
+    def test_pet_grooming_lands_at_completion_and_refunds_reach_the_bank(self):
+        """Review 22/10: grooming ran when the money was held, so a cancel gave a free grooming; and a refund went to the
+        wallet only, so a wallet near its maximum wedged it (the escrow came from the wallet, then the bank account)."""
+        from game import bank, journey as jr, pets
+        from game.engine import apply_action
+        self.bridge.offers=lambda s,c:[dict(offer_id='offer-pet',digest='digest-pet',price=25,label='Tắm cho thú cưng',career='pet_care')]
+        owner=self.user('groomer');buyer=self.user('pet_owner')
+        place=self.make_public(owner)
+        groomed=[]
+        with patch.object(pets,'groom_by_player',side_effect=lambda s:groomed.append(s.get('name')) or True):
+            first=self.api_post(buyer,'order',place=place['id'],offer_id='offer-pet',rid='visit-pet-0001')['order']
+            self.assertEqual(groomed,[],'nothing groomed while the money is only held')
+            def full(s):
+                s2,_=apply_action(s,None,'jr_bk_open',{});s.clear();s.update(s2)
+                bank.get(s)['balance']=1000
+                s['journey']['wallet']=jr.WALLET_MAX-10
+            mr._mutate(self.store,{self.sid(buyer):full})
+            self.api_post(buyer,'cancel',order=first['id'])
+            s=self.state(buyer)
+            self.assertEqual((s['journey']['wallet'],bank.get(s)['balance']),(jr.WALLET_MAX,1000+first['price']-10),'wallet to its maximum, the rest to the bank')
+            self.assertEqual(groomed,[],'a cancelled order grooms nothing')
+            mr._mutate(self.store,{self.sid(buyer):lambda s:s['journey'].update(wallet=5000)})
+            second=self.api_post(buyer,'order',place=place['id'],offer_id='offer-pet',rid='visit-pet-0002')['order']
+            self.api_post(owner,'accept',order=second['id'])
+            state=self.state(owner)
+            self.store.transaction(lambda db:self.w.command_commit(db,self.sid(owner),state,state,'milk_tea','task_action',{'service_events':[{'id':second['id'],'status':'completed'}]}))
+            self.api_post(owner,'receive')
+            self.api_post(owner,'receive')
+        self.assertEqual(len(groomed),1,'groomed once, when the service was done')
