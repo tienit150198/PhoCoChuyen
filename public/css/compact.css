@@ -342,3 +342,43 @@ html[data-layout="phone"] .sheet-head:has(>.grow>.gd-next:not(.gd-dup))>.grow>.g
    on "Chỉ đường". There the note sits low over the street instead. */
 html[data-layout="phone"] dialog#sheet.sheet.tw-sheet.tw-sheet .toasts,
 html[data-clean][data-layout="phone"] dialog#sheet.sheet.tw-sheet.tw-sheet .toasts{top:auto;bottom:calc(max(10px,var(--safe-b)) + 80px)}
+
+/* ---------- E. "Giao diện đầy đủ (cũ)" on a phone: one type scale (owner 21/10, player feedback: "giao diện cũ có vẻ
+   font to hơn khó nhìn hơn") --------------------------------------------------------------------------------------
+   html:not([data-clean]) = the full layout (Cài đặt → Giao diện "Tắt", or a career's ⋯ → "📋 Giao diện đầy đủ (cũ)").
+   Both layouts used the same sizes, but the full one shows every line the gọn one folds away, much of it at the
+   page's default 16 px / 1.6 (54 careers at 390 px, by characters: 39 % of the running text and 37 % of the button
+   text on the first work screen were 16 px+, paragraphs at line-height 1.6), and the phone note (toast) sat on the
+   title. The scale for its sheets:
+     body 15 px / 1.5   (--fs-3 inside the sheet; text with no size of its own inherits it)
+     card titles 18 px  (--fs-4; street-kit intros were 20)
+     buttons 15 px      (.btn .933rem as before; the bar's big button and street-kit buttons follow --fs-3)
+     labels 12–14 px    (--fs-1 / --fs-2 unchanged), the sheet title 17 px (A1).
+   Low specificity (:where) for the inherited defaults, so a career's own smaller size still wins; the few career
+   rules that pin 16 px+ on running text get a scoped override. The gọn layout and the 2.5D map are untouched. */
+html[data-layout="phone"]:not([data-clean]) dialog.sheet{--fs-3:.9375rem;--fs-4:1.125rem}
+:where(html[data-layout="phone"]:not([data-clean])) dialog.sheet :where(.sheet-body,.life-content){font-size:var(--fs-3);line-height:1.5}
+:where(html[data-layout="phone"]:not([data-clean])) dialog.sheet :where(.sheet-body,.life-content) p{line-height:1.5}
+/* …and in the 2.5D look, whose paper sheets set paragraphs to 1.6 (cozy-reference.css): the same elements, 1.5. */
+html[data-game="isometric"]:where([data-layout="phone"]:not([data-clean])) dialog.sheet :is(p,.notice,.help){line-height:1.5}
+:where(html[data-layout="phone"]:not([data-clean])) dialog.sheet :where(.sheet-body,.life-content) .btn.big{font-size:var(--fs-3)}
+/* Office kit (kế toán DN, lương thuế, tập đoàn, nhân sự, thư ký, IT): its root and its quotes/subjects pinned 1rem. */
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.ok{font-size:var(--fs-3)}
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.ok :is(.ok-quote,.ok-mail-subj,.ok-rule-title,.ok-fold>summary){font-size:var(--fs-3)}
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.ok .ok-h{font-size:1rem}
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.ok.ow .ow-doc{font-size:var(--fs-3);line-height:1.55}
+/* Running text other careers pinned at 16–18 px: a customer's words, a mood line, a fold's title, price choices. */
+html[data-layout="phone"]:not([data-clean]) dialog.sheet :is(.career-job.ao .ao-said,.career-job.bm .bm-mood,.tt-fold>.tt-fold-sum,.dw-quote){font-size:var(--fs-3)}
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.gr .gr-choice{font-size:1rem}
+/* Sizes in em follow the 15 px body; delivery's .78em notes would fall to 11.7 px: never under 12. */
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.dl :is(.dl-clock,.dl-ev-head,.dl-part-name) small{font-size:max(.75rem,.78em)}
+/* A work screen is one column the width of the sheet: an implicit grid column grew to its widest nowrap row, so at
+   360 px the flight attendant's strip ("Thành phố 🏙️ · Hướng dẫn an toàn") pushed the tiles and the bar 18 px off
+   screen. (A career's own columns still win: this is the lowest specificity.) */
+:where(html[data-layout="phone"]:not([data-clean]) dialog.sheet) .career-job{grid-template-columns:minmax(0,1fr)}
+html[data-layout="phone"]:not([data-clean]) dialog.sheet .career-job.tv .tv-strip{flex-wrap:wrap}
+/* The phone note sits under the header, as in the gọn layout (A3 above): in the title row it covered the work
+   screen's title on 46 of 54 careers (a two-line note spilled onto it). The town map keeps D3. */
+html[data-layout="phone"]:not([data-clean]) dialog#sheet.sheet:not(.tw-sheet) .toasts,html[data-layout="phone"]:not([data-clean]) dialog#sheet.sheet:not(.tw-sheet)[data-gd-bar] .toasts,html[data-layout="phone"]:not([data-clean]) dialog#sheet.sheet:not(.tw-sheet)[data-gd-bar="below"] .toasts{
+  top:calc(var(--hd-t,10px) + var(--hd-h,52px) + 4px);left:max(8px,var(--safe-l));right:auto;width:calc(100vw - max(8px,var(--safe-l)) - max(8px,var(--safe-r)))}
+html[data-layout="phone"]:not([data-clean]) #sheet .toast{min-height:36px;font-size:var(--fs-2)}
