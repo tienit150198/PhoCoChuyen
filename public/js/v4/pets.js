@@ -24,7 +24,7 @@ const MOOD={vui:'😊',on:'🙂',buon:'🥺'};
 const S={dlg:null,env:null,tab:'home',sub:'',pet:'',kind:'dog',breed:'',coat:0,item:'',food:'hat',toy:'',clean:'bath',vet:'kham',slot:'head',
   shelter:-1,nick:'',donate:0,pose:'happy',frame:'nang',board:null,boardAt:0,busy:false,flash:null,listening:false,
   stat:'spd',gslot:'giay',fz:[],fzMix:false,fzBreed:'',gv:'bag',g:'',gbslot:'giay',gmodel:0,grank:0,bkind:'week',ff:{k:'',r:'',at:''},
-  wk:'',wrank:0,wslot:'',wsel:'',wfslot:'',bq:1};
+  wk:'',wrank:0,wslot:'',wsel:'',wfslot:'',bq:1,wascope:'all',watop:6,wabud:0,wres:null};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().pets;
@@ -89,6 +89,10 @@ function dialog(){
   d.addEventListener('input',e=>{if(e.target.name!=='nick')return;S.nick=e.target.value;
     // ✓ Đổi tên is drawn disabled while the name is unchanged: wake it as the player types (#446), no re-render (keeps the caret)
     if(S.sub==='more'){const b=d.querySelector('.pt-main'),p=cur(),v=S.nick.trim();if(b&&p)b.disabled=S.busy||!v||v===p.n;}});
+  // 🤖 Ghép tự động's two pickers (which piece, up to which rank): a new pick drops a typed budget back to the estimate
+  d.addEventListener('change',e=>{const el=e.target.closest?.('[data-pt-sel]');if(!el||!d.contains(el))return;
+    if(el.dataset.ptSel==='wascope')S.wascope=el.value||'all';else if(el.dataset.ptSel==='watop')S.watop=Number(el.value)||6;else return;
+    S.wabud=0;render();});
   d.addEventListener('close',()=>{S.flash=null;S.sub='';});
   S.dlg=d;return d;
 }
@@ -202,6 +206,22 @@ function gearUp(g){
   const have=(X()?.gear||[]).filter(x=>x.id!==g.id&&!x.on&&x.s===g.s&&x.r===g.r).length,max=g.lv>=t.gear.lv_max;
   return {next:RNAME(g.r+1),max,have:Math.min(2,have),ok:max&&have>=2,lose:g.r>=(t.limits.lose_from??4),fee:t.gear.fuse_fee[g.r]};
 }
+/** 🤖 What Ghép tự động (jr_pet_wfuse_auto) finds now, as game/pet_wardrobe.py triples sees it: three of one piece and
+ * rank not worn, the result at most rank `top`. {sets [{k, r, t triples}] lowest rank first, n triples, est the first
+ * round's fees (each triple once), min the cheapest fee}. The odds stay on the server. */
+function autoPlan(scope=S.wascope,top=S.watop){
+  const W=WARD(),m=new Map(),order=(W?.items||[]).map(i=>i.id);
+  for(const i of myItems()){if(i.on||i.r>=Math.min(top,6)||(scope!=='all'&&i.k!==scope)||!wItem(i.k))continue;const key=`${i.k}|${i.r}`;m.set(key,(m.get(key)||0)+1);}
+  const sets=[...m].filter(([,n])=>n>=3).map(([key,n])=>{const [k,r]=key.split('|');return {k,r:Number(r),t:Math.floor(n/3)};})
+    .sort((a,b)=>a.r-b.r||order.indexOf(a.k)-order.indexOf(b.k));
+  const fee=r=>Number(W?.fee?.[r])||0;
+  return {sets,n:sets.reduce((a,x)=>a+x.t,0),est:sets.reduce((a,x)=>a+x.t*fee(x.r),0),min:sets.length?Math.min(...sets.map(x=>fee(x.r))):0};
+}
+/** The budget picked (the estimate until one is typed), within [the cheapest fee, the money at hand]. */
+function autoBudget(pl){
+  if(!pl.n)return 0;const cap=Math.max(pl.min,ready());
+  return Math.max(pl.min,Math.min(S.wabud||pl.est,cap));
+}
 /** The care a pet needs most: [sub view, emoji, label] (the home screen's main button). */
 function nextCare(p){
   const n=p.needs,c=CAT();if(!c)return ['photo','📸','Chụp ảnh'];
@@ -231,7 +251,8 @@ function main(){
     const u=gearUp(g);   // at +10: the main button ranks it up (owner 19/10)
     return !u?['👑 Đã tối đa','',' ']:u.ok?[`📈 Lên hạng ${u.next} · ${fmt(u.fee)} xu`,'gfuse',readyWhy(u.fee)]:[`📈 Cần thêm ${2-u.have} món hạng ${g.rank}`,'',' '];}
   if(S.tab==='board')return ['🐾 Bé nhà mình','tohome',''];
-  if(S.tab==='ward')return ['','',''];
+  if(S.tab==='ward'){if(S.sub!=='wauto'||!WARD()?.auto_max)return ['','',''];const pl=autoPlan(),b=autoBudget(pl);
+    return pl.n?[`🤖 Ghép tự động · tối đa ${fmt(b)} xu`,'wauto',readyWhy(pl.min)]:['🤖 Chưa có 3 món giống hệt','',' '];}
   if(S.sub==='all'||away())return ['','',''];
   if(!p)return ['🏠 Nhận nuôi miễn phí','toadopt',''];
   const full=x=>x>=c.full;
@@ -270,6 +291,8 @@ async function onClick(op,data){
     case'wfuse':{const [k,r]=S.wsel.split('|'),it=wItem(k),W=WARD(),rr=Number(r),fee=W.fee[rr];if(!it)return;
       if(!await ask(`Ghép ba ${it.name} hạng ${RKS[rr]}?`,`Thành công: ra một ${it.name} hạng ${RKS[rr+1]}${rr>=3?' (có khi ra món 💎 dòng sang)':''}. Trượt: ba món vẫn còn, mất phí. Món đang mặc sẽ được tháo ra.`,`🔀 Ghép · ${fmt(fee)} xu`,fee))return;
       const res=await send('jr_pet_wfuse',{k,r:rr,confirm:true});if(res?.ok){const n=myItems().find(i=>i.id===res.item);S.wsel=n?`${n.k}|${n.r}`:'';}else if(res)S.flash={...S.flash,kind:'bad'};render();return;}
+    case'wabud':S.wabud=Math.max(1,Number(data.n)||0);afterTap(render);return;
+    case'wares':S.wres=null;render();return;
     case'wdrop':{const [k,r]=S.wsel.split('|'),it=wItem(k);if(!it)return;if(!await ask(`Bỏ một ${it.name}?`,`${it.name} hạng ${RKS[r]} sẽ mất hẳn.`,'🗑️ Bỏ'))return;
       await send('jr_pet_wdrop',{k,r:Number(r),confirm:true});if(!myItems().some(i=>`${i.k}|${i.r}`===S.wsel))S.wsel='';render();return;}
     case'fzbreed':S.fzBreed=data.id||'';render();return;
@@ -277,7 +300,7 @@ async function onClick(op,data){
     case'pet':S.pet=data.id;S.sub='';render();return;
     case'pick':S.pet=data.id;S.sub='';render();top();return;
     case'ff':S.ff[data.key]=data.val;render();return;
-    case'sub':S.sub=data.sub;S.flash=null;if(S.sub==='more')S.nick=p?.n||'';render();top();return;
+    case'sub':S.sub=data.sub;S.flash=null;if(S.sub==='more')S.nick=p?.n||'';if(S.sub==='wauto'){S.wres=null;S.wabud=0;}render();top();return;
     case'back':S.sub='';render();return;
     case'kind':S.kind=data.kind;S.bq=1;S.breed='';S.item='';S.wk='';S.wslot='';render();return;
     case'breed':S.breed=data.id;S.coat=0;S.bq=1;S.nick=S.nick||'';render();return;
@@ -337,6 +360,10 @@ async function go(){
     case'wbuy':{const it=wItem(S.wk);if(!it)return;const q=bq(),one=wPrice(it,S.wrank),pr=one*q;
       if(pr>=1000&&!await ask(`Mua ${it.name} hạng ${RKS[S.wrank]}${times(q)}?`,`${q>1?`${q} × ${fmt(one)} xu = ${fmt(pr)} xu, trả một lần`:`Trả ${fmt(pr)} xu`}. Mua xong mặc cho bé ở 👗 Diện hoặc nút "Mặc luôn".`,`🛍️ ${fmt(pr)} xu`,pr))return;
       if(await send('jr_pet_wbuy',{id:it.id,...(S.wrank?{rank:S.wrank}:{}),...(q>1?{qty:q}:{}),confirm:true})){S.bq=1;render();}return;}
+    case'wauto':{const pl=autoPlan(),b=autoBudget(pl);if(!pl.n)return;const W=WARD(),sc=S.wascope==='all'?null:wItem(S.wascope);
+      if(!await ask('🤖 Ghép tự động?',`${sc?`Chỉ ${sc.name}`:'Mọi món'}, hạng thấp trước, tới hạng ${RKS[S.watop]}. Tiêu tối đa ${fmt(b)} xu, tối đa ${W.auto_max} lượt; trượt thì ba món vẫn còn, mất phí lượt đó. Đồ đang mặc được giữ nguyên. Trả một lần: ví trước, thiếu thì lấy từ tài khoản.`,`🤖 Ghép · tối đa ${fmt(b)} xu`,Math.min(b,ready())))return;
+      const r=await send('jr_pet_wfuse_auto',{scope:S.wascope,max_rank:S.watop,budget:b,confirm:true});
+      if(r?.auto){S.wres=r.auto;S.wabud=0;if(!r.ok)S.flash={...S.flash,kind:'bad'};if(S.wascope!=='all'&&!autoPlan().n)S.wascope='all';render();top();}return;}
     case'buy':{const it=shopItems().find(x=>x.id===S.item);if(!it)return;
       if(it.price>=500&&!await ask(`Mua ${it.name}?`,`Trả ${fmt(it.price)} xu.`,`Mua · ${fmt(it.price)} xu`,it.price))return;
       await send('jr_pet_buy',{id:it.id,confirm:true});return;}
@@ -580,6 +607,7 @@ function ward(v,c){
   const W=WARD();if(!W)return '<p class="pt-empty">⏳</p>';
   const its=myItems(),slots=W.slots;
   const help=`<details class="pt-more"><summary>💡 Tủ đồ dùng thế nào?</summary><p class="pt-muted">1. Mua đồ, cánh ở 🛍️ Tiệm (hạng D hoặc C).<br>2. Chọn món bên dưới rồi chạm tên bé để mặc.<br>3. Có 3 món giống hệt (cùng món, cùng hạng) thì 🔀 ghép ra 1 món hạng cao hơn. Từ hạng A có thể ra 💎 dòng sang.<br>4. Mỗi món đang mặc cộng thêm: ${W.ranks.map((r,i)=>`${r} +${W.bonus[i]}%`).join(', ')}; 💎 dòng sang +${W.lux_bonus}%, đủ bộ +${W.set_bonus}% (tối đa +${W.bonus_max}%). Ổ nằm chỉ để ở nhà.</p></details>`;
+  if(S.sub==='wauto'&&W.auto_max)return wauto(W);
   if(!its.length)return help+`<p class="pt-empty">👗</p><p class="pt-muted pt-center">Tủ đồ còn trống.</p><div class="pt-chips pt-center">${chip('tab',{tab:'shop',kind:'wear'},false,'👗 Mua quần áo')}${chip('tab',{tab:'shop',kind:'wing'},false,'🪽 Mua cánh')}</div>`;
   const groups=new Map();
   for(const i of its){const it=wItem(i.k);if(!it)continue;const key=`${i.k}|${i.r}`;const g=groups.get(key)||{key,k:i.k,r:i.r,it,n:0,on:[]};g.n++;if(i.on)g.on.push(i.on);groups.set(key,g);}
@@ -594,8 +622,56 @@ function ward(v,c){
       <div class="pt-chips pt-center">${g.r<6?chip('wfuse',{},false,g.n>=3?`🔀 Ghép 3 → hạng ${RKS[g.r+1]} · ${fmt(fee)} xu`:`🔀 Cần ${3-g.n} món nữa để ghép`):''}${chip('wdrop',{},false,'🗑️ Bỏ 1 món')}</div></section>`
       .replace(`data-pt="wfuse"`,g.n>=3?'data-pt="wfuse"':'data-pt="wfuse" disabled');}
   const chipsF=`<div class="pt-chips">${chip('wfslot',{slot:''},!S.wfslot,`Tất cả · ${its.length}`)}${slots.filter(x=>has.has(x.id)).map(x=>chip('wfslot',{slot:x.id},S.wfslot===x.id,`${x.emoji} ${esc(x.name)}`)).join('')}</div>`;
-  return help+card+chipsF+`<div class="pt-list">${rows.map(r=>`<button type="button" class="pt-item${r.key===S.wsel?' on':''}" data-pt="wsel" data-key="${esc(r.key)}" aria-pressed="${r.key===S.wsel}"><span class="pt-ico" aria-hidden="true">${esc(r.it.emoji)}</span><b>${esc(r.it.name)} ${RK(r.r)}${r.n>1?` <small>×${r.n}</small>`:''}${r.on.length?`<small> · 🐾 ${r.on.map(id=>esc(petName(id))).join(', ')}</small>`:''}</b><em>${r.n>=3&&r.r<6?'🔀':''}</em></button>`).join('')}</div>`
+  // 🤖 Ghép tự động (an older server has no auto_max: no button)
+  const au=W.auto_max?autoPlan('all',6):null;
+  const auto=au?`<button type="button" class="pt-autobtn${au.n?' on':''}" data-pt="sub" data-sub="wauto"><span class="pt-ico" aria-hidden="true">🤖</span><b>Ghép tự động<small>${au.n?`${au.n} bộ ba ghép được ngay`:'Cần 3 món giống hệt (cùng món, cùng hạng)'}</small></b><em aria-hidden="true">›</em></button>`:'';
+  return help+auto+card+chipsF+`<div class="pt-list">${rows.map(r=>`<button type="button" class="pt-item${r.key===S.wsel?' on':''}" data-pt="wsel" data-key="${esc(r.key)}" aria-pressed="${r.key===S.wsel}"><span class="pt-ico" aria-hidden="true">${esc(r.it.emoji)}</span><b>${esc(r.it.name)} ${RK(r.r)}${r.n>1?` <small>×${r.n}</small>`:''}${r.on.length?`<small> · 🐾 ${r.on.map(id=>esc(petName(id))).join(', ')}</small>`:''}</b><em>${r.n>=3&&r.r<6?'🔀':''}</em></button>`).join('')}</div>`
     +`<div class="pt-chips pt-center">${chip('tab',{tab:'shop',kind:'wear'},false,'👗 Mua thêm')}${chip('tab',{tab:'shop',kind:'wing'},false,'🪽 Mua cánh')}</div>`;
+}
+
+/** 🤖 Ghép tự động (owner: "ghép thú thì thêm chế độ ghép tự động cho áo quần nhé"): which piece, up to which rank, the
+ * most to spend (the first round's fees until one is typed); the main button sends jr_pet_wfuse_auto, then its summary.
+ * Never the odds (owner 19/10 "đừng show tỷ lệ ra"). */
+function wauto(W){
+  const pl=autoPlan(),b=autoBudget(pl),all=autoPlan('all',S.watop);
+  const per=new Map();for(const x of all.sets)per.set(x.k,(per.get(x.k)||0)+x.t);
+  if(S.wascope!=='all'&&!per.has(S.wascope)&&wItem(S.wascope))per.set(S.wascope,0);
+  const opt=(v,l,on)=>`<option value="${esc(v)}"${on?' selected':''}>${esc(l)}</option>`;
+  const scope=opt('all',`Tất cả (${all.n})`,S.wascope==='all')+[...per].map(([k,t])=>{const it=wItem(k);return opt(k,`${it.emoji} ${it.name} (${t})`,S.wascope===k);}).join('');
+  const ranks=RKS.slice(1).map((r,i)=>opt(i+1,r,S.watop===i+1)).join('');
+  const fields=`<div class="pt-afields"><label class="pt-afield"><span>Món</span><select data-pt-sel="wascope" aria-label="Món để ghép">${scope}</select></label>`
+    +`<label class="pt-afield"><span>Ghép tới hạng</span><select data-pt-sel="watop" aria-label="Ghép tới hạng">${ranks}</select></label></div>`;
+  const setTag=(k,r,n)=>{const it=wItem(k);return it?`<span class="pt-aset"><i aria-hidden="true">${esc(it.emoji)}</i>${esc(it.name)} ${RK(r)}${n>1?`<small>×${n}</small>`:''}</span>`:'';};
+  let body;
+  if(!pl.n)body=`<p class="pt-empty">🤖</p><p class="pt-muted pt-center">Chưa có 3 món giống hệt (cùng món, cùng hạng) chưa mặc để ghép.</p>`
+    +`<div class="pt-chips pt-center">${chip('tab',{tab:'shop',kind:'wear'},false,'👗 Mua quần áo')}${chip('tab',{tab:'shop',kind:'wing'},false,'🪽 Mua cánh')}</div>`;
+  else{
+    const cap=Math.max(pl.min,ready()),step=pl.min;
+    const quick=[];for(const [n,l] of [[pl.est,'Vòng đầu'],[pl.est*2,'×2'],[pl.est*5,'×5']]){const v=Math.max(pl.min,Math.min(n,cap));if(!quick.some(q=>q[0]===v))quick.push([v,l]);}
+    body=`<div class="pt-astats"><div><b>${pl.n}</b><small>bộ ba ghép được ngay</small></div><div><b>${fmt(pl.est)}</b><small>xu phí vòng đầu</small></div></div>`
+      +`<div class="pt-asets">${pl.sets.slice(0,8).map(x=>setTag(x.k,x.r,x.t)).join('')}${pl.sets.length>8?`<span class="pt-aset">+${pl.sets.length-8}</span>`:''}</div>`
+      +`<div class="pt-qty" role="group" aria-label="Tiêu tối đa"><div class="pt-qty-row"><span class="pt-qty-l">Tiêu tối đa</span><span class="pt-qty-step">`
+      +`<button type="button" class="pt-qty-b" data-pt="wabud" data-n="${b-step}"${b-step<pl.min?' disabled':''} aria-label="Bớt ngân sách">−</button>`
+      +qtyBox({value:b,min:pl.min,max:cap,money:true,label:'Số xu tiêu tối đa',go:`data-pt="wabud" data-n="${QTY}"`})
+      +`<button type="button" class="pt-qty-b" data-pt="wabud" data-n="${b+step}"${b+step>cap?' disabled':''} aria-label="Thêm ngân sách">+</button></span></div>`
+      +`<div class="pt-chips pt-qty-chips">${quick.map(([n,l])=>chip('wabud',{n},b===n,l)).join('')}</div>`
+      +`<p class="pt-qty-sum">Dừng trước khi vượt <b>${fmt(b)} xu</b> · trả một lần</p></div>`;
+  }
+  const card=`<section class="pt-card pt-auto"><h3>🤖 Ghép tự động</h3><p class="pt-muted">Tự ghép từng bộ 3 món giống hệt, hạng thấp trước; món mới ra ghép tiếp được. Trượt thì thử lại bộ đó. Dừng khi hết bộ ba, chạm số xu bạn đặt hoặc đủ ${W.auto_max} lượt. 👗 Đồ đang mặc được giữ nguyên.</p>${fields}${body}</section>`;
+  return (S.wres?autoResult(W,S.wres,setTag):'')+card;
+}
+/** 🤖 The last Ghép tự động's summary (game/pet_wardrobe.py _auto `auto`): fusions, successes, misses, luxury pieces,
+ * the xu spent, the pieces used, why it stopped and the new pieces (the best one tried on). */
+function autoResult(W,a,setTag){
+  const stop={done:'Hết bộ ba để ghép.',budget:'Dừng vì chạm số xu đã đặt.',money:'Dừng vì hết tiền.',cap:`Đủ ${W.auto_max} lượt một lần, bấm ghép tiếp nếu muốn.`}[a.stop]||'';
+  const g=new Map();for(const i of a.made||[]){const key=`${i.k}|${i.r}`;const o=g.get(key)||{k:i.k,r:i.r,n:0};o.n++;g.set(key,o);}
+  const made=[...g.values()].sort((x,y)=>y.r-x.r||Number(!!wItem(y.k)?.lux)-Number(!!wItem(x.k)?.lux)),best=made[0];
+  return `<section class="pt-card pt-ares" aria-label="Kết quả ghép tự động"><div class="pt-ares-h"><h4>🤖 Kết quả ghép tự động</h4>${chip('wares',{},false,'✕','Ẩn kết quả')}</div>`
+    +(best&&wItem(best.k)?`<div class="pt-stage">${tryOn(best.k,best.r,110)}</div>`:'')
+    +`<div class="pt-astats four"><div><b>${a.n}</b><small>lượt ghép</small></div><div class="good"><b>${a.ok}</b><small>thành công</small></div><div><b>${a.n-a.ok}</b><small>trượt</small></div><div class="lux"><b>${a.lux}</b><small>💎 dòng sang</small></div></div>`
+    +`<p class="pt-muted pt-center">Tốn <b>${fmt(a.spent)} xu</b> · dùng ${a.used} món</p><p class="pt-muted pt-center"><span>${esc(stop)}</span>${a.left?` <span>Còn ${a.left} bộ ba.</span>`:''}</p>`
+    +(made.length?`<h4>✨ Món mới</h4><div class="pt-asets">${made.map(x=>setTag(x.k,x.r,x.n)).join('')}</div>`:`<p class="pt-muted pt-center">💨 Chưa ra món mới, các món vẫn còn nguyên.</p>`)
+    +`</section>`;
 }
 
 function board(c){
