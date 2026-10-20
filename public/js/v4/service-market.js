@@ -11,10 +11,11 @@ import {escapeHTML as esc,icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
 import {focusSnapshot,restoreInputFocus} from './quay-business-ui.js';
+import {needsFor,needKey,needsReset,goNeed} from './svc-needs.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const rid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
-const TABS=[['dir','🔎','Tìm dịch vụ'],['inbox','📥','Đơn của tôi'],['mine','🧰','Dịch vụ của tôi']];
+const TABS=[['dir','🔎','Tìm dịch vụ','Tìm'],['inbox','📥','Đơn của tôi','Đơn'],['mine','🧰','Dịch vụ của tôi','Của tôi']];
 const SORTS=[['rating','⭐ Uy tín'],['price','💰 Giá'],['online','🟢 Online'],['deals','🤝 Nhiều đơn']];
 const STATUS={talk:'Đang trả giá',held:'Đã giữ tiền · chờ nhận đơn',working:'Đang làm',delivered:'Đã giao · chờ xác nhận',ready:'Đang thanh toán',refund:'Đang hoàn tiền',
   done:'Xong',refunded:'Đã hoàn tiền',declined:'Bị từ chối',cancelled:'Đã hủy',expired:'Hết hạn',linked:'Đã chốt giá',
@@ -28,7 +29,7 @@ const WED=new Set(['tiec_cuoi','hoa_cuoi','vay_cuoi','trang_diem_cuoi']);   // �
 const OWN=new Set(['marriage','photoStudio']);
 const itemKey=x=>`${x.pid}.${x.career}.${x.service}`;
 const S={dlg:null,env:null,tab:'dir',view:null,dir:null,inbox:null,mine:null,cat:null,card:null,pick:null,career:'',sort:'rating',busy:false,
-  flash:null,step:'',open:{},draft:{},timer:0,seq:0};
+  flash:null,step:'',open:{},draft:{},timer:0,seq:0,needs:{}};
 
 function ensureCss(){return Promise.all([stylesheet('/css/spend.css'),stylesheet('/css/service-market.css')]);}
 const api=()=>S.env.api;
@@ -38,6 +39,11 @@ const stars=r=>r?.n?`<span class="svc-stars">⭐ <b>${String(r.avg).replace('.',
 const btn=(label,op,data={},cls='ghost',extra='')=>`<button type="button" class="btn ${cls}" data-svc="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${S.busy?' disabled':''}${extra}>${label}</button>`;
 const draft=id=>S.draft[id]??={price:'',stars:5,comment:'',text:'',note:'',qty:1};
 const careerName=c=>S.cat?.services?.find(s=>s.career===c)?.career_name||c;
+/** 🧰 / 🔬 what the buyer must have first (v4/svc-needs.js): on the card and the provider page; Đặt stays off when hard. */
+const needOf=x=>x?S.needs[needKey(x.career,x.service)]||null:null;
+function refreshNeeds(items){needsFor(api(),items).then(n=>{if(Object.keys(n).length){S.needs={...S.needs,...n};render();}}).catch(()=>{});}
+const needBox=x=>{const n=needOf(x);if(!n)return '';
+  return `<div class="svc-need${n.hard?' hard':''}" role="note"><p>${n.hard?'🔒':'💡'} ${esc(n.why)}</p>${n.go?btn(esc(n.go.label),'need',{id:needKey(x.career,x.service)},n.hard?'primary':'ghost'):''}</div>`;};
 
 export async function openServiceMarket(env,data={}){
   S.env=env;
@@ -51,7 +57,7 @@ export async function openServiceMarket(env,data={}){
     d.addEventListener('input',input);d.addEventListener('change',input);
     d.addEventListener('close',()=>{clearInterval(S.timer);S.seq++;document.removeEventListener('visibilitychange',visible);});
   }
-  S.flash=null;S.step='';S.pick=null;S.card=null;
+  S.flash=null;S.step='';S.pick=null;S.card=null;S.needs={};needsReset();
   S.tab=data.tab||(data.inbox?'inbox':data.pid?'dir':S.tab||'dir');
   if(data.career&&!data.pid){S.tab='dir';S.card=null;S.career=data.career;}   // 🧰 Phục chế đồ: straight to the restorers
   if(!S.dlg.open){S.dlg.showModal();S.dlg.scrollTop=0;}
@@ -66,7 +72,7 @@ function visible(){if(!document.hidden&&S.dlg?.open)load(true);}
 async function load(quiet=false){
   const seq=++S.seq;if(!quiet){S.loading=true;render();}
   try{
-    if(S.tab==='dir'&&!S.card){const q=new URLSearchParams({sort:S.sort});if(S.career)q.set('career',S.career);S.dir=await api().json('/api/svc/dir?'+q);}
+    if(S.tab==='dir'&&!S.card){const q=new URLSearchParams({sort:S.sort});if(S.career)q.set('career',S.career);S.dir=await api().json('/api/svc/dir?'+q);refreshNeeds(S.dir.items);}
     else if(S.tab==='inbox'){S.inbox=await api().json('/api/svc/inbox');api().svcAlerts=S.inbox.alerts||0;document.dispatchEvent(new Event('mnl:badges'));}
     else if(S.tab==='mine'){S.mine=await api().json('/api/svc/mine');}
     if(seq!==S.seq)return;
@@ -78,7 +84,7 @@ async function openProvider(pid,data={}){
   S.tab='dir';S.step='';S.flash=null;S.loading=true;render();
   try{
     const v=await api().json('/api/svc/provider?pid='+encodeURIComponent(pid));
-    S.card=v;
+    S.card=v;refreshNeeds(v.items);
     const item=v.items.find(x=>(!data.career||x.career===data.career)&&(!data.service||x.service===data.service))||v.items[0]||null;
     S.pick=item?{item,offer:data.offer_id?item.offers?.find(o=>o.offer_id===data.offer_id):item.offers?.[0]||null}:null;
   }catch(e){S.flash={kind:'bad',text:e.message||'Chưa tải được.'};S.card=null;}
@@ -128,6 +134,7 @@ async function click(op,d){
   if(op==='wed'){S.dlg.close();await (await import('./wed-services.js')).openWedServices(S.env,{tab:'work'});return;}
   if(op==='set')return setting(d);
   if(op==='retry'){await load();return;}
+  if(op==='need'){const n=S.needs[d.id];if(!n?.go)return;S.dlg.close();await goNeed(S.env,n.go);return;}
 }
 
 /** 🏥 / 📸 the module's own sheet (its own booking, escrow and payout): the market only lists it. */
@@ -187,7 +194,7 @@ function ownSetting(m){
   return `<article class="svc-set svc-own${m.on?' on':''}" data-k="${esc(id)}"><div class="svc-row"><span class="sd-ico" aria-hidden="true">${esc(m.icon)}</span><div class="grow"><b>${esc(m.name)}</b><small class="svc-muted">${esc(m.desc||m.career_name)}</small></div>
     <span class="svc-pill ${m.on?'s-working':'s-cancelled'}">${m.on?'🟢 Đang hiện':'⚪ Chưa hiện'}</span></div>
     ${m.why?`<p class="sd-why">${esc(m.why)}</p>`:''}${m.price?`<p class="svc-total"><span>${m.note?esc(m.note):'Giá của bạn'}</span><b>${fmt(m.price)} xu</b></p>`:''}
-    <p class="svc-note">Giá và mở / đóng đặt ở mục riêng của nghề; khách đặt và trả tiền ở đó.</p>${btn(`${esc(m.setup?.label||'Cài đặt')} ›`,'setup',{id},'ghost full')}</article>`;
+    <p class="svc-note">Giá và mở / đóng đặt ở mục riêng của nghề; khách đặt và trả tiền ở đó.</p>${btn(`${esc(m.setup?.label||'Cài đặt')} <span aria-hidden="true">›</span>`,'setup',{id},'ghost full')}</article>`;
 }
 const unit=(m,mult)=>Math.max(m.lo,Math.min(m.hi,m.base*mult));
 
@@ -203,7 +210,7 @@ function page(){
   const t=TABS.find(x=>x[0]===S.tab)||TABS[0],alerts=Number(api().svcAlerts)||0;
   const head=`<div class="svc-stick"><header class="sheet-head sd-head"><span class="sd-logo" aria-hidden="true">🛎️</span><div class="grow"><h2 id="svc-title">Phố dịch vụ</h2><small class="svc-sub">${esc(t[2])}</small></div>
     <span class="sd-wallet" title="Ví">👛 ${fmt(wallet())}</span><button class="icon-btn" type="button" data-svc="close" aria-label="Đóng">${icon('x',21)}</button></header>
-    <nav class="sd-tabs" role="tablist" aria-label="Phố dịch vụ">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${t[0]===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${t[0]===id?'on':''}" data-svc="tab" data-tab="${id}">${e}${id==='inbox'&&alerts?`<em class="badge">${alerts}</em>`:''}</button>`).join('')}</nav></div>`;
+    <nav class="sd-tabs" role="tablist" aria-label="Phố dịch vụ">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${t[0]===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${t[0]===id?'on':''}" data-svc="tab" data-tab="${id}"><span aria-hidden="true">${e}</span> <small>${esc(TABS.find(x=>x[0]===id)[3])}</small>${id==='inbox'&&alerts?`<em class="badge">${alerts}</em>`:''}</button>`).join('')}</nav></div>`;
   const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
   let body='',foot='';
   if(S.tab==='dir'&&S.card){[body,foot]=providerView();}
@@ -230,7 +237,7 @@ function card(x){
   return `<button type="button" class="svc-card${x.mine?' mine':''}" data-svc="provider" data-pid="${esc(x.pid)}" data-career="${esc(x.career)}" data-service="${esc(x.service)}"${x.available===false?' aria-disabled="true"':''}>
     ${face(x.who)}<span class="grow"><b class="svc-name">${esc(x.who?.name||'')}${x.online?' <i class="svc-on" title="Đang online">●</i>':''}</b>
     <span class="svc-what">${esc(x.icon)} ${esc(x.name)} <small>· ${esc(careerName(x.career))}</small></span>
-    <span class="svc-meta">${stars(x.rep)}${x.rep?.deals?` <small>· ${fmt(x.rep.deals)} đơn</small>`:''}</span></span>
+    <span class="svc-meta">${stars(x.rep)}${x.rep?.deals?` <small>· ${fmt(x.rep.deals)} đơn</small>`:''}</span>${needOf(x)?`<span class="svc-need-line">${needOf(x).hard?'🔒':'💡'} ${esc(needOf(x).why)}</span>`:''}</span>
     <span class="svc-right">${priceLine(x)}${x.available===false?'<small class="svc-off">Tạm nghỉ</small>':''}</span></button>`;
 }
 
@@ -240,7 +247,7 @@ function ownCard(x){
     ${face(x.who)}<span class="grow"><b class="svc-name">${esc(x.who?.name||'')}${x.online?' <i class="svc-on" title="Đang online">●</i>':''}</b>
     <span class="svc-what">${esc(x.icon)} ${esc(x.name)}${x.note?` · <small>${esc(x.note)}</small>`:''} <small>· ${esc(careerName(x.career))}</small></span>
     <span class="svc-meta">${stars(x.rep)}${x.rep?.deals?` <small>· ${fmt(x.rep.deals)} ${esc(x.unit)}</small>`:''}</span></span>
-    <span class="svc-right"><span class="svc-price"><b>${fmt(x.price)}</b> <small>xu</small></span><span class="svc-open">${esc(x.open?.label||'Mở')} ›</span></span></button>`;
+    <span class="svc-right"><span class="svc-price"><b>${fmt(x.price)}</b> <small>xu</small></span><span class="svc-open">${esc(x.open?.label||'Mở')} <span aria-hidden="true">›</span></span></span></button>`;
 }
 
 function providerView(){
@@ -255,7 +262,7 @@ function providerView(){
   if(it.own){   // its module books and holds the money: a button to its sheet, no order here
     const body=head+tabs+`<section class="sd-card svc-buy"><h3>${esc(it.icon)} ${esc(it.name)}</h3>${it.desc?`<p class="svc-muted">${esc(it.desc)}</p>`:''}${it.note?`<p class="svc-quote">“${esc(it.note)}”</p>`:''}
       <p class="svc-total"><span>Giá</span><b>${fmt(it.price)} xu</b></p><p class="svc-note">Đặt, giữ tiền và thanh toán ở mục riêng của nghề này (không qua đơn Phố dịch vụ).</p></section>${extra}`;
-    return [body,it.mine?'<p class="sd-why">Đây là dịch vụ của bạn.</p>':btn(`${esc(it.open?.label||'Mở')} ›`,'own',{id:itemKey(it)},'primary sd-main')];
+    return [body,it.mine?'<p class="sd-why">Đây là dịch vụ của bạn.</p>':btn(`${esc(it.open?.label||'Mở')} <span aria-hidden="true">›</span>`,'own',{id:itemKey(it)},'primary sd-main')];
   }
   const x=draft(key()),nego=it.mode==='nego',[lo,hi]=bounds(),price=priceOf();
   if(S.step==='confirm')return confirmView(head,it,x,price,nego);
@@ -265,10 +272,10 @@ function providerView(){
   const priceBox=nego?`<label class="svc-field"><span>Giá bạn trả (xu)</span><input id="svc-offer-${esc(key())}" data-k="${esc(key())}" data-f="price" type="number" inputmode="numeric" min="${lo}" max="${hi}" value="${esc(x.price)}" placeholder="${fmt(lo)} – ${fmt(hi)}"></label><div class="sd-chips svc-chips">${chips}</div><p class="svc-note">Từ ${fmt(lo)} đến ${fmt(hi)} xu. Người bán đồng ý, trả giá lại hoặc từ chối.</p>`
     :`<p class="svc-total"><span>Giá</span><b>${fmt(price)} xu</b>${it.mult?`<i class="svc-mult">×${it.mult}</i>`:''}${(S.pick.offer?.fair||it.fair)?`<i class="svc-fair" title="Giá Hội chợ việc làm">🎪 −${S.pick.offer?.fair||it.fair}%</i>`:''}</p>`;
   const body=head+tabs+`<section class="sd-card svc-buy"><h3>${esc(it.icon)} ${esc(it.name)}</h3>${it.desc&&!it.legacy?`<p class="svc-muted">${esc(it.desc)}</p>`:''}${it.note?`<p class="svc-quote">“${esc(it.note)}”</p>`:''}
-    ${offers}${qty}${priceBox}
+    ${needBox(it)}${offers}${qty}${priceBox}
     <label class="svc-field"><span>${it.note_hint?'Lời nhắn':'Lời nhắn (không bắt buộc)'}</span><input id="svc-note-${esc(key())}" data-k="${esc(key())}" data-f="note" type="text" maxlength="160" value="${esc(x.note)}" placeholder="${esc(it.note_hint||'Ví dụ: làm giúp mình buổi tối nhé')}"></label></section>
     <details class="svc-rules"><summary>Tiền được giữ thế nào?</summary><ul><li>Tiền lấy từ ví, thiếu thì từ tài khoản. Không cho nợ.</li><li>Người bán xong việc và bạn xác nhận thì người bán nhận tiền (Phố giữ 5%).</li><li>Hủy, bị từ chối hoặc quá hạn: hoàn đủ tiền.</li><li>Có vấn đề: báo cáo trong 24 giờ sau khi giao.</li></ul></details>${extra}`;
-  const ready=it.legacy?!!S.pick.offer:true,ok=ready&&price>=lo&&price<=hi&&!it.mine&&it.available!==false;
+  const ready=it.legacy?!!S.pick.offer:true,ok=ready&&price>=lo&&price<=hi&&!it.mine&&it.available!==false&&!needOf(it)?.hard;
   const foot=it.mine?'<p class="sd-why">Đây là dịch vụ của bạn.</p>':btn(nego?(price?`🤝 Gửi giá ${fmt(price)} xu`:'🤝 Gửi giá'):`Đặt · ${fmt(price)} xu`,'review',{},'primary sd-main',ok?'':' disabled');
   return [body,foot];
 }
@@ -277,7 +284,8 @@ function confirmView(head,it,x,price,nego){
   const body=head+`<section class="sd-card svc-confirm"><h3>Kiểm tra lại nhé</h3><dl class="svc-dl"><div><dt>Dịch vụ</dt><dd>${esc(it.icon)} ${esc(it.name)}${S.pick.offer?` · ${esc(S.pick.offer.label)}`:''}</dd></div>
     ${!it.legacy&&it.qty_max>1?`<div><dt>Số lượng</dt><dd>${fmt(x.qty||1)} ${esc(it.unit)}</dd></div>`:''}<div><dt>${nego?'Giá bạn trả':'Giá'}</dt><dd><b>${fmt(price)} xu</b></dd></div>${x.note?`<div><dt>Lời nhắn</dt><dd>«${esc(x.note)}»</dd></div>`:''}</dl>
     <p class="svc-note">${nego?'Chưa trừ tiền. Khi hai bên chốt giá, tiền mới được giữ.':'Tiền được giữ ngay. Người bán xong việc, bạn xác nhận thì mới trả.'}</p>${short?'<p class="sd-why">Ví và tài khoản chưa đủ tiền.</p>':''}</section>`;
-  return [body,btn('Sửa','back',{},'ghost')+btn(nego?'Gửi giá':`Giữ ${fmt(price)} xu & đặt`,'buy',{},'primary sd-main',short&&!nego?' disabled':'')];
+  const need=needOf(it)?.hard;
+  return [body+(need?needBox(it):''),btn('Sửa','back',{},'ghost')+btn(nego?'Gửi giá':`Giữ ${fmt(price)} xu & đặt`,'buy',{},'primary sd-main',(short&&!nego)||need?' disabled':'')];
 }
 
 function inboxView(){
@@ -324,7 +332,7 @@ function svcSetting(m){
     <button type="button" class="svc-switch${m.on?' on':''}" role="switch" aria-checked="${!!m.on}" aria-label="Bật dịch vụ" data-svc="set" data-id="${esc(id)}" data-what="on"${m.why&&!m.on?' disabled':''}${S.busy?' disabled':''}><i></i></button></div>
     ${m.why?`<p class="sd-why">${esc(m.why)}</p>`:''}
     <div class="sd-chips svc-mode" role="group" aria-label="Cách tính giá">${btn('Giá cố định','set',{id,what:'mode',mode:'fixed'},!nego?'sd-chip on':'sd-chip')}${btn('🤝 Thương lượng','set',{id,what:'mode',mode:'nego'},nego?'sd-chip on':'sd-chip')}</div>
-    ${nego?`<p class="svc-note">Khách trả giá từ <b>${fmt(m.lo)}</b> đến <b>${fmt(m.hi)}</b> xu, bạn đồng ý hoặc trả lại.</p>`
+    ${nego?`<p class="svc-note">Khách trả giá từ ${fmt(m.lo)} đến ${fmt(m.hi)} xu, bạn đồng ý hoặc trả lại.</p>`
       :`<div class="svc-mult-row">${btn('−','set',{id,what:'mult',n:-1},'ghost',m.mult<=R.mult_min?' disabled':'')}<b class="svc-mult big">×${m.mult}</b>${btn('+','set',{id,what:'mult',n:1},'ghost',m.mult>=R.mult_max?' disabled':'')}<span class="svc-eq">= <b>${fmt(price)}</b> xu</span></div>`}
     <p class="svc-muted">Giá thường ${fmt(m.base)} xu${m.floor>m.base?` · giá sàn ${fmt(m.floor)} xu`:''}</p>
     <label class="svc-field"><span>Lời giới thiệu (không bắt buộc)</span><input name="note" id="svc-n-${esc(id)}" data-f="set" data-id="${esc(id)}" type="text" maxlength="80" value="${esc(m.note||'')}" placeholder="Ví dụ: Nhận đơn buổi tối"></label>

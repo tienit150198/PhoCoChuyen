@@ -332,6 +332,8 @@ html[data-layout="phone"] .mr-ticker{top:calc(var(--safe-t) + 4px);width:calc(10
 .mr-opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent) inset}
 .mr-opt:focus-within{outline:3px solid var(--focus);outline-offset:2px}
 .mr-birth .mr-check{margin-top:8px}
+.mr-hint.mr-bad{color:var(--bad);font-weight:700}
+.mr-birth .input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-soft)}
 .mr-family .mr-check input,.mr-family .mr-opt input{flex:none;width:20px;min-width:20px;height:20px}
 .mr-birth-clock{margin:12px 0;padding:12px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--line)}
 .mr-birth-clock p{margin:8px 0 0;font-size:1.02rem}

@@ -11,8 +11,12 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const TABS=[['mine','🧳','Mang đồ đi'],['bench','🧰','Bàn thợ'],['marks','✨','Đã phục chế']];
 const STATUS={open:'Chờ chọn thợ',bound:'Thợ đang làm',done:'Đã xong',held:'Chờ thợ nhận',working:'Đang làm'};
 const stars=g=>'⭐'.repeat(Math.max(1,Math.min(3,Number(g)||1)));
-const S={dlg:null,env:null,tab:'mine',mine:null,bench:null,busy:false,flash:null,pick:null,style:'giu',seq:0};
+const S={dlg:null,env:null,tab:'mine',mine:null,bench:null,svcOn:null,busy:false,flash:null,pick:null,style:'giu',seq:0};
 const api=()=>S.env.api;
+/** 🧰 Bàn thợ is the restorer's: a player who does not work as 🧰 Thợ phục chế sees two tabs (the bench only when sent
+ * there, with the reason). */
+const restorer=()=>Boolean(api().state?.careers?.restore?.started);
+const visibleTabs=()=>TABS.filter(t=>t[0]!=='bench'||restorer()||S.tab==='bench');
 const btn=(label,op,data={},cls='ghost')=>`<button type="button" class="btn ${cls}" data-rs="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${S.busy?' disabled':''}>${label}</button>`;
 
 export async function openRestore(env,data={}){
@@ -35,7 +39,11 @@ export async function openRestore(env,data={}){
 async function load(){
   const seq=++S.seq;S.loading=true;render();
   try{
-    if(S.tab==='bench')S.bench=await api().json('/api/restore/bench');
+    if(S.tab==='bench'&&restorer()){
+      const [b,m]=await Promise.all([api().json('/api/restore/bench'),api().json('/api/svc/mine').catch(()=>null)]);
+      S.bench=b;S.svcOn=m?(m.services||[]).filter(x=>x.career==='restore'&&x.on).length:null;   // the hint only when none is on
+    }
+    else if(S.tab==='bench')S.bench={off:false,orders:[],done:0,none:true};
     else S.mine=await api().json('/api/restore/mine');
     if(seq!==S.seq)return;
     if(S.pick&&S.mine)resolvePick();
@@ -78,6 +86,7 @@ async function click(op,d){
   if(op==='take'||op==='decline'||op==='done'){await post('/api/svc/'+op,{order:d.order},load);return;}
   if(op==='work'){await post('/api/restore/work',{order:d.order,pick:d.pick},load);return;}
   if(op==='retry'){await load();return;}
+  if(op==='svc'){S.dlg.close();await (await import('./service-market.js')).openServiceMarket(S.env,{tab:'mine'});return;}
 }
 
 async function market(service){
@@ -87,7 +96,7 @@ async function market(service){
 
 function render(){
   if(!S.dlg)return;
-  const tabs=`<nav class="sd-tabs rs-tabs" role="tablist" aria-label="Phục chế đồ">${TABS.map(([id,e,l])=>`<button type="button" role="tab" class="${S.tab===id?'on':''}" aria-selected="${S.tab===id}" aria-label="${esc(l)}" data-rs="tab" data-tab="${id}"${S.busy?' disabled':''}>${e} <span class="rs-tl">${esc(l)}</span></button>`).join('')}</nav>`;
+  const tabs=`<nav class="sd-tabs rs-tabs" role="tablist" aria-label="Phục chế đồ">${visibleTabs().map(([id,e,l])=>`<button type="button" role="tab" class="${S.tab===id?'on':''}" aria-selected="${S.tab===id}" aria-label="${esc(l)}" data-rs="tab" data-tab="${id}"${S.busy?' disabled':''}>${e} <span class="rs-tl">${esc(l)}</span></button>`).join('')}</nav>`;
   const flash=S.flash?`<p class="rs-flash ${S.flash.kind}" role="status">${esc(S.flash.text)}</p>`:'';
   const body=S.loading&&!(S.tab==='bench'?S.bench:S.mine)?'<p class="rs-empty">Đang tải…</p>':S.tab==='bench'?benchView():S.tab==='marks'?marksView():mineView();
   S.dlg.querySelector('.sd-root').innerHTML=`<header class="sheet-head sd-head rs-head"><span class="sd-logo" aria-hidden="true">🧰</span><div class="grow"><h2 id="rs-title">Phục chế đồ</h2><small class="rs-sub">Thợ là người chơi · giá qua 🛎️ Phố dịch vụ</small></div><button type="button" class="btn ghost" data-rs="close">Đóng</button></header>${tabs}<div class="sheet-body rs-body">${flash}${body}</div>`;
@@ -124,7 +133,10 @@ function benchView(){
     else act=btn('Từ chối · hoàn tiền khách','decline',{order:o.order});
     return `<li class="rs-order">${head}${item}${note}<div class="rs-actions">${act}</div></li>`;
   }).join('');
-  return `${offLine(v)}<p class="rs-desc">Bật dịch vụ phục chế ở 🛎️ Phố dịch vụ → Dịch vụ của tôi. Đơn mới hiện ở đây: nhận đơn, làm ba bước, giao đồ là nhận tiền.</p>${rows?`<ul class="rs-list">${rows}</ul>`:'<p class="rs-none">Chưa có đơn nào.</p>'}<p class="rs-foot">Đã phục chế cho người chơi: <b>${fmt(v.done)}</b> món.</p>`;
+  if(v.none)return `<p class="rs-desc">🧰 Bàn thợ dành cho người làm nghề 🧰 Thợ phục chế ở Xưởng phục chế Hồn Xưa: thợ nhận đơn của người chơi và làm ở đây.</p><p class="rs-desc">Muốn sửa đồ của bạn? Mở tab 🧳 Mang đồ đi.</p>${btn('🧳 Mang đồ đi','tab',{tab:'mine'},'primary')}`;
+  const hint=S.svcOn===0?`<p class="rs-desc">Chưa bật dịch vụ phục chế nào: bật ở 🛎️ Phố dịch vụ → Dịch vụ của tôi để người chơi gửi đồ tới.</p>${btn('🛎️ Bật dịch vụ','svc',{},'ghost')}`
+    :rows?'':'<p class="rs-desc">Đơn mới hiện ở đây: nhận đơn, làm ba bước, giao đồ là nhận tiền.</p>';
+  return `${offLine(v)}${hint}${rows?`<ul class="rs-list">${rows}</ul>`:'<p class="rs-none">Chưa có đơn nào.</p>'}<p class="rs-foot">Đã phục chế cho người chơi: <b>${fmt(v.done)}</b> món.</p>`;
 }
 
 function marksView(){

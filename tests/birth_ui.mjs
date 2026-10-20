@@ -29,9 +29,10 @@ await familyAction('fam:birth-book',{},ctx(base,{name:'Na',mode:'adopt',nurse:fa
 assert.deepEqual({...posts[1].p,rid:undefined},{kind:'adopt',name:'Na',where:'agency',price:300000,payer:'me',nurse:false,rid:undefined});
 await familyAction('fam:birth-book',{},ctx(base,{name:'Mít',where:'99'}));   // a room gone from the list: the NPC price
 assert.equal(posts[2].p.where,'npc');assert.equal(posts[2].p.price,800000);
-await familyAction('fam:birth-book',{},ctx(base,{name:'  '}));
-assert.equal(posts.length,3,'no name, no post');
-const form={};await familyAction('fam:birth-mode',{mode:'adopt'},ctx(base,form));assert.equal(form.mode,'adopt');assert.equal(renders,1);
+const noName={name:'  '};await familyAction('fam:birth-book',{},ctx(base,noName));
+assert.equal(posts.length,3,'no name, no post');assert.equal(noName.err,'name');assert.equal(renders,1,'…and the reason shows');
+assert.match(familyView({...base,birth},married,noName),/Đặt tên gọi cho bé trước khi gửi lời mời/);
+const form={};await familyAction('fam:birth-mode',{mode:'adopt'},ctx(base,form));assert.equal(form.mode,'adopt');assert.equal(renders,2);
 
 const stay={id:5,kind:'birth',status:'proposed',name:'Bông',where:'Phòng Mây (Cúc)',emoji:'🏡',price:650000,payer:'partner',mine:false,nurse:'',nurse_ok:true,left:null,due:false,hours:3,paid:'',can_cancel:false,can_answer:true,can_checkin:false};
 html=familyView({...base,birth:{...birth,stay}},married,{});
@@ -63,6 +64,9 @@ assert.doesNotMatch(html,/Chào đời ở/);
 // the homestay owner and the nurse
 html=familyView({...base,birth:{...birth,my_room:{can:true,career:'homestay',room:null,staying:0,booked:0}}},null,{});
 assert.match(html,/Phòng sinh của bạn/);assert.match(html,/min="500000"/);
+const unnamed={};const sent=posts.length;await familyAction('fam:room-save',{},ctx({...base,birth:{...birth,my_room:{can:true,room:null}}},unnamed));
+assert.equal(posts.length,sent,'a room without a name is not saved');assert.equal(unnamed['room:err'],true);
+assert.match(familyView({...base,birth:{...birth,my_room:{can:true,career:'homestay',room:null,staying:0,booked:0}}},null,unnamed),/Đặt tên phòng trước khi lưu/);
 await familyAction('fam:room-save',{},ctx({...base,birth:{...birth,my_room:{can:true,room:null}}},{'room:name':'Phòng Gió','room:price':'720000','room:open':false}));
 assert.deepEqual({...posts.at(-1).p,rid:undefined},{name:'Phòng Gió',price:720000,open:false,rid:undefined});
 html=familyView({...base,birth:{...birth,nurse:{calls:[{id:5,name:'<b>Bông</b>',status:'booked',where:'X',left:null}],helping:[],done:2,full:false}}},null,{});

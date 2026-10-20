@@ -5,6 +5,7 @@
  * prefers-reduced-motion (or Cài đặt → Giảm chuyển động) gets a still banner. Text goes in with
  * textContent only. The same answer carries my own alerts (badges on "Hôn nhân" and "Bạn bè", a toast
  * when someone proposes, asks to be friends, a plan arrives, the spouse sends something or the wedding day came). */
+import {language} from './i18n.js';
 const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',TFAIR='mnl.tfairSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
@@ -12,6 +13,10 @@ let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inf
 // 📻 Players' ads and songs on air (game/radio_station.py ticker: at most a few at once, each with its end time): a line plays
 // once when it shows up, then at most every `replay` seconds on this device while it is on air; one pass, not three.
 const AIRED=new Map(),AIRED_MAX=32;
+// 🎵 A song line (game/radio_station.py line_text) in English: the frame is translated here and the song's title and the
+// buyer's own words stay as they were written (the pack's pattern gives up on a lowercase Vietnamese message).
+const SONG=/^🎵 (.+?) gửi tặng bài “(.+?)” qua DJ (.+?): “([\s\S]*)”$/u;
+const songEn=text=>{if(language()!=='en')return null;const m=SONG.exec(text);return m?`🎵 ${m[1]} dedicates “${m[2]}” via DJ ${m[3]}: “${m[4]}”`:null;};
 
 export function tickerBoot(envFn){
   if(booted)return;booted=true;getEnv=envFn;since=read(SEEN);
@@ -89,7 +94,9 @@ async function next(){
     bar.append(ic,track,x);document.body.append(bar);
   }
   const text=bar.querySelector('.mr-ticker-text');
-  text.textContent=item.text;
+  const en=item.radio?songEn(item.text):null;
+  text.toggleAttribute('data-no-translate',Boolean(en));
+  text.textContent=en||item.text;
   bar.classList.toggle('still',still());
   text.getAnimations?.().forEach(a=>a.cancel());
   if(still()||!text.animate){setTimeout(next,STILL_MS);return;}

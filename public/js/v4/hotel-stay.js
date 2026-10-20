@@ -1,6 +1,6 @@
 /** 🏨 Sổ phòng: a homestay / hotel player rents rooms to other players (game/hotel_stay.py holds every rule and number;
  * the price, escrow, 95 % / 5 % and refunds are Phố dịch vụ's).
- * Two tabs: 🛎️ Lễ tân (the host: confirm a booking, check a guest in with a room and the arrival quirk, the night's
+ * Two tabs: 🛎️ Quầy đón khách (the host: confirm a booking, check a guest in with a room and the arrival quirk, the night's
  * "oái oăm" situations and the guest's requests, check-out) and 🧳 Phòng của tôi (the guest: I'm here, requests,
  * leave early, the rest I got, ⭐ rating). The server lists each stay's next actions.
  * GET /api/hotel/view · POST /api/hotel/confirm|decline|cancel|arrive|checkin|handle|ask|leave|checkout · /api/svc/rate. */
@@ -9,7 +9,7 @@ import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
-const TABS=[['host','🛎️','Lễ tân'],['guest','🧳','Phòng của tôi']];
+const TABS=[['host','🛎️','Quầy đón khách'],['guest','🧳','Phòng của tôi']];
 const STAGE={held:'Chờ chủ nhà xác nhận',booked:'Đã đặt · chờ khách tới',arrived:'Khách đang ở quầy',in:'Đang ở',out:'Đã trả phòng',gone:'Đã hủy · hoàn tiền'};
 const GSTAGE={held:'Chờ chủ nhà xác nhận',booked:'Đã xác nhận · tới nơi thì bấm “Tôi tới rồi”',arrived:'Chờ chủ nhà nhận phòng',in:'Đang ở',out:'Đã trả phòng',gone:'Đã hủy · hoàn tiền'};
 const S={dlg:null,env:null,tab:'',v:null,busy:false,loading:false,flash:null,pick:{},arm:'',armT:0,timer:0,tick:0,seq:0,skew:0,stars:{},focus:''};
@@ -123,7 +123,7 @@ function hostView(v){
   const c=v.card,selling=v.selling.length;
   const intro=!v.careers.length&&!v.host.stays.length&&!v.host.pending.length
     ?`<section class="sd-card hs-empty"><p class="tp-big">🏨</p><h3>Chưa có phòng cho thuê</h3><p class="hs-note">Làm nghề Homestay hoặc Khách sạn để cho người chơi khác thuê phòng.</p></section>`
-    :`<section class="sd-card hs-desk"><div class="hs-row"><div class="grow"><h3>Quầy lễ tân</h3>
+    :`<section class="sd-card hs-desk"><div class="hs-row"><div class="grow"><h3>Quầy đón khách</h3>
       <p class="hs-meta">${c.stays?`${moodFace(c.mood)} Hài lòng TB <b>${c.mood}%</b> · ${fmt(c.stays)} lượt khách · xử lý ${fmt(c.handled)} · bỏ lỡ ${fmt(c.missed)}`:'Chưa có lượt khách nào.'}</p></div></div>
       ${selling?`<p class="hs-note">Đang mở ${selling} loại phòng ở 🛎️ Phố dịch vụ. Khách trả ×${v.rules.default_mult} giá thường, bạn nhận ${100-v.rules.fee_pct}% khi trả phòng.</p>${btn('🧰 Giá & bật/tắt phòng','market',{tab:'mine'},'ghost')}`
         :`<p class="hs-note">Bạn chưa mở bán phòng nào. Mở ở 🛎️ Phố dịch vụ › 🧰 Dịch vụ của tôi.</p>${btn('🧰 Mở bán phòng','market',{tab:'mine'},'primary')}`}</section>`;
