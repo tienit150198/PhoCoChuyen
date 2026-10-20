@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.1", date="2026-10-22", items=(
+        dict(emoji='🏍️', text="Nghề mới Tiệm sửa xe Út Lanh: nghe bệnh xe, sửa đúng sổ tay, nhận đơn bảo dưỡng xe máy của người chơi."),
+        dict(emoji='🩺', text="Nghề mới Phòng khám Thú y Cỏ May: khám, tiêm, chăm các bé, nhận đơn khám và tiêm cho thú cưng người chơi."),
+    )),
     dict(version="2.5.0", date="2026-10-21", items=(
         dict(emoji='🧑‍💼', text="5 nghề mới: Lễ tân khách sạn, Giao dịch viên ngân hàng, Thợ phục chế đồ xưa, Viện nghiên cứu, Đài phát thanh Sóng Mây."),
         dict(emoji='🛎️', text="Phố dịch vụ: thuê người chơi khác chụp ảnh, lo đám cưới, phục chế xe và nhà, nghiên cứu giống cây, lên sóng radio."),

@@ -68,7 +68,7 @@ RAISE = {
     # the hotel / banquet / office desks pay ~60 a day with 5–7 xu a job)
     'banquet': LOW, 'com': LOW, 'drain': LOW, 'farm': LOW, 'fruit': LOW, 'garbage': LOW, 'homemaker': LOW, 'hotel': LOW,
     'ice_cream': LOW, 'laundry': LOW, 'lawyer': LOW, 'library': LOW, 'nail': LOW, 'naucom': LOW, 'pagoda': LOW,
-    'photobooth': LOW, 'post_office': LOW, 'radio': LOW, 'reception': LOW, 'research': LOW, 'teller': LOW, 'tra_da': LOW,
+    'photobooth': LOW, 'post_office': LOW, 'moto': LOW, 'radio': LOW, 'reception': LOW, 'research': LOW, 'teller': LOW, 'tra_da': LOW,
     # well-paid (florist 195 a job, clothing 133, salon 97, grocery 90, babysitter 86, mother_baby 85, …)
     'accounting': HIGH, 'babysitter': HIGH, 'clothing': HIGH, 'customer_care': HIGH, 'florist': HIGH, 'grocery': HIGH,
     'mother_baby': HIGH, 'salon': HIGH, 'teacher': HIGH, 'tour_guide': HIGH,

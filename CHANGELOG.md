@@ -1,3 +1,7 @@
+# v2.5.1 — 2026-10-22
+
+feat/careers-batch-3: 🏍️ Tiệm sửa xe Út Lanh (moto, chương 2) và 🩺 Phòng khám Thú y Cỏ May (vet, chương 3), dịch vụ Phố dịch vụ 🔧 bảo dưỡng xe, 🩺 khám, 💉 tiêm; không đổi schema (79 để trống), khóa save tùy chọn journey.xe_care; moto vào nhóm tăng tiền công LOW (+20%), vet MID. Có gì mới 2.5.1: 2 dòng.
+
 # v2.5.0 — 2026-10-21
 
 Bản gộp lớn (khung 4–5h): careers-integ (5 nghề mới, Phố dịch vụ, phòng sinh, phòng khách sạn, hội chợ việc làm, dịch vụ cưới, chụp ảnh), hướng dẫn coach cho nghề mới, quầy chuỗi (trần thuê/điện, phí chuỗi không trừ thưởng lãi), đấu giá +50 món, Halloween 26–31/10 (schema 80), trang trí +55 món, nhà đảo + bang, thân thiết NPC, màn làm việc dễ nhìn, tiền công +8–20% và Tuần lễ tay nghề 22–28/10 (MNL_PAYWEEK_FROM/UNTIL). Có gì mới 2.5.0: 14 dòng.
@@ -126,7 +130,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Kiểm tra: tests/test_island_houses.py, tests/test_bang_extra.py (mới), tests/test_island_build*.py, tests/island-build.mjs (cập nhật). Tiếng Anh: i18n/overrides.json + build.
 
 ## restoration
-# Chưa phát hành — moto
+## moto
 
 🏍️ Nghề mới Tiệm sửa xe Út Lanh (thợ sửa xe máy đầu hẻm), có dịch vụ người chơi ↔ người chơi (chủ game 21/10 "tính toán làm thêm nghề khác luôn nhé"; đợt nghề 3, docs/CAREERS_BATCH_3.md). game/careers/moto.py, moto_content.py, game/careers/stepkit.py (bộ bước dùng chung), game/moto_service.py, public/js/careers/moto.js + slip_kit.js.
 - Nghề tiệm (mở từ chương 2, LATE_UNLOCKS; nằm ngủ trong save tới khi chơi, engine.DORMANT). Mỗi phiếu một chiếc xe: nghe khách tả bệnh → chốt lỗi (8 bệnh: thủng săm, quá hạn nhớt, bugi, sên chùng, má phanh mòn, đèn pha, ắc quy yếu, xe lội nước) → chốt 1–2 yêu cầu oái oăm → các bước theo sổ tay (tính km từ tem nhớt, ml nhớt, độ chùng sên, má phanh còn bao nhiêu mm, đúng ampe cầu chì, giờ sạc theo Ah, súc nhớt hai lần…) → giao đúng xe theo biển số giữa ba chiếc giống hệt. Tên bệnh chỉ hiện sau bước đầu.
@@ -137,7 +141,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: không đổi schema (79 vẫn để dành). Khóa save tùy chọn journey.xe_care {v, cars} mà 2.4.71 giữ nguyên không đọc. Lùi bản: `scripts/strip_new_careers.py strip --careers …,moto,vet` (mặc định đã có), `restore` trả lại từng byte (tests/test_moto_vet_compat.py).
 - Số nghề: 62 → 63.
 
-# Chưa phát hành — vet
+## vet
 
 🩺 Nghề mới Bác sĩ thú y ở Phòng khám Thú y Cỏ May (phòng khám mà 🐾 thú cưng vẫn đưa tới), có dịch vụ người chơi ↔ người chơi. game/careers/vet.py, vet_content.py, game/vet_service.py, public/js/careers/vet.js.
 - Nghề lương (56–72 xu/ca, mở từ chương 3, nằm ngủ trong save tới khi chơi) + thưởng chất lượng mỗi ca khám (5–9 xu theo bệnh + 1 mỗi yêu cầu, nhân chất lượng, tối thiểu 3). Mỗi ca một bé: nghe chủ kể → chốt bệnh (8 ca: tiêm phòng, cắt móng, ve và bọ chét, ăn nhầm sô-cô-la, nôn ra máu nghi parvo, mèo đực tắc tiểu, nuốt dị vật, triệt sản) → yêu cầu oái oăm của chủ → cân bằng hiệu số (chó: chị Duyên bế lên cân người; mèo: trừ lồng), đo thân nhiệt, liều theo cân, dịch truyền, giờ nhịn ăn trước mổ → trả đúng bé theo phiếu chuồng.
@@ -147,7 +151,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: không bảng mới, không khóa save mới. Lùi bản như nghề sửa xe.
 - Số nghề: 63 → 64.
 
-# Chưa phát hành — restoration
+## restoration
 
 🧰 Thợ phục chế (nghề thứ 60 trong careers-integ): Xưởng phục chế Hồn Xưa của chú Khải, phục chế đồ xưa đồ hỏng; và phục chế đồ của người chơi khác qua 🛎️ Phố dịch vụ (chủ game 21/10: "làm hết đi"). game/careers/restore.py + restore_content.py (nghề), game/restore_service.py (người chơi với người chơi), public/js/careers/restore.js + public/css/careers/restore.css (bàn làm việc), public/js/v4/restore.js + public/css/restore.css (🧰 Phục chế đồ). Không đổi phiên bản, chưa có dòng Có gì mới.
 - Việc của nghề: mỗi phiếu là một món (đồng hồ quả lắc ông nội, ghế mây bà, đài radio, máy khâu con bướm, bình gốm men lam, rương hồi môn, va li da, đèn dầu, quạt con cóc, gia phả chép tay, áo dài cưới của mẹ, xe đạp của ông, tủ thờ gỗ gụ, máy ảnh phim; mở dần theo ngày 1/4/10/20/40), 8 bước server chấm: đọc dấu hiệu → gọi đúng tên hư hỏng (nứt, gỉ, mọt, bong sơn, lỏng mộng, rách, kẹt máy, mẻ, tuột sợi, hỏng dây điện) → chốt yêu cầu khách → linh kiện (thiếu thì chế lại cùng vật liệu, không tháo đồ khách khác) → làm sạch theo chất liệu → phục hồi từng chỗ hư → hoàn thiện → kiểm 4 mục → trả đúng phiếu. Sai thì sửa ngay tại bước đó, chất lượng −12 mỗi lần (sàn 40). Vật tư ứng theo phiếu, trừ một lần khi trả đồ; công 14 + 3 mỗi chỗ hư + 2 mỗi yêu cầu khách + mốc ngày. Thợ vững tay 100 phiếu đạt + 30 ngày; Nghệ nhân Hồn Xưa 180 + 45.
