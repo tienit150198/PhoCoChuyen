@@ -141,7 +141,7 @@ class Integrated(Base):
         self.assertTrue(all(before[2][x] > 0 for x in TABLES), before[2])
         v, n = self.run_old(STARTUP, str(self.store.path), ','.join(TABLES))
         self.assertEqual(int(v), pg_schema.SCHEMA_VERSION)
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 62)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 62)   # 73: 📜 bang_code (new tables only)
         self.assertEqual(n, before[2])
         self.assertEqual(catalog(), before, 'no table or index changed by the old startup')
 
@@ -193,7 +193,7 @@ class Previous(Integrated):
             self.assertIn('isle', catalog)
             fund = int(db.execute('SELECT fund FROM bangs WHERE id=?', (bid,)).fetchone()['fund'])
         v, page_fund, page_id, view_id, kind, after, other = self.run_old(OLD_BANG, str(self.store.path), tok, bid, newcomer)
-        self.assertEqual((int(v), page_fund, page_id, view_id, kind), (62, fund, bid, bid, 'member'), 'version never lowered, rows read as they are')
+        self.assertEqual((int(v), page_fund, page_id, view_id, kind), (pg_schema.SCHEMA_VERSION, fund, bid, bid, 'member'), 'version never lowered, rows read as they are')
         self.assertEqual(after, fund + 2_000_000, "2.4.65's deposit lands in the fund")
         with self.store.connect() as db:
             r = dict(db.execute('SELECT isle, isle_how FROM bangs WHERE id=?', (bid,)).fetchone())
