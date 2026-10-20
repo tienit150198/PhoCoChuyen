@@ -133,7 +133,7 @@ export default {
   job(t,x){
     if(!data(x).intro||x.ui.intro)return wrap(introCard(x,'rd_intro','📻'));
     if(!t.known)return wrap(top(x)+(fresh(t)?rolePicker(x):'')+shiftCard(x)+askCard(x,t,'Đọc phiếu việc')+deskEntry(x)+progress(x));
-    return wrap(top(x)+shiftCard(x)+person(x,t,`<p class="small">${x.esc(t.opening)}</p>`)+briefCard(t,x)+stepCard(t,x)+
+    return wrap(top(x)+shiftCard(x)+person(x,{...t,npc:t.client_npc||t.npc},`<p class="small">${x.esc(t.opening)}</p>`)+briefCard(t,x)+stepCard(t,x)+
       (t.lines?.length?`<p class="rd-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'')+
       `<details class="rd-notebook"><summary>Sổ tay phát sóng Sóng Mây</summary>${notebook(x)}</details>`+progress(x));
   },

@@ -49,12 +49,16 @@ def _opts(r, rows, shuffle=True):
     return out
 
 
-def _step(job, name, typ, title, evidence, options=None, unit=''):
+def _step(job, name, typ, title, evidence, options=None, unit='', sheet=None):
+    """`sheet`: the lines of data the step works on, shown under its words (the field book, the score sheet, the recipe
+    card, the blueprint's parts): each line its own text, so the English pack translates it as the option it repeats."""
     st = dict(id=f'{job}.{name}', type=typ, title=title, evidence=evidence)
     if options is not None:
         st['options'] = options
     if unit:
         st['unit'] = unit
+    if sheet:
+        st['sheet'] = list(sheet)
     return st
 
 
@@ -125,7 +129,8 @@ def _field(r, day, slot):
         _step('field', 'exclude', 'choice', 'Loại ô hỏng ngoài thí nghiệm',
               f'Sổ ruộng của bác Tư: giống {crop} mới trồng {n} ô bằng nhau. Ô nào phải bỏ ra khỏi kết quả?', plots),
         _step('field', 'mean', 'number', 'Tính năng suất trung bình',
-              'Cộng các ô còn lại rồi chia cho số ô còn lại.', unit='kg'),
+              'Sổ ruộng của bác Tư ở dưới. Bỏ ô hỏng ra, cộng các ô còn lại rồi chia cho số ô còn lại.', unit='kg',
+              sheet=[p['label'] for p in plots]),
         _step('field', 'verdict', 'choice', 'Kết luận so với đối chứng',
               f'Ô đối chứng giống cũ đạt {control} kg. Giống mới đạt khi trung bình từ 110% đối chứng trở lên.', _opts(r, rc.VERDICT)),
     ]
@@ -170,7 +175,8 @@ def _scale(r, day, slot):
     steps = [
         _step('scale', 'grams', 'number', f'Tính lượng {main}', f'Công thức gốc {name.lower()}: {grams} g {main} cho 4 suất. Bếp ăn đặt {servings} suất.', unit='g'),
         _step('scale', 'variable', 'choice', 'Thiết kế lần thử', 'Lần trước khách chê hơi ngọt. Lần thử này đổi gì?', _opts(r, rc.VARIABLE)),
-        _step('scale', 'order', 'order', f'Làm {name.lower()} đúng thứ tự', 'Bấm từng công đoạn theo công thức chuẩn của viện.', _opts(r, order)),
+        _step('scale', 'order', 'order', f'Làm {name.lower()} đúng thứ tự',
+              'Bấm từng công đoạn theo thứ tự của thẻ công thức (thứ tự nào đúng thẻ cũng được).', _opts(r, order), sheet=[rc.DISH_CARD[did]]),
         _step('scale', 'log', 'choice', 'Ghi sổ thí nghiệm', 'Mẻ thứ hai hơi khét đáy nồi.', _opts(r, rc.LABBOOK)),
     ]
     key = {'scale.grams': grams * servings // 4, 'scale.variable': 'one', 'scale.order': [k for k, _ in order], 'scale.log': 'all'}
@@ -194,12 +200,14 @@ def _taste(r, day, slot):
     best = totals.index(max(totals))
     table = [dict(id=f't{i}', label=f'{who[i]}' + (f' ({why.lower()})' if i == biased_at else '') + ' chấm: ' +
                   ' · '.join(f'{codes[v]}: {scores[i][v]}' for v in range(3))) for i in range(5)]
+    sheet = [row['label'] for row in table]
     steps = [
         _step('taste', 'code', 'choice', 'Mã hóa mẫu', f'Ba công thức {name.lower()} sắp đưa ra hội đồng nếm.', _opts(r, rc.CODING)),
         _step('taste', 'exclude', 'choice', 'Bỏ điểm người nếm không khách quan', 'Phiếu điểm (thang 1–9). Điểm của ai không được tính?', table),
-        _step('taste', 'total', 'number', 'Tính tổng điểm mẫu thắng', 'Cộng điểm của bốn người còn lại cho mẫu có tổng cao nhất.', unit='điểm'),
+        _step('taste', 'total', 'number', 'Tính tổng điểm mẫu thắng', 'Cộng điểm của bốn người còn lại cho mẫu có tổng cao nhất.', unit='điểm',
+              sheet=sheet),
         _step('taste', 'best', 'choice', 'Chọn mẫu thắng', 'Mẫu nào thắng sau khi bỏ điểm không khách quan?',
-              [dict(id=f'm{codes[v]}', label=f'Mẫu số {codes[v]}') for v in range(3)]),
+              [dict(id=f'm{codes[v]}', label=f'Mẫu số {codes[v]}') for v in range(3)], sheet=sheet),
     ]
     key = {'taste.code': 'blind', 'taste.exclude': f't{biased_at}', 'taste.total': totals[best], 'taste.best': f'm{codes[best]}'}
     _council(r, 'taste', day, steps, key)
@@ -212,7 +220,8 @@ def _cost(r, day, slot):
     did, name, *_ = r.choice(rc.DISHES)
     servings = r.choice((10, 20, 25, 40, 50))
     unit = r.randint(3, 12)
-    rows = r.sample(rc.INGREDIENTS, 5)
+    pool = rc.DISH_INGREDIENTS[did]   # what this dish is made of: its core, and two of the rest
+    rows = pool[:rc.DISH_CORE] + r.sample(pool[rc.DISH_CORE:], 5 - rc.DISH_CORE)
     parts = [r.randint(1, 4) for _ in rows]
     total = unit * servings
     weights = sum(parts)
@@ -247,8 +256,9 @@ def _proto(r, day, slot):
     volts, drop, ma = r.choice(rc.OHM)
     ohm = (volts - drop) * 1000 // ma
     steps = [
-        _step('proto', 'parts', 'multi', 'Lấy đủ linh kiện', f'Bản vẽ “{name}” ({what}). Lấy đủ linh kiện, không lấy thừa.',
-              [dict(id=x, label=rc.PARTS[x]) for x in shown]),
+        _step('proto', 'parts', 'multi', 'Lấy đủ linh kiện',
+              f'Bản vẽ “{name}” ({what}) ghi đủ linh kiện ở dưới. Lấy đủ, không lấy thừa món nào trên khay.', sheet=[rc.PARTS[x] for x in parts],
+              options=[dict(id=x, label=rc.PARTS[x]) for x in shown]),
         _step('proto', 'battery', 'choice', 'Chọn nguồn pin', 'Kho còn mấy loại pin.', _opts(r, rc.BATTERY)),
         _step('proto', 'ohm', 'number', 'Tính điện trở cho đèn báo',
               f'Nguồn {volts} V, đèn LED báo sụt {drop} V, cần dòng {ma} mA. Điện trở bao nhiêu ôm?', unit='Ω'),
@@ -290,7 +300,7 @@ def _patent(r, day, slot):
     fee = rc.FEE_BASE + max(0, claims - rc.FEE_FREE) * rc.FEE_PER
     steps = [
         _step('patent', 'novel', 'choice', 'Tìm điểm mới',
-              f'“{name}” của viện: {feats[0][1]}, {feats[1][1]}, {feats[2][1]}. Tra cứu: thiết bị A đã {feats[0][1]}; thiết bị B đã {feats[1][1]}. Điểm nào là mới?',
+              f'“{name}” của viện: {feats[0][1]}, {feats[1][1]}, {feats[2][1]}. Tra cứu: thiết bị A đã có tính năng “{feats[0][1]}”; thiết bị B đã có “{feats[1][1]}”. Điểm nào là mới?',
               _opts(r, [(k, label[0].upper() + label[1:]) for k, label in feats])),
         _step('patent', 'fee', 'number', 'Tính phí nộp đơn',
               f'Đơn có {claims} điểm yêu cầu bảo hộ. Phí {rc.FEE_BASE} xu, cộng {rc.FEE_PER} xu cho mỗi điểm vượt quá {rc.FEE_FREE}.', unit='xu'),
@@ -368,6 +378,21 @@ def _bonus(t: dict) -> int:
 
 def _same(a, b) -> bool:
     return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
+def _dish_of(order: list) -> str | None:
+    return next((d[0] for d in rc.DISHES if [k for k, _ in d[4]] == list(order)), None)
+
+
+def correct(st: dict, value, right) -> bool:
+    """Is `value` a right answer of step `st` (`right`: the key's answer)? A recipe's order step takes every order that
+    keeps its card (rc.DISH_AFTER); every other step has one answer."""
+    if st['id'] == 'scale.order' and isinstance(value, list) and isinstance(right, list):
+        did = _dish_of(right)
+        if did and sorted(value) == sorted(right) and len(set(value)) == len(value):
+            at = {k: i for i, k in enumerate(value)}
+            return all(at[b] < at[a] for a, before in rc.DISH_AFTER[did].items() for b in before)
+    return _same(value, right)
 
 
 # ---------------------------------------------------------------- shift checklists (pure by day)
@@ -484,7 +509,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     value = _value(st, p.get('value'))
     kit.start_work(t)
     today['lab'] = 1
-    if not _same(value, key[st['id']]):
+    if not correct(st, value, key[st['id']]):
         if st['id'] not in t['errors']:
             t['errors'].append(st['id'])
             cq.slip(t, st['id'], 1, 'Phải làm lại: ' + st['title'])
@@ -726,7 +751,7 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(at == 0 or t['known'], 'Chưa đọc phiếu việc.')
     work = t.get('work')
     kit.need(isinstance(work, dict) and set(work) == set(ids[:at]), 'Các bước đã làm không liên tục.')
-    kit.need(all(_same(work[sid], key[sid]) for sid in ids[:at]), 'Kết quả bước nghiên cứu sai.')
+    kit.need(all(correct(steps[i], work[sid], key[sid]) for i, sid in enumerate(ids[:at])), 'Kết quả bước nghiên cứu sai.')
     errors = t.get('errors')
     kit.need(isinstance(errors, list) and all(isinstance(e, str) for e in errors), 'Nhật ký lỗi của viện sai.')
     kit.need(len(errors) == len(set(errors)) and set(errors) <= set(ids[:min(at + 1, len(ids))]), 'Nhật ký lỗi của viện sai.')

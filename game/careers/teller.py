@@ -48,6 +48,46 @@ def money_text(k: int) -> str:
     return f'{int(k) * 1000:,}'.replace(',', '.') + 'đ'
 
 
+_DIGIT = ('không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín')
+_GROUP = ('', 'nghìn', 'triệu', 'tỷ')
+
+
+def _three(n: int, inner: bool) -> list:
+    """0..999 in words; `inner`: a higher group comes before it (so 50 reads 'không trăm năm mươi', 5 'không trăm linh năm')."""
+    h, t, u = n // 100, n // 10 % 10, n % 10
+    out = [_DIGIT[h], 'trăm'] if h or inner else []
+    if t == 0:
+        if u:
+            out += (['linh'] if h or inner else []) + [_DIGIT[u]]
+    elif t == 1:
+        out += ['mười'] + (['lăm' if u == 5 else _DIGIT[u]] if u else [])
+    else:
+        out += [_DIGIT[t], 'mươi'] + (['mốt' if u == 1 else 'lăm' if u == 5 else _DIGIT[u]] if u else [])
+    return out
+
+
+def number_words(n: int) -> str:
+    """1050000 → 'một triệu không trăm năm mươi nghìn' (how a slip writes an amount bằng chữ)."""
+    n = int(n)
+    if n <= 0:
+        return 'không'
+    groups = []
+    while n:
+        groups.append(n % 1000)
+        n //= 1000
+    words = []
+    for i in range(len(groups) - 1, -1, -1):
+        if groups[i]:
+            words += _three(groups[i], i < len(groups) - 1) + ([_GROUP[i]] if _GROUP[i] else [])
+    return ' '.join(words)
+
+
+def money_words(k: int) -> str:
+    """2350 (nghìn đồng) → 'Hai triệu ba trăm năm mươi nghìn đồng'."""
+    w = number_words(int(k) * 1000) + ' đồng'
+    return w[:1].upper() + w[1:]
+
+
 # ---------------------------------------------------------------- tray rules (the bank's cash, in nghìn đồng)
 def tray_norm(value) -> dict:
     """A tray from the client: {denomination: count} with string keys. Only known notes, 0..TRAY_MAX each."""
@@ -157,7 +197,8 @@ def low(text: str) -> str:
 def _withdraw(r, day, slot, npc, rk):
     who = _person(npc)
     amount = r.randint(8, 60) * 50
-    variant = tc.WD_VARIANTS[(day + slot) % len(tc.WD_VARIANTS)] if day > 1 else 'ok'
+    # its own draw (the rota's withdrawal slots all fall on one parity of day + slot: an index by it never met two cases)
+    variant = kit.rng(ID, 'withdraw-case', day, slot).choice(tc.WD_VARIANTS) if day > 1 else 'ok'
     wish_id, wish, wish_rule = r.choice(tc.WISHES)
     out = r.choice(list(tc.OUT_LINES)) if r.random() < 0.35 else None
     if out and wish_id == 'lixi' and out == '50':
@@ -171,13 +212,13 @@ def _withdraw(r, day, slot, npc, rk):
         rule = dict(total=amount)
         wish_id, wish, out = 'none', tc.WISHES[0][1], None
     words_amount = amount
-    slip = dict(name=who, amount=amount, amount_text=money_text(amount), signed=True, face=tc.FACES[npc % len(tc.FACES)])
+    slip = dict(name=who, amount=amount, amount_text=money_text(amount), signed=True, face=tc.NPC_FACE[npc])
     card = dict(name=who, face=slip['face'], no=f'0{r.randint(10, 99)}…{r.randint(100, 999)}')
     said = ''
     if variant == 'clarify':
         swapped = int(str(amount)[::-1].lstrip('0') or 0)
         words_amount = swapped if swapped and swapped != amount and swapped % 10 == 0 and 400 <= swapped <= 3000 else amount + 500
-        slip['words'] = f'bằng chữ: {money_text(words_amount)}'
+        slip['words'] = f'bằng chữ: {money_words(words_amount)}'
         confirmed = r.choice((amount, words_amount))
         rule['total'] = confirmed
         if fewest_notes(confirmed, rule) is None:
@@ -349,6 +390,8 @@ def arc_saved_before(stage: int) -> int:
     """What Bà Lựu has saved when visit `stage` starts (nghìn đồng)."""
     if stage <= 1:
         return tc.ARC_SAVED
+    if stage >= 4:
+        return tc.ARC_GOAL   # visit 3 paid in what the cart still lacked: the book holds the whole goal
     after_first = tc.ARC_SAVED + tc.ARC_MONTHLY - tc.ARC_SHORT
     return after_first + sum(tc.ARC_DEPOSITS) if stage >= 3 else after_first
 
@@ -544,6 +587,11 @@ HOW = {
 # ---------------------------------------------------------------- shift: float at opening, handover at closing
 def short_day(day: int) -> bool:
     return day >= 2 and day % tc.SHORT_DAY_EVERY == 3
+
+
+def desk_scripts(day: int) -> list:
+    """The desk surprises that can happen on `day`: “ca trước bàn giao quỹ thiếu” only on a day the float really is short."""
+    return [x for x in tc.DESK if x['id'] != 'short_float' or short_day(day)]
 
 
 def _transactions(day: int) -> tuple[list, str]:
@@ -866,7 +914,14 @@ def _shadow(s: dict, c: dict, d: dict, t: dict) -> dict:
     t['lines'] = (t['lines'] + ['👀 Chị Hạnh làm, bạn đứng cạnh xem.'])[-LINES:]
     t['shadow'] = True
     c['xp'] += 1
-    kit.complete(s, c, t, 0, f'Đứng cạnh chị Hạnh xem chị làm {low(j[0])}.', status='referred')
+    # Watching is not serving: the customer is chị Hạnh's. The slip closes (referred) without the engine's task_done, so
+    # it adds nothing to day_completed (the contract's worked day), served, the career's good days or the promotion
+    # counters, and brings no review.
+    t['status'] = 'referred'
+    t['completed_turn'] = c['turn']
+    t['deferred'] = False
+    kit.eng().mark_done(c, t['id'])
+    kit.eng().next_active(c)
     return dict(message=f'👀 Chị Hạnh làm {low(j[0])}, vừa làm vừa nói từng bước cho bạn nghe.')
 
 
@@ -963,7 +1018,8 @@ def _review(s: dict, c: dict, d: dict, p: dict) -> dict:
         kit.need(p.get('start') is True, 'Bấm Bắt đầu thi lên chức nhé.')
         nr = next_rank(d, d['branch'])
         kit.need(nr and nr[2] and d['prog'][d['branch']] >= nr[1], 'Chưa đủ điều kiện thi lên chức ở nhánh này.')
-        kit.need(not rv or rv['day'] < c['day'] or rv['branch'] != d['branch'], 'Hôm nay thi rồi, mai thi lại nhé.', 'teller_retry')
+        # one attempt a day, whatever the branch (switching branch never buys a same-day retake)
+        kit.need(not rv or rv['day'] < c['day'], 'Hôm nay thi rồi, mai thi lại nhé.', 'teller_retry')
         d['review'] = rv = dict(branch=d['branch'], to=nr[0], day=c['day'], at=0, got=[], done=False, passed=False)
         parts, _ = review_parts(rv['branch'], rv['to'], rv['day'], d['record'])
         covered = record_covers(rv['branch'], d['record'])
@@ -1031,6 +1087,8 @@ def _shift(s: dict, c: dict, d: dict, p: dict) -> dict:
                     else '💼 Quỹ lệch sổ: đã lập biên bản với chị Hạnh, chưa ký nhận đủ. Quầy mở.', correct=True)
     today['handover'] = 1
     d['stats']['handovers'] += 1
+    if not today['jobs']:   # an empty shift hands over an untouched float: no bonus, no step on the Quản lý ladder
+        return dict(message='🧾 Bàn giao xong, quỹ khớp từng đồng. Hôm nay chưa phục vụ khách nào nên chưa có thưởng bàn giao.', correct=True)
     if d['stage'] == 'teller':
         d['prog']['quan_ly'] = min(d['prog']['quan_ly'] + 1, 10 ** 6)
     bonus = round(tc.HANDOVER_BONUS * (100 + tc.RANK_PCT * d['ranks']['quan_ly']) / 100)
@@ -1047,7 +1105,7 @@ HOW_SHIFT = {'open.count': 'Nhân mệnh giá với số tờ của từng phong
 def _after(s: dict, c: dict, d: dict, result: dict) -> None:
     desk = d['desk']
     fired = desk['fired']
-    kit.desk_tick(s, c, ID, desk, tc.DESK, kit.daily(ID, c['day'], tc.MODS)['id'])
+    kit.desk_tick(s, c, ID, desk, desk_scripts(c['day']), kit.daily(ID, c['day'], tc.MODS)['id'])
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(tc.DESK, desk['ev']['script'])
         result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: quyết giúp nhé.'.strip()
@@ -1068,7 +1126,7 @@ def on_task(s: dict, c: dict, t: dict) -> None:
 def on_start(s: dict, c: dict) -> None:
     d = _data(c)
     mod = kit.daily(ID, c['day'], tc.MODS)
-    kit.desk_start(s, c, ID, d['desk'], tc.DESK, mod['id'], c['life'].get('mode') == 'festival')
+    kit.desk_start(s, c, ID, d['desk'], desk_scripts(c['day']), mod['id'], c['life'].get('mode') == 'festival')
 
 
 def on_close(s: dict, c: dict) -> dict:
@@ -1132,6 +1190,8 @@ def public_task(t: dict) -> dict:
     v['title'] = title
     v['opening'] = opening
     v['needs'] = deepcopy(b) if t['known'] else None
+    if v['needs']:
+        v['needs'].pop('variant', None)   # the withdrawal's case is the check step's answer: kept on the server
     j = tc.JOBS[t['job']]
     v['job_info'] = dict(id=t['job'], label=j[0], emoji=j[1], branch=j[2])
     return v

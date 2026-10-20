@@ -83,7 +83,11 @@ async function click(op,d){
     if(r){S.pick=null;await load();await market(d.service);}return;}
   if(op==='market'){await market(d.service);return;}
   if(op==='drop'){await post('/api/restore/drop',{ticket:d.ticket},load);return;}
-  if(op==='take'||op==='decline'||op==='done'){await post('/api/svc/'+op,{order:d.order},load);return;}
+  if(op==='take'||op==='decline'||op==='done'){
+    const r=await post('/api/svc/'+op,{order:d.order},load);
+    // the market's generic take line names its "Xong việc"; here the button is 🎁 Giao đồ after the three bench steps
+    if(op==='take'&&r&&S.flash?.kind==='good'){S.flash={kind:'good',text:'Đã nhận đơn. Làm đủ ba bước ở bàn thợ rồi bấm 🎁 Giao đồ nhé.'};render();}
+    return;}
   if(op==='work'){await post('/api/restore/work',{order:d.order,pick:d.pick},load);return;}
   if(op==='retry'){await load();return;}
   if(op==='svc'){S.dlg.close();await (await import('./service-market.js')).openServiceMarket(S.env,{tab:'mine'});return;}

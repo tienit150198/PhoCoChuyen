@@ -75,7 +75,8 @@ def _bulletin(r, day, slot):
     keep = [picked[k][0] for k in rc.READ_ORDER]
     order_opts, order_ids = _lettered(r, [(picked[k][0], picked[k][1]) for k in rc.READ_ORDER])
     j, p, s = r.choice(rc.JINGLE), r.choice(rc.PER_ITEM), r.choice(rc.SIGN_OFF)
-    fix, fix_key = _scenario(r, 'bulletin', 'fix', 'Xử lý chuyện phút chót', rc.BULLETIN_FIX)
+    tonight = {x[0] for x in picked.values()}   # the last-minute trouble is about an item this bulletin carries
+    fix, fix_key = _scenario(r, 'bulletin', 'fix', 'Xử lý chuyện phút chót', [x[1:] for x in rc.BULLETIN_FIX if x[0] is None or x[0] in tonight])
     steps = [
         _step('bulletin', 'pick', 'multi', 'Chọn những tin được đọc',
               f'Bà Tư và chị Hoa gom {len(opts)} mẩu tin. Bản tin phường chỉ đọc tin của phường đã kiểm chứng.', opts),
@@ -100,7 +101,7 @@ def _spot(r, day, slot):
         approved[r.randrange(len(times) - 1)] = True
     rows = [(f'v{i}', f'Bản {i + 1} · gửi lúc {t} · ' + ('chị Hoa đã ký duyệt' if ok else 'gửi qua tin nhắn, chưa duyệt'))
             for i, (t, ok) in enumerate(zip(times, approved))]
-    rows.append(('phone', 'Bản ông vừa đọc qua điện thoại lúc 9:59, chưa có giấy'))
+    rows.append(('phone', 'Bản nhà tài trợ đọc qua điện thoại lúc 9:59, chưa có giấy'))   # any sponsor: never "ông" for bà Năm
     vopts, vids = _lettered(r, rows)
     latest = max(i for i, ok in enumerate(approved) if ok)
     good = r.sample(rc.SPOT_OK, 3)
@@ -110,7 +111,7 @@ def _spot(r, day, slot):
     demand, demand_key = _scenario(r, 'spot', 'demand', 'Yêu cầu phút chót của nhà tài trợ', rc.SPOT_DEMANDS)
     steps = [
         _step('spot', 'version', 'choice', 'Chọn đúng bản kịch bản',
-              f'{sponsor} gửi tới {len(times)} bản kịch bản quảng cáo {product} trong buổi sáng, ông còn đọc thêm một bản qua điện thoại.', vopts),
+              f'{sponsor} gửi tới {len(times)} bản kịch bản quảng cáo {product} trong buổi sáng, nhà tài trợ còn đọc thêm một bản qua điện thoại.', vopts),
         _step('spot', 'cut', 'multi', 'Gạch những câu không được đọc', f'Các câu trong bản duyệt của {sponsor}. Chọn mọi câu đài không đọc.', lopts),
         _step('spot', 'secs', 'number', 'Tính độ dài spot',
               f'Bản đọc còn {words} chữ. Đài đọc {rate} chữ mỗi giây (làm tròn lên), cộng {jingle} giây nhạc hiệu nhà tài trợ. Spot dài bao nhiêu giây?', unit='giây'),
@@ -134,7 +135,8 @@ def _wishes(r, day, slot):
     raw, (right, w1, w2) = r.choice(rc.NAME_ASK)
     nopts, nids = _lettered(r, [('ask', 'Gọi lại người gửi hỏi đúng dấu rồi mới đọc'), ('w1', f'Đọc đại là “{right}”'),
                                 ('w2', f'Đọc là “{w1}” cho nhanh'), ('w3', 'Đánh vần từng chữ không dấu trên sóng')])
-    slip, slip_key = _scenario(r, 'wishes', 'slip', 'Lỡ đọc sai trên sóng', rc.WISH_SLIPS)
+    box = {x[0] for x in good}   # the slip is on a wish read tonight
+    slip, slip_key = _scenario(r, 'wishes', 'slip', 'Lỡ đọc sai trên sóng', [x[1:] for x in rc.WISH_SLIPS if x[0] in box])
     steps = [
         _step('wishes', 'skip', 'multi', 'Chọn những lời KHÔNG được đọc', f'Hộp thư lời chúc tối nay có {len(sopts)} lời. Chọn mọi lời đài không đọc.', sopts),
         _step('wishes', 'order', 'order', 'Đọc theo giờ gửi tới', 'Bấm lần lượt các lời chúc theo thứ tự đài nhận được.', oopts),

@@ -13,7 +13,12 @@ PEOPLE = [
     ('Anh Tài', 'Trưởng đoàn khách', 'Đặt phòng hai người mà dắt cả đoàn tới.', 'warm'),
     ('Bé Su', 'Khách nhí', 'Ôm gấu bông Mơ không rời nửa bước.', 'genz'),
     ('Mèo Bơ', 'Mèo của khách sạn', 'Ngồi quầy như quản lý, nhưng không phải quản lý.', 'quiet'),
+    ('Khách lưu trú', 'Khách ghé Hoa Sứ', 'Mỗi người một chuyện; ai cũng muốn được nhớ tên.', 'warm'),
+    ('Ông Khang', 'Khách đeo kính râm trong nhà', 'Câu nào cũng mở đầu bằng “anh quen giám đốc”.', 'picky'),
+    ('Anh Duy', 'Khách đặt phòng cầu hôn', 'Tay cầm hộp nhẫn, mắt dán vào cửa thang bộ.', 'warm'),
 ]
+GUEST_NPC = 9      # a passing guest of a job (its own name and face ride on the task: reception.guest_of)
+VIP_NPC, PROPOSE_NPC = 10, 11
 CAST = ('quyen', 'khoa', 'na', 'lai', 'tu')            # relations kept in the career data (0..100, start 50)
 CAST_NAME = dict(quyen='Chị Quyên', khoa='Khoa', na='Na', lai='Cô Lài', tu='Ông Tư Bến')
 CAST_ROLE = dict(quyen='Trưởng ca', khoa='Đồng nghiệp ca chiều', na='Lễ tân mới', lai='Buồng phòng', tu='Khách quen')
@@ -47,30 +52,63 @@ TAGS = {   # need id: (label on the need step, room test)
 TAG_IDS = tuple(TAGS)
 BEDS = dict(ss='2 giường đơn', d='1 giường đôi', ds='1 giường đôi + 1 giường đơn', dd='2 giường đôi')
 STATUS = dict(clean='Sạch, trống', dirty='Chưa dọn', busy='Đang có khách')
-# What a guest says for each need (said indirectly on purpose: the need step reads through it).
+# What a guest says for each need (said indirectly on purpose: the need step reads through it). Each line: (words, who
+# may say it: '' anyone, 'f' a woman, 'm' a man; the party it fits: fewest and most people on the card). Every need has a
+# line for one person of either voice, so no card ever hears a "vợ chồng" line from someone alone.
 SAYS = {
-    'twin': ('Hai anh em tôi ngủ riêng giường nha, thằng nhỏ đạp như đá bóng.', 'Hai đồng nghiệp đi công tác, không ngủ chung giường đâu em.',
-             'Tôi với bà bạn già, mỗi người một giường cho thoải mái.'),
-    'double': ('Vợ chồng mới cưới, một giường to là đủ rồi.', 'Tôi quen nằm giường rộng, giường đơn là lăn xuống đất.',
-               'Hai mẹ con ngủ chung một giường cho ấm.'),
-    'quiet': ('Tôi ngủ nông lắm, xe máy rồ ga là thức tới sáng.', 'Mai tôi thi chứng chỉ, cần chỗ thật yên để ôn bài.',
-              'Em bé nhà chị mới ngủ được, có tiếng động là khóc cả đêm.'),
-    'street': ('Mở cửa sổ phải thấy phố đi bộ cho chị quay clip nha.', 'Ông nhà tôi thích ngồi ngắm người qua lại ngoài đường.',
-               'Em làm vlog, cần khung cửa nhìn ra phố đêm.'),
-    'bag': ('Tôi mang theo bộ gậy golf với hai vali to đùng.', 'Đoàn chị chở theo thùng đồ nghề, để ngoài hành lang sợ mất.',
-            'Có cái xe đẩy em bé với ba vali, phòng chật là khỏi bước.'),
-    'cheap': ('Ngân sách eo hẹp lắm, phòng nào rẻ nhất cho tôi.', 'Sinh viên đi thực tập, em xin phòng rẻ thôi ạ.',
-              'Công ty khoán tiền phòng, quá 35 xu là tôi bù túi.'),
-    'ground': ('Bà cụ đau gối, không leo nổi cầu thang đâu.', 'Tôi mới mổ chân, đi nạng đó em.',
-               'Ông nhà tôi sợ độ cao, ở tầng trệt cho lành.'),
-    'near': ('Phòng của mẹ tôi phải sát vách phòng tôi, đêm còn sang xem.', 'Hai nhà đi chung, cho ở sát nhau để tối qua lại.',
-             'Tụi nhỏ ở phòng bên cạnh bố mẹ, chứ xa là không yên tâm.'),
+    'twin': (('Phòng hai giường riêng nha, một giường tôi ngủ, một giường bày đồ nghề.', '', 1, 1),
+             ('Hai anh em tôi ngủ riêng giường nha, thằng nhỏ đạp như đá bóng.', '', 2, 3),
+             ('Hai đồng nghiệp đi công tác, không ngủ chung giường đâu em.', '', 2, 2),
+             ('Tôi với bà bạn già, mỗi người một giường cho thoải mái.', 'f', 2, 2),
+             ('Nhà tôi mỗi người quen một giường, đừng dồn chung nha.', '', 3, 4)),
+    'double': (('Vợ chồng mới cưới, một giường to là đủ rồi.', '', 2, 2),
+               ('Tôi quen nằm giường rộng, giường đơn là lăn xuống đất.', '', 1, 4),
+               ('Hai mẹ con ngủ chung một giường cho ấm.', 'f', 2, 2),
+               ('Hai cha con ngủ chung một giường cho vui.', 'm', 2, 2)),
+    'quiet': (('Tôi ngủ nông lắm, xe máy rồ ga là thức tới sáng.', '', 1, 4),
+              ('Mai tôi thi chứng chỉ, cần chỗ thật yên để ôn bài.', '', 1, 4),
+              ('Em bé nhà tôi mới ngủ được, có tiếng động là khóc cả đêm.', '', 2, 4)),
+    'street': (('Mở cửa sổ phải thấy phố đi bộ cho tôi quay clip nha.', '', 1, 4),
+               ('Ông nhà tôi thích ngồi ngắm người qua lại ngoài đường.', 'f', 2, 4),
+               ('Em làm vlog, cần khung cửa nhìn ra phố đêm.', '', 1, 4)),
+    'bag': (('Tôi mang theo bộ gậy golf với hai vali to đùng.', '', 1, 4),
+            ('Tụi tôi chở theo thùng đồ nghề, để ngoài hành lang sợ mất.', '', 2, 4),
+            ('Có cái xe đẩy em bé với ba vali, phòng chật là khỏi bước.', '', 2, 4)),
+    'cheap': (('Ngân sách eo hẹp lắm, phòng nào rẻ nhất cho tôi.', '', 1, 4),
+              ('Sinh viên đi thực tập, em xin phòng rẻ thôi ạ.', '', 1, 2),
+              ('Công ty khoán tiền phòng, quá 35 xu là tôi bù túi.', '', 1, 4)),
+    'ground': (('Bà cụ nhà tôi đau gối, không leo nổi cầu thang đâu.', '', 2, 4),
+               ('Tôi mới mổ chân, đi nạng đó em.', '', 1, 4),
+               ('Ông nhà tôi sợ độ cao, ở tầng trệt cho lành.', 'f', 2, 4),
+               ('Tôi sợ độ cao, ở tầng trệt cho lành.', '', 1, 4)),
+    'near': (('Phòng của mẹ tôi phải sát vách phòng tôi, đêm còn sang xem.', '', 1, 4),
+             ('Hai nhà đi chung, cho ở sát nhau để tối qua lại.', '', 1, 4),
+             ('Tụi nhỏ ở phòng bên cạnh bố mẹ, chứ xa là không yên tâm.', '', 1, 4)),
 }
-CHATTER = ('Khách sạn mình có wifi không em?', 'Cây sứ ngoài kia nở đẹp ghê.', 'Ủa con mèo này của ai mà ngồi trên quầy vậy?',
-           'Hồi xưa chỗ này là tiệm may đó em biết không.', 'Cho chị xin cái kẹo trong hũ nha.', 'Trời hôm nay nóng muốn xỉu.',
-           'Em ơi, phố này tối có chợ đêm không?', 'Ghi tên anh rõ giùm, lần trước ghi sai chữ Đ.')
+# Small talk at the desk (never a need): (words, who may say it)
+CHATTER = (('Khách sạn mình có wifi không em?', ''), ('Cây sứ ngoài kia nở đẹp ghê.', ''), ('Ủa con mèo này của ai mà ngồi trên quầy vậy?', ''),
+           ('Hồi xưa chỗ này là tiệm may đó em biết không.', ''), ('Cho chị xin cái kẹo trong hũ nha.', 'f'), ('Cho anh xin cái kẹo trong hũ nha.', 'm'),
+           ('Trời hôm nay nóng muốn xỉu.', ''), ('Em ơi, phố này tối có chợ đêm không?', ''),
+           ('Ghi tên anh rõ giùm, lần trước ghi sai chữ Đ.', 'm'), ('Ghi tên chị rõ giùm, lần trước ghi sai dấu.', 'f'))
+
+
+def says(tag: str, gender: str, people: int) -> list:
+    """The lines a guest of `gender` ('male' / 'female') with `people` on the card may say for need `tag`."""
+    g = 'f' if gender == 'female' else 'm'
+    return [x[0] for x in SAYS[tag] if x[1] in ('', g) and x[2] <= people <= x[3]]
+
+
+def chatter(gender: str) -> list:
+    g = 'f' if gender == 'female' else 'm'
+    return [x[0] for x in CHATTER if x[1] in ('', g)]
+
+
 GUESTS = ('Lê Thị Hạnh', 'Trần Văn Lộc', 'Phạm Minh Thư', 'Nguyễn Gia Bảo', 'Đỗ Thu Trang', 'Hoàng Quốc Việt', 'Vũ Ngọc Ánh',
           'Bùi Thanh Tâm', 'Đặng Hữu Phước', 'Mai Khánh Linh', 'Tạ Văn Hùng', 'Lý Mỹ Duyên', 'Châu Bảo Ngọc', 'Hồ Đức Thịnh')
+GUEST_GENDER = {'Lê Thị Hạnh': 'female', 'Trần Văn Lộc': 'male', 'Phạm Minh Thư': 'female', 'Nguyễn Gia Bảo': 'male', 'Đỗ Thu Trang': 'female',
+                'Hoàng Quốc Việt': 'male', 'Vũ Ngọc Ánh': 'female', 'Bùi Thanh Tâm': 'female', 'Đặng Hữu Phước': 'male',
+                'Mai Khánh Linh': 'female', 'Tạ Văn Hùng': 'male', 'Lý Mỹ Duyên': 'female', 'Châu Bảo Ngọc': 'female', 'Hồ Đức Thịnh': 'male',
+                'Ông Tư Bến': 'male'}
 
 # ---------------------------------------------------------------- the key board
 KEY_DECOYS = [('k108', '🔑 108 · móc đỏ · kho khăn'), ('k301', '🔑 301 · móc vàng · sân thượng'),
@@ -93,10 +131,10 @@ SHELF_OF = dict(heavy='bottom', fragile='top', tall='frame')
 ASKS = [   # a pending job a guest asks for at the desk (id, what the guest says, the handover line)
     ('wake', 'Mai gọi báo thức giùm lúc 5 giờ 30 nha.', 'Gọi báo thức 5:30 cho khách {name}'),
     ('pillow', 'Cho xin thêm một cái gối, cổ tôi đau.', 'Mang thêm 1 gối lên cho khách {name}'),
-    ('deposit', 'Tiền cọc để chiều chị chuyển khoản nha.', 'Khách {name} chưa đóng cọc, chiều nhắc lại'),
+    ('deposit', 'Tiền cọc để chiều tôi chuyển khoản nha.', 'Khách {name} chưa đóng cọc, chiều nhắc lại'),
     ('taxi', 'Sáng mai đặt giùm xe ra bến lúc 7 giờ.', 'Đặt xe ra bến 7:00 cho khách {name}'),
     ('safe', 'Gửi tạm cái máy ảnh vào két ở quầy giùm.', 'Máy ảnh của khách {name} đang ở két quầy, trả khi khách hỏi'),
-    ('cake', 'Tối nay sinh nhật vợ tôi, 9 giờ mang bánh lên giùm.', 'Mang bánh sinh nhật lên phòng khách {name} lúc 21:00'),
+    ('cake', 'Tối nay sinh nhật tôi, 9 giờ mang bánh kem lên phòng giùm nha.', 'Mang bánh sinh nhật lên phòng khách {name} lúc 21:00'),
 ]
 ASK_INDEX = {a[0]: a for a in ASKS}
 DONE_LINES = [   # handover decoys: things already done at the desk, or never asked
@@ -144,7 +182,7 @@ COMPLAINTS = {   # id: (what is really wrong, rant, verify option id, (fault evi
               'log', ('Sổ ca đêm: 23:40 phòng bên có khách gọi phản ánh ồn, chưa ai lên nhắc.', 'Sổ ca đêm: phòng bên trống cả đêm; tiếng ồn từ quán nhậu đầu hẻm.'),
               10, 'Báo ca đêm nhắc giờ yên tĩnh 22:00'),
     'water': ('Không có nước nóng sáng nay', 'Tắm nước lạnh run cầm cập! Mấy người làm ăn kiểu gì vậy, đòi gặp quản lý!',
-              'tech', ('Sổ kỹ thuật: bình nóng lạnh tầng 2 nhảy aptomat lúc 5:50, chưa ai bật lại.', 'Sổ kỹ thuật: bình chạy bình thường; khách vặn nhầm vòi lạnh (nút đỏ bên trái).'),
+              'tech', ('Sổ kỹ thuật: bình nóng lạnh tầng 2 nhảy aptomat lúc 5:50, chưa ai bật lại.', 'Sổ kỹ thuật: bình chạy bình thường; khách vặn nhầm vòi lạnh (nút xanh bên phải).'),
               20, 'Báo kỹ thuật kiểm bình nóng lạnh'),
     'charge': ('Bị tính 2 lon nước ngọt minibar', 'Tôi không uống lon nào hết! Tính tiền láo vậy, tôi đăng lên mạng đó!',
                'count', ('Đếm minibar cùng khách: 2 lon vẫn còn nguyên trong tủ, phiếu buồng phòng ghi nhầm.', 'Đếm minibar cùng khách: tủ thiếu 2 lon, vỏ lon trong thùng rác phòng.'),
@@ -290,7 +328,7 @@ DESK = [
         _o('refuse', 'Từ chối cả nhóm vì đặt sai số người', 'Anh Tài kéo cả đoàn đi, Ủn sủa một tràng.', False,
            review=[1, 'Tới nơi bị đuổi về giữa đêm.'])],
        'refuse'),
-    _x('plant', 'Nhà nghiên cứu mang cây khổng lồ', '🌴', 5,
+    _x('plant', 'Nhà nghiên cứu mang cây khổng lồ', '🌴', GUEST_NPC,
        'Một nhà nghiên cứu khệ nệ ôm chậu cây cao 2 mét: “Mẫu cây quý, phải để trong phòng với tôi!” Cầu thang hẹp, chậu nặng như cối đá.',
        [_o('yard', 'Gửi cây ở sân sau có mái che, ghi thẻ gửi, tưới giùm sáng mai', 'Sáng ra cây tươi rói. Nhà nghiên cứu để lại một tấm thiệp ép lá.', True,
            xp=5, keep='plant_card', review=[5, 'Cây của tôi được chăm như khách VIP.']),
@@ -317,7 +355,7 @@ DESK = [
         _o('quiet', 'Lặng lẽ tự thay khăn, không nói ai', 'Khách có khăn, nhưng mai cô Lài vẫn quá tải như cũ.', None,
            patience=-3)],
        'quiet'),
-    _x('threat', 'Dọa đánh giá thấp để ở miễn phí', '📱', 5,
+    _x('threat', 'Dọa đánh giá thấp để ở miễn phí', '📱', GUEST_NPC,
        'Một khách giơ điện thoại: “Phòng có con kiến! Miễn phí cho anh đêm nay, không là 1 sao kèm clip 200 nghìn view.”',
        [_o('check', 'Lên phòng xem cùng khách, xử lý con kiến, bù đúng chính sách nếu có lỗi, ghi sổ', 'Có một con kiến thật. Xịt, lau, tặng nước. Khách hết lý do, ở bình thường.', True,
            xp=6, rel={'quyen': 4}, review=[4, 'Nhân viên lên kiểm ngay, xử lý gọn.']),
@@ -335,7 +373,7 @@ DESK = [
         _o('buy', 'Bảo mẹ bé mua con gấu khác', 'Bé Su gào to hơn. Mẹ bé nhìn bạn như nhìn người ngoài hành tinh.', False,
            review=[1, 'Gấu của con là duy nhất mà.', 7])],
        'post'),
-    _x('surprise', 'Tổ chức bất ngờ, người yêu cứ đứng ở quầy', '💍', 5,
+    _x('surprise', 'Tổ chức bất ngờ, người yêu cứ đứng ở quầy', '💍', PROPOSE_NPC,
        'Anh khách nhờ trang trí phòng 203 để cầu hôn. Khổ nỗi cô bạn gái cứ đứng ở quầy hỏi chuyện, không chịu lên phòng.',
        [_o('stall', 'Nhờ cô “kiểm giúp chữ ký trên phiếu đăng ký” lâu một chút, Na lên trang trí', 'Mười phút sau cửa 203 mở ra, nến điện, cánh hoa. Cô gật đầu.', True,
            xp=6, rel={'na': 5}, review=[5, 'Lễ tân diễn còn hay hơn diễn viên, cảm ơn cả khách sạn.']),
@@ -353,7 +391,7 @@ DESK = [
         _o('shoo', 'Đuổi mèo Bơ ra ngoài cho nghiêm túc', 'Bơ dỗi, nằm chắn cửa thang bộ cả buổi.', None,
            patience=-2)],
        'shoo'),
-    _x('passport', 'Khách quên hộ chiếu ở két quầy', '🛂', 5,
+    _x('passport', 'Khách quên hộ chiếu ở két quầy', '🛂', GUEST_NPC,
        'Khách vừa ra sân bay, hộ chiếu còn nằm trong két quầy. Còn 70 phút nữa đóng quầy thủ tục.',
        [_o('rider', 'Gọi khách xác nhận, gửi xe ôm công nghệ có mã giao, chụp biên nhận', 'Hộ chiếu tới tay khách trước giờ đóng quầy 20 phút. Khách gửi lời cảm ơn.', True,
            xp=6, house=6, review=[5, 'Tôi suýt lỡ chuyến bay, lễ tân cứu tôi.']),
@@ -398,7 +436,7 @@ DESK = [
         _o('refuse', 'Nói thẳng: “Hết đổi rồi chị”', 'Chị Diễm gọi đường dây nóng của chủ khách sạn.', False,
            review=[1, 'Khách đổi phòng có lý do mà bị từ chối thẳng.'])],
        'again', min_day=3),
-    _x('vip', 'VIP tự nhận quen giám đốc', '🕶️', 5,
+    _x('vip', 'VIP tự nhận quen giám đốc', '🕶️', VIP_NPC,
        'Một ông khách đeo kính râm trong nhà: “Anh là bạn thân giám đốc. Giảm 50% với cho anh phòng đẹp nhất, nhanh lên.”',
        [_o('proc', 'Lịch sự làm thủ tục như mọi khách, đề nghị gọi giám đốc xác nhận ưu đãi', 'Giám đốc không bắt máy. Ông khách trả đủ, lẩm bẩm “làm việc đúng ghê”.', True,
            xp=5, rel={'quyen': 4}),
@@ -407,7 +445,7 @@ DESK = [
         _o('mock', 'Mỉa: “Ai vào đây cũng quen giám đốc hết á anh”', 'Ông khách đập quầy, đánh giá 1 sao kèm chữ “láo”.', False,
            review=[1, 'Lễ tân mỉa khách.'])],
        'discount'),
-    _x('suitcase', 'Vali nhầm giữa hai khách giống nhau', '🧳', 5,
+    _x('suitcase', 'Vali nhầm giữa hai khách giống nhau', '🧳', GUEST_NPC,
        'Hai khách cùng vali xanh, cùng hiệu, cùng sticker Đà Lạt. Một người vừa kéo vali ra xe, người kia hét: “Vali của tôi!”',
        [_o('tags', 'Nhờ xe dừng lại, đối số thẻ hành lý hai nửa, mở cùng lúc có mặt hai bên', 'Thẻ số 14 và 41. Đổi lại đúng chủ, ai cũng thở phào.', True,
            xp=6, review=[5, 'Nhờ thẻ gửi đồ mà khỏi lạc vali.']),
@@ -458,7 +496,7 @@ DESK = [
         _o('let', 'Thôi kệ, khách đi khách tới', 'Phòng 102 tháng đó trống mấy đêm liền.', None, rel={'tu': -2})],
        'let', min_day=4, need_mark='tu_sad', rel_max={'tu': 45}),
     # --- consequences that come back
-    _x('freeloader_back', 'Khách “cứ dọa là được” quay lại', '🎭', 5,
+    _x('freeloader_back', 'Khách “cứ dọa là được” quay lại', '🎭', GUEST_NPC,
        'Ông khách từng dọa đánh giá để ở miễn phí quay lại, dắt theo ba người bạn: “Lần trước em cho anh free rồi, lần này cả nhóm nha.”',
        [_o('policy', 'Lịch sự: lần trước là ngoại lệ, lần này giá như mọi khách; có lỗi thật mới bù', 'Nhóm bạn nhìn nhau, trả tiền đủ. Ông khách hết dọa.', True,
            xp=6, unmark='freeloader', rel={'quyen': 5}),

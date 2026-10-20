@@ -22,8 +22,8 @@ for day in range(2, 12):
         arcs = [0, 4] if t.luu_slot(day, slot) else [-1]
         for arc in arcs:
             name = job + ('' if arc < 0 else f'_arc{arc}')
-            if name in out:
-                continue
+            if name in out and (job != 'withdraw' or any(s['type'] == 'tray' for s in out[name]['needs']['steps'])):
+                continue   # (a withdrawal with a tray: the not-the-holder case has none)
             task = dict(t.make_task(day, slot, 1), known=True, arc=arc, rk=1)
             out[name] = t.public_task(task)
 c = {'day': 3, 'tasks': [], 'ext': {'data': t.initial()}}

@@ -217,7 +217,9 @@ STEPS: dict[str, list[dict]] = {
         intro('rc_intro'),
         S('📋', 'Bấm Đọc phiếu việc để nghe khách nói.', ['Đọc phiếu việc'], ['.sk-ask', '[data-command="ask"]'], g=0,
           w='Nút hiện khi có phiếu việc mới.'),
-        S('👂', 'Chọn mọi yêu cầu khách vừa nói, rồi Chốt yêu cầu.', ['Chốt yêu cầu'], [READY.format('.rc-send-need')], o=True,
+        # the chips first, ringed themselves (the bubble anchored to Chốt sat over them on a landscape phone), then the button
+        S('👂', 'Chạm chọn mọi yêu cầu khách vừa nói.', [], ['.rc-step .rc-chips'], o=True, g=1),
+        S('✅', 'Chọn đủ rồi bấm Chốt yêu cầu.', ['Chốt yêu cầu'], [READY.format('.rc-send-need')], o=True,
           v=V('Chạm chọn yêu cầu trước.', [], ['.rc-step .rc-chips']), g=1),
         S('🛏️', 'Chạm thẻ khách, chạm phòng, rồi Xác nhận xếp phòng.', ['Xác nhận xếp phòng'], [READY.format('.rc-send-rooms')], o=True,
           v=V('Xếp đủ từng thẻ khách vào phòng trước.', [], ['.rc-step .rc-board']), g=2),
@@ -444,6 +446,8 @@ EN: dict[str, str] = {
     # reception
     'Bấm Đọc phiếu việc để nghe khách nói.': 'Tap Read the job slip to hear the guest.',
     'Chọn mọi yêu cầu khách vừa nói, rồi Chốt yêu cầu.': 'Pick every request the guest just made, then Confirm requests.',
+    'Chạm chọn mọi yêu cầu khách vừa nói.': 'Tap every request the guest just made.',
+    'Chọn đủ rồi bấm Chốt yêu cầu.': 'Picked them all? Tap Confirm requests.',
     'Chạm chọn yêu cầu trước.': 'Tap the requests first.',
     'Chạm thẻ khách, chạm phòng, rồi Xác nhận xếp phòng.': 'Tap a guest card, tap a room, then Confirm rooms.',
     'Xếp đủ từng thẻ khách vào phòng trước.': 'Put every guest card in a room first.',

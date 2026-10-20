@@ -100,7 +100,7 @@ STORE = [('cold', 'Kho lạnh 5°C, khô ráo, kệ có mã'), ('room', 'Để �
          ('fridge', 'Chung tủ lạnh với hộp cơm của phòng'), ('sun', 'Phơi ngoài nắng cho hạt khỏe')]
 
 # ---------------------------------------------------------------- 🍳 Công thức món
-# id, name, the main ingredient, grams for 4 servings, ordered steps
+# id, name, the main ingredient, grams for 4 servings, ordered steps (one sensible order: DISH_AFTER says which others pass)
 DISHES = [
     ('comga', 'Cơm gà xé phay', 'thịt gà', 300, [('wash', 'Làm sạch gà, chần sơ'), ('boil', 'Luộc gà lửa vừa'), ('rice', 'Nấu cơm bằng nước luộc gà'),
                                                   ('shred', 'Xé gà, trộn rau răm hành tây'), ('plate', 'Bày cơm, gà, chén nước mắm gừng')]),
@@ -115,6 +115,34 @@ DISHES = [
     ('canh', 'Canh bí đỏ tôm khô', 'bí đỏ', 500, [('prep', 'Gọt bí, cắt miếng'), ('shrimp', 'Ngâm tôm khô'), ('broth', 'Phi hành, xào tôm, đổ nước'),
                                                   ('pumpkin', 'Cho bí vào nấu mềm'), ('season', 'Nêm, rắc ngò')]),
 ]
+# The recipe card of each dish (shown on the order step), and what must come before each step: every order that keeps
+# these passes (cơm and xé gà both wait for the boiled chicken but not for each other, nước cốt dừa is cooked apart…).
+DISH_CARD = {
+    'comga': 'Thẻ công thức: gà làm sạch, chần sơ rồi mới luộc; cơm nấu bằng nước luộc gà; gà luộc xong mới xé; bày đĩa sau cùng.',
+    'flan': 'Thẻ công thức: thắng caramel đổ đáy khuôn; trứng đánh với sữa dừa rồi lọc qua rây, đổ lên caramel rồi mới hấp; hấp xong để nguội, cho vào tủ mát.',
+    'che': 'Thẻ công thức: đậu ngâm rồi mới nấu, đậu mềm mới thêm đường; nước cốt dừa nấu riêng, lúc nào cũng được; múc chè sau cùng.',
+    'nuocmam': 'Thẻ công thức: hòa tan đường trước; rồi vắt chanh và thêm nước mắm; nếm, chỉnh lại; tỏi ớt thả sau cùng cho nổi.',
+    'banhmi': 'Thẻ công thức: nhào bột, ủ 45 phút, chia và tạo hình, nướng 180°C; bánh vừa ra lò mới phết mỡ hành.',
+    'canh': 'Thẻ công thức: tôm khô ngâm trước khi xào; phi hành, xào tôm, đổ nước làm nước dùng; bí gọt sẵn, nước dùng có rồi mới cho bí; nêm, rắc ngò sau cùng.',
+}
+DISH_AFTER = {
+    'comga': dict(boil=('wash',), rice=('boil',), shred=('boil',), plate=('rice', 'shred')),
+    'flan': dict(strain=('mix',), steam=('strain', 'caramel'), chill=('steam',)),
+    'che': dict(cook=('soak',), sugar=('cook',), serve=('sugar', 'coco')),
+    'nuocmam': dict(lime=('sugar',), fish=('sugar',), taste=('lime', 'fish'), garlic=('taste',)),
+    'banhmi': dict(rest=('dough',), shape=('rest',), bake=('shape',), top=('bake',)),
+    'canh': dict(broth=('shrimp',), pumpkin=('broth', 'prep'), season=('pumpkin',)),
+}
+# What goes into each dish (name, allergen tag): the first three always, two of the rest on a given day.
+DISH_INGREDIENTS = {
+    'comga': [('Thịt gà', ''), ('Gạo', ''), ('Rau răm', ''), ('Hành tây', ''), ('Gừng', ''), ('Nước mắm', ''), ('Đậu phộng rang', 'peanut'), ('Mè rang', 'sesame')],
+    'flan': [('Trứng gà', 'egg'), ('Sữa dừa', ''), ('Đường', ''), ('Sữa tươi', 'milk'), ('Vani', ''), ('Cà phê', '')],
+    'che': [('Đậu xanh', ''), ('Nước cốt dừa', ''), ('Đường', ''), ('Mè rang', 'sesame'), ('Đậu phộng rang', 'peanut'), ('Bột năng', ''), ('Muối', '')],
+    'nuocmam': [('Nước mắm', ''), ('Đường', ''), ('Chanh', ''), ('Tỏi', ''), ('Ớt', ''), ('Đậu phộng rang', 'peanut'), ('Tôm khô giã', 'shrimp')],
+    'banhmi': [('Bột mì', 'gluten'), ('Men nở', ''), ('Hành lá', ''), ('Dầu ăn', ''), ('Muối', ''), ('Trứng gà', 'egg'), ('Sữa tươi', 'milk')],
+    'canh': [('Bí đỏ', ''), ('Tôm khô', 'shrimp'), ('Hành tím', ''), ('Ngò', ''), ('Muối', ''), ('Dầu ăn', '')],
+}
+DISH_CORE = 3
 SERVINGS = (12, 20, 28, 32, 40, 60)
 VARIABLE = [('one', 'Chỉ đổi một yếu tố (lượng đường), giữ nguyên mọi thứ khác'),
             ('all', 'Đổi cả đường, lửa và thời gian cho mau ra món ngon'),
@@ -128,9 +156,6 @@ CODING = [('blind', 'Mã ngẫu nhiên ba chữ số, không ghi tên công th�
 BIASED = [('Vừa ăn xong một tô mì cay cấp 7', 'chili'), ('Là người nấu ba mẫu này', 'cook'),
           ('Đang cảm cúm, nghẹt mũi', 'cold'), ('Ngó trộm được tên công thức trên khay', 'peek')]
 TASTERS = ['Chị Nhàn', 'Anh Quý', 'Bé Su', 'Chú bảo vệ Toàn', 'Cô kế toán Hương', 'Bác Tư']
-# ingredient, cost per batch unit…, allergen tag
-INGREDIENTS = [('Đậu phộng rang', 'peanut'), ('Sữa tươi', 'milk'), ('Trứng gà', 'egg'), ('Tôm khô', 'shrimp'), ('Mè rang', 'sesame'),
-               ('Bột mì', 'gluten'), ('Đường', ''), ('Muối', ''), ('Hành lá', ''), ('Dầu ăn', ''), ('Nước dừa', ''), ('Rau thơm', '')]
 ALLERGENS = dict(peanut='Đậu phộng', milk='Sữa', egg='Trứng', shrimp='Tôm, cua (giáp xác)', sesame='Mè', gluten='Gluten (lúa mì)')
 CLAIMS = [('true', 'Ghi đúng thành phần và chất gây dị ứng, không ghi công dụng chữa bệnh'),
           ('miracle', 'Ghi “thần dược giảm cân” cho bán chạy'), ('short', 'Bỏ dòng dị ứng cho nhãn gọn'),
@@ -139,7 +164,8 @@ CLAIMS = [('true', 'Ghi đúng thành phần và chất gây dị ứng, không 
 # ---------------------------------------------------------------- 🛠️ Sáng chế
 PARTS = dict(motor='Mô-tơ mini', fan='Cánh quạt nhựa', battery='Hộp pin', switch='Công tắc', led='Bóng LED', resistor='Điện trở',
              sensor='Cảm biến độ ẩm', pump='Bơm nước mini', pipe='Ống dẫn nước', buzzer='Còi chíp', button='Nút bấm',
-             foam='Xốp cách nhiệt', lid='Nắp kín', thermo='Cảm biến nhiệt', clip='Kẹp gấp', solar='Tấm pin mặt trời mini')
+             foam='Xốp cách nhiệt', lid='Nắp kín', thermo='Cảm biến nhiệt', clip='Kẹp gấp', solar='Tấm pin mặt trời mini',
+             light='Cảm biến ánh sáng')
 # id, name, required parts, what it does
 GADGETS = [
     ('fan', 'Quạt cầm tay gấp gọn', ('motor', 'fan', 'battery', 'switch', 'clip'), 'thổi mát lúc chờ xe buýt'),
@@ -147,7 +173,7 @@ GADGETS = [
     ('water', 'Máy tưới cây tự động', ('sensor', 'pump', 'pipe', 'battery'), 'tưới chậu cây khi đất khô'),
     ('bell', 'Chuông cửa bấm vui', ('buzzer', 'button', 'battery'), 'kêu “ting tong” vui tai'),
     ('box', 'Hộp cơm giữ ấm', ('foam', 'lid', 'thermo', 'battery'), 'giữ cơm ấm tới giờ trưa'),
-    ('solar', 'Đèn sân vườn năng lượng mặt trời', ('solar', 'led', 'battery', 'sensor'), 'tự sáng khi trời tối'),
+    ('solar', 'Đèn sân vườn năng lượng mặt trời', ('solar', 'led', 'battery', 'light'), 'tự sáng khi trời tối'),
 ]
 BATTERY = [('safe', 'Pin sạc có mạch bảo vệ, đúng điện áp ghi trên mạch'), ('toy', 'Pin cũ tháo từ xe đồ chơi'),
            ('swollen', 'Pin hơi phồng nhưng còn sạc được'), ('double', 'Nối hai pin cho mạnh gấp đôi')]

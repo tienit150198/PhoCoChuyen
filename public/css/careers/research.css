@@ -23,6 +23,8 @@
 .research .rs-step-count{font-size:13px;color:var(--sk-muted,#5a6b69);margin:0 0 6px}
 .research progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:14px}
 .research .rs-evidence{padding:12px;border-left:3px solid var(--sk-accent-2);background:var(--sk-surface-2,#eaf4f2);line-height:1.55}
+.research .rs-sheet{margin:8px 0 0;padding:8px 12px 8px 30px;border:1px dashed var(--sk-accent-2);border-radius:10px;background:var(--sk-surface,#f8fcfb);font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums}
+.research .rs-sheet li{margin:2px 0}
 .research .rs-options,.research .rs-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
 .research .rs-options button,.research .rs-picks button{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
 .research .rs-pick{display:flex;gap:8px;align-items:flex-start}

@@ -10,6 +10,8 @@ const stepsOf=t=>t.needs?.steps||[];
 const current=t=>stepsOf(t)[t.at];
 const keyOf=(id,st)=>`${id}:${st.id}`;
 const TRACK_EMOJI={seed:'🌱',recipe:'🍳',invent:'🛠️'};
+/** The data a step works on (the field book, the score sheet, the recipe card, the blueprint's parts), one line each. */
+const sheet=(st,x)=>(st.sheet||[]).length?`<ul class="rs-sheet">${st.sheet.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`:'';
 
 /** The track of this shift: Giống cây, Công thức món or Sáng chế (any of them, any day). */
 function trackPicker(x){
@@ -88,7 +90,7 @@ function stepCard(t,x){
   return `<section class="card rs-step${council?' council':''}" aria-labelledby="rs-step-title">
     <p class="rs-step-count" role="status">Bước ${t.at+1}/${steps.length} · chất lượng ${x.esc(t.quality??100)}%</p>
     <progress value="${t.at}" max="${steps.length}" aria-label="Tiến trình phiếu việc"></progress>
-    <h3 id="rs-step-title">${council?'🧐 ':''}${x.esc(st.title)}</h3><p class="rs-evidence">${x.esc(st.evidence)}</p>
+    <h3 id="rs-step-title">${council?'🧐 ':''}${x.esc(st.title)}</h3><p class="rs-evidence">${x.esc(st.evidence)}</p>${sheet(st,x)}
     ${stepBody(st,x,'rs_step',{task:t.id},t.id,t)}</section>`;
 }
 
@@ -121,7 +123,7 @@ function labStep(o,x){
     const v=x.ui.labNum?.[o.id]??'';
     body=`<div class="rs-row rs-num-row"><label class="rs-num-in">Con số ghi vào sổ <input type="number" inputmode="numeric" min="0" max="100000" data-car="labNum" data-order="${x.esc(o.id)}" value="${x.esc(v)}"> <small>${x.esc(st.unit||'')}</small></label>${act(x,'Ghi vào sổ','labSendNum',{order:o.id,step:st.id},'primary rs-send')}</div>`;
   }
-  return `<p class="rs-step-count">Bước ${o.at+1}/${o.total} · chất lượng ${x.esc(o.quality)}%</p><h4>${x.esc(st.title)}</h4><p class="rs-evidence">${x.esc(st.evidence)}</p>${nameBox}${body}`;
+  return `<p class="rs-step-count">Bước ${o.at+1}/${o.total} · chất lượng ${x.esc(o.quality)}%</p><h4>${x.esc(st.title)}</h4><p class="rs-evidence">${x.esc(st.evidence)}</p>${sheet(st,x)}${nameBox}${body}`;
 }
 
 function labCard(x){
@@ -150,7 +152,7 @@ export default {
   job(t,x){
     if(!data(x).intro||x.ui.intro)return wrap(introCard(x,'rs_intro','🔬'));
     if(!t.known)return wrap(top(x)+(fresh(t)?trackPicker(x):'')+shiftCard(x,null)+askCard(x,t,'Đọc phiếu việc')+labCard(x)+progress(x));
-    return wrap(top(x)+shiftCard(x,t)+person(x,t,`<p class="small">${x.esc(t.opening)}</p>`)+briefCard(t,x)+stepCard(t,x)+
+    return wrap(top(x)+shiftCard(x,t)+person(x,{...t,npc:t.client_npc||t.npc},`<p class="small">${x.esc(t.opening)}</p>`)+briefCard(t,x)+stepCard(t,x)+
       (t.lines?.length?`<p class="rs-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'')+labCard(x)+
       `<details class="rs-notebook"><summary>Sổ tay Viện Sông Mây</summary>${notebook(x)}</details>`+progress(x));
   },
