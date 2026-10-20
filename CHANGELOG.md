@@ -1,8 +1,8 @@
-# v2.4.65 — 2026-10-21
+# v2.4.66 — 2026-10-21
 
-🛡️ Bang chiến pet chuyển sang 20:00 Chủ nhật hằng tuần (chốt đội hình 19:50; chủ game 21/10 "bang chiến diễn ra chủ nhật hằng tuần, 8h tối"); PET_WAR_DOW/HOUR vẫn chỉnh được. Dòng Có gì mới 2.4.63 sửa "tối thứ Bảy" → "20:00 Chủ nhật". Không có Có gì mới mới.
+Một lần phát hành gom (chủ game 21/10 "cứ gom lại phát hành 1 lần … update gì đó chung chung"): sửa gõ chữ ở lì xì + 8 màn, chọn số lượng khi mua bé/linh kiện/quần áo bé, ⚔️ Thách đấu bang, xếp hạng bang = pet + công trình + cấp bang (không tính cống hiến), mua/nâng Đảo bang 1M→30M→60M→120M→200M (cần đảo để chơi Bang chiến/Luyện pet/Thách đấu; bang cũ được cấp 1), quỹ bang không giới hạn (điểm góp tối đa 50.000/ngày, Kho bang +5%/cấp), màn Bang mượt, nút Xây Đền vàng. Schema 61–62 (chỉ thêm bảng/cột). Có gì mới: 1 dòng chung.
 
-# Chưa phát hành — bang-challenge
+## bang-challenge
 
 ⚔️ Thách đấu bang (chủ game 21/10: "đấu trường pets chỉ mở cho các bang hội đánh nhau thôi, thêm hoạt động đó vào cho các bang hội nhé", "các bạn trong bang xếp nhau mà chơi"; game/bang_challenge.py). Chưa có Có gì mới.
 - 🐾 Đội hình bang (đứng yên, không reset theo tuần): mỗi thành viên ghi danh 1 bé (đổi/rút lúc nào cũng được), Trưởng lão trở lên xếp thứ tự (▲▼): 5 bé sẵn sàng đầu tiên ra sân, còn lại dự bị và tự vào thay khi người ra sân rời bang hoặc bé không còn ở nhà/trại nuôi. Ảnh chụp chỉ số của bé theo mọi lệnh jr_pet_* (như Bang chiến). Tách riêng với đội hình Bang chiến tuần (pet_war_picks giữ nguyên luật cũ).
@@ -16,7 +16,7 @@
 - SCHEMA_VERSION 61 (chỉ thêm bảng/index, không FK, không backfill, không khóa save mới): bang_chal_roster, bang_chal_team, bang_chal, pet_power (bé mạnh nhất của mỗi người, ghi trong giao dịch lệnh jr_pet_* chỉ khi đổi, và khi vào đấu trường; xếp hạng không bao giờ đọc bản lưu). 2.4.64 chạy trên DB 61 không DDL, trang bang/đấu trường cũ đọc được dữ liệu mới (dòng điểm 'chal', nhật ký 'chal'), lệnh tc_* bị từ chối 'unknown' (tests/test_bang_challenge_compat.py). Trong lúc lăn bản, tiến trình cũ vẫn tính xếp hạng theo công thức cũ: ai chốt người thắng tuần trước thì theo công thức của bản đó.
 - Tests: tests/test_bang_challenge.py (21: đội hình/quyền xếp, gửi/nhận/từ chối/hủy/hết hạn, giới hạn, đánh một lần khi 3 người cùng nhận và khi nhận đua với hủy, thưởng không xu và không ghi bản lưu, đảo bang, xếp hạng 3 phần, rẻ: không đọc bản lưu), tests/test_bang_challenge_compat.py; scripts/browser_bang_challenge.py (2 bang, 390×844 và 844×390).
 
-# Chưa phát hành — bang-island-buy
+## bang-island-buy
 
 🏝️ Mua Đảo bang, nâng cấp đảo, quỹ bang không giới hạn (chủ game 21/10: "đảo bang bắt phải mua nhé … sau mở rộng lên được", "mua giá như giá đảo", "có mức rẻ hơn cho đảo bang là 1m", "muốn lên thì nâng cấp tiếp, 30m thì được cấp 2", "phải có mua đảo bang thì mới chơi được", "quỹ bang cho k giới hạn", "góp 1 lần không giới hạn tiền"). Không đổi phiên bản, không Có gì mới.
 - 🏝️ Đảo bang phải mua: bang lập từ bản này chưa có đảo cho tới khi Bang chủ hoặc Phó bang mua cấp 1 bằng quỹ bang (1.000.000 xu, có ngay). Nâng lần lượt cấp 2 / 3 / 4 / 5 bằng quỹ: 30 / 60 / 120 / 200 triệu xu (đúng giá Đảo Dừa, San Hô, Mây Đá, Hoàng Hôn đọc từ game/island_content.py; giá đảo riêng không qua price_index nên không nhân hệ số), xây 6 / 12 / 24 / 48 giờ thật (giàn giáo, bãi cát đang bồi + cần cẩu ở chỗ khu mới, 🚧 trên đảo và thẻ đếm giờ). Chỉ trả từ quỹ (sổ quỹ kind 'build', mã 'i:<bang>:<cấp>'), dưới khóa dòng bang: hai sĩ quan bấm cùng lúc chỉ trừ một lần, bấm lại cùng cấp trả lời "đã có" không trừ (POST /api/bang/isle {to, confirm}).
@@ -30,7 +30,7 @@
 - Dữ liệu: SCHEMA_VERSION 62 (61 để cho nhánh Thách đấu bang): bangs thêm cột isle (mặc định 1), isle_to, isle_started, isle_ready, isle_paid (mặc định 0), isle_how (mặc định 'grant'), ADD COLUMN IF NOT EXISTS, mặc định hằng: không viết lại bảng, không backfill. 2.4.64 chạy được trên schema 62 (tests/test_integration_compat.py Previous: khởi động không DDL, đọc trang bang, đảo, góp quỹ, điểm danh, lập bang). Lùi về 2.4.64: mọi bang lại vào đảo miễn phí, trần quỹ cũ quay lại (quỹ vượt trần vẫn giữ nguyên, chỉ không góp thêm được); cột mới nằm yên.
 - Khác: scripts/check_old_safari.mjs miễn thêm hai mẫu reset() của Phaser (TweenManager.existing, TweenChain.add: tên biến rút gọn đổi theo bundle mới), có test. Dev: scripts/browser_bang_island_buy.py (BROWSER_CHANNEL=chrome dùng Chrome có sẵn).
 
-# Chưa phát hành — bang-smooth
+## bang-smooth
 
 ⚔️ Bảng Bang bấm mượt, đứng yên chỗ đang bấm (chủ game 21/10 "bang bấm còn giật giật lắm nên sửa lại đi", "chọn cái nào có thể tiếp tục đóng cái đó chứ k cần phải đổi qua cái khác nhé"). Không đổi luật, không đổi schema, không Có gì mới.
 - Nguyên nhân giật (đo bằng scripts/browser_bang_perf.py, 390×844, CPU chậm 4× và 12×, mạng +80 ms): mỗi lần bấm vẽ lại cả bảng bằng innerHTML hai lần (lúc chờ và lúc có kết quả) và lúc chờ làm mờ (disabled, opacity .5) mọi nút hành động trong bảng; dòng kết quả chèn lên đầu bảng đẩy mọi thẻ xuống (thẻ Cổng bang tụt 70 px ngay dưới ngón tay); phong chức làm danh sách sắp lại theo chức (người vừa phong nhảy lên chỗ khác); góp quỹ xong ô số tiền về 100.000; công trình xây xong không hiện lại nút nâng cấp cho tới khi đóng mở bảng; mỗi lần bấm ở bảng còn vẽ lại cả phố phía sau (renderMain); chạm tab không về đầu tab (cuộn nhầm phần tử).
@@ -41,13 +41,7 @@
 - Số đo máy khách (CPU chậm 12×, trung vị mỗi lần bấm, trước → sau): phản hồi đầu tiên sau khi chạm 46–80 → 12–31 ms ở các thao tác ghi; tác vụ dài (> 50 ms) ở phong chức, mời ra, mở thành viên, xây, điểm danh 1 → 0; thời gian bố cục mỗi thao tác ghi 16–38 → 5–12 ms; vẽ lại cả bảng 2 → 0 lần; số nút bị làm mờ lúc chờ 3–6 → 0 (chỉ còn nút bị khóa thật, ví dụ hết chỗ xây); thẻ Cổng bang khi xây: tụt 70 px → đứng yên. CPU 4×: không còn tác vụ dài ở cả hai bản, phản hồi ~14 ms.
 - Kiểm tra: tests/test_bang_smooth.py (mới: 👑 không ghi ở tuần ra mắt, vẫn chốt khi tuần trước có bang, một lần ghi giữ 👑 bỏ bảng; hợp đồng của bang.js); scripts/browser_bang_perf.py (mới: số đo + góp 3 lần liền giữ 500.000, nâng cùng một công trình 2 lần liền thẻ đứng yên, phong chức thẻ vẫn mở, mua 3 lần vẫn ở 🛍️, ⏰ Đền vàng khi thiếu quỹ / đủ quỹ / đang xây); scripts/browser_bang.py thêm ⏰ Đền vàng cho Bang chủ và thành viên.
 
-# v2.4.64 — 2026-10-21
-
-Sửa và đổi luật sau 2.4.63 (chủ game 21/10). Không có Có gì mới.
-- 🐾 Đấu trường: bé thứ 2, 3 ra sân không còn mờ/nghiêng (hiệu ứng gục `fill:'forwards'` của bé trước được hủy khi bé mới vào); một bước hiệu ứng lỗi không còn làm đứng cả trận (bắt lỗi từng bước).
-- 🐾 Đấu trường chỉ dành cho bang ("ẩn đi, chỉ dành cho bang", "chỉ mở cho các bang hội đánh nhau"): bỏ lối vào ở Thêm/Tiện ích/Khu phố và nút ⚔️ ở Thú cưng (mở từ ⚔️ Bang / Đảo bang); tab chỉ còn 🛡️ Bang chiến và 🎯 Luyện pet; đấu xếp hạng 1v1, giao hữu và giải tuần đóng (server từ chối: bang_only / cup_closed); luyện và xếp đội cần đang ở bang (no_bang). `pet_arena.BANG_ONLY` (True). Dữ liệu cũ giữ nguyên.
-- ⚔️ Lập bang: bỏ điều kiện chức danh — chỉ cần tài khoản đủ 14 ngày và 5.000.000 xu ("ai cũng lập được").
-# Chưa phát hành — buy-qty
+## buy-qty
 
 🛍️ Chọn số lượng khi mua (chủ game 21/10: "mua bé hoặc mua linh kiện cho chọn số lượng mua nữa nhé, trang phục cũng thế"). Ba tiệm trong 🐾 Thú cưng: Tiệm (chó/mèo), 👗 Quần áo + 🪽 Cánh, 🧰 Linh kiện › Tiệm.
 - Mỗi tiệm có ô Số lượng: − / ô gõ số (qtyBox) / +, nút nhanh ×1 ×3 ×5 ×10 và "Tối đa ×N" (N = mức nhỏ nhất của giới hạn lệnh, chỗ còn trống, số tiền đủ trả), dòng "N × giá = tổng"; nút chính và hộp xác nhận ghi ×N và tổng tiền. Chỉ hiện khi mua được từ 2 trở lên. Mua bé: các bé tên "Tofu", "Tofu 2", "Tofu 3"… (vừa 16 ký tự), cùng giống, cùng màu lông, mỗi bé tự gieo hạng D/C như mua lẻ.
@@ -57,6 +51,16 @@ Sửa và đổi luật sau 2.4.63 (chủ game 21/10). Không có Có gì mới.
 - Rollback: không đổi schema, không thêm khóa lưu. tests/test_pet_buy_qty.py: không qty cho ra journey + thông điệp y hệt 2.4.63 (fb4b2e82, cùng roll/giờ); bản lưu sau khi mua nhiều (6 bé, 15 linh kiện có hàng xịn, 13 món đồ, một khoản 25 triệu chia dòng) validate/migrate/nhận lệnh trên 2.4.63 và 2.4.60; mỗi giới hạn từ chối mà không trừ tiền; qty sai kiểu/âm/quá lớn bị từ chối; gửi lại cùng request_id chỉ trừ một lần, revision cũ bị từ chối.
 - Tủ đồ của nhân vật (wardrobe.py, jr_wd_buy) không đổi: mỗi món chỉ sở hữu một lần nên không có số lượng.
 
+# v2.4.65 — 2026-10-21
+
+🛡️ Bang chiến pet chuyển sang 20:00 Chủ nhật hằng tuần (chốt đội hình 19:50; chủ game 21/10 "bang chiến diễn ra chủ nhật hằng tuần, 8h tối"); PET_WAR_DOW/HOUR vẫn chỉnh được. Dòng Có gì mới 2.4.63 sửa "tối thứ Bảy" → "20:00 Chủ nhật". Không có Có gì mới mới.
+
+# v2.4.64 — 2026-10-21
+
+Sửa và đổi luật sau 2.4.63 (chủ game 21/10). Không có Có gì mới.
+- 🐾 Đấu trường: bé thứ 2, 3 ra sân không còn mờ/nghiêng (hiệu ứng gục `fill:'forwards'` của bé trước được hủy khi bé mới vào); một bước hiệu ứng lỗi không còn làm đứng cả trận (bắt lỗi từng bước).
+- 🐾 Đấu trường chỉ dành cho bang ("ẩn đi, chỉ dành cho bang", "chỉ mở cho các bang hội đánh nhau"): bỏ lối vào ở Thêm/Tiện ích/Khu phố và nút ⚔️ ở Thú cưng (mở từ ⚔️ Bang / Đảo bang); tab chỉ còn 🛡️ Bang chiến và 🎯 Luyện pet; đấu xếp hạng 1v1, giao hữu và giải tuần đóng (server từ chối: bang_only / cup_closed); luyện và xếp đội cần đang ở bang (no_bang). `pet_arena.BANG_ONLY` (True). Dữ liệu cũ giữ nguyên.
+- ⚔️ Lập bang: bỏ điều kiện chức danh — chỉ cần tài khoản đủ 14 ngày và 5.000.000 xu ("ai cũng lập được").
 # v2.4.63 — 2026-10-21
 
 Ra mắt Bang, Đảo bang, Xây trên đảo, Đấu trường pet (chủ game 19–20/10). Gồm các nhánh island-build, bang, pet-arena, bang-island, tích hợp + review fixes + chế độ duyệt thành viên (schema 56–60, chỉ thêm bảng/cột). Phí giữ tài sản lớn nay tính đảo 60% + công trình 20% (chủ game chốt 20/10). Công tắc tắt khẩn: MNL_BANG_OFF, MNL_ISLAND_BUILD_OFF, MNL_PET_ARENA_OFF, MNL_BANG_ISLAND=0. Có gì mới: 4 dòng.
