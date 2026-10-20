@@ -910,6 +910,8 @@ def alerts(store, sid: str) -> dict | None:
         xfer = waiting(db, sid)
         n += cp.alerts(db, sid, r['couple'])
         n += int(db.execute("SELECT COUNT(*) FROM family_requests WHERE to_sid=? AND status='pending'",(sid,)).fetchone()[0])
+        from . import birth
+        n += birth.alerts(db, sid)   # 🏥 a birth room or an adoption waiting for this spouse's answer
         target = None
         if r['couple']:
             c = _row(db, 'SELECT * FROM couples WHERE id=?', (r['couple'],))
@@ -1165,6 +1167,11 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
         state = got[0]
         out.update(state=public_state(state), revision=got[1])
     _expire(store, sid)
+    from . import birth
+    try:
+        birth.settle_due(store, sid)   # 🏥 a birth room's hours are over: the baby is born now, once (game/birth.py)
+    except Exception:  # noqa: BLE001  (busy rows: the next poll or the "Đón bé" button finishes it)
+        pass
     day = _life_day(state) if state else 1
     pool = json.dumps(pool_of(state), ensure_ascii=False) if state else None
     t = now()

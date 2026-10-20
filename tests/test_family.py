@@ -1,6 +1,7 @@
 """Shared children and home consent use real, isolated PostgreSQL transactions."""
 import copy
 import datetime
+import json
 import threading
 
 from game import household, housing, marriage as mr, couple as cp, journey as jr, bank as bk
@@ -17,8 +18,16 @@ class FamilyTests(CoupleBase):
     def family(self, token):
         return self.view(token)['family']
 
+    def legacy_request(self, origin='adopt', name='Bông'):
+        """🏥 21/10: a free child request is no longer created (game/birth.py books a paid room); one written by 2.4.66
+        before the deploy is still pending in the table, exactly as that build inserted it."""
+        a, b = self.sid(self.a), self.sid(self.b)
+        self.store.transaction(lambda db: db.execute(
+            'INSERT INTO family_requests(couple,from_sid,to_sid,kind,data,at) VALUES(?,?,?,?,?,?)',
+            (self.cid, a, b, 'child', json.dumps(dict(name=name, origin=origin), ensure_ascii=False, sort_keys=True, separators=(',', ':')), mr.now())))
+
     def child(self, origin='adopt'):
-        self.act(self.a, 'family_child_request', name='Bông', origin=origin, rid='child-invite-001')
+        self.legacy_request(origin)
         request = self.family(self.b)['requests'][0]
         self.act(self.b, 'family_answer', id=request['id'], answer='accept', rid='child-accept-001')
         return self.family(self.a)['child']
@@ -63,8 +72,10 @@ class FamilyTests(CoupleBase):
         self.assertEqual(err.exception.code, 'fund_low')
 
     def test_child_requires_partner_consent_and_replays_once(self):
-        self.act(self.a, 'family_child_request', name='Bông', origin='adopt', rid='child-invite-001')
-        self.act(self.a, 'family_child_request', name='Bông', origin='adopt', rid='child-invite-001')
+        self.legacy_request()
+        with self.assertRaises(mr.MarriageError) as err:   # 🏥 a new free request is refused (an older client)
+            self.act(self.a, 'family_child_request', name='Bông', origin='adopt', rid='child-invite-001')
+        self.assertEqual(err.exception.code, 'new_flow')
         self.assertIsNone(self.family(self.a)['child'])
         request = self.family(self.b)['requests'][0]
         with self.assertRaises(mr.MarriageError):
@@ -77,12 +88,14 @@ class FamilyTests(CoupleBase):
     def test_pending_family_invitation_keeps_alert_after_notice_is_seen(self):
         self.act(self.b,'seen')
         before=mr.alerts(self.store,self.sid(self.b))['alerts']
-        self.act(self.a,'family_child_request',name='Bông',rid='alert-child-invite')
+        self.legacy_request()
         self.act(self.b,'seen')
         self.assertEqual(mr.alerts(self.store,self.sid(self.b))['alerts'],before+1)
 
     def test_personal_child_is_preserved_and_both_parents_can_care(self):
-        self.store.command(self.a, 'personal-child-001', self.store.read(self.a)[1], None, 'jr_hh_adopt', dict(kind='child', name='Mây', confirm=True))
+        self.fund(self.a, 305000)   # 🏥 21/10: the paperwork fee (game/birth.py ADOPT_FEE)
+        self.store.command(self.a, 'personal-child-001', self.store.read(self.a)[1], None, 'jr_hh_adopt', dict(kind='child', name='Mây', confirm=True, fee=300000))
+        self.assertEqual(self.wallet(self.a), 5000)
         personal = copy.deepcopy(self.state(self.a)['journey']['household'])
         self.child()
         before = self.wallet(self.a)
