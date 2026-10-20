@@ -920,6 +920,8 @@ class Store:
             forget(db,sid)
             from . import service_market
             service_market.forget(db,sid)  # 🛎️ their talks end, buyers of their paid orders are refunded, their offers go
+            from . import hotel_stay
+            hotel_stay.forget(db,sid)  # 🏨 their host record and rest days go (the stays settle through the market)
             from . import home_guests
             home_guests.forget(db,sid)
             from . import spend
