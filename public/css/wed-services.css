@@ -86,3 +86,6 @@
   .ws-sheet .sd-bar{padding-block:6px}
 }
 @media (prefers-reduced-motion:reduce){.ws-progress i,.ws-switch i{transition:none}}
+/* 🧰 the careers that take wedding orders, by their directory names (Nhà hàng tiệc, Tiệm hoa…) */
+.ws-careers{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.ws-careers li{padding:4px 10px;border-radius:999px;background:var(--surface-2);font-size:.86rem;font-weight:700;color:var(--ink-2)}

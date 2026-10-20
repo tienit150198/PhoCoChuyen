@@ -10,7 +10,7 @@ import {escapeHTML as esc,icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
-const S={dlg:null,env:null,busy:false,flash:null,desk:null,pick:{},ok:{}};
+const S={dlg:null,env:null,busy:false,flash:null,desk:null,svc:null,pick:{},ok:{}};
 const STATUS={held:'⏳ Chờ bạn nhận',working:'🎙️ Đã nhận, chờ lên sóng'};
 const KIND={quang_cao:['📢','Quảng cáo tiệm'],tang_bai:['🎵','Bài hát tặng']};
 const api=()=>S.env.api;
@@ -34,6 +34,8 @@ function dialog(){
 }
 function flash(text,good=true){S.flash=text?{text,good}:null;render();}
 async function load(){
+  // my two services as Phố dịch vụ has them (on / off; 🎵 locked until the DJ is past probation: its `why`, or not listed)
+  api().json('/api/svc/mine').then(m=>{S.svc=(m.services||[]).filter(x=>x.career==='radio');render();}).catch(()=>{});
   try{S.desk=await api().json('/api/radio/desk');COUNT={at:Date.now(),n:waiting(S.desk),go:null};}
   catch(e){S.flash={text:e.message||'Chưa tải được. Thử lại nhé.',good:false};}
   render();
@@ -77,6 +79,19 @@ async function onClick(op,data){
   if(op==='market'){S.dlg.close();await S.env.act?.('svcMarket',{tab:'mine'});}
 }
 
+/** The empty desk's line: what is on, what to switch on, and why 🎵 is not there yet (only what applies). */
+function svcHint(){
+  if(!S.svc)return '';
+  const ad=S.svc.find(x=>x.service==='quang_cao'),song=S.svc.find(x=>x.service==='tang_bai');
+  const songWhy=!song?'Gửi bài hát tặng cần DJ: làm phát thanh viên hết thử việc trước đã.':song.why||'';
+  const on=[ad?.on&&'📢 quảng cáo',song?.on&&!song.why&&'🎵 bài hát tặng'].filter(Boolean);
+  const off=[ad&&!ad.on&&'📢 quảng cáo',song&&!song.on&&!song.why&&'🎵 bài hát tặng'].filter(Boolean);
+  let out=on.length?`<p class="rd-muted rd-center">Đang nhận ${on.join(' và ')}. Đơn mới của người chơi hiện ở đây.</p>`:'';
+  if(off.length)out+=`<p class="rd-muted rd-center">Chưa bật ${off.join(' và ')}: bật ở 🛎️ Phố dịch vụ → 🧰 Dịch vụ của tôi để người chơi đặt.</p>${btn('🛎️ Mở Phố dịch vụ','market',{},'ghost full')}`;
+  if(songWhy)out+=`<p class="rd-muted rd-center">🔒 ${esc(songWhy)}</p>`;
+  return out;
+}
+
 /* ---------------------------------------------------------------- render */
 function render(){
   if(!S.dlg)return;
@@ -102,7 +117,7 @@ function orderCard(o){
   const verdict=o.why?`<p class="rd-why" role="alert">⛔ ${esc(o.why)} Từ chối để khách nhận lại đủ tiền.</p>`
     :`<p class="rd-preview" aria-label="Dòng sẽ chạy trên bảng tin">${esc(o.preview)}</p>`;
   const check=o.why?'':`<label class="rd-okrow"><input type="checkbox" data-rd-ok="${esc(o.id)}"${ok?' checked':''}> <span>Đã đọc kỹ: không link, không số điện thoại, không lời xúc phạm ai</span></label>`;
-  return `<article class="rd-order ${esc(o.status)}"><div class="rd-order-top"><span class="rd-kind" aria-hidden="true">${emoji}</span><div class="grow"><b>${esc(o.who)}</b><small>${esc(name)} · <b>${fmt(o.price)} xu</b> · ${esc(STATUS[o.status]||o.status)}</small></div></div>
+  return `<article class="rd-order ${esc(o.status)}"><div class="rd-order-top"><span class="rd-kind" aria-hidden="true">${emoji}</span><div class="grow"><b>${esc(o.who)}</b><small><span>${esc(name)}</span> · <b>${fmt(o.price)} xu</b> · <span>${esc(STATUS[o.status]||o.status)}</span></small></div></div>
     <p class="rd-note">✏️ “${esc(o.note)}”</p>${verdict}${o.why?'':picks}${check}
     <div class="rd-row">${btn('Từ chối · hoàn tiền','decline',{id:o.id},'ghost')}${o.why?'':btn('🔴 Lên sóng','air',{id:o.id},'primary',!ok)}</div></article>`;
 }
@@ -115,7 +130,7 @@ function body(){
   if(!d)return '<p class="rd-empty" role="status">⏳</p>';
   if(d.off)return '<p class="rd-empty">📻</p><p class="rd-muted rd-center">Đài Sóng Mây đang tạm nghỉ nhận đơn lên sóng. Quay lại sau nhé.</p>';
   const orders=d.orders.length?d.orders.map(orderCard).join('')
-    :`<div class="rd-none"><p class="rd-empty" aria-hidden="true">🎙️</p><p class="rd-muted rd-center">Chưa có đơn nào chờ lên sóng. Mở 📢 quảng cáo và 🎵 bài hát tặng ở 🛎️ Phố dịch vụ → 🧰 Dịch vụ của tôi để người chơi đặt.</p>${btn('🛎️ Mở Phố dịch vụ','market',{},'ghost full')}</div>`;
+    :`<div class="rd-none"><p class="rd-empty" aria-hidden="true">🎙️</p><p class="rd-muted rd-center">Chưa có đơn nào chờ lên sóng.</p>${svcHint()}</div>`;
   const live=d.live.length?`<ul class="rd-lines">${d.live.map(lineRow).join('')}</ul>`:'<p class="rd-muted">Bảng tin chưa có dòng nào của người chơi.</p>';
   const mine=d.mine.length?`<details class="rd-mine"><summary>Dòng của tôi (${fmt(d.mine.length)})</summary><ul class="rd-lines">${d.mine.map(lineRow).join('')}</ul></details>`:'';
   return caps(d.caps)+`<h4>Đơn chờ lên sóng</h4>${orders}<h4>Đang chạy trên bảng tin</h4>${live}${mine}`;

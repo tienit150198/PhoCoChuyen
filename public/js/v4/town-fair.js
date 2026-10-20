@@ -10,11 +10,17 @@ import {escapeHTML as esc,icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
 import {setFair,serverNow,leftText} from './town-fair-data.js';
+import {needsFor,needKey,goNeed} from './svc-needs.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const TABS=[['walk','🎪','Dạo hội chợ'],['booth','🧑‍🔧','Gian của tôi'],['stamps','🎟️','Sổ tem'],['board','🏆','Bảng']];
 const WEEKDAY=['Chủ nhật','thứ Hai','thứ Ba','thứ Tư','thứ Năm','thứ Sáu','thứ Bảy'];
-const S={picked:false,dlg:null,env:null,tab:'walk',v:null,board:null,boardEvent:'',busy:false,loading:false,flash:null,group:'',pct:20,career:'',timer:0,tick:0,seq:0,emoji:null,more:[]};
+const S={picked:false,dlg:null,env:null,tab:'walk',v:null,board:null,boardEvent:'',busy:false,loading:false,flash:null,group:'',pct:20,career:'',timer:0,tick:0,seq:0,emoji:null,more:[],needs:{}};
+/** Careers the catalogue sends without an emoji (journey.js falls back to ✨): the one their guide uses, so the booth
+ * reads "🧰 Phục chế" like the career itself (tutorial/guide-content.js). */
+const CAREER_EMOJI={restore:'🧰',research:'🔬',radio:'📻',hotel:'🛎️',banquet:'👨‍🍳',reception:'🔑',teller:'🏦',oil:'🛢️',railway:'🚦',nurse:'🏥',
+  lighthouse:'🗼',rescue:'📞',lifeguard:'🛟',library:'📚',police:'👮',zpop:'💿',art_studio:'🎨',lawyer:'⚖️',laundry:'🧺',post_office:'✉️',customs:'🛃',
+  pilot:'🧑‍✈️',flight_attendant:'💁'};
 
 const ensureCss=()=>Promise.all([stylesheet('/css/spend.css'),stylesheet('/css/town-fair.css')]);
 const api=()=>S.env.api;
@@ -22,7 +28,7 @@ const wallet=()=>Math.max(0,Number(api().state?.journey?.wallet)||0);
 const face=w=>`<span class="tf-av" aria-hidden="true">${avInner({fc:w?.fc,av:w?.avatar||'🙂'})}</span>`;
 const btn=(label,op,data={},cls='ghost',extra='')=>`<button type="button" class="btn ${cls}" data-tf="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${S.busy?' disabled':''}${extra}>${label}</button>`;
 const moodFace=m=>m>=85?'😍':m>=70?'😊':m>=50?'🙂':m>=30?'😕':'😠';
-const emo=c=>{try{const m=api().content?.catalogue?.find(x=>x.id===c);return S.emoji&&m?S.emoji(m):'🎪';}catch{return '🎪';}};
+const emo=c=>{try{const m=api().content?.catalogue?.find(x=>x.id===c),e=S.emoji&&m?S.emoji(m):'🎪';return e==='✨'&&CAREER_EMOJI[c]||e;}catch{return '🎪';}};
 const when=t=>{const d=new Date(t*1000+7*3600e3);return `${WEEKDAY[d.getUTCDay()]} ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;};
 const hhmm=t=>{const d=new Date(t*1000+7*3600e3);return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;};
 
@@ -52,7 +58,7 @@ async function load(quiet=false){
   const seq=++S.seq;if(!quiet){S.loading=true;render();}
   try{
     const v=await api().json('/api/townfair/view'+(S.group?`?group=${encodeURIComponent(S.group)}`:''));
-    if(seq!==S.seq)return;S.v=v;S.more=[];setFair(v.fair);
+    if(seq!==S.seq)return;S.v=v;S.more=[];setFair(v.fair);refreshNeeds(v.booths);
     if(!quiet&&!S.picked){S.picked=true;if(v.mine&&S.tab==='walk'&&(v.mine.moment||!v.booths.length))S.tab='booth';}
     if(S.tab==='board'&&!S.board)loadBoard(true);
   }catch(e){if(seq===S.seq)S.flash={kind:'bad',text:e.message||'Chưa tải được. Thử lại nhé.'};}
@@ -60,9 +66,13 @@ async function load(quiet=false){
 }
 async function loadMore(){
   const v=S.v;if(!v?.next||S.busy)return;S.busy=true;render();
-  try{const r=await api().json(`/api/townfair/view?offset=${v.next}`+(S.group?`&group=${encodeURIComponent(S.group)}`:''));S.more=[...S.more,...r.booths];S.v={...v,next:r.next};}
+  try{const r=await api().json(`/api/townfair/view?offset=${v.next}`+(S.group?`&group=${encodeURIComponent(S.group)}`:''));S.more=[...S.more,...r.booths];S.v={...v,next:r.next};refreshNeeds(r.booths);}
   catch(e){S.flash={kind:'bad',text:e.message||'Chưa tải được.'};}
   finally{S.busy=false;render();}
+}
+function refreshNeeds(booths){
+  const items=(booths||[]).filter(b=>!b.mine).flatMap(b=>b.items||[]);
+  needsFor(api(),items).then(n=>{if(Object.keys(n).length){S.needs={...S.needs,...n};render();}}).catch(()=>{});
 }
 async function loadBoard(quiet=false){
   if(!quiet){S.loading=true;render();}
@@ -100,6 +110,7 @@ async function click(op,d){
   if(op==='watch'){await post('watch',{pid:d.pid});return;}
   if(op==='claim'){await post('claim',{event:d.event,tier:Number(d.tier)});return;}
   if(op==='event'){S.boardEvent=d.event||'';await loadBoard();return;}
+  if(op==='need'){const n=S.needs[d.id];if(!n?.go)return;S.dlg.close();await goNeed(S.env,n.go);return;}
 }
 
 /* ---------------------------------------------------------------- views */
@@ -121,6 +132,7 @@ function page(){
   const need=v?.mine?.moment?1:0,ready=(v?.stamps?.tiers||[]).filter(x=>x.ready).length;
   const head=`<div class="tf-stick"><header class="sheet-head sd-head tf-head"><span class="sd-logo tf-logo" aria-hidden="true">🎪</span><div class="grow"><h2 id="tf-title">Hội chợ việc làm</h2><small class="tf-sub">${statusLine(f)}</small></div>
     <span class="sd-wallet" title="Ví">👛 ${fmt(wallet())}</span><button class="icon-btn" type="button" data-tf="close" aria-label="Đóng">${icon('x',21)}</button></header>
+    <p class="tf-status">${statusLine(f)}</p>
     <div class="tf-bunting" aria-hidden="true"></div>
     <nav class="sd-tabs tf-tabs" role="tablist" aria-label="Hội chợ việc làm">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${t[0]===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${t[0]===id?'on':''}" data-tf="tab" data-tab="${id}">${e} <small>${esc(l)}</small>${id==='booth'&&need?'<em class="badge">!</em>':id==='stamps'&&ready?`<em class="badge">${ready}</em>`:''}</button>`).join('')}</nav></div>`;
   const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -156,10 +168,11 @@ function boothCard(b){
   const items=(b.items||[]).filter(i=>i.available!==false);
   const show=b.show?`<div class="tf-show"><p><span class="tf-showi" aria-hidden="true">${esc(b.show.icon)}</span><b>${esc(b.show.name)}</b> <small>còn <span data-due="${b.show.until}">${leftText(b.show.until)}</span></small></p><p class="tf-line">${esc(b.show.line)}</p>
       ${b.mine?'':b.watched?'<p class="tf-ok">✓ Bạn đã xem tiết mục này</p>':btn(`👀 Xem trình diễn${b.stamped?'':' · +🎟️'}`,'watch',{pid:b.pid},'primary full')}</div>`:'';
-  const rows=items.length?`<ul class="tf-items">${items.map(i=>`<li><span class="tf-ii" aria-hidden="true">${esc(i.icon)}</span><span class="grow"><b>${esc(i.name)}</b>${i.label?`<small>${esc(i.label)}</small>`:''}</span>${priceHTML(i)}${b.mine?'':btn('Đặt','order',{pid:b.pid,career:i.career,service:i.service,offer:i.offer_id||''},'primary tf-order')}</li>`).join('')}</ul>`
+  const rows=items.length?`<ul class="tf-items">${items.map(i=>{const n=b.mine?null:S.needs[needKey(i.career,i.service)];
+      return `<li><span class="tf-ii" aria-hidden="true">${esc(i.icon)}</span><span class="grow"><b>${esc(i.name)}</b>${i.label?`<small>${esc(i.label)}</small>`:''}</span>${priceHTML(i)}${b.mine?'':btn('Đặt','order',{pid:b.pid,career:i.career,service:i.service,offer:i.offer_id||''},'primary tf-order',n?.hard?' disabled':'')}</li>${n?`<li class="tf-need${n.hard?' hard':''}" role="note"><p>${n.hard?'🔒':'💡'} ${esc(n.why)}</p>${n.go?btn(esc(n.go.label),'need',{id:needKey(i.career,i.service)},n.hard?'primary':'ghost'):''}</li>`:''}`;}).join('')}</ul>`
     :`<p class="tf-muted">${b.mine?'Gian của bạn chưa có dịch vụ nào đang bật.':'Gian này đang trưng bày, chưa nhận đơn. Ghé xem trình diễn nhé!'}</p>`;
   return `<article class="tf-booth g-${esc(b.group)}${b.show?' live':''}${b.mine?' mine':''}"><div class="tf-awning" aria-hidden="true"></div>
-    <div class="tf-row">${face(b.who)}<div class="grow"><b class="tf-name">${esc(b.who?.name||'')}${b.mine?' <small>(bạn)</small>':''}</b><small class="tf-career">${emo(b.career)} ${esc(b.career_name)}${b.online?' · <span class="tf-on">● online</span>':''}</small></div>
+    <div class="tf-row">${face(b.who)}<div class="grow"><b class="tf-name">${esc(b.who?.name||'')}${b.mine?' <small>(bạn)</small>':''}</b><small class="tf-career"><span>${emo(b.career)} ${esc(b.career_name)}</span>${b.online?' · <span class="tf-on">● online</span>':''}</small></div>
       <span class="tf-off" title="Giảm giá hội chợ">−${b.pct}%</span></div>
     <p class="tf-meta"><span title="Điểm gian hàng">${moodFace(b.mood)} ${b.mood}</span><span>🛎️ ${fmt(b.served)} lượt khách</span>${b.watchers?`<span>👀 ${fmt(b.watchers)}</span>`:''}${b.stamped?'<span class="tf-stamp">🎟️ đã có tem</span>':''}</p>
     ${show}${rows}</article>`;

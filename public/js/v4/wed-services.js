@@ -22,6 +22,8 @@ const wallet=()=>Math.max(0,Number(api().state?.journey?.wallet)||0);
 const stars=n=>n?`<span class="ws-stars" aria-label="${n} sao">${'★'.repeat(n)}${'☆'.repeat(5-n)}</span>`:'';
 const btn=(label,op,data={},cls='ghost',extra='')=>`<button type="button" class="btn ${cls}" data-ws="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${S.busy?' disabled':''}${extra}>${label}</button>`;
 const WORK_CAREERS=['banquet','florist','clothing','salon'];
+/** A career as the directory and the street name it ("Nhà hàng tiệc", not the service's "Tiệc cưới"). */
+const careerName=(c,fallback)=>api().content?.catalogue?.find(x=>x.id===c)?.name||fallback||c;
 
 /** app.js handleAction('wedServices', data): data.tab 'couple' | 'work'. */
 export async function openWedServices(env,data={}){
@@ -158,18 +160,22 @@ function teamView(list,title='Đội ngũ người chơi'){
 function coupleView(){
   const v=S.couple;if(!v)return wait();
   if(v.why&&!v.status)return `<section class="sd-card svc-empty ws-why"><p class="tp-big">💍</p><p>${esc(v.why)}</p>${btn('Mở Hôn nhân','marriage',{},'primary')}</section>`;
-  const head=`<section class="sd-card ws-head"><h3>💍 Bạn & ${esc(v.partner)}</h3><p>${v.when?esc(v.when):'Chưa chốt ngày giờ'}${v.tables?` · ${v.tables} bàn`:''}</p>
+  const wed=v.status==='married'&&v.why&&!v.off;   // married, the wedding (or its party) already behind them
+  const head=wed?`<section class="sd-card ws-head ws-wed"><h3>💍 Bạn & ${esc(v.partner)}</h3><p>${v.why.includes('🎉')?'':'🎉 '}${esc(v.why)}</p>
+    <p class="svc-note">${v.orders?.length||v.credits?.length?'Đơn và đội ngũ cưới của hai bạn ở dưới đây.':'Dịch vụ cưới dành cho các cặp sắp cưới.'}</p></section>`
+    :`<section class="sd-card ws-head"><h3>💍 Bạn & ${esc(v.partner)}</h3><p>${v.when?esc(v.when):'Chưa chốt ngày giờ'}${v.tables?` · ${v.tables} bàn`:''}</p>
     <p class="svc-note">Thuê bạn bè làm nghề tiệc, hoa, váy cưới, trang điểm, chụp ảnh. Giá người chơi mặc định ×3 giá NPC, người bán chọn ×1–×10 hoặc thương lượng. Tiền được giữ tới khi họ giao việc: họ nhận 95 %, 5 % là phí. Không thuê ai thì đám cưới vẫn như kế hoạch với NPC.</p>
     ${v.why?`<p class="sd-flash bad">${esc(v.why)}</p>`:''}</section>`;
   const orders=v.orders?.length?`<section class="sd-card"><h3>🧾 Đơn của hai bạn</h3><ul class="ws-orders">${v.orders.map(o=>`<li><span class="ws-ico" aria-hidden="true">${esc(o.icon)}</span><div class="grow">
       <b>${esc(o.label)} · ${esc(o.who)}</b><small>${esc(STATUS[o.status]||o.status)}${o.status==='working'?` · ${o.progress}/${o.total} bước`:''} · ${fmt(o.price)} xu${o.mine?'':' · người ấy đặt'}</small>${o.detail?`<small>${esc(o.detail)}</small>`:''}</div>
       ${stars(o.stars)}${o.mine&&o.status==='held'?btn(S.arm==='cancel'+o.id?'Chắc chưa?':'Hủy','svc',{do:'cancel',id:o.id},'ghost small'):''}</li>`).join('')}</ul>
       <p class="svc-note">Đánh giá, báo cáo, trả giá: ở <button type="button" class="ws-link" data-ws="market" data-tab="inbox">🛎️ Phố dịch vụ</button>.</p></section>`:'';
+  if(wed)return head+teamView(v.credits)+orders;
   const svc=v.services.map(s=>{
     const list=s.providers.length?`<ul class="ws-providers">${s.providers.map(p=>`<li><button type="button" class="svc-card" data-ws="pick" data-svc="${esc(s.key)}" data-pid="${esc(p.pid)}"${v.why?' disabled':''}>
         <div class="grow"><b class="svc-name">${esc(p.who?.name||'')}${p.online?' <i class="svc-on">● online</i>':''}</b><span class="svc-meta">${p.rep?.n?`⭐ ${String(p.rep.avg).replace('.',',')} (${fmt(p.rep.n)})`:'⭐ Chưa có đánh giá'} · ${fmt(p.rep?.deals||0)} đơn</span></div>
         <span class="svc-right">${p.mode==='nego'?`<span class="svc-price nego">🤝 <small>từ</small> <b>${fmt(p.lo)}</b></span>`:`<span class="svc-price"><b>${fmt(p.price)}</b> <small>xu/${esc(s.unit)}</small></span>`}</span></button></li>`).join('')}</ul>`
-      :`<p class="svc-note ws-none">Chưa có ai mở dịch vụ này. Rủ bạn bè làm nghề “${esc(s.short)}” bật nó trong 🧰 Đơn cưới nhé.</p>`;
+      :`<p class="svc-note ws-none">Chưa có ai mở dịch vụ này. Rủ bạn bè làm nghề “${esc(careerName(s.career,s.short))}” bật nó trong 🧰 Đơn cưới nhé.</p>`;
     return `<section class="sd-card ws-svc"><div class="ws-svc-head"><span class="ws-big" aria-hidden="true">${esc(s.icon)}</span><div class="grow"><h3>${esc(s.name)}</h3><small>${esc(s.desc)}</small>
       <small class="ws-npc">Giá NPC ${fmt(s.npc)} xu/${esc(s.unit)} · người chơi ×3 = ${fmt(s.npc*3)} xu</small></div></div>${list}</section>`;
   }).join('');
@@ -183,7 +189,7 @@ function coupleView(){
 function hireView(){
   const {svc,prov}=S.pick,x=S.form,q=Math.max(1,Number(x.qty)||1),nego=prov.mode==='nego';
   const fields=svc.brief.map(f=>`<fieldset class="ws-field"><legend>${esc(f.label)}</legend><div class="sd-chips">${f.options.map(o=>`<button type="button" class="sd-chip${x.brief[f.field]===o.id?' on':''}" aria-pressed="${x.brief[f.field]===o.id}" data-ws="brief" data-field="${esc(f.field)}" data-id="${esc(o.id)}">${esc(o.emoji)} ${esc(o.name)}</button>`).join('')}</div></fieldset>`).join('');
-  const qty=svc.qty_max>1?`<fieldset class="ws-field"><legend>Số ${esc(svc.unit)}</legend><div class="ws-qty">${btn('−','qtyn',{n:-1},'ghost',' aria-label="Bớt"')}<input class="input" type="number" inputmode="numeric" min="1" max="${svc.qty_max}" value="${q}" data-wsf="qty" aria-label="Số ${esc(svc.unit)}">${btn('+','qtyn',{n:1},'ghost',' aria-label="Thêm"')}<small>tối đa ${svc.qty_max}</small></div></fieldset>`:'';
+  const qty=svc.qty_max>1?`<fieldset class="ws-field"><legend>Số ${esc(svc.unit)}</legend><div class="ws-qty">${btn('−','qtyn',{n:-1},'ghost',' aria-label="Bớt một"')}<input class="input" type="number" inputmode="numeric" min="1" max="${svc.qty_max}" value="${q}" data-wsf="qty" aria-label="Số ${esc(svc.unit)}">${btn('+','qtyn',{n:1},'ghost',' aria-label="Thêm một"')}<small>tối đa ${svc.qty_max}</small></div></fieldset>`:'';
   const price=nego?`<label class="field ws-field" for="ws-price">🤝 Giá bạn trả (xu) <small>từ ${fmt(prov.lo*q)} đến ${fmt(prov.hi*q)}</small><input class="input" id="ws-price" inputmode="numeric" data-wsf="price" value="${esc(x.price)}"></label>
       <p class="svc-note">Người bán đồng ý, trả giá lại hoặc từ chối (tối đa ${S.couple.rules?.max_rounds||6} lượt). Tiền chỉ giữ khi hai bên chốt.</p>`
     :`<p class="ws-sum">${fmt(prov.price)} xu × ${q} ${esc(svc.unit)} = <b>${fmt(prov.price*q)} xu</b> <i class="svc-mult">×${prov.mult}</i></p>`;
@@ -199,7 +205,7 @@ function workView(){
       <small>${m.mode==='nego'?'🤝 Thương lượng':`${fmt(m.price)} xu/${esc(m.unit)} · ×${m.mult}`} · NPC ${fmt(m.npc)} xu</small>${m.can?'':'<small class="svc-off">Cần làm nghề này mới nhận được</small>'}</div>
       <button type="button" class="ws-switch${m.on?' on':''}" role="switch" aria-checked="${m.on}" aria-label="${esc(m.short)}: ${m.on?'đang nhận đơn':'đang tắt'}" data-ws="sell" data-svc="${esc(m.key)}"${S.busy||(!m.can&&!m.on)?' disabled':''}><i aria-hidden="true"></i></button></li>`).join('')}</ul>
       <p class="svc-note">Đổi hệ số giá, thương lượng: <button type="button" class="ws-link" data-ws="market" data-tab="mine">🛎️ Phố dịch vụ › Dịch vụ của tôi</button>.</p></section>`
-    :`<section class="sd-card svc-empty"><p class="tp-big">🧰</p><p>Làm nghề ${v.careers.map(c=>`${esc(c.icon)} ${esc(c.short)}`).join(', ')} để nhận đơn cưới của người chơi.</p></section>`;
+    :`<section class="sd-card svc-empty"><p class="tp-big">🧰</p><p>Làm một trong các nghề này để nhận đơn cưới của người chơi:</p><ul class="ws-careers">${v.careers.map(c=>`<li><span aria-hidden="true">${esc(c.icon)}</span> <span>${esc(careerName(c.career,c.short))}</span></li>`).join('')}</ul></section>`;
   const orders=v.orders.length?v.orders.map(orderCard).join(''):`<section class="sd-card svc-empty ws-none"><p class="tp-big">💒</p><p>Chưa có đơn cưới nào. Bật dịch vụ ở trên, cô dâu chú rể sẽ tìm thấy bạn.</p></section>`;
   return (v.why?`<p class="sd-flash bad">${esc(v.why)}</p>`:'')+mine+orders;
 }

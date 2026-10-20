@@ -11,6 +11,12 @@
 .tf-logo{background:linear-gradient(135deg,var(--accent-soft),var(--warn-soft,var(--surface-2)))}
 .tf-sub{display:block;font-size:.8rem;color:var(--muted);font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tf-sub b{color:var(--ink);font-variant-numeric:tabular-nums}
+/* phones: the status (and its countdown) gets a full-width line under the head; beside the wallet it was cut to "còn 2:53…".
+   Wide and landscape screens keep it in the head (.tf-sub). */
+.tf-sub{display:none}
+.tf-status{margin:0;padding:0 14px 6px;font-size:.82rem;font-weight:700;color:var(--muted);line-height:1.35}
+.tf-status b{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (min-width:560px),(max-height:480px){.tf-sub{display:block}.tf-status{display:none}}
 .tf-bunting{height:12px;margin:0 0 -2px;background:
   conic-gradient(from 135deg at 50% 0,var(--tf-red) 90deg,transparent 0) 0 0/36px 12px repeat-x,
   conic-gradient(from 135deg at 50% 0,var(--tf-gold) 90deg,transparent 0) 12px 0/36px 12px repeat-x,
@@ -70,7 +76,12 @@
 .tf-items{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
 .tf-items li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:12px;background:var(--surface-2);min-height:48px}
 .tf-items .grow{min-width:0;flex:1 1 auto;display:flex;flex-direction:column}
-.tf-items b{font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-items b{font-size:.9rem;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.tf-order:disabled{opacity:.5}
+.tf-items li.tf-need{display:block;min-height:0;margin:-4px 0 0;padding:8px;border-radius:0 0 12px 12px;background:var(--surface);border:1px solid var(--line)}
+.tf-need.hard{border-color:var(--warn)}
+.tf-need p{margin:0 0 6px;font-size:.8rem;font-weight:700;line-height:1.4;color:var(--ink-2)}
+.tf-need .btn{width:100%;min-height:40px}
 .tf-items small{font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tf-ii{flex:none;font-size:1.2rem}
 .tf-price{flex:none;display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap;font-size:.86rem}

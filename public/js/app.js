@@ -388,11 +388,11 @@ function navItems(c){
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story)items.push(['townProjects','building','Công trình của phố']);  // 🏗️ cả phố góp tiền xây (v4/town-projects.js, own dialog)
-  if(api.state?.journey?.story&&!api.content?.off?.bang)items.push(['bang','shield','Bang',api.bangAlerts||0]);
+  if(api.state?.journey?.story&&!api.content?.off?.bang)items.push(['bang','shield','Bang',api.bangAlerts||0]);  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
   if(api.state?.journey?.story&&['banquet','florist','clothing','salon'].includes(career()))items.push(['wedWork','heart','Đơn cưới',api.wedsvcAlerts||0]);  // 💒 wedding orders of other players for this career (v4/wed-services.js; badge from v4/ticker.js me.wedsvc)
-  if(api.state?.journey?.story)items.push(['svcMarket','bell','Phố dịch vụ',api.svcAlerts||0]);
+  if(api.state?.journey?.story)items.push(['svcMarket','bell','Phố dịch vụ',api.svcAlerts||0]);  // 🛎️ người chơi phục vụ người chơi (v4/service-market.js, own dialog; badge from v4/ticker.js me.svc)
   if(api.state?.journey?.story){seedFair(api.uiConfig?.tfair);const tf=fairNow();if(tf&&(tf.state==='open'||tf.state==='soon'))items.push(['townFair','flag',tf.state==='open'?'Hội chợ việc làm':'Hội chợ việc làm (sắp mở)',tf.state==='open'?'dot':0]);}  // 🎪 every career's booth, Saturday 14:00–17:00 (v4/town-fair.js, own dialog)
-  if(api.state?.journey?.story&&(api.state?.careers?.homestay?.started||api.state?.careers?.hotel?.started))items.push(['hotelBook','bed','Sổ phòng']);  // 🏨 cho người chơi thuê phòng (v4/hotel-stay.js, own dialog; guests open it from 🛎️ Phố dịch vụ)  // 🛎️ người chơi phục vụ người chơi (v4/service-market.js, own dialog; badge from v4/ticker.js me.svc)  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
+  if(api.state?.journey?.story&&(api.state?.careers?.homestay?.started||api.state?.careers?.hotel?.started))items.push(['hotelBook','bed','Sổ phòng']);  // 🏨 cho người chơi thuê phòng (v4/hotel-stay.js, own dialog; guests open it from 🛎️ Phố dịch vụ)
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)
@@ -1757,10 +1757,10 @@ async function handleAction(action,data,el){
       if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
       if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='townProjects'){await (await import('./v4/town-projects.js')).openTownProjects(env(),data);break;}  // 🏗️ Công trình của phố: lazy
-      if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}
-      if(action==='svcMarket'){await (await import('./v4/service-market.js')).openServiceMarket(env(),data);break;}
+      if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}  // ⚔️ Bang: lazy
+      if(action==='svcMarket'){await (await import('./v4/service-market.js')).openServiceMarket(env(),data);break;}  // 🛎️ Phố dịch vụ: lazy
       if(action==='townFair'){await (await import('./v4/town-fair.js')).openTownFair(env(),data);break;}  // 🎪 Hội chợ việc làm: lazy
-      if(action==='hotelBook'){await (await import('./v4/hotel-stay.js')).openHotel(env(),data);break;}  // 🏨 Sổ phòng: lazy  // 🛎️ Phố dịch vụ: lazy  // ⚔️ Bang: lazy
+      if(action==='hotelBook'){await (await import('./v4/hotel-stay.js')).openHotel(env(),data);break;}  // 🏨 Sổ phòng: lazy
       if(action==='wedServices'||action==='wedWork'){await (await import('./v4/wed-services.js')).openWedServices(env(),action==='wedWork'?{...data,tab:'work'}:data);break;}  // 💒 Dịch vụ cưới từ người chơi: lazy (wedWork: the provider's Đơn cưới)
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
