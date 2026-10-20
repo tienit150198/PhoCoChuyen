@@ -31,6 +31,7 @@ const PLANS:Record<string,Plan>={
   banquet:plan([[0,9],[0,6.2],[-.6,6.2],[-.6,3.2],[-1.2,3.2],[-1.2,-.6],[1.5,-.6],[1.5,-1.3],[3.6,-1.3],[4.1,0],[6.9,0],[7.3,-.8],[9.2,-.8],[9.2,-1.15],[10,-1.15],[10,0]],204,'ceramic','arch','gable',[['workbench','extractor',176],['shelf','hanging-rail',150],['fixture0','wash-splash',96]],0xe2c9b2),
   // Reception: a shuttered lime-washed lobby with a deep key alcove on the left and a stepped bay for the room board.
   reception:plan([[0,9],[0,6.6],[-.55,6.6],[-.55,3.9],[-1,3.9],[-1,-.5],[1.1,-.5],[1.6,-1.15],[3.3,-1.15],[4.1,0],[6.9,0],[7.6,-.7],[8.8,-.7],[9.3,-1.1],[10,-1.1],[10,0]],198,'lime','shutter','gable',[['shelf','pegwall',150],['workbench','canopy',138],['fixture1','arched-niche',146]],0xecd5d2),
+  teller:plan([[0,9],[0,6.4],[-.5,6.4],[-.5,3.6],[-1.1,3.6],[-1.1,-.55],[1.3,-.55],[1.3,-1.2],[3.4,-1.2],[4.1,0],[6.9,0],[7.4,-.65],[8.9,-.65],[8.9,-1.05],[10,-1.05],[10,0]],205,'stone','sash','flat',[['workbench','glass-screen',110],['shelf','sorting-cubbies',150],['evidence','lightbox',140]],0xd3dfd9),
   customs:plan([[0,9],[0,6.9],[-.6,6.9],[-.6,4.2],[-1.15,4.2],[-1.15,-.5],[1.4,-.5],[1.4,-1.25],[3.3,-1.25],[4.1,0],[6.9,0],[7.6,-.5],[8.6,-.5],[8.6,-1.1],[10,-1.1],[10,0]],206,'stone','sash','flat',[['fixture1','glass-screen',96],['shelf','sorting-cubbies',150],['fixture0','canopy',128]],0xcfd3bb),
   // Tea: a glazed brewing bay and a low open pickup wing. Bakery: a deep brick
   // oven apse. Restaurant: two tiled service returns under a stepped hot-line wall.

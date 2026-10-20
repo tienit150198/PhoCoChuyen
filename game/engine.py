@@ -153,7 +153,7 @@ def stamped(state:dict) -> bool:
 # stamp) and put back on every read (wake: Store.parse_state, migrate_state). A save that never used it so still
 # reads on the build before it (2.4.24 requires exactly its own career list). Once the career is used, its record
 # is stored and that older build refuses the save: never roll back below the build that added it.
-DORMANT=("customs","hotel","banquet","reception","radio")
+DORMANT=("customs","hotel","banquet","reception","teller","radio")
 _IDLE={}
 
 
@@ -1348,6 +1348,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["careers"]={cid:({k:(None if k in _FOCUS_OWN else x) for k,x in c.items()} if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)
+    if PLUGINS.get("teller") and PLUGINS["teller"].tea_cart(s):v["journey"]["tea_cart"]=True  # 🍵 Bà Lựu's new cart parks in the 2.5D street
     v["invest"]=iv.public(s)
     v["board"]=bd.summary(s)
     v["life"]=doi.public(s)

@@ -129,8 +129,8 @@ if(process.env.UPDATE_ISOMETRIC_PARITY==='1'){
   writeFileSync(inventoryPath,JSON.stringify(inventory,null,2)+'\n');
 }
 
-test('inventory enumerates all 59 server careers, their real menu/dock variants and current utility routes',()=>{
-  assert.equal(catalogue.length,59);
+test('inventory enumerates all 60 server careers, their real menu/dock variants and current utility routes',()=>{
+  assert.equal(catalogue.length,60);
   assert.deepEqual([...catalogue.map(c=>c.id)].sort(),[...layout.careerOrder].sort());
   assert.equal(careerRows.length,inventory.careers.length);
   for(const [index,row] of careerRows.entries())assert.deepEqual(JSON.parse(JSON.stringify(row)),inventory.careers[index],row.id+' retains its actual scene, menu and phone dock');

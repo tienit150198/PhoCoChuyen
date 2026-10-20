@@ -97,8 +97,9 @@ from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_
 from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
 from game import hotel_stay  # 🏨 Phòng cho người chơi (game/hotel_stay.py: its stays registered in Phố dịch vụ at import, /api/hotel/…)
 from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/photo_studio.py: /api/photo/…, its own reads and writes)
-photo_studio.install()  # 🔌 the packages into game/service_market.py when that module exists (another branch; no-op without it)
 from game import wed_services  # 💒 Dịch vụ cưới từ người chơi: its services into game/service_market.py at import (/api/wedsvc/…)
+from game import service_market as _svc_market  # 🛎️ Phố dịch vụ
+_svc_market.install_own()  # 🏥 player birth rooms + 📸 photo packages listed in Phố dịch vụ (own flows: game/birth.py, game/photo_studio.py; a refusal is logged, never a crash)
 from game import radio_station  # 📻 Đài Sóng Mây for players: ads and songs on the town ticker (game/radio_station.py: /api/radio/…)
 radio_station.install()  # 📢 quảng cáo and 🎵 tặng bài into Phố dịch vụ (game/service_market.py register)
 from game.content import public_content,content_parts,CAREERS

@@ -118,7 +118,7 @@ export function attachGuide(real,getEnv){
     }
     if(changed){s.requestRender?.();real.wake?.();}
   };
-  const refresh=()=>{const env=getEnv();syncShops(env);syncProjects(env);decorate();if(dlg?.open)render(env);};
+  const refresh=()=>{const env=getEnv();syncShops(env);syncProjects(env);world?.setTeaCart?.(env?.api?.state?.journey?.tea_cart===true);decorate();if(dlg?.open)render(env);};   // 🍵 Bà Lựu's new cart (game/careers/teller.py)
   const originalRebuild=s.rebuild;
   // The first town with its buildings: back at the spot remembered on this device.
   let restored=false;const restore=()=>{if(!restored&&real.mode==='town'&&layoutKey(real)>0){restored=true;restoreSpot(real);}};

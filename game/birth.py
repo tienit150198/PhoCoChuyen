@@ -40,12 +40,14 @@ Tables (game/pg_schema.py, SCHEMA_VERSION 65): birth_rooms (one per provider sav
 booking or adoption: proposed → booked → staying → born, or declined / cancelled / refunded; at most one of
 proposed/booked/staying per couple). No save key. 2.4.66 never reads them.
 
-🔌 Seam for the service marketplace (game/service_market.py, SCHEMA 63, another branch): when the module is importable
-this file registers the service spec ('homestay' | 'hotel', 'phong_sinh') with the same floor (`_register`). Until the
-marketplace runs the bookings, the player side is this file's own table. Two functions are the whole provider
-contract and are what the marketplace replaces: `rooms(db, viewer)` (the open offers: id, name, owner, price,
-rating) and `_release(db, stay)` (where the escrow goes once the baby is born). Everything else (agreement, payment,
-the stay, the birth, refunds) stays here.
+🛎️ Phố dịch vụ (game/service_market.py, SCHEMA 63) LISTS the player birth rooms: `install()` registers
+('homestay' | 'hotel', 'phong_sinh') as an own-flow listing (spec `open`): the directory card shows the room, its
+price and rating, and opens Nhà & Gia đình › 👶 Đón con chung with that room preselected. The booking, the
+agreement, the payment, the escrow (birth_stays) and the payout (`_release`) stay here: the market refuses to order,
+negotiate or set up this service itself, so there is one payment path. The provider sets the room (name, price ≥
+FLOOR, open) here (family_room_set); the market's ×N settings do not apply. A room is listed under its
+birth_rooms.career (only CAREERS may open one today: 'hotel' is registered, its listing stays empty until hotel
+players may open rooms).
 """
 from __future__ import annotations
 
@@ -108,21 +110,62 @@ def market():
     return sm
 
 
-def _register() -> None:
+def _market_row(r: dict, busy: int = 0) -> dict:
+    """A birth room as Phố dịch vụ lists it (service_market own-flow row)."""
+    return dict(sid=r['sid'], price=int(r['price']), on=bool(r['open']), stars=int(r['stars']), rated=int(r['rated']), deals=int(r['born']),
+                at=float(r['at'] or 0), title=str(r['name'])[:40], data=dict(room=int(r['id'])),
+                why='' if r['open'] else 'Phòng sinh đang tạm đóng: mở lại ở Nhà & Gia đình.')
+
+
+def _providers(career: str):
+    def rows(db, limit, offset):
+        return [_market_row(r) for r in mr._rows(db, 'SELECT id,sid,name,price,open,stars,rated,born,at FROM birth_rooms WHERE career=? AND open '
+                                                     'ORDER BY price,id LIMIT ? OFFSET ?', (career, int(limit), int(offset)))]
+    return rows
+
+
+def _offer(career: str):
+    def row(db, sid):
+        r = mr._row(db, 'SELECT id,sid,name,price,open,stars,rated,born,at FROM birth_rooms WHERE sid=? AND career=?', (sid, career))
+        return _market_row(r) if r else None
+    return row
+
+
+def _can_provide(career: str):
+    def why(state):
+        return '' if provider_career(state) == career else 'Cần sở hữu homestay (quy mô nghề Homestay từ cấp 1) để mở phòng sinh.'
+    return why
+
+
+def market_spec(career: str) -> dict:
+    """('homestay' | 'hotel', 'phong_sinh') for service_market.register: an own-flow listing (keys the registry accepts)."""
+    return dict(name='Phòng sinh', icon='🏥', unit='ca sinh', base=NPC_PRICE, floor=FLOOR, max_price=ROOM_MAX, duration=STAY_HOURS * 60,
+                desc=f'Phòng cho một ca sinh {STAY_HOURS} giờ của vợ chồng. Giá không dưới {_fmt(FLOOR)} xu.',
+                requires=dict(married=True), can_provide=_can_provide(career),
+                open=dict(action='marriage', data=dict(tab='family', section='children'), label='👶 Đặt phòng sinh'),
+                setup=dict(action='marriage', data=dict(tab='family', section='room'), label='🏡 Phòng sinh của bạn'),
+                providers=_providers(career), offer=_offer(career))
+
+
+def install(strict: bool = False) -> bool:
+    """Register the birth rooms in Phố dịch vụ (idempotent; at import and from service_market's seed). A refusal is
+    logged, never raised at runtime (the family sheet works without the listing); strict=True (tests) raises it."""
     sm = market()
-    reg = getattr(sm, 'register', None) if sm else None
-    if not callable(reg):
-        return
-    spec = dict(name='Phòng sinh', emoji='🏥', floor=FLOOR, max=ROOM_MAX, hours=STAY_HOURS, unit='ca sinh',
-                desc=f'Phòng cho một ca sinh {STAY_HOURS} giờ. Giá không dưới {_fmt(FLOOR)} xu.')
-    for career in ('homestay', 'hotel'):
-        try:
-            reg(career, SERVICE, dict(spec))
-        except Exception:  # noqa: BLE001  (a registry that says no never breaks the family sheet)
-            pass
+    if sm is None or not callable(getattr(sm, 'register', None)):
+        return False
+    try:
+        for career in CAREERS:   # homestay owners only: 'hotel' is a hired job, its player owns no rooms (owner 21/10 batch)
+            sm.register(career, SERVICE, market_spec(career))
+    except Exception:
+        if strict:
+            raise
+        import logging
+        logging.getLogger(__name__).exception('🏥 birth rooms: Phố dịch vụ refused the listing')
+        return False
+    return True
 
 
-_register()
+install()
 
 
 # ---------------------------------------------------------------- money: wallet first, then the account

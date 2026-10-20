@@ -676,6 +676,7 @@
     "hotel",
     "banquet",
     "reception",
+    "teller",
     "radio"
   ],
   "lots": [
@@ -1721,6 +1722,24 @@
         "y0": 43.4,
         "x1": 12.3,
         "y1": 47.6
+      }
+    },
+    {
+      "career": "teller",
+      "district": "office",
+      "at": {
+        "x": 53.3,
+        "y": 46.7
+      },
+      "door": {
+        "x": 53.7,
+        "y": 48.65
+      },
+      "footprint": {
+        "x0": 51.5,
+        "y0": 43.5,
+        "x1": 55.7,
+        "y1": 47.7
       }
     },
     {

@@ -80,6 +80,8 @@ NORMS = {
     'banquet': dict(rate=.12, cash=.60, lo=1, hi=5, bill=20),
     # 🛎️ Lễ tân Hoa Sứ: a guest slips the desk a little after a smooth check-in now and then
     'reception': dict(rate=.12, cash=.60, lo=1, hi=4, bill=20),
+    # 🏦 Quầy số 3: a bank teller never takes cash; regulars leave thanks and small gifts
+    'teller': dict(rate=.05, cash=0, lo=0, hi=0, bill=10),
     # 📻 Đài phát thanh Sóng Mây: a listener drops a little thank-you at the gate now and then
     'radio': dict(rate=.06, cash=.40, lo=1, hi=3, bill=10),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
@@ -262,6 +264,7 @@ CAREER_LINES = {
     'lifeguard': ('Cứu hộ mắt không rời hồ, gửi con yên tâm.', 'Thổi còi đúng lúc mà nói dễ nghe.', 'Có sấm là cho lên bờ liền, chuyên nghiệp.'),
     'hotel': ('Phòng sạch thơm, khăn gấp gọn gàng.', 'Nhận phòng nhanh, nhớ đúng tên đặt phòng.', 'Điều hòa vừa báo là có người lên sửa liền.'),
     'reception': ('Nói một lần là lễ tân nhớ hết mình cần gì.', 'Hành lý lên tận phòng, bình gốm không mẻ chút nào.', 'Mất gấu bông mà lễ tân tìm kịp giờ xe chạy.'),
+    'teller': ('Đếm tiền trước mặt tôi, đọc to từng con số.', 'Đọc lại tên người nhận, khỏi lo chuyển nhầm.', 'Giải thích chậm rãi, tôi hiểu hết.'),
     'radio': ('Đài đọc đúng tên bà cụ nhà tôi, cả nhà vui.', 'Mất điện mà đài xin lỗi đàng hoàng, nghe dễ chịu.', 'Mở đúng bài tôi xin, hay ghê.'),
     'banquet': ('Món ra nóng hổi, bày đẹp như hình.', 'Sảnh trang trí đúng màu nhà mình chọn.', 'Bé dị ứng mà bếp nhớ đổi món, yên tâm ghê.'),
     'customs': ('Phân luồng rõ ràng, hướng dẫn bổ sung đúng một giấy.', 'Tính thuế minh bạch, có biên lai từng khoản.', 'Kiểm hóa nhanh mà kỹ, hàng về kho kịp.'),
@@ -322,6 +325,7 @@ GIFTS = {
     'lifeguard': (('🍧', 'ly chè đậu xanh phụ huynh mang tới'), ('🎨', 'bức tranh cá heo bé Bon vẽ'), ('💌', 'tấm thiệp cảm ơn dán ở ghế trực')),
     'hotel': (('🍫', 'thanh sô-cô-la khách để lại kèm lời cảm ơn'), ('💌', 'tấm thiệp cảm ơn kẹp dưới gối'), ('🍊', 'túi quýt khách quê gửi cả ca')),
     'reception': (('🖍️', 'bức tranh bé Su vẽ cả quầy lễ tân'), ('💌', 'tấm thiệp cảm ơn kẹp dưới bảng móc chìa'), ('🍊', 'túi quýt ông Tư Bến mang từ quê')),
+    'teller': (('🍵', 'ly trà đá bà Lựu mang sang'), ('💌', 'tấm thiệp cảm ơn kẹp ở Quầy số 3'), ('🍱', 'hộp cơm sườn dì Bảy để phần')),
     'radio': (('🍊', 'túi quýt cô Ba gửi cả đài'), ('💌', 'lá thư thính giả gửi qua hộp thư đài'), ('🎨', 'bức vẽ cái loa phường bé Su tặng')),
     'banquet': (('🍬', 'hộp kẹo cưới cô dâu gửi cả bếp'), ('💌', 'tấm thiệp cảm ơn của nhà mừng thọ'), ('🎂', 'miếng bánh kem sinh nhật bé Bin để phần')),
     'customs': (('💌', 'lá thư cảm ơn gửi chi cục'), ('📝', 'vài dòng khen trong hòm thư góp ý cửa khẩu'), ('🎨', 'tấm thiệp con của chủ hàng vẽ tặng')),

@@ -49,6 +49,7 @@ _SPECIALISM_DATA_FILES = (
     'career_specialisms_56.json',
     'career_specialisms_57.json',
     'career_specialisms_58.json',
+    'career_specialisms_teller.json',
     'career_specialisms_radio.json',
 )
 

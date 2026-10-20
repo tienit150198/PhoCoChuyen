@@ -16,7 +16,7 @@ from pathlib import Path
 
 from game import auto_order as ao, business, engine
 from game.engine import GameError, apply_action, public_state, validate_state
-from tests.helpers import unknown_out   # 🔑 the reception desk (newer than these releases) as the stored text leaves it out
+from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 (reception, teller) as the stored text leaves them out
 from tests.helpers import Journey
 from tests.test_inventory_flow import set_money
 

@@ -115,7 +115,7 @@ class Registration(unittest.TestCase):
     def test_registered_last_dormant_salaried_late_unlock(self):
         from game import operations
         from game.career_voice import salaried_set
-        self.assertEqual(ORDER[-1], 'reception')
+        self.assertEqual(tuple(ORDER[-3:]), ('reception', 'teller', 'radio'))   # 🏦 teller, then 📻 radio, were appended right after
         self.assertIn('reception', DORMANT)
         self.assertIn('reception', salaried_set())
         self.assertIn('reception', operations.SALARIED)
@@ -608,6 +608,7 @@ class Rollback(unittest.TestCase):
         clear_desk(j)
         j.act('end_day')
         played = json.loads(json.dumps(j.state))
+        played['journey'].setdefault('certificates', {})['reception_service'] = dict(score=100, best=100, earned_day=1, attempts=1)   # 🎓 its certificate goes out with it
         refused = self.old(played)
         self.assertNotEqual(refused.returncode, 0, 'the old build refuses a worked desk as it is')
         stripped, removed = strip(played, ['reception'])
@@ -621,6 +622,7 @@ class Rollback(unittest.TestCase):
         again = migrate_state(again)
         validate_state(again)
         self.assertEqual(json.dumps(again['careers']['reception'], sort_keys=True), json.dumps(played['careers']['reception'], sort_keys=True))
+        self.assertEqual(again['journey']['certificates']['reception_service'], played['journey']['certificates']['reception_service'])
 
 
 if __name__ == '__main__':

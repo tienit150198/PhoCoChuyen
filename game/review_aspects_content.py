@@ -32,7 +32,7 @@ FAMILY = {
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
     'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
-    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'radio': 'service',
+    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office', 'radio': 'service',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -94,6 +94,15 @@ ASPECTS = dict((
     A('reception_view', ('service',), 'Cảnh từ cửa sổ', 'cửa sổ chưa hợp ý', topic='ambience', only=('reception',), subjective=True,
       neg=['mình thích nhìn cây sứ hơn nhìn phố một chút'], pos=['cửa sổ nhìn ra đúng cảnh mình thích'],
       word=('Thích cây sứ hơn.', 'Cảnh đẹp.')),
+    A('teller_count', ('office',), 'Đếm tiền rõ ràng', 'có bước phải làm lại ở quầy', topic='method', only=('teller',),
+      neg=['quầy phải làm lại một bước mới xong giao dịch của mình'], pos=['đếm tiền trước mặt mình, đọc to từng con số'],
+      word=('Phải làm lại.', 'Rõ ràng.'), sig_neg=('crit:steps:lo',), sig_pos=('crit:steps:hi',)),
+    A('teller_care', ('office',), 'Chu đáo với khách', 'quầy hơi vội với mình', topic='comms', only=('teller',),
+      neg=['mình phải hỏi lại vài lần mới hiểu'], pos=['giải thích chậm rãi, dễ hiểu, không vội'],
+      word=('Hơi vội.', 'Chu đáo.'), sig_neg=('crit:care:lo',), sig_pos=('crit:care:hi',)),
+    A('teller_wait', ('office',), 'Thời gian chờ', 'mình chờ hơi lâu', topic='ambience', only=('teller',), subjective=True,
+      neg=['hàng chờ hôm đó dài quá'], pos=['bốc số xong chờ một chút là tới lượt'],
+      word=('Chờ lâu.', 'Nhanh.')),
     A('radio_names', ('service',), 'Đọc đúng tên', 'đài đọc sai tên phải đính chính', topic='clean', only=('radio',),
       neg=['đài đọc nhầm tên rồi mới đính chính'], pos=['đài đọc đúng tên, đúng người, rõ ràng'],
       word=('Đọc nhầm tên.', 'Đúng tên.'), sig_neg=('crit:steps:lo',), sig_pos=('crit:steps:hi',)),
@@ -795,6 +804,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                          'harsh': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'}},
              'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},
                         'harsh': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'}},
+             'teller': {'polite': {'male': 'anh giao dịch viên', 'female': 'chị giao dịch viên', None: 'giao dịch viên'},
+                        'harsh': {'male': 'anh giao dịch viên', 'female': 'chị giao dịch viên', None: 'giao dịch viên'}},
              'radio': {'polite': {'male': 'anh phát thanh viên', 'female': 'chị phát thanh viên', None: 'phát thanh viên'},
                        'harsh': {'male': 'anh phát thanh viên', 'female': 'chị phát thanh viên', None: 'phát thanh viên'}},
              'banquet': {'polite': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'},

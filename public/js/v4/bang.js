@@ -15,6 +15,11 @@
  *   ⚔️ Thách đấu bang (owner 21/10, game/bang_challenge.py): the home tab's card (record, challenges to answer with
  *        POST /api/arena/tc_answer, the last results) opens the arena's 🛡️ › ⚔️ Thách đấu for the rest (v4/pet-arena.js).
  *   👑 the week's three parts (owner 21/10): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang; cống hiến never counts (game/bang.py standings).
+ *   📜 Nội quy bang (owner 21/10, game/bang_code.py): 📢 the public rules (a preview on the card in Tìm bang, in full on
+ *        the bang's page; joining, asking or accepting an invitation needs the tick "Tôi đã đọc và đồng ý nội quy bang"
+ *        and sends {agree, code_ver}) and 📜 the members-only rules, both in the 📜 tab; Phó bang and up edit them
+ *        (code {kind, text, ver}: a live counter, one-tap lines); 📜 Nội quy mới (a dot on the tab, a card on 🏯) until
+ *        the tab is opened (code_seen {pub, in}).
  * Phone first: one bang a screen, emoji tabs, one main button in the sticky bar. Styles: /css/spend.css + /css/bang.css.
  * Smooth taps (owner 21/10 "bang bấm còn giật giật lắm", "chọn cái nào có thể tiếp tục đóng cái đó"): the sheet is one
  * HTML string patched into the live page (morph: only changed nodes are touched, lists keyed by data-k), a tap marks
@@ -25,12 +30,13 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {qtyBox,QTY,qtyVal} from '../qty-input.js';
 import {COLORS,ROLES,chip,setMine,tagLine} from './bang-tag.js';
 
-const IN_TABS=[['home','🏯','Bang của tôi'],['members','👥','Thành viên'],['build','🏗️','Công trình'],['shop','🛍️','Cửa hàng bang'],['rank','👑','Xếp hạng tuần'],['more','⚙️','Cài đặt bang']];
+const IN_TABS=[['home','🏯','Bang của tôi'],['members','👥','Thành viên'],['code','📜','Nội quy bang'],['build','🏗️','Công trình'],['shop','🛍️','Cửa hàng bang'],['rank','👑','Xếp hạng tuần'],['more','⚙️','Cài đặt bang']];
 const OUT_TABS=[['find','🔎','Tìm bang'],['found','⚔️','Lập bang'],['rank','👑','Xếp hạng tuần']];
 const BIG=1_000_000;
 const S={dlg:null,env:null,view:null,tab:'',flash:null,busy:false,q:'',list:null,found:null,form:null,amount:0,arm:'',armTimer:0,
   friends:null,sel:'',gh:null,timer:0,at:0,bang:null,ladder:null,rules:null,
-  armAt:0,tapEl:null,pendSel:'',ys:{},dirtyMain:false,flashTimer:0,reqN:0,seen:0};
+  armAt:0,tapEl:null,pendSel:'',ys:{},dirtyMain:false,flashTimer:0,reqN:0,seen:0,
+  agree:'',agreeVer:-1,cdEdit:'',cdDraft:{pub:'',in:''},cdBase:{pub:0,in:0},cdNews:[],err:null};   // 📜 the tick (bang id + the version shown), the editor
 const ARM_GAP=200;   // ms: a second tap sooner than this is a double tap, not the confirming tap
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
@@ -78,8 +84,10 @@ function dialog(){
     // the name / motto typed: the preview and the Lập bang button follow (a patch: the box being typed in is kept)
     if(t.name?.startsWith('f-')&&S.form){S.form[t.name.slice(2)]=t.type==='checkbox'?t.checked:t.value;S.tapEl=null;render();return;}
     if(t.matches?.('input[data-qty]')){S.amount=clampGive(qtyVal(t));S.arm='';const b=d.querySelector('[data-bg="give"]');if(b)b.textContent=giveLabel();}
+    if(t.name==='cd-text'&&S.cdEdit){S.cdDraft[S.cdEdit]=t.value;countDraw();}   // 📜 typing: only the counter changes
   });
   d.addEventListener('change',e=>{const t=e.target;if(t.name==='f-open'&&S.form)S.form.open=t.checked;
+    if(t.name==='cd-agree'){const c=peekCode();S.agree=t.checked?String(t.dataset.id||''):'';S.agreeVer=t.checked?Number(c?.ver)||0:-1;S.tapEl=null;render();return;}
     if(t.name?.startsWith('rq-')){const r=draft(),k=t.name.slice(3);r[k]=k==='career'?t.value:Math.max(0,Math.floor(Number(t.value)||0));if(k==='career')r.rank=t.value?Math.max(1,r.rank||1):0;render();return;}if(t.name?.startsWith('gh-')&&S.gh){S.gh[t.name.slice(3)]=Number(t.value);render();}});
   d.addEventListener('close',()=>{S.flash=null;S.arm='';clearInterval(S.timer);S.timer=0;clearTimeout(S.flashTimer);
     if(S.dirtyMain){S.dirtyMain=false;S.env?.renderMain?.();}});   // the uniform, the tag, the wallet: the town redraws once, now
@@ -116,6 +124,7 @@ function accept(v,my=++S.reqN){
   if(!v.mine&&v.list)S.list=v.list;
   const tabs=(v.mine?IN_TABS:OUT_TABS).map(t=>t[0]);
   if(!tabs.includes(S.tab))S.tab=tabs[0];
+  if(S.tab==='code'&&S.dlg?.open&&v.page?.code?.fresh)codeRead();   // 📜 open on the rules: what arrives is read
 }
 async function search(){
   try{const v=await S.env.api.json('/api/bang?q='+encodeURIComponent(S.q.slice(0,30)));S.list=v.list||[];if(v.board&&S.view)S.view.board=v.board;}catch{/* keep the last list */}
@@ -134,12 +143,12 @@ function said(text,kind){
   if(kind==='good')S.flashTimer=setTimeout(()=>{if(S.flash?.text===text){S.flash=null;if(S.dlg?.open){S.tapEl=null;render();}}},6000);
 }
 async function post(op,data={},el=null){
-  if(S.busy)return null;S.busy=true;pend(el);const my=++S.reqN;
+  if(S.busy)return null;S.busy=true;pend(el);const my=++S.reqN;S.err=null;
   try{
     const r=await S.env.api.post('/api/bang/'+op,data);const done=r?.done||{};delete r.done;accept(r,my);
     if(['wear','buy','join','accept','leave','kick','disband','set'].includes(op))S.dirtyMain=true;   // the uniform, the tag: the town redraws me when the sheet closes
     said(done.message||'','good');return done;
-  }catch(e){said(e?.message||'Chưa được. Thử lại nhé.','bad');return null;}
+  }catch(e){S.err=e;said(e?.message||'Chưa được. Thử lại nhé.','bad');return null;}
   finally{S.busy=false;S.arm='';S.pendSel='';render();}
 }
 /** A paid command (the save). `then`: 'load' waits for the new page before letting go (founding: the sheet changes
@@ -183,7 +192,7 @@ function giveWhy(){
 }
 
 /* ---- clicks ---- */
-const LOCAL=new Set(['close','tab','sel','amount','ghDay','unpeek','more','chat','island','toFund','peek','tcopen','tcwatch']);   // no server write: never waits
+const LOCAL=new Set(['close','tab','sel','amount','ghDay','unpeek','more','chat','island','toFund','peek','tcopen','tcwatch','cdEdit','cdCancel','cdTip']);   // no server write: never waits
 async function onClick(op,d,el){
   const p=P(),me=ME();
   if(S.busy&&!LOCAL.has(op)&&!(S.form&&(op==='emoji'||op==='color')))return;   // one write at a time: a double tap never sends twice
@@ -191,10 +200,19 @@ async function onClick(op,d,el){
   switch(op){
     case'close':S.dlg.close();return;
     case'tab':{S.ys[S.tab]=S.dlg.scrollTop;S.tab=d.tab;S.flash=null;S.arm='';S.tapEl=null;if(d.tab==='found'&&!S.found)loadFound();if(d.tab==='members'&&!S.friends&&rank(me?.role)>=3)loadFriends();if(d.tab==='more'&&rank(me?.role)>=4){S.rules=null;if(!S.ladder)loadLadder();}
+      if(d.tab==='code')codeRead();else S.cdNews=[];
       render();S.dlg.scrollTop=S.ys[d.tab]||0;return;}   // each tab where it was left (a new one from its top)
-    case'join':await post('join',{bang:d.id},el);return;
+    case'join':case'accept':{   // 📢 a bang with public rules: from its page, ticked (else its page opens first)
+      const c=peekCode(d.id);
+      if(c===undefined&&hasCode(d.id)){await onClick('peek',{id:d.id},el);said('📢 Đọc nội quy bang rồi đánh dấu đồng ý nhé.','');render();return;}
+      const ok=c?.text?S.agree===d.id&&S.agreeVer===Number(c.ver):true;
+      if(!ok){said(`Đánh dấu “Tôi đã đọc và đồng ý nội quy bang” trước nhé.`,'bad');render();return;}
+      const r=await post(op,{bang:d.id,...(c?.text?{agree:true,code_ver:Number(c.ver)}:{})},el);
+      const why=S.err?.data?.code;
+      if(!r&&(why==='code_changed'||why==='code_agree')){S.agree='';S.agreeVer=-1;const msg=S.flash?.text;await onClick('peek',{id:d.id},null);said(msg,'bad');render();}   // the rules changed: read the new ones
+      else if(r){S.agree='';S.agreeVer=-1;}
+      return;}
     case'cancel':await post('cancel',{bang:d.id},el);return;
-    case'accept':await post('accept',{bang:d.id},el);return;
     case'decline':await post('decline',{bang:d.id},el);return;
     case'peek':S.bang=d.id;S.ys.peek=S.dlg.scrollTop;S.tapEl=null;try{S.bang={id:d.id,...await S.env.api.json('/api/bang?id='+encodeURIComponent(d.id))};}catch(e){said(e?.message||'Không mở được.','bad');S.bang=null;}render();S.dlg.scrollTop=0;return;
     case'unpeek':S.bang=null;S.tapEl=null;render();S.dlg.scrollTop=S.ys.peek||0;return;
@@ -237,6 +255,17 @@ async function onClick(op,d,el){
     case'mode':await post('rules',{mode:d.mode},el);S.rules=null;return;
     case'rulesSave':{const r=draft();await post('rules',{career:r.rank?r.career:'',rank:r.career?r.rank:0,any:r.any,days:r.days},el);S.rules=null;return;}
     case'rulesClear':await post('rules',{career:'',rank:0,any:0,days:0},el);S.rules=null;return;
+    case'cdEdit':{const c=P()?.code?.[d.kind];if(!c)return;S.cdEdit=d.kind;S.cdDraft[d.kind]=c.text||'';S.cdBase[d.kind]=Number(c.ver)||0;S.tapEl=null;render();
+      const ta=S.dlg.querySelector('textarea[name="cd-text"]');ta?.focus({preventScroll:true});ta?.scrollIntoView?.({block:'nearest'});return;}
+    case'cdCancel':S.cdEdit='';render();return;
+    case'cdTip':{const k=S.cdEdit,tip=(P()?.code?.tips||[])[Number(d.i)];if(!k||!tip)return;
+      const cur=String(S.cdDraft[k]||'').replace(/\s+$/,''),line='• '+tip;S.cdDraft[k]=cur?cur+'\n'+line:line;
+      const ta=S.dlg.querySelector('textarea[name="cd-text"]');if(ta)ta.value=S.cdDraft[k];render();return;}
+    case'cdSave':{const k=S.cdEdit;if(!k)return;
+      const r=await post('code',{kind:k,text:String(S.cdDraft[k]||''),ver:S.cdBase[k]},el);
+      if(r){S.cdEdit='';render();return;}
+      if(S.err?.data?.code==='code_conflict'){const c=P()?.code?.[k];if(c)S.cdBase[k]=Number(c.ver)||0;render();}   // the newer text shows above: the draft stays
+      return;}
     case'emoji':if(S.form){S.form.emoji=d.e;render();}else await post('set',{emoji:d.e},el);return;
     case'color':if(S.form){S.form.color=d.c;render();}else await post('set',{color:d.c},el);return;
     case'motto':{const v=S.dlg.querySelector('input[name="bg-motto"]')?.value||'';await post('set',{motto:v},el);return;}
@@ -336,7 +365,7 @@ function page(){
   const m=v?.mine;
   const head=`<div class="bg-stick"><header class="sheet-head sd-head">${m?crest(m.emoji,m.color?.id):'<span class="sd-logo" aria-hidden="true">⚔️</span>'}<div class="grow"><h2 id="bg-title">${esc(inside?m.name:t[2])}</h2>${inside?`<small class="bg-sub">${esc(ROLES[m.role]||'')} · ⭐ ${fmt(m.points)}</small>`:''}</div>
     <span class="sd-wallet" title="Ví">👛 ${fmt(Math.max(0,cash()))}</span><button class="icon-btn" type="button" data-bg="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
-  const nav=`<nav class="sd-tabs" role="tablist" aria-label="Bang">${tabs.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${t[0]===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${t[0]===id?'on':''}" data-bg="tab" data-tab="${id}">${e}</button>`).join('')}</nav></div>`;
+  const nav=`<nav class="sd-tabs" role="tablist" aria-label="Bang">${tabs.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${t[0]===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${t[0]===id?'on':''}${id==='code'&&P()?.code?.fresh?' dot':''}" data-bg="tab" data-tab="${id}">${e}</button>`).join('')}</nav></div>`;
   if(!v)return head+`</div><div class="sheet-body sd-body"><p class="sd-empty">⏳</p></div>`;
   const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
   if(!v.account)return head+`</div><div class="sheet-body sd-body"><section class="sd-card bg-center"><p class="tp-big">⚔️</p><h3>Đăng nhập để vào bang</h3><p class="tp-note">Bang cần tài khoản (như chat).</p></section></div><div class="bg-dock">${flash}</div>`;
@@ -348,6 +377,7 @@ function page(){
   else if(id==='rank')inner=rankTab();
   else if(id==='home'){inner=homeTab();foot=homeFoot();}
   else if(id==='members')inner=membersTab();
+  else if(id==='code')inner=codeTab();
   else if(id==='build')inner=buildTab();
   else if(id==='shop')inner=shopTab();
   else if(id==='more')inner=moreTab();
@@ -358,12 +388,12 @@ function page(){
 /* -- outside a bang -- */
 function invitesCard(){
   const list=S.view?.invites||[];if(!list.length)return '';
-  return `<section class="sd-card bg-invites"><h3>📨 Lời mời vào bang</h3>${list.map(x=>`<div class="bg-row" data-k="v:${esc(x.bang)}">${crest(x.emoji,x.color)}<div class="grow"><b data-no-translate>${esc(x.name)}</b><small>${esc(x.by)} mời bạn</small></div>${btn('accept','Vào',` data-id="${esc(x.bang)}"`,'btn primary')}${btn('decline','✕',` data-id="${esc(x.bang)}" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`;
+  return `<section class="sd-card bg-invites"><h3>📨 Lời mời vào bang</h3>${list.map(x=>`<div class="bg-row" data-k="v:${esc(x.bang)}">${crest(x.emoji,x.color)}<div class="grow"><b data-no-translate>${esc(x.name)}</b><small>${esc(x.by)} mời bạn</small></div>${btn('accept',x.code?'📢 Xem nội quy':'Vào',` data-id="${esc(x.bang)}"`,'btn primary')}${btn('decline','✕',` data-id="${esc(x.bang)}" aria-label="Từ chối"`,'btn cream')}</div>`).join('')}</section>`;
 }
 function bangCard(c){
   const full=c.n>=c.cap;
   const act=c.asked?btn('cancel','Hủy đơn',` data-id="${esc(c.id)}"`,'btn cream'):full?'<span class="bg-full">Đủ người</span>':modeOf(c)==='closed'?'<span class="bg-full">Đang đóng</span>':btn('join',joinLabel(c),` data-id="${esc(c.id)}"`,'btn primary');
-  return `<div class="bg-card" data-k="b:${esc(c.id)}"><button type="button" class="bg-peek" data-bg="peek" data-id="${esc(c.id)}" aria-label="Xem bang ${esc(c.name)}">${crest(c.emoji,c.color)}<span class="grow"><b data-no-translate>${esc(c.name)}</b>${c.motto?`<small data-no-translate>${esc(c.motto)}</small>`:''}<small>👥 ${c.n}/${c.cap} · ${esc(MODES[modeOf(c)])}${c.rank&&c.score?` · #${c.rank} tuần này`:''}</small>${reqLine(c)}</span></button>${act}</div>`;
+  return `<div class="bg-card" data-k="b:${esc(c.id)}"><button type="button" class="bg-peek" data-bg="peek" data-id="${esc(c.id)}" aria-label="Xem bang ${esc(c.name)}">${crest(c.emoji,c.color)}<span class="grow"><b data-no-translate>${esc(c.name)}</b>${c.motto?`<small data-no-translate>${esc(c.motto)}</small>`:''}<small>👥 ${c.n}/${c.cap} · ${esc(MODES[modeOf(c)])}${c.rank&&c.score?` · #${c.rank} tuần này`:''}</small>${reqLine(c)}${c.code?.text?`<small class="bg-nq-pre" data-no-translate>📢 ${esc(c.code.text)}</small>`:''}</span></button>${act}</div>`;
 }
 function findTab(){
   const list=S.list||S.view?.list||[];
@@ -374,11 +404,21 @@ function findTab(){
 function peekView(){
   const b=S.bang;if(!b||!b.bang)return '<p class="sd-empty">⏳</p>';
   const c=b.bang;
-  const act=b.member?'':b.invited?btn('accept','Nhận lời mời',` data-id="${esc(c.id)}"`,'btn primary'):b.asked?btn('cancel','Hủy đơn xin vào',` data-id="${esc(c.id)}"`,'btn cream'):c.n>=c.cap?'<p class="tp-note">Bang đã đủ người.</p>':modeOf(c)==='closed'?'<p class="tp-note">🚫 Bang đang đóng, chỉ vào được khi được mời.</p>':btn('join',modeOf(c)==='auto'?'Vào bang':'Xin vào',` data-id="${esc(c.id)}"`,'btn primary');
+  let act=b.member?'':b.invited?btn('accept','Nhận lời mời',` data-id="${esc(c.id)}"`,'btn primary'):b.asked?btn('cancel','Hủy đơn xin vào',` data-id="${esc(c.id)}"`,'btn cream'):c.n>=c.cap?'<p class="tp-note">Bang đã đủ người.</p>':modeOf(c)==='closed'?'<p class="tp-note">🚫 Bang đang đóng, chỉ vào được khi được mời.</p>':btn('join',modeOf(c)==='auto'?'Vào bang':'Xin vào',` data-id="${esc(c.id)}"`,'btn primary');
+  // 📢 its public rules: read, ticked, then the button (the server checks the version read)
+  const code=c.code?.text?c.code:null,can=!b.member&&(b.invited||!b.asked&&c.n<c.cap&&modeOf(c)!=='closed');
+  let rules='';
+  if(code){
+    let go='';
+    if(can){const ticked=S.agree===c.id&&S.agreeVer===Number(code.ver),[op,label]=b.invited?['accept','Nhận lời mời']:['join',modeOf(c)==='auto'?'Vào bang':'Xin vào'];
+      go=`<label class="bg-agree${ticked?' on':''}"><input type="checkbox" name="cd-agree" data-id="${esc(c.id)}"${ticked?' checked':''}><span>Tôi đã đọc và đồng ý nội quy bang</span></label>${btn(op,label,` data-id="${esc(c.id)}"${ticked?'':' disabled'}`,'btn primary big bg-join')}`;
+      act='';}
+    rules=`<section class="sd-card bg-nq bg-nq-pub" data-k="cd:peek"><h3>📢 Nội quy bang</h3><div class="bg-nq-text" data-no-translate>${esc(code.text)}</div>${go}</section>`;
+  }
   const lv=b.levels||{};
   return `<button type="button" class="btn cream bg-back" data-bg="unpeek">← Quay lại</button><section class="sd-card bg-hero" style="--bgc:${hex(c.color)}">${crest(c.emoji,c.color,' big')}<h3 data-no-translate>${esc(c.name)}</h3>${c.motto?`<p class="bg-motto" data-no-translate>“${esc(c.motto)}”</p>`:''}
     <p class="tp-line"><span>👑 ${esc(b.leader_name||'')}</span><span>👥 ${c.n}/${c.cap}</span><span>${esc(MODES[modeOf(c)])}</span></p>${(c.req||[]).length?`<ul class="bg-reqs">${c.req.map(x=>`<li>📋 ${esc(x)}</li>`).join('')}</ul>`:''}
-    <p class="bg-levels">${(CAT().facilities||[]).filter(f=>lv[f.id]).map(f=>`<span title="${esc(f.name)}">${esc(f.emoji)} ${lv[f.id]}</span>`).join('')}</p>${act}</section>
+    <p class="bg-levels">${(CAT().facilities||[]).filter(f=>lv[f.id]).map(f=>`<span title="${esc(f.name)}">${esc(f.emoji)} ${lv[f.id]}</span>`).join('')}</p>${act}</section>${rules}
     ${(b.members||[]).length?`<h4 class="tp-h">Thành viên</h4><ol class="sd-board">${b.members.map(x=>`<li><span>${esc(roleIcon(x.role))}</span><b data-no-translate>${esc(x.name)}</b><em>${esc(ROLES[x.role]||'')}</em></li>`).join('')}</ol>`:''}`;
 }
 function foundTab(){
@@ -470,7 +510,8 @@ function homeTab(){
     <p class="tp-note">Góp bao nhiêu cũng được, chỉ góp không rút: quỹ dùng mua đảo và xây công trình bang. ${fmt(g.per_point||1000)} xu = 1 điểm cống hiến (tối đa ${fmt(g.day_pts||50000)} điểm/ngày).</p></section>`;
   const pts=`<section class="sd-card bg-pts" data-k="pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
     <p class="tp-note">Hôm nay ${me.today}/${me.today_max} điểm hoạt động: 📅 điểm danh +${CAT().points?.checkin||20}, mỗi ngày làm việc +${CAT().points?.work||10}. Điểm đổi đồ ở 🛍️.</p></section>`;
-  return gold+isleOffer()+hero+chalCard()+fund+pts+goldenCard()+logCard();
+  const codeNew=p.code?.fresh?`<section class="sd-card bg-nq-new" data-k="codenew"><div class="bg-row"><span class="bg-nq-ico" aria-hidden="true">📜</span><div class="grow"><b>Nội quy mới</b><small>Bang vừa cập nhật nội quy. Đọc để nắm luật của bang nhé.</small></div>${btn('tab','Xem',' data-tab="code"','btn primary')}</div></section>`:'';
+  return gold+codeNew+isleOffer()+hero+chalCard()+fund+pts+goldenCard()+logCard();
 }
 /** 👑 The week's three parts (game/bang.py standings): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang. */
 function parts(x,total=false){
@@ -531,6 +572,56 @@ const money=n=>(n=Number(n)||0)>=1e6?`${(n/1e6).toLocaleString('vi-VN',{maximumF
 function logCard(){
   const log=P()?.log||[];if(!log.length)return '';
   return `<details class="sd-card bg-log" data-k="log"><summary>📜 Chuyện trong bang</summary><ul>${log.slice(0,12).map(x=>`<li data-no-translate>${esc(x.text)}</li>`).join('')}</ul></details>`;
+}
+/* -- 📜 Nội quy bang (game/bang_code.py) -- */
+/** The peeked bang's public rules {text, ver} (undefined: no bang peeked, or another one). */
+function peekCode(id){const b=S.bang;return b&&b.bang&&(!id||b.bang.id===id)?(b.bang.code||{text:'',ver:0}):undefined;}
+/** Whether a bang of the list or an invitation has public rules (its page then opens first). */
+const hasCode=id=>(S.list||S.view?.list||[]).some(c=>c.id===id&&c.code?.text)||(S.view?.invites||[]).some(x=>x.bang===id&&x.code);
+/** The 📜 tab opened: what is shown is read (the badge goes; the "Mới" tags stay while the tab is open). */
+function codeRead(){
+  const c=P()?.code;if(!c)return;S.cdNews=[...(c.news||[])];
+  if(!c.fresh)return;
+  c.fresh=false;c.news=[];c.seen={pub:Number(c.pub?.ver)||0,in:Number(c.in?.ver)||0};
+  if(S.view?.mine)S.view.mine.code_new=false;
+  if(S.env?.api)S.env.api.codeNew=false;   // app.js: the next 📜 Nội quy mới counts again
+  S.env?.api?.post?.('/api/bang/code_seen',{pub:c.seen.pub,in:c.seen.in})?.catch?.(()=>{});
+}
+function cdCount(k){
+  const c=P()?.code||{},max=c.max?.[k]||(k==='pub'?300:1200),lines=c.lines?.[k]||(k==='pub'?8:20);
+  const t=String(S.cdDraft[k]||'').trim(),n=[...t].length,l=t?t.split('\n').length:0;
+  return {text:`${n}/${max} ký tự · ${l}/${lines} dòng`,over:n>max||l>lines};
+}
+/** Typing: the counter and the save button only (the box keeps its caret). */
+function countDraw(){
+  const k=S.cdEdit,el=S.dlg?.querySelector('[data-cd-count]');if(!k||!el)return;
+  const x=cdCount(k);el.textContent=x.text;el.classList.toggle('over',x.over);
+  const b=S.dlg.querySelector('[data-bg="cdSave"]');if(b)b.disabled=x.over;
+}
+function codeCard(k){
+  const c=P()?.code,x=c?.[k];if(!x)return '';
+  const pub=k==='pub',title=pub?'📢 Nội quy công khai':'📜 Nội quy nội bộ';
+  const note=pub?'Ai cũng thấy, trong Tìm bang và trang bang. Người xin vào phải đánh dấu đồng ý.':'Chỉ thành viên trong bang thấy.';
+  const fresh=S.cdNews.includes(k)?'<span class="bg-new-tag">Mới</span>':'',editing=S.cdEdit===k&&c.edit;
+  let body;
+  if(editing){
+    const n=cdCount(k),tips=(c.tips||[]).map((t,i)=>btn('cdTip',esc(t),` data-i="${i}"`,'sd-chip bg-tip')).join('');
+    body=`<div class="bg-nq-edit"><textarea name="cd-text" rows="${pub?5:9}" maxlength="${(c.max?.[k]||1200)*4}" placeholder="${pub?'Ví dụ: Online góp quỹ mỗi tuần':'Mỗi điều một dòng'}" aria-label="${esc(title)}">${esc(S.cdDraft[k]||'')}</textarea>
+      <p class="bg-count${n.over?' over':''}" data-cd-count aria-live="polite">${esc(n.text)}</p>
+      <p class="bg-tips-h">Chạm để thêm nhanh một dòng</p><div class="bg-tips">${tips}</div>
+      <div class="bg-row bg-nq-acts">${btn('cdSave','💾 Lưu nội quy',n.over?' disabled':'','btn primary')}${btn('cdCancel','Hủy','','btn cream')}</div></div>`;
+  }else{
+    body=x.text?`<div class="bg-nq-text" data-no-translate>${esc(x.text)}</div><p class="bg-nq-meta">${x.by?`✏️ <span data-no-translate>${esc(x.by)}</span> · `:''}${x.at?esc(dmy(x.at)):''}</p>`
+      :`<p class="tp-note">${x.hidden?'🚫 Quản trị đã ẩn nội quy này.':'Chưa có.'}${c.edit?' Viết vài dòng cho cả bang nhé.':''}</p>`;
+    if(c.edit)body+=btn('cdEdit',x.text?'✏️ Sửa':'✏️ Viết nội quy',` data-kind="${k}"`,'btn cream');
+  }
+  return `<section class="sd-card bg-nq${editing?' editing':''}" data-k="cd:${k}"><h3>${title}${fresh}</h3><p class="tp-note">${esc(note)}</p>${body}</section>`;
+}
+function codeTab(){
+  const p=P();if(!p)return '<p class="sd-empty">⏳</p>';
+  if(!p.code)return '<p class="tp-note">Chưa tải được nội quy. Thử lại nhé.</p>';
+  const top=p.code.edit?'<p class="tp-note bg-top">Bang chủ và Phó bang viết nội quy. Mỗi lần đổi, cả bang thấy “📜 Nội quy mới”.</p>':'';
+  return top+codeCard('pub')+codeCard('in');
 }
 function membersTab(){
   const p=P(),me=p?.me;if(!p)return '<p class="sd-empty">⏳</p>';
