@@ -96,6 +96,7 @@ from game import karaoke_mic  # 🎙️ its live mic (LIVE_KARAOKE_MIC): the bir
 from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_event.py owns its routes)
 from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
 from game import hotel_stay  # 🏨 Phòng cho người chơi (game/hotel_stay.py: its stays registered in Phố dịch vụ at import, /api/hotel/…)
+from game import town_fair  # 🎪 Hội chợ việc làm (game/town_fair.py: /api/townfair/…, its booths' discount asked by game/service_market.py)
 from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/photo_studio.py: /api/photo/…, its own reads and writes)
 from game import wed_services  # 💒 Dịch vụ cưới từ người chơi: its services into game/service_market.py at import (/api/wedsvc/…)
 from game import service_market as _svc_market  # 🛎️ Phố dịch vụ
@@ -159,6 +160,7 @@ def ui_config()->dict:
     (html[data-clean], docs/UI_KIT.md) off for every player at the next page load; unset or anything else = on."""
     out={"clean":(os.environ.get("MNL_CLEAN_UI") or "on").strip().lower()!="off"}
     if (stk:=sticker_event.hint()):out["sticker"]=stk  # 🎨 the in-game way to /sticker while submissions are open
+    if (tf:=town_fair.hint()):out["tfair"]=tf  # 🎪 Hội chợ việc làm on or soon (the menu entry and the 2.5D signpost)
     return out
 
 
@@ -918,6 +920,15 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("hotel-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,hotel_stay.get(self.server.store,token,state,route[len("/api/hotel/"):],{}));return
+            if route.startswith("/api/townfair/"):  # 🎪 Hội chợ việc làm: the fair, my booth, my stamps, the board (game/town_fair.py; the save only to list my careers)
+                token,_,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("tfair-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,town_fair.get(self.server.store,token,None,route[len("/api/townfair/"):],{k:v[0] for k,v in parse_qs(split.query).items()}));return
+            if route=="/api/admin/townfair":  # 🎪 the fair's switches and its archive; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                self.json(200,town_fair.admin_view(self.server.store));return
             if route.startswith("/api/svc/"):  # 🛎️ Phố dịch vụ: directory, a provider, my inbox, my services (game/service_market.py; the save only for 'mine')
                 sub=route[len("/api/svc/"):]
                 token,state,_,_=self.require_session(light=sub!="mine")
@@ -1120,7 +1131,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route=="/api/admin/radio")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/" or route.startswith("/api/townfair/") or route=="/api/admin/radio") or route=="/api/admin/townfair")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1342,6 +1353,13 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/hotel/"):  # 🏨 confirm / decline / cancel / arrive / checkin / handle / ask / leave / checkout (game/hotel_stay.py)
                 if not self.server.rate_limit("hotel:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,hotel_stay.post(self.server.store,token,state,route[len("/api/hotel/"):],data,ip=self.client_ip()));return
+            if route.startswith("/api/townfair/"):  # 🎪 open / pct / close / show / moment / watch / claim (game/town_fair.py; orders go through /api/svc/)
+                if not self.server.rate_limit("tfair:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,town_fair.post(self.server.store,token,None,route[len("/api/townfair/"):],data));return
+            if route=="/api/admin/townfair":  # 🎪 weekly on/off, open a one-off fair now, close it (game/town_fair.py admin_act); admin only
+                if not self.server.rate_limit("admin-tfair:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                self.json(200,town_fair.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route.startswith("/api/svc/"):  # 🛎️ order, offer, answer, take, done, confirm, rate, flag, settings… (game/service_market.py)
                 if not self.server.rate_limit("svc:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import service_market
@@ -1925,6 +1943,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("hotel",lambda:hotel_stay.run_housekeeping(store))  # 🏨 no-shows refunded, the night's situations, overdue check-outs paid (row locks: exactly once)
         service_market.run_housekeeping(store)  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
+        step("townfair",lambda:town_fair.run_housekeeping(store))  # 🎪 Hội chợ việc làm: its ticker line once, then settle, archive and grant a fair's titles (status-guarded: exactly once)
         photo_studio.run_housekeeping(store)  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
 
 

@@ -47,7 +47,7 @@ function harness(id,{mode='town',interfaceMode='new',screen='phone',full=false}=
     meta:()=>({icon:'briefcase',work:'Công việc',station:'Bàn làm việc'}),plugin:()=>!legacy.includes(id),EXT:['teacher','tour_guide','milk_tea'],
     careerUI:cid=>modules[cid],careerContext:()=>({}),env:()=>({}),wordsFor,layout:()=>screen,esc:String,icon:()=>'',
     lowOpen:()=>0,feedUnread:()=>false,openSituation:()=>null,L:{inc:{},people:{},live:full?{m:{live:enabledLive,liveNav:()=>['liveChat','chat','Chat'],dateNav:()=>['liveDate','heart','Hẹn hò']}}:{}},boardUnread:()=>0,needsJob:()=>false,
-    certBadge:()=>0,quayBadge:()=>0,crates:()=>({ready:[]}),lowItems:()=>[]});
+    certBadge:()=>0,quayBadge:()=>0,crates:()=>({ready:[]}),lowItems:()=>[],seedFair:()=>{},fairNow:()=>null});   // 🎪 the town fair stays off here (no ui.tfair)
   vm.runInContext(appSource+';globalThis.routes={sceneActions,navItems,dockItems,railHTML};',context);
   return {state,ui,...context.routes};
 }

@@ -63,7 +63,9 @@ from game import service_market as sm
 
 sm.register(career: str, service_id: str, spec: dict) -> dict      # at import time of the career module
 sm.get_spec(career, service_id) -> dict | None
-sm.quote(db, provider_sid, career, service_id, qty=1) -> dict       # {base, mult, mode, price|None, lo, hi, qty, on}
+sm.quote(db, provider_sid, career, service_id, qty=1) -> dict       # {base, mult, mode, price|None, lo, hi, qty, on, fair, usual}
+# 🎪 fair: the percent off while the provider's Hội chợ việc làm booth for that career is open (game/town_fair.py
+# discount; legacy_quote too), never below lo; usual: the price without it. 0 / the same price outside a fair.
 sm.bounds(spec, base, qty=1) -> (lo, hi)
 sm.open_orders(db, provider_sid, career=None, service=None) -> list[dict]   # paid orders waiting: status 'held' | 'working'
 sm.order_of(db, order_id) -> dict | None

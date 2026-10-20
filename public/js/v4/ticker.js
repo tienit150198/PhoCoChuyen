@@ -5,7 +5,7 @@
  * prefers-reduced-motion (or Cài đặt → Giảm chuyển động) gets a still banner. Text goes in with
  * textContent only. The same answer carries my own alerts (badges on "Hôn nhân" and "Bạn bè", a toast
  * when someone proposes, asks to be friends, a plan arrives, the spouse sends something or the wedding day came). */
-const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
+const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',TFAIR='mnl.tfairSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
 let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
@@ -44,6 +44,10 @@ function handle(d){
       if(t-last<gap||queue.some(q=>q.radio===r.id))continue;
       AIRED.delete(r.id);AIRED.set(r.id,t);while(AIRED.size>AIRED_MAX)AIRED.delete(AIRED.keys().next().value);
       queue.push({id:0,text:r.text.slice(0,200),radio:r.id,passes:1});}}
+  // 🎪 Hội chợ việc làm (game/town_fair.py news_line): its status for the menu and the 2.5D signpost, and its line once per key
+  if('tfair' in d){const tf=d.tfair;import('./town-fair-data.js').then(m=>m.setFair(tf)).catch(()=>{});
+    if(tf&&typeof tf.text==='string'&&typeof tf.key==='string'){let k='';try{k=localStorage.getItem(TFAIR)||'';}catch{k=tf.key;}
+      if(k!==tf.key){write(TFAIR,tf.key);queue.push({id:0,text:tf.text.slice(0,200)});}}}
   if(typeof d.last==='number')since=d.last;  // polling cursor; SEEN (on this device) moves when a line has played
   if(queue.length&&!playing)next();
   const env=getEnv?.();if(!env)return;

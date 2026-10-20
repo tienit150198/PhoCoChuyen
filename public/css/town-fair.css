@@ -1,0 +1,161 @@
+/* ==========================================================================
+   🎪 Hội chợ việc làm (public/js/v4/town-fair.js), over /css/spend.css (sd-*). Theme tokens for text and surfaces; the
+   bunting and the booths' awnings are decoration (aria-hidden). Phone first (360–390 px): one column of booths, 44 px
+   targets, the choices of a moment as full-width buttons; two columns from 560 px; landscape phones (844×390) keep the
+   head slim and put the booths two by two.
+   ========================================================================== */
+.tf-sheet{--tf-red:#d94b3b;--tf-gold:#e8a317;--tf-teal:#2a9d8f;--tf-blue:#3d7cc9;--tf-plum:#9b5aa8}
+.tf-stick{position:sticky;top:0;z-index:6;background:var(--surface)}
+.tf-stick .sheet-head{position:static}
+.tf-head .grow{min-width:0}
+.tf-logo{background:linear-gradient(135deg,var(--accent-soft),var(--warn-soft,var(--surface-2)))}
+.tf-sub{display:block;font-size:.8rem;color:var(--muted);font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tf-sub b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tf-bunting{height:12px;margin:0 0 -2px;background:
+  conic-gradient(from 135deg at 50% 0,var(--tf-red) 90deg,transparent 0) 0 0/36px 12px repeat-x,
+  conic-gradient(from 135deg at 50% 0,var(--tf-gold) 90deg,transparent 0) 12px 0/36px 12px repeat-x,
+  conic-gradient(from 135deg at 50% 0,var(--tf-teal) 90deg,transparent 0) 24px 0/36px 12px repeat-x;opacity:.9}
+.tf-tabs button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:1.1rem;min-width:0;padding:4px 2px;line-height:1.1}
+.tf-tabs button small{font-size:.72rem;font-weight:800;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tf-tabs .badge{position:absolute;top:2px;right:6px;font-size:.7rem;font-style:normal;min-width:18px;height:18px;line-height:18px;padding:0 5px;border-radius:999px;background:var(--bad);color:#fff;font-weight:800}
+.tf-bar .sd-flash{margin:0}
+.tf-bar:has(.sd-flash:empty){display:none}
+.tf-note{margin:6px 0;font-size:.88rem;line-height:1.5;color:var(--ink-2)}
+.tf-muted{display:block;margin:4px 0 0;font-size:.8rem;line-height:1.45;color:var(--muted)}
+.tf-center{text-align:center}
+.tf-lbl{margin:12px 0 6px;font-size:.84rem;font-weight:800;color:var(--ink-2)}
+.tf-acts{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.tf-acts .btn{min-height:44px;flex:1 1 auto}
+.tf-sheet .btn.full{width:100%}
+.tf-ok{font-style:normal;font-weight:800;color:var(--good);font-size:.86rem}
+
+/* the closed fair / an empty state */
+.tf-hero{text-align:center;background:linear-gradient(180deg,var(--warn-soft,var(--surface-2)),var(--surface) 70%)}
+.tf-big{font-size:2.2rem;margin:4px 0 6px;letter-spacing:4px}
+.tf-count{margin:0 0 8px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.tf-how{list-style:none;margin:8px 0 12px;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;text-align:left}
+.tf-how li{padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:.86rem;line-height:1.45;color:var(--ink-2)}
+
+/* 🎪 walk */
+.tf-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px;padding:8px 10px;border-radius:14px;background:var(--surface-2);font-size:.86rem;color:var(--ink-2)}
+.tf-strip b{color:var(--ink)}
+.tf-strip .tf-cta{margin-left:auto;min-height:40px}
+.tf-groups{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -14px 10px;padding:0 14px}
+.tf-groups::-webkit-scrollbar{display:none}
+.tf-groups .sd-chip{flex:none;font-size:.88rem;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.tf-groups .sd-chip small{font-weight:700;color:var(--muted)}
+.tf-live{margin:0 0 10px;padding:8px 10px;border-radius:12px;background:var(--accent-soft);color:var(--accent-text);font-weight:800;font-size:.88rem}
+.tf-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.tf-booth{position:relative;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px 10px 10px;overflow:hidden;--aw:var(--tf-red)}
+.tf-booth.g-food{--aw:var(--tf-red)}.tf-booth.g-shop{--aw:var(--tf-gold)}.tf-booth.g-service{--aw:var(--tf-teal)}.tf-booth.g-office{--aw:var(--tf-blue)}.tf-booth.g-outdoor{--aw:var(--tf-plum)}
+.tf-booth.live{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.tf-booth.mine{border-style:dashed}
+.tf-awning{position:absolute;inset:0 0 auto 0;height:8px;background:repeating-linear-gradient(90deg,var(--aw,var(--tf-red)) 0 16px,var(--surface) 16px 32px);border-bottom:1px solid var(--line)}
+.tf-row{display:flex;align-items:center;gap:8px}
+.tf-row .grow{min-width:0;flex:1 1 auto;display:flex;flex-direction:column}
+.tf-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-name small{font-weight:600;color:var(--muted)}
+.tf-career{font-size:.8rem;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-on{color:var(--good);font-weight:700}
+.tf-av{display:inline-grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--surface-2);font-size:1.4rem}
+.tf-av svg{width:100%;height:100%}
+.tf-off{flex:none;font-weight:900;font-size:.9rem;padding:4px 8px;border-radius:10px;background:var(--bad-soft);color:var(--bad)}
+.tf-meta{display:flex;flex-wrap:wrap;gap:4px 10px;margin:8px 0 0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.tf-stamp{color:var(--good)}
+.tf-show{margin:8px 0 0;padding:8px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--accent)}
+.tf-show p{margin:0 0 4px;font-size:.9rem;color:var(--ink)}
+.tf-show small{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
+.tf-showi{margin-right:4px}
+.tf-line{font-style:italic;color:var(--ink-2)!important;line-height:1.45}
+.tf-items{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.tf-items li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:12px;background:var(--surface-2);min-height:48px}
+.tf-items .grow{min-width:0;flex:1 1 auto;display:flex;flex-direction:column}
+.tf-items b{font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-items small{font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-ii{flex:none;font-size:1.2rem}
+.tf-price{flex:none;display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap;font-size:.86rem}
+.tf-price s{color:var(--muted);font-size:.78rem}
+.tf-price b{font-weight:900;color:var(--ink)}
+.tf-price small{color:var(--muted);font-weight:700}
+.tf-order{flex:none;min-height:40px;padding:0 12px}
+
+/* 🧑‍🔧 my booth */
+.tf-careers{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.tf-career-pick{display:flex;align-items:center;gap:6px;min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;font-weight:700;text-align:left;cursor:pointer}
+.tf-career-pick.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.tf-pcts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.tf-pct{min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);font:inherit;font-weight:800;cursor:pointer}
+.tf-pct.on{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.tf-pct:disabled{opacity:.6}
+.tf-mine{position:relative;padding-top:18px;overflow:hidden}
+.tf-mine.shut{opacity:.85}
+.tf-mine h3{margin:0}
+.tf-big1{font-size:1.8rem;flex:none}
+.tf-mood{display:flex;align-items:center;gap:8px;margin:10px 0 0}
+.tf-mood span{font-size:1.2rem}
+.tf-mood i{flex:1 1 auto;height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.tf-mood i b{display:block;height:100%;background:linear-gradient(90deg,var(--tf-gold),var(--good));border-radius:999px}
+.tf-mood small{font-weight:900;color:var(--ink);min-width:28px;text-align:right}
+.tf-menu,.tf-opts{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin:8px 0 0}
+.tf-opt{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:6px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);text-align:left;font:inherit;font-size:.9rem;font-weight:700;cursor:pointer}
+.tf-opt:hover,.tf-opt:focus-visible{border-color:var(--accent)}
+.tf-opt:disabled{opacity:.55;cursor:not-allowed}
+.tf-moment{margin:0 0 10px;padding:10px;border-radius:16px;border:2px solid var(--warn);background:var(--warn-soft,var(--surface-2))}
+.tf-evt{display:flex;gap:8px;margin:0 0 4px;font-size:.95rem;line-height:1.45;font-weight:700;color:var(--ink)}
+.tf-evi{flex:none;font-size:1.5rem;line-height:1.1}
+.tf-moment .tf-muted b{font-variant-numeric:tabular-nums;color:var(--warn)}
+.tf-log{margin:0 0 10px;font-size:.86rem;color:var(--ink-2)}
+.tf-log summary{min-height:44px;display:flex;align-items:center;font-weight:800;cursor:pointer}
+.tf-log ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.tf-log li{display:flex;gap:6px;line-height:1.4}
+.tf-log small.up{color:var(--good);font-weight:800}
+.tf-log small.down{color:var(--bad);font-weight:800}
+
+/* 🎟️ stamps */
+.tf-stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin:4px 0 8px}
+.tf-stampcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 8px;border:2px dashed var(--tf-red);border-radius:14px;background:var(--surface);text-align:center;transform:rotate(-2deg)}
+.tf-stampcard:nth-child(even){transform:rotate(2deg);border-color:var(--tf-teal)}
+.tf-stampcard>span{font-size:1.6rem}
+.tf-stampcard small{font-size:.72rem;font-weight:700;color:var(--ink-2);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tf-stampcard em{position:absolute;top:2px;right:4px;font-style:normal;font-size:.8rem}
+.tf-tiers{list-style:none;margin:0 0 8px;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.tf-tier{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--surface-2)}
+.tf-tier.ready{background:var(--accent-soft);border:1px solid var(--accent)}
+.tf-tier.got{background:var(--good-soft)}
+.tf-tier .grow{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:2px}
+.tf-tier small{font-size:.76rem;color:var(--muted)}
+.tf-tier .btn{flex:none;min-height:40px}
+.tf-tier em{flex:none;font-style:normal}
+.tf-tieri{font-size:1.6rem;flex:none}
+.tf-prog{display:block;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.tf-prog b{display:block;height:100%;background:var(--accent)}
+
+/* 🏆 board */
+.tf-past{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.tf-past .sd-chip{flex:none;font-size:.86rem}
+.tf-rank{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.tf-rank li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:12px;background:var(--surface-2)}
+.tf-rank .grow{min-width:0;flex:1 1 auto;display:flex;flex-direction:column}
+.tf-rank b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-rank small{font-size:.78rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-medal{flex:none;width:30px;text-align:center;font-weight:900;color:var(--ink-2)}
+.tf-score{flex:none;display:flex;flex-direction:column;align-items:flex-end}
+.tf-score b{font-size:1.05rem;font-weight:900;color:var(--ink)}
+
+@media (min-width:560px){.tf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-height:480px){
+  .tf-stick{position:static}
+  .tf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tf-tabs button{flex-direction:row;gap:5px;min-height:38px}
+  .tf-av{width:36px;height:36px}
+  .tf-sheet .sd-head{padding-top:6px;padding-bottom:4px}
+  .tf-sheet .sd-tabs{padding-top:4px;padding-bottom:4px}
+  .tf-bunting{height:8px;background-size:24px 8px}
+  .tf-tabs button{font-size:1rem}
+}
+@media (min-width:560px){.tf-tabs button{flex-direction:row;gap:5px}.tf-tabs button small{font-size:.8rem}}
+@media (prefers-reduced-motion:no-preference){
+  .tf-booth.live .tf-showi{display:inline-block;animation:tf-bob 1.4s ease-in-out infinite}
+  .tf-opt,.tf-pct,.tf-career-pick{transition:border-color .12s ease,background .12s ease}
+}
+@keyframes tf-bob{50%{transform:translateY(-3px) rotate(-6deg)}}
