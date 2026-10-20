@@ -19,7 +19,11 @@ sponsorship kind 'zpop' that is not the career, for one).
   * journey.study.career == CID       cleared (the course itself stays)
   * journey.days rows of CID, closeness people / snap / log / inbox of the career's own people (ids 'CID_...'),
     stories.arcs.CID, stories.queue beats of CID
+  * journey.certificates / study / cert_paper / worn 'cert:<group>' of a certificate group added with the career (CERTS:
+    🏦 teller → teller_service)
   * check                             the build stamp (career digests): the older build then validates in full
+A life card still waiting at the career (journey.life.pending.career) stays: older builds read an unknown workplace there
+as none (tests/test_career_teller_compat.py plays a day on 2.4.66 with one).
 Restore puts back every one of these except rows of rolling logs (journey.days, the news, closeness log and inbox,
 the stories queue, the history rows' place): those stay in the archive, since the log moved on meanwhile.
 
@@ -37,6 +41,8 @@ Usage
 Restoring puts a career back only when the save has no record for it, or the record is still the fresh one a newer
 build adds on load (no day worked: day 1, never opened); otherwise that save is reported and left as it is.
 
+Proof (🏦 the bank, teller → 2.4.66): tests/test_career_teller_compat.py (a story save hired, trained, examined, two days
+worked, Bà Lựu's arc started, the certificate worn, a shift left open: stripped, played on 2.4.66, restored byte for byte).
 Proof (1.9.11 → 1.9.10): saves of a story player, a player mid-shift at the album shop and one who worked days there
 then moved on, with pets and Mua sắm items, all pass rel-1.9.10's migrate_state + validate_state + public_state and
 play a day once stripped; restored on 1.9.11, they validate and the career record is byte for byte the archived one.
@@ -49,6 +55,9 @@ import json
 import os
 import sys
 
+# Certificate groups added together with a career (an older build validates journey.certificates, journey.study and
+# the worn 'cert:<group>' against its own groups): taken out with that career and put back by restore.
+CERTS = {'teller': ('teller_service',)}
 # Lists outside the careers that name career ids and that older validators check against their own CAREERS.
 ID_LISTS = (('journey', 'unlocked'), ('journey', 'board', 'touched'))
 # Rolling logs: rows naming the career are archived; restore does not put them back (the log moved on meanwhile).
@@ -149,6 +158,19 @@ def strip(state: dict, careers: list[str]) -> tuple[dict, dict]:
             if isinstance(q, list) and any(isinstance(x, dict) and x.get('career') == cid for x in q):
                 r['stories.queue'] = [x for x in q if isinstance(x, dict) and x.get('career') == cid]
                 q[:] = [x for x in q if not (isinstance(x, dict) and x.get('career') == cid)]
+        # 🎓 a certificate group that came with the career: the record, a course or a graded paper of it, the worn badge
+        for gid in CERTS.get(cid, ()):
+            certs = j.get('certificates')
+            if isinstance(certs, dict) and gid in certs:
+                r.setdefault('certs', {})[gid] = certs.pop(gid)
+            for key in ('study', 'cert_paper'):
+                if isinstance(j.get(key), dict) and j[key].get('cert') == gid:
+                    r.setdefault('cert_keys', {})[key] = j[key]
+                    j[key] = None
+            wear = 'cert:' + gid
+            if isinstance(j.get('worn'), list) and wear in j['worn']:
+                r.setdefault('cert_worn', {})[gid] = j['worn'].index(wear)
+                j['worn'] = [x for x in j['worn'] if x != wear]
         if r:
             removed[cid] = r
     if removed:
@@ -207,6 +229,15 @@ def restore(state: dict, removed: dict) -> tuple[dict, list[str]]:
         st = s.get('stories')
         if 'arc' in r and isinstance(st, dict) and isinstance(st.get('arcs'), dict):
             st['arcs'].setdefault(cid, r['arc'])
+        if r.get('certs') and isinstance(j.get('certificates'), dict):
+            for gid, rec in r['certs'].items():
+                j['certificates'].setdefault(gid, rec)
+        for key, v in (r.get('cert_keys') or {}).items():
+            if j.get(key) is None:
+                j[key] = v
+        for gid, i in (r.get('cert_worn') or {}).items():
+            if isinstance(j.get('worn'), list) and 'cert:' + gid not in j['worn']:
+                j['worn'].insert(min(i, len(j['worn'])), 'cert:' + gid)
     s.pop('check', None)
     return s, problems
 

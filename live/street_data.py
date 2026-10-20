@@ -201,7 +201,7 @@ TITLES = {
     'g_places8': '🌈 Đa năng', 'g_places_all': '🗺️ Thuộc từng ngõ nghề', 'g_mature5': '🌿 Vững vàng', 'g_mature10': '🌳 Trưởng thành',
     'g_days30': '📅 Một tháng ở phố', 'g_days100': '🗓️ Trăm ngày thương',
     'c_milk_tea': '🧋 Thợ pha trà sữa', 'c_grocery': '🛒 Chủ quầy tạp hóa', 'c_delivery': '🛵 Shipper thuộc đường',
-    'c_customs': '🛃 Người gác cửa khẩu', 'c_hotel': '🛎️ Người giữ chìa khóa Sông Mây', 'c_banquet': '👨‍🍳 Chiếc mũ trắng Hồng Mây', 'c_cafe_bakery': '☕ Barista buổi sớm', 'c_florist': '💐 Người cắm hoa', 'c_mother_baby': '🎁 Người gói quà khéo',
+    'c_customs': '🛃 Người gác cửa khẩu', 'c_hotel': '🛎️ Người giữ chìa khóa Sông Mây', 'c_banquet': '👨‍🍳 Chiếc mũ trắng Hồng Mây', 'c_teller': '🏦 Người đếm tiền hai lần', 'c_cafe_bakery': '☕ Barista buổi sớm', 'c_florist': '💐 Người cắm hoa', 'c_mother_baby': '🎁 Người gói quà khéo',
     'c_restaurant': '🍜 Đầu bếp mì cay', 'c_pet_care': '🐾 Bạn của chó mèo', 'c_salon': '💇 Thợ tóc có nghề',
     'c_repair': '🔧 Thợ sửa đồ tin cậy', 'c_farm': '🌾 Nông dân đồi gió', 'c_homestay': '🏡 Chủ nhà hiếu khách',
     'c_customer_care': '🎧 Người lắng nghe', 'c_pharmacy': '💊 Người đọc nhãn kỹ', 'c_tour_guide': '🧭 Người kể chuyện đường xa',
@@ -237,6 +237,7 @@ CERTS = {
     'cert:customs_basics': '🛃 Chứng chỉ Nghiệp vụ hải quan cơ bản',
     'cert:hotel_service': '🛎️ Chứng chỉ Nghiệp vụ khách sạn cơ bản',
     'cert:banquet_service': '👨‍🍳 Chứng chỉ Bếp tiệc và sảnh sự kiện cơ bản',
+    'cert:teller_service': '🏦 Chứng chỉ Nghiệp vụ giao dịch viên cơ bản',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

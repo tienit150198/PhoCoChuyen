@@ -264,6 +264,14 @@ _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='kh
                        invite='Mời {who} ghé lại quầy quản lý, Hồng Mây sẽ xem lại phiếu tiệc cùng mình ạ.',
                        process='Nhà hàng làm theo phiếu: bếp sát khuẩn đầu ca, nấu đúng công thức; sảnh bày theo đúng yêu cầu đã chốt. Hôm đó {fact} ạ.')
 
+_ROWS['teller'] = dict(place='phòng giao dịch', self='phòng giao dịch', people='khách giao dịch', who='anh chị', owner='giao dịch viên',
+                      served='giao dịch đã làm', record='biên nhận', review='góp ý của khách', reply='phản hồi',
+                      books='Sổ quầy giao dịch', rail_in='Ở Quầy số 3', confirm='Xác nhận giao dịch', team='Quầy giao dịch Bến Chợ',
+                      daily='Máy gọi số đã bật. Quầy số 3 xin chào!',
+                      invite_label='Mời ghé lại quầy', offers=dict(drink=None, gift=None, refund=None),
+                      invite='Mời {who} ghé lại Quầy số 3, phòng giao dịch sẽ đối chiếu biên nhận cùng mình ạ.',
+                      process='Quầy làm theo năm bước: nhận yêu cầu, kiểm tra thông tin, xử lý tiền, xác nhận, giao biên nhận. Hôm đó {fact} ạ.')
+
 # Full reply packs (§9 of the voice audit), on top of the shared non-shop rows.
 _PACKS = {
     'nurse': dict(
@@ -363,7 +371,7 @@ _SALARIED = frozenset((
     'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
     'pilot', 'flight_attendant', 'oil',
     'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
-    'lawyer', 'post_office', 'customs', 'hotel', 'banquet',
+    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'teller',
 ))
 
 

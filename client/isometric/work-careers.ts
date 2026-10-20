@@ -63,6 +63,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
+  teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
   customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
 
@@ -118,6 +119,13 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
     f('stove',r(2.85,.55,4.2,1.45),64,0xb5473a);f('sink',r(4.6,.6,5.2,1.45),62,blue);f('coldcabinet',r(5.5,.55,6.4,1.5),112,mint);f('desk',r(5.95,3.3,6.5,4.1),46,0xf3dcb4);
     z(r(2.6,.3,6.6,1.85),'tile',0xe6d2c8);z(r(2.85,2.95,6.75,4.45),'checker',0xf0e2cf);
+  }else if(career==='teller'){
+    // The glass-fronted counter in front, files and the safe on the left, the queue display, an ATM and the waiting chairs behind.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);
+    s('workbench','counter',r(3.1,3.2,5.6,4.15),4.35,4.75,60,mint);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
+    f('console',r(2.85,.55,4.1,1.5),82,blue);f('desk',r(4.6,.6,5.6,1.45),52,cream);f('sofa',r(5.9,3.35,6.5,4.15),42,mint);
+    z(r(2.6,.3,6.6,1.85),'tile',0xd6e4de);z(r(2.85,2.95,6.75,4.45),'checker',0xe9eee6);
   }else if(career==='customs'){
     // Declaration files on the left wall, the paper check desk in front, the scanner and the held goods behind.
     clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);

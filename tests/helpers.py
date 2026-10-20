@@ -140,3 +140,12 @@ def solve_activity(j,spec,practice=False):
     else:
         for card in a['cards']:j.act('life_activity_assign',card=card['id'],target=card['bin'] if a['kind']=='sort' else card['id'])
     return j.c['life']['activity']
+
+# Careers newer than the releases the rollback tests replay (engine.DORMANT): a save that never opened one is stored
+# without it (game/storage.py), so that is what an older build reads.
+NEW_DORMANT=('teller',)
+def as_stored(s):
+    from game.engine import initial_career
+    for cid in NEW_DORMANT:
+        assert s['careers'].get(cid,initial_career(cid))==initial_career(cid),cid+' was played: strip it (scripts/strip_new_careers.py)'
+    return dict(s,careers={k:v for k,v in s['careers'].items() if k not in NEW_DORMANT})

@@ -462,6 +462,17 @@ _profile('banquet', 'Bảo Trân | Gia Huy | Thanh Tùng',
     'đã sát khuẩn đầu ca, ra món đúng nhiệt và đúng thẻ dị ứng, tắt điện cuối ca // sanitised at the start of the shift, served at the right temperature with the right allergy cards, and powered down at closing',
     'sổ vệ sinh đầu ca và phiếu kiểm quầy ra món // the opening hygiene log and the pass temperature sheet')
 
+_profile('teller', 'Thu Trang | Minh Đức | Ngọc Ánh',
+    'Chị Hạnh · trưởng quầy giao dịch // Hạnh · teller counter lead',
+    'đúng người, đúng tiền, quỹ khớp từng đồng và không lộ thông tin khách // the right person, the right money, a drawer that balances to the last note, and no customer data exposed',
+    'đếm tiền và đổi cọc | đối chiếu người nhận | quỹ ATM và bàn giao // counting and bundling | recipient checks | ATM cash and handover',
+    'Sáng ngày lương hưu có ba việc: các cụ xếp hàng từ sớm, dì Bảy cần đổi tiền lẻ gấp, và ATM trước cửa báo sắp hết tiền. // A pension-day morning has three jobs: retirees queuing early, dì Bảy needing small change fast, and the ATM outside running low.',
+    'Giao {a} mở quầy đếm tiền chậm rãi cho các cụ, {b} đổi cọc cho dì Bảy và đối chiếu từng chuyển khoản, {c} cùng một người nữa tiếp quỹ ATM và ký sổ. // Have {a} open a counter and count slowly for the retirees, {b} bundle change for dì Bảy and check every transfer, and {c} refill the ATM with a second person and sign the log.',
+    'Sổ bàn giao ghi đủ quỹ nhưng đếm thực tế hụt 200 nghìn và có một phiếu rút đã ký mà chưa chi. // The handover book says the drawer is full, but the count is 200k short and one signed withdrawal slip was never paid out.',
+    'Chưa ký nhận: đối chiếu từng biên nhận, ghi khoản treo, lập biên bản với trưởng quầy rồi mới bàn giao. // Do not sign yet: match every receipt, log the pending item, and write a report with the counter lead before handing over.',
+    'đã đếm hai lần trước mặt khách, chuyển đúng người nhận và bàn giao quỹ khớp sổ // counted twice in front of the customer, sent money to the right recipient, and handed over a drawer that matched the book',
+    'biên nhận từng giao dịch và sổ bàn giao quỹ // a receipt for every transaction and the drawer handover book')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

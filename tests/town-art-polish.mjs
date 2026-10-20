@@ -11,7 +11,7 @@ const careers=content.catalogue.filter(c=>c.playable!==false),exteriors=new Set(
 for(const career of careers){
   const preview=art.careerPreview(career.id);assert.ok(preview,career.id+' has a real preview');
   if(preview.dedicated)assert.equal(art.BUILDING_ART[career.id],'career-'+career.id,`${career.id} retains its dedicated painted building`);
-  else assert.ok(['art_studio','lawyer','laundry','post_office','customs','hotel','banquet'].includes(career.id),'only the seven additions reuse raster art');
+  else assert.ok(['art_studio','lawyer','laundry','post_office','customs','hotel','banquet','teller'].includes(career.id),'only the eight additions reuse raster art');
   const kind=m.townBuildingArt(career,'home');exteriors.add(kind);
   const sign=art.FACADE_SIGNS[kind];assert.ok(sign&&sign.x>0&&sign.x<1&&sign.y>0&&sign.y<.80,`${career.id} sign is on its facade, including low cottage boards`);
   const title=String(career.place||career.short||career.name||career.id),lines=art.facadeTextLines(title);assert.ok(lines.split('\n').length<=2);assert.equal(lines.replace(/\s+/g,' '),title.trim().replace(/\s+/g,' '),'fitting signs never drops part of the real shop name');

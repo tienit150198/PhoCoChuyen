@@ -2000,6 +2000,45 @@ ARCS = {
                 ('me', 'Con sẽ giữ như chú: tay sạch mới vào bếp, khách dặn gì làm nấy, về thì tắt hết điện.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🏦 Quầy số 3, Ngân hàng Phố (sau chương 3)
+    'teller': dict(
+        title='Chiếc ghế xoay ở Quầy số 3', emoji='🏦',
+        keepsake=dict(emoji='🪪', name='Bảng tên Quầy số 3', desc='Bảng tên đầu tiên chị Hạnh cài cho bạn, góc còn dán chữ “Tập sự” đã bóc. Mười hai mùa lương hưu, chị bảo, mới đổi một chiếc ghế.'),
+        cast={'hanh': _p('Chị Hạnh', '👩‍💼', 'Trưởng quầy', 'teller_npc_01'),
+              'quan': _p('Anh Quân', '🙃', 'Giao dịch viên ca sáng', 'teller_npc_02'),
+              'luu': _p('Bà Lựu', '🍵', 'Chủ quán trà đá gốc bàng', 'teller_npc_03'),
+              'vy': _p('Chị Vy', '📈', 'Giám đốc phòng giao dịch', 'teller_npc_10')},
+        beats=[
+            _b('Đếm hai lần', '💵', 'Ngày đầu, chị Hạnh đặt cọc tiền đầu tiên vào tay bạn.', [
+                ('hanh', 'Máy đếm một lần, tay đếm một lần, trước mặt khách. Chậm mười giây mà khỏi cãi nhau cả buổi.'),
+                ('me', 'Dạ, em đếm lại cả cọc này trước mặt dì Bảy.'),
+                ('hanh', 'Ừ. Quầy số 3 xin chào là chào bằng sự cẩn thận đó.')]),
+            _b('Hai anh An', '🔁', 'Chị Thơ chuyển tiền cho “Nguyễn Văn An”, danh sách có hai người.', [
+                ('hanh', 'Tên giống nhau thì nhìn ảnh, nhìn nghề. Thiếu một trong ba là chưa chắc.'),
+                ('me', 'Anh An bán bánh mì, ảnh tóc xoăn. Em đọc lại cho chị Thơ rồi mới bấm.'),
+                ('hanh', 'Đúng. Bấm nhầm thì đòi lại cực lắm.')],
+                _c('Anh Quân dúi tập hồ sơ nhờ làm hộ. Bạn làm gì?',
+                   _o('a', 'Làm hộ nhưng ghi đúng tên người thực hiện trên nhật ký', [('quan', 'Ờ… ghi tên em cũng được. Cảm ơn nha.')], rel='quan'),
+                   _o('b', 'Làm hộ, không nói gì', [('hanh', 'Lần sau ghi tên mình vào nhật ký nhé. Công ai nấy nhận.')], rel='hanh'))),
+            _b('Túi vải của bà Lựu', '🍵', 'Bà Lựu mang túi vải tới góp tháng đầu cho chiếc xe trà mới.', [
+                ('luu', 'Đủ một triệu hai đó con, bà đếm ba lần rồi.'),
+                ('me', 'Bà ơi túi thiếu ba chục ạ. Bà gửi một triệu một trăm bảy mươi hay bù thêm ạ?'),
+                ('luu', 'Trời, thế mà bà cứ tưởng. Con thật thà quá, bà gửi chỗ con là yên tâm.')],
+                days=4, served=10, gap=1),
+            _b('Chỉ tiêu của giám đốc', '📈', 'Giám đốc Vy nhắn tin lúc mười giờ tối về chỉ tiêu bảo hiểm.', [
+                ('vy', 'Quầy 3 còn thiếu bốn hợp đồng. Mai mời hết các cụ gửi tiết kiệm.'),
+                ('me', 'Chị ơi các cụ chỉ cần chỗ cất tiền thuốc. Em ghi lý do vào sổ tư vấn, em tìm khách có nhu cầu thật.'),
+                ('vy', 'Ừ… sổ tư vấn của em chị đọc rồi. Khi xét chức chị sẽ nhớ.')],
+                _c('Một cụ hỏi gói 15 năm có hợp không. Bạn nói gì?',
+                   _o('a', 'Nói thật: cụ cần linh hoạt, gói đó không hợp', [('hanh', 'Nói thật là giữ khách cả đời.')], rel='hanh'),
+                   _o('b', 'Nói chung chung cho cụ tự chọn', [('hanh', 'Cụ hỏi mình là tin mình. Lần sau nói rõ hơn nhé.')], rel='hanh')),
+                days=6, served=14, gap=1),
+            _b('Ly trà đầu tiên', '🍵', 'Chiếc xe trà inox mới đứng dưới gốc bàng đầu phố.', [
+                ('luu', 'Ly đầu tiên từ xe mới, bà mời con. Không lấy tiền, cấm từ chối!'),
+                ('hanh', 'Em làm quầy mấy tháng mà cả chợ tin. Mai chị giao em kèm bạn mới.'),
+                ('me', 'Em sẽ dạy như chị: đếm hai lần, đọc lại một lần, không ai ký thay ai.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

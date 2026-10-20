@@ -1128,7 +1128,8 @@ print(json.dumps(out))
             validate_state(s)
         old = self.old_tree(self.RELEASES['2.4.60'])
         env = {k: v for k, v in dict(os.environ, PYTHONPATH=str(old), PYTHONUTF8='1').items() if k != 'MNL_CAREERS'}   # another test may leave a career filter behind
-        out = subprocess.run([sys.executable, '-c', self.PROG], input=json.dumps([a, b]), capture_output=True, text=True, cwd=old,
+        from tests.helpers import as_stored
+        out = subprocess.run([sys.executable, '-c', self.PROG], input=json.dumps([as_stored(a), as_stored(b)]), capture_output=True, text=True, cwd=old,
                              env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
         got = json.loads(out.stdout)

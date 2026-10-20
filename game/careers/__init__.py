@@ -40,6 +40,7 @@ ORDER = (
     'customs',                     # hải quan: Chi cục Hải quan cửa khẩu Bến Mây (lanes, smuggling, duties, controls; org ladder 'hq')
     'hotel',                       # khách sạn: Khách sạn Sông Mây, salaried shift staff rotating desk, rooms, laundry, breakfast, repairs, decor
     'banquet',                     # nhà hàng tiệc: Nhà hàng tiệc Hồng Mây, salaried kitchen (phụ bếp → đầu bếp) or event-hall shifts
+    'teller',                      # ngân hàng: Quầy số 3 at the Bến Chợ office of Ngân hàng Phố (NPC customers; never the player's own bank)
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

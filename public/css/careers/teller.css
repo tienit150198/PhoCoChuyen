@@ -1,0 +1,117 @@
+/* 🏦 Quầy số 3: a teal bank counter, paper slips, an ID card, the cash tray that totals itself. Theme tokens only. */
+.career-job.teller{--sk-accent:#1f6f6b;--sk-accent-2:#d4a23c;--tl-ok:#2e7d4f;--tl-bad:#b5473a;min-width:0;overflow-wrap:anywhere}
+.teller h3,.teller h4{margin:0 0 6px}
+.teller .tl-evidence{padding:11px 12px;border-left:3px solid var(--sk-accent-2);background:var(--sk-surface-2,#f1f5f2);line-height:1.55;margin:8px 0}
+.teller .tl-step,.teller .tl-shift,.teller .tl-close,.teller .tl-learn,.teller .tl-exam,.teller .tl-review,.teller .tl-cart{padding:15px 16px;margin:12px 0}
+.teller .tl-shift,.teller .tl-close{border-left:5px solid var(--sk-accent-2)}
+.teller .tl-learn,.teller .tl-exam,.teller .tl-review{border-left:5px solid var(--sk-accent)}
+.teller .tl-learn small,.teller .tl-review small{display:block;letter-spacing:.03em;color:var(--sk-muted,#5d6b66);margin-bottom:4px}
+.teller .tl-ask{margin:10px 0 0}
+.teller .tl-done{list-style:none;padding:0;margin:10px 0 0;font-size:13px;color:var(--sk-muted,#5d6b66)}
+.teller .tl-step-count{font-size:13px;color:var(--sk-muted,#5d6b66);margin:0 0 6px}
+.teller progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:12px}
+.teller .tl-options,.teller .tl-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.teller .tl-options .btn,.teller .tl-picks .btn{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
+.teller .tl-pick{display:flex;gap:8px;align-items:flex-start}
+.teller .tl-pick.on,.teller .tl-card.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.teller .tl-tick{flex:0 0 auto;min-width:22px;height:22px;border-radius:11px;border:2px solid var(--sk-accent);color:var(--sk-accent);font-style:normal;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+.teller .tl-row{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end;margin-top:12px}
+.teller .tl-row .btn{min-height:46px}
+.teller .tl-finished,.teller .tl-last,.teller .tl-note-line{padding:11px 12px;background:var(--sk-surface-2,#f1f5f2);border-radius:10px;font-size:13px;line-height:1.5}
+.teller summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+/* the slip and the ID card, side by side */
+.teller .tl-papers{margin:10px 0;display:grid;gap:9px}
+.teller .tl-papers:has(.tl-slip){grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+.teller .tl-papers .tl-note-line{grid-column:1/-1;margin:0}
+.teller .tl-slip,.teller .tl-idcard{display:grid;gap:3px;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.35;min-width:0}
+.teller .tl-slip{background:#fffdf3;border:1px dashed #c9b57a;color:#3b3526}
+.teller .tl-idcard{background:linear-gradient(135deg,#e6f1ef,#d4e6e3);border:1px solid #9cc3bd;color:#21413e}
+.teller .tl-slip small,.teller .tl-idcard small{font-size:11px;letter-spacing:.08em;opacity:.75}
+.teller .tl-amt{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.teller .tl-words,.teller .tl-sign{font-style:italic}
+.teller .tl-face{font-size:26px;line-height:1}
+.teller .tl-idcard em{font-style:normal;color:var(--tl-bad);font-weight:600}
+.teller .tl-say{margin:0;padding:10px 12px;border-radius:10px;background:var(--sk-surface,#fbfdfc);border:1px solid var(--sk-line,#cfe0dc)}
+.teller .tl-photo{margin:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.teller .tl-facts{display:flex;flex-wrap:wrap;gap:6px 14px;padding-left:18px;margin:4px 0 0}
+.teller .tl-chips{display:flex;flex-wrap:wrap;gap:6px}
+.teller .tl-rows{list-style:none;display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:8px 0}
+.teller .tl-rows li{padding:5px 10px;border-radius:8px;background:var(--sk-surface,#fbfdfc);border:1px solid var(--sk-line,#cfe0dc);font-size:13px;font-variant-numeric:tabular-nums}
+.teller .tl-idphoto{display:block;width:40px;height:40px;border-radius:8px;overflow:hidden}
+/* notes: colours of the fictional counter notes */
+.teller .n500,.tl-ghost.n500{--tl-note:#2b8cb3}.teller .n200,.tl-ghost.n200{--tl-note:#b86a3c}.teller .n100,.tl-ghost.n100{--tl-note:#4f8a3a}
+.teller .n50,.tl-ghost.n50{--tl-note:#b04f86}.teller .n20,.tl-ghost.n20{--tl-note:#3d5fb0}.teller .n10,.tl-ghost.n10{--tl-note:#9a7a2c}
+.teller .tl-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:7px;background:var(--sk-surface-2,#eef3f1);background:color-mix(in srgb,var(--tl-note,#888) 16%,transparent);border:1px solid var(--tl-note,#888);font-variant-numeric:tabular-nums;white-space:nowrap}
+.teller .tl-chip b{color:var(--tl-note,#333)}
+/* the tray */
+.teller .tl-trayw{display:grid;gap:10px;margin-top:10px}
+.teller .tl-palette{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;touch-action:none;user-select:none;-webkit-user-select:none}
+.teller .tl-note{min-height:52px;padding:6px 2px;border-radius:9px;border:2px solid var(--tl-note);background:color-mix(in srgb,var(--tl-note) 14%,var(--sk-surface,#fff));display:grid;place-items:center;gap:0;cursor:grab;color:inherit;font:inherit}
+@supports not (background:color-mix(in srgb,red 50%,blue)){.teller .tl-note{background:var(--sk-surface,#fff)}}
+.teller .tl-note b{font-size:16px;color:var(--tl-note)}
+.teller .tl-note small{font-size:10px;opacity:.8}
+.teller .tl-note:active{transform:scale(.96)}
+.teller .tl-tray{border:2px dashed var(--sk-line,#9cc3bd);border-radius:12px;padding:10px 12px;min-height:92px;background:var(--sk-surface,#fbfdfc);transition:border-color .15s,background .15s}
+.teller .tl-tray.hot{border-color:var(--sk-accent);background:#e3f3ef;background:color-mix(in srgb,var(--sk-accent) 10%,var(--sk-surface,#fff))}
+.teller .tl-tray.ok{border-style:solid;border-color:var(--tl-ok)}
+.teller .tl-total{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.teller .tl-total b{font-size:20px;font-variant-numeric:tabular-nums}
+.teller .tl-need{font-size:13px;color:var(--sk-muted,#5d6b66)}
+.teller .tl-diff{display:flex;flex-wrap:wrap;gap:4px 10px;max-width:none;margin:2px 0 6px;font-size:13px;font-weight:600}
+.teller .tl-machine{margin-left:auto;font-weight:600;color:var(--sk-muted,#5d6b66);font-variant-numeric:tabular-nums}
+.teller .tl-diff.ok{color:var(--tl-ok)}.teller .tl-diff.over,.teller .tl-diff.under{color:var(--tl-bad)}
+.teller .tl-empty{margin:4px 0;font-size:13px;color:var(--sk-muted,#5d6b66)}
+.teller .tl-stacks{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.teller .tl-stack{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.teller .tl-stack-btns{display:flex;gap:6px}
+.teller .tl-stack-btns .btn{min-height:40px;min-width:44px;padding:0 10px}
+.tl-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;padding:8px 12px;border-radius:9px;font-weight:700;color:#fff;background:var(--tl-note,#1f6f6b);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+/* recipient cards */
+.teller .tl-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.teller .tl-card{display:grid;gap:2px;justify-items:start;text-align:left;padding:11px 12px;border-radius:11px;border:1px solid var(--sk-line,#cfe0dc);background:var(--sk-surface,#fbfdfc);min-height:96px;color:inherit;font:inherit;cursor:pointer}
+.teller .tl-card small{font-size:12px;color:var(--sk-muted,#5d6b66)}
+.teller .tl-tail{font-variant-numeric:tabular-nums}
+/* ATM */
+.teller .tl-cass{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:6px}
+.teller .tl-cas{display:grid;gap:4px;justify-items:start;padding:8px;border-radius:9px;background:#18302e;color:#d8efe9;font-size:12px}
+.teller .tl-cas .bar{width:100%}
+.teller .tl-atm small{font-size:11px;letter-spacing:.06em}
+.teller .tl-arcbox .bar i{background:var(--sk-accent-2)}
+/* badge, exam, cart */
+.teller .tl-badge{display:flex;align-items:center;gap:10px;margin:12px 0;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,#1f6f6b,#2b8c86);color:#fff}
+.teller .tl-badge small{display:block;opacity:.88}
+.teller .tl-badge-pin{font-size:26px}
+.teller .tl-exam-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.teller .tl-exam-head small{flex:1 1 auto}
+.teller .tl-timer{font-variant-numeric:tabular-nums}
+.teller .tl-cart{text-align:center;border:2px solid var(--sk-accent-2)}
+.teller .tl-cart-art{font-size:40px;margin:0}
+/* progress */
+.teller .tl-progress,.teller .tl-notebook{border-top:1px solid var(--sk-line,#cfe0dc);padding:10px 0;margin-top:10px}
+.teller .tl-branches{list-style:none;padding:0;display:grid;gap:10px}
+.teller .tl-branch{padding:10px 12px;border-radius:10px;border:1px solid var(--sk-line,#cfe0dc)}
+.teller .tl-branch.on{border-color:var(--sk-accent)}
+.teller .tl-ladder{display:flex;flex-wrap:wrap;gap:4px 6px;padding:0;margin:6px 0;list-style:none;font-size:12px}
+.teller .tl-ladder li{padding:2px 8px;border-radius:12px;background:var(--sk-surface-2,#eef3f1);color:var(--sk-muted,#5d6b66)}
+.teller .tl-ladder li.past{background:#d3e7e3;background:color-mix(in srgb,var(--sk-accent) 18%,transparent);color:inherit}
+.teller .tl-ladder li.now{background:var(--sk-accent);color:#fff;font-weight:600}
+.teller .tl-record,.teller .tl-miles{list-style:none;padding:0;display:grid;gap:6px}
+.teller .tl-record li{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.teller .tl-miles li{display:grid;gap:2px}
+.teller .tl-miles small{color:var(--sk-muted,#5d6b66)}
+.teller .tl-rules{padding-left:20px}
+.teller .tl-rules li{margin:6px 0;line-height:1.5}
+.teller button:focus-visible,.teller summary:focus-visible,.teller input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
+.teller .sk-amt-in{min-width:0}
+.teller .sk-amt input{max-width:100%;font-size:18px}
+.career-job.teller .sk-amt-row .sk-amt-in.sk-amt-in input.qty-in.qty-in{flex:1 1 0;width:auto;min-width:0}   /* the unit (nghìn, tờ) stays inside the box */
+html[data-theme="dem"] .career-job.teller{--sk-accent:#5cc2b8;--sk-accent-2:#c9a24b}
+html[data-theme="dem"] .teller .tl-slip{background:#2c2a20;color:#efe6c8;border-color:#7d6d3c}
+html[data-theme="dem"] .teller .tl-idcard{background:#173230;color:#d3ece7;border-color:#3f706a}
+@media(max-width:480px){
+  .teller .tl-options,.teller .tl-picks{grid-template-columns:minmax(0,1fr)}
+  .teller .tl-palette{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .teller .tl-cass{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .teller .tl-papers:has(.tl-slip){grid-template-columns:minmax(0,1fr)}
+  .teller .tl-step,.teller .tl-shift,.teller .tl-close,.teller .tl-learn,.teller .tl-exam,.teller .tl-review{padding:13px}
+}

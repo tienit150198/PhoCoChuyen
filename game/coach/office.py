@@ -201,6 +201,19 @@ STEPS: dict[str, list[dict]] = {
         S('🗺️', 'Chia tuyến đúng mã kiện và vùng.', s=[".post-options:has([data-payload*='.route\"'])"], g=3),
         S('🧾', 'Lưu đúng giấy bàn giao để khép phiếu.', s=[".post-options:has([data-payload*='.proof\"'])"], g=3),
     ],
+    # 🏦 Quầy số 3, Ngân hàng Phố: học việc and the exam first, the float, five steps per customer, the handover.
+    'teller': [
+        S('🏦', 'Đọc giới thiệu rồi bấm Vào việc thôi!', s=['[data-command="tl_intro"]'], o=True),
+        S('🎓', 'Học ba bài ngắn: đọc rồi chọn đáp án đúng.', s=['.tl-learn .tl-options'], g=('prep', 0), o=True),
+        S('📝', 'Bấm Bắt đầu thi thực hành, làm đủ ba phần.', ['Bắt đầu thi thực hành'], ['.tl-exam-go'], g=('prep', 0), o=True),
+        S('💼', 'Đầu ca: đếm quỹ rồi so với sổ bàn giao.', s=['.tl-shift'], g=0, o=True),
+        S('🙋', 'Bấm Nhận yêu cầu để mời khách.', ['Nhận yêu cầu'], ['.sk-ask', '[data-command="ask"]'], g=1,
+          w='Nút hiện khi có khách mới.'),
+        S('🧾', 'Đọc phiếu, làm từng bước trên thẻ.', s=['.tl-step'], g=1),
+        S('💵', 'Kéo hoặc chạm tờ tiền vào khay cho đúng số.', s=['.tl-tray'], g=2, o=True),
+        S('✅', 'Khay khớp phiếu thì bấm Xác nhận khay tiền.', ['Xác nhận khay tiền'], ['.tl-tray-send'], g=2, o=True),
+        S('🧾', 'Cuối ca: bàn giao quỹ, khớp từng biên nhận.', s=['.tl-close > summary'], g=3, x=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -327,4 +340,14 @@ EN: dict[str, str] = {
     'Tính cước theo bảng, bấm Ghi cước vào phiếu.': 'Work out postage from the table, tap Write postage on slip.',
     'Chia tuyến đúng mã kiện và vùng.': 'Route it by parcel code and zone.',
     'Lưu đúng giấy bàn giao để khép phiếu.': 'File the right handover proof to close the slip.',
+    # teller
+    'Học ba bài ngắn: đọc rồi chọn đáp án đúng.': 'Three short lessons: read, then pick the right answer.',
+    'Bấm Bắt đầu thi thực hành, làm đủ ba phần.': 'Tap Start the practical exam and do all three parts.',
+    'Đầu ca: đếm quỹ rồi so với sổ bàn giao.': 'Start of shift: count the float, then check the handover book.',
+    'Bấm Nhận yêu cầu để mời khách.': 'Tap Take the request to call the customer.',
+    'Nút hiện khi có khách mới.': 'The button shows when a new customer comes.',
+    'Đọc phiếu, làm từng bước trên thẻ.': 'Read the slip, do each step on the card.',
+    'Kéo hoặc chạm tờ tiền vào khay cho đúng số.': 'Drag or tap notes into the tray to the exact amount.',
+    'Khay khớp phiếu thì bấm Xác nhận khay tiền.': 'When the tray matches the slip, tap Confirm the tray.',
+    'Cuối ca: bàn giao quỹ, khớp từng biên nhận.': 'End of shift: hand over the drawer, match every receipt.',
 }

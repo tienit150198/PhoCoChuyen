@@ -95,6 +95,7 @@ ORDERS = {
     'customs': ('Việc riêng: hướng dẫn một hộ kinh doanh khai tờ khai', 16, 3, {}),
     'hotel': ('Việc riêng: dọn và bày lại một phòng cho khách quen', 16, 3, {}),
     'banquet': ('Việc riêng: nấu một mâm cỗ nhỏ cho nhà khách quen', 18, 4, {}),
+    'teller': ('Việc riêng: hướng dẫn một tiệm trong phố lập sổ thu chi', 16, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',
