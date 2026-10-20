@@ -1,3 +1,12 @@
+# Chưa phát hành — halloween
+
+🎃 Lễ hội Ma Phố, Halloween 26–31/10/2026 (chủ game 20/10; kế hoạch: docs/HALLOWEEN_2026.md). Tự mở 0:00 26/10 giờ VN, khép 23:59:59 31/10, đổi kẹo tới hết 01/11; trước đó không có gì hiện ra. game/halloween.py + halloween_content.py, public/js/v4/halloween.js, halloween-data.js, halloween-town.js, public/css/halloween.css, quản trị public/js/admin/halloween.js. Không đổi phiên bản, chưa có dòng Có gì mới.
+- Kiếm 🍬 kẹo: điểm danh 10/ngày; 5 quả bí ngô nấp quanh phố mỗi ngày (câu đố 4 lựa chọn, đoán một lần, 5 kẹo; phố 2.5D đi tới đúng biển là nhặt luôn); "Cho kẹo hay bị ghẹo?" gõ cửa người chơi khác (10 nhà/ngày, mỗi nhà một lần, 4 kẹo hoặc bị ghẹo 1; chủ nhà 2 kẹo/khách, tối đa 15 khách/ngày); mỗi ngày một chủ đề có thưởng nhỏ; 31/10 từ 19:00 mọi kẹo ×2 + Bí ngô khổng lồ 30.
+- Quầy đổi kẹo: 3 danh hiệu, 2 khung, 1 màu tên Halloween trọn đời (🎨 Phong cách, không mua được bằng xu), vòng kẹo thú cưng, túi 20.000 xu tối đa 3 lần/tài khoản. Bảng kẹo: top 3 "Vua Kẹo Halloween 2026" + khung bí ngô vàng, top 4–10 "Top 10 săn kẹo 2026", trao một lần lúc 0:00 01/11.
+- Thẻ khai hội giữa màn hình mỗi ngày (break-gate 'hween' sau Thiệp 20/10), dòng tin chạy chữ mỗi ngày + lúc 19:00 31/10, lối vào ở menu và Tiện ích, phố 2.5D trang trí (lớp phủ DOM, không đụng bản Phaser).
+- Chống nick phụ: chỉ tài khoản; gõ cửa cần tài khoản ≥ 1 ngày, ≤ 3 tài khoản/mạng/ngày; túi xu cần tài khoản ≥ 3 ngày, ngày sống ≥ 3, ≤ 3 tài khoản/mạng cả mùa (mạng lưu mã băm); mọi thưởng một lần theo khóa + khóa advisory. Quản trị → Halloween (GET /api/admin/halloween). 🛑 MNL_HALLOWEEN_OFF=1.
+- Dữ liệu: SCHEMA_VERSION 80 (76–79 của nhánh khác): bảng mới hw_players, hw_log + index; không FK, không backfill, không khóa save. Quà qua live_effects kind 'hween' (2.4.71 để chờ). tests/test_halloween.py, tests/test_halloween_compat.py, tests/halloween.mjs, scripts/browser_halloween.py (ảnh 390×844). Tiếng Anh: i18n/overrides.json + build.
+
 # Chưa phát hành — restoration
 
 🧰 Thợ phục chế (nghề thứ 60 trong careers-integ): Xưởng phục chế Hồn Xưa của chú Khải, phục chế đồ xưa đồ hỏng; và phục chế đồ của người chơi khác qua 🛎️ Phố dịch vụ (chủ game 21/10: "làm hết đi"). game/careers/restore.py + restore_content.py (nghề), game/restore_service.py (người chơi với người chơi), public/js/careers/restore.js + public/css/careers/restore.css (bàn làm việc), public/js/v4/restore.js + public/css/restore.css (🧰 Phục chế đồ). Không đổi phiên bản, chưa có dòng Có gì mới.

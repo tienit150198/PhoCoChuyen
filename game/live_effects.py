@@ -36,13 +36,15 @@ import time
 ACTION = 'live_fx'                  # internal command (game/engine.py), never accepted from a client
 RID = 'live-'                       # request id prefix: live-<hash>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
-PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap', 'bark', 'bark_weekly', 'town', 'lixi', 'photo', 'tfair')  # quay_refund preserves the original wage-funding pocket;
+PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund', 'auction', 'mishap', 'bark', 'bark_weekly', 'town', 'lixi', 'photo', 'tfair', 'hween')  # quay_refund preserves the original wage-funding pocket;
 # 'auction' (game/auction.py): an escrow refund or a won lot; its row flips in the save's own transaction (auction.fx_commit)
 # 'bark' (game/dog_bark.py): 🐕 a tug-of-war's pot, a draw's or a cancel's stake; its row flips there too (dog_bark.fx_commit)
 # 'town' (game/town_projects.py): 🏗️ a finished project's titles for one sponsor (amount 1, data {project, rank, xu, titles})
 # 'lixi' (game/lixi.py): 🧧 an envelope grabbed, or what nobody took back to the giver (an older build leaves it pending)
 # 'photo' (game/photo_studio.py): 📸 a photo order's price back (declined, expired); 2.4.66 leaves it pending
 # 'tfair' (game/town_fair.py): 🎪 Hội chợ việc làm's 🎨 Phong cách items (amount 1, data {event, items, why}); 2.4.66 leaves it pending
+# 'hween' (game/halloween.py): 🎃 Lễ hội Ma Phố, candy exchanged (🎨 items, a pet piece, or a capped bag of xu: amount = its xu) or
+# the season board's titles (amount 1, data {why, items?, pet?, coins?}); an older build leaves it pending
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
@@ -83,7 +85,7 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     kind = p.get('kind')
     e.need(kind in PAYS, 'Loại phần thưởng không hợp lệ.')
     transfer_refund = kind == 'coins' and p.get('src') == 'xfer_back'
-    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 2_000_000 if kind == 'bark_weekly' else 10**9 if transfer_refund or kind in ('auction', 'mishap', 'bark') else 10**7 if kind in ('lixi', 'photo') else AMOUNT_MAX)
+    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 2_000_000 if kind == 'bark_weekly' else 10**9 if transfer_refund or kind in ('auction', 'mishap', 'bark') else 10**7 if kind in ('lixi', 'photo', 'hween') else AMOUNT_MAX)
     e.need(amount != 0, 'Số lượng không hợp lệ.')
     h = short(eid)
     got = j.get('live_fx') if isinstance(j.get('live_fx'), list) else []
@@ -116,6 +118,9 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     elif kind == 'tfair':   # 🎪 Hội chợ việc làm: a stamp tier's or a booth's cosmetics (game/town_fair.py)
         from . import town_fair
         message = town_fair.apply_fx(s, p, amount)
+    elif kind == 'hween':   # 🎃 Lễ hội Ma Phố: candy exchanged or the season board's titles (game/halloween.py)
+        from . import halloween
+        message = halloween.apply_fx(s, p, amount)
     elif kind == 'quay_refund':
         from . import quay_hire
         source,label = p.get('source'),p.get('label')
@@ -194,7 +199,7 @@ def on_load(store, token: str, state: dict | None) -> bool:
                 payload.update(wage=data.get('wage'),source=data.get('source'))
         elif r['kind'] == 'quay_refund':
             payload.update(source=data.get('source'),label=data.get('label'))
-        elif r['kind'] in ('auction', 'bark', 'bark_weekly', 'town', 'lixi', 'photo', 'tfair'):
+        elif r['kind'] in ('auction', 'bark', 'bark_weekly', 'town', 'lixi', 'photo', 'tfair', 'hween'):
             payload['data'] = data
         elif r['kind'] == 'mishap':
             payload['sub'] = data.get('sub')

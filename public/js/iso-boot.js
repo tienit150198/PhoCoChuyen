@@ -49,6 +49,7 @@ export function start({env,world,interact,renderMain}){
       })]);
       clearTimeout(timeout);timeout=null;
       world.adopt(real);renderMain();attachGuide(real,env);attachTreasure(real,env);note.remove();
+      try{const hw=()=>import('./v4/halloween-data.js').then(d=>d.hwShown()&&import('./v4/halloween-town.js').then(m=>m.attachHalloweenTown(real,env))).catch(e=>console.warn('halloween town:',e));hw();document.addEventListener('mnl:hween',hw);}catch{/* 🎃 Lễ hội Ma Phố (decor + the pumpkin hunt on foot, lazy): never in the way of the town */}
     }
     catch(e){
       if(timeout!==null)clearTimeout(timeout);

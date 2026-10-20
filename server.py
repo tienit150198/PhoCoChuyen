@@ -97,6 +97,7 @@ from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_
 from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
 from game import hotel_stay  # 🏨 Phòng cho người chơi (game/hotel_stay.py: its stays registered in Phố dịch vụ at import, /api/hotel/…)
 from game import town_fair  # 🎪 Hội chợ việc làm (game/town_fair.py: /api/townfair/…, its booths' discount asked by game/service_market.py)
+from game import halloween  # 🎃 Lễ hội Ma Phố, 26–31/10/2026 (game/halloween.py: /api/halloween…, MNL_HALLOWEEN_OFF)
 from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/photo_studio.py: /api/photo/…, its own reads and writes)
 from game import wed_services  # 💒 Dịch vụ cưới từ người chơi: its services into game/service_market.py at import (/api/wedsvc/…)
 from game import service_market as _svc_market  # 🛎️ Phố dịch vụ
@@ -161,6 +162,7 @@ def ui_config()->dict:
     out={"clean":(os.environ.get("MNL_CLEAN_UI") or "on").strip().lower()!="off"}
     if (stk:=sticker_event.hint()):out["sticker"]=stk  # 🎨 the in-game way to /sticker while submissions are open
     if (tf:=town_fair.hint()):out["tfair"]=tf  # 🎪 Hội chợ việc làm on or soon (the menu entry and the 2.5D signpost)
+    if (hw:=halloween.hint()):out["hween"]=hw  # 🎃 Lễ hội Ma Phố while it shows (26/10 → 01/11): the menu entry, the start card, the town's decor
     return out
 
 
@@ -924,6 +926,15 @@ class Handler(BaseHTTPRequestHandler):
                 token,_,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("tfair-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,town_fair.get(self.server.store,token,None,route[len("/api/townfair/"):],{k:v[0] for k,v in parse_qs(split.query).items()}));return
+            if route=="/api/halloween":  # 🎃 Lễ hội Ma Phố: my candy, today's pumpkins, doors, the shop, the board (game/halloween.py; the save is not read)
+                token,_,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("hween-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,halloween.view(self.server.store,token));return
+            if route=="/api/admin/halloween":  # 🎃 the season's numbers, the board, the xu swaps by network; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                self.json(200,halloween.admin_view(self.server.store));return
             if route=="/api/admin/townfair":  # 🎪 the fair's switches and its archive; admin only
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -1131,7 +1142,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair" or route.startswith("/api/halloween/") and route!="/api/halloween/buy")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1270,7 +1281,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);photo_studio.forget(self.server.store,token);radio_station.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);photo_studio.forget(self.server.store,token);radio_station.forget(self.server.store,token);halloween.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -1353,6 +1364,11 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/hotel/"):  # 🏨 confirm / decline / cancel / arrive / checkin / handle / ask / leave / checkout (game/hotel_stay.py)
                 if not self.server.rate_limit("hotel:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,hotel_stay.post(self.server.store,token,state,route[len("/api/hotel/"):],data,ip=self.client_ip()));return
+            if route.startswith("/api/halloween/"):  # 🎃 checkin / guess / walk / giant / knock / buy (game/halloween.py); an exchange is paid into the save at once
+                if not self.server.rate_limit("hween:"+token,40):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                out=halloween.post(self.server.store,token,route[len("/api/halloween/"):],data,ip=self.client_ip())
+                if route=="/api/halloween/buy" and live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
             if route.startswith("/api/townfair/"):  # 🎪 open / pct / close / show / moment / watch / claim (game/town_fair.py; orders go through /api/svc/)
                 if not self.server.rate_limit("tfair:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,town_fair.post(self.server.store,token,None,route[len("/api/townfair/"):],data));return
@@ -1943,6 +1959,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("hotel",lambda:hotel_stay.run_housekeeping(store))  # 🏨 no-shows refunded, the night's situations, overdue check-outs paid (row locks: exactly once)
         step("svc",lambda:service_market.run_housekeeping(store))  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
+        step("hween",lambda:halloween.run_housekeeping(store))  # 🎃 Lễ hội Ma Phố: after 01/11 00:00 the board's top 10 get their titles and the ticker its line (exactly once)
         step("townfair",lambda:town_fair.run_housekeeping(store))  # 🎪 Hội chợ việc làm: its ticker line once, then settle, archive and grant a fair's titles (status-guarded: exactly once)
         step("photo",lambda:photo_studio.run_housekeeping(store))  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
 
