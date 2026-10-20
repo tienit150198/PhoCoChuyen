@@ -24,7 +24,7 @@ from game import work_visits as wv
 from tests.test_service_market import _Helpers
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = 'a808cb79'   # 2.4.66 (live): schema 62, no svc tables, no work_service_orders.fee
+RELEASE = '5ba2e147'   # 2.4.67 (live; 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 
 OLD = '''import json,sys
 from game.storage import Store

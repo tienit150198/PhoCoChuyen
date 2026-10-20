@@ -183,6 +183,9 @@ GOLDEN_CANCEL_FREEZE = 300     # a window can no longer be cancelled in its last
                                # snapshot of the windows is at most a minute old: none books a cancelled one)
 
 # ---------------------------------------------------------------- anti-churn (joining stays free, owner 19/10)
+REJOIN_HOURS = 48             # owner 21/10: "thoát bang thì cần 48h sau mới vào được bang khác": after leaving a bang (Rời bang),
+                               # another bang (join, ask, invite, approval, founding) waits this long; the same bang takes you back at
+                               # once; a kick or a disband never makes anyone wait. MNL_BANG_REJOIN_HOURS overrides (0: off)
 SWITCH_DAY_MAX = 10            # bangs joined (or founded) a Vietnam day at most per player: a soft cap against hopping
 
 # ---------------------------------------------------------------- 🛍️ Cửa hàng bang (points only)

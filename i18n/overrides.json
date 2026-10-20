@@ -34737,7 +34737,10 @@
   "Xem trình diễn": "Watch the show",
   "lượt khách": "served",
   "điểm gian": "score",
-  "Hội chợ mở mỗi thứ Bảy, 14:00–17:00.": "The fair opens every Saturday, 14:00–17:00."
+  "Hội chợ mở mỗi thứ Bảy, 14:00–17:00.": "The fair opens every Saturday, 14:00–17:00.",
+  "Người này đang ở bang khác: họ cần rời bang đó trước.": "This player is in another guild: they need to leave it first.",
+  "Bạn đang là Bang chủ: giải tán bang cũ trước nhé (không cần trao chức).": "You lead a guild: disband it first (no need to hand over).",
+  "Bang chủ rời bang bằng cách giải tán bang (không cần trao chức).": "A guild leader leaves by disbanding the guild (no need to hand over)."
   },
   "patterns": {
   "Tiệc do $1 phục vụ": "Catering by $1",
@@ -39353,7 +39356,12 @@
   "Gian bạn $1": "Your booth $1",
   "$1 tem": "$1 stamps",
   "Kỳ hội chợ $1": "Fair of $1",
-  "Trả lời trong $1, không thì gian mất điểm.": "Answer within $1, or the booth loses points."
+  "Trả lời trong $1, không thì gian mất điểm.": "Answer within $1, or the booth loses points.",
+  "Bạn đang ở một bang khác: rời bang đó trước, $1 giờ sau mới vào bang mới được.": "You are in another guild: leave it first, then you can join a new one $1 hours later.",
+  "Người này vừa rời bang khác: còn $1 nữa mới vào bang mới được.": "This player just left another guild: $1 to go before they can join a new one.",
+  "Bạn vừa rời bang: còn $1 nữa mới vào bang khác được ($2 giờ sau khi rời).": "You just left a guild: $1 to go before you can join another ($2 hours after leaving).",
+  "Điểm và đồ bang vẫn giữ nếu quay lại. Rời là mất danh hiệu ngay. Rời rồi $1 giờ sau mới vào được bang khác (quay lại bang này thì được ngay).": "Points and guild items stay if you come back. Leaving drops your title at once. After leaving, you can join another guild $1 hours later (coming back to this one works at once).",
+  "Bang chủ rời bang bằng cách giải tán, không cần trao chức. Mọi thành viên ra khỏi bang (họ vào bang khác được ngay). Quỹ $1 xu bị đốt, không trả lại ai. Gõ đúng tên bang để giải tán.": "A guild leader leaves by disbanding, no need to hand over. Every member leaves the guild (they can join another at once). The fund of $1 xu burns, nobody gets it back. Type the guild name to disband."
   },
   "Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.": "Dating corner: sit on a bench to be matched, a 5-minute date, both tap the heart to start “Getting to know”.",
   "Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.": "Live weddings: pick a real date and time, the whole phố can attend, guests get +15 xu every 5 minutes.",

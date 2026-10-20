@@ -141,7 +141,7 @@ class Integrated(Base):
         self.assertTrue(all(before[2][x] > 0 for x in TABLES), before[2])
         v, n = self.run_old(STARTUP, str(self.store.path), ','.join(TABLES))
         self.assertEqual(int(v), pg_schema.SCHEMA_VERSION)
-        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 62)   # 63: 🛎️ Phố dịch vụ (new tables only)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 62)   # 63–74: 🛎️ Phố dịch vụ, 📜 bang_code, new careers (new tables only)
         self.assertEqual(n, before[2])
         self.assertEqual(catalog(), before, 'no table or index changed by the old startup')
 

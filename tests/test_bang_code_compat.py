@@ -18,7 +18,7 @@ from game import pg_schema
 from tests.test_bang import Base
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = 'a808cb79'   # 2.4.66 (live): schema 62, no bang_code tables
+RELEASE = 'a808cb79'   # 2.4.66, the release before bang rules (2.4.67 ships them): schema 62, no bang_code tables
 
 OLD = '''import json,sys
 from game.storage import Store

@@ -25,7 +25,7 @@ from tests.helpers import Journey
 from tests.test_restore_service import RestoreBase, right
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = 'a808cb79'   # 2.4.66 (live): schema 62, no restore career, no restore_tickets, no journey.restored
+RELEASE = '5ba2e147'   # 2.4.67 (live; 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 
 LOAD = '''import json,sys
 from game.engine import validate_state,migrate_state,apply_action

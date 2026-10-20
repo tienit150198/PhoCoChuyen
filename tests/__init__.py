@@ -15,6 +15,9 @@ os.environ.setdefault("MNL_X3_OFF", "1")
 os.environ.setdefault("MNL_MARKET_OFF", "1")
 # ⏰ Giờ vàng (game/golden_hour.py): a test's money must not depend on the hour it runs; tests/test_golden_hour.py turns it on.
 os.environ.setdefault("MNL_GOLDEN_OFF", "1")
+# 🚪 Bang: 48 h between leaving one bang and joining another (owner 21/10); off so older tests can switch freely,
+# tests/test_bang_rejoin.py turns it on.
+os.environ.setdefault("MNL_BANG_REJOIN_HOURS", "0")
 # 🎲 Chợ đen's first round of the day and its short windows (game/fair_boost.py) are gone since 16/10 (rate() is always
 # None); the switch is kept harmless for older test trees.
 os.environ.setdefault("MNL_BM_BOOST_OFF", "1")

@@ -21,7 +21,7 @@ from game.engine import validate_state
 from tests.test_birth import BirthBase, nurse
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = 'a808cb79'   # 2.4.66
+RELEASE = '5ba2e147'   # 2.4.67 (live; 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 
 STARTUP = '''import json,sys
 from game.storage import Store
