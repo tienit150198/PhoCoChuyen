@@ -13,11 +13,15 @@
 export const OPEN={id:'open',kind:'open',e:'☀️',t:'Bấm Mở ca để bắt đầu ngày làm.'};
 export const CLOSE={id:'close',kind:'close',e:'🌙',t:'Làm thêm vài khách. Hết khách thì bấm Khép ca.'};
 export const SUM={id:'sum',kind:'sum',e:'🧾',t:'Tổng kết ngày: tiền vào quỹ, sao khách chấm. Xem kỹ rồi bấm Xong.'};
+/** 💰 game/pay_boost.py, optional (dropped quietly when not on screen): the 🎉 Tuần lễ tay nghề banner while the event
+ * runs, and the 🧰 Bộ đồ nghề button under a finished job's pay (v4/paykit.js). */
+export const PAYWEEK={id:'payweek',e:'🎉',t:'Tuần lễ tay nghề: +20% tiền công, đủ 5 việc mỗi ngày có thưởng.',s:['[data-coach="payweek"]'],o:1};
+export const PAYKIT={id:'paykit',e:'🧰',t:'Tiền công từng khoản ở đây. Bộ đồ nghề giúp kiếm thêm.',s:['[data-coach="paykit-tip"]'],o:1};
 
 /** The whole walk for one workplace: open, its own steps, close, summary. `data` = coach-content.js default export. */
 export function planFor(data,cid){
   const own=data?.careers?.[cid]?.steps||[];
-  return [OPEN,...own.map((s,i)=>({...s,id:s.id||'s'+i})),CLOSE,SUM];
+  return [OPEN,...own.map((s,i)=>({...s,id:s.id||'s'+i})),PAYWEEK,PAYKIT,CLOSE,SUM];
 }
 
 /** Words of a label, for matching a button: no emoji, no punctuation, lower case ("🛒 Mời đặt hàng →" → "mời đặt hàng"). */

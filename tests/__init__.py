@@ -42,3 +42,6 @@ os.environ.setdefault("MNL_ICLOCK_FULL", "1")
 # 🎪 Hội chợ việc làm (game/town_fair.py) follows the real calendar (Saturday 14:00–17:00): off, so a test's ticker and
 # booths do not depend on the day it runs; tests/test_town_fair.py turns it on.
 os.environ.setdefault("MNL_FAIR_OFF", "1")
+# 💰 Tiền công +% / 🎉 Tuần lễ tay nghề / 🧰 Bộ đồ nghề (game/pay_boost.py): off, so the older tests keep their exact pay
+# (each earning would get its own +8–20 % row); tests/test_pay_boost.py turns it on where it checks it.
+os.environ.setdefault("MNL_PAYBOOST_OFF", "1")

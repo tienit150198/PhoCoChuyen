@@ -2,6 +2,7 @@
 import {GameAPI} from './api.js';
 import {sellerVisitStrip,customerTaskBanner,visitCustomer,customerPortrait} from './v4/workplace-visit-ui.js';
 import {equipmentView,staffRefresh,staffRefreshPaused,scrollGuard} from './v4/work-equipment.js';
+import {payBoot,payBar,payDone} from './v4/paykit.js';   // 💰 Tiền công +% · 🎉 Tuần lễ tay nghề · 🧰 Bộ đồ nghề (game/pay_boost.py)
 import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
 import {newInterface,loadInterface,loadCareerScene,promptInterface} from './interface-mode.js';
@@ -139,6 +140,7 @@ const world=isoWorld();
 /** Returning players land on the island; new players first choose their look and name. */
 const isoTownFirst=()=>{const J=api.state?.journey;return newInterface(api.state)&&Boolean(J&&!(J.story&&!J.intro&&!J.gender));};
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
+payBoot(api);  // 💵 the last finished job's pay, piece by piece (v4/paykit.js)
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
 /* 💰 Where the money chip shows and which pockets (v4/money.js): work sheets spend the workplace's fund
@@ -288,6 +290,7 @@ function headMenu(items){return `<details class="head-more" data-auto><summary c
 function sideItems(){
   const cid=career(),on=uiClean(),mine=careerCleanPref(cid),b=(label,value)=>`<button type="button" class="btn ghost ui-side" data-action="uiSide" data-career="${esc(cid)}" data-value="${value}">${label}</button>`;
   return (on?b('📋 Giao diện đầy đủ (cũ)','off'):b('✨ Giao diện gọn (mới)','on'))+(mine?b('↩️ Theo cài đặt chung',''):'')+
+    (room()?.paykit?`<button type="button" class="btn ghost" data-action="decor" data-coach="paykit-open">🧰 Bộ đồ nghề</button>`:'')+   // game/pay_boost.py: the Thiết bị sheet
     `<button type="button" class="btn ghost coach-go" data-action="coachStart" data-career="${esc(cid)}">🧭 Hướng dẫn</button>`;   // the first-day coach again (tutorial/coach.js)
 }
 document.addEventListener('click',e=>{for(const d of document.querySelectorAll('details.head-more[open]'))if(!d.contains(e.target)||e.target.closest?.('.head-menu [data-action],.head-menu [data-command]'))d.open=false;},true);
@@ -797,14 +800,14 @@ function jobView(){
     // A task that went wrong (a case failed or an envelope taken, a safety slip such as a lost child handed to the
     // wrong adult) is closed, not thanked for.
     if(t.status==='cancelled'||t.result==='failed'||(t.slips||[]).some(r=>r?.safety))return header('Việc đã khép lại',t.title,'KẾT QUẢ HÔM NAY',headMenu(sideItems()))+`<div class="sheet-body center done-body"><div class="celebration">${icon('clipboard',55)}</div><h2>Lần này chưa trọn.</h2>${ways}${fold}</div>`;
-    return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY',headMenu(sideItems()))+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${ways}${fold}</div>`;
+    return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY',headMenu(sideItems()))+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${payDone(t)}${ways}${fold}</div>`;
   }
   ui.task=t.id;let inner;
   if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=L.desk.use()?L.desk.m.deskJob(t,env()):skeleton();else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);
   // A workplace with its own workbench whose code or data part did not come (a weak network): a skeleton while it is
   // asked for again (ensureCareerUI), never the customer-care view, which read its task as a ticket and threw.
   else if(CAREER_MODULES.includes(career())){ensureCareerUI();inner=skeleton();}else inner=supportJob(t);
-  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')+sideItems()))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${customerTaskBanner(t)}${inner}</div>`;
+  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')+sideItems()))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${customerTaskBanner(t)}${payBar(c,api.state,t)}${inner}</div>`;
 }
 /* The done screen's "Việc giữa ca" fold remembers that the player opened it (for this task): its data-auto
  * markup is redrawn on every render, so the state lives here. */

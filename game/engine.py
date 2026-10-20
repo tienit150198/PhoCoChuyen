@@ -29,6 +29,7 @@ from . import feedback as fbk
 from . import situations as sit
 from . import inventory as inv
 from . import auto_stock  # 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5): crates at the door counted and shelved
+from . import pay_boost  # 💰 Tiền công +%, 🎉 Tuần lễ tay nghề, 🧰 Bộ đồ nghề / 📒 Sổ khách quen / ⏩ Làm nhanh
 from . import career_gadgets as cgad  # 🧰 Phụ kiện nghề (paid accessories: 🧊 Tủ trữ sữa riêng, 📏 Máy kiểm tra độ tuổi)
 from . import auto_order as ao  # 🔁 Tự đặt hàng (paid unlock): the stock room orders again when an item runs low
 from . import employment as emp
@@ -600,7 +601,7 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
             noticed = business.business_progression.owner_access(out)
         if business.reconcile(out) or noticed:validate_state(out)
         return out,result
-    try:return bank_speaker.collect(lambda:income_gear.collect(run))
+    try:return bank_speaker.collect(lambda:income_gear.collect(lambda:pay_boost.collect(run)))
     finally:
         if token is not None:_SCOPED.reset(token)
         ar.done_acting(acting)
@@ -735,6 +736,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     learning=jr_.get("story") and (c["metrics"].get("served",0)<LEARNING_TASKS or jr_.get("life_day",1)<=LEARNING_LIFE_DAYS)
     prior_patience={t["id"]:t.get("patience",100) for t in c["tasks"]} if learning else None  # no field yet = full
     mod=PLUGINS.get(career)
+    fast=False
+    if action=="payk_fast":  # ⏩ Làm nhanh: the career's own command for the step, its answer from the task's key
+        action,p=pay_boost.resolve_fast(s,c,career,p);fast=True
     plugin_action=bool(mod) and action.startswith(mod.SPEC['prefix'])
     if action.startswith(("shop_","ac_","cs_")) or action in ("ph_pick","ph_check","ph_deliver","ph_refer","ph_inspect"):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
@@ -743,7 +747,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(not (desk_task and desk_task.get("desk")),"Hồ sơ này xử lý ở bàn giấy tờ: đánh dấu dòng sai rồi đóng dấu nhé.")
     if plugin_action and action not in mod.SPEC.get('free_actions',()):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
-    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION,ao.ACTION,cgad.ACTION}
+    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION,ao.ACTION,cgad.ACTION,"payk_buy"}
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|={"mastery_start","mastery_answer","mastery_finish","competition_start","competition_answer"}
     no_tick|=CARE_FREE
@@ -754,6 +758,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(life.handle(s,c,career,action,p))
     elif plugin_action:
         result.update(mod.handle(s,c,action,p))
+        pay_boost.counted(s,career,action,result,fast)  # ⏩ a step done right by hand counts towards Làm nhanh
+        if fast:result["message"]="⏩ "+str(result.get("message") or "Đã làm nhanh.");result["fast"]=True
     elif action in CARE_ACTIONS:
         result.update(care_action(s,c,career,action,p))
     elif action.startswith("desk_"):
@@ -767,6 +773,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(ao.action(s,c,career,p))
     elif action==cgad.ACTION:  # 🧰 Phụ kiện nghề: buy one (Thiết bị)
         result.update(cgad.buy(s,c,career,p))
+    elif action=="payk_buy":  # 🧰 Bộ đồ nghề / 📒 Sổ khách quen / ⏩ Làm nhanh (game/pay_boost.py)
+        result.update(pay_boost.buy(s,c,career,p))
     elif action.startswith("sit_"):
         result.update(sit.action(s,c,career,action,p))
     elif action.startswith("inc_"):
@@ -871,6 +879,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if ot:summary["ot"]=ot
         tile=tile_match.day_total(c,oldday)  # 🧩 the day's Phúc lợi rows (journey: not in the x3 net, no buff twice)
         if tile:summary["tile"]=tile
+        paid=pay_boost.day_total(c,oldday)  # 💰 the day's Tiền công +% rows (journey: not in the x3 net either)
+        if paid:summary["payboost"]=paid
         # The day's figures once everything has closed: the salary and the career's own closing are in, and
         # owner transfers are not (journey._transfer keeps them out of earnings/costs). The fund's change since the
         # morning is not used: a withdrawal larger than the morning fund clamps day_start_money at 0 and lost the
@@ -1368,6 +1378,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["ads"]=ads.public(s)  # 📺 Quảng cáo có thưởng (game/ads.py): None while off
     v["jail"]=jl.public(s)  # 🚔 Trại tạm giữ (game/jail.py): None when free
     v["x3"]=x3w.public()  # 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    v["payweek"]=pay_boost.public(s)  # 🎉 Tuần lễ tay nghề (game/pay_boost.py): None while closed
     v["market"]=staff_market_.public()  # 📈 lãi nhân viên theo thị trường + 🔥 nghề hot hôm nay (game/staff_market.py)
     v["rui"]=rui_.public(s)  # 🛡️ Rủi ro & bảo hiểm (game/rui.py): the warning, the card, the policies
     v["vang"]=vang_.public(s)  # 💰 Tiệm vàng (game/vang.py): today's price, the chart, the gold held
@@ -1383,6 +1394,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["warehouse"]=warehouse.public(raw,cid)
         if c["warehouse"] is not None:c["warehouse"]["reorder"]=ao.public(s,raw,cid)  # 🔁 Tự đặt hàng (None: no stock room)
         c["gadgets"]=cgad.public(raw,cid)  # 🧰 Phụ kiện nghề (None: none sold here)
+        c["paykit"]=pay_boost.career_public(s,raw,cid)  # 💰 tiền công now, 🧰 Bộ đồ nghề shop, ⏩ the step ready (game/pay_boost.py)
         if cid=="mother_baby" and cgad.owned(raw,"age_checker"):c["age_check"]=gifts.age_checks(raw)  # 📏 per open order
         c["job"]=emp.public(raw,cid,s)
         c["mastery"]=cm.public(raw,cid)

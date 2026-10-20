@@ -959,6 +959,8 @@ def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None, *, direc
     if not direct and isinstance(s.get('journey'), dict) and s['journey'].get('story'):
         from . import pet_tiers
         pet = pet_tiers.fund_bonus(s, c, base, what, ref)
+        from . import pay_boost   # 💰 Tiền công +% (raise, 🎉 Tuần lễ tay nghề, 🧰 Bộ đồ nghề): its own row, in the total
+        pet += pay_boost.on_earning(s, c, base, what, ref)
     bonus = extra(s, base, f'{ref}|{what}|{c.get("day")}')
     if not bonus:
         return pet

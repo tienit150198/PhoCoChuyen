@@ -5627,6 +5627,21 @@ GROUPS = [{'id': 'start',
                          'đội.',
                          '📋 Mỗi lần được bo có thông báo nhỏ; bản tổng kết ngày có mục “Tip hôm nay”.',
                          '🌱 Việc đầu tiên ở mỗi nơi không có bo.']},
+             {'id': 'pay_boost',
+              'emoji': '💵',
+              'title': 'Tiền công thêm & Bộ đồ nghề',
+              'points': ['💰 Mỗi việc tự tay làm xong, lương ngày làm thuê: thêm dòng “Tiền công +%” vào quỹ. Nghề lương '
+                         'thấp được thêm nhiều nhất (8–20%).',
+                         '🎉 Tuần lễ tay nghề (khi có sự kiện): mọi nghề +20% tiền công. Làm đủ 5 việc mỗi ngày nhận '
+                         'thưởng Chuyên cần, ngày liên tiếp thưởng to hơn.',
+                         '🔥 Ngày x3 của nghề vẫn tính như cũ; tiền công thêm cộng bên cạnh, không nhân thêm lần nữa.',
+                         '🧰 Mở [[Bộ đồ nghề]] trong ⋯ của bàn làm việc: 5 bậc đồ nghề, mỗi bậc tiền công nghề đó cao '
+                         'hơn (tới +8%).',
+                         '🤝 Mối khách quen: khoảng 1 việc trong 5 được khách quen boa thêm.',
+                         '⏩ Làm nhanh (Giặt ủi, Phục chế): bước nào tự làm đúng 50 lần thì làm bằng một chạm, vẫn được '
+                         'chấm như làm tay.',
+                         '💵 Xong việc, màn cảm ơn ghi rõ: lương cơ bản + từng khoản thêm.'],
+              'go': {'action': 'decor', 'label': 'Mở Bộ đồ nghề'}},
              {'id': 'ledger',
               'emoji': '📒',
               'title': 'Sổ tiệm và hóa đơn',

@@ -789,7 +789,9 @@ def _base_net(result: dict, job_note: dict) -> int:
     mastery_bonus = (summary.get('mastery') or {}).get('bonus') or 0
     competition_bonus = (summary.get('competition') or {}).get('bonus') or 0
     tile_bonus = summary.get('tile') or 0
-    return int(summary.get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus) - int(tile_bonus)
+    pay_bonus = summary.get('payboost') or 0   # 💰 game/pay_boost.py rows: on the base only, never multiplied by x3
+    return (int(summary.get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus) - int(tile_bonus)
+            - int(pay_bonus))
 
 
 def _news(j: dict, kind: str, ref: str, items: list | None = None) -> None:
@@ -1334,6 +1336,8 @@ def validate(s: dict) -> None:
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
+    from . import pay_boost
+    pay_boost.validate(s)   # 🧰 journey['paykit'] (optional: game/pay_boost.py)
     if isinstance(s.get('journey'), dict) and 'lab' in s['journey']:
         from . import research_lab as rl
         rl.validate(s)   # 🔬 journey['lab'] (optional: game/research_lab.py)
