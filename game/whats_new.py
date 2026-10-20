@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.4.72", date="2026-10-21", items=(
+        dict(emoji='💐', text="Mùa thiệp 20/10 khép lại: 922 tấm thiệp đã gửi tới người thương, cảm ơn cả phố! Thiệp mở được tới hết 25/10."),
+    )),
     dict(version="2.4.66", date="2026-10-21", items=(
         dict(emoji='🔧', text='Sửa lỗi và cập nhật: hướng dẫn từng bước khi vào nghề mới, Bang, đảo, đấu trường, cửa hàng.'),
     )),

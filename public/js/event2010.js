@@ -290,7 +290,7 @@ function homeView(){
     <h1>Gửi một tấm thiệp<br><em>cho người thương</em></h1>
     <p class="ev-lead">Viết vài dòng, chọn một mẫu thiệp thật xinh rồi gửi link. Người nhận mở được ngay, không cần chơi game.</p>
     ${DATA.open?`<p class="ev-gift">🎁 Phố tặng <b>${fmt(DATA.coins||100000)} xu</b> cho mỗi tài khoản gửi thiệp · đến hết ${until}</p>`
-      :'<p class="ev-gift is-over">Mùa viết thiệp 20/10 đã khép lại. Những tấm thiệp đã gửi vẫn mở được bằng link nhé 💐</p>'}
+      :`<p class="ev-gift is-over">${esc(DATA.recap||'Mùa viết thiệp 20/10 đã khép lại. Những tấm thiệp đã gửi vẫn mở được bằng link nhé 💐')}</p>`}
   </section>
   <section class="ev-sec" id="viet" aria-labelledby="ev-w-h"><h2 id="ev-w-h">✍️ Viết thiệp</h2><div id="ev-writer"><div class="ev-skel"><i></i><i></i><i></i></div></div></section>
   <section class="ev-sec" id="ev-mine-sec" hidden aria-labelledby="ev-m-h"><h2 id="ev-m-h">💌 Thiệp bạn đã gửi</h2><div id="ev-mine"></div></section>
@@ -371,7 +371,7 @@ async function loadWriter(){
   try{ME=await api('/api/2010/me');}
   catch(e){box.innerHTML=`<p class="ev-reward">${esc(e.message)} <button type="button" class="ev-btn ev-btn-sm" data-act="retry">Thử lại</button></p>`;return;}
   mineView();
-  if(!ME.open){box.innerHTML=`<p class="ev-reward is-closed">Mùa viết thiệp 20/10 đã khép lại. Cảm ơn mọi người đã gửi thật nhiều lời thương 💐</p>${rewardBox(ME.reward?.state==='paid'?ME.reward:null)}`;return;}
+  if(!ME.open){box.innerHTML=`<p class="ev-reward is-closed">${esc(ME.recap||'Mùa viết thiệp 20/10 đã khép lại. Cảm ơn mọi người đã gửi thật nhiều lời thương 💐')}</p>${rewardBox(ME.reward?.state==='paid'?ME.reward:null)}`;return;}
   if(!ME.can_write){box.innerHTML=signInView();return;}
   if(!W.sender&&ME.name)W.sender='';
   box.innerHTML=writerView();bindWriter();paintPreview();

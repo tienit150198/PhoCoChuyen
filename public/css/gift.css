@@ -51,3 +51,4 @@
 .gf-note.gf-hide{display:none}
 @media (max-height:520px){.gf-wheel-wrap{width:min(160px,40vh)}}
 .gf-wish{margin:6px 16px 0;padding:12px 14px;border-radius:14px;background:var(--accent-soft);font-weight:600;color:var(--ink)}
+.gf-amount.gf-take{color:var(--ink-2)}

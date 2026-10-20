@@ -1,3 +1,11 @@
+# v2.4.72 — 2026-10-21
+
+💐 Chốt sự kiện Thiệp 20/10 (chủ game 20/10 "tối nay 0h thì chốt", "nội dung k ổn thì lấy lại tiền, acc clone chuyển đi tài khoản khác cũng lấy lại", "công bố ngẫu nhiên… có xxx thiệp đã gửi tới", "thiệp giữ tới ngày 25/10 sẽ mất"):
+- Viết thiệp đóng 20/10 23:59:59 (MNL_2010_UNTIL trên máy chủ); READ_UNTIL 25/10/2026 23:59:59.
+- event2010.RECAP (922 thiệp, 723 người gửi, 8 tên ngẫu nhiên trong số thiệp đạt) → dòng bảng tin mỗi ngày (key ev2010:recap:<ngày>) và trang /2010 sau khi đóng.
+- ↩️ system_gift TAKE: dòng 'take-…' trạng thái 'take' (bản cũ chỉ trả 'pending', không bao giờ hiểu nhầm thành quà) → trừ ví, rồi số dư ngân hàng, phần thiếu thành nợ ví; thẻ "−N xu · Đã thu hồi", nút "Đã hiểu".
+Có gì mới 2.4.72: 1 dòng.
+
 # v2.4.71 — 2026-10-20
 
 Không có mục Có gì mới.

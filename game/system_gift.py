@@ -50,6 +50,21 @@ _CONTROL = re.compile(r'[\x00-\x08\x0b-\x1f\x7f]')
 
 
 
+# ↩️ Thu hồi (owner 20/10 "ai mà nội dung k ổn thì lấy lại tiền, acc clone chuyển đi tài khoản khác cũng lấy lại"):
+# the same table and path, the other way. A take row has an id starting TAKE and the status TAKE_Q ('take', never
+# 'pending': a build older than this one only pays 'pending' rows, so it can never mistake a take for a gift). At the
+# next load it goes through the same internal command (once per id, journey['gifts'] like a gift): the coins leave
+# the wallet first, then the 🏦 bank balance, and what is still missing stays as a debt in the wallet (journey
+# in_debt). The card says what was taken back and why ("Đã hiểu").
+TAKE = 'take-'
+TAKE_Q = 'take'
+TAKE_LABEL = '↩️ Thu hồi quà'
+
+
+def is_take(gid) -> bool:
+    return isinstance(gid, str) and gid.startswith(TAKE)
+
+
 class GiftError(ValueError):
     def __init__(self, message: str, code: str = 'bad_gift', status: int = 400):
         super().__init__(message)
@@ -87,6 +102,8 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     got = j.get('gifts') if isinstance(j.get('gifts'), list) else []
     if gid in got:   # already paid (a receipt pruned meanwhile): nothing moves
         return s, dict(message='', gift=dict(id=gid, coins=0, already=True))
+    if is_take(gid):
+        return _take(s, j, gid, coins, got)
     e.need(j['wallet'] + coins <= WALLET_MAX, 'Ví đã đầy, quà này chưa vào được.', 'wallet_full')
     left = coins
     while left:   # one Sổ ví row holds at most ROW_MAX xu (journey.validate): a big gift goes in as several rows
@@ -96,6 +113,28 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     j['gifts'] = (got + [gid])[-KEPT:]
     e.validate_state(s)
     return s, dict(message=f'+{coins} xu vào ví.', gift=dict(id=gid, coins=coins))
+
+
+def _take(s: dict, j: dict, gid: str, coins: int, got: list) -> tuple[dict, dict]:
+    """↩️ a take row: the wallet, then the bank balance, the rest as a debt in the wallet (see TAKE)."""
+    from . import bank as bk
+    from . import engine as e
+    from . import journey as jr
+    left = coins
+    w = min(max(0, int(j['wallet'])), left)
+    b = bk.get(s)
+    k = min(max(0, int(b['balance'])), left - w) if b else 0
+    if k:
+        b['balance'] -= k
+        bk._log(b, j['life_day'], 'acc', TAKE_LABEL, -k)
+    rest = left - k
+    while rest:   # one Sổ ví row holds at most ROW_MAX xu
+        step = min(ROW_MAX, rest)
+        jr._wallet(j, -step, 'incident', TAKE_LABEL)
+        rest -= step
+    j['gifts'] = (got + [gid])[-KEPT:]
+    e.validate_state(s)
+    return s, dict(message=f'-{coins} xu thu hồi.', gift=dict(id=gid, coins=-coins, take=True))
 
 
 def validate(j: dict) -> None:
@@ -224,27 +263,30 @@ def on_load(store, token: str, state: dict | None) -> tuple[bool, list]:
         pass
     with store.connect() as db:
         rows = [dict(r) for r in db.execute("SELECT id,coins,title,text,status FROM system_gifts "
-                                            "WHERE sid=? AND status IN ('pending','applied') ORDER BY created,id LIMIT 20", (sid,))]
+                                            "WHERE sid=? AND status IN ('pending','applied',?) ORDER BY created,id LIMIT 20", (sid, TAKE_Q))]
     if not rows:
         return False, []
     story = bool(((state or {}).get('journey') or {}).get('story'))
     changed = False
     for r in rows:
-        if r['status'] != 'pending' or not story:
+        queued = TAKE_Q if is_take(r['id']) else 'pending'
+        if r['status'] != queued or not story:
             continue
         try:
             store.command(token, RID + r['id'], None, None, ACTION, dict(id=r['id'], coins=int(r['coins'])), internal=True)
         except GameError:   # refused (e.g. a receipt with other content): stays pending, the operator looks
             continue
         t = now()
-        store.transaction(lambda db, gid=r['id'], t=t: db.execute(
-            "UPDATE system_gifts SET status='applied',applied_at=? WHERE id=? AND sid=? AND status='pending'", (t, gid, sid)))
+        store.transaction(lambda db, gid=r['id'], t=t, q=queued: db.execute(
+            "UPDATE system_gifts SET status='applied',applied_at=? WHERE id=? AND sid=? AND status=?", (t, gid, sid, q)))
         r['status'] = 'applied'
         changed = True
     shown = []
     for r in rows:
         if r['status'] == 'applied':
             g, w = dict(id=r['id'], coins=int(r['coins']), title=r['title'], text=r['text']), wheel_of(r['id'])
+            if is_take(r['id']):
+                g['take'] = True
             shown.append(dict(g, wheel=w) if w else g)
     return changed, shown[:SHOWN]
 
@@ -305,8 +347,8 @@ def grant(store, sid: str, coins: int, title: str, text: str, gid: str | None = 
         return dict(status='would_create', gift=gift)
     try:
         store.transaction(lambda db: db.execute(
-            "INSERT INTO system_gifts(id,sid,coins,title,text,status,created,granted_by) VALUES(?,?,?,?,?,'pending',?,?)",
-            (gid, sid, coins, title, text, now(), by)))
+            "INSERT INTO system_gifts(id,sid,coins,title,text,status,created,granted_by) VALUES(?,?,?,?,?,?,?,?)",
+            (gid, sid, coins, title, text, TAKE_Q if is_take(gid) else 'pending', now(), by)))
     except dbm.IntegrityError:   # the same id landed first (two runs at once)
         with store.connect() as db:
             return same(db.execute('SELECT * FROM system_gifts WHERE id=?', (gid,)).fetchone())

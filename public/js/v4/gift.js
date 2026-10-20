@@ -66,10 +66,10 @@ function html(g){
   const more=queue.length>1?`<p class="gf-count" aria-hidden="true">1/${queue.length}</p>`:'';
   if(g.wheel?.slots?.length)return wheelHTML(g,more);
   return `${more}<div class="gf-top"><p class="gf-title" id="gfTitle">${esc(g.title)}</p>`+
-    `<p class="gf-amount"><span class="gf-box" aria-hidden="true">🎁</span><span>+${fmt(g.coins)} xu</span></p>`+
-    `<p class="gf-where">Đã vào ví của bạn 👛</p></div>`+
+    (g.take?`<p class="gf-amount gf-take"><span class="gf-box" aria-hidden="true">↩️</span><span>−${fmt(g.coins)} xu</span></p><p class="gf-where">Đã thu hồi khỏi ví và tài khoản</p></div>`   // ↩️ system_gift TAKE
+      :`<p class="gf-amount"><span class="gf-box" aria-hidden="true">🎁</span><span>+${fmt(g.coins)} xu</span></p><p class="gf-where">Đã vào ví của bạn 👛</p></div>`)+
     `<p class="gf-text" id="gfText">${esc(g.text)}</p>`+
-    `<div class="gf-foot"><button type="button" class="btn primary big full" data-gf="ok">Nhận quà 💛</button></div>`;
+    `<div class="gf-foot"><button type="button" class="btn primary big full" data-gf="ok">${g.take?'Đã hiểu':'Nhận quà 💛'}</button></div>`;
 }
 
 function build(){

@@ -108,10 +108,10 @@ class Window(unittest.TestCase):
     def test_the_window_in_vietnam_time(self):
         self.assertEqual(ev.vn_day(ev.WRITE_UNTIL), '2026-10-21')
         self.assertEqual(ev.vn_day(ev.WRITE_UNTIL + 1), '2026-10-22')
-        self.assertEqual(ev.vn_day(ev.READ_UNTIL), '2026-12-20')
+        self.assertEqual(ev.vn_day(ev.READ_UNTIL), '2026-10-25')   # owner 20/10: the cards go away after 25/10
         self.assertTrue(ev.writing_open(ev.WRITE_UNTIL))
         self.assertFalse(ev.writing_open(ev.WRITE_UNTIL + 1))
-        self.assertTrue(ev.reading_open(ev.WRITE_UNTIL + 50 * 86400))
+        self.assertTrue(ev.reading_open(ev.WRITE_UNTIL + 3 * 86400))
         self.assertFalse(ev.reading_open(ev.READ_UNTIL + 1))
 
     def test_kill_switch_and_the_operators_stretch(self):
@@ -129,7 +129,20 @@ class Window(unittest.TestCase):
         self.assertNotEqual(ev.news_line(OPEN_T + 86400)['key'], a['key'])
         self.assertIn('Hôm nay 20/10', ev.news_line(ev.WRITE_UNTIL - 86400)['text'])
         self.assertIn('hết hôm nay', ev.news_line(ev.WRITE_UNTIL - 60)['text'])
-        self.assertIsNone(ev.news_line(ev.WRITE_UNTIL + 1))
+        with mock.patch.object(ev, 'RECAP', dict(cards=0, people=0, names=())):
+            self.assertIsNone(ev.news_line(ev.WRITE_UNTIL + 1))
+
+    def test_the_recap_after_the_close(self):
+        """Owner 20/10: the number of cards, a few senders at random, and the cards go away after 25/10."""
+        with mock.patch.object(ev, 'RECAP', dict(cards=1234, people=900, names=('Lan', 'Mai'))):
+            self.assertIsNone(ev.recap_line(OPEN_T))
+            self.assertIsNone(ev.recap_line(ev.RECAP_FROM - 1))
+            line = ev.news_line(ev.WRITE_UNTIL + 1)
+            self.assertIn('1.234 tấm thiệp', line['text'])
+            self.assertIn('Chúc mừng Lan, Mai cùng 898 bạn khác', line['text'])
+            self.assertIn('25/10', line['text'])
+            self.assertTrue(line['key'].startswith('ev2010:recap:'))
+            self.assertIsNone(ev.recap_line(ev.READ_UNTIL + 1))
 
     def test_the_game_shows_its_entries_for_the_same_window(self):
         js = (ROOT / 'public/js/isometric/town-utilities.js').read_text(encoding='utf-8')

@@ -461,6 +461,25 @@ class TownWide(Base):
 
 
 
+class TakeBack(Base):
+    """Owner 20/10: an offensive card or a clone that moved the money away gives the 100.000 xu back."""
+
+    def test_a_take_leaves_the_wallet_then_the_bank_once(self):
+        tok = self.guest()
+        sid = self.store.key(tok)
+        w0 = self.wallet(tok)
+        out = sg.grant(self.store, sid, w0 + 500, 'Thu hồi quà thiệp 20/10', 'Thiệp có lời lẽ khó nghe.', gid='take-ev2010-test')
+        self.assertEqual(out['gift']['status'], sg.TAKE_Q)
+        changed, shown = self.load(tok)
+        self.assertTrue(changed)
+        self.assertEqual(shown, [dict(id='take-ev2010-test', coins=w0 + 500, title='Thu hồi quà thiệp 20/10',
+                                      text='Thiệp có lời lẽ khó nghe.', take=True)])
+        self.assertEqual(self.wallet(tok), -500)   # nothing in the bank on a fresh save: the rest is a debt
+        self.assertTrue(sg.seen(self.store, tok, 'take-ev2010-test'))
+        self.assertEqual(self.load(tok), (False, []))
+        self.assertEqual(self.wallet(tok), -500)
+
+
 class Wheel2010(Base):
     """Owner 19/10: a 🎡 spin 100k → 1m (520, 666, 888, 1314…) for every save, new or old, that loads on 20/10."""
 

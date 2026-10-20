@@ -42,7 +42,12 @@ import secrets
 import time
 
 WRITE_UNTIL = 1792601999      # 21/10/2026 23:59:59 (VN): writing and the reward close
-READ_UNTIL = 1797785999       # 20/12/2026 23:59:59 (VN): shared cards keep opening ~60 days after
+READ_UNTIL = 1792947599       # 25/10/2026 23:59:59 (VN): owner 20/10 "thiệp giữ tới ngày 25/10 sẽ mất, công bố ra nhé"
+# 📣 Owner 20/10 "ai ok thì công bố ngẫu nhiên rồi chúc mừng có xxx thiệp đã gửi tới": the season's numbers and a few
+# senders picked at random among the cards kept (offensive ones and clone accounts left out), written once at the
+# close (scratchpad ev2010 audit) so every page and the ticker say the same thing until READ_UNTIL.
+RECAP_FROM = 1792515600       # 21/10/2026 00:00 (VN): the season closed (owner 20/10 "tối nay 0h thì chốt")
+RECAP = dict(cards=922, people=723, names=('Chery', 'Cá Voi', 'Phanh', 'Mây', 'Ngoan', 'Changggg', 'Nguyệt Miêu', 'Cam'))
 REWARD_COINS = 100_000        # owner 16/10: "tham gia chương trình này sẽ tặng 100k", once per account
 MIN_LIFE_DAY = 3              # the character's life day (journey.life_day) a reward needs (fresh clone accounts)
 NEED_ACCOUNT = True           # writing needs a registered account too (a guest is asked to sign in / register)
@@ -109,12 +114,25 @@ def news_line(t: float | None = None) -> dict | None:
     day on a device): {text, key}. The key is the VN day, so a new day's line plays again."""
     t = now() if t is None else t
     if not writing_open(t):
-        return None
+        line = recap_line(t)
+        return dict(text=line, key='ev2010:recap:' + vn_day(t)) if line else None
     day = vn_day(t)
     text = ('💐 Hôm nay 20/10! Gửi một tấm thiệp cho người phụ nữ bạn thương: Tiện ích → Thiệp 20/10.' if day.endswith('-10-20') else
             '💐 Thiệp 20/10 mở đến hết hôm nay: tấm đầu tiên vẫn được Phố tặng 100.000 xu. Tiện ích → Thiệp 20/10.' if vn_day(write_until()) == day else
             '💐 Phố đang mùa thiệp 20/10: viết vài dòng tặng người thương, tấm đầu tiên được Phố tặng 100.000 xu. Tiện ích → Thiệp 20/10.')
     return dict(text=text, key='ev2010:' + day)
+
+
+def recap_line(t: float | None = None) -> str | None:
+    """After the close, until READ_UNTIL: how many cards went out, a few senders, when the cards go away."""
+    t = now() if t is None else t
+    if writing_open(t) or not RECAP_FROM <= t <= READ_UNTIL or not RECAP['cards']:
+        return None
+    n = lambda x: f'{int(x):,}'.replace(',', '.')
+    names = list(RECAP['names'])
+    who = f'Chúc mừng {", ".join(names)} cùng {n(max(0, RECAP["people"] - len(names)))} bạn khác. ' if names else ''
+    return (f'💐 Mùa thiệp 20/10 đã khép lại: {n(RECAP["cards"])} tấm thiệp đã được gửi tới những người thương! ' + who +
+            'Thiệp mở được tới hết 25/10, sau đó sẽ được cất đi.')
 
 
 def ip_tag(ip: str) -> str:
@@ -259,7 +277,7 @@ def me(store, token: str | None, ip: str) -> dict:
     """GET /api/2010/me: what the writer needs. The CSRF is this device's own (the page is same-origin; a GET from
     another site cannot read the answer), like /api/bootstrap gives it to the game page."""
     t = now()
-    base = dict(open=writing_open(t), until=write_until(), read_until=READ_UNTIL, now=int(t), per_day=PER_DAY,
+    base = dict(open=writing_open(t), until=write_until(), read_until=READ_UNTIL, now=int(t), per_day=PER_DAY, recap=recap_line(t),
                 themes=list(THEMES), stickers=list(STICKERS), stickers_max=STICKERS_MAX,
                 limits=dict(to=TO_MAX, sender=FROM_MAX, text=TEXT_MAX, text_min=TEXT_MIN))
     with store.connect() as db:
@@ -385,7 +403,8 @@ def _json(data) -> str:
 def page_data(store, cid: str | None) -> tuple[int, dict]:
     """(HTTP status, what public/2010.html embeds): the home, one card, or why a card does not open."""
     t = now()
-    base = dict(open=writing_open(t), until=write_until(), read_until=READ_UNTIL, now=int(t), coins=REWARD_COINS, min_life_day=MIN_LIFE_DAY)
+    base = dict(open=writing_open(t), until=write_until(), read_until=READ_UNTIL, now=int(t), coins=REWARD_COINS, min_life_day=MIN_LIFE_DAY,
+                recap=recap_line(t))
     if cid is None:
         return 200, dict(base, mode='home')
     if not valid_id(cid):
