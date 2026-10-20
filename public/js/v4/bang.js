@@ -14,6 +14,10 @@
  *        21/10, "Tất cả" = wallet + bank) go through the save like any payment.
  *   ⚔️ Thách đấu bang (owner 21/10, game/bang_challenge.py): the home tab's card (record, challenges to answer with
  *        POST /api/arena/tc_answer, the last results) opens the arena's 🛡️ › ⚔️ Thách đấu for the rest (v4/pet-arena.js).
+ *   🛡️ Bang chiến tuần (owner: "có nơi nào đó cho mọi người ở bang thấy sự kiện bang chiến cuối tuần đi"): the home
+ *        tab's card for every member (page.war, game/pet_war.py team_card): when, the lock, a live countdown, the status,
+ *        the lineup (five slots), who chose it, the bang's matches and result; its buttons open the arena's war view
+ *        (👑 Chọn đội hình: straight into the lineup editor).
  *   👑 the week's three parts (owner 21/10): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang; cống hiến never counts (game/bang.py standings).
  *   📜 Nội quy bang (owner 21/10, game/bang_code.py): 📢 the public rules (a preview on the card in Tìm bang, in full on
  *        the bang's page; joining, asking or accepting an invitation needs the tick "Tôi đã đọc và đồng ý nội quy bang"
@@ -29,6 +33,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {qtyBox,QTY,qtyVal} from '../qty-input.js';
 import {COLORS,ROLES,chip,setMine,tagLine} from './bang-tag.js';
+import {petPicture,lookup,accOf,fxRef,RANK} from './pet-art.js';
 
 const IN_TABS=[['home','🏯','Bang của tôi'],['members','👥','Thành viên'],['code','📜','Nội quy bang'],['build','🏗️','Công trình'],['shop','🛍️','Cửa hàng bang'],['rank','👑','Xếp hạng tuần'],['more','⚙️','Cài đặt bang']];
 const OUT_TABS=[['find','🔎','Tìm bang'],['found','⚔️','Lập bang'],['rank','👑','Xếp hạng tuần']];
@@ -65,7 +70,7 @@ function link(href,key){
     l.onload=l.onerror=()=>done();document.head.append(l);setTimeout(done,1500);
   });
 }
-const ensureCss=()=>cssReady??=Promise.all([link('/css/spend.css','sd-css'),link('/css/bang.css','bg-css')]);
+const ensureCss=()=>cssReady??=Promise.all([link('/css/spend.css','sd-css'),link('/css/bang.css','bg-css'),link('/css/pets.css','pt-css')]);   // pets.css: the war card's pets
 
 function dialog(){
   if(S.dlg)return S.dlg;
@@ -174,7 +179,9 @@ function armed(key){
 function tick(){
   if(!S.dlg?.open)return;
   for(const el of S.dlg.querySelectorAll('[data-bg-until]')){const s=left(Number(el.dataset.bgUntil)-serverNow());if(el.textContent!==s)el.textContent=s;}   // only a changed minute is drawn
-  const due=(P()?.facilities||[]).some(f=>f.building&&f.ready<=serverNow())||Boolean(P()?.isle?.to&&P().isle.ready<=serverNow());
+  for(const el of S.dlg.querySelectorAll('[data-bg-cd]')){const s=countdown(Number(el.dataset.bgCd)-serverNow());if(el.textContent!==s)el.textContent=s;}   // 🛡️ the war's countdown, by the second
+  const w=P()?.war,next=w?({pick:w.lock,locked:w.start,live:w.end}[w.phase]):0;   // 🛡️ the lock, the start, the end: the card's status changes
+  const due=(P()?.facilities||[]).some(f=>f.building&&f.ready<=serverNow())||Boolean(P()?.isle?.to&&P().isle.ready<=serverNow())||Boolean(next&&next<=serverNow());
   if(due&&!S.busy&&Date.now()-S.at>15000){S.at=Date.now();load().then(render);}
 }
 
@@ -192,7 +199,7 @@ function giveWhy(){
 }
 
 /* ---- clicks ---- */
-const LOCAL=new Set(['close','tab','sel','amount','ghDay','unpeek','more','chat','island','toFund','peek','tcopen','tcwatch','cdEdit','cdCancel','cdTip']);   // no server write: never waits
+const LOCAL=new Set(['close','tab','sel','amount','ghDay','unpeek','more','chat','island','toFund','peek','tcopen','tcwatch','war','cdEdit','cdCancel','cdTip']);   // no server write: never waits
 async function onClick(op,d,el){
   const p=P(),me=ME();
   if(S.busy&&!LOCAL.has(op)&&!(S.form&&(op==='emoji'||op==='color')))return;   // one write at a time: a double tap never sends twice
@@ -230,6 +237,7 @@ async function onClick(op,d,el){
       S.dlg.close();await S.env.act?.('bangIsland',{});return;   // 🏯 Đảo bang (v4/bang-island.js)
     case'tcopen':S.dlg.close();await S.env.act?.('petArena',{tab:'war',sec:'tc',...(d.find?{find:1}:{})});return;   // ⚔️ Thách đấu (v4/pet-arena.js)
     case'tcwatch':S.dlg.close();await S.env.act?.('petArena',{tab:'war',sec:'tc',watch:d.id});return;
+    case'war':S.dlg.close();await S.env.act?.('petArena',{tab:'war',sec:'war',...(d.lineup?{lineup:1}:{})});return;   // 🛡️ Bang chiến tuần (v4/pet-arena.js)
     case'tcyes':case'tcno':{   // ⚔️ answer a challenge: the tapped button alone waits, the card stays where it was
       if(S.busy)return;S.busy=true;pend(el);let r=null;
       try{r=await S.env.api.post('/api/arena/tc_answer',{id:d.id,ok:op==='tcyes'});said(r?.message||'Xong!','good');}
@@ -512,7 +520,38 @@ function homeTab(){
   const pts=`<section class="sd-card bg-pts" data-k="pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
     <p class="tp-note">Hôm nay ${me.today}/${me.today_max} điểm hoạt động: 📅 điểm danh +${CAT().points?.checkin||20}, mỗi ngày làm việc +${CAT().points?.work||10}. Điểm đổi đồ ở 🛍️.</p></section>`;
   const codeNew=p.code?.fresh?`<section class="sd-card bg-nq-new" data-k="codenew"><div class="bg-row"><span class="bg-nq-ico" aria-hidden="true">📜</span><div class="grow"><b>Nội quy mới</b><small>Bang vừa cập nhật nội quy. Đọc để nắm luật của bang nhé.</small></div>${btn('tab','Xem',' data-tab="code"','btn primary')}</div></section>`:'';
-  return gold+codeNew+isleOffer()+hero+chalCard()+fund+pts+goldenCard()+logCard();
+  return gold+codeNew+isleOffer()+hero+warCard()+chalCard()+fund+pts+goldenCard()+logCard();
+}
+/** "2 ngày 3 giờ", "5 giờ 12 phút", else "12:05" (minutes:seconds) or "1:02:03": the war's countdown. */
+function countdown(sec){
+  const s=Math.max(0,Math.floor(sec)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60,p=n=>String(n).padStart(2,'0');
+  if(d)return `${d} ngày${h?` ${h} giờ`:''}`;if(h>=6)return `${h} giờ${m?` ${m} phút`:''}`;return h?`${h}:${p(m)}:${p(x)}`:`${p(m)}:${p(x)}`;
+}
+const warPic=f=>{const cat=S.env?.api?.content?.journey?.pets,L=lookup(cat,f?.b,f?.c);return L?petPicture(L.breed,L.coat,'sit',accOf(cat,f),40,'pet-svg',fxRef(cat,f)):'<span class="bg-war-paw" aria-hidden="true">🐾</span>';};
+/** 🛡️ Bang chiến tuần (game/pet_war.py team_card): every member sees when, the status, the lineup and the result. */
+function warCard(){
+  const w=P()?.war;if(!w)return '';
+  const day=`${dayLabel(w.start)} · ${hm(w.start)}`,size=w.size||5;
+  const status={pick:`<span class="bg-war-st pick">⏳ Đang chờ</span><span>Chốt đội sau <b data-bg-cd="${w.lock}">${esc(countdown(w.lock-serverNow()))}</b></span>`,
+    locked:`<span class="bg-war-st locked">🔒 Đội hình đã chốt</span><span>Bắt đầu sau <b data-bg-cd="${w.start}">${esc(countdown(w.start-serverNow()))}</b></span>`,
+    live:'<span class="bg-war-st live">🔴 Đang đánh</span><span>Trận đang diễn ra</span>',
+    done:'<span class="bg-war-st done">🏁 Kết quả tuần</span>',cancelled:'<span class="bg-war-st done">💤 Tuần này không đủ bang ra trận</span>'}[w.phase]||'';
+  const who=w.lead?`👑 ${esc(w.lead.role)} đã chọn đội hình`:'🐾 Mọi người tự chọn bé';
+  const slots=[];for(let i=0;i<size;i++){const x=(w.slots||[])[i],f=x?.pet;
+    slots.push(x?`<li class="${x.me?'me':''}">${warPic(f)}<span class="grow"><b data-no-translate>${esc(x.name)}${x.me?' (bạn)':''}</b><small><span data-no-translate>${esc(f?.n||'')}</span>${Number.isInteger(f?.r)?` · <i class="pt-rk r${f.r}">${RANK[f.r]||''}</i>`:''} · 💪 ${fmt(f?.pw)}</small></span></li>`
+      :`<li class="empty"><span class="bg-war-paw" aria-hidden="true">${i+1}</span><span class="grow"><small>Còn trống</small></span></li>`);}
+  const ms=(w.matches||[]).map(m=>`<li class="${m.state}${m.won===true?' win':m.won===false?' loss':''}"><b>${esc(m.round)}</b><span class="grow" data-no-translate>${m.bye?'(miễn đấu)':esc(m.vs?'gặp '+m.vs:'')}</span><em>${m.state==='done'?(m.bye?'✓':`${m.score[0]}–${m.score[1]} ${m.won?'✅':'❌'}`):m.state==='live'?'🔴':esc(hm(m.start))}</em></li>`).join('');
+  const r=w.result;
+  const res=r?`<p class="bg-war-res${r.champ?' champ':''}">${r.champ?'🏆 Bang mình vô địch!':r.second?'🥈 Á quân!':r.out?'Bang mình không ra trận tuần này.':`Dừng ở ${esc(r.round)} · ${r.w} thắng ${r.l} thua`}${r.pts?` · +${fmt(r.pts)} điểm`:''}${!r.champ&&r.champ_name?`<br><small>🏆 Vô địch: <span data-no-translate>${esc(r.champ_name)}</span></small>`:''}</p>`:'';
+  const acts=[];
+  if(w.can_lead)acts.push(btn('war','👑 Chọn đội hình',' data-lineup="1"','btn primary'));
+  if(w.can_pick)acts.push(btn('war',w.mine?'🐾 Đổi bé của tôi':'🐾 Ghi danh bé của tôi','',w.can_lead?'btn cream':'btn primary'));
+  if(w.phase==='live'||w.phase==='done')acts.push(btn('war','📺 Xem trận','','btn primary'));
+  const note=w.phase!=='pick'?'':w.lead&&!w.can_lead?'Bạn không tự đổi được, nhờ người chọn đổi giúp nhé.':!w.can_pick&&!w.can_lead&&!w.lead?(isleLevel()?'':'🏝️ Bang cần Đảo bang để ra trận.'):'';
+  return `<section class="sd-card bg-war" data-k="war"><h3>🛡️ Bang chiến tuần</h3>
+    <p class="bg-war-when"><b>${esc(day)}</b><span>chốt đội ${esc(hm(w.lock))}</span></p><p class="bg-war-line">${status}</p>${res}
+    <p class="tp-note bg-war-who">${who} · ${w.n||0}/${size} bé</p><ol class="bg-war-slots">${slots.join('')}</ol>
+    ${ms?`<ol class="bg-war-ms">${ms}</ol>`:''}${note?`<p class="tp-note">${esc(note)}</p>`:''}${acts.length?`<div class="bg-row bg-war-acts">${acts.join('')}</div>`:''}</section>`;
 }
 /** 👑 The week's three parts (game/bang.py standings): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang. */
 function parts(x,total=false){

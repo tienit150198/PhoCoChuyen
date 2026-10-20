@@ -1381,7 +1381,8 @@ def page(store, sid: str, bid: str | None = None) -> dict:
             members=_members(db, bid, t), facilities=_facilities(db, bid, t),
             shop=[dict(id=i, price=_price(i, lv), unlocked=_unlocked(i, lv), owned=owned.get(i, 0)) for i in C.ITEM_ORDER],
             golden=dict(list=_gh_list(db, bid, t), per_week=_gh_rules(lv)[0], minutes=_gh_rules(lv)[1]),
-            rules=rules_of(r), chal=_chal_card(db, bid, sid, me['role'], t), code=_code().member_view(db, bid, sid, me['role']),
+            rules=rules_of(r), chal=_chal_card(db, bid, sid, me['role'], t), war=_war_card(db, bid, sid, t),
+            code=_code().member_view(db, bid, sid, me['role']),
             log=[dict(text=x['text'], at=float(x['at']), kind=x['kind']) for x in _rows(
                 db, 'SELECT text, at, kind FROM bang_log WHERE bang=? ORDER BY id DESC LIMIT ?', (bid, LOG_SHOWN))],
             slots=C.build_slots(lv[C.HALL]), phao_at=float(r['phao_at']))
@@ -1399,6 +1400,18 @@ def _chal_card(db, bid: str, sid: str, role: str, t: float) -> dict | None:
     if bang_challenge.off():
         return None
     return bang_challenge.card(db, bid, sid, role, t)
+
+
+def _war_card(db, bid: str, sid: str, t: float) -> dict | None:
+    """🛡️ Bang chiến tuần's card on the home tab, for every member (game/pet_war.py team_card: when, the lineup, the
+    status, the result; owner "có nơi nào đó cho mọi người ở bang thấy sự kiện bang chiến cuối tuần đi")."""
+    from . import pet_war
+    try:
+        return pet_war.team_card(db, 'bang', bid, sid, t)
+    except Exception as e:  # noqa: BLE001 - the war's card never breaks the bang page
+        import sys
+        sys.stderr.write(f'[bang] war card: {type(e).__name__}: {e}\n')
+        return None
 
 
 def me_view(store, token) -> dict:
@@ -1431,6 +1444,8 @@ def me_view(store, token) -> dict:
                                points=int(mine['points']), channel=mine['channel'], pet=lv['san_pet'], isle=island_of(mine, t)['level'],
                                uniforms=[u for u in C.UNIFORM_ORDER if C.UNIFORMS[u][2] <= lv['xuong_may']],
                                code_new=_code().fresh(db, mine['bang'], sid))   # 📜 Nội quy mới
+            from . import pet_war   # 🛡️ the war's hours for the ⚔️ Bang entry's line (no query)
+            out['mine']['war'] = dict(start=pet_war.start_of(t), lock=pet_war.lock_of(t), end=pet_war.start_of(t) + 1800)
             if _rank(mine['role']) >= C.APPROVE_FROM and not mine['hidden']:   # ⚔️ challenges waiting for an answer (the menu's badge)
                 from . import bang_challenge
                 out['mine']['tc_in'] = bang_challenge.incoming_count(db, mine['bang'], t)

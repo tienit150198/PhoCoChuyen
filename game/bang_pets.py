@@ -13,6 +13,9 @@
   members (roster: pid, display name, title); lock_team takes the bang row first (game/bang.py's lock order: the bang
   row, then the war's team lock and its pick rows, as a member leaving does); announce writes the line in the bang's
   log ('war') and its chat group (🛡️ Bang chiến pet), and bumps the bang so its pages refresh.
+* ⏰ remind: the hour before the lock (pet_war.remind_due, the housekeeping), a 'war_remind' line in the log and chat
+  group of every active, shown bang holding its island, once a week: a bang with such a log row since the reminder's
+  hour began is skipped (that row is the marker; no table, no column). No bang row is locked or bumped.
 * facility(TRAINING_KEY): the level of the bang's 🐾 Sân luyện pet ('san_pet'), counting a build whose time is up even if
   nobody opened the bang page since (read only: finish_builds writes it later). pet_war turns it into +1 %/level of the
   fighters' stats in the war, at most pet_war.TRAINING_MAX.
@@ -90,6 +93,22 @@ class BangTeams(PW.TeamProvider):
             if c:
                 live_chat.notify(db, dict(op='unhide', id=int(c['id'])))
         BG._bump(db, team_id)
+
+    def remind(self, db, text: str, t: float, since: float, limit: int) -> tuple:
+        if limit <= 0:
+            return 0, True
+        rows = db.execute("SELECT b.id, b.channel FROM bangs b WHERE b.status='active' AND b.hidden=0 AND b.isle>=1 AND NOT EXISTS "
+                          "(SELECT 1 FROM bang_log l WHERE l.bang=b.id AND l.kind='war_remind' AND l.at>=?) ORDER BY b.id LIMIT ?",
+                          (since, limit + 1)).fetchall()
+        from . import live_chat
+        for r in rows[:limit]:
+            BG._log(db, r['id'], '', 'war_remind', text, t)
+            if r['channel']:
+                c = db.execute("INSERT INTO chat_messages(channel, pid, name, av, text, at, adm) VALUES(?, 'admin', ?, '🛡️', ?, ?, 1) RETURNING id",
+                               (r['channel'], '🛡️ Bang chiến pet', text[:300], t)).fetchone()
+                if c:
+                    live_chat.notify(db, dict(op='unhide', id=int(c['id'])))
+        return min(len(rows), limit), len(rows) > limit
 
     def facility(self, db, team_id: str, key: str) -> int:
         if key != PW.TRAINING_KEY:

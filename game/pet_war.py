@@ -20,6 +20,11 @@ The weekly war (start(): Saturday WAR_HOUR, outside the 17:30–20:00 peak; PET_
   skips it, an older build too since no team owns that sid) says the lineup is the leaders' own: members can no longer
   pick or leave it themselves (`lead_set`) until a leader hands it back (`war_lineup_off`, the picks kept). The team
   gets a line in its log and chat group naming the members picked. No table or column added.
+* 🛡️ The team's card (owner: "có nơi nào đó cho mọi người ở bang thấy sự kiện bang chiến cuối tuần đi"; `team_card`,
+  the bang page's home tab): when, the lock, the phase (pick / locked / live / done / cancelled), the lineup as it
+  stands (who fields which pet, who chose it), what this member may do, the team's matches once known and its result.
+  An hour before the lock (REMIND_SECS) the housekeeping reminds every team that can play (`remind_due`, the
+  provider's `remind`: once a team a week, its own log row being the marker).
 * At the lock (server.py housekeeping, or the first page that looks after it) the war is played at once, on the
   server, exactly once (an advisory lock and the pet_war row): the teams with at least one pet fielded enter a single-
   elimination bracket (seeded by the teams' rating across weeks, byes to the best seeds), round r starting at
@@ -56,6 +61,8 @@ K_TEAM = 32
 PTS_WIN, PTS_CHAMP = 3, 5
 LEAD = '~lead|'            # the sid of the marker row of a lineup chosen by the team's leaders (never a save's sid)
 PETS_SHOWN = 8             # a member's strongest pets the lineup editor lists (and the one fielded now)
+REMIND_SECS = 3600         # the reminder goes this long before the lock
+REMIND_BATCH = 200         # teams reminded a housekeeping tick (the rest the next tick, 30 s later)
 
 
 def _env_int(name: str, default: int, lo: int, hi: int) -> int:
@@ -118,6 +125,10 @@ class TeamProvider:
 
     def announce(self, db, team_id: str, sid: str, text: str, t: float) -> None:
         """A line for the team (its log, its chat group)."""
+
+    def remind(self, db, text: str, t: float, since: float, limit: int) -> tuple:
+        """The war's reminder to at most `limit` teams that can play and were not reminded since `since`: (sent, more left)."""
+        return 0, False
 
 
 PROVIDERS: dict = {}
@@ -609,6 +620,111 @@ ROUND_NAMES = {1: 'Chung kết', 2: 'Bán kết', 3: 'Tứ kết'}
 
 def round_name(rd: int, rounds: int) -> str:
     return ROUND_NAMES.get(rounds - rd + 1) or f'Vòng {rd}'
+
+
+def _clock(t: float) -> str:
+    """'20:00' in Vietnam time."""
+    import datetime
+    d = datetime.datetime.fromtimestamp(t, datetime.timezone(datetime.timedelta(hours=7)))
+    return f'{d.hour:02d}:{d.minute:02d}'
+
+
+def team_card(db, kind: str, tid: str, sid: str, t: float | None = None) -> dict:
+    """🛡️ The week's war for a team's page (the bang sheet's home tab), every member the same but for their buttons:
+    {start, lock, end, now, phase, size, slots: [{name, me, pet}], lead: {role} | None, n, mine, can_lead, can_pick,
+    matches: [{rd, round, vs, state, start, won, score}], result: {champ, second, round, w, l, pts} | None, entered}.
+    A few indexed reads: the team's picks (one query), its members, the war row, its matches and ladder row once played."""
+    t = A.now() if t is None else t
+    week, start, lock = _week_open(t)
+    prov = _providers().get(kind)
+    roster = {m['sid']: m for m in (prov.roster(db, tid) if prov else [])}
+    rows = db.execute('SELECT sid, name, pet, snap FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=? ORDER BY at, sid',
+                      (week, kind, tid)).fetchall()
+    lead, picks = None, []
+    for r in rows:
+        if r['sid'].startswith(LEAD):
+            d = A._j(r['snap'], {})
+            lead = dict(role=str(d.get('role') or (prov.lead_who if prov else ''))[:24])
+        elif t >= lock or r['sid'] in roster:     # before the lock only members still in the team count (as play does at it)
+            f = B.clean(A._j(r['snap'], {}))
+            if f:
+                picks.append(dict(name=(roster.get(r['sid']) or {}).get('name') or r['name'], me=r['sid'] == sid, pet=A.pet_view(f)))
+    picks = picks[:SIZE]
+    war = db.execute('SELECT * FROM pet_war WHERE week=?', (week,)).fetchone()
+    end = end_of(war) if war and war['status'] == 'done' else start + SIZE * DUEL_SECS
+    if t < lock:
+        phase = 'pick'
+    elif war and war['status'] != 'done':
+        phase = 'cancelled'
+    elif not war or t < start:
+        phase = 'locked'
+    else:
+        phase = 'live' if t < end else 'done'
+    try:
+        can_lead = bool(prov and prov.can_lead(db, tid, sid))
+        can_pick = bool(prov and prov.can_pick(db, tid, sid))
+    except Exception:  # noqa: BLE001 - a provider's fault never breaks the page
+        can_lead = can_pick = False
+    out = dict(week=week, start=start, lock=lock, end=end, now=t, phase=phase, size=SIZE, slots=picks, n=len(picks), lead=lead,
+               mine=any(p['me'] for p in picks), can_lead=can_lead and phase == 'pick', can_pick=can_pick and phase == 'pick' and not lead,
+               matches=[], result=None, entered=False)
+    if not war or war['status'] != 'done':
+        return out
+    rounds = int(war['rounds'] or 0)
+    for m in db.execute('SELECT rd, slot, a_kind, a_id, a_name, b_kind, b_id, b_name, win, wa, wb, start FROM pet_war_matches WHERE week=? '
+                        'AND ((a_kind=? AND a_id=?) OR (b_kind=? AND b_id=?)) ORDER BY rd', (week, kind, tid, kind, tid)).fetchall():
+        if m['start'] > t and not (m['rd'] == 1 or t >= m['start'] - GAP + SIZE * DUEL_SECS):
+            continue                                      # a later round's pairing is shown once the round before is over
+        side = 0 if (m['a_kind'], m['a_id']) == (kind, tid) else 1
+        bye = not m['b_name']
+        state = 'wait' if m['start'] > t else 'live' if m['start'] + SIZE * DUEL_SECS > t and not bye else 'done'
+        one = dict(rd=m['rd'], slot=m['slot'], round=round_name(m['rd'], rounds), vs='' if bye else (m['b_name'] if side == 0 else m['a_name']),
+                   bye=bye, state=state, start=m['start'])
+        if state == 'done' and not bye:
+            one.update(won=m['win'] == side, score=[m['wa'], m['wb']] if side == 0 else [m['wb'], m['wa']])
+        out['matches'].append(one)
+    out['entered'] = bool(out['matches'])
+    if phase == 'done':
+        lad = db.execute('SELECT * FROM pet_team_ladder WHERE week=? AND team_kind=? AND team_id=?', (week, kind, tid)).fetchone()
+        if lad:
+            champ = bool(lad['champ'])
+            second = not champ and int(lad['best']) == rounds
+            out['result'] = dict(champ=champ, second=second, round=round_name(min(int(lad['best']) or 1, rounds), rounds) if rounds else '',
+                                 w=int(lad['w']), l=int(lad['l']), pts=int(lad['pts']), champ_name=war['champ_name'])
+        else:
+            out['result'] = dict(champ=False, second=False, round='', w=0, l=0, pts=0, champ_name=war['champ_name'], out=True)
+    return out
+
+
+_REMIND: dict = {}
+
+
+def remind_due(store, t: float | None = None) -> int:
+    """⏰ server.py housekeeping (every 30 s): from REMIND_SECS before the lock until the lock, a line in each team's log
+    and chat group ("Bang chiến 20:00 tối nay, đội hình chốt lúc 19:50"), once a team a week (the provider keeps the
+    marker: a bang's own log row), REMIND_BATCH teams a tick, under the week's reminder lock (exactly once with two
+    processes). Nothing outside that hour."""
+    t = A.now() if t is None else t
+    start, lock = start_of(t), lock_of(t)
+    if not lock - REMIND_SECS <= t < lock:
+        return 0
+    week = A.vn_week(t)
+    if _REMIND.get('done') == week:
+        return 0
+    text = f'🛡️ Bang chiến {_clock(start)} tối nay, đội hình chốt lúc {_clock(lock)}. Ghi danh bé ở ⚔️ Bang › 🛡️ Bang chiến tuần nhé!'
+
+    def run(db):
+        db.execute('SELECT pg_advisory_xact_lock(?, hashtext(?))', (LOCK_KEY, f'remind|{week}'))
+        sent, more = 0, False
+        for prov in list(_providers().values()):
+            n, left = prov.remind(db, text, t, lock - REMIND_SECS, REMIND_BATCH - sent)
+            sent += n
+            more = more or left
+        return sent, more
+    sent, more = store.transaction(run)
+    if not more:
+        _REMIND['done'] = week
+    return sent
 
 
 def summary(store, sid: str, t: float) -> dict:

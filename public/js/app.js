@@ -184,10 +184,12 @@ function bootLive(m){
   // ⚔️ Bang (v4/bang-tag.js): my bang's tag, uniform, flag and boat paint; read again when the bang changes for me
   const bangMine=(force=false)=>import('./v4/bang-tag.js').then(b=>b.loadMine(api,{force})).catch(e=>console.warn('bang:',e));
   // ⚔️ Thách đấu bang: challenges waiting for my answer (an officer's me.tc_in) badge ⚔️ Bang; a new one toasts once
+  // 🛡️ Bang chiến tuần (me.war: its hours, game/bang.py me_view): a line under ⚔️ Bang on the war's day
+  const warLine=x=>{api.bangWar=x?.war||null;};
   const tcIn=(x,say)=>{const n=Number(x?.tc_in)||0;if(n>(api.tcIn||0)){if(say)toast('⚔️ Có bang thách đấu bang mình! Mở ⚔️ Bang để nhận lời nhé.','hint');api.bangAlerts=(api.bangAlerts||0)+n-(api.tcIn||0);renderMain();}api.tcIn=n;};
   // 📜 Nội quy mới (me.code_new, game/bang_code.py): one count on ⚔️ Bang while unread; said once when it arrives live
   const codeNew=(x,say)=>{const on=Boolean(x?.code_new);if(on&&!api.codeNew){if(say)toast('📜 Bang vừa cập nhật nội quy. Mở ⚔️ Bang để đọc nhé.','hint');api.bangAlerts=(api.bangAlerts||0)+1;renderMain();}api.codeNew=on;};
-  m.live.on('welcome',()=>bangMine().then(x=>{tcIn(x,false);codeNew(x,false);}));m.live.on('bang_me',()=>bangMine(true).then(x=>{tcIn(x,true);codeNew(x,true);}));
+  m.live.on('welcome',()=>bangMine().then(x=>{tcIn(x,false);codeNew(x,false);warLine(x);}));m.live.on('bang_me',()=>bangMine(true).then(x=>{tcIn(x,true);codeNew(x,true);warLine(x);}));
   m.live.on('bang_invite',f=>{toast(`📨 ${f.e||'⚔️'} Bang ${String(f.name||'').slice(0,24)} mời bạn vào bang. Mở ⚔️ Bang để nhận nhé.`,'hint');api.bangAlerts=(api.bangAlerts||0)+1;renderMain();});
   m.liveBoot(env());
 }
@@ -387,7 +389,7 @@ function navItems(c){
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story)items.push(['townProjects','building','Công trình của phố']);  // 🏗️ cả phố góp tiền xây (v4/town-projects.js, own dialog)
-  if(api.state?.journey?.story&&!api.content?.off?.bang)items.push(['bang','shield','Bang',api.bangAlerts||0]);  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
+  if(api.state?.journey?.story&&!api.content?.off?.bang){const n=bangWarNote();if(n)RAIL_NOTE.bang=n;else delete RAIL_NOTE.bang;items.push(['bang','shield','Bang',api.bangAlerts||0]);}  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)
@@ -402,6 +404,13 @@ function navItems(c){
   if(api.state?.journey?.story&&!result.some(x=>x[0]==='jrInvest'))result.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.certs&&!result.some(x=>x[0]==='jrCerts'))result.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);
   return result;
+}
+/** 🛡️ The ⚔️ Bang entry's line on the war's day (api.bangWar: start, lock, end of this week's war), else ''. */
+function bangWarNote(){
+  const w=api.bangWar,t=Date.now()/1000;if(!w||!(w.start>0))return '';
+  const at=new Date((w.start+7*3600)*1000),hh=`${String(at.getUTCHours()).padStart(2,'0')}:${String(at.getUTCMinutes()).padStart(2,'0')}`;
+  if(t<w.start-18*3600||t>=w.end)return '';
+  return t<w.lock?`🛡️ Bang chiến ${hh} hôm nay`:t<w.start?'🛡️ Đã chốt đội, sắp đánh':'🛡️ Bang chiến đang đánh';
 }
 /** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
 function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)return api.quayInvites;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}   // 💼 a friend's shift invitation: its count

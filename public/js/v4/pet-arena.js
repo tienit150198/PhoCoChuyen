@@ -80,6 +80,7 @@ export async function openArena(env,tab,extra={}){
   if(S.tab!=='fight')await loadTab();
   if(extra?.find&&S.tab==='war'&&S.wsec==='tc'&&S.tc?.mine?.officer){S.tcsub='find';S.tfind=null;render();findLoad();}   // ⚔️ Gửi thách đấu from the Bang sheet
   if(extra?.watch)await watchChallenge(String(extra.watch));
+  if(extra?.lineup&&S.tab==='war'&&S.wsec==='war'&&S.war?.can_lead)await openLineup();   // 👑 Chọn đội hình from the Bang sheet's war card
 }
 export async function petArenaAction(action,data,el,env){
   if(action!=='petArena')return false;
@@ -341,7 +342,7 @@ function warWeek(v){
   else{
     const slots=[];for(let i=0;i<w.size;i++){const p=w.picks[i];slots.push(p?`<div class="pa-slot${p.me?' me':''}">${pic(p.pet,44)}<small data-no-translate>${esc(p.name)}</small></div>`:`<div class="pa-slot empty"><span>?</span><small>Trống</small></div>`);}
     const mine=w.picks.find(p=>p.me);
-    const lead=w.lead?`<p class="pa-lead">👑 <b>${esc(w.lead.role)} đã chọn đội hình</b>${w.can_lead?' · bạn đổi được tới lúc chốt.':' · bạn không tự đổi được.'}</p>`:'';
+    const lead=w.lead?`<p class="pa-lead">👑 <b>${esc(w.lead.role)} đã chọn đội hình</b>${w.phase!=='pick'?'':w.can_lead?' · bạn đổi được tới lúc chốt.':' · bạn không tự đổi được.'}</p>`:'';
     const boss=w.can_lead&&w.phase==='pick'?`<div class="pa-chips"><button type="button" class="pa-chip on" data-pa="lineup">👑 ${w.lead?'Đổi':'Chọn'} đội hình bang</button>${w.lead?'<button type="button" class="pa-chip" data-pa="leadoff">↩️ Để mọi người tự chọn</button>':''}</div>`:'';
     const choose=w.lead?'':w.phase==='pick'?`<h4>${mine?'Đổi bé ra trận':'Chọn bé ra trận'}</h4><div class="pa-picks sm">${(v.pets||[]).map(p=>`<button type="button" class="pa-pick${S.wpet===p.id?' on':''}" data-pa="wpet" data-id="${esc(p.id)}" aria-pressed="${S.wpet===p.id}">${pic(p,52)}<b data-no-translate>${esc(p.n)}</b><small>${rk(p.r)}${elTag(p.e)} 💪${fmt(p.pw)}</small></button>`).join('')}</div>
       ${mine?'<button type="button" class="pa-chip" data-pa="unpick">Rút bé khỏi đội</button>':''}`:'';

@@ -813,7 +813,8 @@ def run_housekeeping(store) -> None:
         except Exception as e:  # noqa: BLE001 - an older schema: no archive table yet
             sys.stderr.write(f'[pet_arena] archive: {type(e).__name__}\n')
     from . import bang_challenge
-    for name, fn in (('cup', pet_cup.run_due), ('war', pet_war.run_due), ('chal', bang_challenge.run_due)):
+    for name, fn in (('cup', pet_cup.run_due), ('war', pet_war.run_due), ('chal', bang_challenge.run_due),
+                     ('war_remind', pet_war.remind_due)):   # ⏰ the war's reminder, the hour before the lock
         try:
             fn(store)
         except Exception as e:  # noqa: BLE001 - housekeeping must never take the server down
