@@ -146,3 +146,26 @@ test('a visitor never builds: taps on plots just walk', async () => {
   const [ex,ey]=L.plots[4];h.view.tap(ex*1000,ey*1000);assert.ok(!h.calls.some(c=>c[0]==='build'));
   h.view.close();
 });
+
+/* ---- 🏡 the house styles (20/10): a colour in the kind, both interfaces, the build sheet's previews ---- */
+test('house styles: a colour in the kind is the same style; unknown colours and styles are skipped', async () => {
+  const A=await import('../public/js/house-art.js');
+  const L=I.layout('hoang_hon');
+  const rows=[{p:0,k:'pho_hoi_an__2',l:2,b:0,t:0},{p:1,k:'hoang_cung',l:3,b:0,t:0},{p:2,k:'thap_moi__1',l:1,b:0,t:0},{p:3,k:'villa_kinh__1',l:0,b:1,t:NOW+60}];
+  const B=I.withBuilds(L,rows,NOW);
+  assert.deepEqual(B.built.map(b=>[b.plot,b.kind,b.look,b.level,b.work]),[[0,'pho_hoi_an',2,2,false],[1,'hoang_cung',0,3,false],[3,'villa_kinh',1,0,true]]);
+  assert.equal(B.spots.find(s=>s.build?.plot===0)?.home,true);
+  assert.deepEqual(A.splitKind('hanok__1'),['hanok',1]);assert.deepEqual(A.splitKind('hanok'),['hanok',0]);
+  for(const id of A.HOUSE_IDS)for(const lv of [1,2,3])for(let v=0;v<A.VARIANTS;v++){
+    const calls={fill:0,circle:0,line:0},view={zs:1,depth:(x,y)=>x+y,P:(x,y,z)=>[(x-y)*560,(x+y)*280-z],fill(){calls.fill++;},circle(){calls.circle++;},line(){calls.line++;}};
+    const r=A.paintHouse(id,lv,v,view);assert.ok(r&&r.top>10&&calls.fill>8,`${id} ${lv} ${v}`);
+  }
+  for(const id of A.DECOR_IDS){const n={f:0},view={zs:1,depth:(x,y)=>x+y,P:(x,y,z)=>[(x-y)*560,(x+y)*280-z],fill(){n.f++;},circle(){},line(){}};
+    assert.ok(A.paintDecor(id,view,'#3a4e7c')&&n.f>2,id);}
+  assert.equal(A.paintHouse('thap_moi',1,0,{}),null);
+  // the old interface draws them (a fake canvas), the new one paints them (the bundled renderer above already ran)
+  globalThis.document??={createElement:()=>fakeCanvas(110,160).canvas};
+  const {createWalkRenderer}=await import('../public/js/v4/island-walk.js');
+  const {canvas,calls}=fakeCanvas(),r=createWalkRenderer(canvas,L);r.setBuilds(B.built);calls.length=0;r.frame({people:[],vehicle:null,focus:[.5,.5]},1000);
+  assert.ok(calls.filter(c=>c==='fill').length>200);r.destroy();
+});

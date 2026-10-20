@@ -83,7 +83,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   function useSpot(id){const s=spotById(L,id);if(s){const [x,y]=standAt(L,s);go(x,y,s);}}
   function reachSpot(s){
     me.spot=null;
-    if(s.home){me.pose=null;view.inside?.({kind:s.build.kind,level:s.build.level,name:s.build.art.name,emoji:s.build.art.emoji,owner:trip.owner?.name||'',mine:Boolean(trip.mine)});return;}
+    if(s.home){me.pose=null;view.inside?.({kind:s.build.kind,tier:s.build.art.tier||0,level:s.build.level,name:s.build.art.name,emoji:s.build.art.emoji,owner:trip.owner?.name||'',mine:Boolean(trip.mine)});return;}
     me.pose=s.pose;
     view.notice(`${s.emoji} ${spotLine(s,Math.floor(clock()/1000))}`);presence?.act(s.id);
     if(s.build)Promise.resolve(actions.use?.(s.build.plot)).then(line=>{if(line&&!closed)view.notice(`${s.emoji} ${spotLine(s,Math.floor(clock()/1000))} ${line}`);}).catch(()=>{});
@@ -194,9 +194,17 @@ const ROOMS={
   nha_san:{wall:'#e8c98f',floor:'#b5844f',items:[['🛏️',18,8,46],['🪔',70,40,30],['🏺',82,10,34]],more:[['🪑',48,6,34],['🪴',6,34,34]],most:[['🎣',62,48,30],['🧺',36,26,30]]},
   biet_thu:{wall:'#f4efe6',floor:'#d9c7a8',items:[['🛋️',20,8,52],['📺',62,44,36],['🪴',86,10,40]],more:[['🛏️',56,6,48],['🖼️',30,62,32]],most:[['🛁',78,26,40],['🎹',6,20,40]]},
   lau_dai:{wall:'#cfc6b8',floor:'#8f8476',items:[['🪑',30,8,44],['🕯️',12,44,30],['🛡️',72,58,34]],more:[['🎹',58,6,50],['🖼️',36,62,34]],most:[['🏆',86,30,34],['📚',4,10,44],['💎',48,40,26]]},
+  // 🏡 the house styles (public/js/house-art.js): a few of their own, the rest by tier (TIER_ROOMS)
+  nha_tranh:{wall:'#d9b98a',floor:'#9c7a52',items:[['🛏️',18,8,44],['🍚',70,40,30],['🏺',84,10,34]],more:[['🪑',48,6,34],['🐓',8,30,30]],most:[['🧺',62,48,30],['🌾',36,26,30]]},
+  nha_cay:{wall:'#c99a62',floor:'#8a6236',items:[['🛏️',20,8,44],['🔭',72,42,32],['🪴',86,10,34]],more:[['📚',48,6,36],['🧸',8,30,30]],most:[['🪁',60,50,30],['✨',34,30,26]]},
+  hai_dang:{wall:'#eef1f4',floor:'#7d8a96',items:[['🛏️',20,8,44],['🧭',70,42,32],['⚓',84,10,34]],more:[['🗺️',46,60,34],['🪑',8,8,34]],most:[['🔭',60,30,34],['📻',34,44,28]]},
+  nha_nhat:{wall:'#efe6d2',floor:'#c9b98a',items:[['🍵',20,8,40],['🏮',72,44,32],['🎎',84,10,34]],more:[['🪷',46,6,34],['🖼️',30,62,32]],most:[['🎋',62,30,34],['🪭',8,40,30]]},
+  hanok:{wall:'#efe3cb',floor:'#a8855a',items:[['🍵',20,8,40],['🏺',74,10,38],['🪭',70,48,28]],more:[['🛏️',46,6,46],['🖼️',30,62,32]],most:[['🪷',86,30,32],['🥢',8,40,28]]},
+  hoang_cung:{wall:'#b8433a',floor:'#7a3a26',items:[['🪑',30,8,46],['🏮',12,48,32],['🐉',74,58,36]],more:[['🎋',58,6,46],['🖼️',36,62,34]],most:[['🏆',86,30,34],['🪭',4,12,40],['💎',48,40,26]]},
 };
+const TIER_ROOMS={1:ROOMS.nha_san,2:{wall:'#f2dfb4',floor:'#a77a4d',items:[['🛏️',18,8,46],['🏮',70,44,30],['🪴',84,10,36]],more:[['🪑',48,6,34],['🖼️',30,62,32]],most:[['🎐',60,50,30],['🧺',6,30,30]]},3:ROOMS.biet_thu,4:ROOMS.lau_dai};
 function roomHtml(info){
-  const r=ROOMS[info.kind]||ROOMS.nha_san,lv=Math.max(1,Math.min(3,Number(info.level)||1));
+  const r=ROOMS[info.kind]||TIER_ROOMS[info.tier]||ROOMS.nha_san,lv=Math.max(1,Math.min(3,Number(info.level)||1));
   const items=[...r.items,...(lv>1?r.more:[]),...(lv>2?r.most:[])];
   return `<div class="isl-room" style="--wall:${r.wall};--floor:${r.floor}"><div class="isl-room-wall"><span class="isl-room-window" aria-hidden="true"></span>${lv>2?'<span class="isl-room-lamp" aria-hidden="true">💡</span>':''}</div><div class="isl-room-floor"></div>
     ${items.map(([e,x,y,size])=>`<span class="isl-room-item" style="left:${x}%;bottom:${y}%;font-size:${size}px" aria-hidden="true">${e}</span>`).join('')}</div>

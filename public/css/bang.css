@@ -243,3 +243,43 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 .bg-war-acts{flex-wrap:wrap;border-top:0}
 .bg-war-acts .btn{flex:1 1 140px;min-height:44px}
 @media (orientation:landscape) and (max-height:480px){.bg-war-slots{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
+
+/* 🏯 Kiểu đại sảnh, 🎏 trang trí, 📋 nhiệm vụ tuần (20/10, game/bang_extra.py) */
+.bg-hs-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 8px;margin:0 -2px;scroll-snap-type:x proximity}
+.bg-hs-row::-webkit-scrollbar{display:none}
+.bg-hs{flex:none;width:104px;display:grid;justify-items:center;gap:2px;padding:6px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--ink);font:inherit;text-align:center;cursor:pointer;scroll-snap-align:start;touch-action:manipulation}
+.bg-hs.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.bg-hs.off{opacity:.62}
+.bg-hs b{font-size:.78rem;line-height:1.2}
+.bg-hs small{font-size:.72rem;color:var(--muted);font-weight:700}
+.bg-hs-art{display:block;width:92px;height:72px;border-radius:10px;background:linear-gradient(180deg,#d8f0f6,#bfe3ec)}
+.bg-hall-e{display:grid;place-items:center;font-size:2.2rem}
+.bg-hall-pick{display:flex;gap:10px;align-items:flex-start}
+.bg-hall-pick .grow{min-width:0;display:grid;gap:6px}
+.bg-hall-pick .btn{min-height:44px}
+.bg-hall-big{flex:none;display:block;width:44%;max-width:180px;height:140px;border-radius:12px;background:linear-gradient(180deg,#cdeef7,#9fd3e2 70%,#7cc0d4)}
+.bg-hall-big.bg-hall-e{font-size:3.4rem}
+.bg-looks{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bg-look{width:40px;height:40px;padding:3px;border:2px solid transparent;border-radius:50%;background:none;cursor:pointer}
+.bg-look i{display:block;width:100%;height:100%;border-radius:50%;box-shadow:inset 0 0 0 1px #0003}
+.bg-look.on{border-color:var(--accent)}
+.bg-looks small{font-size:.78rem;color:var(--muted)}
+.bg-decs{display:grid;gap:8px}
+.bg-dec{display:flex;align-items:center;gap:10px;padding:6px 8px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.bg-dec.on{border-color:var(--good)}
+.bg-dec .grow{min-width:0;display:flex;flex-direction:column;gap:1px}
+.bg-dec small{color:var(--muted);font-size:.78rem;line-height:1.3}
+.bg-dec .btn{flex:none;min-height:44px}
+.bg-dec-art{flex:none;width:64px;height:58px;border-radius:10px;background:#e9f4e4}
+.bg-q-list{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:8px}
+.bg-q{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.bg-q.done{border-color:var(--good)}
+.bg-q .grow{min-width:0;display:flex;flex-direction:column}
+.bg-q b{font-size:.9rem;line-height:1.3}
+.bg-q small{color:var(--muted);font-size:.78rem}
+.bg-sheet .bg-q .tp-bar{height:8px;margin:4px 0 2px}
+.bg-q-ico{flex:none;font-size:1.4rem}
+.bg-q .btn{flex:none;min-height:44px}
+.bg-q-ok{flex:none;font-weight:700;color:var(--good);font-size:.85rem}
+.bg-q-pts{flex:none;font-weight:700;color:var(--muted);font-size:.85rem}
+@media(max-width:360px){.bg-hall-pick{flex-direction:column}.bg-hall-big{width:100%;max-width:none}}

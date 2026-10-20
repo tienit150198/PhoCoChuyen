@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 // @ts-ignore The illustrated atlas adapter preserves the game's actual wardrobe.
 import {getCharacterStamp} from '/js/isometric/character-art.js';
+// @ts-ignore a plain module shared with the old interface (bundled in: a relative path)
+import {HOUSES,paintHouse,houseTop,DECOR,paintDecor} from '../../public/js/house-art.js';
 
 /** ⚔️ Đảo bang on the new interface: a bang's island (public/js/bang-island-layout.js) drawn isometrically, in the
  * private islands' style (client/isometric/private-island.ts: sea, coast, sand, grass, palms, the pier) but bigger,
@@ -13,7 +15,9 @@ import {getCharacterStamp} from '/js/isometric/character-art.js';
  * 🏝️ The island's level (21/10) is the layout's (public/js/bang-island-layout.js layout(level, building)): its coast
  * with the zones' capes, their plots (🥋 a sparring ring, 🍵 a tea pavilion over a koi pond, 🛕 a five-roof pagoda,
  * 🗼 a lighthouse), gold lanterns at level 5, and while the next level is built its raw sand bank with stakes,
- * scaffolding and a crane (`site`). */
+ * scaffolding and a crane (`site`).
+ * 🏯 20/10 (game/bang_extra.py): the hall may wear a house style (public/js/house-art.js, `bang.hall`), and the bang's
+ * decorations (`bang.decor`) stand on their spots (layout.decorAt), drawn with the same models through houseView(). */
 type Pt=[number,number];
 type Facing='se'|'sw'|'ne'|'nw';
 interface Rect {x:number;y:number;w:number;h:number}
@@ -23,9 +27,10 @@ export interface BangIslandLayout {
   slots:Record<string,Rect&{id:string;solid:boolean;door:Pt}>;plots:Array<Rect&{id:string;kind:string}>;
   spots:Array<{id:string;emoji:string;x:number;y:number}>;palms:Pt[];trees:Pt[];
   level?:number;lamps?:Pt[];site?:Rect&{id:string;kind:string;level:number;shore:Pt[]};
+  decorAt?:Record<string,Pt[]>;hallArt?:{scale:number;level:(hall:number)=>number};
 }
 export interface BangFacilityLook {id:string;level:number;band?:number;state:string}
-export interface BangLook {name:string;emoji:string;color:string;facilities:BangFacilityLook[]}
+export interface BangLook {name:string;emoji:string;color:string;facilities:BangFacilityLook[];hall?:{style:string;look:number};decor?:string[]}
 export interface BangPerson {id:string;x:number;y:number;look:any;gender:string;dir:Facing;walking:boolean;pose?:string|null;hidden?:boolean}
 export interface BangFrame {people:BangPerson[];focus?:Pt|null;shift?:number}   // shift: CSS px to show the focus higher (a panel covers the bottom)
 
@@ -34,6 +39,7 @@ const hex=(s:string|undefined,f=0x888888)=>s&&/^#[0-9a-f]{6}$/i.test(s)?parseInt
 const shade=(c:number,k:number)=>{const r=Math.min(255,Math.round(((c>>16)&255)*k)),g=Math.min(255,Math.round(((c>>8)&255)*k)),b=Math.min(255,Math.round((c&255)*k));return (r<<16)|(g<<8)|b;};
 const bandOf=(level:number)=>level<=0?0:level<=3?1:level<=6?2:3;
 const atScreen=(a:number,b:number):Pt=>[.5+(a+b)*R2,.5+(b-a)*R2];
+const known=(table:unknown,id:string|undefined)=>Boolean(id&&(table as Record<string,unknown>)[id]);
 function seeded(seed:number){let s=seed>>>0||1;return ()=>((s=Math.imul(s^(s>>>15),2246822507)^Math.imul(s^(s>>>13),3266489909))>>>0)/4294967296;}
 function inset(shore:Pt[],by:number):Pt[]{
   const cx=shore.reduce((s,p)=>s+p[0],0)/shore.length,cy=shore.reduce((s,p)=>s+p[1],0)/shore.length;
@@ -184,6 +190,29 @@ export class BangIslandRenderer {
     for(const f of bang.facilities){const before=old.facilities.find(x=>x.id===f.id);
       if(flagChanged||!before||this.lookKey(before)!==this.lookKey(f))this.paintFacility(f.id);}
     if(flagChanged)this.paintBoat();
+    if(JSON.stringify(old.hall||null)!==JSON.stringify(bang.hall||null))this.paintFacility('dai_sanh');
+    if(flagChanged||JSON.stringify(old.decor||[])!==JSON.stringify(bang.decor||[]))this.paintDecor();
+  }
+  /** 🏯 The hall's house style when it has one this build knows (else its own art). */
+  private styled():{style:string;look:number}|null{const h=this.bang.hall;return h&&h.style!=='dinh'&&known(HOUSES,h.style)?h:null;}
+  /** The house-art.js adapter on a Kit: local model points around the map point (cx, cy), `scale` map units each. */
+  private houseView(k:Kit,cx:number,cy:number,scale:number){
+    const Z=scale*this.N*HW/560,pt=(p:number[])=>new Phaser.Geom.Point(p[0],p[1]);
+    return {zs:Z,depth:(a:number,b:number)=>a+b,
+      P:(x:number,y:number,z:number)=>{const q=k.p(cx+x*scale,cy+y*scale,z*Z);return [q.x,q.y];},
+      fill:(pts:number[][],color:string,alpha=1)=>k.poly(pts.map(pt),hex(color),alpha),
+      circle:(x:number,y:number,r:number,color:string,alpha=1)=>k.circle(new Phaser.Geom.Point(x,y),r,hex(color),alpha),
+      line:(a:number[],b:number[],color:string,w:number)=>k.line(pt(a),pt(b),hex(color),w)};
+  }
+  /** 🎏 The bang's decorations on their spots (each its own baked image, sorted with the people). */
+  private paintDecor(){
+    const s=this.scene!,old=this.parts.get('decor');if(old){for(const o of old.objects)o.destroy();for(const k of old.keys)if(s.textures.exists(k))s.textures.remove(k);}
+    const keys:string[]=[],objects:Phaser.GameObjects.GameObject[]=[],spots=this.layout.decorAt||{};
+    for(const id of this.bang.decor||[]){if(!known(DECOR,id))continue;
+      for(const [x,y] of spots[id]||[]){const o=this.bake(x,y,k=>{k.ellipse(k.p(x,y),id==='thuyen_rong'?150:30,id==='thuyen_rong'?24:10,id==='thuyen_rong'?0xffffff:0x000000,id==='thuyen_rong'?.35:.14);
+        paintDecor(id,this.houseView(k,x,y,1),this.bang.color);},this.iso(x,y)[1]+.5);keys.push(o.key);objects.push(o.image);
+        if(id==='thuyen_rong')s.tweens.add({targets:o.image,angle:{from:-1,to:1},duration:1800,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}}
+    this.parts.set('decor',{keys,objects,top:0});
   }
   /** A tap on the canvas → the map point under it, or null outside the map. */
   toMap(clientX:number,clientY:number):Pt|null{
@@ -291,6 +320,7 @@ export class BangIslandRenderer {
     for(const [x,y] of L.palms)this.palm(x,y,rand);
     for(const [x,y] of L.trees)this.tree(x,y,rand);
     this.paintBoat();
+    this.paintDecor();
     for(const sp of L.spots){const [a,b]=this.iso(sp.x,sp.y);
       s.add.ellipse(a,b,46,22,0xffffff,.26).setStrokeStyle(2,0xffffff,.8).setDepth(b-2);
       const icon=s.add.text(a,b-30,sp.emoji,{fontSize:'24px'}).setOrigin(.5,1).setDepth(b+1);
@@ -333,7 +363,7 @@ export class BangIslandRenderer {
     }
     // Moving bits: the bang's flags, the temple's glow, the statue's braziers.
     for(const o of this.living(id,r,band,flag,building))objects.push(o);
-    if(this.bang.emoji&&band>=1&&!building&&(id==='dai_sanh'||id==='cong_bang')){
+    if(this.bang.emoji&&band>=1&&!building&&(id==='cong_bang'||id==='dai_sanh'&&!this.styled())){
       let at:Pt,lift:number,depth:number;
       if(id==='dai_sanh'){const b=HALL_BANNER[band],w=sub(r,b.k);at=this.iso(w.x-w.w/2+w.w*b.t,w.y+w.h/2);lift=(b.z0+b.z1)/2;depth=front+.3;}
       else{at=this.iso(...atScreen(L.gate.a,L.gate.b));lift=[0,44,66,70][band];depth=at[1]+2.3;}
@@ -347,6 +377,9 @@ export class BangIslandRenderer {
 
   /** How tall each facility stands per band (pixels), for scaffolding and labels. */
   private height(id:string,band:number){
+    const st=id==='dai_sanh'?this.styled():null;
+    if(st&&band>0){const art=this.layout.hallArt||{scale:2.15,level:(n:number)=>n>=5?3:n>=3?2:1};
+      return houseTop(st.style,art.level(this.facility(id).level))*art.scale*this.N*HW/560;}
     const H:Record<string,number[]>={dai_sanh:[10,110,150,230],kho_bang:[8,62,84,96],xuong_may:[8,58,86,130],den_vang:[8,60,104,170],tuong_bang:[6,48,84,128],san_pet:[4,20,24,44],cong_bang:[6,90,130,140]};
     return (H[id]||[10,60,90,120])[band];
   }
@@ -354,7 +387,10 @@ export class BangIslandRenderer {
   private building(k:Kit,id:string,r:Rect,band:number,flag:number,building:boolean){
     k.shadow(r,band?1.05:.95);
     if(band===0){this.plot(k,r,building);return;}
-    if(id==='dai_sanh')this.hall(k,r,band,flag);
+    const st=id==='dai_sanh'?this.styled():null;
+    if(st){const art=this.layout.hallArt||{scale:2.15,level:(n:number)=>n>=5?3:n>=3?2:1};
+      paintHouse(st.style,art.level(this.facility(id).level),st.look,this.houseView(k,r.x,r.y,art.scale));}
+    else if(id==='dai_sanh')this.hall(k,r,band,flag);
     else if(id==='kho_bang')this.vault(k,r,band);
     else if(id==='xuong_may')this.tailor(k,r,band,flag);
     else if(id==='den_vang')this.temple(k,r,band);
@@ -563,7 +599,7 @@ export class BangIslandRenderer {
     };
     const front=this.iso(r.x+r.w/2,r.y+r.h/2)[1];
     if(building||band===0)return out;
-    if(id==='dai_sanh'){const z=[0,150,190,262][band];pennant(r.x,r.y,z,band===3?24:18,front+.2);}
+    if(id==='dai_sanh'){const z=this.styled()?this.height(id,band)+6:[0,150,190,262][band];pennant(r.x,r.y,z,band===3?24:18,front+.2);}
     if(id==='cong_bang'&&band>=2){const G=L.gate,k=band===3?1.8:1;for(const sgn of [-1,1]){const [x,y]=atScreen(G.a+sgn*G.half*k,G.b);
       if(band===3){const [a,b]=this.iso(x,y),pole=s.add.graphics().setDepth(b+2.1);pole.fillStyle(C.goldD,1).fillRect(a-2,b-136,4,50);out.push(pole);}
       pennant(x,y,band===3?136:114,band===3?22:16,this.iso(x,y)[1]+2.2);}}

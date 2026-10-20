@@ -5,9 +5,12 @@
  * a staked plot before level 1. Same renderer contract as client/isometric/bang-island.ts: frame(model),
  * setBang(bang), toMap(clientX, clientY), toScreen(x, y, lift), anchor(id), personHeight, resize(), destroy().
  * 🏝️ The island's level (21/10) is the layout's: its zones (Võ đường, Trà đình, Bảo tháp, Hải đăng, gold lanterns) and,
- * while the next level is built, its raw sand bank with stakes, scaffolding and a crane (L.site). */
+ * while the next level is built, its raw sand bank with stakes, scaffolding and a crane (L.site).
+ * 🏯 20/10 (game/bang_extra.py): the hall in a house style (B.hall, public/js/house-art.js) and the decorations
+ * (B.decor at L.decorAt), drawn with the same models as the new interface through houseView(). */
 import {figureOf,paintPlayer,CANVAS} from './look.js';
 import {inPoly,band as bandOf,gatePosts,screenOf} from '../bang-island-layout.js';
+import {HOUSES,paintHouse,houseTop,DECOR,paintDecor} from '../house-art.js';
 
 const FLAT=.62,R2=Math.SQRT1_2,FIG_H=160,FIG_W=110;
 function inset(shore,by){
@@ -43,6 +46,18 @@ export function createBangWalkRenderer(canvas,L,bang){
   function poly(list,fill,dy=0){ctx.beginPath();list.forEach(([x,y],i)=>{const [a,b]=P(x,y);i?ctx.lineTo(a,b+dy):ctx.moveTo(a,b+dy);});ctx.closePath();ctx.fillStyle=fill;ctx.fill();}
   const diamond=r=>[[r.x-r.w/2,r.y-r.h/2],[r.x+r.w/2,r.y-r.h/2],[r.x+r.w/2,r.y+r.h/2],[r.x-r.w/2,r.y+r.h/2]];
   const fac=id=>B.facilities.find(f=>f.id===id)||{id,level:0,state:'done'};
+  const art=L.hallArt||{scale:2.15,level:n=>n>=5?3:n>=3?2:1};
+  const styled=()=>{const s=B.hall;return s&&s.style!=='dinh'&&HOUSES[s.style]?s:null;};
+  /** The house-art.js adapter: local model points around the map point (cx, cy), `scale` map units each. */
+  function houseView(cx,cy,scale){
+    const zk=scale*R2*cam.S/560;
+    return {zs:zk,depth:(x,y)=>x+y,
+      P:(x,y,z)=>{const [a,b]=P(cx+x*scale,cy+y*scale);return [a,b-z*zk];},
+      fill(pts,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();ctx.globalAlpha=1;},
+      circle(x,y,r,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,Math.max(.5,r),0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;},
+      line(a,b,color,wd){ctx.strokeStyle=color;ctx.lineWidth=wd;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}};
+  }
+  const hallTop=()=>{const s=styled();return s?houseTop(s.style,art.level(fac('dai_sanh').level))*art.scale*R2*900/560:0;};   // in k units
   function ground(t){
     ctx.fillStyle=L.deep;ctx.fillRect(0,0,w,h);
     if(L.site){poly(inset(L.site.shore,-.09),L.sea);poly(L.site.shore,'#b89a68',8);poly(L.site.shore,'#d9c08e');}   // 🏝️ the next level's sand bank
@@ -117,6 +132,13 @@ export function createBangWalkRenderer(canvas,L,bang){
     if(id==='cong_bang')return gate(band,building,k,t,color);
     if(id==='san_pet')return yardFront(r,band,building,k,t,color);
     if(band===0){stakes(r,k);if(building)scaffold(a,b,wd*.8,40*k,k);return;}
+    const st=id==='dai_sanh'?styled():null;
+    if(st){   // 🏯 the hall in its house style, the bang's flag on top
+      paintHouse(st.style,art.level(f.level),st.look,houseView(r.x,r.y,art.scale));
+      const [ca,cb]=P(r.x,r.y);flagAt(ca,cb-hallTop()*k+6*k,40*k,k,t,color);
+      if(building)scaffold(a,b,wd*.86,hallTop()*k*.92,k);
+      return;
+    }
     const S={
       dai_sanh:[null,[{h:52,wall:'#9a6a3c',roof:'#d6ad55',roofH:34,win:3,door:'#6e4a2a',k:.8}],
         [{h:64,wall:'#f2e4c4',roof:'#b04a35',roofH:16,win:4,door:'#a3242a',pillars:'#c8312f',tips:'#86362a',k:.86},{h:28,wall:'#f2e4c4',roof:'#b04a35',roofH:26,win:3,tips:'#86362a',k:.55}],
@@ -209,6 +231,9 @@ export function createBangWalkRenderer(canvas,L,bang){
       ctx.strokeStyle='#e7b726';ctx.lineWidth=4*k;ctx.beginPath();ctx.moveTo(a+wd*.7,b);ctx.lineTo(a+wd*.7,b-120*k);ctx.lineTo(a-wd*.5,b-112*k);ctx.stroke();
       ctx.strokeStyle='#3d3e46';ctx.lineWidth=1.5*k;ctx.beginPath();ctx.moveTo(a-wd*.3,b-113*k);ctx.lineTo(a-wd*.3,b-70*k);ctx.stroke();ctx.fillStyle='#c99a58';ctx.fillRect(a-wd*.3-7*k,b-70*k,14*k,10*k);}]);}
     for(const id of Object.keys(L.slots)){const r=L.slots[id];const d=id==='cong_bang'?r.x+r.y:r.x+r.y+(r.w+r.h)/2*.84;out.push([d,()=>facility(id,t)]);}
+    for(const id of B.decor||[])if(DECOR[id])for(const [x,y] of L.decorAt?.[id]||[])out.push([x+y,()=>{const [a,b]=P(x,y);
+      ctx.fillStyle=id==='thuyen_rong'?'rgba(255,255,255,.35)':'rgba(0,0,0,.14)';ctx.beginPath();ctx.ellipse(a,b,(id==='thuyen_rong'?70:14)*k,(id==='thuyen_rong'?10:5)*k,0,0,Math.PI*2);ctx.fill();
+      paintDecor(id,houseView(x,y,1),safeColor(B.color));}]);
     // The bang's boat beside the pier, its sail in the bang's colour.
     const [bx,by]=[.5+(.075+.5)*R2,.5+(.5-.075)*R2];out.push([bx+by,()=>{const [a,b]=P(bx,by),bob=Math.sin(t/800)*2;
       ctx.fillStyle='#8a5a32';ctx.beginPath();ctx.moveTo(a-48*k,b-4*k+bob);ctx.lineTo(a+50*k,b-8*k+bob);ctx.lineTo(a+38*k,b+8*k+bob);ctx.lineTo(a-40*k,b+8*k+bob);ctx.fill();
@@ -255,7 +280,7 @@ export function createBangWalkRenderer(canvas,L,bang){
     },
     toMap(clientX,clientY){const r=canvas.getBoundingClientRect(),u=(clientX-r.left-cam.ox)/cam.S,v=(clientY-r.top-cam.oy)/(cam.S*FLAT),x=(u+v)*R2,y=(v-u)*R2;return x>=-.1&&x<=1.1&&y>=-.1&&y<=1.1?[x,y]:null;},
     toScreen(x,y,lift=0){const [a,b]=P(x,y);return [a,b-lift*cam.S/900];},
-    anchor(id){const s=L.slots[id];if(!s)return null;const f=fac(id),tall=(TALL[id]||[10,60,90,120])[f.band??bandOf(f.level)];
+    anchor(id){const s=L.slots[id];if(!s)return null;const f=fac(id),tall=id==='dai_sanh'&&styled()?hallTop():(TALL[id]||[10,60,90,120])[f.band??bandOf(f.level)];
       if(id==='cong_bang'){const g=gatePosts(L);return {x:(g[0].x+g[1].x)/2,y:(g[0].y+g[1].y)/2,lift:tall+12};}
       return {x:s.x+s.w*.42,y:s.y+s.h*.42,lift:tall+(id==='dai_sanh'?40:24)};},
     resize,

@@ -12,6 +12,10 @@ homes have an inside view, and the weekly 🏝️ Đảo đẹp board counts the
 * jr_isle_raze {island, plot, confirm}: phá dỡ (or stop a construction): C.SALVAGE_PCT % of everything the plot cost
   comes back into the wallet ("thu hồi vật liệu"), the plot is empty again. Selling the island does the same for every
   plot on it (game/island.py _sell calls on_sell()).
+* jr_isle_paint {island, plot, look, confirm} (20/10): 🎨 another colour of the same house style (C.LOOKS palettes,
+  public/js/house-art.js), paid at once (C.PAINT_PCT % of its level-1 price, at least C.PAINT_MIN). jr_isle_build takes
+  the colour too (`look`, free). The colour lives in the kind itself, '<id>__<n>' (split()): saves, the island_builds
+  rows and every reader keep their shape; an older build keeps such a plot by shape and simply does not show it.
 * jr_isle_use {trip, plot}: using a leisure building on an island one is on (game/island_trips.py access: the owner, a
   friend aboard, a public visitor): tinh thần +C.USE_SPIRIT, at most C.USE_MAX times a Vietnam day. The reducer cannot
   see the database: command_commit (game/storage.py, in the save's own transaction) checks the trip, the access and
@@ -47,9 +51,10 @@ from . import island_build_content as C
 VERSION = 1
 KEY = 'islb'
 KIND = 'life'
-COMMANDS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_isle_use')
-SYNC_ACTIONS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_island_sell', 'jr_island_buy', 'reset_all', 'import_save')
+COMMANDS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_isle_use', 'jr_isle_paint')
+SYNC_ACTIONS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_isle_paint', 'jr_island_sell', 'jr_island_buy', 'reset_all', 'import_save')
 BUILD = {b['id']: b for b in C.BUILDINGS}
+LOOK_RE = re.compile(r'([a-z0-9_]+?)__([1-9])')
 BLOCK_KEYS = frozenset({'v', 'p', 'n', 'u'})
 PLOT_KEYS = frozenset({'k', 'l', 'b', 't', 'x'})
 USE_KEYS = frozenset({'d', 'n', 'trip', 'plot'})
@@ -65,6 +70,33 @@ TRIP_RE = re.compile(r'[0-9a-f]{16}')
 
 def now() -> float:
     return time.time()
+
+
+def looks_of(it: dict) -> int:
+    """How many colours a building comes in (1: just its own)."""
+    return len(it.get('looks') or ()) or 1
+
+
+def split(kind) -> tuple:
+    """A stored kind → (style id, colour): 'pho_hoi_an__2' → ('pho_hoi_an', 2); a plain id → (id, 0). A suffix this
+    build does not know (no such style, or more colours than it has) stays as it is: an unknown kind."""
+    m = LOOK_RE.fullmatch(kind) if isinstance(kind, str) else None
+    if m and m.group(1) in BUILD and int(m.group(2)) < looks_of(BUILD[m.group(1)]):
+        return m.group(1), int(m.group(2))
+    return kind, 0
+
+
+def known(kind) -> dict | None:
+    """The catalogue entry of a stored kind (its colour aside), None for a kind this build does not know."""
+    return BUILD.get(split(kind)[0])
+
+
+def kind_of(sid: str, look: int = 0) -> str:
+    return f'{sid}__{look}' if look else sid
+
+
+def paint_price(it: dict) -> int:
+    return max(C.PAINT_MIN, it['levels'][0][0] * C.PAINT_PCT // 100 // 1000 * 1000)
 
 
 def _core():
@@ -211,11 +243,11 @@ def score(plots, t: float) -> int:
     C.VARIETY for each different kind standing. Scaffolding counts nothing yet."""
     total, kinds = 0, set()
     for e in plots:
-        it = BUILD.get(e['k'])
+        it = known(e['k'])
         lv = standing(e, t) if it else 0
         if lv:
             total += it['pts'] * min(lv, C.LEVELS)
-            kinds.add(e['k'])
+            kinds.add(it['id'])
     return total + C.VARIETY * len(kinds)
 
 
@@ -256,7 +288,7 @@ def action(s: dict, name: str, p: dict) -> dict:
     need(isinstance(p, dict), 'Thông tin không hợp lệ.')
     if name == 'jr_isle_use':
         return _use(s, p)
-    need(set(p) <= {'island', 'plot', 'kind', 'confirm'} and {'island', 'plot'} <= set(p), 'Thông tin không hợp lệ.')
+    need(set(p) <= {'island', 'plot', 'kind', 'confirm', 'look'} and {'island', 'plot'} <= set(p), 'Thông tin không hợp lệ.')
     iid = p['island']
     need(isinstance(iid, str) and iid in isl.owned(s), 'Bạn chưa có hòn đảo này.', 'not_owned')
     spots = plots_of(iid)
@@ -264,9 +296,9 @@ def action(s: dict, name: str, p: dict) -> dict:
     t = now()
     b = get(s)
     done = _settle(b, t) if b else []
-    out = {'jr_isle_build': _build, 'jr_isle_up': _up, 'jr_isle_raze': _raze}[name](s, p, iid, str(p['plot']), t)
+    out = {'jr_isle_build': _build, 'jr_isle_up': _up, 'jr_isle_raze': _raze, 'jr_isle_paint': _paint}[name](s, p, iid, str(p['plot']), t)
     if done:
-        out.setdefault('effects', []).extend(f'{BUILD[k]["emoji"]} {BUILD[k]["name"]} đã xây xong (cấp {lv}).' for _, _, k, lv in done if k in BUILD)
+        out.setdefault('effects', []).extend(f'{it["emoji"]} {it["name"]} đã xây xong (cấp {lv}).' for _, _, k, lv in done if (it := known(k)))
     return out
 
 
@@ -276,13 +308,21 @@ def _plots(s: dict, iid: str) -> dict:
     return d if isinstance(d, dict) else {}
 
 
+def _look(it: dict, p: dict) -> int:
+    """The colour asked for (`look`, absent: the first), one this style comes in."""
+    look = p.get('look', 0)
+    _core().need(type(look) is int and 0 <= look < looks_of(it), 'Chọn một màu nhé.')
+    return look
+
+
 def _build(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     need = _core().need
     it = BUILD.get(p.get('kind')) if isinstance(p.get('kind'), str) else None
     need(it is not None, 'Chọn một công trình nhé.')
+    look = _look(it, p)
     plots = _plots(s, iid)
     cur = plots.get(key)
-    if cur and cur['k'] == it['id'] and cur['l'] == 0 and cur['b'] == 1:   # a second tap: nothing to pay
+    if cur and split(cur['k'])[0] == it['id'] and cur['l'] == 0 and cur['b'] == 1:   # a second tap: nothing to pay
         return dict(message=f'{it["name"]} đang được xây ở ô này rồi.', duplicate=True)
     need(cur is None, 'Ô đất này đã có công trình.', 'taken')
     isle = isl.ISLAND[iid]
@@ -291,7 +331,7 @@ def _build(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     if it.get('big'):
         need(isle['price'] >= C.BIG_FROM, f'{it["name"]} chỉ xây được trên đảo lớn (Mây Đá, Hoàng Hôn).', 'small')
     if it.get('max'):
-        n = sum(1 for e in plots.values() if e['k'] == it['id'])
+        n = sum(1 for e in plots.values() if split(e['k'])[0] == it['id'])
         need(n < it['max'], f'Mỗi đảo chỉ có {it["max"]} {it["name"]}.', 'limit')
     need(crews_busy(plots, t) < C.CREWS, f'Cả {C.CREWS} đội thợ đang bận. Chờ một công trình xong nhé.', 'busy')
     price, hours = it['levels'][0]
@@ -300,7 +340,7 @@ def _build(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     need(not why, why, 'not_enough')
     how = isl._take(s, price, f'🏗️ Xây {it["name"]} · {isle["name"]}')
     b = _ensure(s)
-    b['p'].setdefault(iid, {})[key] = dict(k=it['id'], l=0, b=1, t=int(t + hours * 3600), x=price)
+    b['p'].setdefault(iid, {})[key] = dict(k=kind_of(it['id'], look), l=0, b=1, t=int(t + hours * 3600), x=price)
     b['n']['built'] = min(BIG, b['n']['built'] + 1)
     b['n']['xu'] = min(BIG, b['n']['xu'] + price)
     return dict(message=f'{it["emoji"]} Khởi công {it["name"]} trên {isle["name"]}: trả {how}. Xong sau {hours} giờ.',
@@ -312,8 +352,8 @@ def _up(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     need('kind' not in p, 'Thông tin không hợp lệ.')
     plots = _plots(s, iid)
     e = plots.get(key)
-    need(e is not None and e['k'] in BUILD, 'Ô đất này chưa có công trình.', 'empty')
-    it = BUILD[e['k']]
+    need(e is not None and known(e['k']), 'Ô đất này chưa có công trình.', 'empty')
+    it = known(e['k'])
     need(not e['b'], f'{it["name"]} đang được xây. Chờ xong rồi nâng cấp nhé.', 'busy')
     need(e['l'] < C.LEVELS, f'{it["name"]} đã ở cấp cao nhất.', 'max')
     need(crews_busy(plots, t) < C.CREWS, f'Cả {C.CREWS} đội thợ đang bận. Chờ một công trình xong nhé.', 'busy')
@@ -338,7 +378,7 @@ def _raze(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     plots = _plots(s, iid)
     e = plots.get(key)
     need(e is not None, 'Ô đất này chưa có công trình.', 'empty')
-    name = BUILD[e['k']]['name'] if e['k'] in BUILD else 'Công trình'
+    name = known(e['k'])['name'] if known(e['k']) else 'Công trình'
     back = salvage(e['x'])
     j = s['journey']
     need(j['wallet'] + back <= isl.PRICE_MAX, 'Ví đã quá đầy. Gửi bớt vào ngân hàng rồi phá nhé.', 'limit')
@@ -351,6 +391,29 @@ def _raze(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
         isl._wallet_rows(j, back, KIND, f'🏗️ Thu hồi vật liệu · {name}')
     return dict(message=f'Đã phá {name}. Thu hồi vật liệu: {_fmt(back)} xu vào ví. Ô đất trống lại.',
                 isle=dict(island=iid, plot=int(key)))
+
+
+def _paint(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
+    """🎨 Another colour of the same style: paid at once, nothing else changes (its level, a construction going on)."""
+    need = _core().need
+    need('kind' not in p and 'look' in p, 'Thông tin không hợp lệ.')
+    e = _plots(s, iid).get(key)
+    it = known(e['k']) if e else None
+    need(it is not None, 'Ô đất này chưa có công trình.', 'empty')
+    need(looks_of(it) > 1, f'{it["name"]} chỉ có một màu.', 'one_look')
+    look = _look(it, p)
+    if split(e['k'])[1] == look:
+        return dict(message=f'{it["name"]} đang là màu {it["looks"][look]} rồi.', duplicate=True)
+    price = paint_price(it)
+    need(p.get('confirm') is True, f'Xác nhận sơn {it["name"]} màu {it["looks"][look]}: {_fmt(price)} xu.')
+    why = isl._lx().ready_why(s, price)
+    need(not why, why, 'not_enough')
+    isle = isl.ISLAND[iid]
+    how = isl._take(s, price, f'🎨 Sơn lại {it["name"]} · {isle["name"]}')
+    e.update(k=kind_of(it['id'], look), x=min(PAID_MAX, e['x'] + price))
+    b = get(s)
+    b['n']['xu'] = min(BIG, b['n']['xu'] + price)
+    return dict(message=f'🎨 {it["name"]} đã sơn màu {it["looks"][look]}: trả {how}.', isle=dict(island=iid, plot=int(key)))
 
 
 def on_sell(s: dict, iid: str) -> int:
@@ -404,7 +467,7 @@ def _rows(after) -> dict:
             continue
         n = len(plots_of(iid))
         for k, e in d.items():
-            if e['k'] in BUILD and int(k) < n:
+            if known(e['k']) and int(k) < n:
                 out[(iid, int(k))] = e
     return out
 
@@ -460,7 +523,7 @@ def _check_use(db, sid: str, after) -> None:
     r = db.execute("SELECT kind, lvl, next_lvl, ready_at FROM island_builds WHERE owner=? AND island=? AND plot=? AND status='up'",
                    (row['owner'], row['island'], u['plot'])).fetchone()
     lv = (int(r['next_lvl']) if r and int(r['next_lvl']) and float(r['ready_at']) <= t else int(r['lvl'])) if r else 0
-    need(r and r['kind'] in BUILD and BUILD[r['kind']]['cat'] == 'fun' and lv >= 1, 'Chỗ này chưa có gì để chơi.', 'not_here')
+    need(r and known(r['kind']) and known(r['kind'])['cat'] == 'fun' and lv >= 1, 'Chỗ này chưa có gì để chơi.', 'not_here')
 
 
 def island_rows(db, owner: str, iid: str) -> list:
@@ -469,7 +532,7 @@ def island_rows(db, owner: str, iid: str) -> list:
                       'ORDER BY plot', (owner, iid)).fetchall()
     n = len(plots_of(iid))
     return [dict(p=int(r['plot']), k=r['kind'], l=int(r['lvl']), b=int(r['next_lvl']), t=float(r['ready_at']))
-            for r in rows if r['kind'] in BUILD and int(r['plot']) < n]
+            for r in rows if known(r['kind']) and int(r['plot']) < n]
 
 
 def row_score(rows: list, t: float) -> int:
@@ -485,7 +548,7 @@ def public(s: dict) -> dict | None:
     owned = set(isl.owned(s))
     t = now()
     u = b['u']
-    return dict(p={iid: {k: dict(k=e['k'], l=e['l'], b=e['b'], t=e['t'], back=salvage(e['x'])) for k, e in d.items() if e['k'] in BUILD}
+    return dict(p={iid: {k: dict(k=e['k'], l=e['l'], b=e['b'], t=e['t'], back=salvage(e['x'])) for k, e in d.items() if known(e['k'])}
                    for iid, d in b['p'].items() if iid in owned},
                 used=u['n'] if u and u['d'] == vn_day(t) else 0)
 
@@ -495,8 +558,11 @@ def catalogue() -> dict:
     return dict(buildings=[dict(id=x['id'], emoji=x['emoji'], name=x['name'], cat=x['cat'], pts=x['pts'], desc=x['desc'],
                                 levels=[dict(price=pr, hours=h, text=x['lv'][i]) for i, (pr, h) in enumerate(x['levels'])],
                                 max=x.get('max', 0), coast=bool(x.get('coast')), big=bool(x.get('big')), spot=x['spot'],
-                                lines=list(x.get('lines', ()))) for x in C.BUILDINGS],
+                                lines=list(x.get('lines', ())),
+                                **(dict(tier=x.get('tier') or C.TIER_OF.get(x['id'], 1)) if x['cat'] == 'home' else {}),
+                                **(dict(looks=list(x['looks']), paint=paint_price(x)) if x.get('looks') else {})) for x in C.BUILDINGS],
                 plots={iid: [[x, y, c] for x, y, c in ps] for iid, ps in C.PLOTS.items()},
+                tiers=[[n, label] for n, label in C.TIERS],
                 crews=C.CREWS, salvage_pct=C.SALVAGE_PCT, big_from=C.BIG_FROM, use_max=C.USE_MAX, variety=C.VARIETY)
 
 

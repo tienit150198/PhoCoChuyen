@@ -80,7 +80,10 @@ class Catalogue(unittest.TestCase):
 
     def test_buildings_cost_and_take_real_hours(self):
         ids = [b['id'] for b in C.BUILDINGS]
-        self.assertEqual(sorted(ids), sorted(['nha_san', 'biet_thu', 'lau_dai', 'cong_vien', 'ho_boi', 'golf', 'cam_trai', 'ben_thuyen']))
+        first = ['nha_san', 'biet_thu', 'lau_dai', 'cong_vien', 'ho_boi', 'golf', 'cam_trai', 'ben_thuyen']
+        styles = [h['id'] for h in C.HOUSES]
+        self.assertEqual(ids, first + styles)                                    # 🏡 20/10: the styles after the first eight
+        self.assertTrue(12 <= len(styles) <= 20)
         self.assertEqual({b['cat'] for b in C.BUILDINGS}, {'home', 'fun'})
         for b in C.BUILDINGS:
             self.assertTrue(ib._id(b['id']))
@@ -89,14 +92,18 @@ class Catalogue(unittest.TestCase):
             hours = [h for _, h in b['levels']]
             self.assertEqual(prices, sorted(prices))
             self.assertTrue(all(6 <= h <= 48 for h in hours), b['id'])
-            self.assertTrue(all(10**6 <= p <= 60 * 10**6 for p in prices), b['id'])
+            self.assertTrue(all(10**6 <= p <= 80 * 10**6 for p in prices), b['id'])
             self.assertTrue(b['pts'] > 0)
         homes = {b['id'] for b in C.BUILDINGS if b['cat'] == 'home'}
-        self.assertEqual(homes, {'nha_san', 'biet_thu', 'lau_dai'})
+        self.assertEqual(homes, {'nha_san', 'biet_thu', 'lau_dai', *styles})
         castle = ib.BUILD['lau_dai']
         self.assertGreater(sum(p for p, _ in castle['levels']), sum(p for p, _ in ib.BUILD['nha_san']['levels']) * 5)
         cat = jr.content()['island']['build']
-        self.assertEqual(len(cat['buildings']), 8)
+        self.assertEqual(len(cat['buildings']), 8 + len(styles))
+        self.assertEqual([t for t, _ in cat['tiers']], [1, 2, 3, 4])
+        by = {b['id']: b for b in cat['buildings']}
+        self.assertEqual((by['nha_san']['tier'], by['lau_dai']['tier'], by['ho_boi'].get('tier')), (1, 4, None))
+        self.assertEqual((len(by['pho_hoi_an']['looks']), by['pho_hoi_an']['paint']), (3, 600_000))
         self.assertEqual(cat['plots']['dao_hoang_hon'][23], [.88, .5, 1])
         self.assertEqual(cat['salvage_pct'], C.SALVAGE_PCT)
 
@@ -107,7 +114,7 @@ class Catalogue(unittest.TestCase):
             self.assertNotIn(word, json.dumps(C.BUILDINGS, ensure_ascii=False).lower())
         # the only wallet credits: the salvage of a phá dỡ / a sale
         self.assertEqual(src.count('_wallet_rows(') - src.count('def _wallet_rows('), 2)
-        self.assertEqual(src.count('_take('), 2)   # build, upgrade
+        self.assertEqual(src.count('_take('), 3)   # build, upgrade, 🎨 paint
 
 
 class Building(Timed):
@@ -163,7 +170,7 @@ class Building(Timed):
         refused(self, s, 'jr_isle_build', 'not_owned', island='dao_dua', plot=0, kind='nha_san', confirm=True)
         refused(self, s, 'jr_isle_build', island='dao_san_ho', plot=10, kind='nha_san', confirm=True)      # only 10 plots
         refused(self, s, 'jr_isle_build', island='dao_san_ho', plot='1', kind='nha_san', confirm=True)
-        refused(self, s, 'jr_isle_build', island='dao_san_ho', plot=0, kind='nha_tranh', confirm=True)
+        refused(self, s, 'jr_isle_build', island='dao_san_ho', plot=0, kind='thap_moi', confirm=True)
         refused(self, s, 'jr_isle_build', island='dao_san_ho', plot=0, kind='nha_san')                      # no confirm
         refused(self, s, 'jr_isle_build', 'coast', island='dao_san_ho', plot=0, kind='ben_thuyen', confirm=True)
         refused(self, s, 'jr_isle_build', 'small', island='dao_san_ho', plot=0, kind='lau_dai', confirm=True)

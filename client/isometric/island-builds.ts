@@ -1,12 +1,15 @@
 import Phaser from 'phaser';
+// @ts-ignore a plain module shared with the old interface and the build sheet (bundled in: a relative path)
+import {HOUSES,paintHouse,houseTop} from '../../public/js/house-art.js';
 
 /** 🏗️ Xây trên đảo on the new interface: the plots of a private island and what stands on them (game/island_build.py),
  * drawn isometrically by PrivateIslandRenderer (private-island.ts). Pure painting: every building is a few Phaser
  * graphics sorted by its front corner, its level adds details; a construction site is scaffolding (giàn giáo) with a
  * green net and, for the big ones, a crane. The map's numbers and the list come from public/js/island-layout.js
- * (withBuilds); nothing here decides a rule. */
+ * (withBuilds); nothing here decides a rule. 🏡 The house styles (20/10) are public/js/house-art.js models, painted
+ * through a small adapter (houseView) in their colour (`look`). */
 type Pt=[number,number];
-export interface BuiltItem {plot:number;x:number;y:number;coast:boolean;kind:string;level:number;work:boolean;until:number;next:number;
+export interface BuiltItem {plot:number;x:number;y:number;coast:boolean;kind:string;look?:number;level:number;work:boolean;until:number;next:number;
   pier?:{rect:{x:number;y:number;w:number;h:number};end:Pt;dir:Pt}}
 
 const N=14,HW=40,HH=20,PLOT=.072;
@@ -16,6 +19,18 @@ type Proj=(x:number,y:number,z?:number)=>Phaser.Geom.Point;
 const TALL:Record<string,number>={nha_san:52,biet_thu:70,lau_dai:120,cong_vien:30,ho_boi:20,golf:24,cam_trai:34,ben_thuyen:30};
 /** How much bigger than its plot's own scale each kind is drawn (from the plot's middle: still inside its square). */
 const GROW:Record<string,number>={nha_san:1.4,biet_thu:1.3,lau_dai:1.35,cong_vien:1.25,ho_boi:1,golf:1.15,cam_trai:1.3,ben_thuyen:1};
+const HOUSE_GROW=1.3;
+const isHouse=(kind:string)=>Boolean((HOUSES as Record<string,unknown>)[kind]);
+const tierOf=(kind:string)=>Number((HOUSES as Record<string,{tier?:number}>)[kind]?.tier)||0;
+const num=(c:string)=>parseInt(c.slice(1),16)||0;
+/** The house-art.js adapter on one Graphics: local plot points (relative to the plot's middle) through P. */
+function houseView(gr:Phaser.GameObjects.Graphics,P:Proj,x:number,y:number){
+  return {zs:1,depth:(a:number,b:number)=>a+b,
+    P:(lx:number,ly:number,lz:number)=>{const q=P(x+lx,y+ly,lz);return [q.x,q.y];},
+    fill:(pts:number[][],color:string,alpha=1)=>{gr.fillStyle(num(color),alpha).fillPoints(pts.map(p=>new Phaser.Geom.Point(p[0],p[1])),true);},
+    circle:(cx:number,cy:number,r:number,color:string,alpha=1)=>{gr.fillStyle(num(color),alpha).fillCircle(cx,cy,r);},
+    line:(a:number[],b:number[],color:string,w:number)=>{gr.lineStyle(w,num(color),1).lineBetween(a[0],a[1],b[0],b[1]);}};
+}
 
 /** A box over the map rectangle centred on (x, y), half sizes hx, hy, from height z0 to z1: two lit walls and a top. */
 function prism(g:Phaser.GameObjects.Graphics,P:Proj,x:number,y:number,hx:number,hy:number,z0:number,z1:number,wall:number,top?:number){
@@ -80,8 +95,14 @@ export function paintPlot(s:Phaser.Scene,it:BuiltItem|null,plot:{x:number;y:numb
       scaffold(s,g2,f2,P,x,y,h,it,out,false);}
     else scaffold(s,g,flat,P,x,y,h,it,out,true);
     return out;}
-  const lv=Math.max(1,Math.min(3,it.level)),K=GROW[it.kind]||1;
+  const lv=Math.max(1,Math.min(3,it.level)),K=GROW[it.kind]||(isHouse(it.kind)?HOUSE_GROW:1);
   g.setScale(K);
+  if(isHouse(it.kind)){   // 🏡 a house style: its yard flat under the people, the house sorted by its front corner
+    flat.setScale(K);
+    paintHouse(it.kind,lv,it.look||0,houseView(flat,P,x,y),{only:'ground'});
+    paintHouse(it.kind,lv,it.look||0,houseView(g,P,x,y),{only:'parts'});
+    return out;
+  }
   /** A small moving part (a flag, a flame, a jet of water) at a point of `g`'s drawing, as big as the building. */
   const part=(gx:number,gy:number)=>s.add.graphics().setPosition(ox+gx*K,oy+gy*K).setScale(K).setDepth(g.depth+1);
   switch(it.kind){
@@ -190,7 +211,7 @@ export function paintPlot(s:Phaser.Scene,it:BuiltItem|null,plot:{x:number;y:numb
 /** Giàn giáo: poles at the corners and the middles, planks every few metres, a green net over the front, a crane for
  * the big ones; how tall follows what is being built. */
 function scaffold(s:Phaser.Scene,g:Phaser.GameObjects.Graphics,flat:Phaser.GameObjects.Graphics,P:Proj,x:number,y:number,h:number,it:BuiltItem,out:Phaser.GameObjects.GameObject[],ground:boolean){
-  const hx=h*.78,hy=h*.78,top=Math.max(30,(TALL[it.kind]||40)*(it.next>1?1:.75));
+  const hx=h*.78,hy=h*.78,top=Math.max(30,(TALL[it.kind]||(isHouse(it.kind)?houseTop(it.kind,Math.max(1,it.next))*HOUSE_GROW:40))*(it.next>1?1:.75));
   if(ground)tile(flat,P,x,y,h*.95,0xc9b48a,0xa8916a);
   if(ground)for(let i=0;i<8;i++){const q=P(x-h*.8+((i*37)%10)/10*h*1.6,y-h*.8+((i*53)%10)/10*h*1.6);flat.fillStyle(i%2?0x9b8a6a:0xd8cfbf,1).fillRect(q.x-3,q.y-2,6,3);}   // bricks, sand
   const corners:Pt[]=[[-1,1],[0,1],[1,1],[1,0],[1,-1],[-1,0],[-1,-1],[0,-1]];
@@ -200,7 +221,7 @@ function scaffold(s:Phaser.Scene,g:Phaser.GameObjects.Graphics,flat:Phaser.GameO
   const W=P(x-hx,y+hy,4),S=P(x+hx,y+hy,4),E=P(x+hx,y-hy,4),Wt=P(x-hx,y+hy,top),St=P(x+hx,y+hy,top),Et=P(x+hx,y-hy,top);
   g.fillStyle(0x3f9a5a,.38).fillPoints([W,S,St,Wt],true);g.fillStyle(0x4fae6a,.32).fillPoints([S,E,Et,St],true);
   g.lineStyle(1,0x2f6d3a,.5);for(let k=1;k<4;k++){const a=P(x-hx+2*hx*k/4,y+hy,4),b=P(x-hx+2*hx*k/4,y+hy,top);g.lineBetween(a.x,a.y,b.x,b.y);}
-  if(it.kind==='lau_dai'||it.kind==='biet_thu'){
+  if(it.kind==='lau_dai'||it.kind==='biet_thu'||tierOf(it.kind)>=3){
     const base=P(x-hx,y-hy),mast=P(x-hx,y-hy,top+46),jib=P(x+hx*1.8,y-hy*2.2,top+46);
     g.lineStyle(4,0xf2b630,1).lineBetween(base.x,base.y,mast.x,mast.y);g.lineStyle(3,0xf2b630,1).lineBetween(mast.x-14,mast.y+4,jib.x,jib.y);
     const hook=s.add.graphics().setPosition(0,0).setDepth(g.depth+1);hook.lineStyle(1,0x444444,1);out.push(hook);
