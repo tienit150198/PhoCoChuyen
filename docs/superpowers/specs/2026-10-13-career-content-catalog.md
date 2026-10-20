@@ -856,3 +856,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Lên phương án trang trí sảnh theo chủ đề
 9. Kiểm điện và âm thanh trước giờ đón khách
 10. Điều phối bếp và sảnh ngày lễ cao điểm
+
+## 58. Lễ tân (`reception`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng phòng sáu phòng có đủ đặc điểm
+2. Soạn mẫu nghe yêu cầu khách ở quầy
+3. Dán nhãn màu cho bảng móc chìa
+4. Quy tắc xếp xe đẩy hành lý
+5. Mẫu sổ giao ca chỉ ghi việc còn dở
+6. Lịch dọn phòng theo giờ khách tới
+7. Lịch dịch vụ sáng mai
+8. Quy trình xử lý phàn nàn có kiểm chứng
+9. Sổ đồ thất lạc theo lộ trình khách
+10. Điều phối đoàn và sự kiện cuối tuần

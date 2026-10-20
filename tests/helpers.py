@@ -140,3 +140,9 @@ def solve_activity(j,spec,practice=False):
     else:
         for card in a['cards']:j.act('life_activity_assign',card=card['id'],target=card['bin'] if a['kind']=='sort' else card['id'])
     return j.c['life']['activity']
+
+def unknown_out(s,careers=('reception',)):
+    """A save as the stored text holds it for a release older than `careers` (engine.DORMANT): each of them left out
+    while untouched; every other career, dormant on this build or not, stays (the older release knows it)."""
+    from game.engine import initial_career
+    return dict(s,careers={k:v for k,v in s['careers'].items() if k not in careers or v!=initial_career(k)})
