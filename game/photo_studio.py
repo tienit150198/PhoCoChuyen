@@ -2,7 +2,7 @@
 thương lượng"). A photographer player (anyone who started the 📸 photobooth career, any level) photographs ANOTHER
 player: the buyer's real character, with their spouse, baby or pet as props when they have them.
 
-The flow (direct path, until the service marketplace takes the ordering over, see "Seam" below):
+The flow (this file's own path; 🛎️ Phố dịch vụ lists the photographers and opens it, see "Phố dịch vụ" below):
 
 1. 🛒 Order (buyer, POST /api/photo/order): from the photographer's place card (work visit) or profile. A package
    (PKGS), who comes along (the spouse, a baby, a pet: only what the buyer really has), a wish (backdrop, mood) and a
@@ -48,16 +48,14 @@ network refused (the buyer's network tag, game/pet_arena.ip_tag, against the pho
 and again when the photographer accepts and delivers); PAIR_DAY orders between the same two players a Vietnam day
 (both ways); BUYER_OPEN open orders a buyer, SHOOTER_OPEN a photographer.
 
-🔌 Seam: the service marketplace (game/service_market.py, another branch, SCHEMA 63) owns ordering, negotiation,
-escrow and the 5 % burn for every career's player services. install() (server start) calls
-service_market.register('photobooth', <package id>, spec) for each package when that module is importable (a getattr
-fallback: nothing happens without it). spec = {name, emoji, base, floor, cap, default (= base × MULT), session: True,
-snapshot: snapshot_for(store, buyer_sid, opts) -> dict (the look snapshot, taken at order time),
-deliver: deliver_photo(db, order_id, buyer_sid, shooter_sid, pkg, snap, result) -> photo id (stores the photo in
-the album and the portfolio; the marketplace pays and burns)}. The session itself (shot / deliver ops) runs on the
-order's row either way. Until the marketplace ships, the direct path above (order / cancel / accept / decline /
-expire and the payout in deliver) does what it will do; MNL_PHOTO_DIRECT_OFF=1 then stops new direct orders while
-the open ones finish. 🛑 MNL_PHOTO_OFF=1: everything refused gracefully, nothing of any save changes.
+🛎️ Phố dịch vụ (game/service_market.py, SCHEMA 63): install() (server start, and the market's seed) registers
+('photobooth', <package id>) for each package as an own-flow listing (spec `open`): the directory shows each public,
+open studio (its work-visit place visible to everyone, the photographer's account ACCOUNT_DAYS old) with this
+studio's price and record, and its button opens this file's order sheet for that place and package. Ordering, the
+escrow (photo_orders), the session and the payout stay here: the market refuses to order, negotiate or set up these
+services itself (one payment path, never a second escrow). Prices (×1–×5 of the NPC base) and open / closed are set
+in 📸 Khách đặt chụp (set_studio). MNL_PHOTO_DIRECT_OFF=1 stops new orders while the open ones finish. 🛑
+MNL_PHOTO_OFF=1: everything refused gracefully, nothing of any save changes.
 
 Tables (game/pg_schema.py, SCHEMA_VERSION 66): photo_studios, photo_orders, photos, photo_pfp. Save: no root key;
 journey['photo_wall'] optional; wallet rows of kind 'life'; 'photo' live_effects rows (an older build leaves them
@@ -176,7 +174,7 @@ RID_RX = re.compile(r'[A-Za-z0-9_-]{8,64}')
 PLACE_RX = re.compile(r'wp_[0-9a-f]{24}')
 PID_RX = re.compile(r'[0-9a-f]{16}')
 UID_RX = re.compile(r'[A-Za-z0-9_-]{1,12}')
-MARKET = dict(on=False)   # install(): the marketplace took the packages
+MARKET = dict(on=False)   # install(): Phố dịch vụ lists the packages
 
 
 class PhotoError(mr.MarriageError):
@@ -237,17 +235,58 @@ def ip_tag(ip: str) -> str:
 
 
 # ---------------------------------------------------------------- 🔌 the marketplace seam
+def _market_row(r: dict, pkg: str, t: float) -> dict:
+    """A photographer's package as Phố dịch vụ lists it (service_market own-flow row)."""
+    st = dict(prices=r.get('prices') or '{}')
+    old = str(r.get('created_at') or '') <= time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t - ACCOUNT_DAYS * DAY))
+    is_open = r.get('open') is None or bool(r['open'])
+    why = ('' if r['visibility'] == 'public' and is_open and old else
+           'Tiệm ảnh đang tạm nghỉ nhận đơn: mở lại ở 📸 Khách đặt chụp.' if not is_open else
+           f'Tiệm ảnh hiện ở Phố dịch vụ khi tài khoản đủ {ACCOUNT_DAYS} ngày.' if not old else
+           'Chỗ làm chưa mở cho mọi người: chọn “Mọi người” ở chỗ làm để hiện ở Phố dịch vụ.')
+    return dict(sid=r['owner'], price=prices_of(st)[pkg], on=not why, stars=int(r.get('stars') or 0), rated=int(r.get('done') or 0),
+                deals=int(r.get('done') or 0), at=float(r.get('updated_at') or 0), data=dict(place=r['id'], pkg=pkg), why=why)
+
+
+_MARKET_SQL = ('SELECT p.id, p.owner, p.visibility, p.updated_at, s.open, s.prices, s.done, s.stars, a.created_at FROM work_visit_places p '
+               'JOIN accounts a ON a.sid=p.owner LEFT JOIN photo_studios s ON s.sid=p.owner '
+               "WHERE p.kind='career' AND p.target=? ")
+
+
+def _providers(pkg: str):
+    def rows(db, limit, offset):
+        t = now()
+        cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t - ACCOUNT_DAYS * DAY))
+        got = _rows(db, _MARKET_SQL + "AND p.visibility='public' AND COALESCE(s.open,1)=1 AND a.created_at<=? "
+                    'ORDER BY p.updated_at DESC, p.id LIMIT ? OFFSET ?', (CAREER, cut, int(limit), int(offset)))
+        return [_market_row(r, pkg, t) for r in got]
+    return rows
+
+
+def _offer(pkg: str):
+    def row(db, sid):
+        r = _row(db, _MARKET_SQL + 'AND p.owner=?', (CAREER, sid))
+        return _market_row(r, pkg, now()) if r and r['visibility'] != 'closed' else None
+    return row
+
+
 def market_spec(pkg: str) -> dict:
+    """('photobooth', pkg) for service_market.register: an own-flow listing (keys the registry accepts)."""
     P = PKGS[pkg]
-    return dict(name=P['name'], emoji=P['emoji'], base=P['base'], floor=floor_of(pkg), cap=cap_of(pkg), default=default_of(pkg),
-                session=True, snapshot=snapshot_for, deliver=deliver_photo)
+    return dict(name=P['name'], icon=P['emoji'], unit='buổi chụp', base=P['base'], floor=floor_of(pkg), max_price=cap_of(pkg),
+                desc=f'Thợ ảnh người chơi chụp bạn, giao ảnh vào 🖼️ Album. Giá từ {fmt(floor_of(pkg))} đến {fmt(cap_of(pkg))} xu.',
+                requires=dict(story=True), work_hours=OPEN_HOURS + SHOOT_HOURS,
+                open=dict(action='photoStudio', data=dict(tab='order'), label='📸 Đặt chụp'),
+                setup=dict(action='photoStudio', data=dict(tab='studio'), label='📸 Khách đặt chụp'),
+                providers=_providers(pkg), offer=_offer(pkg))
 
 
-def install() -> bool:
-    """Register the packages with game/service_market.py when it exists (another branch; getattr fallback).
-    True when it took them. Called once at server start (never at import: no import cycle)."""
+def install(strict: bool = False) -> bool:
+    """List the packages in 🛎️ Phố dịch vụ (game/service_market.py; idempotent). True when it took them. Called at server
+    start and by the market's seed (never at import: no import cycle). A refusal is logged, never raised at runtime (the
+    studio works without the listing); strict=True (tests) raises it."""
     try:
-        from . import service_market as sm   # noqa: F401  (SCHEMA 63, not on this branch yet)
+        from . import service_market as sm
     except ImportError:
         return False
     reg = getattr(sm, 'register', None)
@@ -256,7 +295,11 @@ def install() -> bool:
     try:
         for pkg in ORDER:
             reg(CAREER, pkg, market_spec(pkg))
-    except Exception:  # noqa: BLE001  (a marketplace that refuses: the direct path keeps working)
+    except Exception:
+        if strict:
+            raise
+        import logging
+        logging.getLogger(__name__).exception('📸 photo packages: Phố dịch vụ refused the listing')
         return False
     MARKET['on'] = True
     return True

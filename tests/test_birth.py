@@ -343,6 +343,25 @@ class Providers(BirthBase):
         self.do(self.cuc, 'family_room_set', name='Phòng Đồi Thông', price=600_000)
         self.room = self.bt(self.a)['rooms'][0]
 
+    def test_room_listed_in_pho_dich_vu_and_booked_here_only(self):
+        """🛎️ Phố dịch vụ lists the room (its price, its rating) and opens this sheet with it preselected; the booking and
+        its escrow stay in birth_stays (one payment path, nothing in svc_orders)."""
+        from game import service_market as sm
+        self.assertTrue(bt.install(strict=True))
+        items = [x for x in sm.get(self.store, self.a, None, 'dir', dict(career='homestay', service='phong_sinh'))['items'] if x.get('own')]
+        self.assertEqual([(x['price'], x['note'], x['open']['action'], x['open']['data']) for x in items],
+                         [(600_000, 'Phòng Đồi Thông', 'marriage', dict(tab='family', section='children', room=self.room['id']))])
+        mine = [m for m in sm.get(self.store, self.cuc, None, 'mine', {})['services'] if m['service'] == 'phong_sinh']
+        self.assertEqual([(m['career'], m['on'], m['price'], m['setup']['data']['section']) for m in mine], [('homestay', True, 600_000, 'room')])
+        with self.assertRaises(mr.MarriageError) as e:
+            sm.post(self.store, self.a, None, 'order', dict(pid=items[0]['pid'], career='homestay', service='phong_sinh', rid='own-birth-0001'))
+        self.assertEqual(e.exception.code, 'own_flow')
+        self.book(where=items[0]['open']['data']['room'], price=items[0]['price'])
+        self.accept()
+        self.assertEqual(self.stay(self.a)['status'], 'booked')
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM svc_orders').fetchone()['n'], 0)
+
     def test_player_room_escrow_rating_and_capacity(self):
         self.book(where=self.room['id'], price=600_000)
         self.accept()

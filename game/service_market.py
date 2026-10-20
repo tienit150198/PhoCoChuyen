@@ -48,6 +48,13 @@ the transaction that marks the work done (a photo into the buyer's album, a stay
 Career code delivers with deliver(store, …) or, inside a game command, by putting {'order': id, 'result': {...}} in
 result['svc_done'] (storage.py calls command_commit in the command's transaction).
 
+Own-flow listings (spec `open`): a career whose booking already has its own flow, escrow table and payout (🏥 player
+birth rooms: game/birth.py birth_stays; 📸 player photographers: game/photo_studio.py photo_orders) is LISTED here
+only. Its providers come from the module (`providers` / `offer` callbacks, never svc_settings), its card shows the
+module's price and rating and opens the module's own sheet (`open`: a client action); ordering, offers and settings
+through this market are refused (ServiceError 'own_flow' / 'own_settings'), so there is one payment path and one
+escrow per booking. The provider sets price and open/closed in the module (`setup`).
+
 Tables (game/pg_schema.py SCHEMA_VERSION 63): svc_settings, svc_orders, svc_reviews, svc_rep, svc_flags, svc_net,
 work_service_orders.fee. Nothing in any save.
 """
@@ -96,6 +103,8 @@ WO_MONEY = ('requested', 'accepted', 'ready', 'completed')
 FINAL = ('done', 'refunded', 'declined', 'cancelled', 'expired', 'linked')
 RID_RX = re.compile(r'[A-Za-z0-9_-]{8,80}')
 ID_RX = re.compile(r'(?:sv|wo)_[0-9a-f]{24}')
+OWN_TEXT = 'Dịch vụ này đặt ở mục riêng của nghề: bấm “Mở” trên thẻ dịch vụ nhé.'
+OWN_SETUP_TEXT = 'Dịch vụ này cài giá và mở / đóng ở mục riêng của nghề.'
 
 
 class ServiceError(mr.MarriageError):
@@ -140,7 +149,11 @@ def _pid(sid: str) -> str:
 # ---------------------------------------------------------------- the registry
 SPEC_KEYS = frozenset(('name', 'icon', 'desc', 'base', 'unit', 'duration', 'floor', 'max_price', 'qty_max', 'work_hours',
                        'deliver', 'on_buyer', 'on_provider', 'confirm', 'requires', 'check', 'can_provide', 'pay_to',
-                       'note_hint', 'legacy'))
+                       'note_hint', 'legacy', 'open', 'providers', 'offer', 'setup'))
+OWN_FORBIDDEN = ('deliver', 'on_buyer', 'on_provider', 'confirm', 'pay_to', 'legacy')   # an own-flow listing never uses the escrow
+ACTION_RX = re.compile(r'[A-Za-z][A-Za-z0-9_]{0,39}')
+LINK_KEY_RX = re.compile(r'[a-z][a-z0-9_]{0,23}')
+LISTING_MAX = 300              # own-flow providers of one service read for a directory page (cheap, indexed queries)
 REQUIRES = frozenset(('life_day', 'chapter', 'story', 'married'))
 REGISTRY: dict = {}
 _seeded = [False]
@@ -174,6 +187,17 @@ def register(career: str, service_id: str, spec: dict) -> dict:
                   started in the save)
       pay_to      'wallet' (default) | 'career': the provider's 95 % into the wallet or into the career's fund
       note_hint   str: the placeholder of the buyer's note box
+
+    Own-flow listing (a module with its own booking, escrow table and payout; the market only lists it):
+      open        {action: str, data: {k: str|int|bool}, label: str}: the client action that opens the module's own
+                  order sheet (each provider row's `data` is merged in, e.g. the room or the place to preselect)
+      providers   callable(db, limit, offset) -> [row]: the providers listed now (open), any order
+      offer       callable(db, provider_sid) -> row | None: one provider's row, listed (`on`) or not
+      setup       {action, data, label}: where the provider sets price and open/closed (🧰 links there)
+                  row = {sid, price (xu, one unit), on (listed), stars (sum), rated (count), deals, at (float),
+                  data {…}, title (str, optional), why (str, optional: why it is not listed)}
+      With `open`, `providers` and `offer` are required and deliver / on_buyer / on_provider / confirm / pay_to /
+      legacy are refused: POST order / offer / settings answer 'own_flow' / 'own_settings' (409).
 
     The order dict given to the hooks: {id, career, service, buyer, provider (sids), buyer_pid, provider_pid, qty,
     price (escrow, xu), fee, paid (= price − fee, at settlement), note, input (what the provider sent with the
@@ -223,7 +247,44 @@ def _norm(key, spec) -> dict:
             raise ValueError(f'service_market.register {key}: {k} must be callable')
     if out['confirm'] == 'auto' and out['deliver'] is None and not legacy:
         raise ValueError(f'service_market.register {key}: confirm auto needs deliver')
+    own = spec.get('open')
+    out.update(open=_link(key, 'open', own) if own is not None else None,
+               setup=_link(key, 'setup', spec['setup']) if spec.get('setup') is not None else None,
+               providers=spec.get('providers'), offer=spec.get('offer'))
+    if own is not None:
+        bad = sorted(k for k in OWN_FORBIDDEN if spec.get(k) is not None)
+        if bad:
+            raise ValueError(f'service_market.register {key}: an own-flow listing (open) never uses the escrow: {bad}')
+        if not callable(out['providers']) or not callable(out['offer']):
+            raise ValueError(f'service_market.register {key}: open needs callable providers and offer')
+        if out['qty_max'] != 1:
+            raise ValueError(f'service_market.register {key}: an own-flow listing has qty_max 1')
+    elif any(spec.get(k) is not None for k in ('providers', 'offer', 'setup')):
+        raise ValueError(f'service_market.register {key}: providers / offer / setup belong to an own-flow listing (open)')
     return out
+
+
+def _link(key, name, v) -> dict:
+    """{action, data, label} of an own-flow listing: a client action and its plain data (validated: it reaches the client)."""
+    if not isinstance(v, dict) or set(v) - {'action', 'data', 'label'}:
+        raise ValueError(f'service_market.register {key}: {name} must be {{action, data, label}}')
+    action, data, label = v.get('action'), v.get('data') or {}, v.get('label') or ''
+    if not isinstance(action, str) or not ACTION_RX.fullmatch(action):
+        raise ValueError(f'service_market.register {key}: {name}.action')
+    if not isinstance(data, dict) or not all(isinstance(k, str) and LINK_KEY_RX.fullmatch(k) and _plain(x) for k, x in data.items()):
+        raise ValueError(f'service_market.register {key}: {name}.data must map short ids to str / int / bool')
+    if not isinstance(label, str) or len(label) > 40:
+        raise ValueError(f'service_market.register {key}: {name}.label')
+    return dict(action=action, data=dict(data), label=label)
+
+
+def _plain(x) -> bool:
+    return type(x) in (bool, int) or (isinstance(x, str) and len(x) <= 80)
+
+
+def is_own(spec: dict | None) -> bool:
+    """An own-flow listing: the module books, holds and pays; this market only lists it."""
+    return bool(spec and spec.get('open'))
 
 
 def _seed() -> None:
@@ -245,10 +306,19 @@ def _seed() -> None:
         REGISTRY[('quay', 'dish')] = _norm(('quay', 'dish'), dict(
             name='Món ở quầy', icon='🏪', desc='Quầy của bạn', legacy='quay', base=_legacy_base('quay'), unit='món',
             duration=5, can_provide=_has_stall))
+    install_own()
     import os
     if os.environ.get('MNL_SVC_DEMO') == '1':   # dev only (scripts/browser_service_market.py): one generic service to walk through
         REGISTRY.setdefault(('milk_tea', 'tra_tai_nha'), _norm(('milk_tea', 'tra_tai_nha'), dict(
             name='Pha trà tại nhà', icon='🧋', desc='Mang trà tới nhà, pha tại chỗ', base=1000, unit='lượt', qty_max=3)))
+
+
+def install_own(strict: bool = False) -> bool:
+    """The own-flow listings (🏥 birth rooms, 📸 photographers): their modules register them here (also called by
+    server.py at start). A spec this registry refuses is logged, never a crash; strict=True (tests) raises it."""
+    from . import birth, photo_studio
+    ok = birth.install(strict=strict)
+    return photo_studio.install(strict=strict) and ok
 
 
 def _legacy_base(career):
@@ -295,7 +365,8 @@ def legacy_key(kind: str, career: str) -> tuple:
 
 def public_spec(spec: dict) -> dict:
     return {k: spec[k] for k in ('career', 'service', 'name', 'icon', 'desc', 'unit', 'duration', 'floor', 'max_price',
-                                 'qty_max', 'confirm', 'note_hint')} | dict(legacy=spec['legacy'] or '', requires=spec['requires'])
+                                 'qty_max', 'confirm', 'note_hint')} | dict(legacy=spec['legacy'] or '', requires=spec['requires'],
+                                                                           own=is_own(spec))
 
 
 def catalog() -> dict:
@@ -344,6 +415,7 @@ def quote(db, provider: str, career: str, service: str, qty: int = 1, setting=No
     """What this provider asks for `qty` units: {base, mult, mode, price (None while thương lượng), lo, hi, on}."""
     spec = get_spec(career, service)
     need(spec, 'Dịch vụ này chưa có.', 'unknown_service', 404)
+    need(not is_own(spec), OWN_TEXT, 'own_flow', 409)
     row = setting if setting is not None else _setting(db, provider, career, service)
     base = base_of(spec, db, provider) if base is None else base
     mode, mult = (row['mode'], int(row['mult'])) if row else ('fixed', DEFAULT_MULT)
@@ -898,8 +970,52 @@ def _listing(db, s: dict, sid: str, t: float, online: set, places: dict) -> dict
     return out
 
 
+def _own_rows(spec: dict, db, provider: str | None = None) -> list:
+    """An own-flow listing's provider rows (normalized): all listed ones, or one provider's (listed or not)."""
+    if provider is not None:
+        got = spec['offer'](db, provider)
+        rows = [got] if got else []
+    else:
+        rows = [dict(x, on=True) for x in (spec['providers'](db, LISTING_MAX, 0) or [])[:LISTING_MAX]]
+    out = []
+    for x in rows:
+        if not isinstance(x, dict) or not isinstance(x.get('sid'), str) or type(x.get('price')) is not int or x['price'] < 1:
+            continue
+        data = {k: v for k, v in (x.get('data') or {}).items() if isinstance(k, str) and LINK_KEY_RX.fullmatch(k) and _plain(v)}
+        out.append(dict(sid=x['sid'], price=min(int(x['price']), PRICE_CEIL), on=bool(x.get('on', True)), stars=max(0, int(x.get('stars') or 0)),
+                        rated=max(0, int(x.get('rated') or 0)), deals=max(0, int(x.get('deals') or 0)), at=float(x.get('at') or 0),
+                        data=data, title=str(x.get('title') or '')[:40], why=str(x.get('why') or '')[:160]))
+    return out
+
+
+def _own_item(spec: dict, x: dict, sid: str, online: set) -> dict:
+    """A directory / provider card of an own-flow listing: the module's price and rating, a button to its own sheet."""
+    rep = dict(n=x['rated'], avg=round(x['stars'] / x['rated'], 2) if x['rated'] else 0.0, deals=x['deals'])
+    link = dict(spec['open'], data=dict(spec['open']['data'], **x['data']))
+    return dict(pid=_pid(x['sid']), career=spec['career'], service=spec['service'], name=spec['name'], icon=spec['icon'], desc=spec['desc'],
+                unit=spec['unit'], mode='fixed', mult=0, note=x['title'], rep=rep, online=x['sid'] in online, mine=x['sid'] == sid, legacy='',
+                qty_max=1, available=x['on'], price=x['price'], lo=x['price'], hi=x['price'], base=spec['base'] if type(spec['base']) is int else x['price'],
+                own=True, open=link)
+
+
+def _score(stars, n) -> float:
+    return (int(stars or 0) + 9.0) / (int(n or 0) + 3)
+
+
+def _rank(sort: str, rating: float, price: int, deals: int, online: bool, at: float) -> tuple:
+    """The directory's order (SORTS) as a Python key, so svc rows and own-flow rows merge into one list."""
+    if sort == 'price':
+        return (price, -rating, -at)
+    if sort == 'online':
+        return (not online, -rating, -at)
+    if sort == 'deals':
+        return (-deals, -rating, -at)
+    return (-rating, -deals, -at)
+
+
 def directory(store, sid: str, query: dict) -> dict:
-    """🛎️ The directory: enabled services, filtered by career / service, sorted by rating, price, online or deals."""
+    """🛎️ The directory: enabled services, filtered by career / service, sorted by rating, price, online or deals.
+    Own-flow listings (🏥 birth rooms, 📸 photographers) come from their modules and merge into the same order."""
     t = now()
     career, service = str(query.get('career') or '')[:40], str(query.get('service') or '')[:40]
     sort = query.get('sort') if query.get('sort') in SORTS else 'rating'
@@ -916,33 +1032,62 @@ def directory(store, sid: str, query: dict) -> dict:
         clauses.append('s.service=?')
         args.append(service)
     order_args = [t - ONLINE_SECONDS] if sort == 'online' else []
+    own_specs = [sp for (c, v), sp in sorted(specs().items()) if is_own(sp) and (not career or c == career) and (not service or v == service)]
+    # with own-flow rows to merge, the svc rows of every page before this one are read too (offset is small in practice)
+    limit, skip = (offset + PAGE + 1, 0) if own_specs else (PAGE + 1, offset)
     with store.connect() as db:
         rows = [dict(r) for r in db.execute(
             'SELECT s.*, r.n AS rn, r.stars AS rs, r.deals AS rd, p.last_at FROM svc_settings s LEFT JOIN svc_rep r ON r.provider=s.provider '
             'LEFT JOIN stat_play p ON p.day=? AND p.sid=s.provider WHERE ' + ' AND '.join(clauses) +
-            f' ORDER BY {SORTS[sort]}, s.updated_at DESC LIMIT ? OFFSET ?', (*args, *order_args, PAGE + 1, offset)).fetchall()]
-        more = len(rows) > PAGE
-        rows = rows[:PAGE]
-        online = {r['provider'] for r in rows if (r.get('last_at') or 0) > t - ONLINE_SECONDS}
-        owners = sorted({r['provider'] for r in rows if (get_spec(r['career'], r['service']) or {}).get('legacy')})
+            f' ORDER BY {SORTS[sort]}, s.updated_at DESC LIMIT ? OFFSET ?', (*args, *order_args, limit, skip)).fetchall()]
+        rows = [r for r in rows if not is_own(get_spec(r['career'], r['service']))]   # never a market setting of an own-flow listing
+        merged = [(None, r) for r in rows]
+        own_counts = []
+        if own_specs:
+            got = [(sp, x) for sp in own_specs for x in _own_rows(sp, db)]
+            on_now = _online(db, [x['sid'] for _, x in got], t) if sort == 'online' else set()
+            for sp in own_specs:
+                n = sum(1 for g in got if g[0] is sp)
+                if n:
+                    own_counts.append(dict(career=sp['career'], service=sp['service'], n=n))
+            merged = sorted(
+                [(None, r) for r in rows] + got,
+                key=lambda m: _rank(sort, _score(m[1].get('rs'), m[1].get('rn')), int(m[1]['price'] or 0), int(m[1].get('rd') or 0),
+                                    (m[1].get('last_at') or 0) > t - ONLINE_SECONDS, float(m[1]['updated_at'] or 0)) if m[0] is None
+                else _rank(sort, _score(m[1]['stars'], m[1]['rated']), m[1]['price'], m[1]['deals'], m[1]['sid'] in on_now, m[1]['at']))
+            merged = merged[offset:offset + PAGE + 1]
+        more = len(merged) > PAGE
+        merged = merged[:PAGE]
+        sids = [m[1]['provider'] if m[0] is None else m[1]['sid'] for m in merged]
+        online = {m[1]['provider'] for m in merged if m[0] is None and (m[1].get('last_at') or 0) > t - ONLINE_SECONDS}
+        online |= _online(db, [m[1]['sid'] for m in merged if m[0] is not None], t)
+        owners = sorted({m[1]['provider'] for m in merged if m[0] is None and (get_spec(m[1]['career'], m[1]['service']) or {}).get('legacy')})
         places = {}
         if owners:
             marks = ','.join('?' * len(owners))
             for p in db.execute(f'SELECT * FROM work_visit_places WHERE owner IN ({marks})', tuple(owners)).fetchall():
                 places.setdefault(p['owner'], []).append(dict(p))
         people, out = {}, []
-        for r in rows:
-            if r['provider'] != sid and _blocked(db, sid, r['provider']):
+        for who, (sp, r) in zip(sids, merged):
+            if who != sid and _blocked(db, sid, who):
                 continue
-            item = _listing(db, r, sid, t, online, places)
+            item = _listing(db, r, sid, t, online, places) if sp is None else _own_item(sp, r, sid, online)
             if not item:
                 continue
-            if r['provider'] not in people:
-                people[r['provider']] = _person(db, r['provider'])
-            item['who'] = people[r['provider']]
+            if who not in people:
+                people[who] = _person(db, who)
+            item['who'] = people[who]
             out.append(item)
         counts = [dict(career=r['career'], service=r['service'], n=int(r['n'])) for r in
-                  db.execute('SELECT career, service, COUNT(*) AS n FROM svc_settings WHERE on_=1 GROUP BY career, service').fetchall()]
+                  db.execute('SELECT career, service, COUNT(*) AS n FROM svc_settings WHERE on_=1 GROUP BY career, service').fetchall()
+                  if not is_own(get_spec(r['career'], r['service']))]
+        read = {(x['career'], x['service']) for x in own_specs}
+        for (c, v), sp in sorted(specs().items()):   # the career filter lists own-flow services that this filter left out too
+            if is_own(sp) and (c, v) not in read:
+                n = len(sp['providers'](db, PAGE, 0) or [])   # up to PAGE: the filter only needs to know there are some
+                if n:
+                    own_counts.append(dict(career=c, service=v, n=n))
+        counts += own_counts
     return dict(items=out, next=offset + PAGE if more else None, sort=sort, career=career, service=service, counts=counts)
 
 
@@ -957,7 +1102,10 @@ def provider_view(store, sid: str, pid: str) -> dict:
         rows = [dict(r) for r in db.execute('SELECT s.*, r.n AS rn, r.stars AS rs, r.deals AS rd FROM svc_settings s LEFT JOIN svc_rep r '
                                             'ON r.provider=s.provider WHERE s.provider=? AND s.on_=1 ORDER BY s.career, s.service', (provider,)).fetchall()]
         places = {provider: [dict(p) for p in db.execute('SELECT * FROM work_visit_places WHERE owner=?', (provider,)).fetchall()]}
-        items = [x for x in (_listing(db, r, sid, t, online, places) for r in rows) if x]
+        items = [x for x in (_listing(db, r, sid, t, online, places) for r in rows if not is_own(get_spec(r['career'], r['service']))) if x]
+        for (_c, _v), sp in sorted(specs().items()):   # own-flow listings of this provider (🏥 a birth room, 📸 a studio)
+            if is_own(sp):
+                items += [_own_item(sp, x, sid, online) for x in _own_rows(sp, db, provider) if x['on']]
         reviews = []
         for r in db.execute('SELECT * FROM svc_reviews WHERE provider=? ORDER BY created_at DESC LIMIT 10', (provider,)).fetchall():
             if not _blocked(db, sid, r['buyer']):
@@ -997,6 +1145,14 @@ def mine(store, sid: str, state: dict | None) -> dict:
         rows = {(r['career'], r['service']): dict(r) for r in db.execute('SELECT * FROM svc_settings WHERE provider=?', (sid,)).fetchall()}
         for (career, service), spec in sorted(specs().items()):
             why = (spec['can_provide'] or _career_started(career))(state) if state else 'Chưa đọc được tiến trình.'
+            if is_own(spec):   # set up in the module (🏥 Nhà & Gia đình, 📸 Tiệm ảnh): shown here with a link there
+                own = (_own_rows(spec, db, sid) or [None])[0]
+                if why and not own:
+                    continue
+                out.append(public_spec(spec) | dict(on=bool(own and own['on']), mode='fixed', mult=0, base=own['price'] if own else spec['floor'],
+                                                    lo=0, hi=0, price=own['price'] if own else 0, note=(own or {}).get('title', ''),
+                                                    why=why or (own or {}).get('why', ''), setup=spec['setup'] or spec['open']))
+                continue
             row = rows.get((career, service))
             if why and not row:
                 continue
@@ -1058,10 +1214,11 @@ def _open_counts(db, buyer, provider):
 
 def _target(db, data: dict, sid: str) -> tuple:
     """(provider sid, spec, setting row) of a request {pid, career, service}: on and sold by someone else."""
-    provider = _resolve(db, data.get('pid'))
-    need(provider, 'Không tìm thấy người này.', 'not_found', 404)
     spec = get_spec(str(data.get('career') or ''), str(data.get('service') or ''))
     need(spec, 'Dịch vụ này chưa có.', 'unknown_service', 404)
+    need(not is_own(spec), OWN_TEXT, 'own_flow', 409)   # its module books, holds and pays: never a second escrow here
+    provider = _resolve(db, data.get('pid'))
+    need(provider, 'Không tìm thấy người này.', 'not_found', 404)
     row = _setting(db, provider, spec['career'], spec['service'])
     need(row and row['on_'], 'Dịch vụ này đang tạm nghỉ.', 'unavailable', 409)
     need(provider != sid, 'Không tự đặt dịch vụ của chính mình được.', 'self')
@@ -1504,6 +1661,7 @@ def _settings(store, sid, state, data, ip) -> dict:
     need(set(data) <= {'career', 'service', 'on', 'mode', 'mult', 'note'}, 'Thông tin cài đặt không hợp lệ.')
     spec = get_spec(str(data.get('career') or ''), str(data.get('service') or ''))
     need(spec, 'Dịch vụ này chưa có.', 'unknown_service', 404)
+    need(not is_own(spec), OWN_SETUP_TEXT, 'own_settings', 409)
     on = data.get('on')
     need(isinstance(on, bool), 'Chọn bật hoặc tắt.')
     mode = data.get('mode', 'fixed')

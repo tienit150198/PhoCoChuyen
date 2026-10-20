@@ -67,12 +67,14 @@ export async function photoAction(env,data={}){
   const tab=data.tab||'album';
   if(!d.open){d.showModal();d.scrollTop=0;}
   if(tab==='studio')await openStudio();
-  else if(tab==='order')await openOrder(data.place);
+  else if(tab==='order')await openOrder(data.place,data.pkg);
   else await openAlbum();
 }
 async function openStudio(){S.view='studio';S.studio=null;render();try{S.studio=await get('studio');}catch(e){S.flash={text:e.message,good:false};}render();}
-async function openOrder(place){S.view='order';S.place=null;S.form=null;render();
-  try{S.place=await get('place',{place});S.form=defaults(S.place);}catch(e){S.flash={text:e.message,good:false};}render();}
+async function openOrder(place,pkg){S.view='order';S.place=null;S.form=null;render();
+  try{S.place=await get('place',{place});S.form=defaults(S.place);
+    if(pkg&&(S.place.pkgs||[]).some(x=>x.id===pkg)&&ok(pkg,S.place.can||{}))formSet('pkg',pkg);   // 🛎️ Phố dịch vụ: the package the card showed
+  }catch(e){S.flash={text:e.message,good:false};}render();}
 async function openAlbum(old=false,before=null){S.view='album';S.old=old;if(!before)S.album=null;render();
   try{const r=await get('album',{old:old?'1':'',before});if(r?.state&&typeof r.revision==='number')api().accept({state:r.state,revision:r.revision});
     S.album=before&&S.album?{...r,photos:[...S.album.photos,...r.photos]}:r;}catch(e){S.flash={text:e.message,good:false};}render();}
