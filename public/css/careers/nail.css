@@ -64,3 +64,23 @@
 
 /* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
 html[data-clean] .career-job.sk.nl .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}
+
+/* Clean layout, owner 21/10: the order as slip rows beside the customer's hand (five nails: the shape and length filed,
+   the colour painted, glossy after the top coat), and the bench's parts numbered in working order. */
+html[data-clean] .career-job.nl .nl-slip{margin:var(--sp-1) 0}
+.career-job.nl .nl-hand{display:flex;align-items:flex-end;gap:4px;height:46px;padding:4px 6px;border-radius:14px 14px 6px 6px;background:#e9b9a3}
+.career-job.nl .nl-hand i{display:block;width:11px;height:var(--h,20px);border-radius:6px 6px 3px 3px;background:var(--nc);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);transition:background .4s,height .3s,border-radius .3s}
+.career-job.nl .nl-hand i:nth-child(1){--k:.8}.career-job.nl .nl-hand i:nth-child(2){--k:1}.career-job.nl .nl-hand i:nth-child(3){--k:1.1}.career-job.nl .nl-hand i:nth-child(4){--k:1}.career-job.nl .nl-hand i:nth-child(5){--k:.75}
+.career-job.nl .nl-hand.nl-ngan i{--h:calc(14px * var(--k))}
+.career-job.nl .nl-hand.nl-vua i{--h:calc(20px * var(--k))}
+.career-job.nl .nl-hand.nl-dai i{--h:calc(28px * var(--k))}
+.career-job.nl .nl-hand.nl-vuong i{border-radius:2px 2px 3px 3px}
+.career-job.nl .nl-hand.nl-oval i{border-radius:50% 50% 3px 3px/40% 40% 3px 3px}
+.career-job.nl .nl-hand.nl-hanh_nhan i{border-radius:50% 50% 3px 3px/70% 70% 3px 3px}
+.career-job.nl .nl-hand.nl-tron i{border-radius:7px 7px 3px 3px}
+.career-job.nl .nl-hand.gloss i{background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 42%,transparent 54%),var(--nc)}
+.career-job.nl .nl-hand.art i:nth-child(odd){background:radial-gradient(circle at 50% 30%,#fff 0 2px,transparent 3px),var(--nc)}
+html[data-clean] .career-job.nl .wb-main{counter-reset:nl-part}
+html[data-clean] .career-job.nl :is(.nl-prep,.nl-polish)>h4{display:flex;align-items:center;gap:var(--sp-2)}
+html[data-clean] .career-job.nl :is(.nl-prep,.nl-polish)>h4::before{counter-increment:nl-part;content:counter(nl-part);display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--career,var(--sk-accent));color:var(--career-text,var(--sk-accent));font-size:var(--fs-1);font-weight:900;line-height:1}
+html[data-clean] .career-job.nl .nl-col.selected::before{content:"✓";position:absolute;top:-7px;left:-7px;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--good);color:var(--surface);font-size:var(--fs-1);font-weight:900;box-shadow:0 0 0 2px var(--surface)}

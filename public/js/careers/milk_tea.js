@@ -7,7 +7,7 @@
 import {Sound} from '../audio.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {nextHint,stepCta,barParts,finalGo,pending as nextOf,firstTime,stepLine,todoAttrs} from '../v4/guide.js';
-import {actBar,clean,tip,headChip,helpBtn,whyAttrs} from '../ui-kit.js';
+import {actBar,clean,tip,headChip,helpBtn,whyAttrs,slip,steps as ckSteps,secHead,fixAttrs} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
 import {earlyDays} from '../v4/onboard.js';
@@ -137,12 +137,12 @@ function lightUp(op,p){
 /* ---------------------------------------------------------------- art */
 function piece(k,top,i,color){
   const y=146-top*11-(i%2)*4,x0=36+(i*9)%48;
-  if(['pearls','white_pearl','popping'].includes(k))return `<circle cx="${x0+4}" cy="${y}" r="${k==='popping'?4:4.4}" fill="${color}" stroke="#00000022"/>`;
-  if(k==='red_bean')return `<ellipse cx="${x0+4}" cy="${y}" rx="3.4" ry="2.4" fill="${color}"/>`;
-  if(['pudding','flan'].includes(k))return i===0?`<rect x="34" y="${y-6}" width="52" height="10" rx="4" fill="${color}"/>`:'';
-  return `<rect x="${x0}" y="${y-4}" width="7" height="7" rx="2" fill="${color}" stroke="#00000018"/>`;
+  if(['pearls','white_pearl','popping'].includes(k))return `<circle class="mt-drop" cx="${x0+4}" cy="${y}" r="${k==='popping'?4:4.4}" fill="${color}" stroke="#00000022"/>`;
+  if(k==='red_bean')return `<ellipse class="mt-drop" cx="${x0+4}" cy="${y}" rx="3.4" ry="2.4" fill="${color}"/>`;
+  if(['pudding','flan'].includes(k))return i===0?`<rect class="mt-drop" x="34" y="${y-6}" width="52" height="10" rx="4" fill="${color}"/>`:'';
+  return `<rect class="mt-drop" x="${x0}" y="${y-4}" width="7" height="7" rx="2" fill="${color}" stroke="#00000018"/>`;
 }
-export function cupArt(x,cup,small=false){
+export function cupArt(x,cup,small=false,tag=''){
   const size=small?64:132;
   if(!cup.placed)return `<svg class="mt-cup mt-cup-empty" width="${size}" height="${size*1.2}" viewBox="0 0 120 160" role="img" aria-label="Chưa có ly trên quầy"><path d="M22 34H98L90 150Q90 154 86 154H34Q30 154 30 150Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="6 5" opacity=".45"/><text x="60" y="102" text-anchor="middle" font-size="${small?22:17}" font-weight="800" fill="currentColor" opacity=".7">Lấy ly</text></svg>`;
   const top=cup.size==='L'?18:34,items=cup.items||[];
@@ -150,15 +150,15 @@ export function cupArt(x,cup,small=false){
   const tops=items.map(k=>ing(x,k)).filter(i=>i.group==='topping');
   const caps=tops.filter(i=>['foam','cheese'].includes(i.id)),bits=tops.filter(i=>!['foam','cheese'].includes(i.id));
   const shape=`M22 ${top}H98L90 150Q90 154 86 154H34Q30 154 30 150Z`;
-  const liquid=base?`<rect x="20" y="${top+12}" width="84" height="150" fill="${base.color}"/>`:'';
-  const tint=flavor?`<rect x="20" y="104" width="84" height="60" fill="${flavor.color}" opacity=".75"/>`:'';
+  const liquid=base?`<rect class="mt-pour" x="20" y="${top+12}" width="84" height="150" fill="${base.color}"/>`:'';
+  const tint=flavor?`<rect class="mt-pour" x="20" y="104" width="84" height="60" fill="${flavor.color}" opacity=".75"/>`:'';
   const cap=caps.map((c,i)=>`<rect x="20" y="${top+8+i*7}" width="84" height="9" fill="${c.color}"/>`).join('');
   const dots=bits.map((b,t)=>Array.from({length:8},(_,i)=>piece(b.id,t,i,b.color)).join('')).join('');
-  const ice=Array.from({length:{none:0,little:2,normal:3,extra:5}[cup.ice]||0},(_,i)=>`<rect x="${34+(i*17)%46}" y="${top+22+(i%2)*14}" width="15" height="15" rx="4" fill="#ffffff8c" stroke="#ffffffcc" transform="rotate(${i*13-10} ${41+(i*17)%46} ${top+29})"/>`).join('');
+  const ice=Array.from({length:{none:0,little:2,normal:3,extra:5}[cup.ice]||0},(_,i)=>`<rect class="mt-drop" x="${34+(i*17)%46}" y="${top+22+(i%2)*14}" width="15" height="15" rx="4" fill="#ffffff8c" stroke="#ffffffcc" transform="rotate(${i*13-10} ${41+(i*17)%46} ${top+29})"/>`).join('');
   const film={perfect:'#f39ab8',ok:'#e9c4d0',burnt:'#b98a5e'}[cup.seal_q]||'#e9c4d0';
   const lid=cup.dome?`<path d="M20 ${top}Q60 ${top-30} 100 ${top}Z" fill="#ffffffb0" stroke="#8a6a50" stroke-width="2"/>`:cup.sealed?`<rect x="18" y="${top-4}" width="84" height="7" rx="3" fill="${film}" stroke="#8a6a50" stroke-width="1.6"/>${cup.seal_q==='perfect'?`<path d="M30 ${top-2}H52" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>`:''}`:`<rect x="18" y="${top-4}" width="84" height="7" rx="3" fill="none" stroke="#8a6a50" stroke-width="1.6" stroke-dasharray="4 3" opacity=".5"/>`;
   const straw=cup.sealed?`<rect x="66" y="${top-34}" width="9" height="46" rx="3" fill="#e8849f" transform="rotate(14 70 ${top})"/>`:'';
-  return `<svg class="mt-cup" width="${size}" height="${size*1.2}" viewBox="0 0 120 160" role="img" aria-label="Ly size ${cup.size} đang pha"><defs><clipPath id="mtClip${small?'s':''}"><path d="${shape}"/></clipPath></defs><ellipse cx="60" cy="155" rx="36" ry="4" fill="#00000018"/>${straw}<path d="${shape}" fill="#fffdf8cc"/><g clip-path="url(#mtClip${small?'s':''})">${liquid}${tint}${cap}${dots}${ice}</g><path d="${shape}" fill="none" stroke="#8a6a50" stroke-width="2.4"/>${lid}<text x="60" y="${top+30}" text-anchor="middle" font-size="12" font-weight="800" fill="#5a4436" opacity=".55">${cup.size}</text></svg>`;
+  return `<svg class="mt-cup" width="${size}" height="${size*1.2}" viewBox="0 0 120 160" role="img" aria-label="Ly size ${cup.size} đang pha"><defs><clipPath id="mtClip${small?'s':''}${tag}"><path d="${shape}"/></clipPath></defs><ellipse cx="60" cy="155" rx="36" ry="4" fill="#00000018"/>${straw}<path d="${shape}" fill="#fffdf8cc"/><g clip-path="url(#mtClip${small?'s':''}${tag})">${liquid}${tint}${cap}${dots}${ice}</g><path d="${shape}" fill="none" stroke="#8a6a50" stroke-width="2.4"/>${lid}<text x="60" y="${top+30}" text-anchor="middle" font-size="12" font-weight="800" fill="#5a4436" opacity=".55">${cup.size}</text></svg>`;
 }
 /** "Hồng trà · chưa có topping": what is in the cup right now, in words. */
 function status(x,cup){
@@ -351,7 +351,7 @@ function tile(x,o){
     ${o.art||`<span class="mt-emo" aria-hidden="true">${o.emoji}</span>`}<b>${x.esc(o.name)}</b>${o.sub?`<small>${x.esc(o.sub)}</small>`:''}
     ${o.locked?`<small class="mt-lock">🔒 Cấp ${o.level}</small>`:o.count!=null?`<em class="mt-count${o.count===0?' zero':''}" aria-hidden="true">${o.count}</em>`:''}</button>`;
 }
-function shelf(t,x,group,title){
+function shelf(t,x,group,title,sec=null){
   const cup=t.cup,items=cup.items||[],b=B(x);
   const ready=t.known&&cup.placed&&!cup.sealed;
   const limit={base:1,flavor:1,topping:3}[group],have=items.filter(k=>ing(x,k).group===group).length;
@@ -362,7 +362,8 @@ function shelf(t,x,group,title){
   const want=new Set((t.ticket||[]).map(r=>r.want)),off=all.filter(i=>!shut.includes(i)&&station(x,i.id).on===false&&!want.has(i.id)&&!items.includes(i.id));
   const showOff=!!x.ui.mtShowOff,list=all.filter(i=>!shut.includes(i)&&(showOff||!off.includes(i)));
   const offChip=off.length?`<button type="button" class="mt-lockchip mt-offchip" data-action="car:showoff" aria-pressed="${showOff}">🚫 ${off.length} món ngừng bán · ${showOff?'ẩn':'hiện'}</button>`:'';
-  return `<section class="mt-shelf ${group}"><h4>${title}${group==='topping'?` <small>${have}/${limit}</small>`:''}</h4><div class="mt-grid">${list.map(i=>{
+  const h=sec?secHead({...sec,hint:sec.hint??(group==='topping'?`${have}/${limit}`:'chọn 1')}):`<h4>${title}${group==='topping'?` <small>${have}/${limit}</small>`:''}</h4>`;
+  return `<section class="mt-shelf ${group}${sec?` ck-sec ${sec.state}`:''}">${h}<div class="mt-grid">${list.map(i=>{
     const s=station(x,i.id),inCup=items.includes(i.id);
     if(off.includes(i))return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:s.stock,cls:'off',disabled:true,sub:'Ngừng bán',label:`${i.name}: ngừng bán`});
     if(s.stock===0&&!inCup){
@@ -399,6 +400,13 @@ function stations(t,x,steps){
     ['flavor',()=>shelf(t,x,'flavor','🍑 Siro'),`🍑 Siro${names('flavor')?` · ${names('flavor')}`:''}`,['flavor']],
     ['topping',()=>shelf(t,x,'topping','🧋 Topping'),`🧋 Topping ${items.filter(k=>ing(x,k).group==='topping').length}/3${names('topping')?` · ${names('topping')}`:''}`,['topping']],
     ['dials',()=>dials(t,x),`🧊 Đá${cup.ice?` · ${ICE_TEXT[cup.ice]}`:''} · 🍯 Đường${cup.sugar!=null?` ${cup.sugar}%`:''}`,['ice','sugar']]];
+  if(clean()&&steps.length){
+    const nums=cupParts(t,steps),num=id=>nums.findIndex(p=>p.id===id)+1,st=id=>nums.find(p=>p.id===id)?.state||'';
+    const sec=(id,icon,title,hint)=>num(id)?{n:num(id),icon,title,state:st(id),hint}:{n:'',icon,title,state:'',hint:'khách không gọi'};
+    return cupStack(t,x,sec('cups','🥤','Chọn ly'))+shelf(t,x,'base','🫖 Trà nền',sec('base','🫖','Trà nền'))
+      +shelf(t,x,'flavor','🍑 Siro',sec('flavor','🍑','Siro'))+shelf(t,x,'topping','🧋 Topping',sec('topping','🧋','Topping',num('topping')?undefined:'khách không gọi'))
+      +dials(t,x,{...sec('dials','🧊','Đá & đường'),hint:''});
+  }
   return parts.map(([k,html,sum,keys])=>{
     const key=`${t.id}|${cur}|${k}`,open=!steps.length||k===cur||!!x.ui.mtShelf?.[key];
     if(open)return html();
@@ -406,9 +414,9 @@ function stations(t,x,steps){
   }).join('');
 }
 const verb=id=>['pearls','white_pearl'].includes(id)?'Nấu':['foam','cheese'].includes(id)?'Đánh':'Ủ';
-function cupStack(t,x){
+function cupStack(t,x,sec=null){
   const b=B(x),cup=t.cup,cups=cupsOf(x);
-  return `<section class="mt-shelf cups"><h4>🥤 Chồng ly</h4><div class="mt-grid two">${['M','L'].map(size=>{
+  return `<section class="mt-shelf cups${sec?` ck-sec ${sec.state}`:''}">${sec?secHead({...sec,hint:'chọn cỡ'}):'<h4>🥤 Chồng ly</h4>'}<div class="mt-grid two">${['M','L'].map(size=>{
     // Tea in the cup: neither size can be taken (game/boba.py tea_cup: "Ly đã có trà…"); the other one says why.
     const on=cup.placed&&cup.size===size,filled=!!(cup.items||[]).length,locked=filled&&!on&&!cup.sealed;
     if(!cups[size]){
@@ -421,11 +429,11 @@ function cupStack(t,x){
     return tile(x,{k:'cup_'+size,name:`Ly ${size}`,emoji:size==='L'?'🥤':'🧋',count:cups[size],on,disabled:!t.known||cup.sealed||filled,cmd:'tea_cup',payload:{task:t.id,size},sub:locked?'Đổ ly để đổi cỡ':'',label:`Ly size ${size}, còn ${cups[size]} ly${locked?'. Ly đang có trà: đổ ly rồi mới đổi cỡ':''}`});
   }).join('')}</div></section>`;
 }
-function dials(t,x){
+function dials(t,x,sec=null){
   const cup=t.cup,ok=t.known&&cup.placed&&!cup.sealed,sugars=B(x).sugars||[0,30,50,70,100];
   const shut=closedNow(x);
   const seg=(cmd,val,label,on)=>`<button type="button" class="mt-seg ${on?'on':''}${shut?' is-why':''}" data-k="${cmd.slice(4)}-${val}" ${shut?shutAttrs():ok?cmdAttr(x,cmd,{task:t.id,level:val}):'disabled'} aria-pressed="${on}">${label}</button>`;
-  return `<section class="mt-shelf dials"><h4>🧊 Đá</h4><div class="mt-segs four">${ICE.map(([v,l])=>seg('tea_ice',v,l,cup.ice===v)).join('')}</div>
+  return `<section class="mt-shelf dials${sec?` ck-sec ${sec.state}`:''}">${sec?secHead(sec):''}<h4>🧊 Đá</h4><div class="mt-segs four">${ICE.map(([v,l])=>seg('tea_ice',v,l,cup.ice===v)).join('')}</div>
     <h4>🍯 Đường</h4><div class="mt-segs five">${sugars.map(v=>seg('tea_sugar',v,v+'%',cup.sugar===v)).join('')}</div></section>`;
 }
 function sealer(t,x){
@@ -438,7 +446,7 @@ function sealer(t,x){
   const zones=[['loose',0,S.loose],['ok',S.loose,S.good_lo],['good',S.good_lo,S.good_hi],['ok',S.good_hi,S.burn],['burn',S.burn,S.max]];
   return `<div class="mt-sealer ${start?'running':''}">
     <div class="mt-gauge" data-seal-start="${start||''}" data-s="${[S.loose,S.good_lo,S.good_hi,S.burn,S.max].join(',')}" aria-hidden="true">${zones.map(([k,a,z])=>`<i class="z ${k}" style="left:${pct(a)}%;width:${pct(z-a)}%"></i>`).join('')}<b class="mt-needle" style="transform:translateX(${Math.min(100,pct(held))}%)"></b></div>
-    <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?(clean()?`✨ +1 xu: nhả tay ở vùng xanh (${S.good_lo}–${S.good_hi} giây)`:`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`):clean()?'':'Pha xong trà, đá, đường rồi mới dán nắp'}</small>${!start&&!ready?tip('Pha xong trà, đá, đường rồi mới dán nắp','Dán nắp'):''}
+    <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?(clean()?`✨ +1 xu: nhả tay ở vùng xanh (${S.good_lo}–${S.good_hi} giây)`:`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`):clean()?'':'Pha xong trà, đá, đường rồi mới dán nắp'}</small>${!start&&!ready&&clean()?tip('Pha xong trà, đá, đường rồi mới dán nắp','Dán nắp'):''}
     <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'cream big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},'cream',!ready)}
     ${start?'':jb(x,'Dán thường','tea_seal',{task:t.id},'ghost small',!ready)}</div>${start?'':wear(x)}</div>`;
 }
@@ -447,9 +455,9 @@ function wear(x){
   const w=B(x).sealer;if(!w||w.state==='clean')return '';
   return `<p class="mt-wear ${x.esc(w.state)}"><span>${w.state==='dirty'?'⚠ Khuôn dán bẩn: vùng xanh chỉ còn một vạch.':'Khuôn dán bám keo: vùng xanh hẹp lại.'}</span>${jb(x,'🧽 Lau máy','tea_clean',{},'ghost small')}</p>`;
 }
-function finish(t,x){
+function finish(t,x,sec=null){
   const cup=t.cup;
-  return `<div class="mt-finish">${sealer(t,x)}
+  return `<div class="mt-finish${sec?` ck-sec ${sec.state}`:''}">${sec?secHead(sec):''}${sealer(t,x)}
     <div class="mt-minor">${x.confirmCmd('🗑️ Đổ ly','tea_discard',{task:t.id},'Đổ ly đang làm? Nguyên liệu đã dùng được ghi hao hụt và tính là một lần làm lại.','ghost small',!(cup.placed||(cup.items||[]).length))}
     ${jb(x,'🔎 So phiếu','tea_check',{task:t.id},'ghost small',!t.known||!(cup.items||[]).length||cup.sealed)}</div>
     ${tip('So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.','🔎 So phiếu','p')}</div>`;
@@ -578,10 +586,48 @@ function orderTicket(t,x,steps){
   // Clean layout: the ticket no longer sticks (one pinned box: the bar); its digest is a header chip that opens it
   // over the counter once it has scrolled away. Every part of the order stays on the ticket itself.
   const okN=said.filter(s=>s.row.ok===true).length;
+  if(clean())return slipTicket(t,x,steps,{tabs,meter,tags,okN,n:said.length});
   return `${headChip('🧾',`${okN}/${said.length}`,'.mt-ticket',{label:`Phiếu gọi món: ${okN}/${said.length} đúng`,tone:said.some(s=>s.row.ok===false)?'bad':okN===said.length?'ok':''})}<section class="mt-ticket${t.app?' is-app':''}" aria-label="Phiếu gọi món">
     <div class="mt-ticket-top">${t.app?'<span class="mt-face" style="--s:34px" aria-hidden="true">🛵</span>':face(t,x,34)}${tabs}${tags.length?`<span class="mt-ticket-tags">${tags.map(v=>`<em>${x.esc(v)}</em>`).join('')}</span>`:''}<b class="mt-price">${t.quoted_price!=null?`${t.quoted_price} xu`:''}</b></div>
     <div class="mt-ticket-order"><b>Ly ${g?g.i:1}:</b><ul class="mt-reqs" aria-label="Món khách gọi">${chips.join('')}</ul></div>
     ${meter}</section>`;
+}
+/* ---------------------------------------------------------------- clear counter (compact side, owner 21/10)
+ * "coi UI sắp xếp cho dễ hiểu… show hết thông tin ra xong người ta chọn, kiểu show trà sữa": the ticket is a slip of
+ * plain rows in the order a cup is made (Ly · Trà · Siro · Topping · Đá · Đường), the cup being made beside it; a
+ * numbered stepper under it; every station open as one menu board, each part numbered like its step. The server's
+ * ticket rows are the same; only how they are drawn changes. */
+const MAKE=['size','base','flavor','topping','extra','ice','sugar'];
+const PART={size:['🥤','Ly'],base:['🫖','Trà'],flavor:['🍑','Siro'],topping:['🧋','Topping'],extra:['🚫','Khách không gọi'],ice:['🧊','Đá'],sugar:['🍯','Đường']};
+const cap=s=>s?s[0].toLocaleUpperCase('vi')+s.slice(1):'';
+const rowState=(t,r)=>r.ok===true?'ok':r.ok===false?(fixable(t,r)?'warn':'bad'):'';
+function slipTicket(t,x,steps,{tabs,meter,tags,okN,n}){
+  const name=k=>ing(x,k).name;
+  const value=r=>r.k==='size'?`Size ${r.want}`:r.k==='extra'?name(r.got):r.k==='ice'?cap(ICE_TEXT[r.want]):r.k==='sugar'?`${r.want}%`:name(r.want);
+  const rows=steps.filter(s=>s.row&&MAKE.includes(s.k)).sort((a,c)=>MAKE.indexOf(a.k)-MAKE.indexOf(c.k)).map(s=>{
+    const [icon,label]=PART[s.k];return {icon,label,value:value(s.row),state:rowState(t,s.row),attrs:closedNow(x)?'':todoAttrs(s)};});
+  if(!rows.some(r=>r.label==='Topping'||r.label===PART.extra[1])){const at=rows.findIndex(r=>r.label==='Đá');rows.splice(at<0?rows.length:at,0,{icon:'🧋',label:'Topping',value:'Không topping',state:'none'});}
+  const head=`${t.app?'<span class="mt-face" style="--s:30px" aria-hidden="true">🛵</span>':face(t,x,30)}${tabs}${tags.length?`<span class="mt-ticket-tags">${tags.map(v=>`<em>${x.esc(v)}</em>`).join('')}</span>`:''}<b class="mt-price">${t.quoted_price!=null?`${t.quoted_price} xu`:''}</b>`;
+  const side=`<span class="mt-slip-cup">${cupArt(x,t.cup||{},false,'k')}</span><small>Ly của bạn</small>`;
+  return `${headChip('🧾',`Phiếu ${okN}/${n}`,'.mt-ticket',{label:`Phiếu gọi món: ${okN}/${n} đúng`,tone:steps.some(s=>s.row&&s.row.ok===false)?'bad':okN===n?'ok':''})}${slip({title:t.group?`Phiếu khách · Ly ${t.group.i}`:'Phiếu khách',head,rows,side,foot:meter,cls:`mt-ticket mt-slip${t.app?' is-app':''}`,label:'Phiếu gọi món'})}`;
+}
+/** The numbered steps of the cup: Ly → Trà → (Siro) → (Topping) → Đá·đường → Nắp → Giao; a tap scrolls to that station. */
+const STEP_PART=[['cups','🥤','Ly',['size']],['base','🫖','Trà',['base']],['flavor','🍑','Siro',['flavor']],['topping','🧋','Topping',['topping','extra']],['dials','🧊','Đá·đường',['ice','sugar']]];
+function partState(brew,keys,cur){
+  const r=brew.filter(s=>keys.includes(s.k));
+  return r.some(s=>s.ok===false)?'bad':cur&&keys.includes(cur.k)?'now':r.length&&r.every(s=>s.ok===true)?'done':'';
+}
+function cupParts(t,brew){
+  const has=k=>brew.some(s=>s.k===k),cur=nextOf(brew),sealed=!!t.cup?.sealed;
+  const list=STEP_PART.filter(([id,,,keys])=>id==='cups'||id==='base'||id==='dials'||keys.some(has)).map(([id,icon,label,keys])=>({id,icon,label,state:partState(brew,keys,cur)}));
+  list.push({id:'seal',icon:'✅',label:'Nắp',state:sealed?'done':cur?.k==='seal'?'now':''});
+  list.push({id:'serve',icon:'🛎️',label:'Giao',state:sealed&&!brew.some(s=>s.ok===false)?'now':''});
+  return list;
+}
+const PART_SEL={cups:'.mt-stations .mt-shelf.cups',base:'.mt-stations .mt-shelf.base',flavor:'.mt-stations .mt-shelf.flavor',topping:'.mt-stations .mt-shelf.topping',dials:'.mt-stations .mt-shelf.dials',seal:'.mt-sealer',serve:'.mt-cta .gd-final, .mt-cta .gd-cta'};
+function cupStepper(t,x,brew){
+  if(!brew.length||closedNow(x))return '';
+  return ckSteps(cupParts(t,brew).map(p=>({icon:'',label:p.label,state:p.state,attrs:fixAttrs({sel:PART_SEL[p.id]})})),{label:'Các bước pha ly',cls:'mt-steps'});
 }
 /** The bottom line: how many steps the cup still needs ("Còn 3 bước"), and any part that is wrong.
  * The button under it names the step it does and the pinned ticket above shows every part, so the
@@ -851,7 +897,10 @@ export default {
     const g=teaGuide(t,x),brew=t.known?brewSteps(t,x):[];
     // Stations in the order a cup is made (cup, tea, syrup, toppings, ice & sugar), then the sealer.
     // The cup picture sits beside them on wide screens; on phones the mini cup in the bottom bar shows it.
-    const layout=`<div class="mt-bench"><div class="mt-side"><section class="mt-preview${x.ui.flash?'':' quiet'}">${cupArt(x,t.cup)}<div class="mt-said">${x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}</div></section>${finish(t,x)}</div>
+    // Compact side (owner 21/10): the numbered steps under the slip, the sealer numbered as the step before "Giao".
+    const ck=clean()&&brew.length&&!closedNow(x),parts=ck?cupParts(t,brew):[],sealN=parts.findIndex(p=>p.id==='seal')+1;
+    const sealSec=ck?{n:sealN,icon:'✅',title:'Dán nắp',state:parts[sealN-1]?.state||''}:null;
+    const layout=`<div class="mt-bench"><div class="mt-side"><section class="mt-preview${x.ui.flash?'':' quiet'}">${cupArt(x,t.cup)}<div class="mt-said">${x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}</div></section>${finish(t,x,sealSec)}</div>
       <div class="mt-stations">${stations(t,x,g.final?g.steps:[])}</div></div>`;
     // The order recap and the next step (then the hand-over) stay pinned above the sheet footer.
     // The mini cup keeps the result in view next to whichever station the step scrolled to.
@@ -860,10 +909,10 @@ export default {
     const {next,main}=barParts(x,g.steps,g.final||{label:'',go:null,ready:false});
     const cup=t.known?`<span class="mt-bar-cup" aria-hidden="true">${cupArt(x,t.cup,true)}</span>`:'';
     const recap=todoLine(t,x,brew),left=`${cup}${next||(recap?`<p class="fk-next" aria-live="polite">${recap}</p>`:'')}`;
-    const bar=actBar({next:left,main,cls:'fk-bar mt-bar'});
+    const bar=actBar({next:left,main,cls:'fk-bar mt-cta'});
     // After each step the screen scrolls to the control of the next one (tick), once per step.
     const n=nextOf(g.steps),at=!n||B(x).event?'':n.go?.sel||(n.go?.cmd==='tea_discard'?'.mt-minor':'')||n.at||'';
-    return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${(B(x).care||[]).some(r=>r.tone!=='ok')?careFold(x):''}${appRow(t,x)}${queueRow(t,x)}${customer(t,x,brew)}${outOfStock(t,x)}${t.known?layout:''}${bar}</div>`;
+    return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${(B(x).care||[]).some(r=>r.tone!=='ok')?careFold(x):''}${appRow(t,x)}${queueRow(t,x)}${customer(t,x,brew)}${ck?cupStepper(t,x,brew):''}${outOfStock(t,x)}${t.known?layout:''}${bar}</div>`;
   },
   idle(x){
     if(!x?.room)return '';

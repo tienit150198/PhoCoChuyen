@@ -1,7 +1,7 @@
 /** Pet Care Mèo Mập — intake form, grooming table (body language, escapes, live rinse/dry bars), kennel, feeding
  *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
-import {reqList,fold,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+import {reqList,fold,clean,tip,helpBtn,withWhy,steps as ckSteps} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
 import {stepRows,nextHint,stepCta,stepBar,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
@@ -343,7 +343,8 @@ function stepStrip(t,x){
   const state={brush:g.brush,bath:g.shampoo!=null,rinse:g.rinse_s>=x.cc.rinse_min,dry:g.dry_pct>=100,nails:g.nails!=null,ears:g.ears!=null};
   const need={brush:sv.includes('brush'),bath:sv.includes('bath'),rinse:sv.includes('bath'),dry:sv.includes('bath'),nails:sv.includes('nails'),ears:sv.includes('ears')};
   const current=x.cc.steps.find(s=>need[s.id]&&!state[s.id])?.id;
-  // Clean layout: icons, only the current step keeps its word (all of them stay for screen readers).
+  // Clean layout (owner 21/10): numbered steps with their words, only the ones this pet needs.
+  if(clean())return ckSteps(x.cc.steps.filter(s=>need[s.id]).map(s=>({label:s.name,state:state[s.id]?'done':s.id===current?'now':''})),{label:'Các bước tắm tỉa',cls:'pc-ck-steps'});
   const word=s=>clean()&&s.id!==current?`<span class="sr-only">${x.esc(s.name)}</span>`:x.esc(s.name);
   return `<ol class="pc-steps${clean()?' pc-steps-ico':''}">${x.cc.steps.map(s=>`<li class="${!need[s.id]?'skip':state[s.id]?'done':s.id===current?'now':''}" title="${x.esc(s.name)}"><span>${state[s.id]?'✓':s.emoji}</span>${word(s)}</li>`).join('')}</ol>`;
 }
@@ -369,7 +370,7 @@ function dryBox(t,x){
 function groomJob(t,x,now=new Set()){
   const n=t.needs,g=t.g,sv=n.services,v=ui(x,t),busy=g.rinse||g.dry,off=g.stopped||g.bolt;
   const wet=g.shampoo!=null&&g.dry_pct<100&&!g.stopped;
-  let html=section(clean()?'🛁':'🛁 Bàn tắm tỉa',stepStrip(t,x)+calmTools(t,x),'pc-table');
+  let html=section(clean()?'🛁 Bàn tắm':'🛁 Bàn tắm tỉa',stepStrip(t,x)+calmTools(t,x),'pc-table');
   if(sv.includes('brush')){
     const done=!!g.brush&&(!!g.flea||g.shampoo!=null);
     html+=part(x,t,now,'brush','🪮 Chải & gỡ rối',done?`<p class="small">✓ Đã chải gỡ rối${g.flea?' · đã chải bọ chét':''}.</p>`:`<div class="row wrap">${calmGate(t,'pc_brush',x.cmd(g.brush?'✓ Đã chải gỡ rối':'🪮 Chải gỡ rối','pc_brush',{task:t.id,tool:'brush'},st(t,x,'brush'),g.brush||g.shampoo!=null||off),g.brush||g.shampoo!=null||off)}

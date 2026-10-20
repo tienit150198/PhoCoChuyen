@@ -222,3 +222,16 @@ button.asm-pin-head:focus-visible{outline:3px solid var(--focus);outline-offset:
 .asm-pin.folded .asm-pin-n{margin-left:0}
 .asm-pin-next{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.833rem;color:var(--ink-2)}
 .asm-pin-next>b{color:var(--accent-text)}
+
+/* Clear work screens (owner 21/10 "sắp xếp khó hiểu… button khó nhìn"), compact side: the pinned asks as a two-column
+   list of rows (mark, icon, words) instead of a wall of small pills; the station tabs as one numbered segmented control. */
+html[data-clean] .asm-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-1)}
+html[data-clean] .asm-chips>li{display:flex}
+html[data-clean] .asm-chip{flex:1 1 auto;width:100%;min-height:40px;padding:var(--sp-1) var(--sp-2);border-radius:var(--radius-sm);border-width:1.5px;font-size:var(--fs-2);justify-content:flex-start}
+html[data-clean] .asm-chip>i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--surface);border:2px solid var(--line-strong);font-size:var(--fs-1);line-height:1}
+html[data-clean] .asm-chip.ok>i{border-color:var(--good);background:var(--good);color:var(--surface)}
+html[data-clean] .asm-chip.bad>i{border-color:var(--bad);background:var(--bad);color:var(--on-bad)}
+html[data-clean] .asm-tabs{counter-reset:asmtab;gap:var(--sp-1);padding:var(--sp-1);border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--line)}
+html[data-clean] .asm-tab{min-height:44px;border-color:transparent;background:transparent;font-size:var(--fs-2)}
+html[data-clean] .asm-tab>span::before{counter-increment:asmtab;content:counter(asmtab) ". ";font-weight:900}
+html[data-clean] .asm-tab.on{border-color:var(--career,var(--accent));background:var(--career,var(--accent));color:var(--career-ink,var(--accent-ink));box-shadow:var(--shadow-sm)}

@@ -11,7 +11,7 @@
  * one; on the first order the right flowers glow (and the button picks them). */
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {splitMai} from './tomorrow_kit.js';
-import {reqList,fold,clean} from '../ui-kit.js';
+import {reqList,fold,clean,slip,steps as ckSteps,headChip} from '../ui-kit.js';
 import {nextHint,stepBar,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {lockChip} from './stage_fold.js';
@@ -388,6 +388,29 @@ function pin(t,x,K,tabs,next){
   const who=x.npc(t.npc),o=occasion(x,t.needs.occasion);
   const sub=`${x.esc(who.display_name)} · ${x.esc(o.emoji)} ${x.esc(o.name)}${isSet(t)&&!plated(t)?` · món ${t.cur+1}/${t.pieces.length}`:''}`;
   return reqPin(x,{sub,chips,tabs,key:t.id,next});
+}
+/* Compact side (owner 21/10: "coi UI sắp xếp cho dễ hiểu… các loại hoa xong ruy băng này kia để chọn"): the ticket and
+ * the pinned "Khách cần" chips become ONE slip (who, their words, every ask as a plain row with its mark, the questions
+ * still worth asking), and the three station tabs a numbered stepper: 1 Chọn hoa → 2 Cắm & gói → 3 Thiệp → 4 Giao. */
+function slipFl(t,x,K){
+  const who=x.npc(t.npc),n=t.needs,g=t.guest||{},o=occasion(x,n.occasion);
+  const rows=briefRows(t,x,K).map(r=>{const s=r.ok===true?null:(r.step||r),tap=s&&s.ok!==true?todoAttrs(s):'';
+    return {icon:r.icon,value:`${r.label}${r.value&&!r.label.includes(r.value)?` · ${r.value}`:''}${r.note?` (${r.note})`:''}`,state:r.ok===true?'ok':r.ok===false?'bad':r.tone==='warn'?'warn':'',attrs:tap};});
+  if(!plated(t)){const v=Math.round(benchValue(t,x)/(spec(t).budget||1)*100);rows.push({icon:'💰',value:`Hoa ${v}% giá đơn (nên từ 70%)`,state:v>=70?'ok':''});}
+  const need=rows.filter(r=>r.icon!=='💰'),done=need.filter(r=>r.state==='ok').length,bad=need.some(r=>r.state==='bad');
+  const tags=[`${g.emoji||'🙂'} ${g.label||'Khách'}`,`${o.emoji} ${o.name}`,isSet(t)?`🎁 Bộ ${n.party.length} món`:'',deliver(t)?'':'🏪 Nhận tại tiệm'].filter(Boolean);
+  const head=`${x.portrait(who,30)}<b class="fl-slip-who">${x.esc(who.display_name)}</b>${t.quoted_price!=null?`<b class="price fl-slip-price">${x.money(t.quoted_price)}</b>`:''}
+    <p class="fl-tags fl-slip-tags">${tags.map(v=>`<span class="tag">${x.esc(v)}</span>`).join(' ')}</p><p class="fl-note fl-slip-say">“${x.esc(n.note)}”</p>`;
+  const nClues=Object.keys(n.clues||{}).length;
+  const foot=`${consult(t,x)}${nClues?`<details class="fl-brief"><summary><b>💬 Khách kể thêm</b><small>${nClues}</small></summary>${heardList(t,x)}</details>`:''}${isSet(t)?pieceTabs(t,x):''}${regularCard(t,x)}${patience(t.patience)}`;
+  const title=isSet(t)&&!plated(t)?`Phiếu khách · Món ${t.cur+1}`:'Phiếu khách';
+  return `${headChip('🧾',`Phiếu ${done}/${need.length}`,'.fl-slip',{label:`Khách cần: ${done}/${need.length} xong`,tone:bad?'bad':done===need.length?'ok':''})}${slip({title,head,rows,foot,cls:'fl-slip'})}`;
+}
+function stepsFl(t,x,S,tabs,final){
+  const tabDone=k=>{const ss=S.filter(v=>tabOf(v.tab)===k);return ss.length>0&&ss.every(v=>v.ok===true);};
+  const ready=!pending(S),list=tabs.map(([k,,l])=>({label:l,state:x.ui.tab===k&&!ready?'now':tabDone(k)?'done':'',attrs:` data-action="car:tab" data-tab="${k}"`}));
+  list.push({label:'Giao',state:ready&&final?.go?'now':''});
+  return ckSteps(list,{label:'Các bước làm hoa',cls:'fl-steps'});
 }
 /** What the customer said about the flowers, for sorting the cooler (never the meaning book's taboos). */
 function fitOf(t,x,f){
@@ -793,7 +816,8 @@ export default {
     const now=heads?`<div class="fl-bar-now"><span class="fl-bar-stems" aria-hidden="true">${heads}</span></div>`:'';
     const bar=stepBar(x,ui.flBusy?[BUSY]:S,g.final,{cls:'fk-bar fl-bar',top:now,note:S.length?`<b class="fl-bar-n">${done}/${S.length} ✓</b>`:''});
     // Shop care (water, pre-orders) waits below the order: the order on the bench comes first.
-    return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar,n||finalStep(g.final))}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
+    const order=clean()?`${slipFl(t,x,g.K)}${stepsFl(t,x,S,tabs,g.final)}`:`${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar,n||finalStep(g.final))}`;
+    return `<div class="career-job fl food">${top(g)}${extras(x)}${order}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
   },
   actions:{
     ...asmActions,

@@ -3,12 +3,13 @@
  * bar, the bowl with a live status line, chili, one big "Giao món" and the
  * toppings grid. Only renders server state and sends commands; the server
  * checks every rule (and keeps order details hidden until they are known). */
-import {reqList,fold,refTable,clean,withWhy} from '../ui-kit.js';
+import {reqList,fold,refTable,clean,withWhy,slip,steps as ckSteps,secHead,fixAttrs,headChip,reqSlipRow} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {nextHint,stepBar,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {restockFor} from '../v4/restock.js';
 import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 
+const isClean=()=>clean();   // job() has its own `clean` (the hygiene check)
 const BASE_SCALE=25; // seconds shown on the boiling bar
 const NOODLE={raw:'sống',perfect:'chín tới',soft:'hơi mềm',mushy:'nát'};
 const item=(x,id)=>x.cc.items?.find(i=>i.id===id)||x.content.inventory?.items?.restaurant?.find(i=>i.id===id)||{name:id,emoji:'•'};
@@ -126,7 +127,50 @@ function tabs(t,x){
     return `<button type="button" role="tab" class="rs-tab${done?' done':''}${on?' on':''}" data-command="rs_tab" data-payload="${pay(x,{task:t.id,index:i})}" aria-selected="${on}"${on||(lock&&!on)?' disabled':''}${done?' title="Đã xong, bấm để lấy xuống sửa"':''}>${label}</button>`;
   }).join('')}</div>`;
 }
+/* ---------------------------------------------------------------- clean layout (owner 21/10)
+ * "show hết ra rồi chọn": the order is one "Phiếu khách" with the bowl filling beside it, numbered steps under it, and
+ * the kitchen as numbered parts (bowl & broth, noodles, toppings, chili), each with all its choices open. */
+const RS_SEC=[['bowl','🥣','Tô & nước dùng'],['noodle','🍜','Luộc mì'],['tops','🥚','Topping'],['chili','🌶️','Sốt ớt']];
+const RS_STEP={bowl:'Tô·nước',noodle:'Mì',tops:'Topping',chili:'Cay'};
+const secOf=k=>{const key=[].concat(k||[])[0]||'';return key==='box'||key==='broth'?'bowl':key==='noodle'?'noodle':key==='chili'?'chili':'tops';};
+/** Each part's state from the order rows: bad (a ✗), done (all ✓), now (the first one not done), ''. */
+function rsParts(t,x){
+  if(!t.known||t.needs.masked||plated(t))return [];
+  const rows=checklistRows(t,x),list=RS_SEC.map(([id,icon,title])=>{const r=rows.filter(v=>secOf(v.key)===id);
+    return {id,icon,title,bad:r.some(v=>v.ok===false),done:r.every(v=>v.ok===true)&&(id!=='noodle'||!t.bowl.boiling)};});
+  const now=list.find(p=>!p.done&&!p.bad);
+  for(const p of list)p.state=p.bad?'bad':p.done?'done':p===now?'now':'';
+  return list;
+}
+function rsStepper(t,x){
+  const parts=rsParts(t,x);if(!parts.length)return '';
+  const b=t.bowl,box=b.container==='box'&&t.needs.takeaway,list=parts.map(p=>({label:RS_STEP[p.id],state:p.state,attrs:fixAttrs({sel:`.rs-desk .rs-sec[data-sec="${p.id}"]`})}));
+  const ready=parts.every(p=>p.state==='done');
+  if(box)list.push({label:'Nắp',state:b.lid?'done':ready?'now':'',attrs:fixAttrs({sel:'.rs-cta'})});
+  list.push({label:isGroup(t)&&pending(t).length?'Lên khay':'Giao',state:ready&&(!box||b.lid)?'now':'',attrs:fixAttrs({sel:'.rs-bar .gd-final, .rs-bar .gd-cta'})});
+  return ckSteps(list,{label:'Các bước làm tô',cls:'rs-steps'});
+}
+function slipTicket(t,x){
+  const who=x.npc(t.npc),g=t.guest||{},n=t.needs,b=t.bowl;
+  const off=!!data(x).rules?.discount,after=v=>off?` → ${Math.max(1,pyRound(v*0.9))} xu`:'';
+  const price=n.style==='open'?(b.broth?`${bowlPrice(b,x)}/${n.open.budget} xu${after(Math.min(bowlPrice(b,x),n.open.budget))}`:`≤ ${n.open.budget} xu`)
+    :t.quoted_price?`${x.money(t.quoted_price)}${after(t.quoted_price)}`:'';
+  const tags=[`<span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>`,t.app?`<span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:'',isGroup(t)?`<span class="tag">🍜 ${n.party.length} tô</span>`:'',
+    t.vip==='critic'?'<span class="tag amber">📝 Người viết review</span>':'',off?'<span class="tag">🎓 Học sinh −10%</span>':''].join('');
+  const rows=checklistRows(t,x),steps=t.known&&!n.masked&&!plated(t)?bowlSteps(t,x):[],by={};
+  for(const s of steps)if(s.key&&!by[s.key]&&s.ok!==true&&s.go)by[s.key]=s;
+  const list=rows.map(r=>{const st=[].concat(r.key||[]).map(k=>by[k]).find(Boolean);return reqSlipRow(r,st&&r.ok!==true?todoAttrs({ok:null,go:st.go}):'');});
+  const done=rows.filter(r=>r.ok===true).length;
+  const what=b.container==='box'?'Hộp của bạn':'Tô của bạn';
+  const art=`<figure class="rs-slip-art" aria-label="${what}">${bowlArt(b,x)}<figcaption>${what}</figcaption></figure>`;
+  const top=`<div class="rs-slip-top"><div class="rs-slip-what">${lead(t,x)}${tabs(t,x)}<p class="rs-status">${x.esc(bowlStatus(t,x))}</p>${tray(t,x)}</div>${art}</div>`;
+  const head=`${x.portrait(who,30)}<b class="rs-slip-name">${x.esc(who.display_name)}</b><b class="price">${x.esc(price)}</b><span class="rs-slip-tags">${tags}</span>`;
+  const chip=headChip('🧾',`Phiếu ${done}/${rows.length}`,'.rs-slip',{label:`Phiếu order: ${done}/${rows.length} đúng`,tone:rows.some(r=>r.ok===false)?'bad':done===rows.length?'ok':''});
+  return `${chip}${slip({title:isGroup(t)?`Phiếu khách · tô ${t.cur+1}/${n.party.length}`:'Phiếu khách',head,top,rows:list,
+    foot:`${billLine(t,x)}${voice(t,x)}${regularCard(t,x)}${patience(t.patience)}`,cls:`rs-order rs-slip${t.vip==='critic'?' critic':''}`,label:'Phiếu order'})}${rsStepper(t,x)}`;
+}
 function ticket(t,x){
+  if(clean())return slipTicket(t,x);
   const who=x.npc(t.npc),g=t.guest||{},n=t.needs;
   const off=!!data(x).rules?.discount,after=v=>off?` → ${Math.max(1,pyRound(v*0.9))} xu`:'';
   const price=n.style==='open'?(t.bowl.broth?`${bowlPrice(t.bowl,x)}/${n.open.budget} xu${after(Math.min(bowlPrice(t.bowl,x),n.open.budget))}`:`≤ ${n.open.budget} xu`)
@@ -666,8 +710,15 @@ export default {
     const b=t.bowl;
     const dump=x.confirmCmd('🗑️ Đổ tô','rs_dump',{task:t.id,confirm:true},'Đổ tô này và làm lại? Nguyên liệu đã dùng được ghi hao hụt.','danger small',!started(b)||plated(t));
     const lid=b.container==='box'&&!b.lid&&!plated(t)?x.cmd('📦 Đậy nắp','rs_lid',{task:t.id},'small'):'';
-    const clean=d.clean_checked_day===x.room.day;
-    const desk=`<section class="rs-desk" aria-label="Bếp">
+    const clean=d.clean_checked_day===x.room.day,ck=isClean();
+    const parts=ck?rsParts(t,x):[],sec=(id,body)=>{const i=RS_SEC.findIndex(s=>s[0]===id),p=parts.find(v=>v.id===id),st=p?.state||'';
+      return `<section class="rs-sec ck-sec${st?' '+st:''}" data-sec="${id}">${secHead({n:i+1,icon:RS_SEC[i][1],title:RS_SEC[i][2],state:st})}${body}</section>`;};
+    const desk=ck?`<section class="rs-desk rs-board" aria-label="Bếp">
+      ${sec('bowl',pots(t,x))}${sec('noodle',stove(t,x))}${sec('tops',toppings(t,x))}${sec('chili',chili(t,x))}
+      <div class="rs-cta">${lid}${dump}</div>
+      ${clean?'':`<p class="row wrap rs-tools">${x.cmd('🧽 Kiểm vệ sinh bếp','rs_clean',{},'ghost small')}</p>`}
+      ${careFold(x,false,true)}
+    </section>`:`<section class="rs-desk" aria-label="Bếp">
       ${pots(t,x)}
       <div class="rs-cookline">${stove(t,x)}<div class="rs-bowlbox">${bowlArt(b,x)}<p class="rs-status" aria-live="polite">${x.esc(bowlStatus(t,x))}</p>${tray(t,x)}</div>${chili(t,x)}</div>
       <div class="rs-cta">${lid}${dump}</div>
@@ -679,7 +730,7 @@ export default {
     // The bowl in hand rides with the button, so each tap's result shows right above it (no scrolling).
     const now=`<div class="rs-bar-now"><p><span aria-hidden="true">${b.container==='box'?'🥡':'🥣'}</span> ${x.esc(bowlStatus(t,x))}</p>${b.boiling?boilBar(b.boiling,x,t.id,d.boil_shift||0):''}</div>`;
     const bar=stepBar(x,g.steps,final,{cls:'fk-bar rs-bar',top:now});
-    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${pin(t,x,nextOpen(g.steps)||finalStep(final))}${desk}</div>${bar}</div>`;
+    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${ck?'':pin(t,x,nextOpen(g.steps)||finalStep(final))}${desk}</div>${bar}</div>`;
   },
   tick(root,x){
     keepBarAboveFooter(root);

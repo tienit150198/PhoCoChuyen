@@ -38,7 +38,7 @@ export function reqPin(x,{title='Khách cần',sub='',chips=[],tabs='',key='',ne
     ?`<button type="button" class="asm-pin-head asm-fold" data-action="car:asmFold" data-key="${x.esc(key)}" aria-expanded="${!folded}" title="${folded?'Mở phiếu khách':'Thu gọn phiếu khách'}">${inner}<i class="asm-fold-ico" aria-hidden="true">${folded?'▾':'▴'}</i></button>`
     :`<p class="asm-pin-head">${inner}</p>`;
   // Clean layout (phones): the card scrolls with the work and this chip in the sheet header opens it (ui-kit headChip).
-  const hchip=headChip('🧾',need.length?`${done}/${need.length}`:title,'.asm-pin',{label:`${title}: ${done}/${need.length} xong`,tone:bad?'bad':need.length&&done===need.length?'ok':''});
+  const hchip=headChip('🧾',need.length?`${title==='Khách cần'?'Phiếu':title} ${done}/${need.length}`:title,'.asm-pin',{label:`${title}: ${done}/${need.length} xong`,tone:bad?'bad':need.length&&done===need.length?'ok':''});
   // chipped (opt-in, wave 5: clothing, when the ticket already says the same words): on the clean layout the card is
   // shown only as the chip's popover (.ui-chipped); everyone else's pin is unchanged.
   return `${hchip}<section class="asm-pin${folded?' folded':''}${chipped?' ui-chipped':''}" aria-label="${x.esc(title)}">${head}

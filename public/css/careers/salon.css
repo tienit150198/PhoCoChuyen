@@ -351,3 +351,19 @@ body.reduce-motion .career-job.sl .sl-calm .bar i,html.reduce-motion .career-job
 .career-job.sl .sl-want>.sl-helpq{margin-left:auto}
 .career-job.sl .sl-back{margin:0 0 var(--sp-2)}
 html[data-clean] .career-job.sl .sl-nav button{min-height:44px}
+
+/* Clean layout, owner 21/10: the client is one slip (the photo beside the mirror that changes as the hair does, one row
+   per service with its ✓) and the stages are numbered steps with their words (ui-kit slip / steps). */
+html[data-clean] .career-job.sl .sl-slip{padding:var(--sp-2) var(--sp-3) var(--sp-3);gap:var(--sp-2)}
+html[data-clean] .career-job.sl .sl-slip-name{font-size:var(--fs-3);font-weight:800;min-width:0}
+html[data-clean] .career-job.sl .sl-slip .patience{flex:1 1 90px;min-width:80px}
+html[data-clean] .career-job.sl .sl-slip-n{font-weight:800;color:var(--muted)}
+html[data-clean] .career-job.sl .sl-slip-top{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
+html[data-clean] .career-job.sl .sl-slip-what{flex:1 1 auto;display:grid;gap:var(--sp-1);min-width:0}
+html[data-clean] .career-job.sl .sl-slip-what>*{margin:0}
+html[data-clean] .career-job.sl .sl-slip-mirror{flex:none;display:grid;justify-items:center;gap:2px;margin:0}
+html[data-clean] .career-job.sl .sl-slip-mirror .sl-mirror{zoom:.55;padding:6px;border:0;background:none;grid-template-columns:none;justify-items:center}
+html[data-clean] .career-job.sl .sl-slip-mirror figcaption{font-size:.6875rem;font-weight:700;color:var(--muted)}
+html[data-clean] .career-job.sl .sl-steps-ck{margin:var(--sp-1) 0}
+html[data-clean] .career-job.sl .sl-steps-ck .ck-step-b[aria-pressed="true"] .ck-step-l{text-decoration:underline;text-underline-offset:3px}
+html[data-clean] .career-job.sl .sl-slip-mirror .sl-mirror>small{display:none}

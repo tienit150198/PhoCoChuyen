@@ -2059,6 +2059,84 @@ dialog.ui-help::backdrop{background:var(--overlay)}
 .ui-rows li>span{flex:none;width:24px;text-align:center;font-size:var(--fs-3)}
 html[data-layout="phone"][data-orientation="portrait"] dialog.ui-help{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding-bottom:var(--safe-b)}
 
+/* ---------- 27f. Clear work screens (owner 21/10, ui-kit slip/steps/secHead) --------------------------------
+   "sắp xếp khó hiểu… button sắp xếp cũng khó nhìn": the bar's passing note is a calm line, not a dark button; on a
+   phone the next step sits on its own row above ONE full-width main button; the order slip, the numbered steps and
+   the menu board's numbered parts. Theme tokens only (dark "Phố đêm" included). */
+.ui-bar-note{min-height:40px;border:1px solid var(--line-strong);border-left:4px solid var(--career,var(--accent));background:var(--surface-2);color:var(--ink);font-weight:600}
+.ui-bar-note.error{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.ui-bar-note.good{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+html[data-layout="phone"] dialog.sheet .ui-bar{row-gap:var(--sp-1)}
+html[data-layout="phone"] dialog.sheet .ui-bar>.ui-bar-next{flex:1 1 100%;min-height:0}
+html[data-layout="phone"] dialog.sheet .ui-bar>.ui-bar-main,html[data-layout="phone"] dialog.sheet .ui-bar:has(>.ui-bar-next.is-why)>.ui-bar-main{flex:1 1 100%;max-width:none;min-width:0}
+html[data-layout="phone"] dialog.sheet .ui-bar .ui-bar-main>.btn{min-height:50px;font-size:var(--fs-3);line-height:var(--lh-btn)}
+html[data-layout="phone"] dialog.sheet .ui-bar .ui-bar-next .ui-note{-webkit-line-clamp:1;line-clamp:1}
+html[data-layout="phone"] dialog.sheet .ui-bar .btn.ui-next{min-height:40px;line-height:30px}
+html[data-layout="phone"] dialog.sheet .ui-bar .gd-alt{min-height:36px}
+/* Order slip: the customer's ask as rows (icon · what part · what they want · mark), the work so far on the right. */
+.ck-slip{display:grid;gap:var(--sp-2);padding:var(--sp-2) var(--sp-3) var(--sp-3);border-radius:var(--radius);border:1.5px solid var(--career,var(--accent));background:var(--surface);box-shadow:var(--shadow-sm)}
+.ck-slip-head{display:flex;align-items:center;flex-wrap:wrap;gap:var(--sp-1) var(--sp-2);min-width:0}
+.ck-slip-title{font-size:var(--fs-1);font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--career-text,var(--accent-text))}
+.ck-slip-body{display:flex;align-items:flex-start;gap:var(--sp-2);min-width:0}
+.ck-rows{flex:1 1 auto;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--sp-1);margin:0;padding:0;list-style:none}
+.ck-row{display:flex;align-items:center;gap:var(--sp-2);min-height:44px;min-width:0;padding:2px var(--sp-2);border-radius:var(--radius-sm);border:1.5px solid var(--line-strong);background:var(--surface-2);color:var(--ink);line-height:var(--lh)}
+.ck-row[role="button"]{cursor:pointer}
+.ck-mark{order:3;margin-left:auto;flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface);font-style:normal;font-size:var(--fs-1);font-weight:900;line-height:1}
+.ck-ico{flex:none;font-size:1.15rem;line-height:1}
+.ck-txt{flex:1 1 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--sp-2);min-width:0}
+.ck-txt small{flex:none;width:4.6em;font-size:var(--fs-1);font-weight:700;color:var(--muted);line-height:1.2;overflow-wrap:anywhere}
+.ck-txt b{flex:1 1 8em;min-width:0;font-size:var(--fs-2);font-weight:800;overflow-wrap:anywhere;line-height:1.25}
+.ck-row.ok{border-color:var(--good);background:var(--good-soft)}
+.ck-row.ok .ck-mark{border-color:var(--good);background:var(--good);color:var(--surface)}
+.ck-row.ok .ck-txt b{color:var(--good)}
+.ck-row.bad{border-color:var(--bad);background:var(--bad-soft)}
+.ck-row.bad .ck-mark{border-color:var(--bad);background:var(--bad);color:var(--on-bad)}
+.ck-row.bad .ck-txt b{color:var(--bad)}
+.ck-row.warn{border-color:var(--warn);background:var(--warn-soft)}
+.ck-row.warn .ck-mark{border-color:var(--warn);color:var(--warn)}
+.ck-row.alert{border-color:var(--bad);border-style:dashed}
+.ck-row.alert .ck-mark{border-color:var(--bad);color:var(--bad)}
+.ck-row.alert .ck-txt b{color:var(--bad)}
+.ck-note{flex:none;margin-left:auto;padding-left:var(--sp-1);font-style:normal;font-size:var(--fs-1);font-weight:800;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ck-row.none{border-style:dashed;background:transparent}
+.ck-row.none .ck-txt b{color:var(--muted);font-weight:600}
+.ck-slip.ck-flat{padding:0;border:0;background:none;box-shadow:none}
+.ck-slip.ck-flat>.ck-slip-head{display:none}
+.ck-slip-side{flex:none;display:grid;justify-items:center;gap:2px;min-width:72px;max-width:40%}
+.ck-slip-side>small{font-size:.6875rem;font-weight:700;color:var(--muted);text-align:center}
+/* Numbered steps: one row, the current step filled with the career colour, done ones green with ✓. */
+.ck-steps{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:var(--sp-1);margin:0;padding:0;list-style:none;counter-reset:none}
+.ck-step{position:relative;min-width:0}
+.ck-step:not(:last-child)::after{content:"";position:absolute;top:21px;left:calc(50% + 15px);right:calc(-50% + 15px - var(--sp-1));height:2px;background:var(--line-strong)}
+.ck-step.done:not(:last-child)::after{background:var(--good)}
+.ck-step-b{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;min-height:44px;padding:var(--sp-1) 0;border:0;background:none;color:var(--ink-2);font:inherit;text-align:center;cursor:pointer}
+span.ck-step-b{cursor:default}
+.ck-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink-2);font-size:var(--fs-2);font-weight:900;line-height:1;flex:none}
+.ck-step-l{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;font-size:.6875rem;font-weight:700;line-height:1.2;max-width:100%;overflow:hidden;overflow-wrap:break-word}
+.ck-step.done .ck-n{border-color:var(--good);background:var(--good);color:var(--surface)}
+.ck-step.done .ck-step-l{color:var(--good)}
+.ck-step.bad .ck-n{border-color:var(--bad);background:var(--bad);color:var(--on-bad)}
+.ck-step.bad .ck-step-l{color:var(--bad)}
+.ck-step.now .ck-n{width:32px;height:32px;margin-top:-2px;border-color:var(--career,var(--accent));background:var(--career,var(--accent));color:var(--career-ink,var(--accent-ink));box-shadow:0 0 0 4px var(--career-soft,var(--accent-soft))}
+.ck-step.now .ck-step-l{color:var(--career-text,var(--accent-text));font-weight:900}
+.ck-step-b:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:var(--radius-sm)}
+/* One part of the menu board: its number (✓ once right), name and a short hint; the part being made stands out. */
+.ck-sec-head{display:flex;align-items:center;gap:var(--sp-2);margin:0 0 var(--sp-2);font-size:var(--fs-3);font-weight:800;line-height:var(--lh)}
+.ck-sec-head>small{margin-left:auto;font-size:var(--fs-1);font-weight:700;color:var(--muted);white-space:nowrap}
+.ck-sec-head .ck-n{width:26px;height:26px;font-size:var(--fs-1)}
+.ck-sec-head.done .ck-n{border-color:var(--good);background:var(--good);color:var(--surface)}
+.ck-sec-head.bad .ck-n{border-color:var(--bad);background:var(--bad);color:var(--on-bad)}
+.ck-sec-head.now .ck-n{border-color:var(--career,var(--accent));background:var(--career,var(--accent));color:var(--career-ink,var(--accent-ink))}
+.ck-sec{padding:var(--sp-2) var(--sp-3) var(--sp-3);border-radius:var(--radius);border:1.5px solid var(--line);background:var(--surface)}
+.ck-sec.now{border-color:var(--career,var(--accent));box-shadow:0 0 0 3px var(--career-soft,var(--accent-soft))}
+.ck-sec.done{background:var(--surface-2)}
+/* A picked card on a board: the career colour, a ✓ badge in its corner. */
+.ck-pick{position:relative}
+.ck-pick.on,.ck-pick[aria-pressed="true"]{border-color:var(--career,var(--accent))!important;background:var(--career-soft,var(--accent-soft))!important;box-shadow:0 0 0 2px var(--career,var(--accent))!important}
+.ck-pick.on::before,.ck-pick[aria-pressed="true"]::before{content:"✓";position:absolute;top:-7px;right:-7px;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--career,var(--accent));color:var(--career-ink,var(--accent-ink));font-size:var(--fs-1);font-weight:900;line-height:1;box-shadow:0 0 0 2px var(--surface)}
+@keyframes ck-pour{from{scale:1 0}to{scale:1 1}}
+@keyframes ck-drop{from{translate:0 -36px;opacity:0}to{translate:0 0;opacity:1}}
+
 /* ---------- 28. Motion ---------------------------------------------------- */
 html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}

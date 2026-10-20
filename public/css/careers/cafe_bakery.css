@@ -349,3 +349,36 @@ html[data-clean] .career-job.cb .cb-pace-row{display:flex;align-items:center;gap
 html[data-clean] .career-job.cb .cb-pace-row .btn{min-width:48px}
 html[data-clean] .career-job.cb .cb-tabs{align-items:center}
 html[data-clean] .career-job.cb .cb-tabs>.cb-help{flex:none;margin-left:auto}
+
+/* Clean layout, owner 21/10 ("show hết ra rồi chọn"): the order is one slip with the cup filling beside it, numbered
+   steps under it, and every bar part the drink needs open as a numbered section (ui-kit slip / steps / secHead). */
+html[data-clean] .career-job.cb .cb-slip-name{font-size:var(--fs-3);font-weight:800;min-width:0;overflow-wrap:anywhere}
+html[data-clean] .career-job.cb .cb-slip .price{margin-left:auto;color:var(--career-text,var(--cb-accent));font-size:var(--fs-3)}
+html[data-clean] .career-job.cb .cb-slip-tags{display:flex;flex-wrap:wrap;gap:4px;flex-basis:100%}
+html[data-clean] .career-job.cb .cb-slip .cb-order-head{margin:0;font-size:var(--fs-2)}
+html[data-clean] .career-job.cb .cb-slip .cb-note{margin:0}
+html[data-clean] .career-job.cb .cb-slip-art{display:grid;justify-items:center;gap:4px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-cup{width:62px;height:78px;margin:10px 12px 2px 4px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-cup.large{width:68px;height:86px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-handle{right:-14px;top:16px;width:14px;height:26px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-preview-empty{min-height:0;width:78px;padding:8px 4px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-preview-empty>span{font-size:26px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-preview-empty p{font-size:.6875rem;text-align:center}
+html[data-clean] .career-job.cb .cb-slip-art .cb-bag{width:78px;min-height:52px;padding:6px 4px;margin:4px auto}
+html[data-clean] .career-job.cb .cb-slip-art .cb-bag-items{font-size:16px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-cake{width:90px;height:72px;margin:6px 2px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-cake-top{height:36px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-cake-side{top:18px;height:44px}
+html[data-clean] .career-job.cb .cb-slip-art .cb-cake-text{font-size:8px}
+html[data-clean] .career-job.cb .cb-layer{transform-origin:50% 100%;animation:ck-pour .5s ease-out both}
+html[data-clean] .career-job.cb .cb-ice{animation:ck-drop .35s ease-out both}
+html[data-clean] .career-job.cb .cb-steps{margin:var(--sp-2) 0}
+html[data-clean] .career-job.cb .cb-stations{display:grid;gap:var(--sp-2)}
+html[data-clean] .career-job.cb .cb-sec .cb-st-body{padding:0}
+html[data-clean] .career-job.cb .cb-sec.done:not(.now){padding-bottom:var(--sp-2)}
+html[data-clean] .career-job.cb .cb-sec .tile.is-selected::before{content:"✓";position:absolute;top:-7px;left:-7px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--good);color:var(--surface);font-size:var(--fs-1);font-weight:900;box-shadow:0 0 0 2px var(--surface)}
+html[data-clean] .career-job.cb .cb-sec .tile.wanted:not(.is-selected):not(:disabled){border-style:dashed;border-color:var(--career,var(--cb-accent));background:var(--career-soft,var(--cb-surface))}
+html[data-clean] .career-job.cb .cb-slip-top{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
+html[data-clean] .career-job.cb .cb-slip-what{flex:1 1 auto;display:grid;gap:var(--sp-1);min-width:0}
+html[data-clean] .career-job.cb .cb-slip-art{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;margin:0}
+html[data-clean] .career-job.cb .cb-slip-art figcaption{font-size:.6875rem;font-weight:700;color:var(--muted)}

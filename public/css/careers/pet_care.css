@@ -315,3 +315,8 @@
 .career-job.pc .pc-facts{list-style:none;margin:0 0 var(--sp-2);padding:0;display:flex;flex-wrap:wrap;gap:var(--sp-1) var(--sp-3)}
 .career-job.pc .pc-facts li{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-2);line-height:var(--lh)}
 .career-job.pc .pc-steps.pc-steps-ico li:not(.now){min-width:36px;justify-content:center}
+
+/* Clean layout, owner 21/10: the grooming steps are numbered with their words (ui-kit steps); a picked tile wears ✓. */
+html[data-clean] .career-job.pc .pc-ck-steps{margin:var(--sp-1) 0 var(--sp-2)}
+html[data-clean] .career-job.pc .tile.selected{position:relative}
+html[data-clean] .career-job.pc .tile.selected::before{content:"✓";position:absolute;top:-7px;left:-7px;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--good);color:var(--surface);font-size:var(--fs-1);font-weight:900;box-shadow:0 0 0 2px var(--surface)}

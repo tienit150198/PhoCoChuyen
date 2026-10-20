@@ -5,7 +5,8 @@
  * real time and "Dừng muôi" stops it at the customer's line (a tap-to-stop on kit.tap_now). Clear broth,
  * the fatty top or the small pot without MSG; a pot run low is topped up with bones. The hot clock, the
  * herb plate and quẩy, cash through the shared till. The server decides everything; one tap sends one command. */
-import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
+import {stepRows,nextHint,finalGo,pending,stepLine,todoAttrs} from '../v4/guide.js';
+import {slip,reqSlipRow} from '../ui-kit.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {tip,clean,data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,meter} from './street_kit.js';
@@ -77,6 +78,12 @@ function hotBar(t,x){
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Hỏi khách gọi gì');
   const n=t.needs||{},{pairs}=plan(t);
+  // Clean layout (owner 21/10): the order as slip rows, the bowl being made broken into its parts, each with its mark.
+  if(clean()&&t.stage!=='pay'){
+    const tags=[n.check?'<span class="tag amber">👀 Sành ăn</span>':'',n.quay?`<span class="tag">🥖 ${n.quay} quẩy</span>`:'',n.rau?'<span class="tag">🌿 Rau, giá</span>':''].join('');
+    const rows=orderSteps(t,x).map(r=>reqSlipRow(r.note?{...r,value:r.note}:r,todoAttrs(r)));
+    return person(x,t,`${slip({rows,cls:'ck-flat ph-slip',label:'Phiếu gọi món'})}${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tags?`<span class="ph-tags">${tags}</span>`:'');
+  }
   const chips=(n.lines||[]).map((ln,li)=>`<span class="ph-chip ${pairs.has(li)&&finished((t.bowls||[])[pairs.get(li)])?'ok':''}">${x.esc(lineText(x,ln))}</span>`).join('');
   const tags=[n.check?'<span class="tag amber">👀 Sành ăn, nếm kỹ</span>':'',n.quay?`<span class="tag">🥖 ${n.quay} quẩy</span>`:'',n.rau?'<span class="tag">🌿 Đĩa rau, giá</span>':''].join('');
   return person(x,t,`<p class="ph-chips">${chips}</p>${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tags?`<span class="ph-tags">${tags}</span>`:'');
@@ -272,7 +279,9 @@ export default {
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
     else{
       const b=(t.bowls||[])[(t.bowls||[]).length-1],making=b&&(!finished(b)||t.pour);
-      main=`${hotBar(t,x)}${ladlePanel(t,x)}${making?bowlPanel(t,x):vesselRow(t,x)}${counter(t,x)}${sidePanel(t,x)}`;
+      // Clean layout: the parts in the order a bowl is made (bowl, bánh & meat, ladle, counter, sides), numbered (CSS).
+      main=clean()?`${hotBar(t,x)}${making?bowlPanel(t,x):vesselRow(t,x)}${ladlePanel(t,x)}${counter(t,x)}${sidePanel(t,x)}`
+        :`${hotBar(t,x)}${ladlePanel(t,x)}${making?bowlPanel(t,x):vesselRow(t,x)}${counter(t,x)}${sidePanel(t,x)}`;
       side=stepRows(x,g.steps,'Món của khách',{chip:true});
     }
     const head=t.kind==='setup'?dayBar(x):`${learnCard(x)}${ticket(t,x)}${dayBar(x)}${t.known&&t.stage==='prep'?potBar(x):''}`;
