@@ -107,7 +107,8 @@ class Rollback(BirthBase):
             before = {t: db.execute(f'SELECT COUNT(*) FROM {t}').fetchone()[0] for t in ('birth_rooms', 'birth_stays')}
             idx = sorted(r[0] for r in db.execute("SELECT indexname FROM pg_indexes WHERE schemaname=current_schema() AND tablename LIKE 'birth%'").fetchall())
         v, n = self.run_old(STARTUP, str(self.store.path))
-        self.assertEqual((int(v), pg_schema.SCHEMA_VERSION), (65, 65), 'the version is never lowered')
+        self.assertEqual(int(v), pg_schema.SCHEMA_VERSION, 'the version is never lowered')
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 65)   # later steps only add tables
         self.assertEqual(n, before)
         with self.store.connect() as db:
             idx2 = sorted(r[0] for r in db.execute("SELECT indexname FROM pg_indexes WHERE schemaname=current_schema() AND tablename LIKE 'birth%'").fetchall())
