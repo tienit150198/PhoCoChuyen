@@ -162,5 +162,20 @@ TOWN_TITLES = (
     dict(id='t_ct_gach', emoji='🧱', name='Góp gạch xây phố', price=0, need={}, earn='Góp xây một công trình'),
 )
 TITLES = TITLES + TOWN_TITLES
-STYLE_ITEMS = {x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
+# 🎪 Hội chợ việc làm (game/town_fair.py): 🎟️ stamps from different careers' booths, and a booth's own record, granted for
+# good like the ones above through a live_effects row of kind 'tfair' (2.4.66 leaves the row pending; an id it does not
+# know is never shown there: style_now / live/styles.py look ids up in their own catalogue).
+FAIR_TITLES = (
+    dict(id='t_hc_khach', emoji='🎟️', name='Khách dạo hội chợ', price=0, need={}, earn='Góp 3 tem hội chợ'),
+    dict(id='t_hc_tho_dia', emoji='🎡', name='Thổ địa hội chợ', price=0, need={}, earn='Góp 10 tem hội chợ'),
+    dict(id='t_hc_chu_gian', emoji='🎪', name='Chủ gian hội chợ', price=0, need={}, earn='Phục vụ 3 khách ở một kỳ hội chợ'),
+    dict(id='t_hc_dat_khach', emoji='🛎️', name='Gian hàng đắt khách', price=0, need={}, earn='Top 3 phục vụ một kỳ hội chợ'),
+    dict(id='t_hc_duoc_yeu', emoji='🌟', name='Gian hàng được yêu', price=0, need={}, earn='Top 3 điểm gian hàng một kỳ hội chợ'),
+)
+FAIR_FRAMES = (
+    dict(id='f_hc_den_long', emoji='🏮', name='Khung đèn lồng hội chợ', price=0, ring='#c2410c', earn='Góp 6 tem hội chợ'),
+)
+TITLES = TITLES + FAIR_TITLES
+FRAMES = FRAMES + FAIR_FRAMES
+STYLE_ITEMS ={x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}

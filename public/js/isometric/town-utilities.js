@@ -2,6 +2,7 @@
  * Availability mirrors app.js navItems: no feature is invented by the map.
  */
 import {choice as rideChoice,canRide,label as rideLabel,next as nextRide} from '../v4/ride.js';
+import {fairOpen} from '../v4/town-fair-data.js';   // 🎪 Hội chợ việc làm: on now (game/town_fair.py)
 /** 🚗 The HUD's "đi xe / đi bộ" toggle (the same choice as the old interface's walks, remembered in this browser):
  * its words while the player owns something to ride, else ''. nextTownRide switches to the next one. */
 export const townRideLabel=(state,content)=>canRide(state,content)?rideLabel(rideChoice(state,content)):'';
@@ -29,6 +30,7 @@ export function townServiceAvailable(action,state={},content={},social={},action
   if(action==='rui')return Boolean(state?.rui);
   if(action==='bangIsland')return Boolean(content?.bang_island);   // ⚔️ Đảo bang: only while MNL_BANG_ISLAND=1 (game/bang_island.py)
   if(action==='ev2010')return ev2010Open();
+  if(action==='townFair')return story&&fairOpen();   // 🎪 Saturday 14:00–17:00, or a fair an admin opened
   if(action==='fair'){
     if(!state?.fair?.show)return false;
     const feature={dg:'dog',dt:'knife',xs:'scratch',pb:'photo'}[actionData?.tab];
@@ -69,6 +71,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['luxTiec','people','🎉','Mở tiệc'],['luxHoc','book','📚','Khóa học'],['luxMtq','heart','💝','Mạnh Thường Quân'],
     ])},
     {id:'fair',icon:'flag',label:'Hội chợ & Chợ đen',items:entries([
+      ['townFair','flag','🎪','Hội chợ việc làm · gian hàng mọi nghề'],
       ['fair','flag','🏮','Cổng Chợ đen',{tab:'home'},'fair-home'],
       ['fair','flag','🎪','Hội chợ · ném vòng',{tab:'ring'},'fair-ring'],['fair','paw','🐕','Đường đua chó',{tab:'dg'},'fair-dg'],
       ['fair','people','🪨','Ô ăn quan',{tab:'oaq'},'fair-oaq'],['fair','award','🎲','Bầu cua',{tab:'bc'},'fair-bc'],

@@ -117,3 +117,6 @@
 .svc-reg{padding:6px 0;border-top:1px dashed var(--line)}
 .svc-reg:first-of-type{border-top:0}
 .svc-reg .svc-av{width:32px;height:32px;font-size:1.1rem}
+/* 🎪 Hội chợ việc làm: a booth's fair price (game/town_fair.py) beside the usual one */
+.svc-fair{font-style:normal;font-size:.76rem;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--bad-soft);color:var(--bad);white-space:nowrap}
+.svc-price s{color:var(--muted);font-size:.8em}

@@ -201,7 +201,7 @@ function dirView(){
 }
 function priceLine(x){
   return x.mode==='nego'?`<span class="svc-price nego">🤝 <small>từ</small> <b>${fmt(x.lo)}</b> <small>xu</small></span>`
-    :`<span class="svc-price"><b>${fmt(x.price)}</b> <small>xu</small>${x.mult?` <i class="svc-mult">×${x.mult}</i>`:''}</span>`;
+    :`<span class="svc-price">${x.fair&&x.usual>x.price?`<s>${fmt(x.usual)}</s> `:''}<b>${fmt(x.price)}</b> <small>xu</small>${x.mult?` <i class="svc-mult">×${x.mult}</i>`:''}${x.fair?` <i class="svc-fair" title="Giá Hội chợ việc làm">🎪 −${x.fair}%</i>`:''}</span>`;
 }
 function card(x){
   return `<button type="button" class="svc-card${x.mine?' mine':''}" data-svc="provider" data-pid="${esc(x.pid)}" data-career="${esc(x.career)}" data-service="${esc(x.service)}"${x.available===false?' aria-disabled="true"':''}>
@@ -226,7 +226,7 @@ function providerView(){
   const qty=!it.legacy&&it.qty_max>1?`<div class="svc-qty"><span>Số ${esc(it.unit)}</span>${btn('−','qty',{n:-1},'ghost')}<b>${fmt(x.qty||1)}</b>${btn('+','qty',{n:1},'ghost')}</div>`:'';
   const chips=nego?[1,2,3,5].map(m=>{const base=it.legacy?(S.pick.offer?.base||0):(it.base||0)*Math.max(1,Number(x.qty)||1);const n=Math.max(lo,Math.min(hi,base*m));return n?`<button type="button" class="sd-chip${Number(x.price)===n?' on':''}" data-svc="chip" data-n="${n}">${fmt(n)}</button>`:'';}).join(''):'';
   const priceBox=nego?`<label class="svc-field"><span>Giá bạn trả (xu)</span><input id="svc-offer-${esc(key())}" data-k="${esc(key())}" data-f="price" type="number" inputmode="numeric" min="${lo}" max="${hi}" value="${esc(x.price)}" placeholder="${fmt(lo)} – ${fmt(hi)}"></label><div class="sd-chips svc-chips">${chips}</div><p class="svc-note">Từ ${fmt(lo)} đến ${fmt(hi)} xu. Người bán đồng ý, trả giá lại hoặc từ chối.</p>`
-    :`<p class="svc-total"><span>Giá</span><b>${fmt(price)} xu</b>${it.mult?`<i class="svc-mult">×${it.mult}</i>`:''}</p>`;
+    :`<p class="svc-total"><span>Giá</span><b>${fmt(price)} xu</b>${it.mult?`<i class="svc-mult">×${it.mult}</i>`:''}${(S.pick.offer?.fair||it.fair)?`<i class="svc-fair" title="Giá Hội chợ việc làm">🎪 −${S.pick.offer?.fair||it.fair}%</i>`:''}</p>`;
   const body=head+tabs+`<section class="sd-card svc-buy"><h3>${esc(it.icon)} ${esc(it.name)}</h3>${it.desc&&!it.legacy?`<p class="svc-muted">${esc(it.desc)}</p>`:''}${it.note?`<p class="svc-quote">“${esc(it.note)}”</p>`:''}
     ${offers}${qty}${priceBox}
     <label class="svc-field"><span>Lời nhắn (không bắt buộc)</span><input id="svc-note-${esc(key())}" data-k="${esc(key())}" data-f="note" type="text" maxlength="160" value="${esc(x.note)}" placeholder="Ví dụ: làm giúp mình buổi tối nhé"></label></section>

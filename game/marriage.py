@@ -892,6 +892,8 @@ def news(store, since, token: str | None = None) -> dict:
             pass
     from . import event2010   # 💐 Thiệp 20/10 while writing is open: once a day on a device (an older page ignores it)
     out['event'] = event2010.news_line(t)
+    from . import town_fair   # 🎪 Hội chợ việc làm on or soon: its status (menu, 2.5D signpost) and a line once per fair (an older page ignores it)
+    out['tfair'] = town_fair.news_line(store, t)
     return out
 
 

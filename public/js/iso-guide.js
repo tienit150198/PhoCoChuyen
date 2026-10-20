@@ -29,6 +29,7 @@ export const PLACES=[
   {id:'walk',icon:'🚶',label:'Phố đi dạo',hint:'Gặp người chơi khác',action:'liveWalk',at:{x:13.25,y:20.25},on:e=>Boolean(live(e)?.flags?.street&&live(e)?.welcomed)},
   {id:'date',icon:'💕',label:'Góc hẹn hò',action:'liveDate',at:{x:20.25,y:20.25},on:e=>Boolean(live(e)?.flags?.dating&&live(e)?.welcomed)},
   {id:'marriage',icon:'💒',label:'Hôn nhân & gia đình',action:'marriage',at:{x:27.25,y:13.25},on:()=>true},
+  {id:'tfair',icon:'🎪',label:'Hội chợ việc làm',hint:'Gian hàng của mọi nghề · góp tem',action:'townFair',at:{x:27.25,y:20.25},on:()=>true},   // 🎪 while the fair is on (town-utilities.js townServiceAvailable)
 ];
 const OUTINGS=[['fishing','🎣','Ao câu cá'],['boat','🚣','Bến thuyền'],['pool','🏊','Hồ bơi · thể thao']];
 let cachedLive=null;
@@ -148,6 +149,7 @@ export function attachGuide(real,getEnv){
   else import('./v4/live.js').then(m=>{if(!attached)return;cachedLive=m.live;subscribe(cachedLive);refresh();}).catch(e=>console.warn('Chỉ đường:',e));
   api?.addEventListener?.('state',refresh);
   document.addEventListener('mnl:lazy',refresh);  // the deferred catalogue may enable Quầy
+  document.addEventListener('mnl:tfair',refresh);  // 🎪 the fair opened or closed: its signpost comes and goes
   restore();
   refresh();
   const save=()=>{if(restored)saveSpot(real);},timer=setInterval(save,2000);
@@ -155,7 +157,7 @@ export function attachGuide(real,getEnv){
   detach=()=>{
     attached=false;
     for(const unsubscribe of off)unsubscribe?.();
-    api?.removeEventListener?.('state',refresh);document.removeEventListener('mnl:lazy',refresh);
+    api?.removeEventListener?.('state',refresh);document.removeEventListener('mnl:lazy',refresh);document.removeEventListener('mnl:tfair',refresh);
     clearInterval(timer);removeEventListener('pagehide',save);stopLine();
     for(const id of [...signs.keys()])remove(id);
     if(s.rebuild===rebuild)s.rebuild=originalRebuild;

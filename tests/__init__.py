@@ -36,3 +36,6 @@ os.environ.setdefault("MNL_IMPORT_GUARD_OFF", "1")
 # ⏱️ Ngày có lương/lãi theo giờ thật (game/interest_clock.py): a new save starts with the full allowance like an older one,
 # so a test that closes many days in a few seconds is paid as before (tests/test_interest_clock.py checks START).
 os.environ.setdefault("MNL_ICLOCK_FULL", "1")
+# 🎪 Hội chợ việc làm (game/town_fair.py) follows the real calendar (Saturday 14:00–17:00): off, so a test's ticker and
+# booths do not depend on the day it runs; tests/test_town_fair.py turns it on.
+os.environ.setdefault("MNL_FAIR_OFF", "1")

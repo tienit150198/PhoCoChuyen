@@ -340,8 +340,27 @@ def _setting(db, provider: str, career: str, service: str) -> dict | None:
     return dict(r) if r else None
 
 
+def fair_pct(db, provider: str, career: str) -> int:
+    """🎪 Hội chợ việc làm (game/town_fair.py): the discount (percent) this provider's booth gives on their fixed prices of
+    `career` while a fair is on; 0 otherwise (no query outside a fair)."""
+    from . import town_fair
+    return town_fair.discount(db, provider, career)
+
+
+def _fair_unit(db, spec: dict, provider: str, career: str, base: int, unit: int) -> tuple:
+    """(unit price, percent applied): the fair's percent off, never below the lowest unit price (floor / NPC base)."""
+    pct = fair_pct(db, provider, career)
+    if not pct:
+        return unit, 0
+    from . import town_fair
+    lo = bounds(spec, base, 1)[0]
+    cut = town_fair.apply_pct(unit, lo, pct)
+    return cut, (pct if cut < unit else 0)
+
+
 def quote(db, provider: str, career: str, service: str, qty: int = 1, setting=None, base=None) -> dict:
-    """What this provider asks for `qty` units: {base, mult, mode, price (None while thương lượng), lo, hi, on}."""
+    """What this provider asks for `qty` units: {base, mult, mode, price (None while thương lượng), lo, hi, on, fair (🎪
+    percent off while the provider's fair booth is open, else 0), usual (the price without it)}."""
     spec = get_spec(career, service)
     need(spec, 'Dịch vụ này chưa có.', 'unknown_service', 404)
     row = setting if setting is not None else _setting(db, provider, career, service)
@@ -349,8 +368,12 @@ def quote(db, provider: str, career: str, service: str, qty: int = 1, setting=No
     mode, mult = (row['mode'], int(row['mult'])) if row else ('fixed', DEFAULT_MULT)
     mult = max(MULT_MIN, min(MULT_MAX, mult))
     lo, hi = bounds(spec, base, qty)
-    price = None if mode == 'nego' else unit_price(spec, base, mult) * qty
-    return dict(base=base, mult=mult, mode=mode, price=price, lo=lo, hi=hi, qty=qty, on=bool(row and row['on_']))
+    price, fair, usual = None, 0, None
+    if mode != 'nego':
+        unit = unit_price(spec, base, mult)
+        cut, fair = _fair_unit(db, spec, provider, career, base, unit)
+        price, usual = cut * qty, unit * qty
+    return dict(base=base, mult=mult, mode=mode, price=price, lo=lo, hi=hi, qty=qty, on=bool(row and row['on_']), fair=fair, usual=usual)
 
 
 def legacy_quote(db, provider: str, kind: str, career: str, base: int) -> dict:
@@ -361,8 +384,12 @@ def legacy_quote(db, provider: str, kind: str, career: str, base: int) -> dict:
     mode, mult = (row['mode'], int(row['mult'])) if row else ('fixed', DEFAULT_MULT)
     mult = max(MULT_MIN, min(MULT_MAX, mult))
     lo, hi = bounds(spec, base, 1)
-    return dict(price=None if mode == 'nego' else unit_price(spec, base, mult), base=base, mult=mult, mode=mode, lo=lo, hi=hi,
-                listed=bool(row and row['on_']), career=key[0], service=key[1], fee_pct=FEE_PCT)
+    price, fair, usual = None, 0, None
+    if mode != 'nego':
+        usual = unit_price(spec, base, mult)
+        price, fair = _fair_unit(db, spec, provider, key[0], base, usual) if key[0] != 'quay' else (usual, 0)
+    return dict(price=price, base=base, mult=mult, mode=mode, lo=lo, hi=hi, listed=bool(row and row['on_']), career=key[0], service=key[1],
+                fee_pct=FEE_PCT, fair=fair, usual=usual)
 
 
 def listed(db, place: dict) -> bool:
@@ -388,7 +415,8 @@ def decorate_offers(db, owner: str, kind: str, career: str, offers: list, cache:
             if cache is not None:
                 cache[ck] = q
         out.append(dict(o, base=o['price'], price=q['price'] if q['price'] is not None else q['lo'], mult=q['mult'],
-                        nego=q['mode'] == 'nego', lo=q['lo'], hi=q['hi'], fee_pct=FEE_PCT))
+                        nego=q['mode'] == 'nego', lo=q['lo'], hi=q['hi'], fee_pct=FEE_PCT, fair=q.get('fair', 0),
+                        usual=q['usual'] if q.get('usual') is not None else (q['price'] if q['price'] is not None else q['lo'])))
     return out
 
 
@@ -890,11 +918,12 @@ def _listing(db, s: dict, sid: str, t: float, online: set, places: dict) -> dict
             for o in decorate_offers(db, s['provider'], kind, s['career'], data.get('offers') or []):
                 offers.append(dict(o, place=p['id'], place_name=data.get('name', '')))
         out.update(place=mine[0]['id'] if mine else '', available=bool(offers), offers=offers[:6],
-                   price=min((o['price'] for o in offers), default=int(s['price'] or 0)),
+                   price=min((o['price'] for o in offers), default=int(s['price'] or 0)), fair=max((o.get('fair', 0) for o in offers), default=0),
                    lo=min((o['lo'] for o in offers), default=0), hi=max((o['hi'] for o in offers), default=0))
     else:
         q = quote(db, s['provider'], s['career'], s['service'], 1, setting=s)
-        out.update(available=True, price=q['price'] if q['price'] is not None else q['lo'], lo=q['lo'], hi=q['hi'], base=q['base'])
+        out.update(available=True, price=q['price'] if q['price'] is not None else q['lo'], lo=q['lo'], hi=q['hi'], base=q['base'],
+                   fair=q['fair'], usual=q['usual'] if q['usual'] is not None else (q['price'] if q['price'] is not None else q['lo']))
     return out
 
 
