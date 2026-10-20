@@ -10,6 +10,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {myPortrait} from './look.js';
 import {confirmPurchase} from './payment.js';
 import {familyView,familyAction,familyRefresh} from './family.js';
+import {birthClock} from './birth.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox} from '../qty-input.js';
 
@@ -100,7 +101,7 @@ function take(view){
   S.view=view;
   const h=view.home||{};
   const alerts=view.guest?0:(view.incoming?.length||0)+(view.me?.notice?1:0)+(view.wedding&&view.wedding.status==='proposed'&&!view.wedding.mine?1:0)+(view.wedding?.status==='done'&&!view.wedding.seen?1:0)
-    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length;
+    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length+(view.family?.birth?.stay?.can_answer?1:0);
   badges(alerts,view.friends?.incoming?.length||0);
   const married=view.couple?.status==='married';
   if(['fund','love'].includes(S.tab)&&!married)S.tab='home';
@@ -228,8 +229,8 @@ const clampTables=n=>{const max=venueOf(S.plan.venue).max_tables;return Math.max
 
 async function onClick(mr,data,el){
   if(S.busy&&mr.startsWith('fam:'))return;
-  if(mr==='fam:request'||mr==='fam:rename'){const field=el.closest('section')?.querySelector('input[data-mr-field]');if(field&&!field.value.trim()){field.value='';field.reportValidity();return;}}
-  if(await familyAction(mr,data,{env:S.env,family:S.view?.family,form:S.family,post}))return;
+  if(mr==='fam:request'||mr==='fam:rename'||mr==='fam:birth-book'){const field=el.closest('section')?.querySelector('input[data-mr-field]');if(field&&!field.value.trim()){field.value='';field.reportValidity();return;}}
+  if(await familyAction(mr,data,{env:S.env,family:S.view?.family,form:S.family,post,render}))return;
   const {env}=S;
   switch(mr){
     case'close':S.dlg.close();return;
@@ -375,6 +376,7 @@ function keepFocus(fn){
 function render(){
   if(!S.dlg)return;
   keepFocus(()=>{S.dlg.querySelector('.mr-root').innerHTML=page();});
+  if(S.tab==='family')birthClock(S.dlg);   // 🏥 the birth room's countdown ticks between polls
   S.dlg.setAttribute('aria-busy',String(S.busy||S.loading));
   if(S.familySection&&!S.loading&&S.tab==='family'){const section=S.familySection==='children'?'children':'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
 }
@@ -392,7 +394,7 @@ function page(){
   const c=v.couple,engaged=c?.status==='engaged',married=c?.status==='married';
   const fn=v.friends?.incoming?.length||0,hn=(v.home?.moments||[]).filter(m=>m.new).length,rq=(v.home?.requests||[]).filter(r=>!r.mine).length+(v.home?.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length;
   const dot=n=>n?` <em class="mr-dot">${n}</em>`:'';
-  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length)}`],['home','💍 Hai bạn'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
+  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length+(v.family?.birth?.stay?.can_answer?1:0))}`],['home','💍 Hai bạn'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
     :engaged?[['family','🏡 Nhà & Gia đình'],['home','💞 Hai bạn'],['plan','📋 Kế hoạch cưới'],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
     :[['family','🏡 Nhà & Gia đình'],['friends',`👥 Bạn bè${dot(fn)}`],['home',`💌 Cầu hôn${dot(v.incoming.length)}`],['shop','💍 Tiệm nhẫn']];
   if(!tabs.some(([id])=>id===S.tab))S.tab='home';

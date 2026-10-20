@@ -7,6 +7,7 @@ import json
 import unittest
 
 from game import cradle as cr
+from game.birth import ADOPT_FEE
 from game import household as hh
 from game import journey as jr
 from game import marriage as mr
@@ -21,7 +22,8 @@ def act(s, action, **params):
 def with_child(s=None, name='Bông'):
     s = s or story(500)
     s['journey']['life_day'] = max(12, s['journey']['life_day'])
-    s, _ = act(s, 'jr_hh_adopt', kind='child', name=name, confirm=True)
+    s['journey']['wallet'] += ADOPT_FEE   # 🏥 21/10: the paperwork fee (game/birth.py), funded on top: the wallet is as before
+    s, _ = act(s, 'jr_hh_adopt', kind='child', name=name, confirm=True, fee=ADOPT_FEE)
     return s
 
 
@@ -180,7 +182,10 @@ if CoupleBase is not None:
             return self.view(token)['family']
 
         def child(self, origin='adopt'):
-            self.act(self.a, 'family_child_request', name='Bông', origin=origin, rid='child-invite-001')
+            import json   # 🏥 21/10: a free request as 2.4.66 left it pending (new children are booked: game/birth.py)
+            a, b = self.sid(self.a), self.sid(self.b)
+            self.store.transaction(lambda db: db.execute('INSERT INTO family_requests(couple,from_sid,to_sid,kind,data,at) VALUES(?,?,?,?,?,?)',
+                                                         (self.cid, a, b, 'child', json.dumps(dict(name='Bông', origin=origin)), mr.now())))
             request = self.family(self.b)['requests'][0]
             self.act(self.b, 'family_answer', id=request['id'], answer='accept', rid='child-accept-001')
             return self.family(self.a)['child']
