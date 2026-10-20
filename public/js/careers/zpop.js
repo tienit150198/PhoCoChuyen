@@ -102,18 +102,24 @@ function tileFor(t,x,s){
   return `<button type="button" class="tile sk-tile zp-tile ${inCart?'selected':''}${why?' is-why':''}" data-command="zp_add" data-payload="${x.esc(JSON.stringify({task:t.id,sku:s.id}))}" aria-label="${x.esc(`${s.name} · ${priceOf(x,s.id)} xu · còn ${left}`)}"${why}>
     <span class="tile-emoji" aria-hidden="true">${x.esc(s.emoji)}</span><b>${x.esc(nameOf(s))}</b><small>${priceOf(x,s.id)}${clean()?'':' xu'} · 📦 ${left}</small>${tag?`<em class="zp-cue">${x.esc(tag)}</em>`:''}${inCart?`<span class="zp-badge">${inCart}</span>`:''}</button>`;
 }
+/** 🧭 The coach rings the shelf the next unmet line of the order is on (data-coach="zpop-want"); nothing else reads it. */
+function wantAttr(t,x,id){
+  if(need(t).hidden)return '';
+  const r=lineState(x,t).find(r=>!r.ok);
+  return r&&shelfOf(x,r.line).sel===`[data-zp-shelf="${id}"]`?' data-coach="zpop-want"':'';
+}
 function albumPanel(t,x){
   const albums=cc(x).albums||{},groups=cc(x).groups||{};
   return Object.entries(albums).map(([aid,a])=>{
     const g=groups[a.group]||{},list=skus(x).filter(s=>s.album===aid&&!s.service);
     const sub=clean()?(LEGEND[aid]||''):`${g.name||''} · ${a.kind}`;
-    return `<section class="zp-shelf" data-zp-shelf="${x.esc(aid)}"><h4 class="section-title">${x.esc(a.emoji)} ${x.esc(a.name)} <small class="muted">${x.esc(sub)}</small></h4>
+    return `<section class="zp-shelf" data-zp-shelf="${x.esc(aid)}"${wantAttr(t,x,aid)}><h4 class="section-title">${x.esc(a.emoji)} ${x.esc(a.name)} <small class="muted">${x.esc(sub)}</small></h4>
       <div class="tile-grid zp-tiles">${list.map(s=>tileFor(t,x,s)).join('')}</div></section>`;
   }).join('');
 }
 function merchPanel(t,x){
   const part=(fam,title)=>{const list=skus(x).filter(s=>!s.album&&!s.service&&(fam==='stick'?s.group==='stick':s.group!=='stick'));
-    return `<section class="zp-shelf" data-zp-shelf="${fam}"><h4 class="section-title">${title}</h4><div class="tile-grid zp-tiles">${list.map(s=>tileFor(t,x,s)).join('')}</div></section>`;};
+    return `<section class="zp-shelf" data-zp-shelf="${fam}"${wantAttr(t,x,fam)}><h4 class="section-title">${title}</h4><div class="tile-grid zp-tiles">${list.map(s=>tileFor(t,x,s)).join('')}</div></section>`;};
   return `${part('stick',clean()?`🔨 Búa hồng <small class="muted">${LEGEND.stick}</small>`:'🔨 Búa hồng (BLANKPINK)')}${part('pk',clean()?'🔋 Phụ kiện':'🔋 Pin · binder · toploader · slogan')}`;
 }
 function deskPanel(t,x){

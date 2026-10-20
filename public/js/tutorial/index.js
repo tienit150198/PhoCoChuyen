@@ -9,6 +9,7 @@ import {startTips,stopTips,tipsSaved,tipsRunning,hintsBoot} from './tips.js';
 import {announceBoot,quietAll} from './announce.js';
 import {tourDone,savedRun,notesSeen,markNoteSeen} from './store.js';
 import {markedNew,quiet} from '../v4/onboard.js';
+import {coachBoot,startCoach,coachRunning,stopCoach} from './coach.js';
 
 function css(){
   if(document.querySelector('link[data-tut-css]'))return;
@@ -31,6 +32,7 @@ function boot(env){
   }
   announceBoot(env,{guide:(e,career)=>openGuide(e,career?{career,tab:'work'}:{})},{tips:tipsRunning});   // the first time at a workplace
   hintsBoot(env,{markedNew,quiet,notesSeen,markSeen:markNoteSeen});   // first-time hints (new saves only)
+  coachBoot(env);   // 🧭 the first-day coach of each workplace (coach.js)
 }
 
 export async function tutorialAction(action,data,el,env){
@@ -40,6 +42,11 @@ export async function tutorialAction(action,data,el,env){
       closeGuide();if(document.getElementById('sheet')?.open)env.closeSheet();
       stopTips('replay');if(tourRunning())stopTour('restart');
       setTimeout(()=>startTour(env),250);return true;
+    case'coachStart':{   // ⋯ → 🧭 Hướng dẫn in a work sheet: this workplace's coach from the start (again)
+      const cid=data?.career||env.api?.state?.current;
+      if(tourRunning())stopTour('coach');
+      if(coachRunning())stopCoach('restart',{quiet:true});
+      await startCoach(env,cid);return true;}
   }
   return false;
 }

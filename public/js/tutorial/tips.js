@@ -6,6 +6,7 @@
  * Progress survives a reload (localStorage mnl.tut.tips); the end marks the tutorial done like the tour
  * (store.js markTourDone: settings.tutorialDone follows the account). Markup only: no game rule here. */
 import {markTourDone} from './store.js';
+import {coachOn} from './coach.js';
 
 const KEY='mnl.tut.tips';
 const get=()=>{try{return localStorage.getItem(KEY);}catch{return null;}};
@@ -110,6 +111,7 @@ function tick(){
   if(!run)return;
   const tip=TIPS[run.i];
   if(!tip){finish();return;}
+  if(coachOn()){if(bubbleUp())hideBubble();return;}   // 🧭 the workplace coach says the same, step by step: one voice at a time
   if(run.shown&&(tip.done()||(tip.ttl&&performance.now()-run.shown>tip.ttl))){next();return;}
   if(!tip.when()){if(bubbleUp()&&bubble.dataset.tip===tip.id)hideBubble();return;}
   const el=tip.find(),top=topDialog();
@@ -196,7 +198,7 @@ export function hintsBoot(env,{markedNew,quiet,notesSeen,markSeen}){
       if(!vis(el)||top&&!top.contains(el))bubble.hidden=true;else placeBubble();
       return;
     }
-    if(quiet(s)||document.getElementById('tutLayer')?.isConnected)return;
+    if(quiet(s)||document.getElementById('tutLayer')?.isConnected||coachOn())return;
     const seen=notesSeen(env.api);
     for(const h of HINTS){
       if(seen.has(h.id)||!h.when())continue;
