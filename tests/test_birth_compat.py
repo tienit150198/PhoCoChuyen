@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 from game import birth as bt
+from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 as the stored text leaves them out
 from game import marriage as mr
 from game import pg_schema
 from game.engine import validate_state
@@ -107,7 +108,8 @@ class Rollback(BirthBase):
             before = {t: db.execute(f'SELECT COUNT(*) FROM {t}').fetchone()[0] for t in ('birth_rooms', 'birth_stays')}
             idx = sorted(r[0] for r in db.execute("SELECT indexname FROM pg_indexes WHERE schemaname=current_schema() AND tablename LIKE 'birth%'").fetchall())
         v, n = self.run_old(STARTUP, str(self.store.path))
-        self.assertEqual((int(v), pg_schema.SCHEMA_VERSION), (65, 65), 'the version is never lowered')
+        self.assertEqual(int(v), pg_schema.SCHEMA_VERSION, 'the version is never lowered')
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 65)   # later steps only add tables
         self.assertEqual(n, before)
         with self.store.connect() as db:
             idx2 = sorted(r[0] for r in db.execute("SELECT indexname FROM pg_indexes WHERE schemaname=current_schema() AND tablename LIKE 'birth%'").fetchall())
@@ -140,7 +142,7 @@ class Rollback(BirthBase):
         saves = [paid, refunded, personal]
         for x in saves:
             validate_state(x)
-        got = self.run_old(SAVES, stdin=json.dumps(saves))
+        got = self.run_old(SAVES, stdin=json.dumps([unknown_out(x) for x in saves]))
         for before, after in got:
             self.assertEqual(before, after)
         self.assertEqual(json.loads(got[2][0])[0]['child']['name'], 'Mây')

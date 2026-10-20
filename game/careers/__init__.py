@@ -40,6 +40,7 @@ ORDER = (
     'customs',                     # hải quan: Chi cục Hải quan cửa khẩu Bến Mây (lanes, smuggling, duties, controls; org ladder 'hq')
     'hotel',                       # khách sạn: Khách sạn Sông Mây, salaried shift staff rotating desk, rooms, laundry, breakfast, repairs, decor
     'banquet',                     # nhà hàng tiệc: Nhà hàng tiệc Hồng Mây, salaried kitchen (phụ bếp → đầu bếp) or event-hall shifts
+    'reception',                   # lễ tân: the front desk of Khách sạn Hoa Sứ (six rooms), its own ca thử việc, desk oddities with lasting consequences
     'restore',                     # thợ phục chế: Xưởng phục chế Hồn Xưa, old and broken pieces with awkward customer demands; players' things via Phố dịch vụ
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.

@@ -473,6 +473,17 @@ _profile('banquet', 'Bảo Trân | Gia Huy | Thanh Tùng',
     'đã sát khuẩn đầu ca, ra món đúng nhiệt và đúng thẻ dị ứng, tắt điện cuối ca // sanitised at the start of the shift, served at the right temperature with the right allergy cards, and powered down at closing',
     'sổ vệ sinh đầu ca và phiếu kiểm quầy ra món // the opening hygiene log and the pass temperature sheet')
 
+_profile('reception', 'Thu Hà | Minh Quân | Bảo Anh',
+    'Chị Quyên · trưởng ca lễ tân Hoa Sứ // Quyên · Hoa Sứ front desk shift lead',
+    'đúng phòng đúng người, đủ yêu cầu của khách và sổ giao ca không sót việc // the right room for the right party, every guest need met, and a handover log that misses nothing',
+    'nhận khách | điều phối phòng | dịch vụ và phàn nàn // check-in | room coordination | services and complaints',
+    'Chiều thứ sáu: một đoàn mười khách tới sớm, một bà cụ cần tầng trệt, ba phòng chưa dọn và hai chuyến xe sân bay sáng mai trùng giờ. // Friday afternoon: a party of ten arrives early, an elderly guest needs the ground floor, three rooms are not cleaned yet, and two airport rides tomorrow morning overlap.',
+    'Giao {a} nhận đoàn theo bảng phòng và yêu cầu từng nhóm, {b} xếp lịch dọn phòng theo giờ khách tới, {c} xếp lịch xe và báo thức, ghi sổ giao ca. // Have {a} check the party in by the room board and each group\'s needs, {b} plan the cleaning by arrival time, and {c} schedule the rides and wake-up calls and write the handover.',
+    'Hai phòng của một nhà đã giao nhưng không sát vách, còn sổ giao ca thiếu cuộc báo thức 5:30 khách đã nhờ. // The family\'s two rooms were given but are not side by side, and the handover log is missing the 5:30 wake-up call the guest asked for.',
+    'Đổi sang hai phòng sát vách còn trống, đổi chìa, ghi lý do và thêm cuộc báo thức 5:30 vào sổ giao ca. // Move them to two free rooms side by side, swap the keys, note why, and add the 5:30 wake-up call to the handover log.',
+    'đã xếp đúng phòng đủ yêu cầu, giao đúng chìa và ghi đủ việc còn dở vào sổ giao ca // put each party in a room that met every need, handed the right keys, and logged every pending job in the handover',
+    'bảng phòng đã chốt và sổ giao ca // the final room board and the handover log')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

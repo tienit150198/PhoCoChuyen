@@ -931,6 +931,12 @@ def alerts(store, sid: str) -> dict | None:
             svc = alert_count(db, sid)
     except Exception:
         svc = 0
+    try:   # 🏨 a guest at the desk, a situation, a check-out (game/hotel_stay.py); 0 on a database without its table
+        with store.connect() as db:
+            from .hotel_stay import alerts as hotel_alerts
+            svc += hotel_alerts(db, sid)
+    except Exception:
+        pass
     return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer, svc=svc)
 
 

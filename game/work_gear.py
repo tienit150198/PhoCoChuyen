@@ -35,6 +35,7 @@ NAMES = {
  'customs':'Máy soi hành lý và bộ kìm kẹp chì niêm phong',
  'hotel':'Xe đẩy buồng phòng và máy cài thẻ từ',
  'banquet':'Bộ dao bếp và nhiệt kế đầu dò',
+ 'reception':'Bảng móc chìa dán màu và xe đẩy hành lý',
  'restore':'Bộ dao trổ, kẹp gỗ và đèn soi phục chế',
 }
 RATES=(100,115,135,160)

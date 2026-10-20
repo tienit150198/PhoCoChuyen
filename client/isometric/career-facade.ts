@@ -66,6 +66,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   customs:style('seal','civic','luggage','#4f7f66','#eadcae'),
   hotel:style('bell','banner','luggage','#7a5a9e','#efe0c8'),
   banquet:style('cloche','awning','stools','#b5473a','#f3dcb4'),
+  reception:style('key','scallop','luggage','#b0546f','#fbecef'),
   restore:style('clock','workshop','toolbox','#8a5a2b','#f1dcb8'),
 };
 
@@ -312,6 +313,11 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;
+    case 'key':  // a front-desk key board: three room keys on hooks under a frangipani, a big brass key in front
+      round(-42,-38,62,58,6,body);line([[-37,-14],[15,-14]],cream,3);
+      for(const [i,x] of [-30,-11,8].entries()){ellipse(x,-14,2.5,2.5,ink);line([[x,-12],[x,-4]],ink,2);ellipse(x,-1,4,4,'#e3b65a');round(x-6,4,12,13,3,i===1?s.main:cream);}
+      for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;ellipse(-30+Math.cos(a)*6,-29+Math.sin(a)*6,4.5,4.5,cream,undefined);}ellipse(-30,-29,3,3,'#e8c25c',undefined);
+      ellipse(30,-14,14,14,'#e3b65a');ellipse(30,-14,6,6,s.main);round(26,-1,8,40,2,'#e3b65a');round(33,24,9,5,1,'#e3b65a');round(33,32,6,5,1,'#e3b65a');break;
     case 'clock':  // a restored pendulum clock on a wax tin, a little brush beside it: the restoration workshop
       round(-24,-40,48,74,8,body);ellipse(0,-20,17,17,cream);ellipse(0,-20,13,13,s.light);line([[0,-20],[0,-30]],ink,3);line([[0,-20],[8,-16]],ink,3);
       round(-14,4,28,24,4,cream);line([[0,4],[0,20]],ink,2);ellipse(0,22,6,6,s.main);round(-38,30,76,10,4,s.main);

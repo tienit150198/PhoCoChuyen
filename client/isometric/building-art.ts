@@ -14,13 +14,13 @@ export const LEGACY_BUILDING_ART:Record<string,string>={
   library:'school',nurse:'pharmacy',oil:'garage',railway:'airport',
   lighthouse:'lighthouse',rescue:'office',lifeguard:'market',police:'office',
   zpop:'grocery',
-  art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',customs:'office',hotel:'office',banquet:'pho',restore:'garage',
+  art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',customs:'office',hotel:'office',banquet:'pho',reception:'home',restore:'garage',
 };
 /** The original 50 paintings stay intact; newer careers use real shared art. */
 export const BUILDING_ART:Record<string,string>={...LEGACY_BUILDING_ART,...Object.fromEntries(Object.values(CAREER_ART).map(a=>[a.career,a.key]))};
 const PREVIEW_FALLBACKS:Readonly<Record<string,string>>={
   art_studio:'/icons/cozy-v3/office.webp',lawyer:'/icons/cozy-v3/office.webp',
-  laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',customs:'/icons/cozy-v3/office.webp',hotel:'/icons/cozy-v3/office.webp',banquet:'/icons/cozy-v2/pho.webp',restore:'/icons/cozy-v2/garage.webp',
+  laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',customs:'/icons/cozy-v3/office.webp',hotel:'/icons/cozy-v3/office.webp',banquet:'/icons/cozy-v2/pho.webp',reception:'/icons/isometric/home.webp',restore:'/icons/cozy-v2/garage.webp',
 };
 /** Gallery URLs must point to shipped assets; a shared illustration is labelled honestly. */
 export function careerPreview(career:string):{src:string;dedicated:boolean}|null{

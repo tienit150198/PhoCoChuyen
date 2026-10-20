@@ -1921,6 +1921,45 @@ ARCS = {
                 ('me', 'Em sẽ giữ như chị: đúng luồng, đúng số, không nhận của ai cái gì.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🔑 Lễ tân Khách sạn Hoa Sứ (sau chương 3)
+    'reception': dict(
+        title='Phòng 102 của ông Tư Bến', emoji='🔑',
+        keepsake=dict(emoji='🔑', name='Chiếc chìa 102 cũ', desc='Chiếc chìa đồng phòng 102 đời đầu, ông Tư Bến giữ ba mươi năm rồi trả lại cho quầy, nhờ bạn treo ở móc đầu tiên.'),
+        cast={'quyen': _p('Chị Quyên', '📒', 'Trưởng ca lễ tân', 'reception_npc_01'),
+              'khoa': _p('Khoa', '😏', 'Lễ tân ca chiều', 'reception_npc_02'),
+              'na': _p('Na', '🙋', 'Lễ tân mới', 'reception_npc_03'),
+              'tu': _p('Ông Tư Bến', '👴', 'Khách quen tháng nào cũng về', 'reception_npc_05')},
+        beats=[
+            _b('Sổ giao ca đầu tiên', '📒', 'Chị Quyên đặt cuốn sổ giao ca dày cộm lên quầy.', [
+                ('quyen', 'Ở đây sổ là luật. Việc gì còn dở thì ghi, ghi tên khách, ghi giờ. Ca sau không phải gọi hỏi em.'),
+                ('me', 'Dạ. Việc xong rồi thì khỏi ghi hả chị?'),
+                ('quyen', 'Ghi việc xong là chôn việc dở. Nhớ vậy là được.')]),
+            _b('Ông khách của phòng 102', '👴', 'Một ông cụ đứng ngắm cây sứ trước cửa, tay cầm mũ.', [
+                ('tu', 'Phòng 102 còn không cháu? Bà nhà ông hồi trước thích ngồi bên cửa sổ đó nhìn hoa sứ rụng.'),
+                ('na', 'Ông Tư tháng nào cũng về một tuần đó anh chị. Ông kể chuyện bến sông hoài.'),
+                ('me', 'Dạ còn ạ. Cháu giữ phòng 102 cho ông.')],
+                _c('Ông Tư hỏi bạn có muốn nghe chuyện bến sông không?',
+                   _o('a', 'Rót ấm trà, ngồi nghe ông kể lúc quầy vắng', [('tu', 'Hồi đó chỗ này là bến đò. Bà nhà ông bán nước ngay gốc sứ này nè.')], rel='tu'),
+                   _o('b', 'Hẹn ông tối hết ca rồi nghe', [('tu', 'Ừ, tối ông ngồi sân chờ cháu.')], rel='tu'))),
+            _b('Ai làm vụ hộ chiếu?', '🏅', 'Họp đầu ca, chị Quyên khen Khoa vì một việc bạn làm.', [
+                ('khoa', 'Dạ có gì đâu chị, khách quên đồ thì mình gửi ra thôi.'),
+                ('quyen', 'Lần sau ai làm thì ghi tên vào sổ. Chị đọc sổ chứ không đọc nét mặt.'),
+                ('me', 'Dạ, em ghi giờ và tên rõ rồi chị, trang hôm qua.')],
+                days=4, served=10, gap=1),
+            _b('Na và chiếc chìa 108', '🔑', 'Na đưa nhầm chìa kho cho khách, mặt tái mét.', [
+                ('na', 'Em xin lỗi… em tưởng 108 là 103.'),
+                ('me', 'Hồi tuần đầu anh chị cũng nhầm y vậy. Mình dán màu cho móc nha.'),
+                ('quyen', 'Ừ. Người cũ nhớ lỗi của mình thì người mới đỡ phải mắc.')],
+                _c('Na hỏi xin bạn mẹo nhớ bảng móc chìa.',
+                   _o('a', 'Chỉ Na đọc to số chìa trước khi đưa khách', [('na', 'Đọc to lên là tự nghe ra mình sai liền!')], rel='na'),
+                   _o('b', 'Cùng Na vẽ lại bảng móc chìa có màu', [('na', 'Em dán lên cửa tủ, nhìn là nhớ.')], rel='na')),
+                days=6, served=14, gap=1),
+            _b('Chiếc chìa đồng', '🔑', 'Ông Tư về lần cuối trước khi lên thành phố ở với con.', [
+                ('tu', 'Chìa 102 đời đầu đây. Bà nhà ông giữ, giờ ông trả lại quầy. Cháu treo nó ở móc đầu tiên giùm ông.'),
+                ('quyen', 'Từ mai quầy trông vào em đó. Sổ ghi như em là ca nào cũng yên.'),
+                ('me', 'Cháu sẽ giữ quầy như chị: nghe hết lời khách, đúng phòng, đúng chìa, việc dở ghi đủ.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ 🛎️ Khách sạn Sông Mây (sau chương 3)
     'hotel': dict(
         title='Chùm chìa khóa của chị Hằng', emoji='🗝️',
