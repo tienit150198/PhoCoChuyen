@@ -67,6 +67,7 @@ import re
 import time
 
 from game import wedding_live as WL
+from game import wed_services_content as WS   # 💒 the players serving a wedding (the credits query, pure)
 
 from . import effects
 from .auth import clean_name, pid_of
@@ -154,6 +155,7 @@ class WeddingFeature(Feature):
             p['na'], p['nb'] = await self._name(r['a']), await self._name(r['b'])
             p['pa'], p['pb'] = pid_of(r['a']), pid_of(r['b'])
             keep[wid] = p
+            await self._svc(p, now)
             if r['reminded'] is None and p['at'] - WL.REMIND_BEFORE <= now < p['at']:
                 await self._remind(p, now)
         for wid, p in self.parties.items():   # ended or settled meanwhile: kept until its room closes
@@ -165,6 +167,24 @@ class WeddingFeature(Feature):
         if len(self.names) > 4 * PARTIES_MAX:
             self.names = {k: v for k, v in self.names.items() if k in live_sids}
         await self._race(now)
+
+    async def _svc(self, p: dict, now: float) -> None:
+        """💒 Dịch vụ cưới từ người chơi (game/wed_services.py): who serves this party (the MC thanks them, the board by
+        the gate, the florist's colour). Read only around the party (from 20 minutes before its room opens to its end),
+        at most once a minute; kept on the party (bounded by PARTIES_MAX)."""
+        if now < p['at'] - WL.OPEN_BEFORE - 1200 or now > p['at'] + WL.PARTY_SECS or now - p.get('svc_at', 0.0) < 60:
+            return
+        p['svc_at'] = now
+        try:
+            c = await self.db.fetchrow('SELECT id, a, b, since FROM couples WHERE id=?', (p['couple'],))
+            if not c:
+                return
+            since = float(c['since'] or 0) - 86400
+            rows = await self.db.fetch(WS.CREDITS_SQL, (c['a'], c['b'], since))
+            photos = await self.db.fetch(WS.PHOTO_SQL, (c['a'], c['b'], since))
+            p['svc'] = WS.credits_from_rows(rows, photos, c['id'])
+        except Exception as e:  # noqa: BLE001  (an older database without the table: the party as before)
+            log('wedding svc', e)
 
     def _discard(self, p: dict) -> None:
         p['closed'] = True
@@ -271,7 +291,7 @@ class WeddingFeature(Feature):
                     minutes=WL.PARTY_MINUTES, xu=WL.MINUTE_XU, host_xu=WL.HOST_XU, mins=self._mins(p, pid),
                     envs=list(WL.ENVELOPES), env_free=True, env_max=WL.ENVELOPE_MAX_OLD, wishes=list(WL.WISHES),
                     dishes=list(WL.DISHES), eat=self._left(p, pid), toss=self._toss_view(p), music=p.get('music'),
-                    musics=list(WL.MUSIC))
+                    musics=list(WL.MUSIC), svc=p.get('svc') or [])
 
     @on('wed_list', rate=(10, 10))
     async def wed_list(self, conn, f):

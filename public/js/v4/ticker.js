@@ -40,7 +40,7 @@ function handle(d){
   const env=getEnv?.();if(!env)return;
   const me=d.me||null;
   let moved=false;
-  for(const [action,key,n] of [['marriage','marriageAlerts',Number(me?.alerts)||0],['friends','friendAlerts',Number(me?.friends)||0],['svcMarket','svcAlerts',Number(me?.svc)||0]]){  // 🛎️ Phố dịch vụ: what waits for my answer
+  for(const [action,key,n] of [['marriage','marriageAlerts',Number(me?.alerts)||0],['friends','friendAlerts',Number(me?.friends)||0],['svcMarket','svcAlerts',Number(me?.svc)||0],['wedServices','wedsvcAlerts',Number(me?.wedsvc)||0]]){  // 🛎️ Phố dịch vụ: what waits for my answer; 💒 wedding orders waiting for my work
     if((env.api[key]||0)===n)continue;
     env.api[key]=n;moved=true;
     document.querySelectorAll(`[data-action="${action}"]`).forEach(b=>{if(b.closest('.mr-sheet'))return;b.querySelector('em.badge')?.remove();if(n){const em=document.createElement('em');em.className='badge';em.textContent=String(n);b.append(em);}});
