@@ -8,7 +8,7 @@
   the lineup (can_lead below). 🏝️ Only while the bang holds its island (owner 21/10 "phải có mua đảo bang thì mới chơi
   được": game/bang.py has_island): a bang without one fields nobody (its members still see the war; team_of stays, so their page names their bang). An
   island is never taken back, so a pick made stays valid until the lock.
-* 👑 can_lead (owner: "bang chủ được quyền chọn danh sách thú để xuất chiến nhé"): Trưởng lão and up (LEAD_FROM, the
+* 👑 can_lead (owner: "bang chủ được quyền chọn danh sách thú để xuất chiến nhé"): Bang chủ and Phó bang (LEAD_FROM, the
   same officers who arrange the ⚔️ Thách đấu roster, game/bang_challenge.py OFFICER) choose the war's lineup from the
   members (roster: pid, display name, title); lock_team takes the bang row first (game/bang.py's lock order: the bang
   row, then the war's team lock and its pick rows, as a member leaving does); announce writes the line in the bang's
@@ -27,7 +27,7 @@ from . import pet_war as PW
 
 KIND = 'bang'
 FAC = 'san_pet'            # game/bang_content.py FACILITIES key of 🐾 Sân luyện pet
-LEAD_FROM = BC.APPROVE_FROM   # 3: Trưởng lão and up choose the war's lineup (game/bang_challenge.py OFFICER)
+LEAD_FROM = BC.KICK_FROM      # 4: Bang chủ and Phó bang choose the war's lineup (owner: "bang chủ được quyền"; the Phó acts for the Chủ)
 
 
 def _member(db, sid: str):

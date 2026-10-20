@@ -1,6 +1,6 @@
 """👑 The leaders choose the 🛡️ Bang chiến pet lineup (owner, verbatim: "bang chủ được quyền chọn danh sách thú để
 xuất chiến nhé, hiện tại bang chủ không chọn thú xuất chiến được"; game/pet_war.py war_team / war_lineup /
-war_lineup_off, game/bang_pets.py can_lead): Trưởng lão and up (the ⚔️ Thách đấu roster's officers) list the members
+war_lineup_off, game/bang_pets.py can_lead): Bang chủ and Phó bang list the members
 with their pets and save 1…5 member + pet pairs; the lineup replaces the bang's picks of the week and wins over the
 members' own picks until a leader hands it back; members still volunteer without one; the server checks the role,
 the lock, the size, one pet a member, the pet's owner and the island; the war plays with the leaders' lineup; and the
@@ -119,12 +119,12 @@ class Lineup(Help):
         self.refused('lead_set', self.tc, toks[1], 'war_unpick')
         self.refused('lead_set', self.mypick, toks[0])        # the leader too: through the editor only
         self.assertEqual(len(self.picks(bid)), 3)
-        # the leader (or a Phó bang / Trưởng lão) changes it: other members, another pet
-        self.lineup(toks[2], [toks[4], toks[5], toks[1]], i=1)
+        # the leader (or a Phó bang) changes it: other members, another pet
+        self.lineup(toks[1], [toks[4], toks[5], toks[1]], i=1)
         rows = self.picks(bid)
         self.assertEqual([r['sid'] for r in rows], [self.sid(t) for t in (toks[4], toks[5], toks[1])])
         self.assertEqual(rows[2]['pet'], self.pets(toks[1])[1]['id'])
-        self.assertEqual(self.tc(toks[0], 'war')['lead']['role'], 'Trưởng lão', 'who chose last')
+        self.assertEqual(self.tc(toks[0], 'war')['lead']['role'], 'Phó bang', 'who chose last')
         # handed back: the members pick their own again, the lineup kept
         self.assertIn('tự chọn', self.tc(toks[1], 'war_lineup_off')['message'])
         self.assertEqual(len(self.picks(bid)), 3)
@@ -140,11 +140,11 @@ class Lineup(Help):
 
     def test_only_officers_choose(self):
         toks, bid = self.bang(n=5, roles=('chu', 'pho', 'lao', 'tinh', 'tv'))
-        for t in (toks[3], toks[4]):                           # Tinh anh, Thành viên
+        for t in (toks[2], toks[3], toks[4]):                  # Trưởng lão, Tinh anh, Thành viên (owner: the Bang chủ chooses)
             self.refused('role', self.tc, t, 'war_team')
             self.refused('role', self.lineup, t, toks[:2])
         self.assertEqual(self.picks(bid), [])
-        for t in toks[:3]:                                     # Bang chủ, Phó bang, Trưởng lão (as the Thách đấu roster)
+        for t in toks[:2]:                                     # Bang chủ, Phó bang
             self.assertTrue(self.tc(t, 'war_team')['members'])
         outsider = self.arena(('Bơ',))
         self.refused('no_team', self.tc, outsider, 'war_team')
