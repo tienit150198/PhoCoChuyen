@@ -7,7 +7,7 @@
  * ⚔️ Thách đấu bang (owner 21/10, game/bang_challenge.py): the 🛡️ tab has two sections, ⚔️ Thách đấu (any day: the bang's
  * roster and its order, challenges to answer or send, results and the town's latest matches, each a 5-duel replay) and
  * 🗓️ Bang chiến tuần (the weekly war). data-sec="tc" | "war" opens one, data-watch="<challenge id>" plays a replay.
- * 👑 Chọn đội hình (owner: "bang chủ được quyền chọn danh sách thú để xuất chiến"): Trưởng lão and up open the
+ * 👑 Chọn đội hình (owner: "bang chủ được quyền chọn danh sách thú để xuất chiến"): Bang chủ and Phó bang open the
  * lineup editor of the weekly war (war_team: the members, each with their strongest pets; suggestion: each one's
  * strongest) and save up to 5 member + pet pairs (war_lineup); while it stands members see who chose it and cannot
  * change their own pick (war_lineup_off hands it back).
