@@ -9,6 +9,9 @@ const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.e
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
 let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
+// 📻 Players' ads and songs on air (game/radio_station.py ticker: at most a few at once, each with its end time): a line plays
+// once when it shows up, then at most every `replay` seconds on this device while it is on air; one pass, not three.
+const AIRED=new Map(),AIRED_MAX=32;
 
 export function tickerBoot(envFn){
   if(booted)return;booted=true;getEnv=envFn;since=read(SEEN);
@@ -35,6 +38,12 @@ function handle(d){
   // 💐 a season's line (game/event2010.py news_line: Thiệp 20/10): once per key (a day) on this device
   const ev=d.event;if(ev&&typeof ev.text==='string'&&typeof ev.key==='string'){let k='';try{k=localStorage.getItem(EVENT)||'';}catch{k=ev.key;}
     if(k!==ev.key){write(EVENT,ev.key);queue.push({id:0,text:ev.text.slice(0,200)});}}
+  if(Array.isArray(d.radio)){const t=Date.now();
+    for(const r of d.radio.slice(0,8)){if(!r||typeof r.text!=='string'||typeof r.id!=='string'||!(Number(r.until)*1000>t))continue;
+      const gap=Math.max(60,Number(r.replay)||480)*1000,last=AIRED.get(r.id)||0;
+      if(t-last<gap||queue.some(q=>q.radio===r.id))continue;
+      AIRED.delete(r.id);AIRED.set(r.id,t);while(AIRED.size>AIRED_MAX)AIRED.delete(AIRED.keys().next().value);
+      queue.push({id:0,text:r.text.slice(0,200),radio:r.id,passes:1});}}
   if(typeof d.last==='number')since=d.last;  // polling cursor; SEEN (on this device) moves when a line has played
   if(queue.length&&!playing)next();
   const env=getEnv?.();if(!env)return;
@@ -81,7 +90,7 @@ async function next(){
   text.getAnimations?.().forEach(a=>a.cancel());
   if(still()||!text.animate){setTimeout(next,STILL_MS);return;}
   const track=bar.querySelector('.mr-ticker-track'),w=track.clientWidth,tw=text.scrollWidth,ms=Math.max(7000,(w+tw)*16);
-  const anim=text.animate([{transform:`translateX(${w}px)`},{transform:`translateX(${-tw}px)`}],{duration:ms,iterations:PASSES,easing:'linear'});
+  const anim=text.animate([{transform:`translateX(${w}px)`},{transform:`translateX(${-tw}px)`}],{duration:ms,iterations:item.passes||PASSES,easing:'linear'});
   anim.onfinish=()=>{clearInterval(hold);next();};
   // 🐢 Perf 19/10 (iPad "phản hồi rất lag"): a sheet opened while the line plays. Under a modal (its blurred ::backdrop
   // on a tablet, the masked track) every frame of the scroll redrew the sheet: in WebKit (iPad profile) the main thread

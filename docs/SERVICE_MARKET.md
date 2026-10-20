@@ -96,6 +96,7 @@ sm.fee_of(price) -> int ; sm.FEE_PCT ; sm.ServiceError (a refusal: ServiceError(
 | `providers` | `callable(db, limit, offset) -> [row]` | own-flow: the providers listed now; row = `{sid, price, on, stars (sum), rated, deals, at, data, title?, why?}` |
 | `offer` | `callable(db, provider_sid) -> row \| None` | own-flow: one provider's row, listed (`on`) or not (`why`), for the provider card and 🧰 |
 | `setup` | `{action, data, label}` | own-flow: where the provider sets price and open / closed (🧰 links there) |
+| `note_check` | `callable(note) -> str` | '' or why the buyer's note is refused, checked at the order / offer before any money moves (📻 a ticker line is moderated before escrow, game/radio_station.py) |
 
 The `order` dict given to hooks: `{id, career, service, buyer, provider (sids), buyer_pid, provider_pid, qty, price, fee,
 paid, note, input (what the provider sent with deliver), result, created_at}`.

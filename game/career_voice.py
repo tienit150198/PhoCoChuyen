@@ -255,6 +255,14 @@ _ROWS['hotel'] = dict(place='khách sạn', self='khách sạn', people='khách 
                      invite='Mời {who} ghé lại quầy lễ tân, Sông Mây sẽ kiểm lại phòng và phiếu cùng mình ạ.',
                      process='Khách sạn làm theo phiếu: dọn, bổ sung, kiểm minibar rồi mới báo lễ tân. Hôm đó {fact} ạ.')
 
+_ROWS['radio'] = dict(place='đài phát thanh', self='đài', people='thính giả', who='bạn', owner='phát thanh viên',
+                     served='lượt phát sóng', record='phiếu việc của đài', review='góp ý của thính giả', reply='phản hồi',
+                     books='Sổ ca của đài', rail_in='Ở đài phát thanh', confirm='Xác nhận việc trong ca', team='Ca trực Sóng Mây',
+                     daily='Lịch phát sóng hôm nay đã treo. Kiểm phòng thu rồi lên sóng ở Sóng Mây nhé!',
+                     invite_label='Mời nghe lại chương trình', offers=dict(drink=None, gift=None, refund=None),
+                     invite='Mời {who} nghe lại chương trình tối nay, Sóng Mây sẽ đọc đính chính nếu đài sai ạ.',
+                     process='Đài làm theo phiếu: kiểm phòng thu đầu ca, chỉ đọc bản đã duyệt, sai thì đính chính trên sóng. Hôm đó {fact} ạ.')
+
 _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='khách đặt tiệc', who='anh chị', owner='nhân viên nhà hàng',
                        served='bữa tiệc đã lo', record='phiếu tiệc', review='góp ý của khách', reply='phản hồi',
                        books='Sổ ca nhà hàng', rail_in='Ở nhà hàng tiệc', confirm='Xác nhận việc trong ca', team='Ca bếp và sảnh Hồng Mây',
@@ -388,7 +396,7 @@ _SALARIED = frozenset((
     'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
     'pilot', 'flight_attendant', 'oil',
     'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
-    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research',
+    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio',
 ))
 
 

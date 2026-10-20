@@ -70,6 +70,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   teller:style('vault','civic','planter','#1f6f6b','#e3efe6'),
   restore:style('clock','workshop','toolbox','#8a5a2b','#f1dcb8'),
   research:style('flask','civic','planter','#2f6f73','#d9eee9'),
+  radio:style('antenna','banner','books','#3f6fb0','#e4eefb'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -312,6 +313,11 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'seal':  // a round customs stamp over a sealed crate: no emblem copied from any real agency
       round(-34,6,68,34,4,body);line([[-34,23],[34,23]],cream,3);line([[-12,6],[-12,40]],cream,3);line([[12,6],[12,40]],cream,3);
       ellipse(0,-14,27,27,cream);ellipse(0,-14,21,21,s.main);star(0,-14,13,'#f1dca1');arc(0,-14,24,.3,2.8,ink,2);break;
+    case 'antenna':  // a lattice radio mast sending three arcs of waves, the red ON AIR lamp on its foot
+      line([[0,34],[-14,-30]],ink,4);line([[0,34],[14,-30]],ink,4);line([[-14,-30],[14,-30]],ink,3);
+      for(const y of [-14,2,18])line([[-11+(y+30)*.05,y],[11-(y+30)*.05,y]],s.main,3);
+      ellipse(0,-36,6,6,'#d9534f');for(const r of [14,24,34])arc(0,-36,r,-.75,.75,s.main,3);for(const r of [14,24,34])arc(0,-36,r,Math.PI-.75,Math.PI+.75,s.main,3);
+      round(-22,32,44,12,4,body);ellipse(-12,38,3,3,'#d9534f');line([[-4,38],[16,38]],cream,3);break;
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;

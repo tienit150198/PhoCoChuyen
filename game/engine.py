@@ -153,7 +153,7 @@ def stamped(state:dict) -> bool:
 # stamp) and put back on every read (wake: Store.parse_state, migrate_state). A save that never used it so still
 # reads on the build before it (2.4.24 requires exactly its own career list). Once the career is used, its record
 # is stored and that older build refuses the save: never roll back below the build that added it.
-DORMANT=("customs","hotel","banquet","reception","teller","restore","research")
+DORMANT=("customs","hotel","banquet","reception","teller","restore","research","radio")
 _IDLE={}
 
 

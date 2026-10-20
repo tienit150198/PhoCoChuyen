@@ -99,6 +99,7 @@ ORDERS = {
     'reception': ('Việc riêng: lo đặt phòng và đón một đoàn khách quen của phố', 16, 3, {}),
     'teller': ('Việc riêng: hướng dẫn một tiệm trong phố lập sổ thu chi', 16, 3, {}),
     'research': ('Việc riêng: thử nảy mầm một túi hạt cho nhà khách quen', 16, 3, {}),
+    'radio': ('Việc riêng: thu một đoạn lời chúc cho nhà khách quen', 14, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

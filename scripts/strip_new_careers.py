@@ -57,7 +57,7 @@ import sys
 
 # Certificate groups added together with a career (an older build validates journey.certificates, journey.study and
 # the worn 'cert:<group>' against its own groups): taken out with that career and put back by restore.
-CERTS = {'reception': ('reception_service',), 'teller': ('teller_service',), 'research': ('research_basics',)}
+CERTS = {'reception': ('reception_service',), 'teller': ('teller_service',), 'research': ('research_basics',), 'radio': ('radio_basics',)}
 # Lists outside the careers that name career ids and that older validators check against their own CAREERS.
 ID_LISTS = (('journey', 'unlocked'), ('journey', 'board', 'touched'))
 # Rolling logs: rows naming the career are archived; restore does not put them back (the log moved on meanwhile).

@@ -1739,6 +1739,7 @@ async function handleAction(action,data,el){
         else await m.openBonus(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
       if(action==='lixi'){await (await import('./v4/lixi.js')).openLixi(env(),data.tab||'list');break;}  // 🧧 Lì xì: its own dialog
       if(action==='restoreDesk'){await (await import('./v4/restore.js')).openRestore(env(),data);break;}  // 🧰 Phục chế đồ: mang đồ đi, 🧰 Bàn thợ, đã phục chế (its own dialog)
+      if(action==='radioDesk'){await (await import('./v4/radio.js')).radioAction(env(),data);break;}  // 📻 Đơn lên sóng: players' ads and songs on the town ticker (its own dialog)
       if(action==='photoStudio'){await (await import('./v4/portrait.js')).photoAction(env(),data);break;}  // 📸 Chụp ảnh cho người chơi: thợ ảnh, đặt chụp, 🖼️ Album ảnh (its own dialog)
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy

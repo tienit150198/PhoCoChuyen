@@ -313,6 +313,7 @@ class LazySaveTests(Base):
         self.assertNotIn('hotel', stored['careers'])
         self.assertNotIn('banquet', stored['careers'])
         self.assertNotIn('teller', stored['careers'])
+        self.assertNotIn('radio', stored['careers'])
         wake(stored)
         self.assertEqual(stored, self.store.read(token)[0])
 

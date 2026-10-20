@@ -32,7 +32,7 @@ FAMILY = {
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
     'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
-    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office', 'restore': 'service', 'research': 'office',
+    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office', 'restore': 'service', 'research': 'office', 'radio': 'service',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -121,6 +121,15 @@ ASPECTS = dict((
     A('research_format', ('office',), 'Cách trình bày báo cáo', 'cách trình bày chưa hợp ý', topic='ambience', only=('research',), subjective=True,
       neg=['mình thích biểu đồ cột hơn biểu đồ đường một chút'], pos=['biểu đồ và bảng trình bày đúng kiểu mình thích'],
       word=('Thích biểu đồ cột hơn.', 'Trình bày đẹp.')),
+    A('radio_names', ('service',), 'Đọc đúng tên', 'đài đọc sai tên phải đính chính', topic='clean', only=('radio',),
+      neg=['đài đọc nhầm tên rồi mới đính chính'], pos=['đài đọc đúng tên, đúng người, rõ ràng'],
+      word=('Đọc nhầm tên.', 'Đúng tên.'), sig_neg=('crit:steps:lo',), sig_pos=('crit:steps:hi',)),
+    A('radio_air', ('service',), 'Sóng ổn định', 'sóng còn chập chờn', topic='comms', only=('radio',),
+      neg=['nghe đài còn lúc rè lúc câm'], pos=['sóng rõ, chương trình chạy đúng giờ'],
+      word=('Còn rè.', 'Sóng rõ.'), sig_neg=('crit:care:lo',), sig_pos=('crit:care:hi',)),
+    A('radio_music', ('service',), 'Gu nhạc', 'nhạc chưa hợp gu', topic='ambience', only=('radio',), subjective=True,
+      neg=['mình thích nhạc trữ tình hơn một chút'], pos=['nhạc đúng kiểu mình hay nghe'],
+      word=('Thích nhạc khác.', 'Nhạc hay.')),
     A('lawyer_evidence', ('office',), 'Căn cứ hồ sơ', 'đối chiếu hồ sơ còn phải sửa', topic='method', only=('lawyer',),
       neg=['có phần chứng cứ hoặc tính toán phải đối chiếu lại'],
       pos=['chứng cứ và các khoản đã nhận được đối chiếu rõ ràng'],
@@ -819,6 +828,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                         'harsh': {'male': 'anh giao dịch viên', 'female': 'chị giao dịch viên', None: 'giao dịch viên'}},
              'research': {'polite': {'male': 'anh nghiên cứu viên', 'female': 'chị nghiên cứu viên', None: 'nghiên cứu viên'},
                           'harsh': {'male': 'anh nghiên cứu viên', 'female': 'chị nghiên cứu viên', None: 'nghiên cứu viên'}},
+             'radio': {'polite': {'male': 'anh phát thanh viên', 'female': 'chị phát thanh viên', None: 'phát thanh viên'},
+                       'harsh': {'male': 'anh phát thanh viên', 'female': 'chị phát thanh viên', None: 'phát thanh viên'}},
              'banquet': {'polite': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'},
                          'harsh': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'}},
              'reception': {'polite': {'male': 'anh lễ tân', 'female': 'chị lễ tân', None: 'lễ tân'},

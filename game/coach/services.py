@@ -1,5 +1,5 @@
 """🧭 Coach steps of the service trades (see game/coach/__init__.py): the airline crew (pilot, flight attendant), the
-offshore rig, the album shop, the laundry, the painting studio and the restoration workshop. Each opens on its intro card where it has one,
+offshore rig, the album shop, the laundry, the painting studio, the restoration workshop and the radio station. Each opens on its intro card where it has one,
 then walks the first day's own loop; the album shop ends with its stock round."""
 from . import S, V, stock  # noqa: F401
 
@@ -10,6 +10,8 @@ LEFT = V('Còn bước chưa xong: nút này chỉ việc còn lại.', (), ['.g
 # The album shop's stock room is a dock entry ("Kho" on the phone bar, "Kho album" elsewhere): close the sheet first.
 ZP_CLOSE = V('Đóng bảng việc, Kho album ở thanh dưới.', ['Đóng'], ['#sheet[open] .sheet-head [data-action="close"]'])
 # Laundry: every stage is a choice per garment, then its "Xác nhận …" button.
+# 📻 A send button is only real once the picks are complete (it is drawn disabled until then).
+RD_READY = '{}:not([disabled])'
 LD_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.ld-submit'])
 
 
@@ -163,6 +165,24 @@ STEPS: dict[str, list[dict]] = {
         S('🤝', 'Bấm Đối chiếu và trả đồ.', ['Đối chiếu và trả đồ'], ['.rs-submit[data-stage="deliver"]'], g=3),
         S('🛎️', 'Đồ của người chơi: 🧰 Bàn thợ ở cuối bảng việc.', x=True, o=True),
     ],
+    # 📻 Đài phát thanh Sóng Mây: the studio check comes before any step on air; an outage blocks until its drill is done.
+    'radio': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="rd_intro"]'], o=True),
+        S('🎚️', 'Đầu ca: bấm các việc kiểm phòng thu theo đúng thứ tự.', (), ['.rd-shift .rd-picks'], g=0,
+          w='Kiểm phòng thu hiện ở đầu bảng việc mỗi ca.'),
+        S('✅', 'Bấm Xác nhận thứ tự để mở mic.', ['Xác nhận thứ tự'], [RD_READY.format('.rd-shift .rd-send')], o=True, g=0,
+          v=V('Bấm đủ mọi việc, đúng thứ tự trước.', (), ['.rd-shift .rd-picks'])),
+        S('🎙️', 'Chọn vị trí ca này: Phát thanh viên, hoặc DJ khi hết thử việc.', (), ['.rd-role.on', '.rd-role:not([disabled])'], o=True, g=1),
+        S('📋', 'Bấm Đọc phiếu việc để nhận việc.', ['Đọc phiếu việc'], ['.sk-ask', '[data-command="ask"]'], g=2,
+          w='Nút hiện khi có phiếu việc mới.'),
+        S('🧾', 'Đọc kỹ bước, chọn đáp án đúng trên phiếu.', (), ['.rd-step'], g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn', 'Ghi vào phiếu'],
+          [RD_READY.format('.rd-step .rd-send'), '.rd-step .sk-amt-go'], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.rd-step .rd-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
+        S('⚡', 'Mất điện giữa sóng: làm đủ các bước trong sổ sự cố.', (), ['.rd-outage'], o=True, g=3),
+        S('📻', 'Đơn của người chơi: mở Đơn lên sóng, duyệt lời rồi bấm Lên sóng.', ['Đơn lên sóng'], ['[data-coach="radio-desk"]'], o=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -285,4 +305,12 @@ EN: dict[str, str] = {
     'Hoàn thiện theo điều đã chốt với khách.': 'Finish the piece the way you agreed with the customer.',
     'Kiểm lần cuối: đánh dấu đủ bốn mục.': 'Final check: tick all four lines.',
     'Đồ của người chơi: 🧰 Bàn thợ ở cuối bảng việc.': 'Other players\' things: 🧰 Workbench at the bottom of the work page.',
+    # radio station
+    'Đầu ca: bấm các việc kiểm phòng thu theo đúng thứ tự.': 'Start of shift: tap the studio checks in the right order.',
+    'Kiểm phòng thu hiện ở đầu bảng việc mỗi ca.': 'The studio check is at the top of the work page every shift.',
+    'Bấm Xác nhận thứ tự để mở mic.': 'Tap Confirm order to open the mic.',
+    'Bấm đủ mọi việc, đúng thứ tự trước.': 'Tap every check, in the right order, first.',
+    'Chọn vị trí ca này: Phát thanh viên, hoặc DJ khi hết thử việc.': 'Pick this shift\'s role: Announcer, or DJ once probation is over.',
+    'Mất điện giữa sóng: làm đủ các bước trong sổ sự cố.': 'Power cut on air: do every step in the incident log.',
+    'Đơn của người chơi: mở Đơn lên sóng, duyệt lời rồi bấm Lên sóng.': 'Player orders: open On-air orders, check the words, then tap Go on air.',
 }

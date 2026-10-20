@@ -331,7 +331,7 @@
       },
       "at": {
         "x": -10,
-        "y": 44
+        "y": 41.5
       },
       "features": [
         "Nhà mình",
@@ -678,7 +678,8 @@
     "reception",
     "teller",
     "restore",
-    "research"
+    "research",
+    "radio"
   ],
   "lots": [
     {
@@ -1777,6 +1778,24 @@
         "y0": 16.0,
         "x1": -17.8,
         "y1": 20.2
+      }
+    },
+    {
+      "career": "radio",
+      "district": "residential",
+      "at": {
+        "x": -11.2,
+        "y": 46.2
+      },
+      "door": {
+        "x": -10.8,
+        "y": 48.15
+      },
+      "footprint": {
+        "x0": -13.0,
+        "y0": 43.0,
+        "x1": -8.8,
+        "y1": 47.2
       }
     }
   ],

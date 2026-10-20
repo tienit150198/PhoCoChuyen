@@ -44,6 +44,7 @@ ORDER = (
     'teller',                      # ngân hàng: Quầy số 3 at the Bến Chợ office of Ngân hàng Phố (NPC customers; never the player's own bank)
     'restore',                     # thợ phục chế: Xưởng phục chế Hồn Xưa, old and broken pieces with awkward customer demands; players' things via Phố dịch vụ
     'research',                    # viện nghiên cứu: Viện nghiên cứu Sông Mây, salaried shifts on seeds, recipes or inventions; player research orders (game/research_lab.py)
+    'radio',                       # đài phát thanh: Đài phát thanh Sóng Mây, salaried phát thanh viên (DJ after probation); players' ads and songs on the town ticker
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

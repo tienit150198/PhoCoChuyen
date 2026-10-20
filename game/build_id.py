@@ -17,7 +17,7 @@ BUILD is the SHA-256 of:
   included (scripts/check_task_compat.py stays the release gate for those);
 * game/__init__.py without its `__version__ = "..."` line: the release number is read only by
   admin statistics (tests/test_build_id.py keeps it so), so a version bump alone keeps BUILD.
-* the exact bytes of all seven packaged specialism JSON shards when career_specialism_content
+* the exact bytes of all eight packaged specialism JSON shards when career_specialism_content
   is reachable: their quantities, procedures and acceptance evidence shape saved work.
 
 Left out: modules engine cannot import at all (the admin users page, the board AI, dialogue and
@@ -52,6 +52,7 @@ _SPECIALISM_DATA_FILES = (
     'career_specialisms_teller.json',
     'career_specialisms_restore.json',
     'career_specialisms_research.json',
+    'career_specialisms_radio.json',
 )
 
 # `from . import a, b as c`, `from .x import y`, `from ..x import y`, `from game.x import y`,

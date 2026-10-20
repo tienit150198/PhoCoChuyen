@@ -39,6 +39,7 @@ NAMES = {
  'teller':'Máy đếm tiền và đèn soi tiền giả',
  'restore':'Bộ dao trổ, kẹp gỗ và đèn soi phục chế',
  'research':'Kính hiển vi và cân phân tích',
+ 'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)
