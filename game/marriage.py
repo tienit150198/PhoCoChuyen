@@ -1236,7 +1236,7 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
                 from . import wed_services
                 couple['wedsvc'] = wed_services.card(db, c)
             except Exception:  # noqa: BLE001 - a database without its table: no card
-                couple['wedsvc'] = []
+                couple['wedsvc'] = None
             w = _row(db, "SELECT * FROM weddings WHERE couple=? AND status IN ('proposed','rejected','confirmed','done') ORDER BY id DESC LIMIT 1", (c['id'],))
             if w:
                 wedding = _wedding_view(db, c, w, sid, day)

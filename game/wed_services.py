@@ -438,9 +438,11 @@ def alerts(db, sid: str) -> int:
     return int(r['n'] or 0)
 
 
-def card(db, couple: dict | None) -> list:
-    """The Hôn nhân sheet's 💒 card: the credits (short)."""
-    if off() or not couple:
+def card(db, couple: dict | None) -> list | None:
+    """The Hôn nhân sheet's 💒 card: the credits (short); None hides the card (🛑 MNL_WEDSVC_OFF)."""
+    if off():
+        return None
+    if not couple:
         return []
     return [{k: x[k] for k in ('key', 'icon', 'label', 'line', 'name', 'state', 'stars', 'detail')} for x in credits(db, couple)]
 
@@ -454,12 +456,12 @@ def invite_svc(db, couple_id) -> list:
 
 
 def roll_plan(db, couple: dict, plan: dict) -> tuple:
-    """The wedding day (game/marriage.py resolve): (the plan the guests' roll uses, the credits). A delivered service of
+    """The wedding day (game/marriage.py resolve): (the plan the guests' roll uses, the delivered credits). A delivered service of
     3 stars or more counts as its NPC extra; a 4-star banquet raises the menu one level. No player service: the plan
     as it is."""
     if off():
         return plan, []
-    cr = credits(db, couple)
+    cr = [x for x in credits(db, couple) if x['state'] == 'done']   # only what was delivered served the wedding
     extras, menu = list(plan.get('extras') or []), plan.get('menu')
     for x in cr:
         if x['state'] != 'done':
@@ -601,7 +603,7 @@ def work_view(store, sid: str, state: dict | None) -> dict:
                                who=C.clean_name(mr._display(db, r['buyer'])), couple=names, when=buyer['when'], note=note,
                                due_at=r['due_at'], job=job_view(j) if j else None,
                                result=sm._data(r).get('result') if isinstance(sm._data(r).get('result'), dict) else None))
-    return dict(ok=True, off=off(), mine=mine, orders=orders, rules=sm.rules(),
+    return dict(ok=True, off=off(), why=OFF_TEXT if off() else '', mine=mine, orders=orders, rules=sm.rules(),
                 careers=[dict(key=k, icon=C.SVC[k]['icon'], career=C.SVC[k]['career'], short=C.SVC[k]['short']) for k in C.ORDER])
 
 

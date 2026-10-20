@@ -99,7 +99,7 @@ async function click(op,d){
     if(d.do!=='take'&&S.arm!==d.do+d.id){S.arm=d.do+d.id;setTimeout(()=>{if(S.arm===d.do+d.id){S.arm='';render();}},4000);render();return;}
     S.arm='';await post('/api/svc/'+d.do,{order:d.id},()=>load(true));return;}
   if(op==='open'){S.open[d.id]=!S.open[d.id];render();return;}
-  if(op==='step'){await post('/api/wedsvc/step',{order:d.id,at:Number(d.at),pick:d.pick},r=>{const o=S.work?.orders?.find(x=>x.id===d.id);if(o&&r?.job)o.job=r.job;});return;}
+  if(op==='step'){await post('/api/wedsvc/step',{order:d.id,at:Number(d.at),pick:d.pick},r=>{S.flash=null;const o=S.work?.orders?.find(x=>x.id===d.id);if(o&&r?.job)o.job=r.job;});return;}   // the reply shows in the job itself
   if(op==='deliver'){await post('/api/wedsvc/deliver',{order:d.id},()=>load(true));return;}
 }
 
@@ -164,7 +164,7 @@ function coupleView(){
   const orders=v.orders?.length?`<section class="sd-card"><h3>🧾 Đơn của hai bạn</h3><ul class="ws-orders">${v.orders.map(o=>`<li><span class="ws-ico" aria-hidden="true">${esc(o.icon)}</span><div class="grow">
       <b>${esc(o.label)} · ${esc(o.who)}</b><small>${esc(STATUS[o.status]||o.status)}${o.status==='working'?` · ${o.progress}/${o.total} bước`:''} · ${fmt(o.price)} xu${o.mine?'':' · người ấy đặt'}</small>${o.detail?`<small>${esc(o.detail)}</small>`:''}</div>
       ${stars(o.stars)}${o.mine&&o.status==='held'?btn(S.arm==='cancel'+o.id?'Chắc chưa?':'Hủy','svc',{do:'cancel',id:o.id},'ghost small'):''}</li>`).join('')}</ul>
-      <p class="svc-note">Đánh giá, báo cáo, trả giá: ở ${btn('🛎️ Phố dịch vụ','market',{tab:'inbox'},'link')}.</p></section>`:'';
+      <p class="svc-note">Đánh giá, báo cáo, trả giá: ở <button type="button" class="ws-link" data-ws="market" data-tab="inbox">🛎️ Phố dịch vụ</button>.</p></section>`:'';
   const svc=v.services.map(s=>{
     const list=s.providers.length?`<ul class="ws-providers">${s.providers.map(p=>`<li><button type="button" class="svc-card" data-ws="pick" data-svc="${esc(s.key)}" data-pid="${esc(p.pid)}"${v.why?' disabled':''}>
         <div class="grow"><b class="svc-name">${esc(p.who?.name||'')}${p.online?' <i class="svc-on">● online</i>':''}</b><span class="svc-meta">${p.rep?.n?`⭐ ${String(p.rep.avg).replace('.',',')} (${fmt(p.rep.n)})`:'⭐ Chưa có đánh giá'} · ${fmt(p.rep?.deals||0)} đơn</span></div>
@@ -197,11 +197,11 @@ function workView(){
   const v=S.work;if(!v)return wait();
   const mine=v.mine.length?`<section class="sd-card ws-mine"><h3>🧰 Dịch vụ cưới của bạn</h3><ul class="ws-orders">${v.mine.map(m=>`<li><span class="ws-ico" aria-hidden="true">${esc(m.icon)}</span><div class="grow"><b>${esc(m.name)}</b>
       <small>${m.mode==='nego'?'🤝 Thương lượng':`${fmt(m.price)} xu/${esc(m.unit)} · ×${m.mult}`} · NPC ${fmt(m.npc)} xu</small>${m.can?'':'<small class="svc-off">Cần làm nghề này mới nhận được</small>'}</div>
-      <button type="button" class="sd-toggle${m.on?' on':''}" role="switch" aria-checked="${m.on}" data-ws="sell" data-svc="${esc(m.key)}"${S.busy||(!m.can&&!m.on)?' disabled':''}><span class="sr-only">${m.on?'Đang nhận đơn':'Đang tắt'}</span></button></li>`).join('')}</ul>
-      <p class="svc-note">Đổi hệ số giá, thương lượng: ${btn('🛎️ Phố dịch vụ › Dịch vụ của tôi','market',{tab:'mine'},'link')}.</p></section>`
+      <button type="button" class="ws-switch${m.on?' on':''}" role="switch" aria-checked="${m.on}" aria-label="${esc(m.short)}: ${m.on?'đang nhận đơn':'đang tắt'}" data-ws="sell" data-svc="${esc(m.key)}"${S.busy||(!m.can&&!m.on)?' disabled':''}><i aria-hidden="true"></i></button></li>`).join('')}</ul>
+      <p class="svc-note">Đổi hệ số giá, thương lượng: <button type="button" class="ws-link" data-ws="market" data-tab="mine">🛎️ Phố dịch vụ › Dịch vụ của tôi</button>.</p></section>`
     :`<section class="sd-card svc-empty"><p class="tp-big">🧰</p><p>Làm nghề ${v.careers.map(c=>`${esc(c.icon)} ${esc(c.short)}`).join(', ')} để nhận đơn cưới của người chơi.</p></section>`;
   const orders=v.orders.length?v.orders.map(orderCard).join(''):`<section class="sd-card svc-empty ws-none"><p class="tp-big">💒</p><p>Chưa có đơn cưới nào. Bật dịch vụ ở trên, cô dâu chú rể sẽ tìm thấy bạn.</p></section>`;
-  return mine+orders;
+  return (v.why?`<p class="sd-flash bad">${esc(v.why)}</p>`:'')+mine+orders;
 }
 function orderCard(o){
   const head=`<div class="ws-svc-head"><span class="ws-big" aria-hidden="true">${esc(o.icon)}</span><div class="grow"><h3>${esc(o.label)} · ${esc(o.couple||o.who)}</h3>

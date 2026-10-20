@@ -153,6 +153,8 @@ class Hiring(WedBase):
             self.refused('wedsvc_off', self.wpost, self.hoa, 'deliver', order=o['id'])
             self.refused('wedsvc_off', self.spost, self.hoa, 'done', order=o['id'])
             self.assertTrue(self.wget(self.a, 'couple')['off'])
+            self.assertIsNone(self.view(self.a)['couple']['wedsvc'], 'the Hôn nhân card is hidden')
+            self.assertEqual(self.wget(self.hoa, 'work')['off'], True)
             w = self.resolve()
         self.assertEqual(w['status'], 'done')
         self.assertNotIn('services', json.loads(w['result']))
@@ -307,6 +309,20 @@ class Shown(WedBase):
         names = (mr._clean_name('An'), mr._clean_name('Binh'))
         again = mr.roll(seed, plan, mr._merge_pools(*pools), names)
         self.assertEqual((again['guests'], again['gifts'], again['mood']), (res['guests'], res['gifts'], res['mood']))
+
+    def test_the_invite_card_carries_the_team_and_only_delivered_work_reaches_the_wedding(self):
+        from game import wed_invite as wi
+        self.sell(self.hoa, 'vay')
+        self.hire(self.a, self.hoa, 'vay')        # paid, never done
+        self.deliver_all()
+        self.fund(self.a, 50_000)
+        wi.send(self.store, self.a, dict(text=wi.PRESETS[0], rid='wedsvc-invite-01'))
+        guest = self.user('khach', 100)
+        cards = wi.due(self.store, self.sid(guest))
+        self.assertEqual(len(cards), 1)
+        self.assertEqual([(x['label'], x['name']) for x in cards[0]['svc']], [('Tiệc cưới', 'Bep'), ('Hoa cưới', 'Hoa'), ('Váy & vest', 'Hoa')])
+        res = json.loads(self.resolve()['result'])
+        self.assertEqual([x['key'] for x in res['services']], ['tiec', 'hoa'], 'what was never delivered did not serve the wedding')
 
     def test_credits_cache_is_bounded(self):
         self.deliver_all()

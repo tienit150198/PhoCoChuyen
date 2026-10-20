@@ -33,7 +33,7 @@ SVC = {
                 desc='Cổng hoa, bàn gia tiên, hoa bàn tiệc và bó hoa cầm tay của cô dâu.',
                 brief=[('mau', 'Tông màu', [('hong', 'Hồng phấn', '🩷'), ('trang', 'Trắng tinh khôi', '🤍'), ('do', 'Đỏ rực', '❤️'),
                                             ('tim', 'Tím mộng mơ', '💜'), ('vang', 'Vàng nắng', '💛')]),
-                       ('loai', 'Hoa chính', [('hong', 'Hoa hồng', '🌹'), ('cam_tu_cau', 'Cẩm tú cầu', '💠'), ('baby', 'Baby trắng', '🤍'),
+                       ('loai', 'Hoa chính', [('hong', 'Hồng Đà Lạt', '🌹'), ('cam_tu_cau', 'Cẩm tú cầu', '💠'), ('baby', 'Baby trắng', '🤍'),
                                               ('tulip', 'Tulip', '🌷'), ('ly', 'Hoa ly', '🌸')])],
                 change='mau', final='Trước giờ làm lễ, kiểm lần cuối: cổng hoa phải tông màu gì?'),
     'vay': dict(career='clothing', service='vay_cuoi', icon='👰', name='Váy cưới & vest chú rể', short='Váy & vest',
@@ -168,7 +168,7 @@ DEMANDS = {
           ('c', 'Cãi tay đôi với hai chú', 0, 'Suýt đổ cả mâm cỗ.')]),
     ],
     'hoa': [
-        ('hoa_ly', '👵 Mẹ chồng chê hoa ly nặng mùi: “Nhức đầu quá!”',
+        ('hoa_ly', '👵 Mẹ chồng chê bình hoa ly trên bàn gia tiên nặng mùi: “Nhức đầu quá!”',
          [('a', 'Rút hoa ly khỏi bàn gia tiên, thay cúc trắng', 2, 'Bà cười: “Đấy, thế có phải nhẹ nhõm không.”'),
           ('b', 'Xịt chút nước cho bớt mùi', 1, 'Đỡ được một lúc.'),
           ('c', 'Bảo bà ngồi xa ra', 0, 'Bà giận, cả họ xì xào.')]),

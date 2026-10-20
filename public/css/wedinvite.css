@@ -24,6 +24,10 @@ html[data-theme="dem"] :is(.wi-dialog,.wi-sheet){--wi-rose:#ff7d9c;--wi-gold:#d9
 .wi-when{display:flex;flex-direction:column;align-items:center;gap:1px;margin:12px 18px 0;font-size:.98rem;line-height:1.45;color:var(--ink-2)}
 .wi-when b{color:var(--ink);font-size:1.05rem}
 .wi-when small{font-size:.85rem;color:var(--muted)}
+.wi-team{display:flex;flex-direction:column;align-items:center;gap:3px;margin:10px 18px 0;text-align:center;font-size:.9rem;color:var(--ink-2)}
+.wi-team>small{font-size:.78rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.wi-team>span{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px}
+.wi-team b{color:var(--ink)}
 .wi-foot{display:grid;gap:8px;padding:14px 18px 16px}
 .wi-foot .btn.big{min-height:50px}
 .wi-foot .btn.ghost{min-height:var(--tap)}

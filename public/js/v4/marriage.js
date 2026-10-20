@@ -249,6 +249,7 @@ async function onClick(mr,data,el){
     case'seen':post('seen',data.wedding?{wedding:Number(data.wedding)}:{},{quiet:true});return;
     case'party':post('party',{at:S.partyAt||partyDefault()});return;
     case'pinvite':post('party_invite');return;
+    case'wedsvc':S.dlg.close();import('./wed-services.js').then(m=>m.openWedServices(env,{tab:'couple'})).catch(e=>console.warn('marriage: wedsvc',e));return;
     case'wedinv':S.dlg.close();import('./wedinvite.js').then(m=>m.openWedInvite(env)).catch(e=>console.warn('marriage: wedinvite',e));return;
     case'pgo':S.dlg.close();import('./walk.js').then(m=>m.openWalk(env,{wedding:Number(data.id)})).catch(e=>console.warn('marriage: walk',e));return;
     case'ring_buy':{
@@ -565,7 +566,17 @@ function couple(){
     <label class="field" for="mr-confirm">Gõ <b>${word}</b> để xác nhận<input class="input" id="mr-confirm" data-mr-field="confirm" value="${esc(S.confirm)}" autocomplete="off" spellcheck="false"></label>
     ${btn(married?'Ly hôn':'Hủy hôn ước','divorce',{},'danger',S.confirm.trim()?'':' disabled')}</details>`;
   const split=married?`<p class="mr-hint">Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.</p>`:'';
-  return `${notice()}${top}${married?`<section class="mr-card"><h3>🏡 Nhà &amp; Gia đình</h3><p>${(v.family?.requests||[]).some(r=>!r.mine)?'Có lời mời đang chờ bạn trả lời.':'Vào nhà, mời người ấy về ở và cùng chăm con.'}</p>${btn('Mở Nhà & Gia đình','tab',{tab:'family'},'primary')}</section>`:''}${partyCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
+  return `${notice()}${top}${married?`<section class="mr-card"><h3>🏡 Nhà &amp; Gia đình</h3><p>${(v.family?.requests||[]).some(r=>!r.mine)?'Có lời mời đang chờ bạn trả lời.':'Vào nhà, mời người ấy về ở và cùng chăm con.'}</p>${btn('Mở Nhà & Gia đình','tab',{tab:'family'},'primary')}</section>`:''}${partyCard(c)}${wedsvcCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
+}
+/** 💒 Dịch vụ cưới từ người chơi (v4/wed-services.js, game/wed_services.py): who serves the wedding, and the way to hire
+ * them. Hidden on an older server (no couple.wedsvc) and once the party is over with nobody hired. */
+function wedsvcCard(c){
+  const list=c.wedsvc;if(!Array.isArray(list))return '';
+  const over=c.status==='married'&&(!c.party||c.party.state==='done');
+  if(over&&!list.length)return '';
+  const rows=list.map(x=>`<li class="${esc(x.state)}"><span aria-hidden="true">${esc(x.icon)}</span><div class="grow"><b>${esc(x.line)}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}</div><small>${x.state==='done'?(x.stars?'★'.repeat(x.stars):'✅'):'⏳'}</small></li>`).join('');
+  return `<section class="mr-card mr-wedsvc"><h3>💒 Dịch vụ cưới từ người chơi</h3>${rows?`<ul class="mr-team">${rows}</ul>`:'<p>Thuê bạn bè làm nghề tiệc, hoa, váy cưới, trang điểm, chụp ảnh cho đám cưới của hai bạn. Không thuê ai thì cưới với NPC như kế hoạch.</p>'}
+    ${over?'':`<div class="mr-actions">${btn(rows?'Xem & thuê thêm':'💒 Thuê người chơi','wedsvc',{},rows?'cream':'primary')}</div>`}</section>`;
 }
 const viDate=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:'';};
 
@@ -587,6 +598,7 @@ function resultCard(w){
       <div class="${profit>=0?'good':'bad'}"><dt>${profit>=0?'Lời':'Lỗ'}</dt><dd>${signed(profit)}</dd></div></dl>
     <p class="mr-share">Phần của bạn (${esc(myname)}, góp ${w.side==='a'?r.split_a:100-r.split_a}%): cọc ${xu(me.deposit)}, trả nốt ${xu(me.balance)}, nhận mừng ${xu(me.gift)}${me.late?` + ${xu(me.late)} gửi sau`:''} → <b class="${me.net>=0?'good':'bad'}">${signed(me.net)}</b>. ${esc(pname)} nhận phần còn lại.</p>
     ${close}${hl}${groups?`<h4>Khách mời</h4>${groups}`:''}
+    ${r.services?.length?`<h4>💒 Đội ngũ người chơi</h4><ul class="mr-team">${r.services.map(x=>`<li><span aria-hidden="true">${esc(x.icon)}</span><div class="grow"><b>${esc(x.line)}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}</div><small>${x.stars?'★'.repeat(x.stars):''}</small></li>`).join('')}</ul>`:''}
     <h4>Lời chúc</h4><ul class="mr-speeches">${r.speeches.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><p class="mr-gossip">${esc(r.gossip)}</p></article>`;
 }
 
