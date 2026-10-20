@@ -151,6 +151,28 @@
 - Bản lưu / rollback: không DDL, không bảng mới, SCHEMA_VERSION giữ 62. Khối nghề `careers.teller` ngủ (engine.DORMANT) khi chưa đụng tới nên 2.4.66 đọc nguyên save. Save đã làm ngân hàng: chạy `scripts/strip_new_careers.py strip --careers teller` trước khi lùi (nay cất cả chứng chỉ teller_service: journey.certificates, study, cert_paper, khung đeo), `restore` trả lại khi lên lại. tests/test_career_teller_compat.py: 2.4.66 (a808cb79, git archive) đọc save chưa đụng; save story đã ứng tuyển, học, thi, làm 2 ngày, chuyện oái oăm, chặng Bà Lựu, chứng chỉ đeo, ca đang mở dở khách — strip xong 2.4.66 validate/migrate/public và chơi trọn một ngày nghề khác, ví không đổi; restore trên bản này trả khối nghề y từng byte. tests/helpers.as_stored: các test rollback cũ gửi save đúng như máy chủ lưu (ngân hàng chưa đụng thì không có trong bản lưu).
 - Tests: tests/test_career_teller.py (28), tests/test_career_teller_compat.py (2), tests/teller-ui.mjs (14); đếm nghề 57→58 ở các test đếm (59 khi gộp cùng Lễ tân trong careers-integ).
 
+# v2.4.68 — 2026-10-20
+
+Không có mục Có gì mới (chủ game: không thông báo).
+
+## bang-disband
+
+- 👑 Giải tán bang chỉ cần bấm hai lần (chủ game 21/10 "chưa giải tán được bang nhé"): 2.4.67 còn bắt gõ đúng tên bang từng ký tự, mọi lần thử trên production đều bị từ chối (400). Giờ không cần gõ; app cũ còn gửi tên thì tên được so như khóa trùng tên (bỏ hoa thường, dấu cách, dấu).
+
+## pet-buy
+
+- 🐾 Mua thú không còn giới hạn 10 bé một lần (chủ game 21/10 "mua thú thì k cần giới hạn tối đa đâu"): chỉ còn giới hạn chỗ ở (3 ở nhà + 30 ở trại nuôi). pets_content.BUY_QTY_MAX = 33.
+
+## pet-autofuse
+
+🤖 Ghép tự động đồ thú cưng (chủ game: "ghép thú thì thêm chế độ ghép tự động cho áo quần nhé"). game/pet_wardrobe.py, public/js/v4/pets.js.
+- Lệnh mới jr_pet_wfuse_auto {scope: 'all' hoặc một món, max_rank (mặc định SSS), keep_worn (mặc định true), budget (bắt buộc), confirm}: ghép liên tiếp từng bộ 3 món giống hệt chưa mặc, hạng thấp trước (cùng hạng: theo thứ tự trong tiệm); trượt thì thử lại bộ đó; món mới ra ghép tiếp được. Dừng khi hết bộ ba, lượt tiếp theo vượt ngân sách hoặc số tiền đang có, hoặc đủ 50 lượt. Một lệnh = một lần lưu, trừ tiền một lần (ví trước, thiếu lấy tài khoản, như _pay); trả về tóm tắt {n, ok, lux, spent, stop, used, made, left}.
+- Mỗi lượt là đúng phép ghép của jr_pet_wfuse (tách thành _fuse_three dùng chung: cùng tỷ lệ, cùng phí, cùng thứ tự roll, tháo đồ, 💎 dòng sang từ hạng A, dòng "hot"). jr_pet_wfuse giữ nguyên câu trả lời và kết quả như 2.4.67 (test so với cây 2.4.67). Tỷ lệ vẫn không hiện.
+- Tủ đồ: nút 🤖 Ghép tự động (số bộ ba ghép được ngay) mở màn riêng: chọn món (tất cả / một món), ghép tới hạng, xem trước số bộ ba và phí vòng đầu, ô "Tiêu tối đa" kiểu − số + (mặc định = phí vòng đầu, chip Vòng đầu ×2 ×5), xác nhận, rồi thẻ kết quả (lượt, thành công, trượt, 💎, xu đã tốn, món mới). Máy chủ cũ (không có auto_max trong nội dung) thì không hiện nút. Điện thoại 390×844 và ngang đã kiểm.
+- Không có khóa mới trong bản lưu: món sinh ra giống hệt món ghép tay, 2.4.66 / 2.4.67 đọc được bản lưu sau khi ghép tự động (test chạy trên cây hai bản đó).
+- Tiếng Anh: chuỗi mới trong i18n/overrides.json, đã build public/i18n/en.json.
+- tests/test_pet_wardrobe_auto.py: bằng N lần ghép tay (cùng seed), ngân sách, tiền (ví rồi tài khoản, hết tiền thì dừng), đồ đang mặc, giới hạn 50, không có bộ ba, request id gửi lại chỉ trừ một lần, bản lưu chạy trên 2.4.66 / 2.4.67.
+
 # v2.4.67 — 2026-10-20
 
 Gồm nội quy bang và sửa chip 💬 Nói gần đây. Không có mục Có gì mới (chủ game 21/10: "mấy cái kia update trước đi, k cần thông báo, còn update nghề làm sau"); các nghề mới và Phố dịch vụ ra ở bản sau (SCHEMA 63–72 của chúng: bảng được tạo khi bản đó lên).

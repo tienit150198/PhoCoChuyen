@@ -10,6 +10,8 @@ giá"; "đừng show tỷ lệ ra"). The pieces are in game/pet_wardrobe_content
 * 🔀 jr_pet_wfuse: three items of the same piece and rank (worn ones are taken off) for FUSE_FEE: FUSE_BP of a success
   gives one item a rank up; from rank A up, LUX_BP of those turn into the slot's luxury piece. A failure keeps the
   three, the fee is spent. No daily limit (owner 19/10 "đừng giới hạn lượt ghép"). The odds are never shown.
+* 🤖 jr_pet_wfuse_auto (owner: "ghép tự động cho áo quần"): that fusion again and again, the lowest-rank triple
+  first, worn items kept out (keep_worn), within a budget and AUTO_MAX fusions; one charge, one save, a summary.
 * 💰 What a pet wears adds to its work bonus (game/pet_tiers.bonus_bp): BONUS_BP of each worn piece's rank (the bed
   not: it stays home), LUX_BONUS more for a luxury piece, SET_BONUS for a whole set; at most BONUS_MAX. The day's cap
   stays the pet's rank's.
@@ -56,7 +58,8 @@ BONUS_MAX = 2500
 ITEM_MAX = 150
 BUY_QTY_MAX = 20                                   # 🛍️ owner 21/10 "trang phục cũng thế": one purchase of one piece × rank (and the room)
 CUTE_AT = (6, 15, 24)                              # the worn ranks' sum for cute aura 1, 2, 3
-COMMANDS = ('jr_pet_wbuy', 'jr_pet_wwear', 'jr_pet_wfuse', 'jr_pet_wdrop', 'jr_pet_morph')
+AUTO_MAX = 50                                      # 🤖 the fusions one Ghép tự động makes at most
+COMMANDS = ('jr_pet_wbuy', 'jr_pet_wwear', 'jr_pet_wfuse', 'jr_pet_wfuse_auto', 'jr_pet_wdrop', 'jr_pet_morph')
 VN = datetime.timezone(datetime.timedelta(hours=7))
 
 
@@ -388,6 +391,113 @@ def _fmt(n: int) -> str:
     return f'{n:,}'.replace(',', '.')
 
 
+def _fuse_three(s: dict, x: dict, three: list) -> tuple:
+    """🔀 One fusion of three identical items (paid already), jr_pet_wfuse's own: the day's count, FUSE_BP of a success
+    (the three go, worn ones taken off, one item a rank up; from A up LUX_BP of those the slot's luxury piece), a
+    failure keeps the three. (the new item, luxury) or (None, False); the same rolls in the same order."""
+    pt = _pt()
+    d = _today(x)
+    k, r0 = three[0]['k'], three[0]['r']
+    it = W.ITEM[k]
+    d['f'] = min(10**9, d['f'] + 1)
+    if roll(10000) >= FUSE_BP[r0]:
+        return None, False
+    for i in three:
+        for w in x['on'].values():
+            for slot in [slot for slot, oid in w.items() if oid == i['id']]:
+                w.pop(slot)
+        x['it'].remove(i)
+    r = r0 + 1
+    lux = False
+    if r0 >= LUX_FROM and not it.get('lux') and roll(10000) < LUX_BP:
+        k, lux = W.LUX[it['slot']], True
+    i = _new(x, k, r)
+    _tidy(s, x)
+    if lux or r == TOP:
+        x['hot'] = [i['id'], int(pt.now())]
+    return i, lux
+
+
+_ORDER = {it['id']: n for n, it in enumerate(W.ITEMS)}
+
+
+def triples(x: dict, scope: str = 'all', max_rank: int = TOP, keep_worn: bool = True) -> list:
+    """🤖 What Ghép tự động may fuse now: [(k, r, the items in the order jr_pet_wfuse takes them)] for every piece × rank
+    with three to use (worn ones left out when keep_worn, else last, as jr_pet_wfuse takes them) whose result is at
+    most max_rank; the lowest rank first, then the catalogue's order."""
+    groups: dict = {}
+    for i in x['it']:
+        if (scope == 'all' or i['k'] == scope) and i['r'] < min(max_rank, TOP):
+            groups.setdefault((i['k'], i['r']), []).append(i)
+    out = []
+    for (k, r), its in groups.items():
+        free = [i for i in its if wearer(x, i['id']) is None]
+        use = free if keep_worn else free + [i for i in its if wearer(x, i['id']) is not None]
+        if len(use) >= 3:
+            out.append((k, r, use))
+    out.sort(key=lambda g: (g[1], _ORDER[g[0]]))
+    return out
+
+
+def _auto(s: dict, x: dict, p: dict) -> dict:
+    """🤖 Ghép tự động (owner 21/10 "ghép thú thì thêm chế độ ghép tự động cho áo quần nhé"): jr_pet_wfuse again and
+    again, each time the lowest-rank triple left (a failure tries the same three again, as a player would), until none
+    is left, the next fee would pass the budget or the money, or AUTO_MAX fusions; one charge of what they cost, one
+    save. Nothing new is stored: the items are those a fusion makes, so an older build loads the save."""
+    pt = _pt()
+    pt._keys(p, {'scope', 'max_rank', 'keep_worn', 'budget', 'confirm'}, {'budget', 'confirm'})
+    scope = p.get('scope', 'all')
+    _need(scope == 'all' or (isinstance(scope, str) and scope in W.ITEM), 'Chọn một món hoặc tất cả nhé.')
+    top = p.get('max_rank', TOP)
+    _need(_int(top, 1, TOP), 'Hạng dừng không hợp lệ.')
+    keep = p.get('keep_worn', True)
+    _need(keep in (True, False), 'Thông tin không hợp lệ.')
+    budget = p['budget']
+    _need(_int(budget, 1, 10**12), 'Nhập số xu tối đa muốn tiêu nhé.')
+    first = triples(x, scope, top, keep)
+    _need(bool(first), 'Không còn ba món giống hệt nhau (cùng món, cùng hạng) để ghép tự động.'
+          + (' Món đang mặc được giữ nguyên.' if keep else ''), 'not_owned')
+    fee0 = FUSE_FEE[first[0][1]]
+    _need(fee0 <= budget, f'Ngân sách chưa đủ cho lượt ghép đầu ({_fmt(fee0)} xu).', 'not_enough')
+    why = pt._ready_why(s, fee0)
+    _need(not why, why, 'not_enough')
+    _need(p['confirm'] is True, f'Xác nhận ghép tự động, tiêu tối đa {_fmt(budget)} xu.')
+    before = {i['id'] for i in x['it']}
+    n = won = lux = spent = 0
+    stop = 'done'
+    while True:
+        left = triples(x, scope, top, keep)
+        if not left:
+            break
+        if n >= AUTO_MAX:
+            stop = 'cap'
+            break
+        fee = FUSE_FEE[left[0][1]]
+        if spent + fee > budget:
+            stop = 'budget'
+            break
+        if pt._ready_why(s, spent + fee):
+            stop = 'money'
+            break
+        spent += fee
+        n += 1
+        i, l = _fuse_three(s, x, left[0][2][:3])
+        if i is not None:
+            won += 1
+            lux += l
+    how = pt._pay(s, spent, f'Ghép tự động đồ thú cưng · {n} lượt')
+    made = [dict(id=i['id'], k=i['k'], r=i['r']) for i in x['it'] if i['id'] not in before]
+    used = len(before - {i['id'] for i in x['it']})
+    msg = f'🤖 Ghép tự động {n} lượt: {won} thành công, {n - won} trượt.'
+    if lux:
+        msg += f' 💎 Ra {lux} món dòng sang!'
+    msg += {'done': ' Hết bộ ba để ghép.', 'budget': ' Dừng vì chạm ngân sách.', 'money': ' Dừng vì hết tiền.',
+            'cap': f' Mỗi lần tối đa {AUTO_MAX} lượt.'}[stop]
+    return dict(message=f'{msg} ({how})', ok=won > 0,
+                auto=dict(n=n, ok=won, lux=lux, spent=spent, stop=stop, used=used, made=made,
+                          left=len(triples(x, scope, top, keep))))
+
+
 def action(s: dict, name_: str, p: dict) -> dict:
     pt = _pt()
     _need(name_ in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
@@ -446,31 +556,19 @@ def action(s: dict, name_: str, p: dict) -> dict:
         _need(p['r'] < TOP, 'Hạng SSS là cao nhất rồi.', 'full')
         same = [i for i in x['it'] if i['k'] == p['k'] and i['r'] == p['r']]
         _need(len(same) >= 3, 'Cần ba món giống hệt nhau (cùng món, cùng hạng).', 'not_owned')
-        d = _today(x)
+        _today(x)
         same.sort(key=lambda i: wearer(x, i['id']) is not None)   # the ones in the wardrobe first
-        three = same[:3]
         it = W.ITEM[p['k']]
         fee = FUSE_FEE[p['r']]
         _need(p['confirm'] is True, f'Xác nhận ghép ba {it["name"]} hạng {RANKS[p["r"]]} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Ghép đồ thú cưng · {it["name"]} {RANKS[p["r"]]}')
-        d['f'] = min(10**9, d['f'] + 1)
-        if roll(10000) >= FUSE_BP[p['r']]:
+        i, lux = _fuse_three(s, x, same[:3])
+        if i is None:
             return dict(message=f'💨 Ghép trượt, ba món vẫn còn nguyên. ({how})', ok=False)
-        for i in three:
-            for w in x['on'].values():
-                for slot in [slot for slot, oid in w.items() if oid == i['id']]:
-                    w.pop(slot)
-            x['it'].remove(i)
-        k, r = p['k'], p['r'] + 1
-        lux = False
-        if p['r'] >= LUX_FROM and not it.get('lux') and roll(10000) < LUX_BP:
-            k, lux = W.LUX[it['slot']], True
-        i = _new(x, k, r)
-        _tidy(s, x)
-        if lux or r == TOP:
-            x['hot'] = [i['id'], int(pt.now())]
         msg = (f'💎 Ghép ra món DÒNG SANG: {name(i)}!' if lux else f'🎉 Ghép thành công: {name(i)}!')
         return dict(message=f'{msg} ({how})', ok=True, item=i['id'], lux=lux)
+    if name_ == 'jr_pet_wfuse_auto':
+        return _auto(s, x, p)
     if name_ == 'jr_pet_wdrop':
         pt._keys(p, {'k', 'r', 'confirm'}, {'k', 'r', 'confirm'})
         same = [i for i in x['it'] if i['k'] == p.get('k') and i['r'] == p.get('r')]
@@ -531,4 +629,5 @@ def catalogue() -> dict:
                 items=[dict(it, sale=list(it['sale']) if it.get('sale') else None, on_sale=on_sale(it, date)) for it in W.ITEMS],
                 sets=[dict(st) for st in W.SETS], ranks=list(RANKS), shop_ranks=SHOP_RANKS, c_mult=C_MULT,
                 fee=list(FUSE_FEE), bonus=[b / 100 for b in BONUS_BP], lux_bonus=LUX_BONUS / 100, set_bonus=SET_BONUS / 100,
-                bonus_max=BONUS_MAX / 100, limit=ITEM_MAX, cute_at=list(CUTE_AT), qty_max=BUY_QTY_MAX)
+                bonus_max=BONUS_MAX / 100, limit=ITEM_MAX, cute_at=list(CUTE_AT), qty_max=BUY_QTY_MAX,
+                auto_max=AUTO_MAX)

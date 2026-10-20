@@ -616,6 +616,7 @@ class Fund(Base):
         self.give(self.a, 3_000_000)
         before = (self.wallet(self.a), self.wallet(b))
         self.refused_op(self.a, 'disband', 'confirm', confirm=True, name='sai tên')
+        self.refused_op(self.a, 'disband', 'confirm', name='Rồng Đỏ')   # no confirmation
         self.refused_op(b, 'disband', 'role', confirm=True, name='Rồng Đỏ')
         self.op(self.a, 'disband', confirm=True, name='Rồng Đỏ')
         r = self.one('SELECT * FROM bangs WHERE id=?', (self.bid,))
