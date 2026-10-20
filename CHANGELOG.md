@@ -1,4 +1,8 @@
-# Chưa phát hành — accessories
+# v2.4.69 — 2026-10-20
+
+Không có mục Có gì mới (chủ game: cho người dùng mua, không thông báo).
+
+## accessories
 
 🧰 Phụ kiện nghề (chủ game: "thêm phụ kiện vào cho người ta nhé", "phụ kiện kiểm tra tuổi hay gì đó... để check"). game/career_gadgets.py: mỗi món mua một lần bằng quỹ nghề, hiện trong Trang trí & nâng cấp (mục 🧰 Phụ kiện nghề, trên Thiết bị nghề), lệnh mới `gadget_buy {item}` (không tốn giờ tiệm).
 - 🧊 Tủ trữ sữa riêng · 220 xu (Tiệm bánh & cà phê, góp ý #454 "Xác suất sữa bị hỏng trong ngày khá cao… thêm phụ kiện tủ trữ đồ riêng"): sữa tươi nhập về để được 3 ngày thay vì 2 (game/inventory.py `_receive_lot` hỏi `life_bonus` của nghề), sữa tươi đang trên kệ lúc lắp tủ cũng thêm 1 ngày; chuyện "Ca sữa tươi vừa mở có mùi chua" còn ~3,6% số ngày.
