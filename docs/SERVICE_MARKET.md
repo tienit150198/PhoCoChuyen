@@ -131,6 +131,28 @@ escrow and payout. They register **listings** here with `open` (`birth.install()
 
 Dev only: `MNL_SVC_DEMO=1` registers 🧋 Pha trà tại nhà (milk_tea) for the browser walk-through.
 
+## 🏍️ Bảo dưỡng xe máy and 🩺 khám / tiêm thú cưng (moto, vet: worked at the bench)
+
+`game/moto_service.py` registers `('moto', 'bao_duong')` (base 50 xu, one motorbike per order: qty_max 1, since the
+market's `check` cannot see qty; needs a motorbike in the garage) and `game/vet_service.py` registers `('vet', 'kham')` / `('vet', 'tiem')` (base = the NPC clinic's own price in
+`pets_content.VET` / `VACCINE`, one pet per order, needs a pet that needs it). The ×3 default price, escrow and the 5 % fee are the
+market's own.
+
+* The provider takes the order, opens it in the career's 🛎️ orders card and works three server-graded steps
+  (`xm_svc` / `ty_svc` `{order, service, step, value}`; tyre pressure + oil + safety picks / weighing + exam order +
+  advice, or weighing + temperature + injection order). The finished job lands in the career's `svc_ok` list (grade
+  1–3 from the slips). `{order, drop: true}` throws away an untouched stale job (cancelled / refunded order): no money, no xp.
+* `deliver` reads the provider's **committed** save and refuses (`moto_bench` / `vet_bench`) until that order is in
+  `svc_ok`: a hand-made `done` cannot fake the work.
+* Buyer's save, once: 🏍️ the warned bike first, then the others: `journey.xe_care = {v:1, cars:{vid: last_day}}` for
+  `CARE_DAYS` (10) days, and a pending 🎲 "xe sắp hỏng" warning on that bike is cleared as prevented; `rui` halves the
+  chance of a breakdown of a cared-for bike. 🩺 the same effect as the NPC clinic (pets.py `jr_pet_vet` / vaccine),
+  with the same bond / week points / tricks (`pets._care`).
+* 🩺 only a vet still hired at the clinic is listed (`can_provide`). A job may be dropped only while untouched; a started
+  one is finished to leave the book (its mistakes stay in the grade).
+* 🛑 `MNL_MOTO_SVC_OFF=1` / `MNL_VET_SVC_OFF=1`: `done` refused (`moto_off` / `vet_off`); orders keep settling and
+  refunding as usual. No table, no column; `journey.xe_care` is optional and 2.4.71 keeps it untouched.
+
 ## HTTP
 
 GET `/api/svc/dir?career=&service=&sort=rating|price|online|deals&offset=` · `/api/svc/provider?pid=` · `/api/svc/inbox`
@@ -175,7 +197,8 @@ table here stays (nothing is dropped), but it must never meet money this build s
 Steps, in order, on this build:
 
 1. Stop new money coming in: set `MNL_SVC_OFF=1`, `MNL_BIRTH_OFF=1`, `MNL_HOTEL_OFF=1`, `MNL_PHOTO_DIRECT_OFF=1` (also
-   `MNL_WEDSVC_OFF`, `MNL_RADIO_OFF`, `MNL_RESTORE_OFF`, `MNL_RESEARCH_OFF`, `MNL_FAIR_OFF` if wanted; use `1`, which every
+   `MNL_WEDSVC_OFF`, `MNL_RADIO_OFF`, `MNL_RESTORE_OFF`, `MNL_RESEARCH_OFF`, `MNL_MOTO_SVC_OFF`, `MNL_VET_SVC_OFF`,
+   `MNL_FAIR_OFF` if wanted; use `1`, which every
    switch reads as on) and restart. Paid orders keep settling and refunding meanwhile.
 2. Look: `python scripts/svc_drain.py` (dry run: what is held, per table and status, in xu).
 3. Drain: `python scripts/svc_drain.py --write`. Hotel stays are refunded through `hotel_stay._refund_db`; talks
@@ -186,7 +209,7 @@ Steps, in order, on this build:
    prints the counts again: everything should be 0 (exit code 1 otherwise, with the rows that refused in `log`; run
    it again, a busy save just retries).
 4. Strip the new careers from the saves (an older build refuses a save with a career it does not know):
-   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio --db --archive removed.jsonl`
+   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet --db --archive removed.jsonl`
    (counts), then the same with `--write` (that list is the script's default). Keep `removed.jsonl`: `restore` puts it
    back after rolling forward.
 5. Deploy 2.4.68.

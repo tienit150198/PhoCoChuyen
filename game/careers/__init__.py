@@ -45,6 +45,8 @@ ORDER = (
     'restore',                     # thợ phục chế: Xưởng phục chế Hồn Xưa, old and broken pieces with awkward customer demands; players' things via Phố dịch vụ
     'research',                    # viện nghiên cứu: Viện nghiên cứu Sông Mây, salaried shifts on seeds, recipes or inventions; player research orders (game/research_lab.py)
     'radio',                       # đài phát thanh: Đài phát thanh Sóng Mây, salaried phát thanh viên (DJ after probation); players' ads and songs on the town ticker
+    'moto',                        # sửa xe máy: Tiệm sửa xe Út Lanh, step-graded tickets (lốp, nhớt, bugi, sên, phanh, đèn, ắc quy, xe ngập); players' bikes serviced via Phố dịch vụ
+    'vet',                         # bác sĩ thú y: Phòng khám Thú y Cỏ May, salaried, step-graded cases (tiêm, ve, ngộ độc, tắc tiểu, mổ); players' pets examined via Phố dịch vụ
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

@@ -34,7 +34,7 @@ for(const id of layout.careerOrder.filter(id=>!legacy.includes(id))){
   modules[id]=vm.runInNewContext('({'+members.map(p=>p.getText(source)).join(',')+'})',{air,AIR:{}});
 }
 const appSource=declarations('public/js/app.js',['sceneActions','navItems','stockBadge','dockItems','railHTML','groupBadge',
-  'RAIL_MAIN','RAIL_GROUPS','RAIL_GROUPED','RAIL_NOTE','ACC_CAREERS','railItem','railMain','badgeHTML']);
+  'RAIL_MAIN','RAIL_GROUPS','RAIL_GROUPED','RAIL_NOTE','ACC_CAREERS','railItem','railMain','badgeHTML','bangWarNote']);
 const optionalJourney={garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{},deco:{},household:{}};
 const optionalContent={quay:{},auction:{},certs:{}};
 const enabledLive={welcomed:true,flags:{street:true,dating:true,wedding:true,kara:true,bark:true}};
@@ -129,8 +129,8 @@ if(process.env.UPDATE_ISOMETRIC_PARITY==='1'){
   writeFileSync(inventoryPath,JSON.stringify(inventory,null,2)+'\n');
 }
 
-test('inventory enumerates all 62 server careers, their real menu/dock variants and current utility routes',()=>{
-  assert.equal(catalogue.length,62);
+test('inventory enumerates all 64 server careers, their real menu/dock variants and current utility routes',()=>{
+  assert.equal(catalogue.length,64);
   assert.deepEqual([...catalogue.map(c=>c.id)].sort(),[...layout.careerOrder].sort());
   assert.equal(careerRows.length,inventory.careers.length);
   for(const [index,row] of careerRows.entries())assert.deepEqual(JSON.parse(JSON.stringify(row)),inventory.careers[index],row.id+' retains its actual scene, menu and phone dock');

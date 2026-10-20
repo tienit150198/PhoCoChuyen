@@ -1,0 +1,50 @@
+/* The step slips of 🏍️ Tiệm sửa xe (moto) and 🩺 Phòng khám thú y (vet): the ticket, one step at a time, the players'
+ * orders card, today's numbers and the notebook. Each career sets --sk-accent / --sk-accent-2 in its own sheet. */
+.career-job.slip{min-width:0;overflow-wrap:anywhere}
+.slip .sl-ticket{border:1px solid var(--sk-line,#d8dde6);border-left:5px solid var(--sk-accent);border-radius:12px;padding:14px 16px;background:var(--sk-surface,#f8f9fb);margin:12px 0}
+.slip .sl-ticket small{display:block;letter-spacing:.03em;color:var(--sk-muted,#5d6675)}
+.slip .sl-ticket h3{margin:5px 0 4px;display:flex;gap:8px;align-items:center}
+.slip .sl-ticket p{margin:0}
+.slip .sl-step{padding:16px;margin:12px 0}
+.slip .sl-step-count{font-size:13px;color:var(--sk-muted,#5d6675);margin:0 0 6px}
+.slip progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:14px}
+.slip .sl-step h3{margin:0 0 8px}
+.slip .sl-evidence{padding:12px;border-left:3px solid var(--sk-accent);background:var(--sk-surface-2,#f1f3f7);line-height:1.55;margin:0}
+.slip .sl-options,.slip .sl-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.slip .sl-options button,.slip .sl-picks button{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
+.slip .sl-options button{justify-content:flex-start}
+.slip .sl-pick{display:flex;gap:10px;align-items:flex-start;justify-content:flex-start}
+.slip .sl-pick span{flex:1;min-width:0;text-align:left}
+.slip .sl-pick.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.slip .sl-num{flex:0 0 auto;min-width:22px;height:22px;border-radius:11px;background:var(--sk-accent);color:#fff;font-style:normal;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.slip .sl-num.off{background:transparent;border:2px solid var(--sk-line,#c7cdd8)}
+.slip .sl-row{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end;margin-top:12px}
+.slip .sl-row .btn{min-height:44px}
+.slip .sl-send{min-height:48px}
+.slip .sl-last,.slip .sl-finished,.slip .sl-ready{padding:12px;background:var(--sk-surface-2,#f1f3f7);border-radius:10px;font-size:13px;line-height:1.5;margin:10px 0}
+.slip .sl-ready{background:transparent;border:1px dashed var(--sk-accent);font-weight:600}
+.slip .sl-orders{padding:14px 16px;margin:14px 0;border-top:4px solid var(--sk-accent-2,var(--sk-accent))}
+.slip .sl-orders-head{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.slip .sl-orders-head h3{margin:0}
+.slip .sl-orders-head .btn{min-height:40px}
+.slip .sl-order{border-top:1px solid var(--sk-line,#d8dde6);padding:12px 0 4px;margin-top:10px}
+.slip .sl-order-head{display:grid;gap:2px}
+.slip .sl-order-head small{color:var(--sk-muted,#5d6675)}
+.slip .sl-note{margin:8px 0;padding:8px 12px;border-left:3px solid var(--sk-line,#d8dde6);font-size:13px}
+.slip .sl-order .sl-step{padding:12px 0;margin:8px 0 0;box-shadow:none;border:0;background:transparent}
+.slip .sl-take,.slip .sl-give,.slip .sl-start{min-height:48px;width:100%;margin-top:8px;justify-content:center}
+.slip .sl-wrong{color:var(--sk-muted,#5d6675)}
+.slip .sl-drop{min-height:40px;color:var(--sk-muted,#5d6675)}
+.slip .sl-empty{margin:10px 0 0}
+.slip .sl-stats,.slip .sl-notebook{border-top:1px solid var(--sk-line,#d8dde6);padding:12px 0;margin-top:10px}
+.slip summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.slip .sl-rules{padding-left:20px}
+.slip .sl-rules li{margin:6px 0;line-height:1.5}
+.slip .sl-rules-h{margin:16px 0 4px}
+.slip button:focus-visible,.slip summary:focus-visible,.slip input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
+.slip .sk-amt-in{min-width:0}
+.slip .sk-amt input{max-width:100%;font-size:18px}
+@media(max-width:480px){
+  .slip .sl-options,.slip .sl-picks{grid-template-columns:minmax(0,1fr)}
+  .slip .sl-step,.slip .sl-ticket,.slip .sl-orders{padding:13px}
+}

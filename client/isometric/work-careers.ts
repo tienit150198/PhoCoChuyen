@@ -64,6 +64,8 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
   restore:identity('Khám dấu hiệu · chốt yêu cầu khách rồi mới phục hồi','Bàn khám & phục hồi','Tủ linh kiện & sáp ong','Quầy nhận và trả đồ'),
   radio:identity('Kiểm phòng thu · đọc tin, quảng cáo duyệt và lời chúc đúng tên','Phòng thu','Bàn trộn âm & micro','Phòng máy & lịch phát sóng'),
+  moto:identity('Nghe bệnh xe · chốt lỗi rồi mới cầm cờ lê · giao đúng biển số','Cầu nâng','Tủ đồ nghề & phụ tùng','Quầy nhận và giao xe'),
+  vet:identity('Nghe chủ kể · cân bé, tính liều theo cân · trả đúng bé','Bàn khám','Tủ thuốc & sổ tiêm','Ghế chờ & lồng bé'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
@@ -129,6 +131,19 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
     f('console',r(2.85,.55,4.25,1.45),78,0x3f6fb0);f('rack',r(4.65,.6,5.95,1.5),110,0x9aa7b8);f('sofa',r(6.15,.7,6.6,1.5),40,mint);f('planter',r(6,3.35,6.5,4.15),70,0x9fb98f);
     z(r(2.6,.3,6.6,1.85),'carpet',0xc5d2e2);z(r(2.85,2.95,6.75,4.45),'checker',0xe2e8ef);
+  }else if(career==='moto'){
+    // The lift bench in front, the tool wall on the left, the oil drain, the parts rack and a crate of worn parts behind.
+    clear(false,'tile');s('shelf','tools',r(.55,1.75,1.5,4.05),2,2.9,118,0x8f7a5c);
+    s('workbench','bench',r(3.1,3.3,5.8,4.2),4.45,4.8,50,0xc0562b);
+    f('pipework',r(2.85,.6,3.95,1.5),92,0x6f7b86);f('rack',r(4.4,.6,5.6,1.45),110,0x9aa7b8);f('crate',r(5.95,.7,6.55,1.5),50,0xc2a171);
+    z(r(2.6,.3,6.7,1.9),'tile',0xd5d2cc);z(r(2.8,3,6.5,4.5),'mat',0xbfb8ad);
+  }else if(career==='vet'){
+    // The examination table in front, the medicine cabinet on the left wall, the wash basin, pet carriers and the waiting bench behind.
+    clear(false,'tile');s('shelf','medicine',r(.55,1.85,1.45,3.95),1.95,2.9,118,cream);
+    s('workbench','desk',r(3.2,3.25,5.6,4.15),4.4,4.75,58,0x8fc7b8);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('sink',r(2.9,.6,3.6,1.45),62,blue);f('crate',r(4.05,.7,5.05,1.5),48,0xd9c8a5);f('bench',r(5.3,.7,6.5,1.4),44,mint);f('planter',r(6.05,3.4,6.5,4.1),70,0x9fb98f);
+    z(r(2.6,.3,6.7,1.85),'tile',0xd3ebe4);z(r(2.85,2.95,6.7,4.45),'checker',0xe6efe9);
   }else if(career==='banquet'){
     // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
     clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);

@@ -86,6 +86,10 @@ NORMS = {
     'research': dict(rate=.03, cash=0, lo=0, hi=0, bill=10),
     # 📻 Đài phát thanh Sóng Mây: a listener drops a little thank-you at the gate now and then
     'radio': dict(rate=.06, cash=.40, lo=1, hi=3, bill=10),
+    # 🏍️ Tiệm sửa xe Út Lanh: a customer rounds the bill up for the young helper now and then
+    'moto': dict(rate=.10, cash=.70, lo=1, hi=3, bill=20),
+    # 🩺 Phòng khám Thú y Cỏ May: a clinic takes no tips; a grateful owner leaves something for the staff's tea now and then
+    'vet': dict(rate=.04, cash=0, lo=0, hi=0, bill=10),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
     'zpop': dict(rate=.10, cash=.60, lo=1, hi=4, bill=30),
 }
@@ -267,6 +271,8 @@ CAREER_LINES = {
     'hotel': ('Phòng sạch thơm, khăn gấp gọn gàng.', 'Nhận phòng nhanh, nhớ đúng tên đặt phòng.', 'Điều hòa vừa báo là có người lên sửa liền.'),
     'reception': ('Nói một lần là lễ tân nhớ hết mình cần gì.', 'Hành lý lên tận phòng, bình gốm không mẻ chút nào.', 'Mất gấu bông mà lễ tân tìm kịp giờ xe chạy.'),
     'teller': ('Đếm tiền trước mặt tôi, đọc to từng con số.', 'Đọc lại tên người nhận, khỏi lo chuyển nhầm.', 'Giải thích chậm rãi, tôi hiểu hết.'),
+    'moto': ('Nói thật chỗ hư, không vẽ bệnh.', 'Bơm bánh đúng áp, xe chạy êm ru.', 'Thay nhớt xong còn đưa nhớt cũ cho coi.'),
+    'vet': ('Bác sĩ cân bé rồi mới tính thuốc, yên tâm ghê.', 'Ôm bé nhẹ nhàng, bé không sợ.', 'Nói thật bệnh, không bán thuốc thừa.'),
     'radio': ('Đài đọc đúng tên bà cụ nhà tôi, cả nhà vui.', 'Mất điện mà đài xin lỗi đàng hoàng, nghe dễ chịu.', 'Mở đúng bài tôi xin, hay ghê.'),
     'banquet': ('Món ra nóng hổi, bày đẹp như hình.', 'Sảnh trang trí đúng màu nhà mình chọn.', 'Bé dị ứng mà bếp nhớ đổi món, yên tâm ghê.'),
     'research': ('Có khay đối chứng hẳn hoi, nhìn là tin.', 'Nói thật kết quả, không hứa hão.', 'Sổ thí nghiệm ghi kỹ từng lần, phục ghê.'),
@@ -329,6 +335,8 @@ GIFTS = {
     'hotel': (('🍫', 'thanh sô-cô-la khách để lại kèm lời cảm ơn'), ('💌', 'tấm thiệp cảm ơn kẹp dưới gối'), ('🍊', 'túi quýt khách quê gửi cả ca')),
     'reception': (('🖍️', 'bức tranh bé Su vẽ cả quầy lễ tân'), ('💌', 'tấm thiệp cảm ơn kẹp dưới bảng móc chìa'), ('🍊', 'túi quýt ông Tư Bến mang từ quê')),
     'teller': (('🍵', 'ly trà đá bà Lựu mang sang'), ('💌', 'tấm thiệp cảm ơn kẹp ở Quầy số 3'), ('🍱', 'hộp cơm sườn dì Bảy để phần')),
+    'moto': (('🥤', 'ly nước mía bà Chín mua cho cả tiệm'), ('🍌', 'nải chuối chú Hai Lúa mang từ quê'), ('💌', 'mảnh giấy cảm ơn kẹp ở yên xe')),
+    'vet': (('🍊', 'túi quýt cô Ba Mập gửi cả phòng khám'), ('🖍️', 'bức vẽ bé Na tặng con hamster được chữa'), ('💌', 'tấm thiệp ông Sáu viết tay')),
     'radio': (('🍊', 'túi quýt cô Ba gửi cả đài'), ('💌', 'lá thư thính giả gửi qua hộp thư đài'), ('🎨', 'bức vẽ cái loa phường bé Su tặng')),
     'banquet': (('🍬', 'hộp kẹo cưới cô dâu gửi cả bếp'), ('💌', 'tấm thiệp cảm ơn của nhà mừng thọ'), ('🎂', 'miếng bánh kem sinh nhật bé Bin để phần')),
     'research': (('🌽', 'bao bắp đầu mùa bác Tư gửi cả phòng'), ('💌', 'lá thư cảm ơn của bếp ăn trường Sông Mây'), ('🎨', 'bức vẽ “cô nhà khoa học” của bé Na')),

@@ -114,7 +114,7 @@ class Registration(unittest.TestCase):
         from game import operations
         from game.career_voice import salaried_set
         self.assertIn('radio', ORDER)
-        self.assertEqual(ORDER[-1], 'radio')   # appended last (reception, teller, restore, research, radio)
+        self.assertEqual(ORDER[ORDER.index('research') + 1], 'radio')   # appended after reception, teller, restore, research
         self.assertIn('radio', DORMANT)
         self.assertIn('radio', salaried_set())
         self.assertIn('radio', operations.SALARIED)

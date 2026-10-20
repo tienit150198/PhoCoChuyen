@@ -1,5 +1,6 @@
 """🧭 Coach steps of the service trades (see game/coach/__init__.py): the airline crew (pilot, flight attendant), the
-offshore rig, the album shop, the laundry, the painting studio, the restoration workshop and the radio station. Each opens on its intro card where it has one,
+offshore rig, the album shop, the laundry, the painting studio, the restoration workshop, the radio station, the motorbike
+repair shop and the vet clinic. Each opens on its intro card where it has one,
 then walks the first day's own loop; the album shop ends with its stock round."""
 from . import S, V, stock  # noqa: F401
 
@@ -186,6 +187,38 @@ STEPS: dict[str, list[dict]] = {
         S('⚡', 'Mất điện giữa sóng: làm đủ các bước trong sổ sự cố.', (), ['.rd-outage'], o=True, g=3),
         S('📻', 'Đơn của người chơi: mở Đơn lên sóng, duyệt lời rồi bấm Lên sóng.', ['Đơn lên sóng'], ['[data-coach="radio-desk"]'], o=True),
     ],
+    # 🏍️ Tiệm sửa xe Út Lanh: one step of the ticket open at a time (careers/slip_kit.js), a wrong one stays open to fix.
+    'moto': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="xm_intro"]'], o=True),
+        S('🏍️', 'Bấm Nghe khách tả bệnh xe để nhận xe.', ['Nghe khách tả bệnh xe'], ['.sk-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có khách dắt xe vào.'),
+        S('🔎', 'Nghe bệnh, nhìn xe rồi chọn đúng lỗi.', (), ['.sl-step .sl-options'], g=0),
+        S('🌀', 'Khách dặn điều oái oăm: chọn cách trả lời thật thà.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('🔢', 'Việc có thứ tự: bấm lần lượt từng việc.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=2),
+        S('☑️', 'Chọn mọi dòng đúng, bỏ dòng sai.', (), ['.sl-step .sl-picks[data-pick="multi"]'], o=True, g=2),
+        S('📏', 'Tra sổ tay, tính số đo rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
+        S('🔔', 'Có chuyện ở tiệm: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+        S('🛎️', 'Xe của người chơi: nhận đơn, làm từng bước rồi bấm Giao.', (), ['[data-coach="moto-orders"]'], o=True),
+    ],
+    # 🩺 Phòng khám Thú y Cỏ May: the same slips, a case per pet.
+    'vet': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="ty_intro"]'], o=True),
+        S('🩺', 'Bấm Nghe chủ kể bệnh để nhận ca.', ['Nghe chủ kể bệnh'], ['.sk-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có bé được bế vào.'),
+        S('🔎', 'Nghe chủ kể, khám bé rồi chọn đúng bệnh.', (), ['.sl-step .sl-options'], g=0),
+        S('🌀', 'Chủ nuôi dặn điều oái oăm: chọn cách trả lời thật thà.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('⚖️', 'Cân bé, tính liều theo sổ tay rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=2),
+        S('🔢', 'Việc có thứ tự: bấm lần lượt từng việc.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=2),
+        S('☑️', 'Chọn mọi dòng đúng, bỏ dòng sai.', (), ['.sl-step .sl-picks[data-pick="multi"]'], o=True, g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
+        S('🔔', 'Có chuyện ở phòng khám: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+        S('🛎️', 'Bé của người chơi: nhận đơn, khám từng bước rồi bấm Giao.', (), ['[data-coach="vet-orders"]'], o=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -316,4 +349,20 @@ EN: dict[str, str] = {
     'Chọn vị trí ca này: Phát thanh viên, hoặc DJ khi hết thử việc.': 'Pick this shift\'s role: Announcer, or DJ once probation is over.',
     'Mất điện giữa sóng: làm đủ các bước trong sổ sự cố.': 'Power cut on air: do every step in the incident log.',
     'Đơn của người chơi: mở Đơn lên sóng, duyệt lời rồi bấm Lên sóng.': 'Player orders: open On-air orders, check the words, then tap Go on air.',
+    # motorbike repair shop and vet clinic
+    'Bấm Nghe khách tả bệnh xe để nhận xe.': 'Tap Hear what is wrong with the bike to take it in.',
+    'Nút hiện khi có khách dắt xe vào.': 'The button shows when a customer wheels a bike in.',
+    'Nghe bệnh, nhìn xe rồi chọn đúng lỗi.': 'Listen, look at the bike, then pick the right fault.',
+    'Việc có thứ tự: bấm lần lượt từng việc.': 'Steps in order: tap each task in turn.',
+    'Chọn mọi dòng đúng, bỏ dòng sai.': 'Pick every right line, leave the wrong ones.',
+    'Tra sổ tay, tính số đo rồi bấm Ghi vào phiếu.': 'Look it up in the notebook, work out the number, then tap Write on the ticket.',
+    'Có chuyện ở tiệm: chọn cách xử lý rồi làm tiếp.': 'Something came up at the shop: choose what to do, then carry on.',
+    'Xe của người chơi: nhận đơn, làm từng bước rồi bấm Giao.': "Players' bikes: take the order, do each step, then tap Hand over.",
+    'Bấm Nghe chủ kể bệnh để nhận ca.': 'Tap Hear the owner out to take the case.',
+    'Nút hiện khi có bé được bế vào.': 'The button shows when a pet is carried in.',
+    'Nghe chủ kể, khám bé rồi chọn đúng bệnh.': 'Hear the owner out, examine the pet, then pick the right case.',
+    'Chủ nuôi dặn điều oái oăm: chọn cách trả lời thật thà.': 'The owner asks for something awkward: pick the honest answer.',
+    'Cân bé, tính liều theo sổ tay rồi bấm Ghi vào phiếu.': 'Weigh the pet, work out the dose from the notebook, then tap Write on the ticket.',
+    'Có chuyện ở phòng khám: chọn cách xử lý rồi làm tiếp.': 'Something came up at the clinic: choose what to do, then carry on.',
+    'Bé của người chơi: nhận đơn, khám từng bước rồi bấm Giao.': "Players' pets: take the order, examine step by step, then tap Hand over.",
 }

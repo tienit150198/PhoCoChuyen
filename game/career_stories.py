@@ -2156,6 +2156,84 @@ ARCS = {
                 ('me', 'Em sẽ giữ như chị: đúng tin, đúng tên, chỉ đọc bản đã duyệt, mất điện thì bình tĩnh theo sổ.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🏍️ Tiệm sửa xe Út Lanh (từ chương 2)
+    'moto': dict(
+        title='Chiếc cờ lê số 10', emoji='🔧',
+        keepsake=dict(emoji='🔧', name='Chiếc cờ lê số 10 của Út Lanh', desc='Chiếc cờ lê mòn vẹt ba của Út Lanh để lại, ba mươi năm siết ốc xả nhớt cả hẻm. Giờ nó móc trên tủ đồ nghề của bạn.'),
+        cast={'lanh': _p('Út Lanh', '🔧', 'Chủ tiệm', 'moto_npc_01'),
+              'teo': _p('Tèo', '🧽', 'Thợ phụ', 'moto_npc_02'),
+              'chin': _p('Bà Chín', '👵', 'Bán vé số đầu hẻm', 'moto_npc_03'),
+              'hai': _p('Chú Hai Lúa', '🧐', 'Người chơi xe cub', 'moto_npc_06')},
+        beats=[
+            _b('Nghe bệnh trước', '👂', 'Ngày đầu ở tiệm, Út Lanh bắt bạn nghe tiếng máy trước khi cầm cờ lê.', [
+                ('lanh', 'Khách nói “xe kêu”. Kêu ở đâu, kêu lúc nào, nghe kỹ rồi mới chốt.'),
+                ('me', 'Dạ, kêu lạch cạch dưới chân lúc sang số. Em đoán sên chùng.'),
+                ('lanh', 'Đoán thì lắc sên thử đã. Thợ giỏi là thợ không tháo nhầm.')]),
+            _b('Thùng phụ tùng giá rẻ', '📦', 'Một người lạ chở tới thùng bố thắng, bugi rẻ bằng một phần ba giá chợ.', [
+                ('teo', 'Rẻ quá cô ơi, mua đi, lời to!'),
+                ('me', 'Không hóa đơn, không nói lấy ở đâu. Mình không mua.'),
+                ('lanh', 'Ừ. Phụ tùng gian lắp vào xe khách, xe khách mang tội theo.')],
+                _c('Tèo năn nỉ mua hai cái bugi “thôi cũng được”. Bạn nói sao?',
+                   _o('a', 'Giải thích cho Tèo vì sao không mua, dù chỉ hai cái', [('lanh', 'Dạy thằng nhỏ vậy là đúng. Một lần nhắm mắt là lần sau mở không ra.')], rel='lanh'),
+                   _o('b', 'Mua hai cái cho Tèo vui', [('teo', 'Dạ… mà sao em thấy kỳ kỳ.')], rel='teo'))),
+            _b('Chiếc xe của bà Chín', '👵', 'Bà Chín đẩy xe xẹp bánh tới, túi chỉ còn mấy tờ vé số.', [
+                ('chin', 'Bà bán chưa được tờ nào, con vá giùm bà rồi bà trả sau nghe.'),
+                ('me', 'Bà ngồi uống ly nước, con vá liền. Bánh sau con bơm đúng áp luôn.'),
+                ('lanh', 'Tiệm mình sống nhờ hẻm này. Có lúc lấy công, có lúc lấy cái tình.')],
+                days=4, served=10, gap=1),
+            _b('Chiều mưa ngập', '🌧️', 'Nước ngập tới gối, năm chiếc xe chết máy xếp hàng trước tiệm.', [
+                ('hai', 'Đề thử cái coi nổ chưa! Xe cub của tôi zin đó nghe!'),
+                ('me', 'Chú đợi con tháo bugi đẩy nước ra đã, đề bây giờ là cong tay dên.'),
+                ('teo', 'Em phát số cho mọi người rồi, ai cũng dặn không đề.')],
+                _c('Chú Hai nổi nóng đòi làm trước. Bạn làm gì?',
+                   _o('a', 'Giữ thứ tự số, giải thích từng xe mất bao lâu', [('hai', 'Ờ… thôi để tôi ngồi chờ. Tiệm này làm kỹ.')], rel='hai'),
+                   _o('b', 'Cho chú chen lên cho êm', [('chin', 'Bà đứng chờ từ trưa, sao chú tới sau lại được làm trước?')], rel='chin')),
+                days=6, served=14, gap=1),
+            _b('Chiếc cờ lê số 10', '🔧', 'Út Lanh về quê phụ con gái, trao lại chiếc cờ lê mòn vẹt.', [
+                ('lanh', 'Ba cô dạy: siết ốc xả vừa tay thôi, mạnh quá là toét ren. Làm người cũng vậy.'),
+                ('teo', 'Từ mai em theo cô học nghe!'),
+                ('me', 'Con sẽ giữ như cô dạy: nghe bệnh trước, nói thật với khách, giao đúng xe.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🩺 Phòng khám Thú y Cỏ May (từ chương 3)
+    'vet': dict(
+        title='Chiếc ống nghe một phút', emoji='🩺',
+        keepsake=dict(emoji='🩺', name='Chiếc ống nghe của bác sĩ Thảo', desc='Chiếc ống nghe dây đã ngả màu, mười lăm năm nghe tim chó mèo trong hẻm. Bác sĩ Thảo dặn: bé nào cũng cần một phút của mình.'),
+        cast={'thao': _p('Bác sĩ Thảo', '🩺', 'Trưởng phòng khám', 'vet_npc_01'),
+              'duyen': _p('Chị Duyên', '📒', 'Trợ lý', 'vet_npc_02'),
+              'ba': _p('Cô Ba Mập', '🐶', 'Chủ bé Lu', 'vet_npc_03'),
+              'sau': _p('Ông Sáu', '🐈‍⬛', 'Chủ bé Mun', 'vet_npc_08')},
+        beats=[
+            _b('Cân trước, tính sau', '⚖️', 'Ca đầu tiên, bác sĩ Thảo chỉ chiếc cân ở góc phòng.', [
+                ('thao', 'Liều nào cũng tính theo cân. Ước chừng bằng mắt là đoán, mà đoán thì bé chịu.'),
+                ('duyen', 'Chị ôm bé lên cân, em trừ cân chị ra nhé.'),
+                ('me', 'Dạ, sáu mươi bốn trừ năm mươi hai, bé Lu mười hai ký.')]),
+            _b('Mẹo trên mạng', '📱', 'Cô Ba Mập mang theo chai nước tỏi giã để trị ve cho bé Lu.', [
+                ('ba', 'Trên mạng nói bôi tỏi là ve rụng hết đó con.'),
+                ('me', 'Tỏi độc với chó cô ơi. Con chọn ống thuốc nhỏ gáy đúng cân cho bé.'),
+                ('thao', 'Nói thật mà nhẹ nhàng, chủ nuôi nào cũng thương con mình.')],
+                _c('Cô Ba buồn vì “mất công giã tỏi”. Bạn nói sao?',
+                   _o('a', 'Cảm ơn cô đã lo cho bé, chỉ cô cách kiểm ve sau mỗi lần dắt về', [('ba', 'Ờ, vậy cô học cái này thay cái tỏi.')], rel='ba'),
+                   _o('b', 'Nói cô đừng tin mạng nữa', [('ba', 'Cô biết rồi mà, sao nói vậy…')], rel='ba'))),
+            _b('Ca cấp cứu giữa trưa', '🚨', 'Một chú mèo đực rặn tiểu không ra, chủ muốn để mai.', [
+                ('duyen', 'Bàng quang căng cứng rồi em ơi.'),
+                ('me', 'Anh ơi, để tới mai bé có thể không qua khỏi. Mình xử lý ngay nhé.'),
+                ('thao', 'Đúng. Ca nào có thể chết trong ngày là ca làm trước.')],
+                days=4, served=10, gap=1),
+            _b('Bé Mun mười bốn tuổi', '🕯️', 'Ông Sáu ôm bé Mun gầy rộc, hỏi bạn nói thật.', [
+                ('sau', 'Con nói thật đi, nó còn đau nhiều không?'),
+                ('me', 'Con nói thật với ông, rồi ông con mình ngồi đây với bé một lát, không vội.'),
+                ('thao', 'Có những ca mình không chữa được. Mình chỉ còn sự thật và sự tử tế.')],
+                _c('Phòng chờ đông, chị Duyên nhắc ca sau. Bạn làm gì?',
+                   _o('a', 'Nhờ chị Duyên báo phòng chờ đợi mười phút, ngồi lại với ông Sáu', [('sau', 'Cảm ơn con. Ông không quên đâu.')], rel='sau'),
+                   _o('b', 'Đứng dậy gọi ca sau', [('duyen', 'Ông Sáu ôm bé ra về, không nói gì hết.')], rel='duyen')),
+                days=6, served=14, gap=1),
+            _b('Chiếc ống nghe một phút', '🩺', 'Bác sĩ Thảo đi học chuyên khoa, trao lại chiếc ống nghe cũ.', [
+                ('thao', 'Nghe đủ một phút, đừng vội. Bé nào cũng cần một phút của mình.'),
+                ('duyen', 'Từ mai sổ tiêm chị giao cho em nha.'),
+                ('me', 'Em sẽ giữ như chị dạy: cân trước, tính liều sau, nói thật với chủ.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

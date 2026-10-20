@@ -1,0 +1,250 @@
+{
+  "moto": [
+    {
+      "tier": 1,
+      "title": "Lập bảng áp suất lốp theo tem càng xe",
+      "output_unit": "bảng áp suất lốp",
+      "inputs": [
+        {
+          "name": "Bộ tem càng xe hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chép áp suất bánh trước, bánh sau của từng mẫu xe giả lập từ tem càng xe.",
+        "Ghi thêm cột chở người hoặc hàng: cộng 3 psi bánh sau.",
+        "Dán bảng cạnh máy bơm và cho chủ tiệm ký."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi dòng có áp bánh trước, bánh sau và cột cộng 3 psi khi chở thêm.",
+        "bad": "Một con số chung cho mọi xe, bơm căng cho chắc.",
+        "why": "Áp suất đúng tem giữ lốp bền và phanh ăn."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn phiếu thay nhớt theo loại xe",
+      "output_unit": "phiếu thay nhớt",
+      "inputs": [
+        {
+          "name": "Xấp phiếu thay nhớt hư cấu",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chia các mẫu xe giả lập thành xe số, côn tay và tay ga.",
+        "Ghi loại nhớt và lượng “thay nhớt” lấy từ sổ xe, không lấy dòng rã máy.",
+        "Thêm ô ghi số km lúc thay và số km hẹn lần sau."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Tay ga ghi nhớt tay ga và nhớt hộp số, lượng theo dòng thay nhớt, có số km hẹn.",
+        "bad": "Mọi xe một loại nhớt, đổ đầy tới miệng cho dư.",
+        "why": "Đúng loại, đúng lượng thì máy mát và ly hợp không trượt."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Sắp khay vá săm theo thứ tự",
+      "output_unit": "khay vá săm",
+      "inputs": [
+        {
+          "name": "Khay đồ vá săm giả lập",
+          "unit": "khay",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Xếp đồ nghề theo thứ tự tháo săm, tìm lỗ, chà nhám, quét keo, dán.",
+        "Dán nhãn “đợi keo se” giữa hai bước quét keo và dán miếng vá.",
+        "Thêm chỗ để cây đinh gỡ ra khỏi lòng lốp, trả khách xem."
+      ],
+      "check": {
+        "prompt": "Khay nào được nghiệm thu?",
+        "good": "Đồ nghề xếp đúng thứ tự, có nhắc đợi keo se và chỗ để đinh gỡ ra.",
+        "bad": "Dồn hết vào một hộp, cần gì lục nấy.",
+        "why": "Đúng thứ tự thì miếng vá không bong và lốp không xì lại."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập sổ soi bugi cũ",
+      "output_unit": "sổ soi bugi",
+      "inputs": [
+        {
+          "name": "Bộ ảnh đầu bugi hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Chụp đầu bugi cũ của từng xe giả lập: đen khô, ướt xăng, nâu nhạt, trắng bệch.",
+        "Ghi cạnh mỗi ảnh điều nó cho biết về cách máy đốt.",
+        "Thêm cột việc cần kiểm tiếp: lọc gió, chế hòa khí, chỗ hở gió."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Mỗi màu bugi có lời đọc đúng và việc kiểm tiếp, không chỉ ghi “thay bugi”.",
+        "bad": "Bugi nào cũng ghi thay mới, khỏi cần soi.",
+        "why": "Bugi cũ kể bệnh của máy; thay mà không soi là bỏ sót bệnh."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Chuẩn hóa cách chỉnh sên",
+      "output_unit": "quy trình chỉnh sên",
+      "inputs": [
+        {
+          "name": "Bộ thước đo độ chùng sên",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Ghi khoảng độ chùng trong sổ tay của từng mẫu xe giả lập.",
+        "Đặt quy tắc chỉnh về giữa khoảng, hai ốc tăng vặn cùng số vạch.",
+        "Thêm bước soi dĩa: răng nhọn như lưỡi cưa thì báo thay cả bộ."
+      ],
+      "check": {
+        "prompt": "Quy trình nào được duyệt?",
+        "good": "Chỉnh về giữa khoảng, hai bên cùng vạch, có bước soi dĩa và báo thay cả bộ.",
+        "bad": "Kéo sên thật căng cho khỏi chùng lâu.",
+        "why": "Sên căng quá làm mòn dĩa và gãy sên; lệch vạch làm bánh chạy xéo."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập bảng giới hạn má phanh",
+      "output_unit": "bảng giới hạn má phanh",
+      "inputs": [
+        {
+          "name": "Mẫu má phanh mòn hư cấu",
+          "unit": "cặp",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi độ dày má mới và giới hạn phải thay của từng loại phanh giả lập.",
+        "Đo từng mẫu má mòn, ghi số mm còn dùng được.",
+        "Đánh dấu đỏ những mẫu đã tới giới hạn và ghi “thay cặp”."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Có độ dày mới, giới hạn, số đo thật và dấu đỏ ở mẫu tới giới hạn.",
+        "bad": "Ghi “còn dùng được” cho mọi mẫu, xịt dầu cho hết kêu.",
+        "why": "Phanh là chuyện an toàn: tới giới hạn là thay, không bao giờ xịt dầu."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Soạn sổ dò điện đèn và cầu chì",
+      "output_unit": "sổ dò điện",
+      "inputs": [
+        {
+          "name": "Bảng mạch đèn giả lập",
+          "unit": "bảng",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Ghi thứ tự kiểm: cầu chì, bóng, giắc cắm, công tắc pha cốt.",
+        "Ghi số ampe đúng của từng hộp cầu chì giả lập.",
+        "Thêm dòng: cầu chì mới lại đứt thì dừng, dò chỗ chạm mát."
+      ],
+      "check": {
+        "prompt": "Sổ nào được nghiệm thu?",
+        "good": "Có thứ tự kiểm, số ampe đúng từng hộp và bước dò chập khi cầu chì lại đứt.",
+        "bad": "Lắp cầu chì to gấp đôi cho khỏi đứt nữa.",
+        "why": "Cầu chì to hơn thì dây điện cháy trước cầu chì."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lập sổ đo và sạc ắc quy",
+      "output_unit": "sổ ắc quy",
+      "inputs": [
+        {
+          "name": "Bộ bình ắc quy mẫu",
+          "unit": "bình",
+          "quantity": 3,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đo vôn từng bình mẫu lúc tắt máy, xếp vào đầy, yếu hay hỏng.",
+        "Tính giờ sạc chậm của bình yếu: dung lượng chia dòng sạc.",
+        "Ghi thứ tự tháo lắp cọc: tháo âm trước, lắp âm sau, bôi mỡ cọc."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Mỗi bình có số vôn, kết luận đúng mốc, giờ sạc tính đúng và thứ tự cọc.",
+        "bad": "Bình nào yếu cũng thay mới cho nhanh.",
+        "why": "Đo rồi mới quyết thì khách không tốn tiền oan."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Diễn tập cứu xe lội nước",
+      "output_unit": "buổi diễn tập xe ngập",
+      "inputs": [
+        {
+          "name": "Xe số tập huấn hư cấu",
+          "unit": "chiếc",
+          "quantity": 1,
+          "unit_cost": 30000
+        },
+        {
+          "name": "Can nhớt súc máy",
+          "unit": "can",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Dán bảng “KHÔNG ĐỀ” và phát số thứ tự cho các xe giả lập.",
+        "Tập tháo bugi, đẩy nước khỏi buồng đốt, súc nhớt hai lần.",
+        "Lau lọc gió, ống pô rồi mới lắp bugi và đề thử."
+      ],
+      "check": {
+        "prompt": "Buổi diễn tập nào đạt?",
+        "good": "Không xe nào bị đề trước khi tháo bugi; nhớt súc đủ hai lần.",
+        "bad": "Đề thử từng xe xem chiếc nào nổ thì làm trước.",
+        "why": "Đề khi buồng đốt có nước là cong tay dên, hỏng máy."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Chuẩn hóa phiếu giao xe",
+      "output_unit": "bộ phiếu giao xe",
+      "inputs": [
+        {
+          "name": "Xấp phiếu giao xe hư cấu",
+          "unit": "xấp",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi biển số, màu xe, số km lúc nhận và lúc giao trên mỗi phiếu giả lập.",
+        "Thêm ô ký nhận túi đồ cũ đã thay và ghi chú bảo hành.",
+        "Tập giao xe: so biển số trên phiếu khách cầm với xe trước khi đưa chìa."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được nghiệm thu?",
+        "good": "Có biển số, số km hai lần, túi đồ cũ và bước so biển trước khi giao.",
+        "bad": "Chỉ ghi tên khách, giao chiếc nào giống thì giao.",
+        "why": "Ba chiếc giống nhau thì chỉ biển số mới chắc đúng xe."
+      }
+    }
+  ]
+}

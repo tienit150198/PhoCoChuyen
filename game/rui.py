@@ -512,6 +512,15 @@ def _waived(r: dict, day: int) -> bool:
     return bool(r['waived']) and day - r['waived'] <= WAIVED_DAYS
 
 
+def care_until(s: dict, vid: str) -> int:
+    """🔧 The last life day a player mechanic's bảo dưỡng keeps `vid` calmer (half its breakdown odds; 0: none). The
+    optional journey key xe_care = {v: 1, cars: {vid: day}} is written by game/moto_service.py; read defensively."""
+    x = (s.get('journey') or {}).get('xe_care')
+    cars = x.get('cars') if isinstance(x, dict) else None
+    v = cars.get(vid) if isinstance(cars, dict) else None
+    return v if type(v) is int and v >= 0 else 0
+
+
 def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]:
     """[(odds per 10 000 today, kind, sub, ref)]: what could start today (each its own odds)."""
     from . import garage as gr
@@ -524,7 +533,8 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
     for vid, car, V in _motor(s):
         if vid in r['broken']['xe'] or not gr.used_before(s,vid,day):
             continue
-        out.append((XE_P[0 if vid == ride else 1] * twice, 'xe', V['group'], vid))
+        calm = 2 if care_until(s, vid) >= day else 1   # 🔧 bảo dưỡng by a player mechanic (game/moto_service.py)
+        out.append((XE_P[0 if vid == ride else 1] * twice // calm, 'xe', V['group'], vid))
     from . import housing as hs
     for x in _homes(s):
         if x['id'] in r['broken']['nha']:

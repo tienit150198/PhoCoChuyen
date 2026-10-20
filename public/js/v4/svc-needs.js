@@ -1,4 +1,4 @@
-/** 🧰 / 🔬 What a buyer must have before ordering a Phố dịch vụ service whose server `check` looks at the buyer's own
+/** 🧰 / 🔬 / 🏍️ / 🩺 What a buyer must have before ordering a Phố dịch vụ service whose server `check` looks at the buyer's own
  * things (game/restore_service.py: an open ticket for that service, written in 🧰 Phục chế đồ; game/research_lab.py:
  * 🌟 Vườn mới for a seed batch, a food shop for a recipe, one live batch at a time, a few days between two orders).
  * Read from the buyer's own GETs and save, so the directory card, the provider page and the 🎪 fair show the reason
@@ -7,6 +7,8 @@
 const FOOD=['milk_tea','cafe_bakery','restaurant','pho','com','ice_cream','tra_da'];   // research_lab.FOOD
 const RESTORE={action:'restoreDesk',label:'🧰 Mở Phục chế đồ'};
 const GARDEN={action:'svcGarden',label:'🌱 Mở Vườn mới'};
+const BIKES={action:'garage',data:{tab:'bike'},label:'🏍️ Mở Nhà xe'};
+const ADOPT={action:'pets',data:{tab:'adopt'},label:'🐾 Nhận nuôi bé'};
 const key=(c,s)=>`${c}.${s}`;
 let cache={at:0,restore:null};
 
@@ -46,13 +48,27 @@ function researchNeed(state,service){
   return null;   // the days between two orders and a full gadget shelf are the server's to say (not in the public save)
 }
 
+/** 🏍️ game/moto_service.py: a motorbike to bring (the server also leaves out the bicycles). 🩺 game/vet_service.py: a pet
+ * to bring (whether one needs a check-up or a jab is the server's to say). Only what the save shows for sure. */
+function ownNeed(api,career){
+  const j=api?.state?.journey;if(!j)return null;
+  if(career==='moto'){
+    const g=j.garage;if(!g||!Array.isArray(g.cars))return null;
+    const group=Object.fromEntries((api.content?.journey?.garage?.vehicles||[]).map(v=>[v.id,v.group]));
+    if(g.cars.some(c=>(group[c.id]??'bike')==='bike'))return null;
+    return {why:'Bạn chưa có xe máy nào để mang đi bảo dưỡng.',hard:true,go:BIKES};
+  }
+  if(!j.pets||!j.story)return null;
+  return (j.pets.pets||[]).length?null:{why:'Bạn chưa nuôi bé nào để mang đi khám.',hard:true,go:ADOPT};
+}
+
 /** The needs of the restore / research services among `items` ({career, service}); {} for every other service. */
 export async function needsFor(api,items){
-  const out={},list=(items||[]).filter(i=>i&&!i.mine&&(i.career==='restore'||i.career==='research'));
+  const out={},list=(items||[]).filter(i=>i&&!i.mine&&['restore','research','moto','vet'].includes(i.career));
   if(!list.length)return out;
   const v=list.some(i=>i.career==='restore')?await restoreMine(api):null;
   for(const i of list){
-    const n=i.career==='restore'?restoreNeed(v,i.service):researchNeed(api.state,i.service);
+    const n=i.career==='restore'?restoreNeed(v,i.service):i.career==='research'?researchNeed(api.state,i.service):ownNeed(api,i.career);
     if(n)out[key(i.career,i.service)]=n;
   }
   return out;
