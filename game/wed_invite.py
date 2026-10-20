@@ -219,7 +219,7 @@ def send(store, token: str, d: dict) -> dict:
 
 
 # ---------------------------------------------------------------- the viewers' side
-_DUE = ("SELECT i.id, i.wedding, i.name_a, i.name_b, i.text, i.at, p.at AS party_at FROM wed_invites i "
+_DUE = ("SELECT i.id, i.wedding, i.couple, i.name_a, i.name_b, i.text, i.at, p.at AS party_at FROM wed_invites i "
         'JOIN couples c ON c.id=i.couple LEFT JOIN wedding_parties p ON p.wedding=i.wedding '
         "WHERE i.status='live' AND i.id>? AND i.until>? AND i.sid<>? AND i.partner<>? AND c.status IN ('engaged','married') "
         "AND (i.wedding IS NULL OR (p.status='booked' AND p.at+?>?)) "
@@ -253,7 +253,16 @@ def due(store, sid: str, t: float | None = None) -> list:
             return []
         pid = _pid(sid)
         rows = db.execute(_DUE, (upto, t, sid, sid, wl.PARTY_SECS, t, sid, sid, pid, pid, min(left, BATCH))).fetchall()
-    return [_card(r) for r in rows]
+        cards = [_card(r) for r in rows]
+        try:   # 💒 the players serving the wedding (game/wed_services.py): "Đội ngũ: 🍽️ X · 💐 Y" on the card
+            from . import wed_services
+            for r, card in zip(rows, cards):
+                team = wed_services.invite_svc(db, r['couple'])
+                if team:
+                    card['svc'] = team
+        except Exception:  # noqa: BLE001 - no team line, the card as before
+            pass
+    return cards
 
 
 def seen(store, sid: str, d: dict) -> dict:

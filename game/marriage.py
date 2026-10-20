@@ -937,7 +937,14 @@ def alerts(store, sid: str) -> dict | None:
             svc += hotel_alerts(db, sid)
     except Exception:
         pass
-    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer, svc=svc)
+    wsv = 0
+    try:   # 💒 Dịch vụ cưới từ người chơi: wedding orders waiting for this provider's work (game/wed_services.py)
+        with store.connect() as db:
+            from .wed_services import alerts as wed_alerts
+            wsv = wed_alerts(db, sid)
+    except Exception:
+        wsv = 0
+    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer, svc=svc, wedsvc=wsv)
 
 
 # ---------------------------------------------------------------- loading a save: due weddings and the inbox
@@ -1013,7 +1020,16 @@ def resolve(store, couple_id: int, wedding_id: int) -> bool:
         days[side] = _life_day(got[0]) if got else None
     plan = json.loads(w['plan'])
     q = json.loads(w['quote'])
-    res = roll(f'wedding|{w["id"]}|{c["id"]}|{int(c["since"])}', plan, _merge_pools(pools['a'], pools['b']), (name_a, name_b))
+    played, services = plan, []
+    try:   # 💒 players who served this wedding (game/wed_services.py): a good one counts as its NPC extra for the mood
+        from . import wed_services
+        with store.connect() as db:
+            played, services = wed_services.roll_plan(db, c, plan)
+    except Exception:  # noqa: BLE001 - no player service (or no table yet): the NPC wedding exactly as planned
+        played, services = plan, []
+    res = roll(f'wedding|{w["id"]}|{c["id"]}|{int(c["since"])}', played, _merge_pools(pools['a'], pools['b']), (name_a, name_b))
+    if services:
+        res['services'] = services
     total, balance, pct = int(q['total']), int(q['balance']), int(w['split_a'])
     g = _split(res['gifts'], pct)
     bal = _split(balance, pct)
@@ -1222,6 +1238,11 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
             from . import wedding_live as wl
             couple['wed_label'] = wl.label_of(db, c)   # 💍 "Cưới ngày 04/10/2026 · 20:30" (booked, or the legacy date)
             couple['party'] = wl.party_view(db, c, t)   # 🎉 the 10-minute live party: choose its time, invite, watch it go
+            try:   # 💒 Dịch vụ cưới từ người chơi (game/wed_services.py): who serves this wedding
+                from . import wed_services
+                couple['wedsvc'] = wed_services.card(db, c)
+            except Exception:  # noqa: BLE001 - a database without its table: no card
+                couple['wedsvc'] = None
             w = _row(db, "SELECT * FROM weddings WHERE couple=? AND status IN ('proposed','rejected','confirmed','done') ORDER BY id DESC LIMIT 1", (c['id'],))
             if w:
                 wedding = _wedding_view(db, c, w, sid, day)

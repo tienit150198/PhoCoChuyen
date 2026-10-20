@@ -71,6 +71,23 @@ function pickLine(P){
   if(P.k==='love')return `${who} chọn nhạc chậm rồi, mời cô dâu chú rể nhảy điệu đầu tiên nào 💞`;
   return `${who} đổi nhạc rồi: ${TRACKS[P.k]?.name||'nhạc mới'}! Quẩy lên nào! 🎧`;
 }
+/* ---- 💒 the players who serve this wedding (live/wedding.py wed.svc, game/wed_services.py): the MC thanks each one
+ * in a free slot of the programme, a board by the gate lists them, the flowers take the florist's colour ---- */
+const SVC_AT={hoa:20,vay:70,tiec:160,makeup:300,anh:480};   // free slots (no MC line within SAY+1 seconds)
+const SVC_SAY={hoa:'Cổng hoa lung linh hôm nay là do {n} cắm đó ạ, cảm ơn {n} nha! 💐',vay:'Váy cưới và vest của cô dâu chú rể do {n} chuẩn bị, đẹp quá trời! 👗',
+  tiec:'Cỗ cưới hôm nay do {n} nấu và phục vụ, cả nhà cho một tràng pháo tay nào! 👏',makeup:'Cô dâu xinh thế này là nhờ bàn tay trang điểm của {n} đó nha 💄',
+  anh:'Ảnh cưới của hai bạn do {n} chụp, nhớ ghé xem nha cả nhà! 📸'};
+const FLOWER={hong:['#f6a8bd','#f28c9e','#fbe3ea'],trang:['#ffffff','#f3efe6','#e9f3e3'],do:['#e0334f','#ff6f6f','#b8182e'],tim:['#b18be0','#9563dc','#e3d3f6'],vang:['#ffd45e','#f5b83d','#fff1b8']};
+const SVC_CACHE=new WeakMap();
+function svcOf(w){
+  let v=w&&SVC_CACHE.get(w);if(v)return v;
+  const list=Array.isArray(w?.svc)?w.svc.filter(x=>x&&typeof x.name==='string'):[];
+  const done=list.filter(x=>x.state==='done');
+  v={list,lines:done.filter(x=>SVC_AT[x.key]!=null).map(x=>[SVC_AT[x.key],SVC_SAY[x.key].replaceAll('{n}',x.name)]).sort((p,q)=>p[0]-q[0]),
+     flower:FLOWER[done.find(x=>x.key==='hoa')?.color]||null};
+  if(w)SVC_CACHE.set(w,v);return v;
+}
+let BOUQUET=null;   // the florist's petals for the bouquet (set while the party is drawn)
 const NB_LINES=[
   'Chúc hai cháu trăm năm hạnh phúc, sớm có tin vui nha!','Cỗ hôm nay ngon ghê, nem rán giòn rụm luôn!',
   'Hồi xưa bác cưới có năm mâm thôi, giờ linh đình quá!','Cô dâu chú rể đẹp đôi quá trời đất ơi!',
@@ -108,7 +125,7 @@ function chatter(w,s){
   if(s<-300||s>=600)return null;
   const slot=Math.floor(s/7),from=slot*7;if(s-from>SAY)return null;
   const h=hash(w.id*7919+slot+1000);
-  if(MC_LINES.some(([t])=>Math.abs(t-from)<4)||(PICK&&Math.abs(PICK.s-from)<6))return null;   // the MC has the floor
+  if(MC_LINES.some(([t])=>Math.abs(t-from)<4)||svcOf(w).lines.some(([t])=>Math.abs(t-from)<4)||(PICK&&Math.abs(PICK.s-from)<6))return null;   // the MC has the floor
   const kid=kidsOn(from)&&h%5<3;
   if(kid){const i=h%KIDS.length;return {who:'kid',i,text:KID_LINES[(h>>>3)%KID_LINES.length],t0:from};}
   if(h%4===3)return null;                                      // a quiet moment now and then
@@ -116,6 +133,7 @@ function chatter(w,s){
 }
 function mcLine(w,s){
   const P=PICK;if(P&&s>=P.s&&s<P.s+SAY+1)return {text:pickLine(P),t0:P.s};   // 🎧 a new song: the MC says so
+  for(const [t,text] of svcOf(w).lines)if(s>=t&&s<t+SAY+1)return {text,t0:t};   // 💒 thanks to a player who served
   for(const [t,text] of MC_LINES)if(s>=t&&s<t+SAY+1)return {text:fill(text,w),t0:t};return null;}
 /** A kid's spot: running a loop around the lawn while the kids are about, in from the gate and out again. */
 function kidPos(i,s,sec){
@@ -216,6 +234,7 @@ function floor(c,fx){
 /** Under and among the guests: the lights, the dance floor, the speakers, the MC, the neighbours, the kids, the pole. */
 export function ground(c,fx){
   const {s,sec,dark}=fx;
+  svcBoard(c,fx);
   STRINGS.forEach((pts,k)=>{c.strokeStyle=dark?'#ffffff33':'#5a4a3a40';c.lineWidth=1;c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();bulbs(c,pts,sec,dark,k*1.3);});
   floor(c,fx);
   for(const [x,y,side] of SPEAKERS)speaker(c,x,y,side,fx);
@@ -224,6 +243,22 @@ export function ground(c,fx){
   NB.forEach((n,i)=>figure(c,n,n.x,n.y,Math.max(0,Math.sin(sec*2+i))*1.2,fx));
   KIDS.forEach((k,i)=>{const p=kidPos(i,s,sec);if(p)figure(c,k,p[0],p[1],p[2],fx);});
   const l=lionState(s,fx);if(l&&l.pole)pole(c,l,sec);
+}
+
+/** 💒 The florist's flowers on the gate, and the board by the gate: "Đội ngũ" with each player who served. */
+function svcBoard(c,fx){
+  const v=svcOf(fx.w);BOUQUET=v.flower;
+  if(v.flower){for(let i=0,a=Math.PI;a<=Math.PI*2+.01;a+=Math.PI/11,i++){const x=300+Math.cos(a)*78,y=872+Math.sin(a)*78;
+    c.fillStyle=v.flower[i%3];c.beginPath();c.arc(x,y,8,0,Math.PI*2);c.fill();c.fillStyle=v.flower[(i+1)%3];c.beginPath();c.arc(x,y,3.5,0,Math.PI*2);c.fill();}}
+  const rows=v.list.slice(0,5);if(!rows.length)return;
+  const x=412,w=124,h=26+rows.length*17,y=842-h;
+  c.fillStyle='#8b6a3e';c.fillRect(x+16,y+h-2,4,22);c.fillRect(x+w-20,y+h-2,4,22);   // the easel's legs
+  c.fillStyle=fx.dark?'#3b2f27':'#fffaf0';c.strokeStyle='#c9a46a';c.lineWidth=2;c.beginPath();c.roundRect(x,y,w,h,8);c.fill();c.stroke();
+  c.textAlign='center';c.textBaseline='middle';c.fillStyle=fx.dark?'#ffe7b0':'#a3352f';c.font='800 11px system-ui,sans-serif';c.fillText('💒 Đội ngũ',x+w/2,y+12);
+  c.textAlign='left';c.font='600 10px system-ui,sans-serif';
+  rows.forEach((r,i)=>{const ty=y+28+i*17;c.fillStyle=fx.dark?'#f4ead8':'#4a3a2e';
+    let t=`${r.icon} ${r.name}`;while(c.measureText(t).width>w-14&&t.length>4)t=t.slice(0,-2)+'…';
+    c.globalAlpha=r.state==='done'?1:.55;c.fillText(t,x+7,ty);c.globalAlpha=1;});
 }
 
 /* ---- 🦁 the lion dance: in from one side, dancing about the lawn, a jump now and then, it walks up to the pole,
@@ -334,7 +369,8 @@ export function bouquet(c,x,y,rot){
   c.save();c.translate(x,y);c.rotate(rot);c.scale(1.45,1.45);   // big enough to follow in the air on a phone
   c.fillStyle='#7cae79';c.beginPath();c.moveTo(-4,4);c.lineTo(0,20);c.lineTo(4,4);c.closePath();c.fill();
   c.fillStyle='#fff3e8';c.fillRect(-4,8,8,4);
-  for(const [dx,dy,col] of [[-7,-2,'#f28c9e'],[7,-2,'#f6a8bd'],[0,-8,'#fbe3ea'],[-3,3,'#ff6f91'],[4,3,'#fff'],[0,-1,'#f28c9e']]){
+  const P=BOUQUET;   // 💒 the florist's colour when a player did the flowers
+  for(const [dx,dy,col] of P?[[-7,-2,P[1]],[7,-2,P[0]],[0,-8,P[2]],[-3,3,P[1]],[4,3,P[2]],[0,-1,P[0]]]:[[-7,-2,'#f28c9e'],[7,-2,'#f6a8bd'],[0,-8,'#fbe3ea'],[-3,3,'#ff6f91'],[4,3,'#fff'],[0,-1,'#f28c9e']]){
     c.fillStyle=col;c.beginPath();c.arc(dx,dy,5.2,0,Math.PI*2);c.fill();}
   c.restore();
 }
