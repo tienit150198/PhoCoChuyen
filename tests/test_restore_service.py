@@ -25,7 +25,8 @@ def right(kind, i, style):
     return rs.BENCH[kind][i][2] or style
 
 
-class Restore(Base):
+class RestoreBase(Base):
+    """Helpers only (tests/test_restore_compat.py uses them too)."""
     def setUp(self):
         super().setUp()
         sm._swept[0] = 0.0
@@ -97,6 +98,8 @@ class Restore(Base):
                     self.assertFalse(self.work(tho, oid, bad)['ok'])
             self.assertTrue(self.work(tho, oid, right(kind, i, style))['ok'])
 
+
+class Restore(RestoreBase):
     # ------------------------------------------------------------ the whole flow
     def test_a_broken_vehicle_is_restored_once_with_a_mark_and_money_is_conserved(self):
         tho, khach = self.restorer(), self.owner()
