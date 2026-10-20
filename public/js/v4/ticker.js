@@ -53,6 +53,8 @@ function handle(d){
   if('tfair' in d){const tf=d.tfair;import('./town-fair-data.js').then(m=>m.setFair(tf)).catch(()=>{});
     if(tf&&typeof tf.text==='string'&&typeof tf.key==='string'){let k='';try{k=localStorage.getItem(TFAIR)||'';}catch{k=tf.key;}
       if(k!==tf.key){write(TFAIR,tf.key);queue.push({id:0,text:tf.text.slice(0,200)});}}}
+  // 🎃 Lễ hội Ma Phố (game/halloween.py hint): its status for the menu, Tiện ích, the start card and the town's decor
+  if('hween' in d)import('./halloween-data.js').then(m=>m.setHween(d.hween)).catch(()=>{});
   if(typeof d.last==='number')since=d.last;  // polling cursor; SEEN (on this device) moves when a line has played
   if(queue.length&&!playing)next();
   const env=getEnv?.();if(!env)return;

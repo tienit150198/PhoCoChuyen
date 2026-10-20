@@ -893,6 +893,9 @@ def news(store, since, token: str | None = None) -> dict:
             pass
     from . import event2010   # 💐 Thiệp 20/10 while writing is open: once a day on a device (an older page ignores it)
     out['event'] = event2010.news_line(t)
+    from . import halloween   # 🎃 Lễ hội Ma Phố (26–31/10): its line once a day (and once more at the night), its status for the menu
+    out['event'] = out['event'] or halloween.news_line(t)
+    out['hween'] = halloween.hint(t)
     try:   # 📻 players' ads and songs on air now (game/radio_station.py: at most LIVE_MAX, cached; an older page ignores it)
         from . import radio_station
         out['radio'] = radio_station.ticker(store)

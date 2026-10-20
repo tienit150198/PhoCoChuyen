@@ -177,5 +177,27 @@ FAIR_FRAMES = (
 )
 TITLES = TITLES + FAIR_TITLES
 FRAMES = FRAMES + FAIR_FRAMES
+# 🎃 Lễ hội Ma Phố (game/halloween.py, 26–31/10/2026): bought with candy (🍬 kẹo, never xu) or won on the season's board, granted
+# for good through a live_effects row of kind 'hween' (an older build leaves the row pending and never shows an id it does
+# not know: style_now / live/styles.py look ids up in their own catalogue). The colour reads on both themes (tests/test_spend.py).
+HALLOWEEN_TITLES = (
+    dict(id='t_hw_san_bi_ngo', emoji='🎃', name='Thợ săn bí ngô', price=0, need={}, earn='Đổi 40 kẹo Halloween'),
+    dict(id='t_hw_ma_lem', emoji='👻', name='Ma lém lỉnh', price=0, need={}, earn='Đổi 150 kẹo Halloween'),
+    dict(id='t_hw_ba_tuoc', emoji='🧛', name='Bá tước Phố Mây', price=0, need={}, earn='Đổi 450 kẹo Halloween'),
+    dict(id='t_hw_vua_keo', emoji='👑', name='Vua Kẹo Halloween 2026', price=0, need={}, earn='Top 3 Bảng kẹo Halloween 2026'),
+    dict(id='t_hw_top_keo', emoji='🍬', name='Top 10 săn kẹo 2026', price=0, need={}, earn='Top 10 Bảng kẹo Halloween 2026'),
+)
+HALLOWEEN_FRAMES = (
+    dict(id='f_hw_doi', emoji='🦇', name='Khung dơi đêm', price=0, ring='#4c1d95', earn='Đổi 100 kẹo Halloween'),
+    dict(id='f_hw_nhen', emoji='🕸️', name='Khung mạng nhện', price=0, ring='#475569', earn='Đổi 300 kẹo Halloween'),
+    dict(id='f_hw_bi_ngo_vang', emoji='🎃', name='Khung bí ngô vàng', price=0, ring='#d97706', earn='Top 3 Bảng kẹo Halloween 2026'),
+)
+HALLOWEEN_COLORS = (
+    dict(id='c_hw_bi_ngo', emoji='🟠', name='Bí ngô ma mị', price=0, light='#9a3412', dark='#fdba74',
+         grad=('#9a3412', '#6b21a8'), grad_dark=('#fdba74', '#d8b4fe'), earn='Đổi 220 kẹo Halloween'),
+)
+TITLES = TITLES + HALLOWEEN_TITLES
+FRAMES = FRAMES + HALLOWEEN_FRAMES
+COLORS = COLORS + HALLOWEEN_COLORS
 STYLE_ITEMS ={x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}

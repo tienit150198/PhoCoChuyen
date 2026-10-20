@@ -1,0 +1,146 @@
+/* ==========================================================================
+   🎃 Lễ hội Ma Phố (public/js/v4/halloween.js, v4/halloween-town.js), over /css/spend.css (sd-*) and /css/whatsnew.css
+   (the start card). The night band of the sheet's head and the card's art are decoration on a fixed dark purple (white
+   text on #2a1747: ≥ 12:1); everything else uses the theme's tokens. Phone first (390×844): 44 px targets, the riddle's
+   places two by two, one column of doors and items; landscape phones keep the head slim.
+   ========================================================================== */
+.hw-sheet{--hw-night:#2a1747;--hw-night-2:#120a24;--hw-pumpkin:#f97316;--hw-moon:#fde68a}
+.hw-stick{position:sticky;top:0;z-index:6;background:var(--surface)}
+.hw-stick .sheet-head{position:relative}
+.hw-head,.hw-sheet .sheet-head.hw-head{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--hw-night),#3b1d5e);color:#fff;border-bottom:0}
+.hw-head .hw-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.9}
+.hw-head>:not(.hw-art){position:relative}
+.hw-head h2{color:#fff}
+.hw-head .grow{min-width:0}
+.hw-sub{display:block;font-size:.8rem;font-weight:700;color:#e9d5ff;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hw-sub b{color:#fff;font-variant-numeric:tabular-nums}
+.hw-head .hw-logo{background:rgba(255,255,255,.14);box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.hw-candy{flex:none;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-weight:800;font-size:.92rem;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hw-x{color:#fff}
+.hw-head.night,.hw-sheet .sheet-head.hw-head.night{background:linear-gradient(180deg,#120a24,#2a1747)}
+.hw-tabs button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:1.1rem;min-width:0;padding:4px 2px;line-height:1.1}
+.hw-tabs button small{font-size:.72rem;font-weight:800;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hw-tabs .badge{position:absolute;top:2px;right:6px;font-size:.7rem;font-style:normal;min-width:18px;height:18px;line-height:18px;padding:0 5px;border-radius:999px;background:var(--bad);color:#fff;font-weight:800}
+.hw-bar{padding:0 14px}
+.hw-bar .sd-flash{margin:8px 0 0}
+.hw-bar:has(.sd-flash:empty){display:none}
+.sd-flash.warn{padding:8px 10px;border-radius:10px;background:var(--warn-soft,var(--surface-2));color:var(--ink)}
+.hw-body .card{margin:0 0 10px}
+.hw-note{margin:6px 0 10px;font-size:.88rem;line-height:1.5;color:var(--ink-2)}
+.hw-center{text-align:center}
+.hw-muted{display:block;margin:2px 0 0;font-size:.82rem;line-height:1.45;color:var(--muted)}
+.hw-warn{margin:0 0 10px;padding:8px 10px;border-radius:10px;background:var(--bad-soft);color:var(--bad);font-weight:700;font-size:.88rem}
+.hw-h{margin:16px 0 4px;font-size:1rem}
+.hw-ok{font-style:normal;font-weight:800;color:var(--good);font-size:.88rem;white-space:nowrap}
+.hw-plus{font-style:normal;font-weight:800;color:var(--accent-text);white-space:nowrap}
+.hw-tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-size:.72rem;font-weight:800;vertical-align:1px}
+.hw-acts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.hw-acts .btn{flex:1 1 140px;min-height:44px}
+.hw-sheet .btn.full{width:100%}
+.hw-strip{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 8px;padding:8px 10px;border-radius:14px;background:var(--surface-2);font-size:.86rem;color:var(--ink-2)}
+.hw-strip b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* the closed season, a guest */
+.hw-hero{text-align:center;line-height:1.5}
+.hw-big{font-size:2.2rem;margin:4px 0 6px;letter-spacing:4px}
+.hw-rules summary{cursor:pointer;font-weight:800;min-height:32px}
+.hw-rules ul{margin:6px 0 0;padding-left:18px;font-size:.86rem;line-height:1.5;color:var(--ink-2)}
+.hw-rules li{margin:4px 0}
+
+/* 🎃 today */
+.hw-day{background:linear-gradient(135deg,color-mix(in srgb,var(--hw-pumpkin) 14%,var(--surface)),var(--surface));border-color:color-mix(in srgb,var(--hw-pumpkin) 40%,var(--line))}
+.hw-day.night{background:linear-gradient(135deg,color-mix(in srgb,#7c3aed 18%,var(--surface)),var(--surface))}
+.hw-day-k{margin:0;font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.hw-day-t{margin:2px 0 4px;font-size:1.12rem;font-weight:800;color:var(--ink)}
+.hw-day-l{margin:0;font-size:.92rem;line-height:1.5;color:var(--ink-2)}
+.hw-night{margin:8px 0 0;font-weight:800;color:var(--accent-text)}
+.hw-row-card{display:flex;align-items:center;gap:10px}
+.hw-row-card .grow{min-width:0}
+.hw-row-card .btn{flex:none;min-height:44px;white-space:nowrap}
+.hw-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);font-size:1.3rem}
+.hw-giant .hw-ic{background:color-mix(in srgb,var(--hw-pumpkin) 22%,var(--surface))}
+.hw-pumpkins{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.hw-pk .hw-riddle{margin:0 0 8px;font-size:.95rem;line-height:1.5;font-style:italic;color:var(--ink)}
+.hw-pk .hw-riddle span{font-style:normal}
+.hw-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0 0 8px}
+.hw-choices .sd-chip{font-size:.88rem;line-height:1.2;padding:6px 8px;border-radius:12px;min-height:44px;white-space:normal}
+.hw-pk.found{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
+.hw-pk.missed{opacity:.8}
+.hw-pk-r{margin:0;font-weight:800;font-size:.9rem;color:var(--ink-2)}
+.hw-pk.found .hw-pk-r{color:var(--good)}
+
+/* 🚪 doors */
+.hw-user label{display:block;margin:0 0 6px;font-size:.9rem}
+.hw-user-row{display:flex;gap:8px}
+.hw-user-row input{flex:1 1 auto;min-width:0;min-height:44px;padding:0 12px;border:1px solid var(--line-strong,var(--line));border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:1rem}
+.hw-user-row .btn{flex:none;min-height:44px}
+.hw-list{display:flex;flex-direction:column;gap:6px}
+.hw-person{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.hw-person .grow{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.hw-person b{font-size:.95rem}
+.hw-person .btn{flex:none;min-height:40px;white-space:nowrap}
+.hw-av{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--surface-2);overflow:hidden;font-size:1.2rem}
+.hw-av svg{width:100%;height:100%}
+
+/* 🎁 shop */
+.hw-shop{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.hw-item{display:flex;align-items:center;gap:10px}
+.hw-item .grow{min-width:0}
+.hw-item.owned{opacity:.85}
+.hw-item-e{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:color-mix(in srgb,#7c3aed 12%,var(--surface-2));font-size:1.45rem}
+.hw-item-buy{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.hw-item-buy .btn{min-height:40px;min-width:64px}
+.hw-cost{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.hw-short{font-size:.78rem;font-weight:700;color:var(--muted);white-space:nowrap}
+
+/* 🏆 board */
+.hw-board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.hw-board li{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.hw-board li.me{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.hw-board .grow{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hw-rank{flex:none;width:28px;text-align:center;font-weight:800}
+
+@media (min-width:560px){
+  .hw-pumpkins,.hw-shop{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
+}
+@media (max-height:480px){
+  .hw-head{padding-top:6px;padding-bottom:6px}
+  .hw-tabs button{min-height:40px}
+}
+
+/* ---------------------------------------------------------------- the start card (over whatsnew.css) */
+.hw-card .wn-head{background:linear-gradient(180deg,#2a1747,#3b1d5e);color:#fff;border-bottom:0}
+.hw-card .wn-head h2{color:#fff}
+.hw-card .wn-meta{color:#e9d5ff}
+.hw-card .wn-x{color:#fff}
+.hw-card .wn-spark{background:rgba(255,255,255,.14)}
+.hw-card-art{display:block;width:100%;height:auto;margin:10px 0 8px;border-radius:14px}
+.hw-card-line{margin:4px 0 8px;font-size:1.02rem;line-height:1.5;color:var(--ink)}
+.hw-card-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:4px;font-size:.95rem;color:var(--ink-2)}
+.hw-card-foot{display:flex;flex-direction:column;gap:6px}
+.hw-card-foot .btn.ghost{min-height:44px}
+
+/* ---------------------------------------------------------------- the 2.5D town at Halloween (v4/halloween-town.js) */
+.hw-town{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hw-town[hidden]{display:none}
+.hw-tint{position:absolute;inset:0;background:
+  radial-gradient(ellipse 120% 80% at 50% 115%,transparent 45%,rgba(24,8,48,.32) 100%),
+  linear-gradient(180deg,rgba(42,23,71,.30),rgba(42,23,71,.06) 42%,transparent 60%)}
+.hw-town.night .hw-tint{background:
+  radial-gradient(ellipse 110% 75% at 50% 110%,transparent 35%,rgba(18,10,36,.5) 100%),
+  linear-gradient(180deg,rgba(18,10,36,.5),rgba(42,23,71,.14) 50%,rgba(249,115,22,.06))}
+.hw-moon{position:absolute;right:max(14px,4vw);top:calc(var(--safe-t,0px) + 64px);width:44px;height:44px;opacity:.85}
+.hw-garland{position:absolute;left:0;right:0;top:calc(var(--safe-t,0px) + 52px);height:22px;display:flex;justify-content:space-around;opacity:.92}
+.hw-garland i{display:block;width:14px;height:12px;margin-top:calc(var(--d,0) * 1px);border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 50% 60%,#fde047 0 18%,#f97316 26% 100%);box-shadow:0 0 10px rgba(249,115,22,.7);animation:hw-glow 2.6s ease-in-out infinite alternate;animation-delay:calc(var(--d,0) * -.2s)}
+.hw-garland::before{content:'';position:absolute;left:0;right:0;top:0;height:10px;border-bottom:1px solid rgba(30,20,40,.45);border-radius:0 0 50% 50%/0 0 100% 100%}
+.hw-bats{position:absolute;left:0;top:0;will-change:transform}
+.hw-bats[hidden]{display:none}
+.hw-bats svg{position:absolute;display:block;transform-origin:50% 40%;animation:hw-flap .22s ease-in-out infinite alternate}
+.hw-bats svg:nth-child(2){animation-delay:-.1s}.hw-bats svg:nth-child(3){animation-delay:-.16s}
+.hw-ghost{position:absolute;left:8%;bottom:28%;width:38px;opacity:0;animation:hw-ghost 14s ease-in-out infinite}
+@keyframes hw-glow{from{filter:brightness(.85)}to{filter:brightness(1.25)}}
+@keyframes hw-flap{from{transform:scaleY(1)}to{transform:scaleY(.4)}}
+@keyframes hw-ghost{0%,70%,100%{opacity:0;transform:translate(0,0)}78%{opacity:.75}88%{opacity:.6;transform:translate(26px,-30px)}96%{opacity:0;transform:translate(40px,-46px)}}
+@media (prefers-reduced-motion:reduce){.hw-garland i,.hw-bats svg,.hw-ghost{animation:none}.hw-bats,.hw-ghost{display:none}}
+html.reduce-motion .hw-garland i{animation:none}
+html.reduce-motion .hw-bats,html.reduce-motion .hw-ghost{display:none}
