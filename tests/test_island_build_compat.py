@@ -1,7 +1,8 @@
 """🏗️ Xây trên đảo and rollbacks: saves with journey.islb (and the wallet rows building, upgrading, razing and a sale
 wrote) validate, migrate and play on the releases production may be rolled back to (2.4.60 at e05bacf5, the release
 before this one; 2.4.34 at 917f0733, the first with islands). Those builds keep the block untouched (journey allows extra
-keys), never charge or pay it, and coming back to this build the buildings are still there."""
+keys), never charge or pay it, and coming back to this build the buildings are still there. 🏡 20/10: a house style in
+another colour ('<style>__<n>') is kept by shape there too (never shown, never counted)."""
 import copy
 import json
 import unittest
@@ -54,6 +55,8 @@ class Rollback(old_compat.OldServer):   # (the module: its own OldServer tests r
             clock[0] += 48 * 3600
             a, _ = act(a, 'jr_isle_up', island='dao_hoang_hon', plot=0, confirm=True)                       # 40M upgrade building
             a, _ = act(a, 'jr_isle_raze', island='dao_hoang_hon', plot=23, confirm=True)                    # salvage back
+            a, _ = act(a, 'jr_isle_build', island='dao_hoang_hon', plot=2, kind='pho_hoi_an', look=2, confirm=True)   # 🏡 20/10: a style
+            a, _ = act(a, 'jr_isle_paint', island='dao_hoang_hon', plot=2, look=1, confirm=True)            # in its colour 'pho_hoi_an__1'
             a, _ = act(a, 'jr_isle_use', trip='ab' * 8, plot=1)
             b = rich(80_000_000)
             b, _ = buy(b, 'dao_san_ho')
@@ -81,6 +84,7 @@ class Rollback(old_compat.OldServer):   # (the module: its own OldServer tests r
         a, _ = act(a, 'jr_seen', ids=['x'])
         validate_state(a)
         self.assertEqual(a['journey']['islb']['p']['dao_hoang_hon']['0']['k'], 'lau_dai')
+        self.assertEqual(a['journey']['islb']['p']['dao_hoang_hon']['2']['k'], 'pho_hoi_an__1')   # an older build kept it as it was
         self.assertGreater(ib.worth(a['journey']), 0)
 
     def test_saves_play_on_2_4_60(self):

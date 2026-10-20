@@ -31,7 +31,8 @@ export function facing(dx,dy,prev='se'){
 /** The map for the server's view of the bang: its island's level, and the next level's work site while it is built. */
 export const layoutOf=bang=>layout(bang?.isle?.level||1,bang?.isle?.state==='building'?bang.isle.to||0:0);
 /** The renderers' facility looks from the server's view. */
-export const looks=bang=>({name:bang.name,emoji:bang.emoji,color:bang.color,facilities:(bang.facilities||[]).map(f=>({id:f.id,level:f.level,band:f.band,state:f.state}))});
+export const looks=bang=>({name:bang.name,emoji:bang.emoji,color:bang.color,facilities:(bang.facilities||[]).map(f=>({id:f.id,level:f.level,band:f.band,state:f.state})),
+  ...(bang.hall?{hall:{style:String(bang.hall.style||''),look:Number(bang.hall.look)||0}}:{}),...(Array.isArray(bang.decor)?{decor:bang.decor.map(String)}:{})});   // 🏯🎏 20/10 (game/bang_extra.py)
 
 /** The session without the DOM: tests drive it with a fake view, renderer, live socket and clock. */
 export function createBangIslandSession(env,{isle,view,loadRenderer,loadLive=async()=>null,actions={},clock=()=>performance.now(),wall=()=>Date.now()/1000,

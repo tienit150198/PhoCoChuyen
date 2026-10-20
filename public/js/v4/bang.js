@@ -29,11 +29,15 @@
  * HTML string patched into the live page (morph: only changed nodes are touched, lists keyed by data-k), a tap marks
  * only its own button as pending (never the whole sheet disabled and greyed), the tapped card stays under the finger
  * (scroll anchoring), the result line sits in the sticky bottom dock (nothing above moves), the tab, the chosen amount,
- * the open member and each tab's scroll stay; the town redraws once the sheet closes. */
+ * the open member and each tab's scroll stay; the town redraws once the sheet closes.
+ * 🏯 20/10 (game/bang_extra.py): 🏗️ has the hall's styles (hall {style, look, confirm}: a style bought once from the
+ * fund, owned ones and their colours switch free, once an hour) and the island's decorations (decor {id, confirm});
+ * 🏯 has this week's three quests (quest {id}: điểm cống hiến). Previews are drawn by public/js/house-art.js. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {qtyBox,QTY,qtyVal} from '../qty-input.js';
 import {COLORS,ROLES,chip,setMine,tagLine} from './bang-tag.js';
 import {petPicture,lookup,accOf,fxRef,RANK} from './pet-art.js';
+import {HOUSES,previewHouse,previewDecor} from '../house-art.js';
 
 const IN_TABS=[['home','🏯','Bang của tôi'],['members','👥','Thành viên'],['code','📜','Nội quy bang'],['build','🏗️','Công trình'],['shop','🛍️','Cửa hàng bang'],['rank','👑','Xếp hạng tuần'],['more','⚙️','Cài đặt bang']];
 const OUT_TABS=[['find','🔎','Tìm bang'],['found','⚔️','Lập bang'],['rank','👑','Xếp hạng tuần']];
@@ -41,7 +45,9 @@ const BIG=1_000_000;
 const S={dlg:null,env:null,view:null,tab:'',flash:null,busy:false,q:'',list:null,found:null,form:null,amount:0,arm:'',armTimer:0,
   friends:null,sel:'',gh:null,timer:0,at:0,bang:null,ladder:null,rules:null,
   armAt:0,tapEl:null,pendSel:'',ys:{},dirtyMain:false,flashTimer:0,reqN:0,seen:0,
-  agree:'',agreeVer:-1,cdEdit:'',cdDraft:{pub:'',in:''},cdBase:{pub:0,in:0},cdNews:[],err:null};   // 📜 the tick (bang id + the version shown), the editor
+  agree:'',agreeVer:-1,cdEdit:'',cdDraft:{pub:'',in:''},cdBase:{pub:0,in:0},cdNews:[],err:null,   // 📜 the tick (bang id + the version shown), the editor
+  hallPick:'',hallLook:-1};   // 🏯 the hall style and colour being looked at (20/10)
+const drawn=new WeakMap();   // a preview canvas → what it shows (drawn again only when that changes)
 const ARM_GAP=200;   // ms: a second tap sooner than this is a double tap, not the confirming tap
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
@@ -253,6 +259,12 @@ async function onClick(op,d,el){
       if(!/^PCC-[0-9A-Z]{6}$/.test(v)){said('Nhập mã người chơi dạng PCC-XXXXXX nhé.','bad');render();return;}
       await post('invite',{code:v},el);return;}
     case'build':{const f=(p?.facilities||[]).find(x=>x.id===d.id);if(!f)return;if(!armed('build:'+f.id))return;await post('build',{fac:f.id,confirm:true},el);return;}
+    case'hallPick':S.hallPick=d.id;S.hallLook=-1;S.arm='';render();return;
+    case'hallLook':S.hallLook=Number(d.n)||0;S.arm='';render();return;
+    case'hall':{const h=p?.hall,st=(h?.list||[]).find(x=>x.id===d.id);if(!st)return;const look=Number(d.n)||0;
+      if(!st.owned&&!armed('hall:'+st.id))return;if(await post('hall',{style:st.id,look,...(st.owned?{}:{confirm:true})},el)){S.hallPick='';S.hallLook=-1;}return;}
+    case'decor':{if(!armed('decor:'+d.id))return;await post('decor',{id:d.id,confirm:true},el);return;}
+    case'quest':await post('quest',{id:d.id},el);return;
     case'buy':await post('buy',{item:d.id,rid:rid()},el);return;
     case'wear':await post('wear',{item:d.id,on:d.on==='1',...(d.style?{style:d.style}:{})},el);return;
     case'fire':{const r=await post('fire',{rid:rid()},el);if(r){try{(await import('./fireworks.js')).markMine?.('lon');}catch{/* the show comes anyway */}}return;}
@@ -331,6 +343,8 @@ function render(){
   }
   if(keep&&!keep.el.isConnected){const b=keep.qty?S.dlg.querySelector('input[data-qty]'):S.dlg.querySelector(`input[name="${CSS.escape(keep.name||'')}"]`);if(b&&b.type!=='checkbox'){b.value=keep.value;b.focus({preventScroll:true});try{b.setSelectionRange(keep.pos,keep.pos);}catch{/* not text */}}}
   if(S.pendSel)S.dlg.querySelector(S.pendSel)?.classList.add('is-pending');
+  for(const cv of S.dlg.querySelectorAll('canvas[data-art]')){const key=()=>cv.dataset.art+'|'+cv.clientWidth+'|'+cv.width;if(drawn.get(cv)===key())continue;   // 🏯🎏 previews (the redraw drops the
+    const [kind,id,a,b]=cv.dataset.art.split('|');if(kind==='h')previewHouse(cv,id,Number(a)||1,Number(b)||0);else previewDecor(cv,id,hex(P()?.bang?.color));drawn.set(cv,key());}   // canvas size it set: drawn again)
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 /* ---- morph: the new HTML onto the live nodes. Same tag in the same place (or the same data-k among its siblings):
@@ -520,7 +534,16 @@ function homeTab(){
   const pts=`<section class="sd-card bg-pts" data-k="pts"><h3>⭐ ${fmt(me.points)} điểm cống hiến</h3>${bar(Math.floor(me.today*100/Math.max(1,me.today_max)),'bg-today')}
     <p class="tp-note">Hôm nay ${me.today}/${me.today_max} điểm hoạt động: 📅 điểm danh +${CAT().points?.checkin||20}, mỗi ngày làm việc +${CAT().points?.work||10}. Điểm đổi đồ ở 🛍️.</p></section>`;
   const codeNew=p.code?.fresh?`<section class="sd-card bg-nq-new" data-k="codenew"><div class="bg-row"><span class="bg-nq-ico" aria-hidden="true">📜</span><div class="grow"><b>Nội quy mới</b><small>Bang vừa cập nhật nội quy. Đọc để nắm luật của bang nhé.</small></div>${btn('tab','Xem',' data-tab="code"','btn primary')}</div></section>`:'';
-  return gold+codeNew+isleOffer()+hero+warCard()+chalCard()+fund+pts+goldenCard()+logCard();
+  return gold+codeNew+isleOffer()+hero+warCard()+chalCard()+questCard()+fund+pts+goldenCard()+logCard();
+}
+/** 📋 Nhiệm vụ tuần (game/bang_extra.py): the bang's three quests, their progress, my rewards. */
+function questCard(){
+  const q=P()?.quests;if(!q?.list?.length)return '';
+  const rows=q.list.map(x=>{const pct=Math.floor(x.have*100/Math.max(1,x.need));
+    const act=x.claimed?'<span class="bg-q-ok">✓ Đã nhận</span>':x.done?btn('quest',`Nhận ⭐ ${x.pts}`,` data-id="${esc(x.id)}"${!q.active||q.used>=q.max?' disabled':''}`,'btn primary sm'):`<span class="bg-q-pts">⭐ ${x.pts}</span>`;
+    return `<li data-k="q:${esc(x.id)}" class="bg-q${x.done?' done':''}"><span class="bg-q-ico" aria-hidden="true">${esc(x.emoji)}</span><div class="grow"><b>${esc(x.text)}</b>${bar(pct,'bg-q-bar')}<small>${fmt(x.have)}/${fmt(x.need)}</small></div>${act}</li>`;}).join('');
+  const note=!q.active?'Góp sức cho bang tuần này (điểm danh, làm việc hoặc góp quỹ) để nhận thưởng.':q.used>=q.max?`Tuần này bạn đã nhận đủ ${q.max} phần thưởng.`:`Cả bang cùng làm, ai góp sức đều nhận thưởng${q.bonus?` (trang trí đảo +${q.bonus}%)`:''}.`;
+  return `<section class="sd-card bg-quests" data-k="quests"><h3>📋 Nhiệm vụ tuần</h3><ul class="bg-q-list">${rows}</ul><p class="tp-note">${esc(note)} Đổi tuần sau <b data-bg-until="${q.ends}">${esc(left(q.ends-serverNow()))}</b>.</p></section>`;
 }
 /** "2 ngày 3 giờ", "5 giờ 12 phút", else "12:05" (minutes:seconds) or "1:02:03": the war's countdown. */
 function countdown(sec){
@@ -712,7 +735,34 @@ function buildTab(){
     }else foot='<p class="bg-next">✨ Cấp cao nhất</p>';
     return `<section data-k="f:${f.id}" class="sd-card bg-fac${f.building?' building':''}"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">${esc(c.emoji||'🏗️')}</span><div class="grow"><b>${esc(c.name||f.id)}</b><small>Cấp ${f.level}/${f.max} · ${esc(f.perk)}</small></div></div><div class="bg-pips" aria-hidden="true">${pips}</div>${foot}</section>`;
   }).join('');
-  return `<p class="tp-note bg-top">💰 Quỹ ${fmt(p.fund)} xu · xây cùng lúc ${busy}/${p.slots}</p>`+isleCard()+cards;
+  return `<p class="tp-note bg-top">💰 Quỹ ${fmt(p.fund)} xu · xây cùng lúc ${busy}/${p.slots}</p>`+isleCard()+hallCard()+cards+decorCard();
+}
+/** 🏯 Kiểu đại sảnh: the styles (a preview each), the chosen one big with its colours, buy (fund) or switch. */
+function hallCard(){
+  const p=P(),h=p?.hall;if(!h?.list)return '';
+  const can=rank(p.me.role)>=4,pick=h.list.find(x=>x.id===S.hallPick)||h.list.find(x=>x.id===h.style)||h.list[0];
+  const art=(id,lv,look,cls)=>HOUSES[id]?`<canvas class="${cls}" data-art="h|${esc(id)}|${lv}|${look}" aria-hidden="true"></canvas>`:`<span class="${cls} bg-hall-e" aria-hidden="true">🏯</span>`;
+  const lv=p.levels?.dai_sanh||1,hl=lv>=5?3:lv>=3?2:1;
+  const chips=h.list.map(x=>{const on=x.id===pick.id,cur=x.id===h.style;
+    return `<button type="button" data-k="hs:${esc(x.id)}" class="bg-hs${on?' on':''}${x.open?'':' off'}" data-bg="hallPick" data-id="${esc(x.id)}" aria-pressed="${on}">${art(x.id,hl,cur?h.look:0,'bg-hs-art')}<b>${esc(x.name)}</b><small>${cur?'✓ Đang dùng':x.owned?'Đã mở':x.open?`${mil(x.price)} xu`:`Đại sảnh cấp ${x.hall}`}</small></button>`;}).join('');
+  const pals=HOUSES[pick.id]?.pals||[],look=S.hallLook>=0&&pals[S.hallLook]?S.hallLook:pick.id===h.style?h.look:0;
+  const sw=pals.length>1?`<div class="bg-looks" role="group" aria-label="Màu">${pals.map((c,n)=>`<button type="button" class="bg-look${n===look?' on':''}" data-bg="hallLook" data-n="${n}" aria-pressed="${n===look}" title="${esc(c.name)}" aria-label="${esc(c.name)}"><i style="background:linear-gradient(135deg,${c.roof} 50%,${c.wall} 50%)"></i></button>`).join('')}<small>${esc(pals[look]?.name||'')}</small></div>`:'';
+  const same=pick.id===h.style&&look===h.look;
+  const why=same?'':!can?'Phó bang trở lên mới đổi':!pick.open?`Cần Đại sảnh cấp ${pick.hall}`:h.wait>0?`Vừa đổi, chờ ${left(h.wait)}`:!pick.owned&&p.fund<pick.price?`Quỹ thiếu ${fmt(pick.price-p.fund)} xu`:'';
+  const label=same?'✓ Đang dùng':pick.owned?'Đổi sang kiểu này':S.arm==='hall:'+pick.id?'Bấm lần nữa':`Mở kiểu · ${mil(pick.price)} xu quỹ`;
+  return `<section class="sd-card bg-hall" data-k="hall"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">🏯</span><div class="grow"><b>Kiểu đại sảnh</b><small>Diện mạo đại sảnh trên đảo bang. Mở một lần, đổi qua lại miễn phí.</small></div></div>
+    <div class="bg-hs-row">${chips}</div>
+    <div class="bg-hall-pick">${art(pick.id,hl,look,'bg-hall-big')}<div class="grow"><b>${esc(pick.emoji)} ${esc(pick.name)}</b>${sw}
+      ${btn('hall',label,` data-id="${esc(pick.id)}" data-n="${look}"${same||why?' disabled':''}`,'btn primary')}${why?`<small class="sd-why">${esc(why)}</small>`:''}</div></div></section>`;
+}
+/** 🎏 Trang trí đảo bang: bought once each from the fund, each +5 % on the weekly quests' points (30 % at most). */
+function decorCard(){
+  const p=P(),d=p?.decor;if(!d?.list)return '';
+  const can=rank(p.me.role)>=4,isle=isleLevel()>=1;
+  const rows=d.list.map(x=>{const why=x.owned?'':!can?'Phó bang trở lên mới mua':!isle?'Cần 🏝️ Đảo bang':!x.open?`Cần Đại sảnh cấp ${x.hall}`:p.fund<x.price?`Quỹ thiếu ${fmt(x.price-p.fund)} xu`:'';
+    const act=x.owned?'<span class="bg-q-ok">✓ Đã có</span>':btn('decor',S.arm==='decor:'+x.id?'Bấm lần nữa':`${mil(x.price)} xu`,` data-id="${esc(x.id)}"${why?' disabled':''}`,'btn primary sm');
+    return `<div data-k="d:${esc(x.id)}" class="bg-dec${x.owned?' on':''}"><canvas class="bg-dec-art" data-art="d|${esc(x.id)}" aria-hidden="true"></canvas><div class="grow"><b>${esc(x.emoji)} ${esc(x.name)}</b><small>${esc(x.blurb)}</small>${why?`<small class="sd-why">${esc(why)}</small>`:''}</div>${act}</div>`;}).join('');
+  return `<section class="sd-card bg-decor" data-k="decor"><div class="bg-fac-head"><span class="bg-fac-ico" aria-hidden="true">🎏</span><div class="grow"><b>Trang trí đảo bang</b><small>Mỗi món +${d.per}% điểm nhiệm vụ tuần (tối đa +${d.max}%) · đang +${d.bonus}%</small></div></div><div class="bg-decs">${rows}</div></section>`;
 }
 function shopTab(){
   const p=P();if(!p)return '<p class="sd-empty">⏳</p>';

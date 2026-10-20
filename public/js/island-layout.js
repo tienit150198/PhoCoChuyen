@@ -9,6 +9,8 @@
  *   plots [[x, y, coast]] 🏗️ the building plots (game/island_build_content.py PLOTS: the same numbers, the same order;
  *   tests/test_island_build.py checks it). withBuilds(L, builds) adds what stands on them: blocks, spots, piers. */
 
+import {HOUSES,splitKind} from './house-art.js';
+
 const TAU=Math.PI*2;
 /** An organic coast: an ellipse whose radius wobbles by `bumps` (one value per control point), smoothed. */
 function blob(cx,cy,rx,ry,bumps,steps=48){
@@ -174,6 +176,8 @@ export const BUILD_ART={
   golf:{emoji:'⛳',name:'Sân golf mini',pose:'stand',lines:['Vụt một gậy, bóng lăn sát lỗ!','Bóng rơi vào hố cát, cười một trận.']},
   cam_trai:{emoji:'🏕️',name:'Khu cắm trại',pose:'sit',lines:['Ngồi quanh lửa, nướng bắp thơm phức.','Nằm trong lều nghe sóng vỗ.']},
   ben_thuyen:{emoji:'⚓',name:'Bến du thuyền',pose:'stand',lines:['Ngồi mép cầu, thả chân xuống nước.','Ngắm thuyền buồm lắc lư bên bến.']},
+  // 🏡 the house styles (public/js/house-art.js, 20/10): homes, a door to go inside
+  ...Object.fromEntries(Object.entries(HOUSES).map(([id,h])=>[id,{emoji:h.emoji,name:h.name,home:true,pose:'stand',tier:h.tier}])),
 };
 /** The live room's spot id of a plot's building (live/island.py SPOT_RE: letters and _ only). */
 export const plotSpot=p=>'b_'+(p<26?String.fromCharCode(97+p):'z'+String.fromCharCode(97+p-26));
@@ -198,13 +202,13 @@ export function pierOf(L,[px,py]){
 export function withBuilds(L,builds,now){
   const plots=L.plots||[],built=[],spots=L.spots.filter(s=>!s.build),blocks=[...(L.blocks||[])],walk=[...(L.walk||[])];
   for(const b of builds||[]){
-    const pl=plots[b.p],art=BUILD_ART[b.k];if(!pl||!art)continue;
+    const [kind,look]=splitKind(b.k),pl=plots[b.p],art=BUILD_ART[kind];if(!pl||!art)continue;   // 🏡 '<style>__<n>': its colour
     const level=levelAt(b,now),work=workAt(b,now);
-    const it={plot:b.p,x:pl[0],y:pl[1],coast:Boolean(pl[2]),kind:b.k,level,work,until:work?b.t:0,next:b.b||0,art};
+    const it={plot:b.p,x:pl[0],y:pl[1],coast:Boolean(pl[2]),kind,look:HOUSES[kind]?look:0,level,work,until:work?b.t:0,next:b.b||0,art};
     built.push(it);
     if(work||art.home)blocks.push({x:pl[0],y:pl[1],w:PLOT_W*.8,h:PLOT_W*.8});
     if(work||level<1)continue;
-    if(b.k==='ben_thuyen'){it.pier=pierOf(L,pl);walk.push(it.pier.rect);}
+    if(kind==='ben_thuyen'){it.pier=pierOf(L,pl);walk.push(it.pier.rect);}
     const door=art.home?[pl[0]+PLOT_W*.3,pl[1]+PLOT_W*.62]:[pl[0],pl[1]];
     spots.push({id:plotSpot(b.p),emoji:art.home?'🚪':art.emoji,name:art.home?`Vào ${art.name}`:art.name,x:door[0],y:door[1],
       pose:art.home?'stand':art.pose,lines:art.lines||[`${art.emoji} ${art.name}`],build:it,home:Boolean(art.home)});

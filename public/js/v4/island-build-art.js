@@ -4,9 +4,12 @@
  * pools, piers), `standing` returns [y, draw] pairs the walk sorts with the people. `view()` gives the walk's current
  * projection {P(x, y) → [px, py], S, FLAT}. Pure painting: the list comes from public/js/island-layout.js withBuilds. */
 import {PLOT_W} from '../island-layout.js';
+import {HOUSES,paintHouse,houseTop} from '../house-art.js';
 
-/** How much bigger than its plot's own scale each kind is drawn (as on the new interface: client/isometric/island-builds.ts). */
+/** How much bigger than its plot's own scale each kind is drawn (as on the new interface: client/isometric/island-builds.ts).
+ * 🏡 The house styles of public/js/house-art.js: HOUSE_GROW. */
 const GROW={nha_san:1.4,biet_thu:1.3,lau_dai:1.35,cong_vien:1.25,ho_boi:1,golf:1.15,cam_trai:1.3,ben_thuyen:1};
+const HOUSE_GROW=1.3;
 
 export function createBuildArt(ctx,view){
   const darker=(hex,k)=>{const n=parseInt(String(hex).slice(1),16);const c=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${c((n>>16)&255)},${c((n>>8)&255)},${c(n&255)})`;};
@@ -33,6 +36,15 @@ export function createBuildArt(ctx,view){
     if(lv>2){ctx.fillStyle='#eef3f7';ctx.fillRect(-20*k,-22*k,36*k,16*k);ctx.fillStyle='#3d6f96';ctx.fillRect(-16*k,-19*k,28*k,6*k);}
     ctx.restore();}
 
+  /** 🏡 A house style (public/js/house-art.js) in this three-quarter view: x across, y squashed, z straight up. */
+  function houseView(p){
+    const {P,S}=view(),k=S/900;
+    return {zs:k,depth:(x,y)=>y,light:(nx,ny,nz)=>Math.max(.66,Math.min(1.14,.86+.14*ny+.24*nz+.1*nx)),
+      P:(x,y,z)=>{const [a,b]=P(p.x+x,p.y+y);return [a,b-z*k];},
+      fill(pts,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();ctx.globalAlpha=1;},
+      circle(x,y,r,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,Math.max(.5,r),0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;},
+      line(a,b,color,w){ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}};
+  }
   function groundOne(p,it){
     const r={x:p.x,y:p.y,w:PLOT_W*.92,h:PLOT_W*.92};
     if(!it){const [a,b,c,d]=rect(r,'rgba(255,255,255,.14)');ctx.setLineDash([6,5]);ctx.strokeStyle='rgba(255,255,255,.65)';ctx.lineWidth=1.5;ctx.strokeRect(a,b,c-a,d-b);ctx.setLineDash([]);
@@ -40,6 +52,7 @@ export function createBuildArt(ctx,view){
       if(p.coast)emoji('⚓',(a+c)/2,(b+d)/2+8,14,.7);return;}
     const lv=Math.max(1,Math.min(3,it.level));
     if(it.work&&it.level<1){const [a,b,c,d]=rect(r,'#c9b48a');ctx.fillStyle='#9b8a6a';for(let i=0;i<6;i++)ctx.fillRect(a+(c-a)*((i*37)%10)/10,b+(d-b)*((i*53)%10)/10,5,3);return;}
+    if(HOUSES[it.kind]){const {P}=view(),[a,b]=P(p.x,p.y);ctx.save();ctx.translate(a,b);ctx.scale(HOUSE_GROW,HOUSE_GROW);ctx.translate(-a,-b);paintHouse(it.kind,lv,it.look||0,houseView(p),{only:'ground'});ctx.restore();return;}
     switch(it.kind){
       case 'nha_san':rect(r,'rgba(201,167,122,.55)');break;
       case 'biet_thu':rect(r,'#e9e2d2');break;
@@ -58,16 +71,17 @@ export function createBuildArt(ctx,view){
   }
 
   function scaffold(p,it,t){
-    const top=({lau_dai:110,biet_thu:66,nha_san:50}[it.kind]||36)*(it.next>1?1:.75),bx=box(p.x,p.y,H*.78,H*.78,0,top,'rgba(79,174,106,.32)','rgba(63,154,90,.2)'),{k}=bx;
+    const top=({lau_dai:110,biet_thu:66,nha_san:50}[it.kind]||(HOUSES[it.kind]?houseTop(it.kind,Math.max(1,it.next||1))*HOUSE_GROW:36))*(it.next>1?1:.75),bx=box(p.x,p.y,H*.78,H*.78,0,top,'rgba(79,174,106,.32)','rgba(63,154,90,.2)'),{k}=bx;
     ctx.strokeStyle='#8a6038';ctx.lineWidth=2.5;for(const f of [0,.5,1]){const xx=bx.a+(bx.c-bx.a)*f;ctx.beginPath();ctx.moveTo(xx,bx.base);ctx.lineTo(xx,bx.front);ctx.stroke();ctx.beginPath();ctx.moveTo(xx,bx.front);ctx.lineTo(xx,bx.top);ctx.stroke();}
     ctx.strokeStyle='#c49a5c';ctx.lineWidth=3;for(let z=12;z<=top;z+=14){const yy=bx.base-z*k;ctx.beginPath();ctx.moveTo(bx.a-2,yy);ctx.lineTo(bx.c+2,yy);ctx.stroke();}
-    if(it.kind==='lau_dai'||it.kind==='biet_thu'){ctx.strokeStyle='#f2b630';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(bx.a,bx.top);ctx.lineTo(bx.a,bx.top-46*k);ctx.lineTo(bx.c+30*k,bx.top-40*k);ctx.stroke();
+    if(it.kind==='lau_dai'||it.kind==='biet_thu'||(HOUSES[it.kind]?.tier||0)>=3){ctx.strokeStyle='#f2b630';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(bx.a,bx.top);ctx.lineTo(bx.a,bx.top-46*k);ctx.lineTo(bx.c+30*k,bx.top-40*k);ctx.stroke();
       const sw=Math.sin(t/700)*4;ctx.strokeStyle='#444';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(bx.c+24*k,bx.top-40*k);ctx.lineTo(bx.c+24*k,bx.top-14*k+sw);ctx.stroke();ctx.fillStyle='#8a6038';ctx.fillRect(bx.c+18*k,bx.top-14*k+sw,12*k,5*k);}
     emoji('🏗️',bx.c,bx.top-2+Math.sin(t/450)*2,18*k+8);
   }
 
   function standOne(p,it,t){
     const lv=Math.max(1,Math.min(3,it.level));
+    if(HOUSES[it.kind]){paintHouse(it.kind,lv,it.look||0,houseView(p),{only:'parts'});return;}
     switch(it.kind){
       case 'nha_san':{const hw=lv>1?.024:.02,hd=lv>1?.02:.017,z=14;const legs=box(p.x,p.y,hw,hd,0,z,'rgba(0,0,0,0)','rgba(0,0,0,0)');
         ctx.fillStyle='#6e4a2e';for(const f of [0,1])ctx.fillRect(legs.a+(legs.c-legs.a)*f-1.5,legs.front,3,legs.base-legs.front);
@@ -107,7 +121,7 @@ export function createBuildArt(ctx,view){
       const out=[];
       for(const it of built||[]){
         const p=(plots||[])[it.plot];if(!p)continue;const at={x:p[0],y:p[1]};
-        if(it.level>=1)out.push([at.y+H*.8,()=>{const {P}=view(),[a,b]=P(at.x,at.y),K=GROW[it.kind]||1;ctx.save();ctx.translate(a,b);ctx.scale(K,K);ctx.translate(-a,-b);standOne(at,it,t);ctx.restore();}]);
+        if(it.level>=1)out.push([at.y+H*.8,()=>{const {P}=view(),[a,b]=P(at.x,at.y),K=GROW[it.kind]||(HOUSES[it.kind]?HOUSE_GROW:1);ctx.save();ctx.translate(a,b);ctx.scale(K,K);ctx.translate(-a,-b);standOne(at,it,t);ctx.restore();}]);
         if(it.work)out.push([at.y+H*.8+.0001,()=>scaffold(at,it,t)]);
         if(it.kind==='ben_thuyen'&&it.pier&&!it.work)out.push([it.pier.end[1],()=>{}]);
       }

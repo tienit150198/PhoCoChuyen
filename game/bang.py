@@ -50,6 +50,8 @@ What a player does
   (never under its lock) the storage layer refreshes a small shared snapshot of the windows on now (once a minute, one
   thread a process) and, every half hour, the player's own windows that already ended (prepare); the command binds
   this save's (bind).
+* 🏯 Kiểu đại sảnh, 🎏 trang trí đảo bang, 📋 nhiệm vụ tuần (owner 20/10 "bang hội nữa nhiều hơn"): game/bang_extra.py
+  (ops hall, decor, quest; the page's `hall`, `decor`, `quests`). Fund sinks and điểm cống hiến only; never the ranking.
 * 👑 Bang mạnh nhất tuần (owner 21/10, final: "đừng để cống hiến bang tính điểm nhé, hãy tính điểm của pets, công trình
   và cấp bang làm điểm nhé"): three parts (standings, weights in game/bang_content.py), heaviest first: 🐾 Pets (the
   week's pet war once its matches were shown, its ⚔️ Thách đấu bang, and 💪 Chiến lực: the strongest pet power of each
@@ -1386,6 +1388,7 @@ def page(store, sid: str, bid: str | None = None) -> dict:
             log=[dict(text=x['text'], at=float(x['at']), kind=x['kind']) for x in _rows(
                 db, 'SELECT text, at, kind FROM bang_log WHERE bang=? ORDER BY id DESC LIMIT ?', (bid, LOG_SHOWN))],
             slots=C.build_slots(lv[C.HALL]), phao_at=float(r['phao_at']))
+        out.update(_extra().page_part(db, bid, sid, lv, n, t))
         if _rank(me['role']) >= C.APPROVE_FROM:
             out['asks'] = [dict(pid=pid_of(x['sid']), name=str(x['display'])[:24] if x['display'] else GONE, at=float(x['at'])) for x in _rows(
                 db, "SELECT k.sid, k.at, a.display FROM bang_asks k LEFT JOIN accounts a ON a.sid=k.sid WHERE k.bang=? AND k.kind='ask' "
@@ -2084,7 +2087,15 @@ def _op_gh_cancel(db, sid, data, t):
 OPS = dict(join=_op_join, cancel=_op_cancel, accept=_op_accept, decline=_op_decline, leave=_op_leave, invite=_op_invite,
            approve=_op_approve, kick=_op_kick, role=_op_role, set=_op_set, disband=_op_disband, checkin=_op_checkin,
            build=_op_build, buy=_op_buy, isle=_op_isle, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel, rules=_op_rules,
-           code=lambda db, sid, data, t: _code().op_edit(db, sid, data, t), code_seen=lambda db, sid, data, t: _code().op_seen(db, sid, data, t))
+           code=lambda db, sid, data, t: _code().op_edit(db, sid, data, t), code_seen=lambda db, sid, data, t: _code().op_seen(db, sid, data, t),
+           hall=lambda db, sid, data, t: _extra().op_hall(db, sid, data, t), decor=lambda db, sid, data, t: _extra().op_decor(db, sid, data, t),
+           quest=lambda db, sid, data, t: _extra().op_quest(db, sid, data, t))
+
+
+def _extra():
+    """🏯 Kiểu đại sảnh, 🎏 trang trí, 📋 nhiệm vụ tuần (game/bang_extra.py)."""
+    from . import bang_extra
+    return bang_extra
 
 
 def _code():

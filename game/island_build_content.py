@@ -75,6 +75,74 @@ BUILDINGS = (
          desc='Cầu gỗ ra biển, thuyền đậu sát bến. Cần ô đất sát bờ.',
          lines=('Ngồi mép cầu, thả chân xuống nước.', 'Ngắm thuyền buồm lắc lư bên bến.')),
 )
+# 🏡 Kiểu nhà (owner 20/10 "coi hướng đảo có thể xây nhà các kiểu đẹp và nhiều hơn"): fifteen more homes, in four tiers
+# (TIERS), each in three colours (`looks`: the palettes of public/js/house-art.js HOUSES, same order). A colour is stored
+# in the kind itself, '<id>__<n>' (n = 1…2; 0 is the plain id): an older build keeps such a kind by shape (never shown or
+# counted, like any kind it does not know) and the island_builds table needs no new column. Same rules as the first
+# three: a pure money sink, prices beside the islands' (30M → 200M), `pts` ≈ 7 × (level-1 price in millions)^0.6 like
+# the first three (2M → 10, 8M → 24, 25M → 50), at most 48 hours a level; the two 👑 palaces only on a big island, one each.
+def _home(id, emoji, name, tier, pts, levels, lv, desc, looks, spot='sit', **more):
+    return dict(id=id, emoji=emoji, name=name, cat='home', pts=pts, spot=spot, levels=levels, lv=lv, desc=desc, tier=tier,
+                looks=looks, **more)
+
+
+HOUSES = (
+    _home('nha_tranh', '🏚️', 'Nhà tranh vách đất', 1, 9, ((1_500_000, 6), (3 * M, 10), (5 * M, 16)),
+          ('Mái tranh, vách đất, sân đất nện', 'Hàng rào tre, gian bếp bên hông', 'Đụn rơm, giếng nước, gà vườn'),
+          'Mái tranh vàng, vách đất, chái bếp khói lam chiều.', ('Rơm vàng', 'Rạ nâu', 'Cỏ tranh')),
+    _home('nha_tre', '🎋', 'Nhà tre sinh thái', 1, 12, ((2_500_000, 6), (4_500_000, 12), (8 * M, 20)),
+          ('Nhà tre trên cột thấp, mái lá', 'Hiên tre, bồn rau trước nhà', 'Pin mặt trời, bồn nước mưa, dây đèn'),
+          'Tre ghép, mái lá, gió lùa mát rượi. Sống xanh giữa đảo.', ('Lá xanh', 'Rơm', 'Lá cọ sẫm')),
+    _home('nha_cay', '🌳', 'Nhà trên cây', 1, 14, ((3 * M, 8), (6 * M, 14), (10 * M, 24)),
+          ('Căn chòi gỗ trên cây cổ thụ', 'Lan can quanh sàn, xích đu thả xuống', 'Cầu trượt, dây đèn lấp lánh'),
+          'Leo thang gỗ lên căn chòi giữa tán lá.', ('Gỗ mộc', 'Xanh trời', 'Đỏ gạch'), spot='stand'),
+    _home('cabin_go', '🛖', 'Cabin gỗ chữ A', 1, 16, ((4 * M, 8), (7 * M, 16), (12 * M, 24)),
+          ('Mái chữ A, cửa kính tam giác', 'Hiên gỗ bên hông, củi xếp gọn', 'Bồn tắm nóng, dây đèn vàng'),
+          'Mái dốc chữ A, ống khói và khung kính nhìn ra biển.', ('Gỗ sẫm', 'Đỏ kho thóc', 'Bạch dương')),
+    _home('bungalow', '🏝️', 'Bungalow mái lá', 2, 18, ((5 * M, 10), (9 * M, 18), (15 * M, 30)),
+          ('Nhà gỗ trên nền đá, mái lá cao', 'Hồ ngâm nhỏ bên hiên', 'Ghế tắm nắng, đuốc tre, cây sứ trắng'),
+          'Mái lá dựng cao kiểu nhiệt đới, hiên mở bốn phía.', ('Gỗ tếch', 'Vôi trắng', 'Gỗ sẫm')),
+    _home('pho_hoi_an', '🏮', 'Nhà phố Hội An', 2, 20, ((6 * M, 12), (10 * M, 20), (16 * M, 30)),
+          ('Tường vàng, cửa gỗ, đèn lồng', 'Lên lầu, ban công gỗ', 'Giàn hoa giấy, đèn lồng sáng cả đêm'),
+          'Tường vàng, mái ngói âm dương, đèn lồng trước hiên.', ('Vàng nghệ', 'Xanh ngọc', 'Hồng đào')),
+    _home('nha_ruong', '🏯', 'Nhà rường Huế', 2, 22, ((7 * M, 12), (12 * M, 24), (18 * M, 36)),
+          ('Nhà gỗ ba gian, hiên cột', 'Thêm nhà ngang phía sau', 'Bình phong, ao sen, chậu kiểng'),
+          'Gỗ lim ba gian, mái ngói cong đầu đao kiểu cố đô.', ('Ngói đỏ', 'Ngói rêu', 'Ngói vàng')),
+    _home('hai_dang', '🗼', 'Nhà hải đăng', 2, 22, ((7 * M, 12), (12 * M, 24), (20 * M, 36)),
+          ('Ngọn tháp và căn nhà người gác', 'Tháp cao hơn, đèn quét ra biển', 'Đèn sáng rực, cờ hiệu bên nhà'),
+          'Tháp sọc đỏ trắng, đèn quét qua mặt biển mỗi tối.', ('Đỏ trắng', 'Xanh trắng', 'Đen trắng'), spot='stand', max=1),
+    _home('nha_nhat', '🎎', 'Nhà kiểu Nhật', 2, 24, ((8 * M, 16), (14 * M, 24), (22 * M, 36)),
+          ('Cửa giấy shoji, hiên gỗ', 'Thêm tầng, mái hai lớp', 'Đèn đá, hồ cá koi, cây phong đỏ'),
+          'Cửa giấy, sàn chiếu, mái ngói xám vươn rộng.', ('Ngói xám', 'Mái đồng xanh', 'Ngói đen')),
+    _home('hanok', '🏘️', 'Nhà kiểu Hàn (Hanok)', 2, 24, ((8 * M, 16), (14 * M, 24), (22 * M, 36)),
+          ('Nền đá, khung gỗ, mái ngói cong', 'Thêm chái nhà hình chữ L', 'Hũ tương, cây hồng, tường đá thấp'),
+          'Khung gỗ, giấy dán cửa, mái ngói cong mềm như cánh chim.', ('Ngói than', 'Ngói ngọc', 'Ngói nâu đất')),
+    _home('villa_phap', '🏛️', 'Biệt thự Pháp', 3, 31, ((12 * M, 24), (20 * M, 36), (32 * M, 48)),
+          ('Tường vàng kem, cửa chớp xanh', 'Lên lầu, ban công sắt', 'Vườn xén, đài phun nước'),
+          'Kiểu Đà Lạt xưa: mái ngói dốc, cửa chớp, ống khói.', ('Vàng kem', 'Trắng mái xám', 'Hồng phấn')),
+    _home('dia_trung_hai', '🏖️', 'Biệt thự Địa Trung Hải', 3, 34, ((14 * M, 24), (22 * M, 36), (35 * M, 48)),
+          ('Khối trắng, mái vòm xanh', 'Thêm phòng bên, sân thượng', 'Hồ bơi, tháp chuông, dù che nắng'),
+          'Tường trắng, mái vòm xanh, hoa giấy hồng trên vách.', ('Mái vòm xanh', 'Mái vòm ngọc', 'Mái vòm đất nung')),
+    _home('villa_kinh', '🪟', 'Biệt thự kính hiện đại', 3, 39, ((18 * M, 24), (28 * M, 36), (45 * M, 48)),
+          ('Một tầng vách kính, mái phẳng', 'Tầng hai đua ra, vườn trên mái', 'Hồ bơi tràn bờ, đèn sáng cả nhà'),
+          'Vách kính từ sàn tới trần, mái phẳng, nhìn thẳng ra biển.', ('Kính xanh', 'Kính khói', 'Gỗ ấm')),
+    _home('dinh_thu', '🏰', 'Dinh thự châu Âu', 4, 54, ((30 * M, 36), (48 * M, 48), (70 * M, 48)),
+          ('Nhà đá hai tháp tròn', 'Thêm hai tháp sau, cờ bay', 'Vườn xén, đài phun nước, đèn sáng'),
+          'Tường đá, tháp nhọn mái lam. Chỉ đảo lớn mới đủ chỗ.', ('Đá kem mái lam', 'Đá trắng mái đồng', 'Đá hồng mái than'),
+          spot='stand', max=1, big=True),
+    _home('hoang_cung', '👑', 'Hoàng cung Á Đông', 4, 59, ((35 * M, 36), (55 * M, 48), (80 * M, 48)),
+          ('Điện son hai tầng mái', 'Thêm hai điện phụ phía sau', 'Đèn lồng, cờ phướn, bảo châu trên nóc'),
+          'Cột son thếp vàng, mái ngói hoàng gia. Chỉ đảo lớn mới đủ chỗ.', ('Ngói hoàng gia', 'Ngói lưu ly xanh', 'Ngói đỏ son'),
+          spot='stand', max=1, big=True),
+)
+BUILDINGS = BUILDINGS + HOUSES
+# The tiers the 🏗️ Xây sheet groups the homes by (the first three homes: nhà sàn 1, biệt thự 3, lâu đài 4).
+TIERS = ((1, '🌾 Mộc mạc'), (2, '🏮 Phong vị'), (3, '💎 Sang trọng'), (4, '👑 Đỉnh cao'))
+TIER_OF = dict(nha_san=1, biet_thu=3, lau_dai=4)
+LOOKS = 3                     # colours a style comes in (house-art.js VARIANTS): '<id>' and '<id>__1', '<id>__2'
+PAINT_PCT = 10                # 🎨 sơn lại (another colour of the same style): 10 % of its level-1 price, at once
+PAINT_MIN = 200_000
+
 LEVELS = 3
 CREWS = 2                     # constructions at once on one island (two crews of builders)
 SALVAGE_PCT = 20              # phá dỡ / selling the island: 20 % of what the plot cost back ("thu hồi vật liệu")

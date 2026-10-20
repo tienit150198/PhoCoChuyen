@@ -4,7 +4,7 @@ the levels, the build timers, the fund) belongs to the Bang branch, which plugs 
 
 * The input, BangIslandView (docs/BANG_ISLAND.md has the JSON schema):
       {bang_id, name, emoji, color, level, facilities: [{id, level, state: 'building'|'done', ready_at, note?}],
-       members_online?, isle?: {level, max, state, ready_at, cap}}
+       members_online?, isle?: {level, max, state, ready_at, cap}, hall?: {style, look}, decor?: [id]}
   `level` of a facility is the level in effect now (0: not built yet), `max` its top level (optional, ≤ 10; a Bang
   facility has 5 or 10); `state == 'building'` means level + 1 is being built and is ready at `ready_at` (epoch
   seconds). A facility the view leaves out counts as level 0, done. `isle` (21/10, optional: the bought island's level
@@ -47,6 +47,8 @@ COLOR = re.compile(r'#[0-9a-fA-F]{6}')
 NAME_MAX, NOTE_MAX, EMOJI_MAX = 40, 120, 16
 READY_MAX = 4_102_444_800                 # 2100-01-01: a ready_at past this is a unit mistake (ms instead of s)
 STATES = ('building', 'done')
+ART_ID = re.compile(r'[a-z0-9_]{1,24}')    # a hall style or a decoration id (the client draws only those it knows)
+DECOR_MAX = 16
 
 
 class FacilityView(TypedDict, total=False):
@@ -75,6 +77,8 @@ class BangIslandView(TypedDict, total=False):
     facilities: list[FacilityView]
     members_online: int                    # optional
     isle: IsleView                         # optional (21/10): the island's level; absent = level 1, CAP
+    hall: dict                             # optional (20/10, game/bang_extra.py): {style, look} the hall's style ('dinh': its own)
+    decor: list                            # optional (20/10): the decorations standing (game/bang_extra_content.py DECOR ids)
 
 
 class Access(TypedDict, total=False):
@@ -239,6 +243,13 @@ def validate_view(raw) -> BangIslandView:
         if not _int(cap, 1, CAP_MAX):
             bad('isle.cap')
         view['isle'] = IsleView(level=lv, max=top, state=st, ready_at=ready, cap=cap)
+    hall = raw.get('hall')
+    if isinstance(hall, Mapping) and isinstance(hall.get('style'), str) and ART_ID.fullmatch(hall['style']):
+        look = hall.get('look', 0)
+        view['hall'] = dict(style=hall['style'], look=look if _int(look, 0, 9) else 0)
+    decor = raw.get('decor')
+    if isinstance(decor, (list, tuple)):
+        view['decor'] = [d for d in decor if isinstance(d, str) and ART_ID.fullmatch(d)][:DECOR_MAX]
     return view
 
 
@@ -270,6 +281,10 @@ def island_view(view: BangIslandView, now: float | None = None) -> dict:
                          left=max(0, int(math.ceil(isle['ready_at'] - now))) if building else 0))
     if 'members_online' in view:
         out['members_online'] = view['members_online']
+    if view.get('hall'):
+        out['hall'] = dict(view['hall'])
+    if view.get('decor'):
+        out['decor'] = list(view['decor'])
     return out
 
 

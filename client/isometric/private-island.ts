@@ -64,7 +64,7 @@ export class PrivateIslandRenderer {
 
   /** 🏗️ What stands on the plots now (public/js/island-layout.js withBuilds().built): painted again only when it changed. */
   setBuilds(built:BuiltItem[]){
-    const key=JSON.stringify(built.map(b=>[b.plot,b.kind,b.level,b.work,b.next]));
+    const key=JSON.stringify(built.map(b=>[b.plot,b.kind,b.look||0,b.level,b.work,b.next]));
     if(key===this.builtKey&&this.built)return;
     this.builtKey=key;this.built=built;if(this.scene)this.paintPlots();
   }

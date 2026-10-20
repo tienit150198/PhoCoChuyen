@@ -73,6 +73,8 @@ class BangIslandSource:
                 return None
             rows = {r['fac']: r for r in db.execute('SELECT fac, level, target, ready_at FROM bang_facilities WHERE bang=?',
                                                     (bang_id,)).fetchall()}
+            from . import bang_extra
+            extra = bang_extra.island_part(db, bang_id)   # 🏯 the hall's style, 🎏 the decorations (20/10)
         facilities, hall = [], 1
         for fac, isle in FAC.items():
             top = C.max_level(fac)
@@ -98,7 +100,7 @@ class BangIslandSource:
         if il['to'] is not None and lv < C.ISLE_MAX:
             isle_view.update(state='building', ready_at=float(il['ready']))
         return dict(bang_id=str(b['id']), name=str(b['name'])[:BI.NAME_MAX], emoji=str(b['emoji'])[:BI.EMOJI_MAX] or '⚔️',
-                    color=color, level=max(1, min(BI.BANG_LEVEL_MAX, hall)), facilities=facilities, isle=isle_view)
+                    color=color, level=max(1, min(BI.BANG_LEVEL_MAX, hall)), facilities=facilities, isle=isle_view, **extra)
 
     def access(self, store, sid, bang_id):
         if not sid:

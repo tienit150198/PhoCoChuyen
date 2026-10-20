@@ -140,6 +140,20 @@ export function layout(level=1,building=0){
   return L;
 }
 export const slotById=(L,id)=>L.slots[id]||null;
+/** 🎏 Where each decoration of the bang stands (game/bang_extra_content.py DECOR, 20/10): map points, none in the way
+ * (decorations are not solid: nobody's path changes with them) and none on a facility, a plot or the plaza's statue. */
+export const DECOR_AT={
+  den_long:[[-.06,.2],[.06,.2],[-.06,.29],[.06,.29]].map(([a,b])=>at(a,b)),
+  hoa_dao:[[-.16,-.035],[.16,-.035]].map(([a,b])=>at(a,b)),
+  co_hoi:[[-.14,.35],[.14,.35]].map(([a,b])=>at(a,b)),
+  rong_da:[[-.075,.04],[.075,.04]].map(([a,b])=>at(a,b)),
+  lau_chuong:[[-.37,-.215]].map(([a,b])=>at(a,b)),
+  thuyen_rong:[[-.13,.5]].map(([a,b])=>at(a,b)),
+};
+/** 🏯 A hall style (public/js/house-art.js, 20/10) on the hall's slot: how much bigger than a private island's plot
+ * (map units), and the house level by the hall's level (1–2: 1, 3–4: 2, 5: 3). */
+export const HALL_ART={scale:2.15,level:hall=>hall>=5?3:hall>=3?2:1};
+LAYOUT.decorAt=DECOR_AT;LAYOUT.hallArt=HALL_ART;   // every level's map (layout() spreads LAYOUT) carries them
 
 export function inPoly(pts,x,y){
   let inside=false;
