@@ -66,6 +66,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   customs:style('seal','civic','luggage','#4f7f66','#eadcae'),
   hotel:style('bell','banner','luggage','#7a5a9e','#efe0c8'),
   banquet:style('cloche','awning','stools','#b5473a','#f3dcb4'),
+  reception:style('key','scallop','luggage','#b0546f','#fbecef'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -311,6 +312,11 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;
+    case 'key':  // a front-desk key board: three room keys on hooks under a frangipani, a big brass key in front
+      round(-42,-38,62,58,6,body);line([[-37,-14],[15,-14]],cream,3);
+      for(const [i,x] of [-30,-11,8].entries()){ellipse(x,-14,2.5,2.5,ink);line([[x,-12],[x,-4]],ink,2);ellipse(x,-1,4,4,'#e3b65a');round(x-6,4,12,13,3,i===1?s.main:cream);}
+      for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;ellipse(-30+Math.cos(a)*6,-29+Math.sin(a)*6,4.5,4.5,cream,undefined);}ellipse(-30,-29,3,3,'#e8c25c',undefined);
+      ellipse(30,-14,14,14,'#e3b65a');ellipse(30,-14,6,6,s.main);round(26,-1,8,40,2,'#e3b65a');round(33,24,9,5,1,'#e3b65a');round(33,32,6,5,1,'#e3b65a');break;
     case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
       round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
       round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;

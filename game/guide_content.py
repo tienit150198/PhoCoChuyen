@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6898,6 +6898,27 @@ CAREERS.update({
                   dict(bad='Về mà chưa tắt thiết bị điện.', result='Có thể cháy bếp: đền bù 8% lương ca (2 đến 6 xu) trừ vào ví, không bao giờ quá số tiền đang có.')],
         prep=['Ứng tuyển ở Hồng Mây trước khi làm (mở từ chương 3). Phụ bếp thử việc 3 ca bếp đạt thì lên Đầu bếp.'],
         surprises=['Nhà hàng hay có chuyện lạ: khách nhờ giấu nhẫn cầu hôn, chú cún muốn làm phù dâu, chú rể xin vào bếp nếm… chọn cách xử lý cho khéo.'], buttons=[]),
+    'reception': dict(emoji='🔑', name='Lễ tân', place='Khách sạn Hoa Sứ',
+        intro='Bạn đứng quầy lễ tân của khách sạn nhỏ sáu phòng Hoa Sứ: nhận khách, xếp phòng, giao chìa, lo hành lý, điều phối dọn phòng và dịch vụ, nghe phàn nàn, tìm đồ thất lạc.',
+        jobs=[dict(emoji='🛎️', name='Nhận khách', how='Đọc lời khách để biết yêu cầu, xếp từng nhóm vào phòng sạch đủ chỗ đủ yêu cầu, lấy đúng chìa, xếp xe hành lý, ghi sổ giao ca.'),
+              dict(emoji='🧾', name='Trả phòng', how='Đối số chìa, tính tiền (đêm × giá + minibar + phụ thu − cọc), giữ hành lý có thẻ hai nửa.'),
+              dict(emoji='🧹', name='Điều phối dọn phòng', how='Khách đang chờ ở sảnh trước, rồi theo giờ khách tới; phòng báo xong thì kiểm nhanh, cô Lài quá tải thì nhờ người phụ.'),
+              dict(emoji='⏰', name='Lịch dịch vụ', how='Đặt giờ báo thức, khay ăn sáng, xe sân bay, xe bến xe; hai chuyến trùng xe đối tác thì gọi hãng khác; cộng phí.'),
+              dict(emoji='😤', name='Phàn nàn', how='Nghe ra điều thật sự sai, kiểm bằng sổ hoặc tận mắt, bù đúng chính sách nếu lỗi có thật, ghi sổ phản ánh.'),
+              dict(emoji='🧸', name='Đồ thất lạc', how='Tìm từ chỗ cuối còn thấy đồ theo đường khách đi, đối chiếu sổ đồ thất lạc, hỏi chi tiết ẩn trước khi trả.')],
+        steps=['Bấm [[Đọc phiếu việc]] để nghe khách nói gì.',
+               'Nhận khách: chọn đủ yêu cầu khách vừa nói rồi bấm [[Chốt yêu cầu]].',
+               'Chạm thẻ khách rồi chạm phòng trên bảng phòng, xong bấm [[Xác nhận xếp phòng]].',
+               'Chọn đúng chìa trên bảng móc rồi bấm [[Giao chìa]]; xếp từng món hành lý lên xe rồi bấm [[Xếp xong xe]].',
+               'Chọn những việc còn dở rồi bấm [[Ghi sổ giao ca]]. Việc khác: làm từng bước trên phiếu, sai thì sửa ngay tại bước đó.'],
+        stars=['Không sai bước nào giữ chất lượng 100%.', 'Sổ giao ca đủ việc còn dở là ca sau khỏi hỏi lại.'],
+        mistakes=[dict(bad='Giao phòng chưa dọn, phòng thiếu chỗ hoặc thiếu yêu cầu khách đã nói.', result='Phải xếp lại; chất lượng và thưởng giảm.'),
+                  dict(bad='Ghi sổ giao ca cả việc đã xong, quên việc khách nhờ.', result='Ca sau sót việc; ở ca thử việc là chưa đạt phần đó.')],
+        prep=['Ứng tuyển ở Hoa Sứ (mở từ chương 3): CV, phỏng vấn, buổi làm thử với chị Quyên. Vào làm rồi còn ba ca thử việc: khách thường, khách tới sớm, một nhóm hai yêu cầu. Phần nào đạt thì giữ.',
+              'Thăng tiến qua ba kỳ thi: đón đoàn, trực ca tối, điều phối sự kiện. Từ bậc 2 chọn hướng đi: chăm sóc khách, điều hành, sự kiện hoặc tự kinh doanh homestay.'],
+        surprises=['Quầy Hoa Sứ toàn chuyện oái oăm: bán trùng phòng, đặt hai người mà tới cả nhóm, khách dọa đánh giá, gấu bông mất trước giờ xe chạy, mèo Bơ “không phải quản lý”…',
+                   'Cách bạn chọn được nhớ: khách quen, đồng nghiệp và chị Quyên đổi thái độ theo đó.'],
+        buttons=['Đọc phiếu việc', 'Chốt yêu cầu', 'Xác nhận xếp phòng', 'Giao chìa', 'Xếp xong xe', 'Ghi sổ giao ca']),
 })
 
 

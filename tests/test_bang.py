@@ -28,6 +28,7 @@ from game import bang_content as C
 from game import golden_hour, promotion, staff_market
 from game import marriage as mr
 from game.engine import GameError, apply_action, validate_state
+from tests.helpers import unknown_out   # 🔑 the reception desk (newer than these releases) as the stored text leaves it out
 from tests.test_bank import story
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1128,7 +1129,7 @@ print(json.dumps(out))
             validate_state(s)
         old = self.old_tree(self.RELEASES['2.4.60'])
         env = {k: v for k, v in dict(os.environ, PYTHONPATH=str(old), PYTHONUTF8='1').items() if k != 'MNL_CAREERS'}   # another test may leave a career filter behind
-        out = subprocess.run([sys.executable, '-c', self.PROG], input=json.dumps([a, b]), capture_output=True, text=True, cwd=old,
+        out = subprocess.run([sys.executable, '-c', self.PROG], input=json.dumps([unknown_out(a), unknown_out(b)]), capture_output=True, text=True, cwd=old,
                              env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
         got = json.loads(out.stdout)

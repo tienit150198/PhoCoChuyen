@@ -16,11 +16,11 @@ def catalogue():
     return importlib.import_module('game.career_scale_content')
 
 
-def test_catalogue_covers_all_57_careers_with_456_immutable_stages():
+def test_catalogue_covers_all_58_careers_with_464_immutable_stages():
     c = catalogue()
     assert set(c.PROFILES) == set(CAREERS)
-    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 34, 'agency': 22, 'community': 1}
-    assert sum(len(p.stages) for p in c.PROFILES.values()) == 456
+    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 34, 'agency': 23, 'community': 1}
+    assert sum(len(p.stages) for p in c.PROFILES.values()) == 464
     for cid, p in c.PROFILES.items():
         assert c.profile(cid) is p
         assert [s.tier for s in p.stages] == list(range(1, 9))

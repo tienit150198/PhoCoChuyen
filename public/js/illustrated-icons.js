@@ -167,7 +167,7 @@ for(const [symbol,name] of Object.entries({'💧':'water','🐛':'pest','⛺':'t
 
 /** Resolve careers without changing the server catalogue or old icon(name) API. */
 export const careerIconNames=Object.freeze({
-  art_studio:'palette',lawyer:'briefcase',laundry:'cleaning',post_office:'mail',customs:'shield',hotel:'bell',banquet:'cake',
+  art_studio:'palette',lawyer:'briefcase',laundry:'cleaning',post_office:'mail',customs:'shield',hotel:'bell',banquet:'cake',reception:'lock',
   mother_baby:'gift',pharmacy:'cross',accounting:'book',customer_care:'headphones',restaurant:'bowl',cafe_bakery:'cake',
   freelancer:'palette',farm:'tractor',sales:'store',grocery:'cart',fashion:'shirt',pet_care:'paw',florist:'flower',salon:'scissors',
   repair:'wrench',homestay:'bed',teacher:'book',tour_guide:'compass',milk_tea:'milk_tea',delivery:'bike',corp_accounting:'calculator',

@@ -1,0 +1,244 @@
+{
+  "reception": [
+    {
+      "tier": 1,
+      "title": "Lập bảng phòng sáu phòng có đủ đặc điểm",
+      "output_unit": "bảng phòng",
+      "inputs": [
+        {
+          "name": "Bộ thẻ phòng hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi cho từng phòng số giường, sức chứa, yên hay ồn, hướng nhìn, chỗ để hành lý.",
+        "Đánh dấu các cặp phòng sát vách và phòng tầng trệt.",
+        "Cho trưởng ca đọc thử ba yêu cầu khách rồi tìm phòng trên bảng."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi phòng ghi đủ sức chứa và đặc điểm, đọc một lần là biết hợp ai.",
+        "bad": "Chỉ ghi số phòng và giá cho gọn.",
+        "why": "Không có đặc điểm thì lễ tân phải đoán yêu cầu của khách."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn mẫu nghe yêu cầu khách ở quầy",
+      "output_unit": "mẫu ghi yêu cầu",
+      "inputs": [
+        {
+          "name": "Sổ tay quầy hư cấu",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Liệt kê cách khách hay nói vòng: ngủ nông, vali to, đau gối, đi chung.",
+        "Ghép mỗi câu với một yêu cầu phòng cụ thể.",
+        "Thử với năm lời khách giả lập và nhắc lại cho khách xác nhận."
+      ],
+      "check": {
+        "prompt": "Mẫu nào đạt?",
+        "good": "Mỗi câu khách nói được đổi thành một yêu cầu phòng rõ ràng và nhắc lại cho khách.",
+        "bad": "Ghi đúng một yêu cầu đầu tiên khách nói cho nhanh.",
+        "why": "Khách hiếm khi nói thẳng; bỏ sót một câu là xếp sai phòng."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Dán nhãn màu cho bảng móc chìa",
+      "output_unit": "bảng móc chìa",
+      "inputs": [
+        {
+          "name": "Bộ nhãn màu móc chìa",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Tách móc chìa phòng, móc kho và móc ổ cũ bằng ba màu khác nhau.",
+        "In số phòng to, rõ trên từng móc.",
+        "Cho nhân viên mới lấy thử mười chìa và đếm số lần nhầm."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Chìa phòng, chìa kho và chìa ổ cũ không cùng màu móc.",
+        "bad": "Treo mọi chìa chung một hàng theo thứ tự đến.",
+        "why": "Chìa giống nhau là chỗ người mới hay nhầm nhất."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Quy tắc xếp xe đẩy hành lý",
+      "output_unit": "quy tắc xe hành lý",
+      "inputs": [
+        {
+          "name": "Thẻ gửi hành lý hư cấu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đặt đồ nặng ở tầng dưới, đồ dễ vỡ ở tầng trên, đồ dài ở khung dựng.",
+        "Ghi sức chứa từng tầng và buộc thẻ số hai nửa cho từng món.",
+        "Thử xếp xe cho một đoàn có vali lớn, bình gốm và túi gậy golf."
+      ],
+      "check": {
+        "prompt": "Quy tắc nào đạt?",
+        "good": "Đồ dễ vỡ không bao giờ nằm dưới đồ nặng, món nào cũng có thẻ số.",
+        "bad": "Chất cho đầy xe, đồ nhẹ để đâu cũng được.",
+        "why": "Một bình gốm vỡ là mất cả lòng tin của khách."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Mẫu sổ giao ca chỉ ghi việc còn dở",
+      "output_unit": "mẫu sổ giao ca",
+      "inputs": [
+        {
+          "name": "Sổ giao ca hư cấu",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chia sổ thành việc còn dở, việc cần nhắc và việc đã xong.",
+        "Ghi giờ, tên khách và người nhận việc cho từng dòng.",
+        "Cho ca sau đọc lại và đánh dấu việc nào còn phải hỏi."
+      ],
+      "check": {
+        "prompt": "Mẫu nào đạt?",
+        "good": "Ca sau đọc là làm được, không cần gọi hỏi lại ai.",
+        "bad": "Ghi hết mọi việc trong ngày cho chắc.",
+        "why": "Sổ dài quá thì việc còn dở bị chìm giữa việc đã xong."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lịch dọn phòng theo giờ khách tới",
+      "output_unit": "lịch dọn phòng",
+      "inputs": [
+        {
+          "name": "Bảng lịch buồng phòng hư cấu",
+          "unit": "bảng",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Xếp phòng có khách đang chờ ở sảnh lên đầu, rồi theo giờ khách tới.",
+        "Đặt giờ kiểm nhanh khăn, ga, thùng rác sau mỗi phòng báo xong.",
+        "Ghi chỗ cần người phụ khi một mình buồng phòng không kịp."
+      ],
+      "check": {
+        "prompt": "Lịch nào đạt?",
+        "good": "Phòng khách tới sớm nhất được dọn và kiểm trước.",
+        "bad": "Dọn theo số phòng từ nhỏ tới lớn cho dễ nhớ.",
+        "why": "Khách đang chờ ở sảnh không quan tâm số phòng tròn hay lẻ."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lịch dịch vụ sáng mai",
+      "output_unit": "lịch dịch vụ",
+      "inputs": [
+        {
+          "name": "Bảng giờ dịch vụ hư cấu",
+          "unit": "bảng",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đặt giờ báo thức, khay ăn sáng, xe sân bay và xe bến xe theo quy định quầy.",
+        "Đánh dấu hai chuyến xe trùng giờ của cùng một xe đối tác.",
+        "Cộng phí dịch vụ vào hóa đơn từng phòng."
+      ],
+      "check": {
+        "prompt": "Lịch nào đạt?",
+        "good": "Không có hai chuyến xe trùng giờ trên cùng một xe, mọi phí đều vào hóa đơn.",
+        "bad": "Đặt mọi chuyến xe cho xe đối tác quen.",
+        "why": "Một chiếc xe không thể chở hai khách đi hai hướng cùng lúc."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Quy trình xử lý phàn nàn có kiểm chứng",
+      "output_unit": "quy trình phàn nàn",
+      "inputs": [
+        {
+          "name": "Sổ phản ánh hư cấu",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Nghe ra điều thật sự sai giữa lời than của khách.",
+        "Kiểm bằng sổ hoặc tận mắt trước khi hứa bù.",
+        "Bù theo chính sách nếu lỗi có thật và ghi sổ phản ánh."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Kiểm trước, bù đúng chính sách nếu lỗi có thật, luôn ghi sổ.",
+        "bad": "Khách dọa đánh giá thấp thì cho ở miễn phí cho êm.",
+        "why": "Bù mà không kiểm là dạy khách cứ dọa là được."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Sổ đồ thất lạc theo lộ trình khách",
+      "output_unit": "sổ đồ thất lạc",
+      "inputs": [
+        {
+          "name": "Túi niêm đồ thất lạc",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi chỗ, giờ nhặt, màu và đặc điểm từng món.",
+        "Tìm theo đường khách đi từ chỗ cuối còn thấy đồ.",
+        "Trả đồ sau khi hỏi một chi tiết người ngoài không thấy."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Món nào cũng có chỗ, giờ, đặc điểm và người nhận lại.",
+        "bad": "Khách nói mất là đưa luôn món giống nhất.",
+        "why": "Hai món giống nhau thì chỉ chi tiết ẩn mới phân biệt được chủ."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối đoàn và sự kiện cuối tuần",
+      "output_unit": "kế hoạch đoàn và sự kiện",
+      "inputs": [
+        {
+          "name": "Bảng phân ca quầy hư cấu",
+          "unit": "bảng",
+          "quantity": 2,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Chia quầy, buồng phòng và xe hành lý theo giờ đoàn tới.",
+        "Chốt giờ sự kiện ở sảnh để khách đang ở vẫn được yên.",
+        "Họp giao ca năm phút và ghi người chịu trách nhiệm từng việc."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào đạt?",
+        "good": "Ngày đông vẫn có người giữ quầy, người lo phòng và giờ yên tĩnh được giữ.",
+        "bad": "Ngày đông bỏ sổ giao ca, làm xong tính sau.",
+        "why": "Ngày càng đông càng dễ sót một lời khách nhờ."
+      }
+    }
+  ]
+}

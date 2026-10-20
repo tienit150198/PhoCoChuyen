@@ -102,7 +102,7 @@ CH_UNLOCKS = {
 # 🛎️ A workplace added after a release opens from a chapter without entering `unlocked` until it is worked: a
 # chapter list would put it in every story save (upgrade() re-runs the chapters), and an older build, whose CAREERS
 # lacks it, refuses such a save. Untouched it stays dormant (engine.DORMANT), so a rollback keeps loading the save.
-LATE_UNLOCKS = {'hotel': 3, 'banquet': 3}
+LATE_UNLOCKS = {'hotel': 3, 'banquet': 3, 'reception': 3}
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 CAST = {
@@ -289,6 +289,7 @@ TITLES = [
     _t('c_police', 'career', '👮', 'Người giữ bình yên hẻm', 'Đạt cấp 3 ở Công an phường Mây.', lambda x: x['lv'].get('police', 1) >= 3),
     _t('c_hotel', 'career', '🛎️', 'Người giữ chìa khóa Sông Mây', 'Đạt cấp 3 ở Khách sạn Sông Mây.', lambda x: x['lv'].get('hotel', 1) >= 3),
     _t('c_banquet', 'career', '👨‍🍳', 'Chiếc mũ trắng Hồng Mây', 'Đạt cấp 3 ở Nhà hàng tiệc Hồng Mây.', lambda x: x['lv'].get('banquet', 1) >= 3),
+    _t('c_reception', 'career', '🔑', 'Người giữ bảng móc chìa', 'Đạt cấp 3 ở quầy lễ tân Khách sạn Hoa Sứ.', lambda x: x['lv'].get('reception', 1) >= 3),
     _t('c_customs', 'career', '🛃', 'Người gác cửa khẩu', 'Đạt cấp 3 ở Chi cục Hải quan cửa khẩu Bến Mây.', lambda x: x['lv'].get('customs', 1) >= 3),
     _t('c_zpop', 'career', '💿', 'Người giữ seal nguyên vẹn', 'Đạt cấp 3 ở tiệm album Mây Pop.', lambda x: x['lv'].get('zpop', 1) >= 3),
     # Skills at level 3.
