@@ -20,3 +20,4 @@
 .town-social-bubble>strong{display:block;color:#77664d;font-size:10px;margin-bottom:2px}.town-social-bubble>span{white-space:pre-wrap}.town-social-bubble-emote>span{font-size:30px;line-height:1.2}
 .town-social-bubble-actions{display:flex;gap:1px;margin-top:4px;pointer-events:auto}.town-social-bubble-actions button{font-size:16px;min-height:30px;min-width:30px;padding:2px;border-color:transparent;background:transparent;border-radius:8px}.town-social-counts{display:block;color:#68583e;font-size:11px}
 @media(max-width:600px){.town-social{right:max(10px,env(safe-area-inset-right));width:min(320px,calc(100vw - 20px))}.town-social-toggle{max-width:168px}.town-social-bubble{max-width:210px}}
+.town-social.is-covered{display:none!important}   /* a menu or sheet is open (2.4.67) */

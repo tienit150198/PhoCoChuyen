@@ -54,6 +54,13 @@ export function createTownSocial(envGetter,options={}){
     // Stop game keyboard/joystick handlers from seeing composer and menu input.
     for(const name of ['keydown','keyup','pointerdown','pointerup','click'])dock.addEventListener(name,e=>{e.stopPropagation();if(name==='keydown'&&e.key==='Escape'){expand(false);toggle.focus();}});
     doc.body.append(layer,dock);
+    // 2.4.67 (owner 21/10 screenshot "cái này nó che nè"): step aside while a menu or a sheet is open — the
+    // 2.5D Tiện ích / Khu phố panel (a <details open> in #isoHUD) or any open dialog — so the chip never covers a tile.
+    const covered=()=>typeof doc.querySelector==='function'&&Boolean(doc.querySelector('#isoHUD details[open], dialog[open], .sheet[open]'));
+    const sync=()=>{if(!dock?.classList)return;const c=covered();dock.classList.toggle('is-covered',c);if(c&&expanded)expand(false);};
+    doc.addEventListener?.('toggle',sync,true);   // <details> open/close (does not bubble: capture)
+    try{if(typeof MutationObserver==='function'&&doc.body)new MutationObserver(sync).observe(doc.body,{subtree:true,attributes:true,attributeFilter:['open']});}catch{/* old browsers or a test double: toggle only */}
+    sync();
   }
   function drop(pid){bubbles.get(pid)?.node.remove();bubbles.delete(pid);if(!bubbles.size&&raf){events?.cancelAnimationFrame?.(raf);raf=0;}}
   function clear(){for(const pid of [...bubbles.keys()])drop(pid);pending.clear();selected=null;card=null;latestCardCid=null;friendBusy=false;nearKey='';if(cardNode){cardNode.hidden=true;cardNode.replaceChildren();}syncSend();}
