@@ -214,19 +214,20 @@ STEPS: dict[str, list[dict]] = {
         S('💰', 'Xong việc có thưởng nhỏ; lương ca trả khi khép ca.', x=True, g=3),
     ],
     'reception': [
+        # fix=True: a wrong answer stays open to fix (the quality drops); the walk goes back to it, not on to the next
         intro('rc_intro'),
         S('📋', 'Bấm Đọc phiếu việc để nghe khách nói.', ['Đọc phiếu việc'], ['.sk-ask', '[data-command="ask"]'], g=0,
           w='Nút hiện khi có phiếu việc mới.'),
         # the chips first, ringed themselves (the bubble anchored to Chốt sat over them on a landscape phone), then the button
         S('👂', 'Chạm chọn mọi yêu cầu khách vừa nói.', [], ['.rc-step .rc-chips'], o=True, g=1),
-        S('✅', 'Chọn đủ rồi bấm Chốt yêu cầu.', ['Chốt yêu cầu'], [READY.format('.rc-send-need')], o=True,
+        S('✅', 'Chọn đủ rồi bấm Chốt yêu cầu.', ['Chốt yêu cầu'], [READY.format('.rc-send-need')], o=True, fix=True,
           v=V('Chạm chọn yêu cầu trước.', [], ['.rc-step .rc-chips']), g=1),
-        S('🛏️', 'Chạm thẻ khách, chạm phòng, rồi Xác nhận xếp phòng.', ['Xác nhận xếp phòng'], [READY.format('.rc-send-rooms')], o=True,
+        S('🛏️', 'Chạm thẻ khách, chạm phòng, rồi Xác nhận xếp phòng.', ['Xác nhận xếp phòng'], [READY.format('.rc-send-rooms')], o=True, fix=True,
           v=V('Xếp đủ từng thẻ khách vào phòng trước.', [], ['.rc-step .rc-board']), g=2),
-        S('🔑', 'Chọn đúng chìa trên bảng móc, rồi Giao chìa.', ['Giao chìa'], [READY.format('.rc-send-keys')], o=True, g=3),
-        S('🧳', 'Xếp từng món lên xe, rồi Xếp xong xe.', ['Xếp xong xe'], [READY.format('.rc-send-cart')], o=True,
+        S('🔑', 'Chọn đúng chìa trên bảng móc, rồi Giao chìa.', ['Giao chìa'], [READY.format('.rc-send-keys')], o=True, fix=True, g=3),
+        S('🧳', 'Xếp từng món lên xe, rồi Xếp xong xe.', ['Xếp xong xe'], [READY.format('.rc-send-cart')], o=True, fix=True,
           v=V('Xếp đủ từng món lên xe trước.', [], ['.rc-step .rc-cart']), g=3),
-        S('📒', 'Chọn việc còn dở, rồi Ghi sổ giao ca.', ['Ghi sổ giao ca'], [READY.format('.rc-send-note')], o=True, g=4),
+        S('📒', 'Chọn việc còn dở, rồi Ghi sổ giao ca.', ['Ghi sổ giao ca'], [READY.format('.rc-send-note')], o=True, fix=True, g=4),
         S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=4),
     ],
     'homestay': [

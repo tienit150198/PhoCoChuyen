@@ -5,7 +5,7 @@
 // Run by tests/test_coach.py (node tests/coach_engine.mjs '<career ids json>'); exits non-zero on failure.
 import assert from 'node:assert/strict';
 import {CoachRun,planFor,norm,labelScore,labelHit,OPEN,CLOSE,SUM,SETTLE,GRACE,OPT_WAIT} from '../public/js/tutorial/coach-core.js';
-import {coachSeen,markCoach,notesSeen,markNoteSeen,markGuideSeen,guidesFrom,GUIDE_BITS,COACH_NEW} from '../public/js/tutorial/store.js';
+import {coachSeen,markCoach,notesSeen,markNoteSeen,markGuideSeen,guidesFrom,GUIDE_BITS,COACH_NEW,FEATURE_BITS,featuresSeen,markFeature} from '../public/js/tutorial/store.js';
 import data from '../public/js/tutorial/coach-content.js';
 
 /* ---- words */
@@ -110,6 +110,20 @@ assert.equal(f.step.id,'c','jumped to the step the game is at');
 assert.equal(new CoachRun({cid:'demo',steps,at:4,now:clock}).frame(s=>s.id==='c'?{jump:1}:{}).step.id,'c','never jumps back');
 // A resumed run starts where it was.
 assert.equal(new CoachRun({cid:'demo',steps,at:4,now:clock}).step.id,'c');
+// Back to the step before: an optional step not on screen while the step before it (f: kept open on a wrong answer) is
+// open again (coach.js probe says {back}): the walk shows that one again rather than dropping the rest.
+const two=[OPEN,{id:'p1',e:'1',t:'P1',k:['P1'],o:1,f:1},{id:'p2',e:'2',t:'P2',k:['P2'],o:1},CLOSE,SUM];
+const r5=new CoachRun({cid:'demo',steps:two,at:1,now:clock});
+const on5=new Set(['P1']);
+const p5=s=>s.id==='p2'&&on5.has('P1')?{back:1}:s.k?.some(k=>on5.has(k))?{el:s.k[0]}:{};
+assert.equal(r5.frame(p5).step.id,'p1');
+r5.tap(r5.i,{cmd:true});r5.answered(true);now+=1;
+assert.equal(r5.frame(p5).step.id,'p2','accepted: on to the next one');
+now+=OPT_WAIT;f=r5.frame(p5);
+assert.equal(f.step.id,'p1','still open (a wrong answer): back to it');assert.equal(f.mode,'spot');
+on5.delete('P1');on5.add('P2');r5.tap(r5.i,{cmd:true});r5.answered(true);now+=OPT_WAIT;
+assert.equal(r5.frame(p5).step.id,'p2','fixed: the next step');
+assert.equal(new CoachRun({cid:'demo',steps:two,at:2,now:clock}).frame(()=>({back:0})).step.id,'p2','only ever one step back');
 
 /* ---- memory: settings.notesSeen (node: no localStorage, the server copy is the truth) */
 function player(notes=''){
@@ -137,4 +151,11 @@ assert.ok(coachSeen(env.api).offered.has('grocery')&&coachSeen(env.api).done.has
 env=player();for(const cid of GUIDE_BITS)markCoach(env,cid,{done:true});
 for(const x of env.api.state.settings.notesSeen.split(','))assert.match(x,/^[a-z0-9-]{1,24}$/);
 assert.equal(coachSeen(env.api).done.size,GUIDE_BITS.length);
+// First-use hints of the player services (tips.js FEATS): one packed "fh-" id beside the coach's, never pushed out.
+for(const id of FEATURE_BITS)markFeature(env,id);
+for(let i=0;i<20;i++)markNoteSeen(env,'y-'+i);
+assert.equal(featuresSeen(env.api).size,FEATURE_BITS.length);
+assert.equal(coachSeen(env.api).done.size,GUIDE_BITS.length,'the hints do not touch the coach marks');
+assert.equal(env.api.state.settings.notesSeen.split(',').filter(x=>x.startsWith('fh-')).length,1);
+for(const x of env.api.state.settings.notesSeen.split(','))assert.match(x,/^[a-z0-9-]{1,24}$/);
 console.log('coach_engine.mjs: ok');

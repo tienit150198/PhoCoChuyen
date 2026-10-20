@@ -17,11 +17,14 @@ A step, S(emoji, words, labels, selectors, …):
   s   CSS selectors tried first: [data-coach="…"], [data-command="…"], [data-action="…"][data-tab="…"]…
   g   the guide line it comes from (game/guide_content.py): an index into `steps`, or ('prep', i). Shown under
       "Chi tiết", translated whole by the English pack.
-  v   V(words, labels, selectors): a tab or fold that reveals the control when it is not on screen.
+  v   V(words, labels, selectors): a tab or fold that reveals the control when it is not on screen (hold=True: what
+      comes first and is still being done; the coach waits out of sight while it is on screen).
   w   where the control is when it is not on screen yet ("Nút ở thanh dưới, hiện khi khách đã gọi món.").
   o   optional: dropped quietly when its control is not around (a beer in the basket, a cold night).
   x   words only (a choice to make, a timing): no control to ring; "Tiếp" moves on, so does the next accepted tap.
   at  'any' when the control is outside the work sheet (the stock sheet, the town); default: the work sheet.
+  fix an optional step the game keeps open on a wrong answer (the quality drops, the player fixes it there): when it
+      is on screen again while the next optional step is not, the walk goes back to it instead of dropping the rest.
 
 Text rules (like the guide): short player Vietnamese, whole literals (each line is translated whole: add the English
 to i18n/overrides.json "strings"), no developer words.
@@ -39,7 +42,7 @@ EMOJI = re.compile(r'^([^\w\s\[“"(]+)\s*')
 
 
 def S(e: str, t: str, k=(), s=(), *, g=None, v=None, w: str | None = None, o: bool = False, x: bool = False,
-      at: str | None = None) -> dict:
+      at: str | None = None, fix: bool = False) -> dict:
     """One step of a workplace's coach (see the module doc)."""
     step = dict(e=e, t=t)
     if k:
@@ -58,12 +61,17 @@ def S(e: str, t: str, k=(), s=(), *, g=None, v=None, w: str | None = None, o: bo
         step['x'] = 1
     if at:
         step['at'] = at
+    if fix:
+        step['f'] = 1
     return step
 
 
-def V(t: str, k=(), s=()) -> dict:
-    """What reveals a step's control: a tab, a fold, a dock button."""
+def V(t: str, k=(), s=(), *, hold: bool = False) -> dict:
+    """What reveals a step's control: a tab, a fold, a dock button. `hold`: rather what comes first and is still being
+    done (the lessons, an exam in progress): while it is on screen the coach waits out of sight instead of ringing it."""
     via = dict(t=t)
+    if hold:
+        via['h'] = 1
     if k:
         via['k'] = [k] if isinstance(k, str) else list(k)
     if s:

@@ -205,9 +205,17 @@ STEPS: dict[str, list[dict]] = {
     'teller': [
         S('🏦', 'Đọc giới thiệu rồi bấm Vào việc thôi!', s=['[data-command="tl_intro"]'], o=True),
         S('🎓', 'Học ba bài ngắn: đọc rồi chọn đáp án đúng.', s=['.tl-learn .tl-options'], g=('prep', 0), o=True),
-        S('📝', 'Bấm Bắt đầu thi thực hành, làm đủ ba phần.', ['Bắt đầu thi thực hành'], ['.tl-exam-go'], g=('prep', 0), o=True),
+        # the exam button only shows once the three lessons are done: ring the lesson left meanwhile (a via keeps the
+        # step, an optional step with nothing on screen would be dropped after the first lesson)
+        S('📝', 'Bấm Bắt đầu thi thực hành, làm đủ ba phần.', ['Bắt đầu thi thực hành'], ['.tl-exam-go'], g=('prep', 0), o=True,
+          v=V('Học nốt các bài với chị Hạnh trước.', (), ['.tl-learn .tl-options'])),
+        S('⏱️', 'Mỗi phần thi làm một lần. Bí thì Gợi ý, mất 🎯.', (), ['.tl-exam:has(.tl-timer)'], g=('prep', 0), o=True),
         S('💼', 'Đầu ca: đếm quỹ rồi so với sổ bàn giao.', s=['.tl-shift'], g=0, o=True),
+        # day 1: the lessons, the exam and the float come before any customer (the steps above showed each): while one is
+        # still on screen the coach waits out of sight (a ring round a card taller than the phone would put the bubble
+        # over its controls)
         S('🙋', 'Bấm Nhận yêu cầu để mời khách.', ['Nhận yêu cầu'], ['.sk-ask', '[data-command="ask"]'], g=1,
+          v=V('Làm xong phần đang mở ở trên trước.', (), ['.tl-learn .tl-options', '.tl-exam', '.tl-shift'], hold=True),
           w='Nút hiện khi có khách mới.'),
         S('🧾', 'Đọc phiếu, làm từng bước trên thẻ.', s=['.tl-step'], g=1),
         S('💵', 'Kéo hoặc chạm tờ tiền vào khay cho đúng số.', s=['.tl-tray'], g=2, o=True),
@@ -344,6 +352,9 @@ EN: dict[str, str] = {
     'Học ba bài ngắn: đọc rồi chọn đáp án đúng.': 'Three short lessons: read, then pick the right answer.',
     'Bấm Bắt đầu thi thực hành, làm đủ ba phần.': 'Tap Start the practical exam and do all three parts.',
     'Đầu ca: đếm quỹ rồi so với sổ bàn giao.': 'Start of shift: count the float, then check the handover book.',
+    'Học nốt các bài với chị Hạnh trước.': 'Finish the lessons with Hạnh first.',
+    'Mỗi phần thi làm một lần. Bí thì Gợi ý, mất 🎯.': 'Each exam part is done once. Stuck? Hint, but you lose 🎯.',
+    'Làm xong phần đang mở ở trên trước.': 'Finish the open part above first.',
     'Bấm Nhận yêu cầu để mời khách.': 'Tap Take the request to call the customer.',
     'Nút hiện khi có khách mới.': 'The button shows when a new customer comes.',
     'Đọc phiếu, làm từng bước trên thẻ.': 'Read the slip, do each step on the card.',

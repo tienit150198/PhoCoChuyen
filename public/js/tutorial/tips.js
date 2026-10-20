@@ -5,8 +5,9 @@
  *
  * Progress survives a reload (localStorage mnl.tut.tips); the end marks the tutorial done like the tour
  * (store.js markTourDone: settings.tutorialDone follows the account). Markup only: no game rule here. */
-import {markTourDone} from './store.js';
+import {markTourDone,featuresSeen,markFeature} from './store.js';
 import {coachOn} from './coach.js';
+import {t as tr} from '../v4/i18n.js';
 
 const KEY='mnl.tut.tips';
 const get=()=>{try{return localStorage.getItem(KEY);}catch{return null;}};
@@ -180,15 +181,48 @@ const HINTS=[
     find:()=>first('#taskHUD .calm-end[data-action="end"]')||first('#taskHUD .icon-btn[data-action="end"]'),
     done:()=>view()==='summary'},
 ];
+/* First use of the town's player services, for every save (they came after most players' first days): the first
+ * time one of these sheets is open, one short bubble on the control to start with, like the hints above. Once each
+ * (store.js markFeature: one packed "fh-" id in notesSeen), never over the tips, the tour or a running coach. The
+ * 🧭 coach itself is per workplace (a shift to open and close): these sheets are not workplaces. */
+const SVC='dialog.svc-sheet:not(.ws-sheet)[open]',FAM='dialog.mr-sheet[open]',PHOTO='dialog.pt-sheet[open]',WED='dialog.ws-sheet[open]',FAIR='dialog.tf-sheet[open]';
+const FEATS=[
+  {id:'svc',emoji:'🛎️',dlg:SVC,text:'Chạm một người để xem giá rồi đặt. Xu được giữ tới khi bạn xác nhận.',
+    find:()=>first(`${SVC} .svc-list .svc-card`)},
+  {id:'svc-mine',emoji:'🧰',dlg:SVC,text:'Bật công tắc để người khác đặt dịch vụ của bạn.',
+    find:()=>first(`${SVC} .svc-switch`)},
+  {id:'birth',emoji:'👶',dlg:FAM,text:'Chọn Sinh con hay Nhận nuôi, đặt tên bé, rồi gửi lời mời.',
+    find:()=>first(`${FAM} #mr-family-children .mr-seg`)},
+  {id:'birth-room',emoji:'🏡',dlg:FAM,text:'Đặt tên, giá phòng sinh rồi lưu: các cặp sẽ đặt phòng của bạn.',
+    find:()=>first(`${FAM} #mr-family-room h3`)},
+  {id:'photo',emoji:'📸',dlg:PHOTO,text:'Chọn gói, phông, giá rồi bấm Đặt chụp. Xu giữ tới khi có ảnh.',
+    find:()=>first(`${PHOTO} .pt-pkgs`)},
+  {id:'studio',emoji:'📷',dlg:PHOTO,text:'Khách đặt hiện ở đây: Nhận đơn rồi bấm Chụp.',
+    find:()=>first(`${PHOTO} .pt-order .btn.primary`)},
+  {id:'wed',emoji:'💒',dlg:WED,text:'Mỗi dịch vụ: chọn một người làm, chọn yêu cầu rồi đặt.',
+    find:()=>first(`${WED} .ws-providers .svc-card`)},
+  {id:'wed-work',emoji:'🧰',dlg:WED,text:'Bật dịch vụ cưới để cô dâu chú rể tìm thấy bạn.',
+    find:()=>first(`${WED} .ws-switch`)},
+  {id:'fair',emoji:'🎪',dlg:FAIR,text:'Đặt ở một gian để được giá hội chợ. Xem diễn để lấy tem.',
+    find:()=>first(`${FAIR} .tf-grid > *`)},
+  {id:'booth',emoji:'🧑‍🔧',dlg:FAIR,text:'Chọn nghề, mức giảm, rồi bấm Dựng gian.',
+    find:()=>first(`${FAIR} .tf-setup .tf-careers`)},
+];
+// It goes at the player's first tap (it may sit over other controls of the sheet), when the sheet closes, or after 9 s.
+for(const f of FEATS){f.ttl=9000;f.feat=true;f.done=()=>!document.querySelector(f.dlg)||H.tap>H.since;}
 let H=null;
 export function hintsBoot(env,{markedNew,quiet,notesSeen,markSeen}){
   if(H)return;E=E||env;watch();
-  H={now:null,since:0};
+  H={now:null,since:0,tap:0};
+  document.addEventListener('pointerdown',()=>{if(H.now)H.tap=performance.now();},true);
   const tick=()=>{
-    const s=env.api.state;if(!s||!markedNew(s))return;
+    const s=env.api.state;if(!s)return;
+    const fresh=markedNew(s);
     if(run){if(H.now)H.now=null;return;}                  // the tips go first
     if(H.now){
-      const h=HINTS.find(x=>x.id===H.now);
+      const h=HINTS.find(x=>x.id===H.now)||FEATS.find(x=>x.id===H.now);
+      // These sheets redraw themselves: the bubble follows the control drawn again in its place.
+      if(h.feat&&bubble?.dataset.tip===h.id&&!bubble._el?.isConnected){const el=h.find();if(el)bubble._el=el;}
       // An inline line the page dropped while redrawing itself goes back under its heading.
       if(h.cls==='inline'&&bubble?.dataset.tip===h.id&&!bubble.isConnected&&!h.done?.()){const el=bubble._el?.isConnected?bubble._el:h.find();if(el){el.after(bubble);bubble._el=el;}}
       const gone=!bubbleUp()||bubble.dataset.tip!==h.id;
@@ -198,13 +232,26 @@ export function hintsBoot(env,{markedNew,quiet,notesSeen,markSeen}){
       if(!vis(el)||top&&!top.contains(el))bubble.hidden=true;else placeBubble();
       return;
     }
-    if(quiet(s)||document.getElementById('tutLayer')?.isConnected||coachOn())return;
-    const seen=notesSeen(env.api);
-    for(const h of HINTS){
-      if(seen.has(h.id)||!h.when())continue;
+    if(document.getElementById('tutLayer')?.isConnected)return;
+    // The coach's chip (or a coach run waiting out of sight under these sheets) does not hold the services' hints back.
+    const coachUp=coachOn(),coachShown=!!document.querySelector('#coachLayer:not([hidden])');
+    if(fresh&&!quiet(s)&&!coachUp){
+      const seen=notesSeen(env.api);
+      for(const h of HINTS){
+        if(seen.has(h.id)||!h.when())continue;
+        const el=h.find(),top=topDialog();if(!el||top&&!top.contains(el))continue;
+        showBubble({id:h.id,emoji:h.emoji,text:h.text,el,cls:`hint ${h.cls||''}`.trim()});
+        H.now=h.id;H.since=performance.now();markSeen(env,h.id);   // shown = seen: it never comes back
+        return;
+      }
+    }
+    if(coachShown)return;
+    const done=featuresSeen(env.api);
+    for(const h of FEATS){
+      if(done.has(h.id))continue;
       const el=h.find(),top=topDialog();if(!el||top&&!top.contains(el))continue;
-      showBubble({id:h.id,emoji:h.emoji,text:h.text,el,cls:`hint ${h.cls||''}`.trim()});
-      H.now=h.id;H.since=performance.now();markSeen(env,h.id);   // shown = seen: it never comes back
+      showBubble({id:h.id,emoji:h.emoji,text:tr(h.text),el,cls:'hint'});
+      H.now=h.id;H.since=performance.now();markFeature(env,h.id);
       return;
     }
   };

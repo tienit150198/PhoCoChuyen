@@ -111,6 +111,8 @@ function ahead(root){
   }
   return best;
 }
+/** Has a step of the workplace's own (not the shared open step) been on screen in this run? */
+const started=()=>[...run.shown].some(id=>id!=='open');
 /** What is on screen for step `s` (CoachRun.frame's probe). */
 function probe(s){
   const cid=run.cid,c=room(cid),st=S();
@@ -127,11 +129,20 @@ function probe(s){
   if(!c.open){const p=pick(OPEN_AT);return p?{nav:p.el,navText:p.text}:top?backOut():{hold:true};}
   const el=find(s,root);if(el)return {el};
   // Its tab/fold, unless that one is already open (then the control is just not there yet).
-  const via=s.v&&find(s.v,root);if(via&&!via.matches('[aria-selected="true"],[aria-pressed="true"],[aria-expanded="true"],[aria-current],.primary,.active,.on,.is-active,details[open]>summary'))return {via};
+  const via=s.v&&find(s.v,root);if(via&&s.v.h)return {hold:true};   // what comes first is still being done: wait out of sight
+  if(via&&!via.matches('[aria-selected="true"],[aria-pressed="true"],[aria-expanded="true"],[aria-current],.primary,.active,.on,.is-active,details[open]>summary'))return {via};
   // The game's own next step (the first-task pulse, the bottom button, the header hint) is a LATER step of this walk:
   // the player is already past this one (the customer came in by herself, say): go there.
   if(!s.x&&v==='job'){const j=ahead(root);if(j!=null)return {jump:j};}
-  if((s.at||'job')==='job'&&v!=='job'&&!s.o){   // an optional step away from the work screen is just not for now
+  // An optional step not on screen while the step before it (marked f: the game keeps it open on a wrong answer, the
+  // quality drops) is there again: back to that one rather than dropping this one and the rest of the walk with it
+  // (Lễ tân: wrong needs → "Chốt yêu cầu" again, then the rooms). Only marked steps: a control that simply stays on
+  // screen (milk tiles, a fold) would send the walk round in circles.
+  if(s.o&&!s.x&&v==='job'){const p=run.steps[run.i-1];if(p?.f&&!p.kind&&!p.x&&run.shown.has(p.id)&&(find(p,root)||p.v&&find(p.v,root)))return {back:run.i-1};}
+  // An optional step away from the work screen is just not for now, except before the workplace's first own step: the
+  // shift was just opened from the town (2.5D: the sheet is closed), and the intro card, the học việc / exam, the role
+  // or the shift check only show once the work screen is open: go there first, then drop the ones that are not around.
+  if((s.at||'job')==='job'&&v!=='job'&&(!s.o||!started())){
     if(top){const next=firstVis('#sheet[open] [data-action="nextJob"]');return next?{nav:next,navText:'Bấm Làm tiếp để vào việc.'}:backOut();}
     const p=pick(JOB_AT);return p?{nav:p.el,navText:'Bấm Làm tiếp để vào việc.'}:{};
   }
