@@ -1446,14 +1446,16 @@ def catalogue() -> dict:
     """Static (journey.content()['deco'], sent once at bootstrap)."""
     return dict(items=[dict(id=k, cat=v['cat'], spot=v['spot'], w=v['w'], h=v['h'], price=v['price'], cozy=v['cozy'],
                             rooms=list(v['rooms']), tags=list(v['tags']), surface=v['surface'], ledge=v['ledge'], name=v['name'],
-                            emoji=v['emoji'], sell=sell_price(k), **({'uq': True} if v.get('uq') else {})) for k, v in ITEMS.items()],
+                            emoji=v['emoji'], sell=sell_price(k), **({'uq': True} if v.get('uq') else {}),
+                            **({'new': True} if v.get('new') else {})) for k, v in ITEMS.items()],
                 cats=[dict(id=c, emoji=e, name=n) for c, e, n in DC.CATS],
                 sets=[dict(id=k, emoji=v['emoji'], name=v['name'], bonus=v['bonus'], size=len(v['need'])) for k, v in SETS.items()],
                 skins=[dict(id=k, part=v['part'], name=v['name'], price=v['price'], types=list(v['types']) if v['types'] else None)
                        for k, v in SKINS.items()],
                 levels=[dict(min=low, name=n) for low, n in LEVELS], rent_steps=[dict(min=low, spirit=n) for low, n in RENT_STEPS],
                 fix_names=dict(FIX_NAMES), sell_pct=SELL_PCT, guest_min=GUEST_MIN, u=U, z_max=Z_MAX,
-                kits={k: _room_view(kit_room(k)) for k in DC.KITS}, no_skin=list(DC.NO_SKIN), facing=list(FACING_ITEMS))
+                kits={k: _room_view(kit_room(k)) for k in DC.KITS}, no_skin=list(DC.NO_SKIN), facing=list(FACING_ITEMS),
+                styles=[dict(id=i, emoji=e, name=n, items=list(ks)) for i, e, n, ks in DC.STYLES])   # 🔎 the shop's style chips
 
 
 def _place_name(pl: dict) -> tuple[str, str]:

@@ -477,6 +477,139 @@ export const ART={
   quay_bar_ho:{h:54,surface:26,d:(W)=>shadow(W,30)+box(2,W-4,0,24,10,'#d9a066','#ecc28f',3)+[8,18,28,38,48,58,68].filter(x=>x<W-6).map(x=>L(`M${x} -24v22`,'#b47a45',1.2)).join('')
     +Pa(`M${W-24} -46q12-12 22 0z`,P.red,1)+L(`M${W-13} -46v10`,P.dark,1.6)+Pa('M12 -40h8l-2 6h-4z','#ff9a4d',1)+L('M16 -34v4',OL,1.2)+C(15,-41,1.6,P.leaf,0)},
   kinh_thien_van:{h:58,d:()=>shadow(40,30)+L('M20 -26l-10 26M20 -26l10 26M20 -26v26',P.dark,2)+`<g transform="rotate(-32 20 -36)">`+R(4,-42,30,11,P.navy,5)+R(30,-43,6,13,'#3a4670',2,1)+R(2,-40,4,7,P.gold,1,1)+'</g>'},
+  /* 🛋️ Thêm đồ trang trí (21/10/2026, game/deco_content.py MORE_2026). 🏮 Nét Việt xưa */
+  sap_gu:{h:36,d:(W)=>shadow(W,30)+[6,W/2-5,W-16].map(x=>Pa(`M${x} 0q-2-6 2-10h6q4 4 2 10z`,'#5a2e1c',1.2)).join('')+box(2,W-4,10,12,10,'#6b3420','#8a4a2c',3)
+    +L(`M8 -12q${(W-16)/4} 7 ${(W-16)/2} 0q${(W-16)/4} 7 ${(W-16)/2} 0`,'#c9954f',1.3)+shine(10,-31,W-20,1.5)+C(W/2,-16,2.2,'#c9954f',1)+C(12,-16,1.3,'#c9954f',0)+C(W-12,-16,1.3,'#c9954f',0)},
+  tu_che:{h:34,d:(W)=>shadow(W,30)+legs([5,W-11],-5,5,'#4a2416',6)+box(2,W-4,4,18,8,'#5e2e1c','#7a3e26',3)
+    +[0,1,2].map(i=>{const w=(W-12)/3,x=6+i*w;return R(x+1,-20,w-2,13,'#6b3420',2,1)+C(x+w/2,-11,1.4,'#c9954f',.8);}).join('')
+    +[[12,-17],[W/2-4,-16],[W-14,-17],[W/2+6,-17],[24,-14],[W-26,-14]].map(([x,y])=>C(x,y,1.1,'#f3f0ff',0)).join('')+L(`M6 -28h${W-12}`,'#c9954f',1,' opacity=".6"')},
+  den_hoi_an:{h:34,wall:1,g:(W)=>[W/2,17,28],d:(W)=>L(`M${W/2} 0v5`)+R(W/2-4,4,8,3,'#8a4a2c',1,1)+E(W/2,16,9,10,'#f2c14e')
+    +L(`M${W/2-5} 7q-6 9 0 18M${W/2} 6v20M${W/2+5} 7q6 9 0 18`,'#d4a03a',1)+R(W/2-4,25,8,3,'#8a4a2c',1,1)+L(`M${W/2} 28v5`,P.redD,1.6)+shine(W/2-6,11,2,7)},
+  chum_den_hoi_an:{h:34,wall:1,g:(W)=>[W/2,18,W*.55],d:(W)=>L(`M2 3q${W/2-2} 8 ${W-4} 0`,P.dark,1.2)
+    +[[W*.2,P.red,'#b8473f',8],[W*.5,P.butter,P.butterD,10],[W*.8,'#c77dd6','#9a55a8',8]].map(([x,c,dk,y])=>L(`M${x} ${y-3}v3`)+R(x-3,y,6,2,'#8a4a2c',1,.9)+E(x,y+10,7,8,c)
+      +L(`M${x-4} ${y+3}q-4 7 0 14M${x+4} ${y+3}q4 7 0 14`,dk,.9)+R(x-3,y+18,6,2,'#8a4a2c',1,.9)+L(`M${x} ${y+20}v4`,dk,1.2)).join('')},
+  tranh_ga_dh:{h:68,wall:1,d:(W,H)=>R(3,3,W-6,H-6,P.woodD,2)+Rn(7,7,W-14,H-14,'#f6e2b0',1)
+    +Pa('M12 40q-6-8-2-16q2 8 6 10z','#2f6b4a',1)+Pa('M12 44q-2-14 8-18q8-2 10 6q2 10-6 14q-8 2-12-2z','#d9483b',1.2)+Pa('M24 26q2-8 6-6q-1 4 2 6z','#d9483b',1)
+    +Pa('M30 29l4 1l-4 2z',P.butterD,1)+C(27,29,.9,OL,0)+L('M14 36q6 4 12 0',P.butterD,1)+L('M18 48v8M23 48v8M16 56h4M21 56h4',OL,1.2)+Rn(9,H-14,W-18,4,'#d9483b',1,.6)},
+  tranh_chuot_dh:{h:34,wall:1,d:(W,H)=>R(3,3,W-6,H-6,P.woodD,2)+Rn(7,7,W-14,H-14,'#f6e2b0',1)
+    +[14,30,52,66].map((x,i)=>E(x,H-12,5,3.2,'#5a566b',1)+C(x+4,H-14,1.6,'#5a566b',.8)+L(`M${x-5} ${H-12}q-4 0-4-3`,'#5a566b',.9)
+      +(i===2?'':Rn(x-3,H-16,6,2,['#d9483b','#2f6b4a','','#f2c14e'][i],1))).join('')+R(42,10,20,9,'#d9483b',2,1)+L('M38 17h28',P.woodD,1.4)+C(52,13,1.2,P.butter,0)},
+  binh_phong:{h:80,d:(W)=>{const w=(W-8)/4;return shadow(W,30)+legs([6,W-10],-4,4,'#4a2416')+[0,1,2,3].map(i=>{const x=4+i*w;return R(x,-78,w,74,'#7a3e26',2,1.3)+Rn(x+3,-72,w-6,40,'#f6e2b0',1)+Rn(x+3,-28,w-6,18,'#8a4a2c',1)+C(x+w/2,-19,3,'#c9954f',1);}).join('')
+    +L('M10 -42q10-10 22-4q8-12 20-4q10-8 20 2','#2f6b4a',1.4)+leafE(22,-50,2,4,-30,P.leaf)+leafE(46,-56,2,4,20,P.leaf)+C(W-18,-62,4.5,'#d9483b',0)
+    +L(`M${w+4} -78v74M${2*w+4} -78v74M${3*w+4} -78v74`,'#4a2416',1.2);}},
+  chieu_hoa:{h:20,rug:1,d:(W,D)=>R(4,-D+6,W-8,D-10,'#e9d39a',3)+R(9,-D+10,W-18,D-18,'#d9483b',2,1)+R(13,-D+14,W-26,D-26,'#e9d39a',2,0)
+    +Array.from({length:Math.floor((W-30)/10)},(_,i)=>Pa(`M${18+i*10} ${-D/2-2}l4-5l4 5l-4 5z`,i%2?'#2f6b4a':'#d9483b',0)).join('')
+    +L(Array.from({length:Math.floor((W-12)/6)},(_,i)=>`M${8+i*6} ${-D+7}v${D-12}`).join(''),'#c9a860',.5,' opacity=".5"')},
+  am_tich:{h:30,top:1,d:()=>E(20,-2,12,2.6,'#000',0,' opacity=".1"')+Pa('M8 -2q-4-14 4-20h16q8 6 4 20z',P.wood)+L('M8 -8h24M7 -14h26',P.woodD,1)
+    +L('M11 -2l2-20M17 -2v-20M23 -2v-20M29 -2l-2-20',P.woodD,.7,' opacity=".7"')+E(20,-22,8,2.5,P.white)+Pa('M15 -23q5-8 10 0',P.white,1.2)+C(20,-27,1.6,P.skyD,1)
+    +L('M26 -22q6-2 8-8',OL,2)+L('M26 -22q6-2 8-8',P.white,1)},
+  non_la:{h:34,wall:1,d:(W)=>C(W/2,4,1.4,P.greyD,0)+Pa(`M${W/2} 5L${W/2+16} 28q-16 6-32 0z`,'#f1dfa8')
+    +L(`M${W/2-12} 23q12 4 24 0M${W/2-8} 17q8 3 16 0M${W/2-4} 11q4 2 8 0`,'#c9a860',1)+L(`M${W/2-14} 28q-2 4 4 5`,P.red,1.2)},
+  den_dau:{h:34,top:1,g:()=>[20,-20,24],d:()=>E(20,-2,9,2.4,'#000',0,' opacity=".1"')+Pa('M13 -3q-3-8 7-10q10 2 7 10z','#8fd0c8')+E(20,-3,7,2,'#8fd0c8')
+    +R(16,-15,8,3,P.gold,1,1)+Pa('M16 -15q-4-8 1-16h6q5 8 1 16z','#eaf6fb',1.1,' opacity=".85"')+Pa('M20 -18q-3-4 0-8q3 4 0 8z','#ffb84d',0)+L('M28 -15h3v4',P.gold,1.2)},
+  tranh_theu:{h:34,wall:1,d:(W,H)=>R(3,3,W-6,H-6,'#8a5a36',2)+Rn(7,7,W-14,H-14,'#eef3e6',1)+E(W/2-22,H-12,8,3.5,'#5f9a6a',1)+E(W/2+22,H-14,7,3,P.leaf,1)
+    +Pa(`M${W/2} ${H-10}q-12-2-12-10q8 0 12 10z`,P.pinkL,1)+Pa(`M${W/2} ${H-10}q12-2 12-10q-8 0-12 10z`,P.pinkL,1)+Pa(`M${W/2} ${H-10}q-6-8 0-16q6 8 0 16z`,P.pink,1)
+    +L(`M12 12q4-2 8 0M${W-20} 11q4-2 8 0`,'#9ab5a0',.8)},
+  /* 🤍 Tối giản */
+  sofa_goc:{h:90,d:(W,D)=>shadow(W,D)+legs([10,W-12],-6,6,P.dark,3)+R(4,-D-26,W-8,30,'#9aa5b1',10)+box(2,W-50,D-22,12,12,'#9aa5b1','#c3ccd5',6)
+    +R(W-46,-D-4,42,D-2,'#9aa5b1',8)+box(W-46,42,6,14,D-24,'#9aa5b1','#c3ccd5',6)+R(0,-D-8,14,32,'#b3bdc7',7)
+    +R(16,-D-20,28,18,'#dfe5ea',7)+R(48,-D-20,28,18,'#dfe5ea',7)+C(W-26,-D+4,6,P.butter)+L(`M${W-29} ${-D+2}l3 3l3-3`,OL,1.1)},
+  den_san_cong:{h:90,g:()=>[31,-62,34],d:()=>shadow(40,30)+E(10,-3,8,3,P.dark)+L('M10 -4v-60q0-20 18-20q8 0 10 10',P.dark,2.2)
+    +Pa('M31 -76q8-1 9 7l-1 4h-15l-1-4q1-7 8-7z',P.white)+E(31,-64,6,1.6,'#fff3b0',0)},
+  tranh_truu_tuong:{h:34,wall:1,d:(W,H)=>R(3,3,W-6,H-6,P.dark,2,1.2)+Rn(6,6,W-12,H-12,'#f4efe6',1)+C(W*.32,H*.55,8,'#e0a07a',0)
+    +Rn(W*.5,9,W*.18,H-18,'#9fb4a6',1)+Pa(`M${W*.72} ${H-8}a8 8 0 0 1 16 0z`,'#3d4a6b',0)+L(`M10 ${H-10}h${W*.4}`,P.dark,1.2)},
+  ban_tra_tron:{h:24,d:()=>shadow(40,30)+L('M20 -12v10M12 -1h16',P.dark,2.4)+E(20,-14,17,5,'#e9e5de')+E(20,-15,15,3.6,'#f6f3ee',0)+L('M10 -15q4-2 8 0M24 -16q4 1 6 3','#c9c2b6',.8)},
+  ke_bac_thang:{h:70,d:()=>shadow(40,30)+L('M8 0l8-68M32 0l-4-68',P.woodD,2.6)+[[-14,30],[-32,26],[-50,22]].map(([y,w])=>R(20-w/2,y,w,3,P.wood,1,1.1)).join('')
+    +R(10,-22,4,8,P.sky,1,1)+R(15,-21,3,7,P.pink,1,1)+R(24,-40,3,8,P.butter,1,1)+R(28,-39,3,7,P.mint,1,1)+C(20,-58,4,P.leaf,1)+R(17,-56,6,5,P.pot,1,1)},
+  den_giay:{h:34,wall:1,g:(W)=>[W/2,18,28],d:(W)=>L(`M${W/2} 0v6`)+C(W/2,18,12,'#fbf6ea')
+    +L(`M${W/2-11} 14q11 3 22 0M${W/2-12} 19q12 3 24 0M${W/2-10} 24q10 3 20 0`,'#e3d8c2',1)},
+  binh_canh_kho:{h:40,top:1,d:()=>E(20,-2,8,2.2,'#000',0,' opacity=".1"')+L('M20 -16l-8-22M20 -16l2-24M20 -16l9-18M14 -30l-5-4M22 -32l5-5',P.woodD,1.2)
+    +[[12,-38],[9,-34],[22,-40],[27,-37],[29,-34]].map(([x,y])=>E(x,y,1.8,1.1,'#e8d9b5',0)).join('')+Pa('M14 -2q-4-6 0-12q2-4 1-6h10q-1 2 1 6q4 6 0 12z','#f4f1ea')},
+  /* 🎀 Pastel dễ thương */
+  giuong_may:{h:108,d:(W,D)=>shadow(W,D)+legs([4,W-8],-6,6,P.lilacD)+[[.14,14],[.32,18],[.5,21],[.68,18],[.86,14]].map(([t,r])=>C(W*t,-D-12-r*.6,r,P.lilacL)).join('')
+    +Rn(5,-D-16,W-10,14,P.lilacL)+R(2,-D-4,W-4,D-6,P.white,6)+E(W*.3,-D+2,16,7,P.pinkL)+E(W*.66,-D+2,16,7,P.pinkL)
+    +Pa(`M4 ${-D*0.62}q${W/2-4} -8 ${W-8} 0v${D*0.62-14}h${-(W-8)}z`,P.lilac)+[0.2,0.4,0.6,0.8].map(t=>star(W*t,-D*0.36,3.2,P.butter)).join('')+R(2,-14,W-4,10,P.lilacD,3)},
+  ghe_tho:{h:52,d:()=>shadow(40,30)+E(13,-36,3.4,10,P.pinkL,1.4,' transform="rotate(-12 13 -36)"')+E(27,-36,3.4,10,P.pinkL,1.4,' transform="rotate(12 27 -36)"')
+    +E(13,-36,1.4,6,P.pink,0,' transform="rotate(-12 13 -36)"')+E(27,-36,1.4,6,P.pink,0,' transform="rotate(12 27 -36)"')
+    +Pa('M4 -4q-4-26 16-30q20 4 16 30q-16 6-32 0z',P.pinkL)+eyes(15,25,-16,1.5)+L('M18 -12q2 2 4 0',OL,1.2)+blush(11,-12)+blush(29,-12)},
+  den_may:{h:34,wall:1,g:(W)=>[W/2,16,28],d:(W)=>L(`M${W/2} 0v6`,OL,1)+Pa(`M${W/2-14} 24q-6 0-5-6q1-5 6-5q1-7 8-7q5-5 11 0q7-1 8 6q6 1 5 7q-1 5-6 5z`,'#f7f3ff')
+    +eyes(W/2-4,W/2+4,16,1.1)+L(`M${W/2-1.5} 19q1.5 1.5 3 0`,OL,1)+blush(W/2-8,19)+blush(W/2+8,19)},
+  ke_cau_vong:{h:34,wall:1,d:(W)=>[[P.pink,13],[P.butter,10],[P.mint,7],[P.sky,4]].map(([c,r])=>L(`M${n(W/2-r*2.6)} 22a${n(r*2.6)} ${n(r*1.5)} 0 0 1 ${n(r*5.2)} 0`,c,3.2)).join('')
+    +R(4,21,W-8,4,P.wood,1.5,1.2)+C(W/2,3,1.2,P.greyD,0)},
+  tham_may:{h:14,rug:1,d:(W,D)=>[[.22,.36],[.42,.42],[.62,.4],[.8,.32]].map(([t,r])=>E(W*t,-D/2-2,W*r*.42,D*r,P.skyL,1.2)).join('')+E(W/2,-D/2,W/2-6,D/2-5,P.skyL,0)
+    +eyes(W/2-5,W/2+5,-D/2-2,1.2)+blush(W/2-10,-D/2+2)+blush(W/2+10,-D/2+2)},
+  gau_dau_tay:{h:30,top:1,d:()=>E(20,-8,10,8,P.red)+C(12,-4,3.5,P.red)+C(28,-4,3.5,P.red)+Pa('M10 -18q10-16 20 0z',P.red)+Pa('M14 -27l3 3l3-4l3 4l3-3l-2 5h-8z',P.leaf,1)
+    +C(20,-16,6.5,P.peach)+eyes(17.5,22.5,-17,1.1)+blush(15,-14)+blush(25,-14)+[[15,-8],[24,-6],[19,-4],[13,-11],[26,-11]].map(([x,y])=>E(x,y,.7,1.1,P.butter,0)).join('')},
+  den_keo_bong:{h:36,top:1,g:()=>[20,-24,24],d:()=>E(20,-2,8,2.4,P.lilacD)+R(18.5,-14,3,12,P.white,1,1)+C(15,-22,8,P.pinkL)+C(25,-24,8,P.skyL)+C(20,-29,7,P.pinkL)+C(18,-25,3,'#fff',0)},
+  /* 🎮 Góc gaming */
+  man_hinh_cong:{h:34,top:1,d:()=>E(20,-2,10,2.4,P.darkL)+R(18,-12,4,10,P.dark,1,1)+Pa('M1 -32q19-5 38 0v20q-19-4-38 0z',P.dark)+Pa('M3 -30q17-4 34 0v16q-17-3-34 0z','#6be0c8',0)
+    +L('M6 -20q6-6 12-2q6 4 14-4','#8a8cff',1.6)+C(30,-26,2,'#ff7ab8',0)},
+  ban_phim_led:{h:14,top:1,d:()=>E(20,-2,16,2.4,'#000',0,' opacity=".12"')+Pa('M3 -2l3-8h28l3 8z',P.dark)
+    +Array.from({length:12},(_,i)=>Rn(7+(i%6)*4.5,-9+Math.floor(i/6)*3.4,3.4,2.4,['#ff7ab8','#ffd36b','#6be0c8','#8a8cff','#ff7ab8','#ffd36b'][i%6],.6)).join('')},
+  tai_nghe:{h:34,top:1,d:()=>E(20,-2,8,2.4,P.darkL)+R(18.5,-26,3,24,P.greyD,1,1)+L('M10 -18q0-16 10-16q10 0 10 16',P.dark,3)+R(6,-22,7,11,P.red,3)+R(27,-22,7,11,P.red,3)},
+  den_thanh_rgb:{h:80,g:()=>[20,-44,34],d:()=>shadow(40,30)+E(20,-3,8,2.6,P.dark)
+    +'<defs><linearGradient id="dcRgb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7ab8"/><stop offset=".5" stop-color="#8a8cff"/><stop offset="1" stop-color="#6be0c8"/></linearGradient></defs>'
+    +R(17,-78,6,74,P.dark,3)+Rn(18.5,-76,3,70,'url(#dcRgb)',1.5)},
+  poster_game:{h:68,wall:1,d:(W,H)=>R(4,4,W-8,H-10,'#2a2833',2)
+    +[[1,0],[5,0],[2,1],[3,1],[4,1],[1,2],[2,2],[3,2],[4,2],[5,2],[0,3],[1,3],[3,3],[5,3],[6,3],[0,4],[1,4],[2,4],[3,4],[4,4],[5,4],[6,4],[1,5],[5,5],[0,6],[6,6]].map(([x,y])=>Rn(9+x*3.2,16+y*3.2,3,3,'#6be0c8')).join('')
+    +L(`M10 ${H-31}h${W-20}`,'#ffd36b',1.4)+R(8,H-24,W-16,7,'#ff7ab8',1.5,1)+C(W/2,6,1.6,P.red,1)},
+  ke_tay_cam:{h:34,wall:1,d:(W)=>R(4,24,W-8,5,P.dark,1.5,1.2)+Pa('M10 29v5l5-5z',P.darkL,1)+Pa(`M${W-10} 29v5l-5-5z`,P.darkL,1)
+    +[[12,P.red],[W/2+4,P.sky]].map(([x,c])=>Pa(`M${x} 23q-2-12 6-12h12q8 0 6 12q-3 3-6-1h-12q-3 4-6 1z`,c)+L(`M${x+5} 15v4M${x+3} 17h4`,OL,1.2)+C(x+17,15.5,1.3,P.butter,0)+C(x+19.5,18,1.3,P.mint,0)).join('')},
+  /* 📖 Góc đọc sách */
+  tu_sach_cao:{h:104,d:(W)=>shadow(W,30)+R(3,-104,W-6,104,'#8a5a36',3)+Rn(7,-100,W-14,96,P.woodD,2)
+    +[[-100,-77],[-74,-51],[-48,-27],[-24,-4]].map(([y0,y1],r)=>Array.from({length:8},(_,i)=>{const x=9+i*8.4,h=(y1-y0)-3-((i+r)%3)*3;return x+6<W-7?R(x,y1-h,6,h,[P.red,P.sky,P.butter,P.mint,P.lilac,P.pink,P.peach,P.navy][(i+r*3)%8],1.2,1):'';}).join('')).join('')
+    +[-77,-51,-27].map(y=>R(5,y,W-10,4,'#8a5a36',1,1)).join('')},
+  ghe_doc_sach:{h:56,d:()=>shadow(40,30)+legs([7,29],-6,6,P.woodD)+R(5,-54,30,36,'#5f8f74',10)+R(9,-48,22,24,'#79a98c',7,0)+box(4,32,6,10,8,'#5f8f74','#79a98c',5)
+    +R(1,-34,8,28,'#4e7a61',4)+R(31,-34,8,28,'#4e7a61',4)+R(14,-30,12,8,P.butter,3,1)},
+  den_doc_sach:{h:84,g:()=>[31,-62,28],d:()=>shadow(40,30)+E(12,-3,8,2.6,'#b8893a')+L('M12 -4v-62q0-10 10-12q8-1 10 6','#b8893a',2.2)
+    +Pa('M26 -72l12 2l-2 10l-12-3z','#2f6b4a')+E(31,-61,5,1.4,'#fff3b0',0)},
+  chan_len:{h:22,top:1,d:()=>E(20,-2,15,2.4,'#000',0,' opacity=".1"')+R(5,-8,30,7,P.peach,3)+R(7,-14,28,7,P.mint,3)+R(5,-20,30,7,P.butter,3)
+    +L('M9 -17h22M9 -11h22M9 -5h22',OL,.6,' stroke-dasharray="2 2"')},
+  ke_sach_treo:{h:34,wall:1,d:()=>R(4,26,32,4,P.wood,1.5,1.2)+Pa('M8 30v4l4-4z',P.woodD,1)+Pa('M32 30v4l-4-4z',P.woodD,1)
+    +R(7,10,5,16,P.red,1,1)+R(12,12,5,14,P.sky,1,1)+R(17,9,5,17,P.butter,1,1)+Pa('M23 26l4-15l4 1l-4 15z',P.mint,1)},
+  ban_do:{h:34,wall:1,d:(W,H)=>R(3,3,W-6,H-6,P.woodD,2)+Rn(6,6,W-12,H-12,'#cfe6f2',1)+L(`M6 ${H/2}h${W-12}`,'#9fc3d8',.6,' stroke-dasharray="2 2"')
+    +Pa('M12 11q6-2 10 2q2 4-2 6q-2 4 0 8l-4 1q-4-4-4-9z',P.leaf,.8)+Pa(`M${W*.4} 10q8-2 12 3q-4 2-2 6q-4 6-8 2q-2-6-2-11z`,P.butterD,.8)
+    +Pa(`M${W*.62} 11q10-3 16 3q2 6-6 6q-6-2-10-9z`,P.peach,.8)+Pa(`M${W-18} 21q6-2 8 3l-6 2z`,P.pinkD,.8)},
+  /* 🍳 Bếp & ăn uống */
+  ban_an_tron:{h:40,d:(W)=>shadow(W,30)+L(`M${W/2} -22v20M${W/2-12} -2h24`,P.woodD,3)+E(W/2,-24,W/2-6,8,P.woodD)+E(W/2,-26,W/2-8,6,P.wood,1.2)+E(W/2,-26,W/2-18,3,P.woodL,0)
+    +[10,W-10].map(x=>legs([x-5,x+2],-10,10,P.woodD,3)+R(x-6,-14,12,4,P.woodL,2,1.1)).join('')},
+  noi_dat:{h:30,top:1,d:()=>E(20,-2,12,2.6,'#000',0,' opacity=".1"')+Pa('M7 -14q-2 12 13 12q15 0 13-12z','#a8603a')+L('M5 -11h3M32 -11h3','#8a4a2c',2)+E(20,-14,13,3,'#8a4a2c')
+    +Pa('M9 -16q11-8 22 0z','#a8603a')+C(20,-19,2,'#8a4a2c',1)+L('M14 -24q-2-3 0-6M20 -25q-2-3 0-6M26 -24q-2-3 0-6',P.greyD,1,' opacity=".6"')},
+  tu_bep_treo:{h:34,wall:1,d:(W,H)=>Rn(4,H-5,W-8,2,'#000',1,.1)+R(2,2,W-4,H-6,P.mintL,3)+R(5,5,W/2-7,H-12,P.mint,2,1)+R(W/2+2,5,W/2-7,H-12,P.mint,2,1)
+    +R(W/2-6,H/2-6,2,8,P.greyD,1,.8)+R(W/2+4,H/2-6,2,8,P.greyD,1,.8)},
+  may_rua_bat:{h:52,d:()=>shadow(40,30)+R(3,-50,34,50,'#dfe3e6',4)+Rn(5,-48,30,6,'#5a566b',2)+C(10,-45,1.2,'#6be0c8',0)+C(14,-45,1.2,P.butter,0)
+    +R(8,-38,24,3,'#a3aab0',1.5,1)+Rn(7,-32,26,26,'#cfd5d9',2)+shine(9,-30,3,20)},
+  gio_banh_mi:{h:28,top:1,d:()=>E(20,-2,13,2.6,'#000',0,' opacity=".1"')+E(14,-16,4,10,'#e8b468',1.2,' transform="rotate(-20 14 -16)"')+E(23,-17,4,11,'#e8b468',1.2,' transform="rotate(8 23 -17)"')
+    +L('M12 -20l3-2M22 -22l3-1M24 -16l3-1',P.woodD,.9)+Pa('M6 -12h28l-3 10h-22z',P.wood)+L('M9 -8h22M12 -12v10M20 -12v10M28 -12v10',P.woodD,.8)},
+  /* 🛁 Nhà tắm */
+  thang_khan:{h:70,d:()=>shadow(40,30)+L('M10 0l6-68M30 0l-2-68',P.wood,2.6)+L('M14 -54h15M13 -38h16M11 -22h18',P.woodD,2)
+    +Pa('M13 -38h17v14h-4v-10h-13z',P.sky,1.1)+Pa('M15 -54h14v10h-14z',P.pinkL,1.1)},
+  chau_ngam_chan:{h:28,d:()=>shadow(40,30)+Pa('M5 -18h30l-3 16h-24z',P.wood)+L('M7 -12h26M11 -18v16M20 -18v16M29 -18v16',P.woodD,1)+E(20,-18,15,3.6,P.woodD)
+    +E(20,-18,13,2.6,'#a9d6f5',0)+C(16,-18,1.4,P.pink,0)+C(23,-19,1.2,P.pink,0)+L('M14 -24q-2-3 0-5M24 -25q-2-3 0-5',P.greyD,1,' opacity=".6"')},
+  den_muoi:{h:30,top:1,g:()=>[20,-16,24],d:()=>E(20,-2,9,2.4,P.woodD)+R(12,-6,16,4,P.wood,1.5,1)+Pa('M12 -6q-4-10 2-18q6-6 12-2q6 6 2 20z','#ffa07a')
+    +L('M15 -10q1-6 5-9M22 -8l2-8','#ffcfae',1.2)},
+  ke_tre_tam:{h:34,wall:1,d:(W)=>L(`M8 2v26M${W-8} 2v26`,'#b9a35a',2)+R(4,20,W-8,4,'#d8c27a',2,1.2)+L(`M${W*.3} 20v4M${W*.6} 20v4`,'#b9a35a',1)
+    +R(4,4,W-8,3,'#d8c27a',1.5,1)+L(`M${W*.4} 4v3M${W*.75} 4v3`,'#b9a35a',1)},
+  /* 🌿 Ban công, sân vườn, cây */
+  ban_ghe_ban_cong:{h:44,d:(W)=>shadow(W,30)+[10,W-10].map((x,i)=>L(`M${x-6} 0v-14M${x+6} 0v-14`,P.dark,1.6)+R(i?x-1:x-7,-36,8,22,P.mint,3,1.1)+R(x-8,-16,16,4,P.mint,2,1.1)).join('')
+    +L(`M${W/2} -20v18M${W/2-8} -2h16`,P.dark,2)+E(W/2,-22,14,4.4,P.white)+Pa(`M${W/2-4} -26h8l-1 6h-6z`,P.white,1)+L(`M${W/2+4} -24q3 0 2 3`,OL,1)},
+  chau_lan:{h:62,d:()=>shadow(40,30)+leafE(14,-18,4,9,-60,P.leafD)+leafE(26,-18,4,9,60,P.leaf)+L('M20 -18v-36q2-6 10-4',P.leafD,1.3)
+    +[[20,-46],[24,-54],[30,-52],[33,-46]].map(([x,y])=>C(x,y,4,'#f0b6d8',1)+C(x,y,1.2,P.butter,0)).join('')+pot(20,18,16,P.white,P.grey)},
+  gian_muop:{h:70,d:(W)=>shadow(W,30)+L(`M6 0v-66M${W-6} 0v-66M4 -66h${W-8}M6 -44h${W-12}M6 -22h${W-12}`,P.woodD,2)
+    +Array.from({length:7},(_,i)=>leafE(10+i*(W-20)/6,-62+(i%2)*6,5,4,i*25,i%2?P.leaf:P.leafD)).join('')
+    +[[W*.3,-54],[W*.7,-50]].map(([x,y])=>L(`M${x} ${y}v4`,P.leafD,1)+E(x,y+12,3,8,P.leafL,1.1)).join('')
+    +[[W*.2,-58],[W*.55,-60],[W*.85,-56]].map(([x,y])=>C(x,y,3,P.butter,1)).join('')+R(4,-6,W-8,6,P.pot,2)},
+  hon_non_bo:{h:60,d:()=>shadow(40,30)+E(20,-8,18,7,'#9aa0a6')+E(20,-10,15,4.5,'#7fb8e0',1.2)+Pa('M10 -10l4-26l6 8l4-20l6 18l4-4l2 24z','#8d8a84')
+    +L('M14 -34l2 6M24 -50l2 10',P.greyD,1)+leafE(13,-36,3,5,-30,P.leaf)+leafE(30,-26,3,4,30,P.leafD)+R(23,-46,4,4,P.cream,.5,.8)+Pa('M21 -46h8l-4-4z',P.red,1)},
+  den_nang_luong:{h:56,g:()=>[20,-40,24],d:()=>shadow(40,30)+L('M20 0v-36',P.dark,2.4)+Pa('M12 -36h16l-2-10h-12z','#fff3c4',1.2)+R(10,-50,20,5,'#3d4a6b',1.5,1)
+    +L('M14 -50v5M20 -50v5M26 -50v5','#7f9ac8',.8)+R(14,-37,12,2,P.dark,1,0)},
+  chau_sen_da:{h:24,top:1,d:()=>E(20,-2,8,2.2,'#000',0,' opacity=".1"')+pot(20,14,9)
+    +[[-60,'#9fd3b0'],[60,'#9fd3b0'],[-25,'#7fc49a'],[25,'#7fc49a'],[0,'#b9e3c4']].map(([r,c])=>leafE(20,-14,3,6,r,c)).join('')+C(20,-14,2,P.pinkL,.8)},
+  cay_bang_sing:{h:86,d:()=>shadow(40,30)+L('M20 -16v-58',P.woodD,2.2)
+    +[[12,-72,-30],[28,-68,30],[11,-56,-50],[29,-50,50],[13,-40,-40],[27,-34,40],[20,-80,0]].map(([x,y,r],i)=>leafE(x,y,6,9,r,i%2?P.leaf:P.leafD)).join('')+pot(20,22,18,P.white,P.grey)},
+  tham_tho_cam:{h:14,rug:1,d:(W,D)=>R(4,-D+5,W-8,D-8,'#3d2a4a',3)+Rn(6,-D+8,W-12,3,'#d9483b')+Rn(6,-7,W-12,3,'#d9483b')
+    +Array.from({length:Math.floor((W-16)/10)},(_,i)=>Pa(`M${12+i*10} ${-D/2-1}l5-5l5 5l-5 5z`,['#f2c14e','#d9483b','#6bb5a0'][i%3],0)).join('')
+    +L(Array.from({length:Math.floor((W-8)/5)},(_,i)=>`M${6+i*5} ${-D+5}v-2M${6+i*5} -3v2`).join(''),'#f2c14e',1)},
 };
 /* ↻ Xoay hướng: the back of the pieces from 1.7.15 and before that turn too (game/deco.py FACING_ITEMS; the new
  * ones above carry their own `back`). Seen from behind: the back panel in front, what faced you hidden behind it. */
@@ -831,7 +964,17 @@ export const TINT={sofa:'pink',ban_tra:'wood',giuong:'sky',tv:'wood',be_ca:'wood
   giuong_king:'butter',ban_go_lim:{'#8a5232':'c','#6b3f22':'d'},ghe_da_bo:{'#b8653d':'c','#9a4f2e':'d'},qua_dia_cau:'sky',ghe_rap_doi:{'#b13a4c':'c','#8e2b3a':'d'},
   may_bong_ngo:'red',loa_cot:{'#2c2a33':'c'},thung_ruou:{'#9a6438':'c'},ban_nem_ruou:{'#8a5232':'c','#6b3f22':'d'},may_chay_bo:{'#3d3a4a':'c'},
   gia_ta:{'#5a566b':'c'},tu_giay:{'#f6f0e5':'c'},dao_trang_suc:{'#ffffff':'l','#f6f0e5':'c'},xe_may_co:{'#5a9a8a':'c'},bien_neon:{'#ff7ab8':'c'},
-  lo_suoi_ngoai:{'#7d7a74':'c'},quay_bar_ho:'wood',kinh_thien_van:'navy'};
+  lo_suoi_ngoai:{'#7d7a74':'c'},quay_bar_ho:'wood',kinh_thien_van:'navy',
+  sap_gu:{'#8a4a2c':'c','#6b3420':'d'},tu_che:{'#7a3e26':'c','#5e2e1c':'d'},den_hoi_an:{'#f2c14e':'c','#d4a03a':'d'},chum_den_hoi_an:['red','butter'],
+  tranh_ga_dh:'wood',tranh_chuot_dh:'wood',binh_phong:{'#8a4a2c':'c','#7a3e26':'d'},chieu_hoa:{'#d9483b':'c'},am_tich:'wood',non_la:{'#f1dfa8':'c','#c9a860':'d'},
+  den_dau:{'#8fd0c8':'c'},tranh_theu:'pink',sofa_goc:{'#c3ccd5':'c','#b3bdc7':'c','#9aa5b1':'d'},den_san_cong:'white',tranh_truu_tuong:{'#e0a07a':'c','#9fb4a6':'l','#3d4a6b':'d'},
+  ban_tra_tron:{'#e9e5de':'c','#f6f3ee':'l'},ke_bac_thang:'wood',den_giay:{'#fbf6ea':'c','#e3d8c2':'d'},binh_canh_kho:{'#f4f1ea':'c'},giuong_may:'lilac',ghe_tho:'pink',
+  den_may:{'#f7f3ff':'c'},ke_cau_vong:['pink','butter','mint','sky'],tham_may:'sky',gau_dau_tay:'red',den_keo_bong:['pink','sky'],man_hinh_cong:'dark',ban_phim_led:'dark',
+  tai_nghe:'red',den_thanh_rgb:{'#ff7ab8':'c','#8a8cff':'d','#6be0c8':'l'},poster_game:{'#6be0c8':'c','#ff7ab8':'d'},ke_tay_cam:['red','sky'],tu_sach_cao:{'#b47a45':'c','#8a5a36':'d'},
+  ghe_doc_sach:{'#79a98c':'c','#5f8f74':'d','#4e7a61':'d'},den_doc_sach:{'#2f6b4a':'c'},chan_len:['peach','mint','butter'],ke_sach_treo:'wood',ban_do:'wood',ban_an_tron:'wood',
+  noi_dat:{'#a8603a':'c','#8a4a2c':'d'},tu_bep_treo:'mint',may_rua_bat:{'#dfe3e6':'c','#cfd5d9':'l'},gio_banh_mi:'wood',thang_khan:'wood',chau_ngam_chan:'wood',
+  den_muoi:{'#ffa07a':'c','#ffcfae':'l'},ke_tre_tam:{'#d8c27a':'c','#b9a35a':'d'},ban_ghe_ban_cong:'mint',chau_lan:{'#f0b6d8':'c'},gian_muop:'wood',hon_non_bo:{'#9aa0a6':'c'},
+  den_nang_luong:{'#3d4a6b':'c'},chau_sen_da:'pot',cay_bang_sing:{white:'c',grey:'d'},tham_tho_cam:{'#3d2a4a':'c'}};
 const MAPS=new Map();
 function tintMap(id){
   if(MAPS.has(id))return MAPS.get(id);
