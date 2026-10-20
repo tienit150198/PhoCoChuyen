@@ -23,16 +23,22 @@ export const savedRun=()=>get(KEY.run);
 export const saveRun=id=>set(KEY.run,id||null);
 
 /** The new-player marker (v4/onboard.js MARK): only the server sets it, so a copy left in this browser by
- * another save never spreads to the account in play. */
+ * another save never spreads to the account in play (nor does the coach's "cn1": it counts once the server has it). */
 const MARK='onb1';
 export function notesSeen(api){
   const server=ids(api?.state?.settings?.notesSeen);
-  return new Set([...ids(get(KEY.notes)).filter(x=>x!==MARK||server.includes(MARK)),...server]);
+  return new Set([...ids(get(KEY.notes)).filter(x=>x!==MARK&&x!==COACH_NEW||server.includes(x)),...server]);
 }
 export function markNoteSeen(env,id){
   const all=notesSeen(env?.api);if(all.has(id)&&ids(env?.api?.state?.settings?.notesSeen).includes(id))return;
-  all.add(id);const gd=guidesId(guidesFrom(all));   // the guides-seen id is never the one pushed out
-  const list=[...[...all].filter(x=>!x.startsWith('gd-')).slice(gd?-11:-12),...(gd?[gd]:[])].join(',');
+  all.add(id);save(env,all);
+}
+/** The list written back: at most 12 ids; the packed per-workplace ids ("gd-", and the coach's "co-"/"cd-") and the
+ * coach's "cn1" are never the ones pushed out (each packed kind merges into ONE id: two devices add up). */
+function save(env,all){
+  const keep=[...PACKED.map(p=>bitsId(bitsFrom(all,p),p)).filter(Boolean),...STICKY.filter(x=>all.has(x))];
+  const rest=[...all].filter(x=>!PACKED.some(p=>x.startsWith(p))&&!STICKY.includes(x)).slice(-(12-keep.length));
+  const list=[...rest,...keep].join(',');
   set(KEY.notes,list);sync(env,{notesSeen:list});
 }
 
@@ -46,22 +52,41 @@ export const GUIDE_BITS=['mother_baby','pharmacy','accounting','customer_care','
   'hr_admin','secretary','it_helpdesk','ice_cream','nail','pagoda','pho','com','photobooth','giupviec','naucom','babysitter','library','oil','railway','nurse','lighthouse','rescue','lifeguard','police','zpop',
   'art_studio','lawyer','laundry','post_office','customs','hotel','banquet'];
 const B32='0123456789abcdefghijklmnopqrstuv',GD='gd-';
-/** The workplaces whose guide card was answered, from a set of note ids (every "gd-" id counts: two devices merge). */
-export function guidesFrom(seen){
+/** 🧭 The first-day coach (coach.js), per workplace with the same bits: "co-" offered and answered (it ran, was turned
+ * off, or its "Có hướng dẫn mới" chip was closed), "cd-" finished to the end. "cn1": a save that started with the coach
+ * (every workplace's first day starts it by itself; older saves get the chip instead). All three ride in notesSeen,
+ * which every release since 0.x accepts: nothing new in the save, a rollback only forgets nothing. */
+const CO='co-',CD='cd-';export const COACH_NEW='cn1';
+const PACKED=[GD,CO,CD],STICKY=[COACH_NEW];
+/** The workplaces packed in every `prefix` id of a set of note ids. */
+function bitsFrom(seen,prefix){
   const out=new Set();
-  for(const id of seen)if(id.startsWith(GD))[...id.slice(GD.length)].forEach((ch,i)=>{const v=B32.indexOf(ch);for(let k=0;k<5;k++)if(v>=0&&v>>k&1&&GUIDE_BITS[i*5+k])out.add(GUIDE_BITS[i*5+k]);});
+  for(const id of seen)if(id.startsWith(prefix))[...id.slice(prefix.length)].forEach((ch,i)=>{const v=B32.indexOf(ch);for(let k=0;k<5;k++)if(v>=0&&v>>k&1&&GUIDE_BITS[i*5+k])out.add(GUIDE_BITS[i*5+k]);});
   return out;
 }
-/** The one id for a set of workplaces ('' when none). */
-export function guidesId(cids){
+/** The one `prefix` id for a set of workplaces ('' when none). */
+function bitsId(cids,prefix){
   const chars=[];GUIDE_BITS.forEach((cid,b)=>{if(cids.has(cid))chars[b/5|0]=(chars[b/5|0]||0)|1<<b%5;});
   const s=Array.from({length:chars.length},(_,i)=>B32[chars[i]||0]).join('').replace(/0+$/,'');
-  return s?GD+s:'';
+  return s?prefix+s:'';
 }
+/** The workplaces whose guide card was answered, from a set of note ids (every "gd-" id counts: two devices merge). */
+export const guidesFrom=seen=>bitsFrom(seen,GD);
+/** The one id for a set of workplaces ('' when none). */
+export const guidesId=cids=>bitsId(cids,GD);
 export const guideSeen=(api,cid)=>guidesFrom(notesSeen(api)).has(cid);
 export function markGuideSeen(env,cid){
   const all=notesSeen(env?.api),done=guidesFrom(all);if(done.has(cid)&&ids(env?.api?.state?.settings?.notesSeen).some(x=>x.startsWith(GD)))return;
-  done.add(cid);
-  const list=[...[...all].filter(x=>!x.startsWith(GD)).slice(-11),guidesId(done)].join(',');
-  set(KEY.notes,list);sync(env,{notesSeen:list});
+  all.add(guidesId(new Set([cid])));save(env,all);
 }
+/** Coach: {offered, done} sets of workplaces, and whether this save began with the coach. */
+export function coachSeen(api){const all=notesSeen(api);return {offered:bitsFrom(all,CO),done:bitsFrom(all,CD),native:all.has(COACH_NEW)};}
+/** Remember the coach at a workplace: `done` = finished to the end (also counts as offered). */
+export function markCoach(env,cid,{done=false}={}){
+  const all=notesSeen(env?.api),server=ids(env?.api?.state?.settings?.notesSeen);
+  const has=(p,set)=>set.has(cid)&&server.some(x=>x.startsWith(p));
+  if(has(CO,bitsFrom(all,CO))&&(!done||has(CD,bitsFrom(all,CD))))return;
+  all.add(bitsId(new Set([cid]),CO));if(done)all.add(bitsId(new Set([cid]),CD));
+  save(env,all);
+}
+export const coachIds={bitsFrom,bitsId,CO,CD};

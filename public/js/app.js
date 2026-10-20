@@ -70,7 +70,7 @@ const L={
   promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css','/css/career-scale.css','/css/career-specialism.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý
   abroad:lazy(()=>import('./v4/abroad.js'),{css:['/css/abroad.css']}),  // ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
 };
-const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
+const TUT_OPEN=new Set(['help','tutGuide','tutReplay','coachStart']);  // tutorial actions whose buttons other modules render
 const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice','pmForce']);  // 🎖️ v4/promo.js
 const ABROAD_OPEN=new Set(['abroad','abTab','abJob','abLesson']);  // ✈️🌏 v4/abroad.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
@@ -280,7 +280,8 @@ function headMenu(items){return `<details class="head-more" data-auto><summary c
  * or "✨ Giao diện gọn (mới)", kept per career (v4/shell.js setCareerCleanPref); "↩️ Theo cài đặt chung" once one is picked. */
 function sideItems(){
   const cid=career(),on=uiClean(),mine=careerCleanPref(cid),b=(label,value)=>`<button type="button" class="btn ghost ui-side" data-action="uiSide" data-career="${esc(cid)}" data-value="${value}">${label}</button>`;
-  return (on?b('📋 Giao diện đầy đủ (cũ)','off'):b('✨ Giao diện gọn (mới)','on'))+(mine?b('↩️ Theo cài đặt chung',''):'');
+  return (on?b('📋 Giao diện đầy đủ (cũ)','off'):b('✨ Giao diện gọn (mới)','on'))+(mine?b('↩️ Theo cài đặt chung',''):'')+
+    `<button type="button" class="btn ghost coach-go" data-action="coachStart" data-career="${esc(cid)}">🧭 Hướng dẫn</button>`;   // the first-day coach again (tutorial/coach.js)
 }
 document.addEventListener('click',e=>{for(const d of document.querySelectorAll('details.head-more[open]'))if(!d.contains(e.target)||e.target.closest?.('.head-menu [data-action],.head-menu [data-command]'))d.open=false;},true);
 function setPaused(value){ui.paused=value;world.paused=value;$('#pauseOverlay').hidden=!value;renderMain();if(value)sound.stopMusic();else sound.configure(api.state.settings);}

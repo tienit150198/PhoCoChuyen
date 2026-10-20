@@ -19,13 +19,13 @@ function control(x,t,g){
 }
 function checks(x,t){
   const state=draft(x,t.id,t.stage);
-  return `<fieldset class="ld-checks"><legend>Kiểm lần cuối · ${t.needs.quantity} món</legend>${Object.entries(CHECKS).map(([k,v])=>`<label class="ld-tick"><input type="checkbox" data-ld-task="${x.esc(t.id)}" data-ld-stage="check" data-ld-field="${k}"${state[k]?' checked':''}>${x.esc(v)}</label>`).join('')}</fieldset>`;
+  return `<fieldset class="ld-checks" data-coach="laundry-checks"><legend>Kiểm lần cuối · ${t.needs.quantity} món</legend>${Object.entries(CHECKS).map(([k,v])=>`<label class="ld-tick"><input type="checkbox" data-ld-task="${x.esc(t.id)}" data-ld-stage="check" data-ld-field="${k}"${state[k]?' checked':''}>${x.esc(v)}</label>`).join('')}</fieldset>`;
 }
 function tags(x,t){
   const state=draft(x,t.id,t.stage),opts=[...t.needs.tag_options];
   // Stable display order varies by ticket; location in a list never conveys correctness.
   if(Number(t.id.split('-').at(-1))%2)opts.reverse();else opts.push(opts.shift());
-  return `<fieldset class="ld-checks"><legend>Phiếu khách xuất trình</legend>${opts.map(tag=>`<label class="ld-tick"><input type="radio" name="ld-tag" value="${x.esc(tag)}" data-ld-task="${x.esc(t.id)}" data-ld-stage="deliver" data-ld-field="tag"${state.tag===tag?' checked':''}>${x.esc(tag)}</label>`).join('')}</fieldset>`;
+  return `<fieldset class="ld-checks" data-coach="laundry-checks"><legend>Phiếu khách xuất trình</legend>${opts.map(tag=>`<label class="ld-tick"><input type="radio" name="ld-tag" value="${x.esc(tag)}" data-ld-task="${x.esc(t.id)}" data-ld-stage="deliver" data-ld-field="tag"${state.tag===tag?' checked':''}>${x.esc(tag)}</label>`).join('')}</fieldset>`;
 }
 export default {
   id:'laundry',css:true,
@@ -35,7 +35,7 @@ export default {
     const n=t.needs,at=STAGES.indexOf(t.stage);
     const progress=`<ol class="ld-progress" aria-label="Các bước giặt ủi">${STAGES.map((s,i)=>`<li class="${i===at?'now':i<at?'done':''}"${i===at?' aria-current="step"':''}>${i<at?'✓':i+1} ${x.esc(NAMES[s])}</li>`).join('')}</ol>`;
     const garments=n.garments.map(g=>`<article class="ld-garment"><div class="ld-garment-head"><span aria-hidden="true">👕</span><h4>${x.esc(g.name)}</h4></div><p>${x.esc(g.description)}</p><p class="ld-label"><b>Nhãn chăm vải</b> ${x.esc(g.label)}</p><p><b>Khách dặn:</b> ${x.esc(g.packing)} · <b>Tem:</b> ${x.esc(g.tag)}</p>${control(x,t,g)}</article>`).join('');
-    return `<div class="career-job ld"><header class="ld-ticket"><span>PHIẾU GIẶT · ${x.esc(n.tag)}</span><h3>${x.esc(t.title||'Tiệm Nếp Thơm')}</h3><p>${n.quantity} món · Chất lượng ${t.quality}% · Công chuẩn ${n.net} xu sau ${n.cost} xu vật tư</p></header>${progress}<section class="ld-stage" data-stage="${x.esc(t.stage)}"><h3>${x.esc(x.cc.stages?.[t.stage]||NAMES[t.stage]||'Đã hoàn tất')}</h3><p>${x.esc(t.instruction||'')}</p>${t.last_issue?`<p class="ld-repair" role="status">${x.esc(t.last_issue)}</p>`:''}<div class="ld-garments">${garments}</div>${t.stage==='check'?checks(x,t):t.stage==='deliver'?tags(x,t):''}${t.stage!=='done'?button(x,t):''}</section>${book(x)}${stats(x)}</div>`;
+    return `<div class="career-job ld"><header class="ld-ticket"><span>PHIẾU GIẶT · ${x.esc(n.tag)}</span><h3>${x.esc(t.title||'Tiệm Nếp Thơm')}</h3><p>${n.quantity} món · Chất lượng ${t.quality}% · Công chuẩn ${n.net} xu sau ${n.cost} xu vật tư</p></header>${progress}<section class="ld-stage" data-stage="${x.esc(t.stage)}"><h3>${x.esc(x.cc.stages?.[t.stage]||NAMES[t.stage]||'Đã hoàn tất')}</h3><p>${x.esc(t.instruction||'')}</p>${t.last_issue?`<p class="ld-repair" role="status">${x.esc(t.last_issue)}</p>`:''}<div class="ld-garments" data-coach="laundry-items">${garments}</div>${t.stage==='check'?checks(x,t):t.stage==='deliver'?tags(x,t):''}${t.stage!=='done'?button(x,t):''}</section>${book(x)}${stats(x)}</div>`;
   },
   idle(x){return `<div class="career-job ld"><article class="card"><h3>🧺 Tiệm giặt ủi Nếp Thơm</h3>${tip('Nhận phiếu 2–4 món, đọc nhãn, tách màu và vải, xử lý vết, giặt, làm khô rồi ủi / gấp. Đối chiếu tem trước khi trả đồ.','','p')}${tip('Tiệm ứng vật tư theo phiếu, trừ một lần khi thu tiền. Sai thì sửa ngay tại bước hiện tại; công giảm theo chất lượng.','','p')}</article>${stats(x)}${book(x)}</div>`;},
   input(el,x){

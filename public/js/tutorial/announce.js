@@ -7,6 +7,7 @@
  * Tapping either button remembers it. The guide stays one tap away: the "?" of every work screen, Cài đặt. */
 import {notesSeen,markNoteSeen,guidesFrom,markGuideSeen} from './store.js';
 import {markedNew} from '../v4/onboard.js';
+import {coachOn} from './coach.js';
 
 /** {id, emoji, text, label, action}: `action` names a handler given to announceBoot. Add an entry with a new id
  * to announce again. ("guide-v1", the "Có hướng dẫn mới" card, gave way to the per-workplace card.) */
@@ -27,7 +28,7 @@ export function guideDue(state,seen){
 let E=null,card=null,shown=null,timer=0,ACTIONS={},tipsOn=()=>false;
 /** A sheet, a decision (confirm, live happening), the phone menu, the tour or another notice is up. */
 const busy=()=>!!document.querySelector('dialog[open]')||document.documentElement.classList.contains('menu-open')||!!document.getElementById('tutLayer')?.isConnected||
-  !!document.querySelector('.hap-choices, #aiNotice')||!!E?.ui?.paused||tipsOn();
+  !!document.querySelector('.hap-choices, #aiNotice')||!!E?.ui?.paused||tipsOn()||coachOn();   // 🧭 coach.js: its run or its chip
 
 function pending(){
   const seen=notesSeen(E.api),n=NOTES.find(x=>!seen.has(x.id));
