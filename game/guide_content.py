@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6950,6 +6950,23 @@ CAREERS.update({
         mistakes=[dict(bad='Ghi tuổi đồ theo lời khách, tháo linh kiện của khách khác, hay đóng dấu giả đồ cổ.', result='Bước đó giữ lại để sửa; chất lượng và tiền công giảm.')],
         prep=['Xưởng ứng vật tư và linh kiện theo phiếu, trừ một lần khi thu tiền; xem công chuẩn sau vật tư trên phiếu.'],
         surprises=['Khách oái oăm lắm: đồ “gia truyền trăm năm” còn tem nhà máy, đồ của bà mà đòi mới tinh, thiếu linh kiện, mặc cả nửa giá, thư cũ trong ngăn bí mật… chọn cách xử lý cho khéo.'], buttons=[]),
+    'research': dict(emoji='🔬', name='Viện nghiên cứu', place='Viện nghiên cứu Sông Mây',
+        intro='Bạn là nghiên cứu viên ở Viện Sông Mây: đầu ca chọn hướng Giống cây, Công thức món hay Sáng chế; người chơi khác còn đặt viện làm giống, công thức, đồ sáng chế.',
+        jobs=[dict(emoji='🧬', name='Giống cây: lai tạo', how='Chọn đúng hai dòng bố mẹ, tính số hạt theo tỷ lệ nảy mầm, ghi nhãn khay đủ, luôn có khay đối chứng.'),
+              dict(emoji='🌾', name='Giống cây: khảo nghiệm, ngân hàng hạt', how='Loại ô hỏng ngoài thí nghiệm, tính năng suất trung bình, so với đối chứng; sấy, thử nảy mầm, cất kho lạnh.'),
+              dict(emoji='⚖️', name='Công thức món', how='Nhân định lượng theo số suất, mỗi lần đổi một thứ, nếm mù có mã, bỏ điểm người không khách quan, tính giá vốn, ghi đủ chất gây dị ứng.'),
+              dict(emoji='🔧', name='Sáng chế', how='Lấy đủ linh kiện, chọn pin an toàn, tính điện trở, thử từng bước; thả rơi tính tỷ lệ hỏng; hồ sơ sáng chế đúng điểm mới, đúng tác giả.'),
+              dict(emoji='📬', name='Đơn của người chơi', how='Ở Phố dịch vụ, người khác đặt giống cải tiến, công thức món hoặc đồ sáng chế. Nhận đơn, làm ba bước nghiên cứu rồi giao.')],
+        steps=['Đầu ca chọn hướng: Giống cây, Công thức món hoặc Sáng chế.',
+               'Làm an toàn đầu ca (áo blouse, kính, găng, tủ hút, ghi sổ) trước khi làm thí nghiệm.',
+               'Làm lần lượt từng bước của phiếu; sai thì sửa ngay tại chỗ, chất lượng giảm.',
+               'Cuối ca: cất mẫu, khóa tủ hóa chất, tắt thiết bị rồi mới về.'],
+        stars=['Không sai bước nào giữ chất lượng 100%.', 'Từ ngày 4, việc nào cũng qua hội đồng: giữ số liệu thật, kết luận đúng mức.'],
+        mistakes=[dict(bad='Chưa làm an toàn đầu ca khi viện trưởng đi kiểm tra.', result='Bị nhắc nhở, đánh giá 2 sao.'),
+                  dict(bad='Về mà chưa tắt thiết bị.', result='Có thể hỏng mẫu qua đêm: đền 8% lương ca (2 đến 6 xu) trừ vào ví, không bao giờ quá số tiền đang có.'),
+                  dict(bad='Sửa số liệu cho đẹp, bỏ ô vì số xấu.', result='Hội đồng bắt làm lại, chất lượng và thưởng giảm.')],
+        prep=['Ứng tuyển ở Viện Sông Mây trước khi làm (mở từ chương 3). Bạn nhận lương hợp đồng; thưởng chất lượng nhỏ theo từng việc.'],
+        surprises=['Viện hay có chuyện oái oăm: thí nghiệm nổ, mẫu bị chuột ăn, hội đồng duyệt khó tính, nhà tài trợ đòi kết quả sớm, đồng nghiệp nhận vơ công… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

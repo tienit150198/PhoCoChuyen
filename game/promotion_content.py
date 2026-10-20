@@ -38,6 +38,7 @@ EMP_TITLES = {
     'banquet': ('Nhân viên nhà hàng chính thức', 'Tổ trưởng bếp và sảnh', 'Bếp phó Hồng Mây', 'Bếp trưởng Hồng Mây'),
     'reception': ('Lễ tân đón đoàn', 'Lễ tân trực ca tối', 'Điều phối sự kiện Hoa Sứ', 'Trưởng ca lễ tân Hoa Sứ'),
     'teller': ('Giao dịch viên chính thức', 'Giao dịch viên cao cấp', 'Trưởng quầy giao dịch', 'Phó giám đốc phòng giao dịch'),
+    'research': ('Nghiên cứu viên chính thức', 'Nghiên cứu viên chính', 'Trưởng phòng thí nghiệm', 'Phó viện trưởng Sông Mây'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -90,6 +91,7 @@ _EMP_HIGH = {
     'banquet': ('Quản lý nhà hàng tiệc Hồng Mây', 'Giám đốc ẩm thực Hồng Mây', 'Cố vấn bếp tiệc'),
     'reception': ('Phó quản lý Khách sạn Hoa Sứ', 'Quản lý Khách sạn Hoa Sứ', 'Cố vấn lễ tân của phố'),
     'teller': ('Giám đốc phòng giao dịch Bến Chợ', 'Giám đốc chi nhánh Ngân hàng Phố', 'Cố vấn ngân hàng bán lẻ'),
+    'research': ('Viện trưởng Viện nghiên cứu Sông Mây', 'Chủ tịch hội đồng khoa học Sông Mây', 'Cố vấn khoa học'),
 }
 for _career, _titles in _EMP_HIGH.items():
     EMP_TITLES[_career] += _titles
@@ -143,7 +145,7 @@ BASE_OWN = 'Chủ mới'        # an owner before step 1
 # Question banks of the review, by career group. score: 2 best · 1 ok · 0 not now.
 GROUP = {
     'office': ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk',
-               'accounting', 'customer_care', 'lawyer', 'post_office', 'teller'),
+               'accounting', 'customer_care', 'lawyer', 'post_office', 'teller', 'research'),
     'air': ('pilot', 'flight_attendant'),
     'rig': ('oil',),
     'rail': ('railway',),

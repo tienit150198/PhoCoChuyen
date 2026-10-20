@@ -69,6 +69,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   reception:style('key','scallop','luggage','#b0546f','#fbecef'),
   teller:style('vault','civic','planter','#1f6f6b','#e3efe6'),
   restore:style('clock','workshop','toolbox','#8a5a2b','#f1dcb8'),
+  research:style('flask','civic','planter','#2f6f73','#d9eee9'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -327,6 +328,10 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
       round(-24,-40,48,74,8,body);ellipse(0,-20,17,17,cream);ellipse(0,-20,13,13,s.light);line([[0,-20],[0,-30]],ink,3);line([[0,-20],[8,-16]],ink,3);
       round(-14,4,28,24,4,cream);line([[0,4],[0,20]],ink,2);ellipse(0,22,6,6,s.main);round(-38,30,76,10,4,s.main);
       line([[30,-26],[42,-6]],'#876c50',5);round(38,-8,9,10,3,s.light);break;
+    case 'flask':  // an Erlenmeyer flask of green liquid with a seedling beside it: seeds, recipes and inventions under one sign
+      poly([[-9,-42],[9,-42],[9,-14],[34,34],[-34,34],[-9,-14]],body);poly([[-21,10],[21,10],[34,34],[-34,34]],s.light);
+      line([[-13,-42],[13,-42]],cream,4);ellipse(-8,20,4,4,cream);ellipse(9,26,3,3,cream);
+      line([[33,-4],[33,-28]],'#7b9977',3);ellipse(27,-29,8,5,'#9cae71');ellipse(39,-35,8,5,'#9cae71');break;
     case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
       round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
       round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;

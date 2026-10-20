@@ -38,6 +38,7 @@ NAMES = {
  'reception':'Bảng móc chìa dán màu và xe đẩy hành lý',
  'teller':'Máy đếm tiền và đèn soi tiền giả',
  'restore':'Bộ dao trổ, kẹp gỗ và đèn soi phục chế',
+ 'research':'Kính hiển vi và cân phân tích',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

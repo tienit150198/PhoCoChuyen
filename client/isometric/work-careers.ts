@@ -66,6 +66,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
+  research:identity('Có đối chứng · ghi đủ sổ · giữ số liệu thật','Bàn thí nghiệm','Ruộng thử & bếp thử','Bàn sáng chế & tủ mẫu'),
   customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
 
@@ -142,6 +143,13 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
     f('console',r(2.85,.55,4.1,1.5),82,blue);f('desk',r(4.6,.6,5.6,1.45),52,cream);f('sofa',r(5.9,3.35,6.5,4.15),42,mint);
     z(r(2.6,.3,6.6,1.85),'tile',0xd6e4de);z(r(2.85,2.95,6.75,4.45),'checker',0xe9eee6);
+  }else if(career==='research'){
+    // Sample shelves on the left wall, the lab bench in front, the fume hood and the seed-tray rack behind, a test kitchen corner.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);
+    s('workbench','counter',r(3.1,3.2,5.6,4.15),4.35,4.75,60,0xd3e2dc);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
+    f('coldcabinet',r(2.85,.55,3.85,1.5),112,mint);f('planter',r(4.2,.6,4.8,1.45),70,0x9fb98f);f('console',r(5.2,.55,6.4,1.45),80,0x2f6f73);f('desk',r(5.95,3.3,6.5,4.1),46,0xd9eee9);
+    z(r(2.6,.3,6.6,1.85),'tile',0xd6e6e1);z(r(2.85,2.95,6.75,4.45),'checker',0xe6efe9);
   }else if(career==='customs'){
     // Declaration files on the left wall, the paper check desk in front, the scanner and the held goods behind.
     clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);

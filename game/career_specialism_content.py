@@ -73,6 +73,7 @@ CAREER_IDS = (
     "reception",
     "teller",
     "restore",
+    "research",
 )
 _FILES = (
     "career_specialisms.json",
@@ -84,6 +85,7 @@ _FILES = (
     "career_specialisms_58.json",
     "career_specialisms_teller.json",
     "career_specialisms_restore.json",
+    "career_specialisms_research.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -151,6 +153,7 @@ _TITLE_DIGESTS = {
     "reception": "63c3a2f7c74e0cba2cf46e0265d8bd2e94bb4f024fea0ccf19ac1dc4c786a4f7",
     "teller": "1b880079fae12d1910eb5f2241e79f60649882da46786b5bc9b3bbc3fdda1972",
     "restore": "b623ffe118153120542d6545d796723d10472abc6319590f4fa55787bc19a669",
+    "research": "f6d9c2de043adb3b8ea70065064d7887218d92bdac020f02390f8f0621c59484",
 }
 
 

@@ -2078,6 +2078,45 @@ ARCS = {
                 ('me', 'Em sẽ dạy như chị: đếm hai lần, đọc lại một lần, không ai ký thay ai.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🔬 Viện nghiên cứu Sông Mây (sau chương 3)
+    'research': dict(
+        title='Cuốn sổ thí nghiệm bìa xanh', emoji='🔬',
+        keepsake=dict(emoji='📗', name='Cuốn sổ thí nghiệm bìa xanh', desc='Cuốn sổ đầu tiên chị Nhàn đánh số trang cho bạn. Trang nào cũng có ngày, chữ ký, và cả những lần hỏng được ghi thật thà.'),
+        cast={'linh': _p('Cô Diệu Linh', '👩‍🔬', 'Viện trưởng', 'research_npc_01'),
+              'quy': _p('Anh Quý', '🦹', 'Nghiên cứu viên cùng phòng', 'research_npc_02'),
+              'nhan': _p('Chị Nhàn', '🧪', 'Kỹ thuật viên', 'research_npc_03'),
+              'tu': _p('Bác Tư', '👨‍🌾', 'Nông dân nhận khảo nghiệm', 'research_npc_07')},
+        beats=[
+            _b('Trang đầu tiên', '📗', 'Ngày đầu, chị Nhàn đưa bạn cuốn sổ bìa xanh đã đánh số trang.', [
+                ('nhan', 'Ở đây cái gì không có trong sổ là chưa từng xảy ra. Ghi cả lần hỏng nhé.'),
+                ('me', 'Dạ, lần hỏng cũng ghi ạ?'),
+                ('nhan', 'Lần hỏng mới quý. Nó cho mình biết chỗ nào không được làm lại.')]),
+            _b('Khay đối chứng', '🌱', 'Ông Hưng ghé phòng ươm, muốn chụp ảnh giống mới cho tờ rơi.', [
+                ('nhan', 'Khay giống cũ để cạnh khay mới, cùng đất, cùng nước. Ông Hưng muốn để khay cũ chỗ râm cho ảnh đẹp.'),
+                ('me', 'Vậy thì ảnh đẹp mà số liệu sai mất.'),
+                ('nhan', 'Đúng. Mình làm khoa học, không làm tờ rơi.')],
+                _c('Ông Hưng nài “để khay cũ ra sau một chút thôi”. Bạn làm gì?',
+                   _o('a', 'Giữ nguyên chỗ cũ, mời ông chụp cả hai khay cạnh nhau', [('nhan', 'Giỏi. Ảnh thật mới đáng in.')], rel='nhan'),
+                   _o('b', 'Dời khay cũ ra sau một chút cho ông vui', [('nhan', 'Lần này chị chụp lại ảnh khác. Lần sau đừng nhé.')], rel='nhan'))),
+            _b('Con trâu tò mò', '🐃', 'Bác Tư gọi điện từ ruộng thử, giọng vừa lo vừa buồn cười.', [
+                ('tu', 'Con Mực nhà bác vào giẫm nát ô số ba rồi con ơi. Bác xin lỗi nghen.'),
+                ('me', 'Dạ không sao bác. Con ghi ô ba hỏng vì trâu giẫm, bỏ khỏi kết quả, ba ô kia vẫn tính.'),
+                ('tu', 'Vậy là khỏi phải làm lại hả? Mai bác rào thêm lớp tre.')],
+                days=4, served=10, gap=1),
+            _b('Tên ai trên bản tin', '🦹', 'Bản tin của viện đăng ảnh anh Quý cầm khay mạ của bạn.', [
+                ('quy', 'Ơ, người ta chụp thì anh cầm giùm thôi mà. Chú thích là do bên truyền thông ghi.'),
+                ('me', 'Em có sổ thí nghiệm từng ngày. Mình nhờ bên truyền thông đính chính giúp em nhé.'),
+                ('quy', 'Ừ… thôi được. Lần sau anh đứng cạnh khay của anh.')],
+                _c('Cô Diệu Linh hỏi bạn muốn xử lý chuyện này thế nào?',
+                   _o('a', 'Chỉ xin đính chính, không cần phạt ai', [('linh', 'Được. Sổ của em đủ để ai cũng hiểu.')], rel='linh'),
+                   _o('b', 'Xin ghi rõ phân công trong mọi đề tài từ nay', [('linh', 'Ý hay. Viện sẽ làm bảng phân công từ tuần sau.')], rel='linh')),
+                days=6, served=14, gap=1),
+            _b('Cuốn sổ bìa xanh', '🔬', 'Cô Diệu Linh gọi bạn lên phòng, trên bàn là cuốn sổ đầu tiên của bạn.', [
+                ('linh', 'Hội đồng duyệt đề tài của em mà không ghi chú bút đỏ nào. Ba mươi năm cô mới thấy GS. Bảo làm vậy.'),
+                ('nhan', 'Vì sổ của em ghi cả lần hỏng. Ông ấy tin những người ghi cả lần hỏng.'),
+                ('me', 'Em sẽ giữ như chị dạy: có đối chứng, ghi đủ, kết luận đúng mức.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

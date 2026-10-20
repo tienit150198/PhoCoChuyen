@@ -901,3 +901,18 @@ Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phươ
 8. Hoàn thiện giữ dấu thời gian
 9. Biên bản phục chế cho bảo tàng phường
 10. Từ chối làm giả đồ cổ
+
+## 61. Viện nghiên cứu (`research`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập sổ thí nghiệm đánh số trang
+2. Bố trí khay đối chứng cho mẫu ươm
+3. Tính số hạt gieo theo tỷ lệ nảy mầm
+4. Loại ô hỏng khỏi kết quả khảo nghiệm
+5. Sấy và cất hạt vào kho lạnh
+6. Chuẩn hóa định lượng món cho bếp ăn
+7. Tổ chức buổi nếm mù có mã hóa
+8. Làm nhãn món có đủ chất gây dị ứng
+9. Chạy thử an toàn mẫu thiết bị nhỏ
+10. Nộp hồ sơ sáng chế đúng tác giả

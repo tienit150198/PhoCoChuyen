@@ -495,6 +495,17 @@ _profile('teller', 'Thu Trang | Minh Đức | Ngọc Ánh',
     'đã đếm hai lần trước mặt khách, chuyển đúng người nhận và bàn giao quỹ khớp sổ // counted twice in front of the customer, sent money to the right recipient, and handed over a drawer that matched the book',
     'biên nhận từng giao dịch và sổ bàn giao quỹ // a receipt for every transaction and the drawer handover book')
 
+_profile('research', 'Minh Thư | Quốc Huy | Gia Bảo',
+    'Cô Diệu Linh · viện trưởng Viện nghiên cứu Sông Mây // Diệu Linh · director of the Sông Mây research institute',
+    'thí nghiệm có đối chứng, sổ ghi đủ cả lần hỏng và kết luận đúng mức dữ liệu // experiments with a control, a lab book that records the failures too, and conclusions the data supports',
+    'lai tạo giống | thử công thức món | làm mẫu sáng chế // plant breeding | recipe trials | prototype building',
+    'Hội đồng họp sáng thứ hai: một giống lúa chịu hạn chưa đủ lần lặp, ba công thức chè chờ nếm, và một mẫu quạt cầm tay vừa nứt ở bàn thả rơi. // The council meets on Monday morning: a drought-tolerant rice line short of repeats, three dessert recipes waiting to be tasted, and a handheld fan prototype that just cracked on the drop rig.',
+    'Giao {a} làm thêm lần lặp có khay đối chứng, {b} mã hóa mẫu và chủ trì buổi nếm, {c} gia cố mẫu quạt rồi thử lại cả lô. // Have {a} run the extra repeats with a control tray, {b} code the samples and run the tasting, and {c} reinforce the fan and test a fresh batch.',
+    'Biểu đồ đã in cho hội đồng nhưng có hai ô ruộng ngập nước vẫn được tính vào trung bình, và sổ thí nghiệm thiếu chữ ký ngày thứ ba. // The chart is printed for the council, but two flooded plots are still counted in the mean, and the lab book is missing the third day\'s signature.',
+    'Giữ biểu đồ lại, bỏ hai ô ngập có ghi lý do, tính lại trung bình và xin chữ ký bổ sung có ghi chú ngày sửa. // Hold the chart, drop the two flooded plots with the reason written down, recompute the mean, and get the missing signature with a dated correction note.',
+    'đã giữ số liệu thật, có đối chứng, ghi đủ mẫu hỏng và trình hội đồng đúng mức kết quả // kept the real numbers, used a control, logged every spoiled sample, and presented the council only what the results show',
+    'sổ thí nghiệm đánh số trang và biên bản hội đồng // the page-numbered lab book and the council minutes')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

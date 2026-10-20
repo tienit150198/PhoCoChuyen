@@ -16,11 +16,11 @@ def catalogue():
     return importlib.import_module('game.career_scale_content')
 
 
-def test_catalogue_covers_all_60_careers_with_480_immutable_stages():
+def test_catalogue_covers_all_61_careers_with_488_immutable_stages():
     c = catalogue()
     assert set(c.PROFILES) == set(CAREERS)
-    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 35, 'agency': 24, 'community': 1}   # 🔑 reception and 🏦 teller +1 agency each, 🧰 restore +1 business
-    assert sum(len(p.stages) for p in c.PROFILES.values()) == 480
+    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 35, 'agency': 25, 'community': 1}   # 🔑 reception, 🏦 teller and 🔬 research +1 agency each, 🧰 restore +1 business
+    assert sum(len(p.stages) for p in c.PROFILES.values()) == 488
     for cid, p in c.PROFILES.items():
         assert c.profile(cid) is p
         assert [s.tier for s in p.stages] == list(range(1, 9))
@@ -41,7 +41,7 @@ def test_prices_and_group_counts_match_approved_design():
     factors = {'retail': (8, 10), 'food': (8, 8), 'service': (9, 7),
                'technical': (2, 12), 'farm': (1, 12), 'hospitality': (1, 15),
                'professional': (3, 6), 'arts': (2, 8), 'logistics': (1, 12),
-               'agency': (24, 0), 'community': (1, 0)}
+               'agency': (25, 0), 'community': (1, 0)}   # + reception, teller, research
     fees = (50_000, 250_000, 1_000_000, 4_000_000, 12_000_000, 35_000_000, 100_000_000, 250_000_000)
     targets = (1000, 3500, 12000, 35000, 90000, 200000, 420000, 800000)
     for group, (count, tenths) in factors.items():

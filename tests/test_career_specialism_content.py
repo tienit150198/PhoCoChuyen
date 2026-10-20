@@ -15,7 +15,7 @@ def approved_titles():
 
 def test_exact_approved_540_titles_and_real_procedure_diversity():
     expected = approved_titles()
-    assert len(expected) == 60   # 🔑 reception the 58th, 🏦 teller the 59th, 🧰 restore the 60th
+    assert len(expected) == 61   # 🔑 reception the 58th, 🏦 teller the 59th, 🧰 restore the 60th, 🔬 research the 61st
     assert set(content.CAREER_IDS) == set(expected)
     all_procedures, all_checks = set(), set()
     for cid, titles in expected.items():
@@ -35,7 +35,7 @@ def test_exact_approved_540_titles_and_real_procedure_diversity():
             assert p['title'] not in ' '.join(p['procedure'])
             all_procedures.add(tuple(p['procedure']))
             all_checks.add((p['check']['good'], p['check']['bad']))
-    assert len(all_procedures) == len(all_checks) == 600
+    assert len(all_procedures) == len(all_checks) == 610
 
 
 def test_callers_cannot_mutate_catalogue():

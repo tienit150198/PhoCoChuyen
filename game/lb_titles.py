@@ -75,7 +75,7 @@ CAREER_NOUN = dict(
     fruit='trái cây', garbage='thu gom rác', drain='thông cống', homemaker='nội trợ', ice_cream='tiệm kem', pho='quán phở', com='quán cơm', nail='tiệm nail', pagoda='việc chùa', photobooth='tiệm ảnh', library='thư viện', giupviec='giúp việc', naucom='bếp nhà khách', babysitter='trông trẻ', customer_care='chăm sóc khách', pharmacy='nhà thuốc',
     tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách', oil='giàn khoan',
     corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
-    hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng', railway='gác chắn', nurse='khoa Nội', lighthouse='hải đăng', rescue='tổng đài cứu hộ', lifeguard='hồ bơi', police='công an phường', zpop='tiệm album', customs='hải quan', hotel='khách sạn', banquet='nhà hàng tiệc', reception='quầy lễ tân', teller='quầy giao dịch',
+    hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng', railway='gác chắn', nurse='khoa Nội', lighthouse='hải đăng', rescue='tổng đài cứu hộ', lifeguard='hồ bơi', police='công an phường', zpop='tiệm album', customs='hải quan', hotel='khách sạn', banquet='nhà hàng tiệc', reception='quầy lễ tân', teller='quầy giao dịch', research='viện nghiên cứu',
     lawyer='văn phòng luật', art_studio='xưởng vẽ', post_office='bưu điện', laundry='giặt ủi', restore='phục chế')
 # A workplace whose top 1 is not a "Trùm": nobody is the boss of a pagoda (game/pagoda_voice.py).
 CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
