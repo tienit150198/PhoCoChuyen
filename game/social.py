@@ -514,6 +514,12 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
             bt = bang.tag_of(store, db, t['sid'])
             if bt:
                 profile['bang'] = bt
+            from . import photo_studio   # 🙂 the profile photo a player photographer made (game/photo_studio.py; an older client ignores it)
+            pf = photo_studio.pfp_of(db, t['sid'])
+            if pf:
+                profile['pfp'] = pf
+            if photo_studio.has_studio(db, t['sid']):   # 📸 their studio: the card opens the order sheet and the portfolio
+                profile['studio'] = photo_studio.place_id(t['sid'])
             return dict(profile=profile, visits=visits, rating=rating,
                         counted=sum(1 for r in reviews if r.get('counted')),
                         reviews=[_review(r, mine) for r in reviews], listings=[_listing(db, m, mine) for m in listings],

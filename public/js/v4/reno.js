@@ -129,6 +129,13 @@ function dialog(){
   S.dlg=d;return d;
 }
 
+/** 📸 The framed photos of journey.photo_wall (game/photo_studio.py hang): their pictures for deco-art.js PHOTO_ART, then
+ * the room again. Own home only (a guest's view keeps the frame's soft silhouette). */
+function framedPhotos(){
+  const wall=J().photo_wall;if(!wall||typeof wall!=='object'||!Object.keys(wall).length)return;
+  import('./portrait.js').then(m=>m.loadWall(S.env,wall,(uid,url)=>{if(A.PHOTO_ART.get(uid)===url)return false;A.PHOTO_ART.set(uid,url);return true;},
+    ()=>{if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();})).catch(e=>console.warn('ảnh treo:',e));
+}
 export async function openReno(env,mode,guestCode=''){
   const seq=++openSeq;
   S.env=env;
@@ -158,6 +165,7 @@ export async function openReno(env,mode,guestCode=''){
   if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';if(!S.remote)S.drawer=v.bag.length?'bag':'shop';}
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
   hw().reopen();
+  if(!guestCode)framedPhotos();
   loadMate();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
   if(!S.remote){loadCoopLog();BB.css();BB.loadFamily(env.api).then(()=>{if(seq!==openSeq||!S.dlg?.open||S.remote)return;render();BB.greet(env,{here:true});});}   // 👶
@@ -414,7 +422,7 @@ function roomMarkup(rm,opts={}){
   for(const o of depthOrder(rm,all)){
     const it=o.it,a=A.anchor(it,o.q,G,hostFor(rm,o.q,all));
     const g=A.glowAt(it,a[0],a[1],o.q.f);if(g)glows.push(g);
-    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id),o.q.face);
+    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id),o.q.face,o.mate?'':o.id);
     if(photo){out.push(body);continue;}
     if(o.mate){
       const [bx,by,bw,bh]=bbox(it,a);
@@ -827,7 +835,7 @@ function dragTo(cx,cy){
     if(!q){g.innerHTML='';D.q=null;return;}
     const a=A.anchor(D.it,q,A.geom(rm),hostFor(rm,q,list));D.q=q;D.bad=checkQ(rm,D.it,q,list);
     const facing=D.uid?V()?.bag.find(b=>b.id===D.uid)?.face:undefined;if(facing)q.face=facing;
-    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null,q.face)}</g>`;
+    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null,q.face,D.uid||'')}</g>`;
     return;
   }
   if(!pt)return;
@@ -843,7 +851,7 @@ function paintPiece(uid){
   const svg=roomSvg(),p=placed(uid),rm=roomOf(p?.r),el=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-piece`);if(!el||!rm)return;
   const list=inRoom(rm),o=list.find(x=>x.id===uid);if(!o)return;
   const a=A.anchor(o.it,o.q,A.geom(rm),hostFor(rm,o.q,list));
-  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid),o.q.face);
+  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid),o.q.face,uid);
 }
 /** Draw `uid` (and what stands on it) at `q` without redrawing the room. */
 function showMove(uid,q,D=null){

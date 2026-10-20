@@ -1328,6 +1328,8 @@ def validate(s: dict) -> None:
     town_projects.validate(s)   # 🏗️ journey['town'] (optional)
     from . import bang
     bang.validate(s)   # ⚔️ journey['bang'] (optional)
+    from . import photo_studio
+    photo_studio.validate(s)   # 📸 journey['photo_wall'] (optional): the framed photos hung at home
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)

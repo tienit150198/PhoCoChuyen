@@ -95,6 +95,8 @@ from game import karaoke  # 🎤 Phòng hát (game/karaoke.py; the rooms: live/k
 from game import karaoke_mic  # 🎙️ its live mic (LIVE_KARAOKE_MIC): the birth year, the headers below
 from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_event.py owns its routes)
 from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
+from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/photo_studio.py: /api/photo/…, its own reads and writes)
+photo_studio.install()  # 🔌 the packages into game/service_market.py when that module exists (another branch; no-op without it)
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -904,6 +906,15 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("home-guests-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 self.json(200,home_guests.get(self.server.store,token,state,route[len("/api/home-guests"):].lstrip('/'),query));return
+            if route.startswith("/api/photo/"):  # 📸 catalog, studio (the photographer's queue), place (an order sheet), album, one, folio
+                token,state,_,_=self.require_session(light=True)
+                if not self.server.rate_limit("photo-get:"+token,180):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                sub=route[len("/api/photo/"):]
+                out=photo_studio.get(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()})
+                if sub=="album" and photo_studio.refund_waiting(self.server.store,token):  # 📸 a refund waiting: paid now, the album answer carries the new state
+                    st,_,_=self.server.store.read(token)
+                    if live_effects.on_load(self.server.store,token,st):st,rev,_=self.server.store.read(token);out.update(state=public_state(st),revision=rev)
+                self.json(200,out,known=FULL);return
             if route.startswith("/api/work-visits/"):
                 token,state,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("work-visits-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1062,7 +1073,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1201,7 +1212,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);photo_studio.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -1284,6 +1295,11 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/social/"):
                 if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,social.post(self.server.store,token,state,route[len("/api/social/"):],data));return
+            if route.startswith("/api/photo/"):  # 📸 order / cancel / accept / decline / shot / deliver / studio / pfp / hang / folio (game/photo_studio.py: reads and writes the saves itself)
+                if not self.server.rate_limit("photo:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                out=photo_studio.post(self.server.store,token,state,route[len("/api/photo/"):],data,self.client_ip())
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
             if route.startswith("/api/arena/"):  # 🐾 Đấu trường pet (game/pet_arena.py act): the battle resolves here, in one request; never a save write
                 op=route[len("/api/arena/"):]
                 if not self.server.rate_limit("arena:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1829,6 +1845,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         from game import bang
         bang.run_housekeeping(store)  # 🗄️ ⚔️ old bang_log / bang_points / closed bang_stints rows to their archive tables (batched, off-peak, never dropped)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
+        photo_studio.run_housekeeping(store)  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
 
 
 def tune_gc()->None:
