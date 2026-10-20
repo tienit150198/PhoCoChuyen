@@ -13,6 +13,11 @@ Gồm nội quy bang và sửa chip 💬 Nói gần đây. Không có mục Có 
 - MNL_BANG_OFF tắt cả nội quy cùng Bang. Không có khóa mới trong bản lưu.
 - Cơ sở dữ liệu (SCHEMA_VERSION 73, chỉ thêm bảng và index, không FK, không backfill): bang_code (mỗi bang × loại: chữ, phiên bản, ai sửa, ẩn), bang_code_hist, bang_code_seen (đã đọc tới bản nào, bản đã đồng ý). 2.4.66 chạy trên DB này không DDL, giữ nguyên dữ liệu, vẫn vào bang được (tests/test_bang_code_compat.py).
 
+## bang-leave
+
+- 🚪 Rời bang thì 48 giờ sau mới vào bang khác (chủ game 21/10 "set là thoát bang thì cần 48h sau mới vào được bang khác"): áp cho vào thẳng, xin vào, nhận lời mời, được duyệt và lập bang mới (bị từ chối thì không trừ tiền). Quay lại đúng bang vừa rời thì được ngay; bị mời ra hoặc bang giải tán thì không phải chờ. Đang ở một bang thì phải rời trước rồi mới vào bang khác (hết đổi bang thẳng). game/bang.py rejoin_left/_rejoin_need, C.REJOIN_HOURS = 48, MNL_BANG_REJOIN_HOURS ghi đè (0: tắt). tests/test_bang_rejoin.py.
+- 👑 Bang chủ giải tán bang không cần trao chức (chủ game 21/10 "giải tán bang k cần nhường chức nha, cho phép giải tán luôn"): mục Rời bang của Bang chủ giờ là thẻ Giải tán (gõ tên bang, bấm hai lần); thành viên ra khỏi bang và vào bang khác được ngay.
+
 ## social-chip
 
 - 💬 Nói gần đây (bản đồ 2.5D) tự ẩn khi menu Khu phố hoặc một bảng đang mở, không còn che menu (ảnh chủ game 21/10 "cái này nó che nè").

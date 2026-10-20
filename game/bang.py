@@ -640,6 +640,49 @@ def joins_today(db, sid: str, t: float) -> int:
     return int(db.execute('SELECT COUNT(*) AS n FROM bang_stints WHERE sid=? AND joined>=?', (sid, day_start(t))).fetchone()['n'])
 
 
+def rejoin_hours() -> int:
+    try:
+        return max(0, min(24 * 30, int(os.environ.get('MNL_BANG_REJOIN_HOURS', C.REJOIN_HOURS))))
+    except ValueError:
+        return C.REJOIN_HOURS
+
+
+def rejoin_left(db, sid: str, bid: str | None, t: float) -> int:
+    """Seconds this player still waits before another bang than `bid` (0: free): C.REJOIN_HOURS after they left one
+    themselves (Rời bang, or a switch made by an older build); a kick or a disband never counts (index bang_stints_sid)."""
+    h = rejoin_hours()
+    if not h:
+        return 0
+    r = db.execute("SELECT MAX(left_at) AS at FROM bang_stints WHERE sid=? AND why IN ('leave','switch') AND left_at>? AND bang<>?",
+                   (sid, t - h * 3600, bid or '')).fetchone()
+    return max(0, int(float(r['at']) + h * 3600 - t)) if r and r['at'] is not None else 0
+
+
+def _wait_text(secs: int) -> str:
+    h, m = secs // 3600, (secs % 3600 + 59) // 60
+    if m == 60:
+        h, m = h + 1, 0
+    return (f'{h} giờ ' if h else '') + (f'{m} phút' if m or not h else '')
+
+
+def _rejoin_need(db, sid: str, bid: str | None, t: float, mine: dict | None, how: str = 'join', fail=None) -> None:
+    """🚪 One bang at a time and C.REJOIN_HOURS between two (owner 21/10): a member of another bang leaves it first.
+    `fail`: engine.need inside a paid command (a GameError rolls the payment back), else this module's need."""
+    need = fail or globals()['need']
+    if not rejoin_hours():
+        return
+    h = rejoin_hours()
+    if mine and mine['bang'] != bid:
+        if how == 'approve':
+            need(False, 'Người này đang ở bang khác: họ cần rời bang đó trước.', 'in_other')
+        need(False, f'Bạn đang ở một bang khác: rời bang đó trước, {h} giờ sau mới vào bang mới được.', 'in_other')
+    left = rejoin_left(db, sid, bid, t)
+    if left:
+        if how == 'approve':
+            need(False, f'Người này vừa rời bang khác: còn {_wait_text(left)} nữa mới vào bang mới được.', 'rejoin_wait')
+        need(False, f'Bạn vừa rời bang: còn {_wait_text(left)} nữa mới vào bang khác được ({h} giờ sau khi rời).', 'rejoin_wait')
+
+
 def _switch_need(db, sid: str, t: float, how: str = 'join') -> None:
     """Joining stays free (owner 19/10), with a soft anti-churn cap: C.SWITCH_DAY_MAX bangs a Vietnam day."""
     if joins_today(db, sid, t) < C.SWITCH_DAY_MAX:
@@ -668,9 +711,10 @@ def _join(db, sid: str, bang: dict, t: float, locked: dict, how: str = 'join') -
         return
     need(bang['status'] == 'active' and not bang['hidden'], 'Bang này không còn nhận người.', 'closed')
     if mine:
-        need(mine['role'] != 'chu', 'Bạn đang là Bang chủ: trao lại chức hoặc giải tán bang cũ trước nhé.', 'leader')
+        need(mine['role'] != 'chu', 'Bạn đang là Bang chủ: giải tán bang cũ trước nhé (không cần trao chức).', 'leader')
         old = locked.get(mine['bang'])
         need(old is not None, 'Thử lại nhé.', 'retry')
+    _rejoin_need(db, sid, bang['id'], t, mine, how)
     _switch_need(db, sid, t, how)
     if mine:
         _leave(db, sid, old, t, 'switch')
@@ -723,6 +767,9 @@ def _found_commit(db, sid, pid, x, info, t) -> None:
     mine = _mine(db, sid)
     locked = _lock(db, mine['bang']) if mine else {}
     e.need(joins_today(db, sid, t) < C.SWITCH_DAY_MAX, f'Hôm nay bạn đã vào {C.SWITCH_DAY_MAX} bang rồi. Mai hãy lập bang nhé.', 'switch_cap')
+    if mine and mine['role'] == 'chu':
+        e.need(False, 'Bạn đang là Bang chủ: giải tán bang cũ trước nhé (không cần trao chức).', 'leader')
+    _rejoin_need(db, sid, None, t, mine, fail=e.need)   # 🚪 founding is joining another bang too (nothing paid if not)
     if mine:
         e.need(mine['role'] != 'chu', 'Bạn đang là Bang chủ: trao lại chức hoặc giải tán bang cũ trước nhé.', 'leader')
         _leave(db, sid, locked[mine['bang']], t, 'switch')
@@ -1162,7 +1209,7 @@ def tag_of(store, db, sid: str) -> dict | None:
 
 
 def catalogue() -> dict:
-    return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
+    return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, rejoin_hours=rejoin_hours(), name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
                 emojis=list(C.EMOJIS), colors=[color(k) for k in C.COLORS],
                 roles={k: dict(name=v[0], short=v[1], seats=v[2], rank=v[3]) for k, v in C.ROLES.items()},
                 give=dict(min=C.GIVE_MIN, max=C.GIVE_MAX, presets=list(C.GIVE_PRESETS), per_point=C.XU_PER_POINT, day_pts=C.GIVE_PTS_DAY),
@@ -1502,6 +1549,7 @@ def _op_join(db, sid, data, t):
     need(invite or rules['mode'] != 'closed', f'Bang {bang["name"]} đang đóng, không nhận thêm người.', 'closed_bang')
     problem = req_problem(rules, data.get('_who'))
     need(not problem, problem, 'requirements')
+    _rejoin_need(db, sid, bid, t, mine)   # 🚪 before an ask waits for nothing
     _code().agreed(db, bid, sid, _code().need_agree(db, bang, data), t)   # 📢 the public rules read and agreed to
     if rules['mode'] == 'auto' or invite:
         _join(db, sid, bang, t, locked)
@@ -1549,7 +1597,7 @@ def _op_leave(db, sid, data, t):
     need(me is not None, 'Bạn chưa ở bang nào.', 'not_member')
     bang = _lock(db, me['bang'])[me['bang']]
     me = _need_member(db, sid, bang['id'])
-    need(me['role'] != 'chu', 'Bang chủ cần trao lại chức trước khi rời (hoặc giải tán bang).', 'leader')
+    need(me['role'] != 'chu', 'Bang chủ rời bang bằng cách giải tán bang (không cần trao chức).', 'leader')
     need(data.get('confirm') is True, f'Xác nhận rời bang {bang["name"]}.')
     _leave(db, sid, bang, t, 'leave')
     return dict(message=f'Bạn đã rời bang {bang["name"]}. Điểm và đồ bang vẫn giữ nếu quay lại.')

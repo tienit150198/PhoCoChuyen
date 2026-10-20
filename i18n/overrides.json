@@ -1,5 +1,8 @@
 {
   "strings": {
+  "Người này đang ở bang khác: họ cần rời bang đó trước.": "This player is in another guild: they need to leave it first.",
+  "Bạn đang là Bang chủ: giải tán bang cũ trước nhé (không cần trao chức).": "You lead a guild: disband it first (no need to hand over).",
+  "Bang chủ rời bang bằng cách giải tán bang (không cần trao chức).": "A guild leader leaves by disbanding the guild (no need to hand over).",
   "Nội quy bang": "Guild rules",
   "📢 Nội quy bang": "📢 Guild rules",
   "📢 Đọc nội quy bang rồi đánh dấu đồng ý nhé.": "📢 Read the guild rules, then tick to agree.",
@@ -28453,6 +28456,12 @@
   "Giao tranh đúng người nhận ghi trên phiếu.": "Hand the painting to the person named on the order."
   },
   "patterns": {
+  "Bạn đang ở một bang khác: rời bang đó trước, $1 giờ sau mới vào bang mới được.": "You are in another guild: leave it first, then you can join a new one $1 hours later.",
+  "Người này vừa rời bang khác: còn $1 nữa mới vào bang mới được.": "This player just left another guild: $1 to go before they can join a new one.",
+  "Bạn vừa rời bang: còn $1 nữa mới vào bang khác được ($2 giờ sau khi rời).": "You just left a guild: $1 to go before you can join another ($2 hours after leaving).",
+  "$1 giờ $2 phút": "$1 h $2 min",
+  "Điểm và đồ bang vẫn giữ nếu quay lại. Rời là mất danh hiệu ngay. Rời rồi $1 giờ sau mới vào được bang khác (quay lại bang này thì được ngay).": "Points and guild items stay if you come back. Leaving drops your title at once. After leaving, you can join another guild $1 hours later (coming back to this one works at once).",
+  "Bang chủ rời bang bằng cách giải tán, không cần trao chức. Mọi thành viên ra khỏi bang (họ vào bang khác được ngay). Quỹ $1 xu bị đốt, không trả lại ai. Gõ đúng tên bang để giải tán.": "A guild leader leaves by disbanding, no need to hand over. Every member leaves the guild (they can join another at once). The fund of $1 xu burns, nobody gets it back. Type the guild name to disband.",
   "$1/$2 ký tự · $3/$4 dòng": "$1/$2 characters · $3/$4 lines",
   "Nội quy tối đa $1 ký tự.": "Rules: at most $1 characters.",
   "Nội quy tối đa $1 ký tự (đang $2).": "Rules: at most $1 characters (now $2).",
