@@ -1,3 +1,14 @@
+# Chưa phát hành — career-ui
+
+🧭 Màn làm việc từng nghề dễ hiểu hơn (chủ game 21/10: "coi UI sắp xếp cho dễ hiểu ở từng nghề… button sắp xếp cũng khó nhìn… show hết thông tin ra xong người ta chọn, kiểu show trà sữa, các loại hoa xong ruy băng"). Chỉ đổi giao diện: máy chủ chấm điểm, trả tiền như cũ; không khóa save mới, không đổi schema, không đổi phiên bản, chưa có dòng Có gì mới.
+- Thanh nút dưới cùng (mọi nghề dùng .ui-bar, cả 2 giao diện): trên điện thoại bước tiếp theo nằm một dòng riêng, nút chính một mình cả hàng (cao 50 px), không còn bị ép 40–62% bề ngang rồi xuống 2–3 dòng chữ; dòng báo kết quả (barNote) thành dòng nhạt có vạch màu nghề, không còn là ô tối trông như nút bấm.
+- Bộ ghép chung mới trong ui-kit.js (app.css 27f): slip ("🧾 Phiếu khách": từng phần khách gọi thành một dòng chữ thường, ✓ đúng / ✗ sai / ! cần chỉnh / ○ chưa làm), steps (các bước đánh số, bước đang làm tô màu nghề, chạm để nhảy tới khu đó), secHead (tiêu đề đánh số cho từng khu trên bảng chọn).
+- 🧋 Trà sữa (giao diện gọn): phiếu khách theo thứ tự pha (Ly · Trà · Siro · Topping · Đá · Đường) thay cho hàng chip phải vuốt ngang; ly đang pha nằm cạnh phiếu ("Ly của bạn": trà rót dâng lên, đá và trân châu rơi vào); thanh bước 1 Ly → 2 Trà → (Siro) → (Topping) → Đá·đường → Nắp → Giao; mọi quầy mở hết thành một bảng chọn, mỗi khu đánh số như bước của nó, khu khách không gọi ghi "khách không gọi"; món đã chọn viền màu nghề có dấu ✓. Sửa lỗi cũ: thanh nút của trà sữa mang lớp .mt-bar trùng tên thanh kiên nhẫn (display:block, cao 8px) nên nút bị lệch nửa hàng; nay là .mt-cta. Bỏ nút "Nghe gọi món" trùng trong bong bóng khi thanh nút đã có; bỏ câu "Pha xong trà, đá, đường…" lặp hai lần ở giao diện đầy đủ.
+- 💐 Tiệm hoa (giao diện gọn): thẻ khách + hàng chip "Khách cần" + 3 tab gộp thành một phiếu (ai, lời khách, từng yêu cầu một dòng có dấu, câu còn nên hỏi, kiên nhẫn) và thanh bước 1 Chọn hoa → 2 Cắm & gói → 3 Thiệp → 4 Giao (chạm để đổi khu). Bó hoa xem trước (hoa, giấy gói, màu nơ) vẫn ngay dưới.
+- Sửa đồ, nhà hàng, quần áo (asm_kit reqPin, giao diện gọn): chip yêu cầu thành lưới 2 cột dòng to có dấu tròn ✓/✗; tab khu làm việc thành một thanh chọn đánh số "1. … 2. …", tab đang mở tô màu nghề. Chip trên đầu màn ghi "🧾 Phiếu 2/5" thay vì chỉ "2/5".
+- Tiếng Anh: i18n/overrides.json + build (20 chuỗi, 6 mẫu).
+- Kiểm tra: ảnh 390×844 trước/sau ở cả 2 giao diện và giao diện tối "Phố đêm" (trà sữa, tiệm hoa, nhà hàng, cà phê, sửa đồ, quần áo, phở, salon, tạp hóa, nail, trà đá, chăm thú); tests milk tea / florist / guides / webassets và các bài node của giao diện.
+
 # v2.4.72 — 2026-10-21
 
 💐 Chốt sự kiện Thiệp 20/10 (chủ game 20/10 "tối nay 0h thì chốt", "nội dung k ổn thì lấy lại tiền, acc clone chuyển đi tài khoản khác cũng lấy lại", "công bố ngẫu nhiên… có xxx thiệp đã gửi tới", "thiệp giữ tới ngày 25/10 sẽ mất"):

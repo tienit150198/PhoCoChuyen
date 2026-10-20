@@ -74,7 +74,7 @@ Migrated so far:
 - wave 5: the classic desks (`dw-bar`: pharmacy, accounting; `dk-bar`), mother & baby (`mb-ctabar`), delivery (`dl-bar`),
   farm (`fa-bar`), homestay (`hs-bar`), grocery (`gr-billbar`), salon (`sl-bar`), pet care (`pc-bar`), clothing (`ao-bar`)
 
-- milk tea (`fk-bar mt-bar`: the mini cup and "Còn n bước" in the left slot) and cafe (`fk-bar cb-dock`: what is in hand in
+- milk tea (`fk-bar mt-cta`, was `mt-bar`, which clashed with the patience bar's class: the mini cup and "Còn n bước" in the left slot) and cafe (`fk-bar cb-dock`: what is in hand in
   the left slot; the wide side column no longer repeats the button) — wave 4, via `barParts` + `actBar`.
 
 Not yet migrated (they keep their own bar with the phone rules in compact.css): `td-bar`.
@@ -131,6 +131,26 @@ Wave 5: the classic desks' guards live once in `game/desk_can.py` (engine runs t
 delivery `can.dl_signal` (a crossing off the leg, no destination yet) and `can.dl_ride`; homestay `can.hs_assign` (a room
 whose app booking still waits to sync, fix "📥 Đơn chờ") and `can.hs_pick` (the most places to suggest); clothing
 `can.ao_pick` (a size the rack is out of), salon `can.sl_mix`, repair `can.rp_show` / `can.rp_fix`, pet care `can.pc_*`.
+
+## Order slip, steps and a menu board (owner 21/10, ui-kit `slip` / `steps` / `secHead`, app.css 27f)
+
+Owner, 21/10: "coi UI sắp xếp cho dễ hiểu ở từng nghề… show hết thông tin ra xong người ta chọn, kiểu show trà sữa, các
+loại hoa xong ruy băng này kia để chọn". The compact side of an order screen reads top to bottom as:
+
+1. **`slip({title, head, rows, side, foot, cls})`**: "🧾 Phiếu khách". One row per part of the ask, in plain words
+   (`{icon, label, value, state:'ok'|'bad'|'warn'|'none'|'', attrs}`), the mark at the end of the row. `side` holds the
+   work so far (milk tea: the cup being made, the tea pours in and the ice drops in). A row with a guide step gets
+   `todoAttrs(step)` and is a tap target.
+2. **`steps(list)`**: the numbered steps of the order (`{label, state:'done'|'now'|'bad'|'', attrs}`); the step being
+   made is filled with the career colour, a tap jumps to its part (`fixAttrs({sel})`, or a tab switch).
+3. **The board**: every choice open at once, each part headed by `secHead({n, icon, title, hint, state})` with the same
+   number as its step ("khách không gọi" where the order has none). A picked card: the career colour and a ✓ badge
+   (`.ck-pick`, or the career's own `.on`).
+4. **The bar** (on a phone, both sides): the next step on its own line, then ONE full-width main button. A passing note
+   is a calm line with the career's stripe, never a dark pill that looks like a button.
+
+Done: milk tea and the florist (compact side). The asm_kit pin (repair, restaurant, clothing) draws its chips as a two-column
+list of rows and its tabs as one numbered segmented control on the compact side. Not changed: grading, payouts, saves.
 
 ## Typed quantity: `qtyBox({...})` (qty-input.js)
 

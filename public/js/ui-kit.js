@@ -103,6 +103,37 @@ export function headChip(icon,text,target,{label='',tone='',flow=false}={}){
   return `<button type="button" class="ui-chip${tone?' '+e(tone):''}" data-ui-head${flow?'="flow"':''} data-ui-pop="${e(target)}" aria-expanded="false" aria-label="${e(label||text)}"><span aria-hidden="true">${e(icon)}</span><b>${e(text)}</b><i aria-hidden="true">›</i></button>`;
 }
 
+/* ---------------------------------------------------------------- clear work screens (owner 21/10)
+ * "coi UI sắp xếp cho dễ hiểu ở từng nghề… show hết thông tin ra xong người ta chọn": three shared pieces, styled in
+ * app.css 27f (.ck-*), used by the careers' compact side first.
+ *  - slip: "🧾 Phiếu khách", what the customer asked for, one row per part in plain words with its mark;
+ *  - steps: the numbered steps of one order (where the player is, a tap jumps to that part of the bench);
+ *  - secHead: the numbered heading of one part of the menu board ("② 🫖 Trà nền · chọn 1"). */
+const CK_MARK={ok:'✓',bad:'✗',warn:'!',none:'–'};
+const CK_SAID={ok:'đã đúng',bad:'sai',warn:'cần chỉnh',none:'',todo:'chưa làm'};
+/** rows: [{icon, label (what part: "Trà"), value (what they want: "Matcha"), state:'ok'|'bad'|'warn'|'none'|'', attrs}].
+ * head: HTML beside the title (face, name, price); side: HTML on the right (the work so far: a cup, a bouquet);
+ * foot: HTML under the rows (patience). attrs on a row make it tappable (a guide pointer). */
+export function slip({title='Phiếu khách',icon='🧾',head='',rows=[],side='',foot='',cls='',label=''}={}){
+  const row=r=>{const st=r.state||'todo',mark=CK_MARK[st]||'';
+    return `<li class="ck-row ${e(st)}"${r.attrs||''} aria-label="${e(`${r.label?r.label+': ':''}${r.value||''}${CK_SAID[st]?` (${CK_SAID[st]})`:''}`)}"><i class="ck-mark" aria-hidden="true">${mark}</i>${r.icon?`<span class="ck-ico" aria-hidden="true">${e(r.icon)}</span>`:''}<span class="ck-txt">${r.label?`<small>${e(r.label)}</small>`:''}<b>${e(r.value||'')}</b></span></li>`;};
+  return `<section class="ck-slip${cls?' '+cls:''}" aria-label="${e(label||title)}"><div class="ck-slip-head"><b class="ck-slip-title"><span aria-hidden="true">${e(icon)}</span> ${e(title)}</b>${head}</div><div class="ck-slip-body"><ul class="ck-rows">${rows.map(row).join('')}</ul>${side?`<div class="ck-slip-side">${side}</div>`:''}</div>${foot}</section>`;
+}
+/** list: [{icon, label, state:'done'|'now'|'bad'|'', attrs}]: one numbered step per part of the order; the current one
+ * stands out, done ones show ✓, a wrong one ✗. attrs (e.g. fixAttrs({sel})) make a step jump to its part. */
+export function steps(list,{label='Các bước',cls=''}={}){
+  if(!list.length)return '';
+  return `<ol class="ck-steps${cls?' '+cls:''}" aria-label="${e(label)}" style="--n:${list.length}">${list.map((s,i)=>{
+    const st=s.state||'',n=st==='done'?'✓':st==='bad'?'✗':String(i+1),inner=`<b class="ck-n" aria-hidden="true">${n}</b><span class="ck-step-l">${s.icon?`<span aria-hidden="true">${e(s.icon)}</span> `:''}${e(s.label)}</span>`;
+    const said=`${i+1}. ${s.label}${st==='done'?' (xong)':st==='bad'?' (sai)':st==='now'?' (đang làm)':''}`;
+    return `<li class="ck-step${st?' '+e(st):''}"${st==='now'?' aria-current="step"':''}>${s.attrs?`<button type="button" class="ck-step-b"${s.attrs} aria-label="${e(said)}">${inner}</button>`:`<span class="ck-step-b" aria-label="${e(said)}">${inner}</span>`}</li>`;}).join('')}</ol>`;
+}
+/** The heading of one part of the menu board: its step number (✓ once done), icon, name and a short hint ("chọn 1"). */
+export function secHead({n='',icon='',title='',hint='',state='',extra=''}={}){
+  const mark=state==='done'?'✓':state==='bad'?'✗':String(n);
+  return `<h4 class="ck-sec-head${state?' '+e(state):''}">${mark?`<b class="ck-n" aria-hidden="true">${mark}</b>`:''}<span>${icon?`<span aria-hidden="true">${e(icon)}</span> `:''}${e(title)}</span>${hint?`<small>${e(hint)}</small>`:''}${extra}</h4>`;
+}
+
 /* The "?" sheet: rules, formulas and intros live here, never on the work screen. Content is kept by key at render
  * time (pure strings); the dialog is built once on first use. */
 const HELP=new Map();

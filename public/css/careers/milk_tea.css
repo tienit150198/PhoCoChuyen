@@ -464,3 +464,26 @@ html.reduce-motion .mt-event{animation:none}
 html[data-clean] .career-job.mt .mt-ticket:not(.ui-pop){position:relative;top:auto;box-shadow:none}
 html[data-clean] .career-job.mt .mt-hud{align-items:center}
 html[data-clean] .career-job.mt .mt-hud>.mt-help{margin-left:auto}
+
+/* Clear counter (compact side, owner 21/10 "show hết thông tin ra xong người ta chọn"): the slip with the cup being made
+   beside it (the tea pours in, ice and pearls drop in), the numbered steps, every station open as one numbered board,
+   picked tiles in the career colour with a ✓. */
+html[data-clean] .career-job.mt .mt-slip{gap:var(--sp-2)}
+html[data-clean] .career-job.mt .mt-slip .ck-slip-head .mt-price{margin-left:auto;align-self:center;font-size:var(--fs-3);font-weight:900}
+.mt-slip-cup{display:block;width:78px}
+.mt-slip-cup .mt-cup{width:78px;height:auto}
+.mt-slip-cup .mt-pour{transform-box:fill-box;transform-origin:50% 100%;animation:ck-pour .7s var(--ease) both}
+.mt-slip-cup .mt-drop{animation:ck-drop .45s var(--ease) both}
+html[data-clean] .career-job.mt .mt-steps{padding:var(--sp-1) 0}
+html[data-clean] .career-job.mt .mt-stations{gap:var(--sp-3)}
+html[data-clean] .career-job.mt .mt-shelf.ck-sec h4:not(.ck-sec-head){margin-top:var(--sp-1);font-size:var(--fs-2)}
+html[data-clean] .career-job.mt .mt-finish.ck-sec{gap:var(--sp-2)}
+html[data-clean] .career-job.mt .mt-tile{min-height:82px;gap:var(--sp-1);padding:var(--sp-2) var(--sp-1)}
+html[data-clean] .career-job.mt .mt-tile .mt-emo{font-size:1.75rem}
+html[data-clean] .career-job.mt .mt-tile b{font-size:var(--fs-1);background:none;border:0;padding:0}
+html[data-clean] .career-job.mt .mt-tile.on,html[data-clean] .career-job.mt .mt-seg.on{border-color:var(--career,var(--accent));background:var(--career-soft,var(--accent-soft));box-shadow:0 0 0 2px var(--career,var(--accent))}
+html[data-clean] .career-job.mt .mt-tile.on:after{content:"✓";top:-7px;left:auto;right:-7px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--career,var(--accent));color:var(--career-ink,var(--accent-ink));box-shadow:0 0 0 2px var(--surface)}
+html[data-clean] .career-job.mt .mt-tile.on .mt-count{display:none}
+html[data-clean] .career-job.mt .mt-seg{font-size:var(--fs-2)}
+html[data-clean] .career-job.mt .mt-shelf.ck-sec:not(.now) .mt-tile:disabled:not(.on){opacity:.4}
+html[data-clean] .career-job.mt:has(.mt-cta .gd-cta) .mt-ask{display:none}   /* the bar says the same "👂 Nghe gọi món" */

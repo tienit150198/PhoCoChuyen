@@ -382,3 +382,14 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-price-note{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:10px 0 0;padding:8px 12px;border-radius:var(--fl-r);border:1px dashed var(--fl-line);background:var(--fl-surface);font-size:.833rem;line-height:1.4;color:var(--ink-2)}
 .career-job.fl .fl-price-note>span{flex:1 1 14em;min-width:0}
 .career-job.fl .fl-price-note>.btn{min-height:44px}
+
+/* Compact side (owner 21/10): one slip (who, their words, every ask as a plain row with its mark) and a numbered
+   stepper in place of the ticket + "Khách cần" chips + station tabs. */
+.career-job.fl .fl-slip .ck-slip-head>.portrait,.career-job.fl .fl-slip .ck-slip-head>img,.career-job.fl .fl-slip .ck-slip-head>svg{flex:none;width:30px;height:30px}
+.career-job.fl .fl-slip-who{font-size:var(--fs-3)}
+.career-job.fl .fl-slip-price{margin-left:auto;font-size:var(--fs-3);font-weight:900;color:var(--career-text,var(--accent-text))}
+.career-job.fl .fl-slip-tags{flex:1 1 100%;margin:0;display:flex;flex-wrap:wrap;gap:var(--sp-1)}
+.career-job.fl .fl-slip-say{flex:1 1 100%;margin:0;font-style:italic;font-size:var(--fs-2);color:var(--ink-2)}
+.career-job.fl .fl-slip .ck-row .ck-txt b{font-weight:700}
+.career-job.fl .fl-slip>.fl-brief,.career-job.fl .fl-slip>.fl-ask{margin:0}
+.career-job.fl .fl-steps{padding:var(--sp-1) 0}
