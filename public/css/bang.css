@@ -185,3 +185,29 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 @keyframes bg-hl{from{box-shadow:0 0 0 3px var(--accent)}to{box-shadow:0 0 0 0 transparent}}
 @media (prefers-reduced-motion:reduce){.bg-dock>.sd-flash:not(:empty),.bg-hl,.bg-sheet .is-pending::after{animation:none}}
 .reduce-motion .bg-dock>.sd-flash:not(:empty),.reduce-motion .bg-hl{animation:none}
+/* 📜 Nội quy bang (owner 21/10, v4/bang.js codeTab / peekView): the text as written (line breaks kept, long words wrap),
+   the editor's live counter, one-tap lines, the agreement tick before joining, the unread dot on the 📜 tab. */
+.bg-nq-text{margin:6px 0 4px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:.95rem;color:var(--ink)}
+.bg-nq-meta{margin:0 0 8px;font-size:.8rem;color:var(--muted)}
+.bg-nq-pre{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line;overflow-wrap:anywhere;color:var(--ink-2)}
+.bg-nq-edit textarea{display:block;box-sizing:border-box;width:100%;min-height:120px;max-height:50vh;padding:10px 12px;border:1px solid var(--field-line,var(--line));border-radius:12px;font:inherit;line-height:1.5;background:var(--surface);color:var(--ink);resize:vertical}
+.bg-nq.editing .bg-nq-edit textarea{min-height:150px}
+.bg-count{margin:4px 2px 8px;text-align:right;font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.bg-count.over{color:var(--bad);font-weight:800}
+.bg-tips-h{margin:0 0 6px;font-size:.82rem;font-weight:800;color:var(--ink-2)}
+.bg-tips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.bg-tips .bg-tip{min-height:36px;font-size:.85rem;text-align:left;white-space:normal}
+.bg-tips .bg-tip::before{content:'+ ';font-weight:800}
+.bg-nq-acts{gap:8px}
+.bg-agree{display:flex;align-items:center;gap:10px;min-height:44px;margin:10px 0 8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font-weight:700;line-height:1.4}
+.bg-agree input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--accent)}
+.bg-agree.on{border-color:var(--accent);background:var(--accent-soft)}
+.bg-nq .bg-join{width:100%;min-height:48px}
+.bg-new-tag{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;background:var(--bad-soft);color:var(--bad);font-size:.72rem;font-weight:800;vertical-align:middle}
+.bg-nq-new{border-color:var(--accent);background:var(--accent-soft)}
+.bg-nq-new .bg-row{border-top:0;padding:0;align-items:center}
+.bg-nq-new small{display:block;color:var(--ink-2)}
+.bg-nq-ico{font-size:1.6rem}
+.bg-sheet .sd-tabs button.dot{position:relative}
+.bg-sheet .sd-tabs button.dot::after{content:'';position:absolute;top:5px;right:6px;width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 2px var(--surface)}
+@media (orientation:landscape) and (max-height:500px){.bg-nq-edit textarea{min-height:90px;max-height:40vh}}

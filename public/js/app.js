@@ -185,7 +185,9 @@ function bootLive(m){
   const bangMine=(force=false)=>import('./v4/bang-tag.js').then(b=>b.loadMine(api,{force})).catch(e=>console.warn('bang:',e));
   // ⚔️ Thách đấu bang: challenges waiting for my answer (an officer's me.tc_in) badge ⚔️ Bang; a new one toasts once
   const tcIn=(x,say)=>{const n=Number(x?.tc_in)||0;if(n>(api.tcIn||0)){if(say)toast('⚔️ Có bang thách đấu bang mình! Mở ⚔️ Bang để nhận lời nhé.','hint');api.bangAlerts=(api.bangAlerts||0)+n-(api.tcIn||0);renderMain();}api.tcIn=n;};
-  m.live.on('welcome',()=>bangMine().then(x=>tcIn(x,false)));m.live.on('bang_me',()=>bangMine(true).then(x=>tcIn(x,true)));
+  // 📜 Nội quy mới (me.code_new, game/bang_code.py): one count on ⚔️ Bang while unread; said once when it arrives live
+  const codeNew=(x,say)=>{const on=Boolean(x?.code_new);if(on&&!api.codeNew){if(say)toast('📜 Bang vừa cập nhật nội quy. Mở ⚔️ Bang để đọc nhé.','hint');api.bangAlerts=(api.bangAlerts||0)+1;renderMain();}api.codeNew=on;};
+  m.live.on('welcome',()=>bangMine().then(x=>{tcIn(x,false);codeNew(x,false);}));m.live.on('bang_me',()=>bangMine(true).then(x=>{tcIn(x,true);codeNew(x,true);}));
   m.live.on('bang_invite',f=>{toast(`📨 ${f.e||'⚔️'} Bang ${String(f.name||'').slice(0,24)} mời bạn vào bang. Mở ⚔️ Bang để nhận nhé.`,'hint');api.bangAlerts=(api.bangAlerts||0)+1;renderMain();});
   m.liveBoot(env());
 }

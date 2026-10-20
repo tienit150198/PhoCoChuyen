@@ -25,6 +25,16 @@
 - Dữ liệu: SCHEMA_VERSION 69 (67–68 của nhánh khác): bảng mới wedsvc_jobs + 2 index; không FK, không backfill, không khóa save mới. Kết quả đám cưới có thêm khóa tùy chọn `services`. 2.4.66 chạy trên 69 không DDL, giữ dòng, hiện đám cưới có đội ngũ, tự quyết ngày cưới của nó, đọc được save đã trả / đã nhận tiền (tests/test_wed_services_compat.py).
 - Tests: tests/test_wed_services.py (giá ×3 giữ đúng một lần, yêu cầu theo đơn, ai được thuê, công tắc tắt, hoàn tiền, chấm từng bước một lần, giao chờ đủ bước rồi trả 95 %, đổi phút chót đổi bước kiểm cuối, làm ẩu ít sao, thêm bàn, đơn đặt từ danh mục chung, thương lượng, thẻ Hôn nhân / thiệp mời / ngày cưới, không thuê ai thì y như cũ, bộ nhớ đệm có giới hạn, truy vấn của dịch vụ trực tiếp), tests/test_wed_services_compat.py. Tiếng Anh: i18n/overrides.json + build.
 
+# Chưa phát hành — bang-rules
+
+📜 Nội quy bang (chủ game 21/10 "bang thì thêm cái nội quy bang nữa nhé, thiếu nội quy bang rồi", "công bố bên ngoài thì có nội quy bang riêng nữa, có text và giới hạn chữ"). Không đổi phiên bản, chưa có Có gì mới. game/bang_code.py, SCHEMA_VERSION 73.
+- Hai nội quy cho mỗi bang: 📢 Nội quy công khai (tối đa 300 ký tự, 8 dòng): hiện ngoài bang, xem trước 1 dòng trên thẻ bang ở Tìm bang, đầy đủ trên trang bang cho khách và người xin vào; 📜 Nội quy nội bộ (tối đa 1200 ký tự, 20 dòng): chỉ thành viên thấy. Tab mới 📜 trong bảng Bang.
+- Bang chủ và Phó bang viết / sửa (như cách nhận người). Ô soạn có bộ đếm trực tiếp "123/300 ký tự · 3/8 dòng", 6 dòng gợi ý chạm là thêm ("Online góp quỹ mỗi tuần", "Không chửi bậy trong bang", "Bang chiến Chủ nhật 20:00 phải có mặt", "Vắng 7 ngày không báo sẽ bị mời ra"…). Lọc như khẩu hiệu: không link, e-mail, số điện thoại, từ cấm bị che. Mỗi nội quy sửa cách nhau ≥ 15 giây, cả bang tối đa 20 lần một ngày. Sửa theo phiên bản (compare-and-set): hai người sửa cùng lúc thì một người được, người kia được báo "vừa được người khác sửa"; bấm lại cùng nội dung không ghi gì thêm. Mỗi lần sửa ghi Chuyện trong bang ("📜 X cập nhật nội quy công khai của bang.") và giữ bản cũ (bang_code_hist, chỉ thêm, không xóa).
+- Vào bang: bang có nội quy công khai thì phải đánh dấu "Tôi đã đọc và đồng ý nội quy bang" trước khi Vào / Xin vào / Nhận lời mời; máy chủ kiểm tra {agree, code_ver}: nội quy vừa đổi thì đọc lại; bản 2.4.66 (không gửi gì) được báo rõ "Tải lại game để đọc và đồng ý nội quy rồi vào bang nhé"; bang không có nội quy công khai vào như cũ. Lưu phiên bản đã đồng ý.
+- 📜 Nội quy mới: thành viên thấy chấm đỏ trên tab 📜, thẻ "Nội quy mới" ở 🏯 và số trên nút ⚔️ Bang (kèm thông báo khi đang online) tới khi mở tab. Thành viên mới coi như đã đọc bản công khai đã đồng ý, chưa đọc bản nội bộ.
+- Quản trị (trang Bang): xem cả hai nội quy, ẩn / hiện lại từng cái; chữ vẫn giữ trong dữ liệu, ghi Chuyện trong bang và ghi chú quản trị. Nội quy đã ẩn thì người xin vào không cần đồng ý; Bang chủ không đăng lại đúng chữ đã bị ẩn.
+- MNL_BANG_OFF tắt cả nội quy cùng Bang. Không có khóa mới trong bản lưu.
+- Cơ sở dữ liệu (SCHEMA_VERSION 73, chỉ thêm bảng và index, không FK, không backfill): bang_code (mỗi bang × loại: chữ, phiên bản, ai sửa, ẩn), bang_code_hist, bang_code_seen (đã đọc tới bản nào, bản đã đồng ý). 2.4.66 chạy trên DB này không DDL, giữ nguyên dữ liệu, vẫn vào bang được (tests/test_bang_code_compat.py).
 
 # Chưa phát hành — service-market
 

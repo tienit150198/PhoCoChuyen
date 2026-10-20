@@ -18,6 +18,8 @@ What a player does
   all applying: a career from a title of its real ladder (game/promotion.py), a title step in any career, the account's
   age. Checked on the server from the player's real save (parsed before the transaction, only for a bang with
   requirements) on join, request, invitation and approval; members already in stay when they change.
+* 📜 Nội quy bang (owner 21/10, SCHEMA_VERSION 73: game/bang_code.py): 📢 public rules shown outside (an applicant
+  agrees to them on join, request or accepting an invitation) and 📜 members-only rules, written by Phó bang and up.
 * 💰 Quỹ bang: deposits only (the command jr_bang_give {bang, amount, confirm}: from C.GIVE_MIN, whole thousands, no
   maximum but what the player has, wallet then bank: owner 21/10 "quỹ bang cho k giới hạn", "góp 1 lần không giới hạn";
   the wallet's part in Sổ ví rows of at most ROW_MAX), written with the save (ledger row 'g:<pid>:<nonce>', the nonce in
@@ -680,6 +682,7 @@ def _join(db, sid: str, bang: dict, t: float, locked: dict, how: str = 'join') -
                (bang['id'], sid, pid_of(sid), t))
     db.execute('INSERT INTO bang_stints(bang, sid, joined) VALUES(?,?,?)', (bang['id'], sid, t))
     db.execute("UPDATE bang_asks SET status='done', answered=? WHERE bang=? AND sid=? AND status='open'", (t, bang['id'], sid))
+    _code().joined(db, bang['id'], sid, t)   # 📜 read: the public rules agreed to, not yet the internal ones
     _chat_add(db, bang['channel'], sid, t)
     _log(db, bang['id'], sid, 'join', f'{_display(db, sid)} vào bang.', t)
     _bump(db, bang['id'])
@@ -1208,11 +1211,13 @@ def search(store, sid: str | None, q: str = '') -> list:
             counts = {r['bang']: int(r['n']) for r in _rows(db, "SELECT bang, COUNT(*) AS n FROM bang_members WHERE status='in' GROUP BY bang")}
             halls = {r['bang']: int(r['level']) for r in _rows(db, 'SELECT bang, level FROM bang_facilities WHERE fac=?', (C.HALL,))}
             sc = standings(db, vn_week(t))
+            codes = _code().public_map(db)       # 📢 each card's public rules (game/bang_code.py)
         order = {x['bang']: (i + 1, x) for i, x in enumerate(sc)}
         out = []
         for r in rows:
             rank, x = order.get(r['id'], (len(order) + 1, dict(score=0)))
-            out.append(_card(r, counts.get(r['id'], 0), C.HALL_CAP[min(5, max(1, halls.get(r['id'], 1)))], x['score'], rank, x))
+            out.append(dict(_card(r, counts.get(r['id'], 0), C.HALL_CAP[min(5, max(1, halls.get(r['id'], 1)))], x['score'], rank, x),
+                            code=codes.get(r['id']) or dict(text='', ver=0)))
         out.sort(key=lambda c: (c['rank'], c['name']))
         return out
     cards = _cached(('search', vn_week(t)), run)
@@ -1308,7 +1313,7 @@ def page(store, sid: str, bid: str | None = None) -> dict:
         lv = levels(db, bid)
         n, cap = _count(db, bid), cap_of(lv)
         wk = week_of(db, bid, vn_week(t), t)
-        out = dict(bang=_card(r, n, cap, wk['score'], 0, wk),
+        out = dict(bang=dict(_card(r, n, cap, wk['score'], 0, wk), code=_code().public_of(db, bid)),
                    member=bool(mine and mine['bang'] == bid), leader_name=_display(db, r['leader']),
                    levels=lv, color=color(r['color']), created=float(r['created']), status=r['status'], isle=isle_card(r, t))
         if not out['member']:
@@ -1329,7 +1334,7 @@ def page(store, sid: str, bid: str | None = None) -> dict:
             members=_members(db, bid, t), facilities=_facilities(db, bid, t),
             shop=[dict(id=i, price=_price(i, lv), unlocked=_unlocked(i, lv), owned=owned.get(i, 0)) for i in C.ITEM_ORDER],
             golden=dict(list=_gh_list(db, bid, t), per_week=_gh_rules(lv)[0], minutes=_gh_rules(lv)[1]),
-            rules=rules_of(r), chal=_chal_card(db, bid, sid, me['role'], t),
+            rules=rules_of(r), chal=_chal_card(db, bid, sid, me['role'], t), code=_code().member_view(db, bid, sid, me['role']),
             log=[dict(text=x['text'], at=float(x['at']), kind=x['kind']) for x in _rows(
                 db, 'SELECT text, at, kind FROM bang_log WHERE bang=? ORDER BY id DESC LIMIT ?', (bid, LOG_SHOWN))],
             slots=C.build_slots(lv[C.HALL]), phao_at=float(r['phao_at']))
@@ -1369,12 +1374,16 @@ def me_view(store, token) -> dict:
                                              "LEFT JOIN accounts a ON a.sid=k.by_sid WHERE k.sid=? AND k.kind='invite' AND k.status='open' "
                                              "AND b.status='active' AND b.hidden=0 ORDER BY k.at DESC LIMIT 20", (sid,))]
         out['items'] = _items_of(db, sid)
+        codes = _code().public_map(db, [x['bang'] for x in out['invites']])
+        for x in out['invites']:   # 📢 a bang with public rules: its page first (agree, then accept)
+            x['code'] = bool((codes.get(x['bang']) or {}).get('text'))
         if mine:
             lv = levels(db, mine['bang'])
             out['mine'] = dict(bang=mine['bang'], pid=pid_of(sid), name=mine['name'], emoji=mine['emoji'], color=color(mine['color']), role=mine['role'],
                                wear=int(mine['wear']), uniform=mine['uniform'] if mine['uniform'] in C.UNIFORMS else 'polo',
                                points=int(mine['points']), channel=mine['channel'], pet=lv['san_pet'], isle=island_of(mine, t)['level'],
-                               uniforms=[u for u in C.UNIFORM_ORDER if C.UNIFORMS[u][2] <= lv['xuong_may']])
+                               uniforms=[u for u in C.UNIFORM_ORDER if C.UNIFORMS[u][2] <= lv['xuong_may']],
+                               code_new=_code().fresh(db, mine['bang'], sid))   # 📜 Nội quy mới
             if _rank(mine['role']) >= C.APPROVE_FROM and not mine['hidden']:   # ⚔️ challenges waiting for an answer (the menu's badge)
                 from . import bang_challenge
                 out['mine']['tc_in'] = bang_challenge.incoming_count(db, mine['bang'], t)
@@ -1493,6 +1502,7 @@ def _op_join(db, sid, data, t):
     need(invite or rules['mode'] != 'closed', f'Bang {bang["name"]} đang đóng, không nhận thêm người.', 'closed_bang')
     problem = req_problem(rules, data.get('_who'))
     need(not problem, problem, 'requirements')
+    _code().agreed(db, bid, sid, _code().need_agree(db, bang, data), t)   # 📢 the public rules read and agreed to
     if rules['mode'] == 'auto' or invite:
         _join(db, sid, bang, t, locked)
         return dict(message=f'{bang["emoji"]} Chào mừng bạn vào bang {bang["name"]}!', joined=bid)
@@ -1521,6 +1531,7 @@ def _op_accept(db, sid, data, t):
     need(bang is not None and bang['status'] == 'active' and not bang['hidden'], 'Bang này không còn nữa.', 'gone')
     problem = req_problem(rules_of(bang), data.get('_who'))   # an invitation opens a closed bang, not its requirements
     need(not problem, problem, 'requirements')
+    _code().agreed(db, bid, sid, _code().need_agree(db, bang, data), t)   # 📢 nor its public rules
     _join(db, sid, bang, t, locked)
     return dict(message=f'{bang["emoji"]} Chào mừng bạn vào bang {bang["name"]}!', joined=bid)
 
@@ -1984,7 +1995,14 @@ def _op_gh_cancel(db, sid, data, t):
 
 OPS = dict(join=_op_join, cancel=_op_cancel, accept=_op_accept, decline=_op_decline, leave=_op_leave, invite=_op_invite,
            approve=_op_approve, kick=_op_kick, role=_op_role, set=_op_set, disband=_op_disband, checkin=_op_checkin,
-           build=_op_build, buy=_op_buy, isle=_op_isle, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel, rules=_op_rules)
+           build=_op_build, buy=_op_buy, isle=_op_isle, wear=_op_wear, fire=_op_fire, gh_set=_op_gh_set, gh_cancel=_op_gh_cancel, rules=_op_rules,
+           code=lambda db, sid, data, t: _code().op_edit(db, sid, data, t), code_seen=lambda db, sid, data, t: _code().op_seen(db, sid, data, t))
+
+
+def _code():
+    """📜 Nội quy bang (game/bang_code.py)."""
+    from . import bang_code
+    return bang_code
 
 
 def _pre_profile(store, sid: str, op: str, data: dict) -> None:
@@ -2020,6 +2038,8 @@ def post(store, token, op: str, data) -> dict:
     if op in ('join', 'accept', 'approve'):
         _pre_profile(store, sid, op, data)
     out = store.transaction(lambda db: OPS[op](db, sid, data, now()))
+    if op == 'code_seen':   # 📜 a read mark: nothing else changed, no page to send
+        return dict(done=out)
     _drop_views()
     return dict(done=out or {}, **get_view(store, token, {}))
 
@@ -2031,18 +2051,21 @@ def admin_view(store, q: str = '') -> dict:
         rows = _rows(db, 'SELECT b.*, a.display AS leader_name, a.username AS leader_user, '
                          "(SELECT COUNT(*) FROM bang_members m WHERE m.bang=b.id AND m.status='in') AS n "
                          'FROM bangs b LEFT JOIN accounts a ON a.sid=b.leader ORDER BY b.created DESC LIMIT 500')
+        codes = _code().admin_map(db, [r['id'] for r in rows])   # 📜 both rules texts, even hidden ones
     out = [dict(id=r['id'], name=r['name'], emoji=r['emoji'], color=r['color'], motto=r['motto'], status=r['status'], hidden=bool(r['hidden']),
                 n=int(r['n']), fund=int(r['fund']), given=int(r['given']), spent=int(r['spent']), burned=int(r['burned']),
-                leader=str(r['leader_name'] or GONE), user=str(r['leader_user'] or ''), created=float(r['created']), note=r['admin_note'])
+                leader=str(r['leader_name'] or GONE), user=str(r['leader_user'] or ''), created=float(r['created']), note=r['admin_note'],
+                code=codes.get(r['id']) or {})
            for r in rows if not key or key in name_key(r['name'])]
     return dict(bangs=out[:200])
 
 
 def admin_act(store, admin: str, data) -> dict:
-    """{op: 'hide' | 'show' | 'rename', id, name?}: never a hard delete; a hidden bang leaves the lists and its tag goes."""
+    """{op: 'hide' | 'show' | 'rename' | 'code_hide' | 'code_show', id, name?, kind?}: never a hard delete; a hidden bang
+    leaves the lists and its tag goes; a hidden 📜 rules text (kind 'pub' | 'in') stays in the database, unseen."""
     need(isinstance(data, dict), 'Yêu cầu không hợp lệ.')
     op, bid = data.get('op'), data.get('id')
-    need(op in ('hide', 'show', 'rename'), 'Thao tác không hợp lệ.')
+    need(op in ('hide', 'show', 'rename', 'code_hide', 'code_show'), 'Thao tác không hợp lệ.')
     need(isinstance(bid, str) and ID_RE.fullmatch(bid), 'Không tìm thấy bang này.')
     t = now()
 
@@ -2050,6 +2073,10 @@ def admin_act(store, admin: str, data) -> dict:
         bang = _lock(db, bid).get(bid)
         need(bang is not None, 'Không tìm thấy bang này.', 'not_found', 404)
         who = str(admin or 'admin')[:40]
+        if op in ('code_hide', 'code_show'):
+            _code().admin_act(db, bang, op, data.get('kind'), who, t)
+            _bump(db, bid)
+            return
         if op == 'rename':
             from .engine import GameError
             try:
@@ -2105,6 +2132,7 @@ def forget(db, sid: str) -> None:
                 _leave(db, sid, bang, t, 'gone')
     for table in ('bang_fund', 'bang_points', 'bang_log', 'bang_points_old', 'bang_log_old'):
         db.execute(f"UPDATE {table} SET sid='' WHERE sid=?", (sid,))
+    _code().forget(db, sid)
     db.execute("UPDATE bang_asks SET status='cancelled' WHERE sid=? AND status='open'", (sid,))
 
 
