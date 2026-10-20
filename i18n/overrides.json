@@ -34952,7 +34952,20 @@
   "🔍 Bề mặt:": "🔍 Surface:",
   "Đã nhận đơn. Làm đủ ba bước ở bàn thợ rồi bấm 🎁 Giao đồ nhé.": "Order taken. Do all three steps at the bench, then tap 🎁 Hand over.",
   "Chạm chọn mọi yêu cầu khách vừa nói.": "Tap every request the guest just made.",
-  "Chọn đủ rồi bấm Chốt yêu cầu.": "Picked them all? Tap Confirm requests."
+  "Chọn đủ rồi bấm Chốt yêu cầu.": "Picked them all? Tap Confirm requests.",
+  "Chạm một người để xem giá rồi đặt. Xu được giữ tới khi bạn xác nhận.": "Tap someone to see the price, then order. Your coins are held until you confirm.",
+  "Bật công tắc để người khác đặt dịch vụ của bạn.": "Turn the switch on so others can order your service.",
+  "Chọn Sinh con hay Nhận nuôi, đặt tên bé, rồi gửi lời mời.": "Choose Have a baby or Adopt, name the baby, then send the invite.",
+  "Đặt tên, giá phòng sinh rồi lưu: các cặp sẽ đặt phòng của bạn.": "Name your birth room, set its price and save: couples will book it.",
+  "Chọn gói, phông, giá rồi bấm Đặt chụp. Xu giữ tới khi có ảnh.": "Pick a package, a backdrop and a price, then tap Book a shoot. Your coins are held until the photos arrive.",
+  "Khách đặt hiện ở đây: Nhận đơn rồi bấm Chụp.": "Bookings show up here: Take order, then tap Photograph.",
+  "Mỗi dịch vụ: chọn một người làm, chọn yêu cầu rồi đặt.": "For each service: pick who does it, choose what you want, then order.",
+  "Bật dịch vụ cưới để cô dâu chú rể tìm thấy bạn.": "Turn on your wedding services so couples can find you.",
+  "Đặt ở một gian để được giá hội chợ. Xem diễn để lấy tem.": "Order at a booth for the fair price. Watch a show to get a stamp.",
+  "Chọn nghề, mức giảm, rồi bấm Dựng gian.": "Pick a job and a discount, then tap Set up a booth.",
+  "Học nốt các bài với chị Hạnh trước.": "Finish the lessons with Hạnh first.",
+  "Mỗi phần thi làm một lần. Bí thì Gợi ý, mất 🎯.": "Each exam part is done once. Stuck? Hint, but you lose 🎯.",
+  "Làm xong phần đang mở ở trên trước.": "Finish the open part above first."
   },
   "patterns": {
   "🏥 Phòng sinh tạm đóng để bảo trì: lượt đặt được hủy, $1 xu hoàn đủ cho người trả.": "🏥 Birth rooms are closed for maintenance: the booking was cancelled and $1 xu refunded in full to the payer.",

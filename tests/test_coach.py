@@ -63,7 +63,7 @@ class Coverage(unittest.TestCase):
                                     f'{cid}: guide step {i} ({labels}) is neither a step (g={i}) nor every label a target')
 
     def test_steps_are_well_formed(self):
-        keys = {'e', 't', 'k', 's', 'g', 'v', 'w', 'o', 'x', 'at'}
+        keys = {'e', 't', 'k', 's', 'g', 'v', 'w', 'o', 'x', 'at', 'f'}
         for cid in G.ORDER:
             for s in C.raw(cid):
                 with self.subTest(career=cid, step=s.get('t', '')[:40]):

@@ -57,16 +57,21 @@ const B32='0123456789abcdefghijklmnopqrstuv',GD='gd-';
  * (every workplace's first day starts it by itself; older saves get the chip instead). All three ride in notesSeen,
  * which every release since 0.x accepts: nothing new in the save, a rollback only forgets nothing. */
 const CO='co-',CD='cd-';export const COACH_NEW='cn1';
-const PACKED=[GD,CO,CD],STICKY=[COACH_NEW];
-/** The workplaces packed in every `prefix` id of a set of note ids. */
+/** First-use hints of the town's player services (tips.js FEATS: 🛎️ Phố dịch vụ, 🏥 phòng sinh, 📸 tiệm ảnh, 💒 dịch vụ
+ * cưới, 🎪 Hội chợ việc làm), packed the same way in ONE "fh-" id. Append only, like GUIDE_BITS. */
+export const FEATURE_BITS=['svc','svc-mine','birth','birth-room','photo','studio','wed','wed-work','fair','booth'];
+const FH='fh-';
+const PACKED=[GD,CO,CD,FH],STICKY=[COACH_NEW];
+const BITS={[GD]:GUIDE_BITS,[CO]:GUIDE_BITS,[CD]:GUIDE_BITS,[FH]:FEATURE_BITS};
+/** The workplaces (or hints, for "fh-") packed in every `prefix` id of a set of note ids. */
 function bitsFrom(seen,prefix){
-  const out=new Set();
-  for(const id of seen)if(id.startsWith(prefix))[...id.slice(prefix.length)].forEach((ch,i)=>{const v=B32.indexOf(ch);for(let k=0;k<5;k++)if(v>=0&&v>>k&1&&GUIDE_BITS[i*5+k])out.add(GUIDE_BITS[i*5+k]);});
+  const out=new Set(),list=BITS[prefix];
+  for(const id of seen)if(id.startsWith(prefix))[...id.slice(prefix.length)].forEach((ch,i)=>{const v=B32.indexOf(ch);for(let k=0;k<5;k++)if(v>=0&&v>>k&1&&list[i*5+k])out.add(list[i*5+k]);});
   return out;
 }
-/** The one `prefix` id for a set of workplaces ('' when none). */
+/** The one `prefix` id for a set of workplaces (or hints) ('' when none). */
 function bitsId(cids,prefix){
-  const chars=[];GUIDE_BITS.forEach((cid,b)=>{if(cids.has(cid))chars[b/5|0]=(chars[b/5|0]||0)|1<<b%5;});
+  const chars=[];BITS[prefix].forEach((cid,b)=>{if(cids.has(cid))chars[b/5|0]=(chars[b/5|0]||0)|1<<b%5;});
   const s=Array.from({length:chars.length},(_,i)=>B32[chars[i]||0]).join('').replace(/0+$/,'');
   return s?prefix+s:'';
 }
@@ -90,3 +95,9 @@ export function markCoach(env,cid,{done=false}={}){
   save(env,all);
 }
 export const coachIds={bitsFrom,bitsId,CO,CD};
+/** First-use hints of the player services already shown (tips.js FEATS). */
+export const featuresSeen=api=>bitsFrom(notesSeen(api),FH);
+export function markFeature(env,id){
+  const all=notesSeen(env?.api);if(bitsFrom(all,FH).has(id)&&ids(env?.api?.state?.settings?.notesSeen).some(x=>x.startsWith(FH)))return;
+  all.add(bitsId(new Set([id]),FH));save(env,all);
+}

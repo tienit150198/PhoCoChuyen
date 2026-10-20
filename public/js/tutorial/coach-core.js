@@ -3,9 +3,12 @@
  * drives it with fake controls. No DOM, no game rule here.
  *
  * A step (from ./coach-content.js, game/coach_content.py):
- *   {id, e: emoji, t: short words, k: [button labels], s: [css selectors], v: {t,k,s} a tab/fold that reveals it,
+ *   {id, e: emoji, t: short words, k: [button labels], s: [css selectors], v: {t,k,s,h} a tab/fold that reveals it
+ *    (h: 1 what comes first and is still being done: the coach waits out of sight while it is on screen),
  *    d: the guide line it comes from (shown under "Chi tiết"), w: where it is when it is not on screen,
- *    o: 1 optional (skipped quietly when its control is not around), x: 1 text only (no control: "Tiếp"),
+ *    o: 1 optional (skipped quietly when its control is not around, unless the step before it, marked f: 1, is open
+ *       again: a wrong answer the game keeps open to fix; then the walk goes back to that one), x: 1 text only (no
+ *       control: "Tiếp"),
  *    at: 'job' (default: the work sheet) | 'any', kind: 'open' | 'close' | 'sum' (the shared steps below)}. */
 
 /** Shared steps around every workplace's own: open the shift, then (after the workplace's steps) close it and read
@@ -77,6 +80,12 @@ export class CoachRun{
   }
   /** "Bỏ qua": this step is not for now. */
   skip(){this.next();}
+  /** Back to step `j` (only ever the one just before): the game took the answer but kept that step open to fix (a wrong
+   * pick lowers the quality and stays), so the walk shows it again instead of dropping the optional steps after it. */
+  back(j){
+    if(j==null||j<0||j>=this.i)return;
+    this.i=j;this.pend=null;this.acted=false;this.since=this.moved=this.now();
+  }
   /** A tap on the control of step `j` (this one, or a later one the player went ahead to). `busy()` = a command is
    * on its way. The step advances when the game answers (answered(true)), or after SETTLE when nothing was sent. */
   tap(j,{cmd=false}={}){
@@ -104,6 +113,7 @@ export class CoachRun{
       if(look.done){this.next();continue;}
       const settled=this.now()-this.moved>=OPT_WAIT;
       if(look.jump!=null&&look.jump>this.i&&settled){this.next(look.jump);continue;}   // the game is already further on
+      if(look.back!=null&&look.back===this.i-1&&settled){this.back(look.back);continue;}   // the last step is open again
       if(look.hold)return {mode:'hidden',step:s};
       if(look.el){this.shown.add(s.id);return {mode:look.dock?'dock-spot':'spot',el:look.el,step:s,text:look.text||''};}
       if(look.via){this.shown.add(s.id);return {mode:'via',el:look.via,step:s};}

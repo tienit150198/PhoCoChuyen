@@ -11,7 +11,8 @@ DATA_JS.write_text(render_js(), encoding='utf-8', newline='\n')
 print(f'wrote {DATA_JS}')
 if '--i18n' in sys.argv:
     path = Path(__file__).resolve().parents[2] / 'i18n' / 'overrides.json'
-    text = path.read_text(encoding='utf-8')
+    with open(path, encoding='utf-8', newline='') as f:   # its own line endings, as they are (no CRLF on Windows)
+        text = f.read()
     have = json.loads(text)['strings']
     add = {vi: en for vi, en in english().items() if vi not in have}
     if add:
@@ -20,5 +21,6 @@ if '--i18n' in sys.argv:
         lines = ''.join(f',\n  {json.dumps(vi, ensure_ascii=False)}: {json.dumps(en, ensure_ascii=False)}' for vi, en in add.items())
         text = text[:at] + lines + text[at:]
         json.loads(text)   # still valid JSON
-        path.write_text(text, encoding='utf-8')
+        with open(path, 'w', encoding='utf-8', newline='') as f:
+            f.write(text)
     print(f'i18n/overrides.json: {len(add)} coach lines added')

@@ -12,7 +12,7 @@ ZP_CLOSE = V('Đóng bảng việc, Kho album ở thanh dưới.', ['Đóng'], [
 # Laundry: every stage is a choice per garment, then its "Xác nhận …" button.
 # 📻 A send button is only real once the picks are complete (it is drawn disabled until then).
 RD_READY = '{}:not([disabled])'
-LD_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.ld-submit'])
+LD_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.ld-stage [data-coach^="laundry-"]'])
 
 
 def _ld(stage: str, what: str = 'items') -> str:
@@ -20,7 +20,9 @@ def _ld(stage: str, what: str = 'items') -> str:
 
 
 # Restoration: every stage is a choice (per sign, demand, part or damage), then its "Xác nhận …" button.
-RS_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.rs-submit'])
+# The way on (a stage still open, or answered wrong and to fix) rings that stage's choices: its Xác nhận button is
+# .primary, which coach.js reads as an already open tab and never rings as a via (same for laundry's LD_NEXT).
+RS_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.rs-stage [data-coach^="restore-"]'])
 
 
 def _rs(stage: str, what: str) -> str:
@@ -170,7 +172,8 @@ STEPS: dict[str, list[dict]] = {
         S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="rd_intro"]'], o=True),
         S('🎚️', 'Đầu ca: bấm các việc kiểm phòng thu theo đúng thứ tự.', (), ['.rd-shift .rd-picks'], g=0,
           w='Kiểm phòng thu hiện ở đầu bảng việc mỗi ca.'),
-        S('✅', 'Bấm Xác nhận thứ tự để mở mic.', ['Xác nhận thứ tự'], [RD_READY.format('.rd-shift .rd-send')], o=True, g=0,
+        # fix: a wrong order stays open to redo; the walk comes back to it rather than dropping the role pick
+        S('✅', 'Bấm Xác nhận thứ tự để mở mic.', ['Xác nhận thứ tự'], [RD_READY.format('.rd-shift .rd-send')], o=True, g=0, fix=True,
           v=V('Bấm đủ mọi việc, đúng thứ tự trước.', (), ['.rd-shift .rd-picks'])),
         S('🎙️', 'Chọn vị trí ca này: Phát thanh viên, hoặc DJ khi hết thử việc.', (), ['.rd-role.on', '.rd-role:not([disabled])'], o=True, g=1),
         S('📋', 'Bấm Đọc phiếu việc để nhận việc.', ['Đọc phiếu việc'], ['.sk-ask', '[data-command="ask"]'], g=2,
