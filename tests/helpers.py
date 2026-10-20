@@ -141,7 +141,7 @@ def solve_activity(j,spec,practice=False):
         for card in a['cards']:j.act('life_activity_assign',card=card['id'],target=card['bin'] if a['kind']=='sort' else card['id'])
     return j.c['life']['activity']
 
-NEWER_THAN_LIVE=('reception',)   # careers 2.4.66 (a808cb79) does not know: add each new career here
+NEWER_THAN_LIVE=('reception','radio')   # careers 2.4.66 (a808cb79) does not know: add each new career here
 
 
 def unknown_out(s,careers=NEWER_THAN_LIVE):
