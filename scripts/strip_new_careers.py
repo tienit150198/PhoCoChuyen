@@ -20,7 +20,7 @@ sponsorship kind 'zpop' that is not the career, for one).
   * journey.days rows of CID, closeness people / snap / log / inbox of the career's own people (ids 'CID_...'),
     stories.arcs.CID, stories.queue beats of CID
   * journey.certificates / study / cert_paper / worn 'cert:<group>' of a certificate group added with the career (CERTS:
-    🏦 teller → teller_service)
+    🛎️ reception → reception_service, 🏦 teller → teller_service)
   * check                             the build stamp (career digests): the older build then validates in full
 A life card still waiting at the career (journey.life.pending.career) stays: older builds read an unknown workplace there
 as none (tests/test_career_teller_compat.py plays a day on 2.4.66 with one).
@@ -57,7 +57,7 @@ import sys
 
 # Certificate groups added together with a career (an older build validates journey.certificates, journey.study and
 # the worn 'cert:<group>' against its own groups): taken out with that career and put back by restore.
-CERTS = {'teller': ('teller_service',)}
+CERTS = {'reception': ('reception_service',), 'teller': ('teller_service',)}
 # Lists outside the careers that name career ids and that older validators check against their own CAREERS.
 ID_LISTS = (('journey', 'unlocked'), ('journey', 'board', 'touched'))
 # Rolling logs: rows naming the career are archived; restore does not put them back (the log moved on meanwhile).
