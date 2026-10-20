@@ -269,6 +269,7 @@ async function onClick(op,d,el){
     case'emoji':if(S.form){S.form.emoji=d.e;render();}else await post('set',{emoji:d.e},el);return;
     case'color':if(S.form){S.form.color=d.c;render();}else await post('set',{color:d.c},el);return;
     case'motto':{const v=S.dlg.querySelector('input[name="bg-motto"]')?.value||'';await post('set',{motto:v},el);return;}
+    case'rename':{const v=(S.dlg.querySelector('input[name="bg-name"]')?.value||'').trim();if(!v)return;await post('set',{name:v},el);return;}
     case'leave':if(!armed('leave'))return;await post('leave',{confirm:true},el);return;
     case'disband':{if(!armed('disband'))return;await post('disband',{confirm:true},el);return;}
     case'found':{
@@ -423,7 +424,7 @@ function peekView(){
 }
 function foundTab(){
   const f=S.form||{},ok=S.found;
-  const fee=CAT().fee||5_000_000,days=CAT().account_days||14;
+  const fee=CAT().fee||5_000_000,days=CAT().account_days||7;
   const tick=(on,label)=>`<li class="${on?'ok':'no'}"><span aria-hidden="true">${on?'✅':'⬜'}</span>${label}</li>`;
   const checks=ok?`<ul class="bg-checks">${tick(ok.days_ok,`Tài khoản đủ ${days} ngày${Number.isFinite(ok.age)?` (đang ${ok.age} ngày)`:''}`)}${tick(ready()>=fee,`Có ${fmt(fee)} xu (ví + ngân hàng)`)}</ul>`:'<p class="sd-empty">⏳</p>';
   const emojis=(CAT().emojis||[]).map(e=>`<button type="button" class="bg-emo${f.emoji===e?' on':''}" data-bg="emoji" data-e="${esc(e)}" aria-pressed="${f.emoji===e}">${esc(e)}</button>`).join('');
@@ -440,7 +441,7 @@ function foundTab(){
 }
 function foundFoot(){
   const ok=S.found,fee=CAT().fee||5_000_000,f=S.form||{};
-  const why=!ok?'':!ok.account?'Cần đăng nhập':!ok.days_ok?`Tài khoản chưa đủ ${CAT().account_days||14} ngày`:ready()<fee?`Còn thiếu ${fmt(fee-ready())} xu`:String(f.name||'').trim().length<2?'Đặt tên bang':'';
+  const why=!ok?'':!ok.account?'Cần đăng nhập':!ok.days_ok?`Tài khoản chưa đủ ${CAT().account_days||7} ngày`:ready()<fee?`Còn thiếu ${fmt(fee-ready())} xu`:String(f.name||'').trim().length<2?'Đặt tên bang':'';
   const label=S.arm==='found'?`Bấm lần nữa: trả ${fmt(fee)} xu`:`⚔️ Lập bang · ${fmt(fee)} xu`;
   return `<footer class="sd-bar">${why?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main" data-bg="found"${why||!ok?' disabled':''}>${esc(label)}</button></footer>`;
 }
@@ -724,7 +725,7 @@ function moreTab(){
     const emojis=(CAT().emojis||[]).map(e=>`<button type="button" class="bg-emo${c.emoji===e?' on':''}" data-bg="emoji" data-e="${esc(e)}" aria-pressed="${c.emoji===e}">${esc(e)}</button>`).join('');
     const colors=Object.keys(COLORS).map(k=>`<button type="button" class="bg-sw${c.color===k?' on':''}" data-bg="color" data-c="${k}" style="--bgc:${hex(k)}" aria-label="${esc((CAT().colors||[]).find(x=>x.id===k)?.name||k)}" aria-pressed="${c.color===k}"></button>`).join('');
     set=`<section class="sd-card"><h3>⚙️ Cài đặt bang</h3>
-      <div class="bg-field"><span>Biểu tượng</span><div class="bg-emos">${emojis}</div></div><div class="bg-field"><span>Màu bang</span><div class="bg-sws">${colors}</div></div>
+      <div class="bg-field"><span>Tên bang</span><div class="bg-code"><input name="bg-name" value="${esc(c.name||'')}" maxlength="${(CAT().name||[2,24])[1]}" placeholder="Tên bang" autocomplete="off">${btn('rename','Đổi tên')}</div><small class="tp-note">Mỗi ${CAT().rename_hours||24} giờ đổi một lần, tên không trùng bang khác.</small></div><div class="bg-field"><span>Huy hiệu</span><div class="bg-emos">${emojis}</div></div><div class="bg-field"><span>Màu bang</span><div class="bg-sws">${colors}</div></div>
       <div class="bg-code"><input name="bg-motto" value="${esc(c.motto||'')}" maxlength="${CAT().motto||60}" placeholder="Khẩu hiệu">${btn('motto','Lưu')}</div></section>`;
   }
   const rules=rank(me.role)>=4?rulesCard():(c.req||[]).length||modeOf(c)!=='auto'?`<section class="sd-card"><h3>🚪 Cách nhận người</h3><p>${esc(MODES[modeOf(c)])}</p>${reqLine(c)}</section>`:'';

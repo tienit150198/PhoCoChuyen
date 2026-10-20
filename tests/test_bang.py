@@ -67,7 +67,7 @@ def refused(test, s, action_, want=None, **p):
 class Catalogue(unittest.TestCase):
     def test_numbers(self):
         self.assertEqual(C.FOUND_FEE, 5_000_000)
-        self.assertEqual(C.FOUND_ACCOUNT_DAYS, 14)
+        self.assertEqual(C.FOUND_ACCOUNT_DAYS, 7)
         self.assertEqual(C.HALL_CAP[1:], (10, 15, 20, 25, 30))
         self.assertEqual(C.max_level(C.HALL), 5)
         self.assertEqual({k: v[2] for k, v in C.ROLES.items()}, dict(chu=1, pho=2, lao=3, tinh=5, tv=None))
@@ -351,8 +351,8 @@ class Founding(Base):
         validate_state(self.store.read(a)[0])
 
     def test_refused_in_the_commit_pays_nothing(self):
-        young = self.player(days=10)
-        self.assertIn('14 ngày', self.refused_cmd(young, 'jr_bang_found', 'too_new', name='Hổ Xám', confirm=True))
+        young = self.player(days=5)
+        self.assertIn('7 ngày', self.refused_cmd(young, 'jr_bang_found', 'too_new', name='Hổ Xám', confirm=True))
         guest = self.player(account=False)
         self.refused_cmd(guest, 'jr_bang_found', 'account', name='Hổ Xám', confirm=True)
         a, b = self.player(), self.player(name='Minh')

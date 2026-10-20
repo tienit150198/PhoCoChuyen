@@ -1,5 +1,7 @@
 {
   "strings": {
+  "Huy hiệu": "Badge",
+  "Tên này đã có bang dùng. Thử tên khác nhé.": "Another guild already uses this name. Try another one.",
   "Phụ kiện nghề": "Work accessories",
   "Tủ trữ sữa riêng": "Separate milk fridge",
   "Máy kiểm tra độ tuổi": "Age checker",
@@ -28519,6 +28521,9 @@
   "Giao tranh đúng người nhận ghi trên phiếu.": "Hand the painting to the person named on the order."
   },
   "patterns": {
+  "Mỗi $1 giờ đổi một lần, tên không trùng bang khác.": "Once every $1 hours, and not a name another guild uses.",
+  "Mỗi $1 giờ chỉ đổi tên bang một lần.": "The guild can be renamed once every $1 hours.",
+  "Bang chủ đổi tên bang: $1 → $2.": "The leader renamed the guild: $1 → $2.",
   "$1/$2 đã có": "$1/$2 owned",
   "Mua $1? $2 xu từ quỹ nghề.": "Buy $1? $2 xu from the job fund.",
   "$1 đã có ở tiệm rồi.": "$1 is already in the shop.",

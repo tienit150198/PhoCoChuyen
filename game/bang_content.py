@@ -7,7 +7,7 @@ from __future__ import annotations
 
 # ---------------------------------------------------------------- founding (Lập bang)
 FOUND_FEE = 5_000_000          # a pure sink: wallet then bank, never a loan, never into the fund
-FOUND_ACCOUNT_DAYS = 14        # the leader's account is at least this many real days old
+FOUND_ACCOUNT_DAYS = 7         # the leader's account is at least this many real days old (owner 20/10 evening: "7 ngày là tạo được bang, k phải 14 ngày")
 NAME_MIN, NAME_MAX = 2, 20
 MOTTO_MAX = 60
 EMOJIS = ('⚔️', '🐉', '🦁', '🐯', '🦅', '🐺', '🦊', '🐼', '🦄', '🔥', '🌊', '⭐', '🌙', '🌸', '🍀', '🏮')
@@ -39,6 +39,7 @@ APPOINT = ('pho', 'lao', 'tinh', 'tv')         # what Bang chủ may set (Bang c
 APPROVE_FROM = 3                                # Trưởng lão and up: accept asks, invite, decline
 KICK_FROM = 4                                   # Phó bang and up (never someone of the same or a higher rank)
 BUILD_FROM = 4                                  # Phó bang and up start a facility upgrade and set the Giờ vàng
+RENAME_HOURS = 24              # owner 20/10 "tên bang và huy hiệu cho phép đổi": the Bang chủ renames at most once a day
 SETTINGS_FROM = 5                               # Bang chủ: open / by approval, motto, emoji, colour, disband
 RULES_FROM = 4                                  # Phó bang and up: the join mode and the requirements (owner 20/10)
 # 🚪 How a bang takes new members (owner 20/10 "tắt, mở hoặc tự động duyệt member vào bang tùy chọn"): id -> label.

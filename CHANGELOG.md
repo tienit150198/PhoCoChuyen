@@ -1,3 +1,15 @@
+# v2.4.70 — 2026-10-20
+
+Không có mục Có gì mới.
+
+## bang-rename
+
+- ✏️ Bang chủ đổi được tên bang (mỗi 24 giờ một lần, theo luật tên như khi lập, không trùng bang đang hoạt động; ghi vào Chuyện trong bang, nhóm chat đổi tên theo) và huy hiệu (biểu tượng, đổi lúc nào cũng được) ở ⚙️ Cài đặt bang (chủ game: "tên bang và huy hiệu cho phép đổi nhé").
+
+## bang-found-7d
+
+- ⚔️ Lập bang: tài khoản đủ 7 ngày (đời thực) là lập được, thay vì 14 (chủ game: "7 ngày là tạo được bang, k phải 14 ngày"). bang_content.FOUND_ACCOUNT_DAYS = 7; vẫn cần 5 triệu xu.
+
 # v2.4.69 — 2026-10-20
 
 Không có mục Có gì mới (chủ game: cho người dùng mua, không thông báo).

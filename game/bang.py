@@ -1209,7 +1209,7 @@ def tag_of(store, db, sid: str) -> dict | None:
 
 
 def catalogue() -> dict:
-    return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, rejoin_hours=rejoin_hours(), name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
+    return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, rejoin_hours=rejoin_hours(), rename_hours=C.RENAME_HOURS, name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
                 emojis=list(C.EMOJIS), colors=[color(k) for k in C.COLORS],
                 roles={k: dict(name=v[0], short=v[1], seats=v[2], rank=v[3]) for k, v in C.ROLES.items()},
                 give=dict(min=C.GIVE_MIN, max=C.GIVE_MAX, presets=list(C.GIVE_PRESETS), per_point=C.XU_PER_POINT, day_pts=C.GIVE_PTS_DAY),
@@ -1733,6 +1733,26 @@ def _op_set(db, sid, data, t):
             raise BangError(x.message, 'bad_motto') from None
         db.execute('UPDATE bangs SET motto=? WHERE id=?', (motto, bang['id']))
         changes.append('khẩu hiệu mới')
+    new_name = None
+    if 'name' in data:   # ✏️ owner 20/10 "tên bang … cho phép đổi": the founding name rules, unique among active bangs
+        from .engine import GameError
+        try:
+            new_name = clean_name(data['name'])
+        except GameError as x:
+            raise BangError(x.message, 'bad_name') from None
+        if new_name == bang['name']:
+            new_name = None
+        else:
+            last = db.execute("SELECT MAX(at) AS at FROM bang_log WHERE bang=? AND kind='rename'", (bang['id'],)).fetchone()
+            need(not (last and last['at'] is not None and t - float(last['at']) < C.RENAME_HOURS * 3600),
+                 f'Mỗi {C.RENAME_HOURS} giờ chỉ đổi tên bang một lần.', 'rename_wait')
+            key = name_key(new_name)
+            db.execute(f'SELECT pg_advisory_xact_lock({LOCK}, hashtext(?))', (key,))   # two bangs taking one name: one waits
+            need(not db.execute("SELECT 1 FROM bangs WHERE key=? AND status='active' AND id<>?", (key, bang['id'])).fetchone(),
+                 'Tên này đã có bang dùng. Thử tên khác nhé.', 'name_taken')
+            db.execute('UPDATE bangs SET name=?, key=? WHERE id=?', (new_name, key, bang['id']))
+            _log(db, bang['id'], sid, 'rename', f'Bang chủ đổi tên bang: {bang["name"]} → {new_name}.', t)
+            changes.append('tên mới')
     if 'emoji' in data:
         need(data['emoji'] in C.EMOJIS, 'Chọn một biểu tượng trong danh sách nhé.')
         db.execute('UPDATE bangs SET emoji=? WHERE id=?', (data['emoji'], bang['id']))
@@ -1742,8 +1762,8 @@ def _op_set(db, sid, data, t):
         db.execute('UPDATE bangs SET color=? WHERE id=?', (data['color'], bang['id']))
         changes.append('màu mới')
     need(changes, 'Không có gì thay đổi.')
-    if 'emoji' in data:
-        db.execute('UPDATE chat_channels SET title=? WHERE id=?', (f'{data["emoji"]} {bang["name"]}'[:40], bang['channel']))
+    if 'emoji' in data or new_name:
+        db.execute('UPDATE chat_channels SET title=? WHERE id=?', (f'{data.get("emoji") or bang["emoji"]} {new_name or bang["name"]}'[:40], bang['channel']))
     _log(db, bang['id'], sid, 'set', 'Bang chủ đổi: ' + ', '.join(changes) + '.', t)
     _bump(db, bang['id'])
     pids = [x['pid'] for x in _rows(db, "SELECT pid FROM bang_members WHERE bang=? AND status='in'", (bang['id'],))]
