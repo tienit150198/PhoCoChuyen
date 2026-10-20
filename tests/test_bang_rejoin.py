@@ -94,20 +94,19 @@ class Rejoin(Base):
         self.op(self.c, 'disband', confirm=True, name='  hổ xám ')            # case, spaces, diacritics as typed on a phone
         self.assertIsNone(self.mine(self.c))
 
-    def test_the_leader_renames_once_a_day(self):
+    def test_name_and_badge_change_twice_each(self):
         self.refused_op(self.b, 'set', 'role', name='Rồng Vàng')              # a member cannot
         self.refused_op(self.a, 'set', 'name_taken', name='hổ xám')          # another active bang's name (any case)
         self.op(self.a, 'set', name='Rồng Vàng', emoji='🦄')
-        b = self.one('SELECT name, key, emoji, channel FROM bangs WHERE id=?', (self.bid,))
+        b = self.one('SELECT name, emoji, channel FROM bangs WHERE id=?', (self.bid,))
         self.assertEqual((b['name'], b['emoji']), ('Rồng Vàng', '🦄'))
         self.assertEqual(self.one('SELECT title FROM chat_channels WHERE id=?', (b['channel'],))['title'], '🦄 Rồng Vàng')
-        self.assertTrue(self.one("SELECT 1 FROM bang_log WHERE bang=? AND kind='rename'", (self.bid,)))
-        self.refused_op(self.a, 'set', 'rename_wait', name='Rồng Bạc')       # once a day
-        self.op(self.a, 'set', emoji='🐉')                                  # the badge any time
-        self.t[0] += 24 * 3600 + 1
-        self.op(self.a, 'set', name='Rồng Bạc')
-        self.assertEqual(self.one('SELECT name FROM bangs WHERE id=?', (self.bid,))['name'], 'Rồng Bạc')
-        self.op(self.c, 'set', name='Rồng Vàng')                             # the old name is free again
+        self.op(self.a, 'set', name='Rồng Bạc', emoji='🐉')                   # the second time each
+        self.refused_op(self.a, 'set', 'rename_used', name='Rồng Đồng')        # owner: at most 2
+        self.refused_op(self.a, 'set', 'badge_used', emoji='🦁')
+        self.op(self.a, 'set', name='Rồng Bạc', emoji='🐉', motto='Vẫn đổi được khẩu hiệu')   # same name/badge: not a change
+        self.assertEqual(self.one("SELECT COUNT(*) AS n FROM bang_log WHERE bang=? AND kind='rename'", (self.bid,))['n'], 2)
+        self.op(self.c, 'set', name='Rồng Vàng')                             # a freed name is free again
 
     def test_off_switch(self):
         with patch.dict(os.environ, {'MNL_BANG_REJOIN_HOURS': '0'}):

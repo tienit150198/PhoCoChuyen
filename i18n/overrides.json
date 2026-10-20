@@ -28521,6 +28521,10 @@
   "Giao tranh đúng người nhận ghi trên phiếu.": "Hand the painting to the person named on the order."
   },
   "patterns": {
+  "Mỗi bang đổi tên tối đa $1 lần, huy hiệu tối đa $2 lần. Tên không trùng bang khác.": "A guild can be renamed at most $1 times and change its badge at most $2 times. The name can't be another guild's.",
+  "Bang đã đổi tên $1 lần rồi, không đổi thêm được.": "This guild has already been renamed $1 times; no more renames.",
+  "Bang đã đổi huy hiệu $1 lần rồi, không đổi thêm được.": "This guild has already changed its badge $1 times; no more changes.",
+  "Bang chủ đổi huy hiệu: $1 → $2.": "The leader changed the guild badge: $1 → $2.",
   "Mỗi $1 giờ đổi một lần, tên không trùng bang khác.": "Once every $1 hours, and not a name another guild uses.",
   "Mỗi $1 giờ chỉ đổi tên bang một lần.": "The guild can be renamed once every $1 hours.",
   "Bang chủ đổi tên bang: $1 → $2.": "The leader renamed the guild: $1 → $2.",

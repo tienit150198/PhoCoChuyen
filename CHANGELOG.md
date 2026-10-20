@@ -4,7 +4,7 @@ Không có mục Có gì mới.
 
 ## bang-rename
 
-- ✏️ Bang chủ đổi được tên bang (mỗi 24 giờ một lần, theo luật tên như khi lập, không trùng bang đang hoạt động; ghi vào Chuyện trong bang, nhóm chat đổi tên theo) và huy hiệu (biểu tượng, đổi lúc nào cũng được) ở ⚙️ Cài đặt bang (chủ game: "tên bang và huy hiệu cho phép đổi nhé").
+- ✏️ Bang chủ đổi được tên bang (tối đa 2 lần mỗi bang, chủ game "giới hạn 1 bang được đổi 2 lần"; theo luật tên như khi lập, không trùng bang đang hoạt động; ghi vào Chuyện trong bang, nhóm chat đổi tên theo) và huy hiệu (biểu tượng, cũng tối đa 2 lần) ở ⚙️ Cài đặt bang (chủ game: "tên bang và huy hiệu cho phép đổi nhé").
 
 ## bang-found-7d
 

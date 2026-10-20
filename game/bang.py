@@ -1209,7 +1209,7 @@ def tag_of(store, db, sid: str) -> dict | None:
 
 
 def catalogue() -> dict:
-    return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, rejoin_hours=rejoin_hours(), rename_hours=C.RENAME_HOURS, name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
+    return dict(fee=C.FOUND_FEE, account_days=C.FOUND_ACCOUNT_DAYS, rejoin_hours=rejoin_hours(), rename_max=C.RENAME_MAX, badge_max=C.BADGE_MAX, name=[C.NAME_MIN, C.NAME_MAX], motto=C.MOTTO_MAX,
                 emojis=list(C.EMOJIS), colors=[color(k) for k in C.COLORS],
                 roles={k: dict(name=v[0], short=v[1], seats=v[2], rank=v[3]) for k, v in C.ROLES.items()},
                 give=dict(min=C.GIVE_MIN, max=C.GIVE_MAX, presets=list(C.GIVE_PRESETS), per_point=C.XU_PER_POINT, day_pts=C.GIVE_PTS_DAY),
@@ -1743,9 +1743,8 @@ def _op_set(db, sid, data, t):
         if new_name == bang['name']:
             new_name = None
         else:
-            last = db.execute("SELECT MAX(at) AS at FROM bang_log WHERE bang=? AND kind='rename'", (bang['id'],)).fetchone()
-            need(not (last and last['at'] is not None and t - float(last['at']) < C.RENAME_HOURS * 3600),
-                 f'Mỗi {C.RENAME_HOURS} giờ chỉ đổi tên bang một lần.', 'rename_wait')
+            n = db.execute("SELECT COUNT(*) AS n FROM bang_log WHERE bang=? AND kind='rename'", (bang['id'],)).fetchone()['n']
+            need(int(n) < C.RENAME_MAX, f'Bang đã đổi tên {C.RENAME_MAX} lần rồi, không đổi thêm được.', 'rename_used')
             key = name_key(new_name)
             db.execute(f'SELECT pg_advisory_xact_lock({LOCK}, hashtext(?))', (key,))   # two bangs taking one name: one waits
             need(not db.execute("SELECT 1 FROM bangs WHERE key=? AND status='active' AND id<>?", (key, bang['id'])).fetchone(),
@@ -1753,10 +1752,13 @@ def _op_set(db, sid, data, t):
             db.execute('UPDATE bangs SET name=?, key=? WHERE id=?', (new_name, key, bang['id']))
             _log(db, bang['id'], sid, 'rename', f'Bang chủ đổi tên bang: {bang["name"]} → {new_name}.', t)
             changes.append('tên mới')
-    if 'emoji' in data:
+    if 'emoji' in data and data['emoji'] != bang['emoji']:
         need(data['emoji'] in C.EMOJIS, 'Chọn một biểu tượng trong danh sách nhé.')
+        n = db.execute("SELECT COUNT(*) AS n FROM bang_log WHERE bang=? AND kind='badge'", (bang['id'],)).fetchone()['n']
+        need(int(n) < C.BADGE_MAX, f'Bang đã đổi huy hiệu {C.BADGE_MAX} lần rồi, không đổi thêm được.', 'badge_used')
         db.execute('UPDATE bangs SET emoji=? WHERE id=?', (data['emoji'], bang['id']))
-        changes.append('biểu tượng mới')
+        _log(db, bang['id'], sid, 'badge', f'Bang chủ đổi huy hiệu: {bang["emoji"]} → {data["emoji"]}.', t)
+        changes.append('huy hiệu mới')
     if 'color' in data:
         need(isinstance(data['color'], str) and data['color'] in C.COLORS, 'Chọn một màu trong bảng màu nhé.')
         db.execute('UPDATE bangs SET color=? WHERE id=?', (data['color'], bang['id']))

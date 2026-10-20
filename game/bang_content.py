@@ -39,7 +39,8 @@ APPOINT = ('pho', 'lao', 'tinh', 'tv')         # what Bang chủ may set (Bang c
 APPROVE_FROM = 3                                # Trưởng lão and up: accept asks, invite, decline
 KICK_FROM = 4                                   # Phó bang and up (never someone of the same or a higher rank)
 BUILD_FROM = 4                                  # Phó bang and up start a facility upgrade and set the Giờ vàng
-RENAME_HOURS = 24              # owner 20/10 "tên bang và huy hiệu cho phép đổi": the Bang chủ renames at most once a day
+RENAME_MAX = 2                 # owner 20/10 "tên bang và huy hiệu cho phép đổi", "giới hạn 1 bang được đổi 2 lần": a bang's name
+BADGE_MAX = 2                  # and its badge (emoji) change at most this many times each, ever (bang_log 'rename' / 'badge' rows)
 SETTINGS_FROM = 5                               # Bang chủ: open / by approval, motto, emoji, colour, disband
 RULES_FROM = 4                                  # Phó bang and up: the join mode and the requirements (owner 20/10)
 # 🚪 How a bang takes new members (owner 20/10 "tắt, mở hoặc tự động duyệt member vào bang tùy chọn"): id -> label.
