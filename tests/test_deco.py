@@ -89,7 +89,7 @@ class Catalogue(unittest.TestCase):
         uq = [k for k, v in DC.ITEMS.items() if v.get('uq')]                 # 🔨 the paintings won at auction, after them
         self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq))
         self.assertEqual(uq[-1], 'anh_chup')                                  # 📸 a framed player photo (game/photo_studio.py), last
-        self.assertTrue(uq and all(k.startswith('uq_tr_') and DC.ITEMS[k]['price'] == 0 for k in uq[:-1]))
+        self.assertTrue(uq and all(k.startswith(('uq_tr_', 'uq_dc_')) and DC.ITEMS[k]['price'] == 0 for k in uq[:-1]))   # 🪑 20/10 furniture too
         self.assertEqual(DC.ITEMS['anh_chup']['price'], 0)
         self.assertEqual(DC.KNOWN_1715[-1], 'mam_ngu_qua')                  # the last piece 1.7.15 knows
         self.assertEqual(DC.KNOWN_132, tuple(DC.ITEMS)[:65])                # what a 1.3.2 build knows: its mirror holds only these
@@ -109,7 +109,7 @@ class Catalogue(unittest.TestCase):
                 self.assertRegex(k, r'^[a-z0-9_]{1,24}$')
                 self.assertIn(it['spot'], DC.SPOTS)
                 self.assertIn(it['cat'], cats)
-                self.assertTrue(1 <= it['w'] <= 3 and 1 <= it['h'] <= 2 and (it['price'] > 0 or it.get('uq')) and 1 <= it['cozy'] <= 3)
+                self.assertTrue(1 <= it['w'] <= 3 and 1 <= it['h'] <= 2 and (it['price'] > 0 or it.get('uq')) and 1 <= it['cozy'] <= (6 if it.get('uq') else 3))   # 🔨 an auction piece: its base +1…3
                 self.assertTrue(it['rooms'] and set(it['rooms']) <= set(DC.TYPES))
                 self.assertTrue(it['surface'] == 0 or it['spot'] == 'floor')
                 if it['spot'] == 'top':

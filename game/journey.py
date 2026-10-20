@@ -754,6 +754,17 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
             notes.append(f'{V["emoji"]} Biển đẹp +{pct}%: +{plate} xu.')
         else:
             plate = 0
+    # 🧰 Đồ nghề độc bản (game/auction.py tool_pct, 20/10): this workplace's signature tool, on the same base net. With the
+    # Biển đẹp of this shift never above PCT_CAP percent nor BONUS_CAP xu.
+    tool, tpct, tit = 0, *auc.tool_pct(s, career)
+    tpct = max(0, min(tpct, AC.PCT_CAP - pct))
+    if tpct > 0:
+        tool = min(AC.BONUS_CAP - plate, max(0, _base_net(result, job_note)) * tpct // 100)
+        if tool > 0 and icl.day_paid(s):
+            _wallet(j, tool, 'salary', f'{tit["emoji"]} {tit["name"]} +{tpct}% · {_place(career)}', career)
+            notes.append(f'{tit["emoji"]} {tit["name"]} +{tpct}%: +{tool} xu.')
+        else:
+            tool = 0
     # Rent and meals for the day that just ended.
     cost = living_cost(j)
     _wallet(j, -cost['total'], 'living', cost['label'])
@@ -775,7 +786,8 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     if isinstance(summary, dict):
         summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'],
                                   **({'gift': WELCOME_GIFT} if gift else {}), **({'x3': extra} if extra > 0 else {}),
-                                  **({'plate': plate, 'plate_pct': pct} if plate > 0 else {}))
+                                  **({'plate': plate, 'plate_pct': pct} if plate > 0 else {}),
+                                  **({'tool': tool, 'tool_pct': tpct} if tool > 0 else {}))
     result.setdefault('effects', []).extend(notes)
 
 
@@ -840,6 +852,8 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
         _end_of_day(s, career, result)
     if j['story']:
         icl.sync(s)   # ⏱️ every story save decides each new life day (a save without bank or home included)
+        if auc.Y_KEY in j:
+            auc.y_settle(s)   # 🔨 an auction piece still waiting (the pet wardrobe was full) goes in once there is room
     bk.on_life_day(s, result)   # 🏦 interest, statements, installments: once per life day (idempotent)
     hs.on_life_day(s, result)   # 🏠 home installments and comfort (after the bank's morning)
     rn.on_life_day(s, result)   # 🛠️ wear and the Ấm cúng morning (after the home's)
@@ -1347,6 +1361,7 @@ def validate(s: dict) -> None:
     island_build.validate(s)   # 🏗️ journey['islb'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
     auc.x_validate(s)   # 🔨 journey['uniq_x'] (optional): vehicles, registrations, yacht names won; plates attached
+    auc.y_validate(s)   # 🔨 journey['uniq_y'] (optional, 20/10): furniture, pet pieces, signature tools won
     from . import town_projects
     town_projects.validate(s)   # 🏗️ journey['town'] (optional)
     from . import bang

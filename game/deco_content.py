@@ -481,6 +481,19 @@ for _k, _it in _AC.ART_PIECE.items():
     ITEMS[_k] = dict(_i('wall', 'wall', 2, 2, 0, _AC.ART_COZY, _UQ_ROOMS, f'Tranh “{_it["name"]}” · {_it["artist"]}', '🖼️', ('art',)),
                      price=0, uq=True)
 
+# 🪑 One-of-a-kind furniture (20/10, game/auction_content.py kind 'decor'): its base piece's size, spot, rooms, tags and
+# surfaces, its Ấm cúng + DECO_COZY[tier], unique like the paintings (price 0, `uq`). In a theme set it stands in for its
+# base piece (and `alt`): appended to the set entries that name them (an older build keeps the piece in reno.items,
+# unshown, and its sets as they were).
+for _k, _it in _AC.DECO_PIECE.items():
+    _b = ITEMS[_it['base']]
+    ITEMS[_k] = dict(_b, rooms=tuple(_b['rooms']), tags=tuple(_b['tags']), price=0, cozy=_b['cozy'] + _AC.DECO_COZY[_it['tier']],
+                     name=_it['name'], emoji=_it['emoji'], uq=True, base=_it['base'])
+for _S in SETS.values():
+    _S['need'] = tuple(_e if _e[0] == 'tag' else _e + tuple(k for k, it in _AC.DECO_PIECE.items()
+                                                             if set(_e) & {it['base'], *it['alt']} and k not in _e)
+                       for _e in _S['need'])
+
 # 📸 A framed photo a player photographer made for this save (game/photo_studio.py hang, SCHEMA_VERSION 66): 2 × 2 wall
 # cells, unique like the paintings (price 0, `uq`: never in the shop, never sold back). journey['photo_wall'] {uid: photo
 # id} says which photo each frame holds (the client draws it with public/js/v4/portrait-art.js). 2.4.66 keeps the piece in

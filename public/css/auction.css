@@ -85,3 +85,13 @@
 .au-help>summary{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);cursor:pointer;list-style:none;font-weight:700}
 .au-help>summary::-webkit-details-marker{display:none}
 .au-help ul{margin:var(--sp-2,8px) 0 0;padding-left:var(--sp-4,16px);font-size:var(--fs-1,.85rem);color:var(--ink-2)}
+/* 20/10: 🪑 a one-of-a-kind piece of furniture (its drawing from deco-art.js), 🐾 a pet piece with its rank, 🧰 a signature tool */
+.au-decor,.au-petgear,.au-tool{grid-auto-flow:row;gap:4px;padding:var(--sp-2,8px)}
+.au-decor{background:radial-gradient(circle at 50% 40%,var(--au-glow,#f2c14e) 0,transparent 62%),var(--surface-2)}
+.au-decor .dc-thumb{width:120px;height:120px}
+.au-decor small,.au-petgear small,.au-tool small{padding:1px 8px;border-radius:6px;background:rgba(255,248,225,.92);color:#3b2a06;font-weight:800;letter-spacing:.1em;font-size:var(--fs-1,.8rem)}
+.au-petgear{background:radial-gradient(circle at 50% 38%,var(--au-rank,#f2b632) 0,transparent 60%),var(--surface-2)}
+.au-petgear span,.au-tool span{font-size:3.2rem;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.au-petgear b{min-width:44px;padding:0 8px;border-radius:999px;background:var(--au-rank,#f2b632);color:#fff;font-weight:900;text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.au-tool{background:linear-gradient(160deg,#fff6d5,#e8c97a);border:3px solid #b8862f;box-shadow:inset 0 0 0 3px #fff8e1,var(--shadow-sm)}
+.au-use{margin:var(--sp-2,8px) 0;padding:6px 10px;border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:var(--fs-2,.9rem);font-weight:700;line-height:1.4}
