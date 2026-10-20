@@ -1,4 +1,8 @@
-# Chưa phát hành — quầy chuỗi
+# v2.5.0 — 2026-10-21
+
+Bản gộp lớn (khung 4–5h): careers-integ (5 nghề mới, Phố dịch vụ, phòng sinh, phòng khách sạn, hội chợ việc làm, dịch vụ cưới, chụp ảnh), hướng dẫn coach cho nghề mới, quầy chuỗi (trần thuê/điện, phí chuỗi không trừ thưởng lãi), đấu giá +50 món, Halloween 26–31/10 (schema 80), trang trí +55 món, nhà đảo + bang, thân thiết NPC, màn làm việc dễ nhìn, tiền công +8–20% và Tuần lễ tay nghề 22–28/10 (MNL_PAYWEEK_FROM/UNTIL). Có gì mới 2.5.0: 14 dòng.
+
+## quầy chuỗi
 
 🌸 Quầy chuỗi bớt nặng (chủ game 21/10, người chơi báo "quầy hoa bán còn nửa giá"; không có mục Có gì mới, chưa tăng phiên bản). Giá bán từng món không đổi; từ 20/10 phí chuỗi của 2.4.52/2.4.53 (`dea74703`, `d846233f`) làm một chuỗi ki-ốt hoa 64 quầy mất ~40% phần chủ nhận, chuỗi tốc độ thường thì lỗ, vì mỗi xu thuê/điện/thuế tăng thêm còn kéo thưởng lãi nhân viên 236% xuống theo (mất ~3,36 xu).
 - Phần chuỗi (tiền thuê và điện trên mức gốc, các điểm thuế chuỗi trên 7%) vẫn trừ đủ vào két nhưng không còn trừ vào lãi tính thưởng: thưởng lãi tính đúng như trước 20/10 (giá vốn, thuê/điện gốc, thuế 7%). game/quay_business.py: `_charge` ghi phần gốc vào `profit_boost.costs` và `income_tax.loss`, `income_tax_parts` tách thuế gốc / thuế chuỗi, mỗi phần có số lẻ riêng (khóa tùy chọn `business.chain_carry` {rent, power, tax}; bản cũ bỏ qua khóa lạ); đơn của khách là người chơi (player_service_tasks.credit_visit) cũng vậy.
@@ -17,7 +21,7 @@
 
 - Mọi nghề quầy, mọi chỗ (xe, sạp, ki-ốt), bảng món mặc định, tốc độ thường, 6…64 quầy: thấp nhất 75% (quần áo ki-ốt/sạp), trái cây 78%, còn lại ≥ 82% (2.4.71: quần áo ki-ốt 25%, trà đá xe lỗ). Chuỗi 64 ki-ốt hoa tốc độ nhanh: phí chuỗi ≈ 5,1 triệu/ngày (2.4.71: ≈ 28 triệu).
 - tests/test_quay_chain_bonus.py (thưởng bằng đúng trước 20/10, chuỗi ≤ 5 quầy không đổi từng xu, thuế tách không làm tròn mất, ≥ 70% mọi nghề ở 64 quầy, kiểm tra khóa chain_carry); tests/test_wealth_fee.py theo mức chặn mới.
-# Chưa phát hành — npc-goodwill
+## npc-goodwill
 
 💛 Thân thiết với NPC: lấy lòng hàng xóm và khách quen giờ có lợi thật (chủ game 21/10: "để mọi người biết sự quan trọng của việc lấy lòng NPC", "lấy lòng NPC thì kinh doanh được nhiều tiền hơn… hoặc là sẽ được mở thêm gì đó mà mọi người k biết"). Xây trên Điểm thân quen có sẵn (game/closeness.py: điểm 0–100, 5 bậc, trò chuyện, quà, lời mời, đánh giá, nhạt dần sau 14 ngày); luật mới ở game/goodwill.py + game/goodwill_content.py. Không đổi phiên bản, chưa có dòng Có gì mới.
 - 💼 Khách ruột trả thêm (engine.task_done → goodwill.pay_bonus): xong việc cho khách Người quen +2%, Thân thiết +4%, Như người nhà +6%; hỏi thăm/tặng quà trong 7 ngày gần đây +2%; 📜 bí kíp bà Sáu +2% ở quán ăn/quán nước; 🤝 khách sộp được giới thiệu +10%. Tối đa 10% tiền công một việc (tính trên phần lời với tiệm bán hàng, như đồ nghề), 200 xu một việc, 1.000 xu một ngày Việt Nam cho cả bản lưu, chỉ trong ngày có thưởng theo giờ thật (interest_clock.day_paid), không áp cho đơn người chơi; vào quỹ nơi làm, danh mục 'revenue'.
@@ -29,7 +33,7 @@
 - Bản lưu: chỉ khóa tùy chọn journey.npcgw (bản 2.4.72 giữ nguyên, không đọc: journey cho phép khóa thêm; tests/test_goodwill.py chạy thật bản 2.4.72 83fe229c). Không thêm khóa vào journey.closeness, không danh hiệu mới trong journey.titles, không loại hộp thư/món túi quà/danh mục sổ thu chi mới. Không bảng mới, không đổi SCHEMA_VERSION.
 - Công tắc MNL_NPCGW_OFF=1: tắt mọi ưu đãi, ngừng điểm mới (việc nhờ, sinh nhật, mở khóa, việc giúp, khách sộp), bỏ giới hạn 12 điểm (luật cũ); khối dữ liệu giữ nguyên, bật lại là chạy tiếp.
 - Kiểm thử: tests/test_goodwill.py; scripts/browser_goodwill.py (390×844, 1280×800).
-# Chưa phát hành — career-ui
+## career-ui
 
 🧭 Màn làm việc từng nghề dễ hiểu hơn (chủ game 21/10: "coi UI sắp xếp cho dễ hiểu ở từng nghề… button sắp xếp cũng khó nhìn… show hết thông tin ra xong người ta chọn, kiểu show trà sữa, các loại hoa xong ruy băng"). Chỉ đổi giao diện: máy chủ chấm điểm, trả tiền như cũ; không khóa save mới, không đổi schema, không đổi phiên bản, chưa có dòng Có gì mới.
 - Thanh nút dưới cùng (mọi nghề dùng .ui-bar, cả 2 giao diện): trên điện thoại bước tiếp theo nằm một dòng riêng, nút chính một mình cả hàng (cao 50 px), không còn bị ép 40–62% bề ngang rồi xuống 2–3 dòng chữ; dòng báo kết quả (barNote) thành dòng nhạt có vạch màu nghề, không còn là ô tối trông như nút bấm.
@@ -47,7 +51,7 @@
 - Quần áo, trà đá: đã bày hết lựa chọn (món, màu, size; trà, đồ ăn vặt, khay) nên giữ nguyên.
 - Tiếng Anh: i18n/overrides.json + build (45 chuỗi, 10 mẫu).
 - Kiểm tra: ảnh 390×844 trước/sau ở cả 2 giao diện và giao diện tối "Phố đêm" (trà sữa, tiệm hoa, nhà hàng, cà phê, sửa đồ, quần áo, phở, salon, tạp hóa, nail, trà đá, chăm thú); tests milk tea / florist / guides / webassets và các bài node của giao diện.
-# Chưa phát hành — pay-boost
+## pay-boost
 
 💰 Thêm tiền công khi làm nghề (chủ game 21/10: "thêm tiền thưởng cho mọi người khi làm nghề nhé, hiện tại đang ít, tăng nhẹ nữa thì tốt, coi làm event hay gì đó thì làm ngắn hạn cũng được"; "cái nào thêm để mọi người mua và tự động hay scale gì đó hợp lý thì làm luôn nha"). game/pay_boost.py, public/js/v4/paykit.js. Không đổi phiên bản, chưa có dòng Có gì mới.
 - Đo trước (21/10, việc hoàn thành trong các test nghề, trung vị tiền công một việc mà các khoản thưởng tính trên đó): trà đá 3 xu/ly, rác 6, chùa 7, nấu cơm 10, thư viện 10, cơm 12, trái cây 14, photobooth 14, kem 15,5, nội trợ 18, giặt ủi 18, thông cống 20, nail 20, nông trại 21, xưởng vẽ 25, phục chế 26, homestay 27, giúp việc 28, ZPOP 30, phở 38, trà sữa 40, quán mì 48, bánh & cà phê 50,5, thú cưng 53,5, kế toán 65, mẹ & bé 85, trông trẻ 86, tạp hóa 90, quần áo 133, tiệm hoa 195. Nghề làm thuê: lương hợp đồng 14–24 (giao hàng) / 15–24 (chăm thú cưng) / 18–28 (sửa đồ, salon) … 50–85 (văn phòng, khách sạn, đài, viện…) / 65–110 (phi công) / 80–140 (dầu khí), cộng thưởng việc 5–10 xu (khách sạn, tiệc, luật, hải quan, bưu điện, ngân hàng, công an, điều dưỡng…) tới 25–97 xu (văn phòng, kế toán, salon). Thăng chức: +8/20/35/55/66/77/88 % lương (làm thuê), chủ tiệm 3–21 % tiền bo khách quen; 🔥 x3: ngày của nghề trả thêm 2 × lãi ròng gốc (trần 3.000 xu/ca).
@@ -69,7 +73,7 @@
 - event2010.RECAP (922 thiệp, 723 người gửi, 8 tên ngẫu nhiên trong số thiệp đạt) → dòng bảng tin mỗi ngày (key ev2010:recap:<ngày>) và trang /2010 sau khi đóng.
 - ↩️ system_gift TAKE: dòng 'take-…' trạng thái 'take' (bản cũ chỉ trả 'pending', không bao giờ hiểu nhầm thành quà) → trừ ví, rồi số dư ngân hàng, phần thiếu thành nợ ví; thẻ "−N xu · Đã thu hồi", nút "Đã hiểu".
 Có gì mới 2.4.72: 1 dòng.
-# Chưa phát hành — coach (nghề mới)
+## coach (nghề mới)
 
 🧭 Hướng dẫn ngày đầu kiểu mới (coach: vòng sáng + làm mờ + bong bóng ngắn trên nút thật) cho các nghề mới của careers-integ, kiểm lại trên trình duyệt 390×844, cả giao diện gọn và đầy đủ, phố 2.5D và phố cổ điển (chủ game: "có đầy đủ hướng dẫn theo kiểu mới"). Không đổi phiên bản, chưa có dòng Có gì mới.
 - Đối chiếu: cả 62 nghề trong game/guide_content.py ORDER (55 nghề plugin + 7 nghề gốc) đều có bước coach riêng trong game/coach/*.py; Lễ tân, Ngân hàng, Thợ phục chế, Viện nghiên cứu, Đài phát thanh, Khách sạn, Nhà hàng tiệc, Hải quan, Luật sư đã có sẵn. Lỗi tìm thấy khi chơi thử và đã sửa ở dưới.
@@ -80,7 +84,7 @@ Có gì mới 2.4.72: 1 dòng.
 - 🛎️ Dịch vụ của người chơi: coach chỉ dành cho chỗ làm (mở ca, khép ca), nên các bảng dịch vụ có gợi ý dùng lần đầu kiểu gợi ý ngắn có sẵn (tips.js, một bong bóng có vòng trên đúng nút, tắt khi chạm, đóng bảng hoặc sau 9 giây, mỗi gợi ý một lần, cho mọi bản lưu): 🛎️ Phố dịch vụ (Tìm, Của tôi), 🏥 phòng sinh (đón con chung, phòng sinh của chủ homestay), 📸 tiệm ảnh (khách đặt chụp, thợ nhận đơn), 💒 dịch vụ cưới (cưới của bạn, đơn cưới), 🎪 Hội chợ việc làm (dạo hội chợ, dựng gian). Đã xem lưu trong settings.notesSeen thành MỘT id gói "fh-" (store.js FEATURE_BITS, chỉ thêm ở cuối), như "gd-"/"co-": không khóa save mới, rollback an toàn.
 - Tiếng Anh: i18n/overrides.json + scripts/i18n_extract.py build. `python -m game.coach --i18n` giữ nguyên kiểu xuống dòng của overrides.json (trước đây trên Windows đổi cả file sang CRLF).
 - Kiểm tra: tests/test_coach.py, tests/coach_engine.mjs (lùi một bước, id "fh-"), test các nghề mới; chạy thử scripts/browser_coach.py (Ngân hàng, Lễ tân, Đài phát thanh, Viện nghiên cứu, Thợ phục chế; gọn và đầy đủ; 2.5D và cổ điển): mọi vòng sáng nằm trong màn hình, bong bóng không che nút.
-# Chưa phát hành — auction items
+## auction items
 
 🔨 Nhà đấu giá thêm 50 món, món nào cũng dùng được (chủ game 20/10: "thêm nhiều đồ mới cho đấu giá nhé, thêm nhiều vào và ứng dụng được"). Danh mục 81 → 131 món. game/auction_content.py (dữ liệu), game/auction.py (trao món, câu "dùng để làm gì"), game/journey.py (thưởng đồ nghề cuối ca), game/deco_content.py + public/js/v4/deco-art.js (nội thất độc bản), public/js/v4/auction-display.js + public/css/auction.css (thẻ lô). Không đổi phiên bản, chưa có dòng Có gì mới.
 - Loại cũ thêm món: 🏎️ 8 xe bản giới hạn (Cub Đồng Cổ số 50, Tay ga Hồng Ngọc số 88, Mini Ngọc Trai số 02, SUV Đêm Nhung số 09, Buồm Hoàng Hôn số 03, Cánh quạt Ngọc Trai số 01, Trực thăng Đồng Cổ số 01, Tia Chớp Hồng Ngọc số 02; 5 màu sơn riêng mới), 🚗 7 biển số, ✈️ 3 số đăng ký tàu bay, ⚓ 3 biển tên du thuyền, 👑 6 danh hiệu. Dùng như món cùng loại đã có: xe vào Nhà xe, biển gắn lên xe để lời mỗi ca +3–10%, danh hiệu đeo ở Phong cách.
@@ -90,7 +94,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Giá mở: theo hạng 5k / 50k / 500k như cũ; 3 món đỉnh (siêu xe Tia Chớp Hồng Ngọc 1.000.000, vòng kim cương SSS 800.000, máy espresso 800.000) mở cao hơn, chỉ khi đúng hạng của món. Tài sản: xe bản giới hạn tính theo giá mua lại của xe gốc như trước; nội thất, đồ thú cưng, đồ nghề không tính (xu đã đốt, không bán lại).
 - Dữ liệu: không có bước schema. Khóa save mới tùy chọn journey.uniq_y {v, own} cho 3 loại mới (journey.uniq / uniq_x của bản cũ kiểm chặt loại nên không đụng). Bản cũ (2.4.71) giữ nguyên khóa lạ, đồ trang trí là món hợp lệ theo hình dạng trong reno.items, đồ thú cưng dùng mã món tủ đồ đã có; trao thưởng loại mới trên bản cũ bị từ chối nên dòng live_effects vẫn chờ, bản mới trao sau. tests/test_auction_items.py: bản lưu có đủ loại mới đi qua 2.4.71 cả hai chiều.
 - Kiểm tra: tests/test_auction_items.py (19), tests/auction_items.mjs; test_deco / test_deco_more chấp nhận món độc bản uq_dc_. Ảnh 390×844: thẻ lô 4 loại, Của tôi, túi đồ, kéo sập vào phòng khách (Ấm cúng 15 → 21). Tiếng Anh: i18n/overrides.json + build.
-# Chưa phát hành — halloween
+## halloween
 
 🎃 Lễ hội Ma Phố, Halloween 26–31/10/2026 (chủ game 20/10; kế hoạch: docs/HALLOWEEN_2026.md). Tự mở 0:00 26/10 giờ VN, khép 23:59:59 31/10, đổi kẹo tới hết 01/11; trước đó không có gì hiện ra. game/halloween.py + halloween_content.py, public/js/v4/halloween.js, halloween-data.js, halloween-town.js, public/css/halloween.css, quản trị public/js/admin/halloween.js. Không đổi phiên bản, chưa có dòng Có gì mới.
 - Kiếm 🍬 kẹo: điểm danh 10/ngày; 5 quả bí ngô nấp quanh phố mỗi ngày (câu đố 4 lựa chọn, đoán một lần, 5 kẹo; phố 2.5D đi tới đúng biển là nhặt luôn); "Cho kẹo hay bị ghẹo?" gõ cửa người chơi khác (10 nhà/ngày, mỗi nhà một lần, 4 kẹo hoặc bị ghẹo 1; chủ nhà 2 kẹo/khách, tối đa 15 khách/ngày); mỗi ngày một chủ đề có thưởng nhỏ; 31/10 từ 19:00 mọi kẹo ×2 + Bí ngô khổng lồ 30.
@@ -98,7 +102,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Thẻ khai hội giữa màn hình mỗi ngày (break-gate 'hween' sau Thiệp 20/10), dòng tin chạy chữ mỗi ngày + lúc 19:00 31/10, lối vào ở menu và Tiện ích, phố 2.5D trang trí (lớp phủ DOM, không đụng bản Phaser).
 - Chống nick phụ: chỉ tài khoản; gõ cửa cần tài khoản ≥ 1 ngày, ≤ 3 tài khoản/mạng/ngày; túi xu cần tài khoản ≥ 3 ngày, ngày sống ≥ 3, ≤ 3 tài khoản/mạng cả mùa (mạng lưu mã băm); mọi thưởng một lần theo khóa + khóa advisory. Quản trị → Halloween (GET /api/admin/halloween). 🛑 MNL_HALLOWEEN_OFF=1.
 - Dữ liệu: SCHEMA_VERSION 80 (76–79 của nhánh khác): bảng mới hw_players, hw_log + index; không FK, không backfill, không khóa save. Quà qua live_effects kind 'hween' (2.4.71 để chờ). tests/test_halloween.py, tests/test_halloween_compat.py, tests/halloween.mjs, scripts/browser_halloween.py (ảnh 390×844). Tiếng Anh: i18n/overrides.json + build.
-# Chưa phát hành — home decor
+## home decor
 
 🛋️ Thêm đồ trang trí cho nhà (chủ game 21/10: "thêm đồ trang trí cho nhà"). game/deco_content.py (MORE_2026, 8 bộ góc, STYLES), game/deco.py (catalogue: `new`, `styles`), public/js/v4/deco-art.js (55 hình), client/home3d/meshes.js + public/js/v4/home-3d-scene.js (cảnh 3D), public/js/v4/reno.js + public/css/reno.css (cửa hàng, 📍 Đặt nhanh). Không đổi phiên bản, không bước schema, chưa có dòng Có gì mới.
 - 55 món mới, giá 22–1.200 xu (giá ghi sao bán vậy, không qua chỉ số giá), Ấm cúng +1…+3 mỗi món: 🏮 Nét Việt xưa (sập gụ chân quỳ, tủ chè khảm trai, đèn lồng và chùm đèn lồng Hội An, tranh Đông Hồ đàn gà và đám cưới chuột, bình phong gỗ chạm, chiếu hoa, ấm tích giỏ ủ, nón lá, đèn dầu, tranh thêu sen), tối giản (sofa góc chữ L, đèn sàn cần câu, tranh trừu tượng, bàn trà mặt đá, kệ bậc thang, đèn giấy, bình cành khô), pastel (giường đám mây, ghế lười tai thỏ, đèn mây, kệ cầu vồng, thảm mây, gấu dâu tây, đèn kẹo bông), gaming (màn hình cong, bàn phím LED, giá tai nghe, đèn thanh RGB, poster game, kệ tay cầm), góc đọc sách (tủ sách kịch trần, ghế bành, đèn cổ ngỗng, chăn len, kệ sách treo, bản đồ), bếp (bàn ăn tròn, nồi đất kho cá, tủ bếp treo, máy rửa bát, giỏ bánh mì), nhà tắm (thang treo khăn, chậu ngâm chân, đèn đá muối, kệ tre), ban công và cây (bộ bàn ghế ban công, chậu lan, giàn mướp, hòn non bộ, đèn năng lượng mặt trời, sen đá, bàng Singapore, thảm thổ cẩm). Món nào cũng có hình 2D, khối 3D, tên tiếng Anh; biệt thự có thêm phòng thì món cũng vào được phòng cùng loại.
@@ -107,7 +111,7 @@ Có gì mới 2.4.72: 1 dòng.
 - 📍 Đặt nhanh (góp ý #443, người chơi khiếm thị): cầm món lên (chạm thẻ) thì hiện các nút chỗ trống có tên đọc được ("Đặt chùm đèn lồng Hội An: Giữa tường, phòng khách"): trái/giữa/phải của tường, sàn hoặc thảm; đồ nhỏ thì "Lên tủ chè…" trên mặt kệ, bàn có sẵn. Chỗ do client tính theo đúng luật server (không vướng cửa, không chồng món), bấm là mua/đặt như kéo thả, không cần kéo.
 - Lưu và quay về bản cũ: không bước schema, không khóa lưu mới; món mới chỉ là đồ có mã mới. Bản cũ đọc save vẫn hợp lệ (chỉ kiểm hình dạng), giữ món mới trong nhà nhưng không vẽ; nếu bản cũ ghi lại bố trí thì món mới về túi đồ, vẫn còn của người chơi, lên bản mới đặt lại được.
 - Kiểm thử: tests/test_deco_2026.py (đủ món, hình 2D/3D, tên tiếng Anh, bộ góc làm được trong biệt thự và không cộng trùng, mua/đặt/lưu/đọc lại từng món, chủ nhà và khách đều thấy, bán lại nửa giá, quay về bản cũ); scripts/browser_decor_2026.py (390×844: cửa hàng, lọc, tìm, Đặt nhanh bằng bàn phím, hoàn thành Gian nhà xưa, xem 2D và 3D).
-# Chưa phát hành — island houses + bang
+## island houses + bang
 
 🏡⚔️ Đảo riêng có nhiều kiểu nhà đẹp hơn, bang hội có thêm việc để làm cùng nhau (chủ game 20/10 "coi hướng đảo có thể xây nhà các kiểu đẹp và nhiều hơn, bang hội nữa nhiều hơn"). game/island_build*.py, public/js/house-art.js (mới: vẽ nhà 2.5D dùng chung), public/js/v4/island.js, game/bang_extra.py + bang_extra_content.py (mới), public/js/v4/bang.js. Không đổi phiên bản, chưa có dòng Có gì mới.
 - 🏠 15 kiểu nhà mới trong 4 bậc, mỗi kiểu 3 cấp và 3 màu: 🌾 Mộc mạc (Nhà tranh vách đất 1,5tr, Nhà tre sinh thái 2,5tr, Nhà trên cây 3tr, Cabin gỗ chữ A 4tr), 🏮 Phong vị (Bungalow mái lá 5tr, Nhà phố Hội An 6tr, Nhà rường Huế 7tr, Nhà hải đăng 7tr – 1 cái/đảo, Nhà kiểu Nhật 8tr, Hanok 8tr), 💎 Sang trọng (Biệt thự Pháp 12tr, Địa Trung Hải 14tr, Biệt thự kính 18tr), 👑 Đỉnh cao (Dinh thự châu Âu 30tr, Hoàng cung Á Đông 35tr – chỉ đảo lớn, 1 cái/đảo). Giá cấp 1 / 2 / 3 nằm giữa nhà sàn, biệt thự biển và lâu đài cũ; cả 3 cấp tối đa 170tr (rẻ hơn đảo đắt nhất); điểm bảng đảo theo giá như nhà cũ, một kiểu chỉ tính đa dạng một lần dù khác màu.
@@ -121,7 +125,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: KHÔNG có bước schema (không dùng 77). Kiểu đại sảnh nằm trong cột bang_facilities.place có sẵn (bản cũ không đọc); trang trí là dòng bang_facilities 'd_<id>' cấp 1 (bản cũ bỏ qua khi tính cấp và xếp hạng); tiền mua là dòng bang_fund 'build'; điểm nhiệm vụ là dòng bang_points 'quest'. Rollback: bản cũ đọc save bình thường; công trình đảo có màu khác 0 bị bản cũ coi là loại lạ (ẩn, có thể bị đánh dấu 'gone' trong island_builds tới lần đồng bộ sau của chủ đảo); kiểu nhà mới màu 0 thì bản cũ cũng không biết kiểu (ẩn như trên).
 - Kiểm tra: tests/test_island_houses.py, tests/test_bang_extra.py (mới), tests/test_island_build*.py, tests/island-build.mjs (cập nhật). Tiếng Anh: i18n/overrides.json + build.
 
-# Chưa phát hành — restoration
+## restoration
 
 🧰 Thợ phục chế (nghề thứ 60 trong careers-integ): Xưởng phục chế Hồn Xưa của chú Khải, phục chế đồ xưa đồ hỏng; và phục chế đồ của người chơi khác qua 🛎️ Phố dịch vụ (chủ game 21/10: "làm hết đi"). game/careers/restore.py + restore_content.py (nghề), game/restore_service.py (người chơi với người chơi), public/js/careers/restore.js + public/css/careers/restore.css (bàn làm việc), public/js/v4/restore.js + public/css/restore.css (🧰 Phục chế đồ). Không đổi phiên bản, chưa có dòng Có gì mới.
 - Việc của nghề: mỗi phiếu là một món (đồng hồ quả lắc ông nội, ghế mây bà, đài radio, máy khâu con bướm, bình gốm men lam, rương hồi môn, va li da, đèn dầu, quạt con cóc, gia phả chép tay, áo dài cưới của mẹ, xe đạp của ông, tủ thờ gỗ gụ, máy ảnh phim; mở dần theo ngày 1/4/10/20/40), 8 bước server chấm: đọc dấu hiệu → gọi đúng tên hư hỏng (nứt, gỉ, mọt, bong sơn, lỏng mộng, rách, kẹt máy, mẻ, tuột sợi, hỏng dây điện) → chốt yêu cầu khách → linh kiện (thiếu thì chế lại cùng vật liệu, không tháo đồ khách khác) → làm sạch theo chất liệu → phục hồi từng chỗ hư → hoàn thiện → kiểm 4 mục → trả đúng phiếu. Sai thì sửa ngay tại bước đó, chất lượng −12 mỗi lần (sàn 40). Vật tư ứng theo phiếu, trừ một lần khi trả đồ; công 14 + 3 mỗi chỗ hư + 2 mỗi yêu cầu khách + mốc ngày. Thợ vững tay 100 phiếu đạt + 30 ngày; Nghệ nhân Hồn Xưa 180 + 45.
@@ -133,7 +137,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: SCHEMA_VERSION 72 (69–71 của nhánh khác): bảng mới restore_tickets + index; chỉ thêm, không FK, không backfill. Khóa save mới tùy chọn journey.restored {v, items} (tối đa 80 dấu) mà 2.4.66 giữ nguyên không đọc. Nghề restore nằm trong engine.DORMANT: chưa làm thì không lưu, 2.4.66 vẫn đọc bản lưu; đã làm thì trước khi rollback chạy scripts/strip_new_careers.py strip --careers restore (restore để trả lại). tests/test_restore_compat.py: 2.4.66 chơi tiếp bản lưu có dấu phục chế, khởi động trên DB 72 không DDL, giữ mọi dòng.
 - Kiểm tra: tests/test_career_restore.py, tests/test_restore_service.py, tests/test_restore_compat.py; số nghề 58 → 59 trong các test đếm nghề (Lễ tân là 58). Ảnh 390×844 và 844×390: bàn làm việc gọn / đầy đủ, 🧰 Bàn thợ, 🧰 Phục chế đồ, ✨ Đã phục chế, phố 2.5D, phố cũ. Tiếng Anh: i18n/overrides.json + build.
 
-# Chưa phát hành — research
+## research
 
 🔬 Nghề mới Viện nghiên cứu (nhà nghiên cứu) ở Viện nghiên cứu Sông Mây (chủ game 21/10 "làm hết đi"). game/careers/research.py, research_content.py, game/research_lab.py, public/js/careers/research.js.
 - Nghề có lương hợp đồng (54–70), mở từ chương 3 (LATE_UNLOCKS), nằm ngủ trong save tới khi chơi (engine.DORMANT). Đầu ca chọn một trong ba hướng: 🌱 Giống cây (lai tạo, khảo nghiệm ngoài đồng, ngân hàng hạt giống), 🍳 Công thức món (chuẩn hóa công thức, hội đồng nếm mù, giá vốn và nhãn), 🛠️ Sáng chế (mẫu thử, thử độ bền, hồ sơ sáng chế). Mỗi bước chấm ở máy chủ, sai thì sửa tại chỗ, chất lượng giảm 6/lần (sàn 60), thưởng 6–8 xu theo chất lượng.
@@ -145,7 +149,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: SCHEMA_VERSION 71 (67, 70 của nhánh khác): bảng mới research_jobs + 1 index; không FK, không backfill. Save: khóa tùy chọn journey.lab (2.4.66 giữ nguyên, không đọc); careers.research vắng mặt khi chưa chơi (đã chơi thì không lùi về dưới bản thêm nghề, như mọi nghề mới). 🛑 MNL_RESEARCH_OFF=1: không đặt/làm/giao đơn mới, hiệu ứng tạm dừng (không mất).
 - Số nghề: +1 (cộng thêm trên các nghề nhánh khác).
 
-# Chưa phát hành — radio
+## radio
 
 📻 Nghề mới Đài phát thanh Sóng Mây (phát thanh viên / DJ), có tương tác người chơi với người chơi (chủ game 21/10 "làm hết đi"). game/careers/radio.py, game/careers/radio_content.py, game/radio_station.py, public/js/careers/radio.js, public/js/v4/radio.js.
 - Nghề lương theo hợp đồng (50–64 xu/ca, thử việc 3 ngày), mở từ chương 3 (LATE_UNLOCKS, ngủ đông trong save như hotel/banquet/reception). Đầu ca BẮT BUỘC kiểm phòng thu theo đúng thứ tự (bàn trộn, mic, tai nghe, đường truyền, đèn ĐANG PHÁT SÓNG) rồi mới lên sóng.
@@ -164,7 +168,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: bước SCHEMA_VERSION 70 của đài (63–69, 71–73 của nhánh khác; sau khi gộp careers-integ SCHEMA_VERSION là 73): bảng mới radio_lines + 5 index; chỉ thêm, không FK, không backfill. Save: chỉ bản ghi nghề `radio` (ngủ đông khi chưa làm). Quay về 2.4.66: save chưa làm đài đọc bình thường; save đã làm đài phải `scripts/strip_new_careers.py strip --careers radio` rồi `restore` khi lên lại. 2.4.66 chạy trên CSDL 70 không DDL, giữ nguyên dòng (tests/test_radio_compat.py).
 - Tests: tests/test_career_radio.py (24), tests/test_radio_station.py (13), tests/test_radio_compat.py (3), tests/radio-ui.mjs (15); số nghề +1 (60 với lễ tân và giao dịch viên ngân hàng).
 
-# Chưa phát hành — town-fair
+## town-fair
 
 🎪 Hội chợ việc làm (Hội chợ phố): hội chợ hằng tuần, mọi nghề dựng gian hàng phục vụ người chơi khác (chủ game 21/10: "làm hết đi"). Khác hẳn 🏮 Hội chợ dân gian / Chợ đen (game/fair*.py): module, tên và bảng riêng. game/town_fair.py (luật), game/town_fair_content.py (trình diễn, tình huống, quà), public/js/v4/town-fair.js + town-fair-data.js + css/town-fair.css.
 - Lịch: thứ Bảy 14:00–17:00 giờ Việt Nam (ngoài giờ cao điểm 17:30–20:00, xa Bang chiến Chủ nhật 20:00). Admin (Phố dịch vụ trong /admin): tắt/bật lịch hằng tuần, mở một kỳ đặc biệt 1–6 giờ, đóng sớm. 🛑 MNL_FAIR_OFF=1: không mở, không giảm giá, không lên bảng tin; kỳ đã diễn ra vẫn chốt và giữ quà.
@@ -177,7 +181,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: SCHEMA_VERSION 74 (70–73 của nhánh khác): bảng mới fair_events, fair_booths, fair_stamps, fair_rewards, fair_config + index; chỉ thêm, không FK, không backfill, KHÔNG thêm khóa save (quà là món Phong cách trong journey.spend.own; 2.4.66 chỉ kiểm định dạng id và không hiển thị id lạ; dòng live_effects 'tfair' để chờ). Cache có giới hạn (cấu hình 30 giây, bảng / danh sách gian LRU 32).
 - Kiểm thử: tests/test_town_fair.py (13), tests/test_town_fair_compat.py (2.4.66 trên DB 74: không DDL, giữ dòng, quà chờ rồi trả đúng một lần, save hợp lệ); tests/__init__.py đặt MNL_FAIR_OFF=1 cho các bài khác.
 
-# Chưa phát hành — hotel
+## hotel
 
 🏨 Phòng cho người chơi: người chơi làm Homestay / Khách sạn cho người chơi khác thuê phòng qua đêm hoặc vài giờ (chủ game 21/10: "nghề phải tương tác người chơi với người chơi", "làm hết đi"). game/hotel_stay.py (luật), game/hotel_stay_content.py (tình huống oái oăm), public/js/v4/hotel-stay.js + public/css/hotel-stay.css (🏨 Sổ phòng). Không đổi phiên bản, chưa có dòng Có gì mới.
 - Đăng ký vào 🛎️ Phố dịch vụ (service_market.register, đúng API thật) 3 dịch vụ cho cả 'homestay' và 'hotel': 🛏️ Phòng nghỉ qua đêm (1 đêm = 3 giờ thật, tối đa 3 đêm), ⏰ Nghỉ vài giờ (1 giờ thật), 💞 Phòng đôi cho cặp đôi (vợ chồng hoặc đã đính hôn, tối đa 3 đêm). Giá thường (NPC) homestay 30 / 12 / 44 xu, khách sạn 40 / 15 / 56 xu (theo giá phòng 28–48 xu của nghề Homestay); người chơi trả mặc định ×3 (90 / 36 / 132 và 120 / 45 / 168 xu), chủ chỉnh ×1–×10 hoặc 🤝 thương lượng ở 🧰 Dịch vụ của tôi. Giữ tiền (escrow), 95 % cho chủ khi trả phòng, 5 % bị đốt, mọi hủy / từ chối / khách không tới đều hoàn đủ: luật của Phố dịch vụ, không đường tiền riêng.
@@ -192,7 +196,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Kiểm tra: tests/test_hotel_stay.py (giá ×3/×N, cả luồng 95 %/5 % + bảo toàn tiền + chi phí đốt, "Xong việc" bị từ chối, một phòng một khách, một lượt mỗi khách, yêu cầu của khách + trả muộn, hủy / từ chối / không tới hoàn đủ, tự trả phòng khi vắng, trả phòng đúng một lần khi nhiều luồng, nghỉ một lần mỗi ngày, cặp đôi cùng nghỉ đúng một lần, công tắc tắt, danh mục tình huống), tests/test_hotel_stay_http.py, tests/test_hotel_stay_compat.py; tests/test_birth_compat.py bỏ ghim số 65 (≥ 65). scripts/browser_hotel_stay.py (chủ + khách 390×844, chủ nhận phòng 844×390, khách 844×390). Tiếng Anh: i18n/overrides.json + build.
 - Ghi chú cho nhánh khác: game/birth.py và game/photo_studio.py gọi service_market.register với khóa không có trong API (emoji, max, hours, cap, session…) nên đăng ký bị bỏ qua im lặng (try/except): phòng sinh và gói chụp ảnh chưa hiện trong Phố dịch vụ.
 
-# Chưa phát hành — wedding-services
+## wedding-services
 
 💒 Dịch vụ cưới từ người chơi: cặp đôi thuê NGƯỜI CHƠI KHÁC làm nghề phù hợp cho đám cưới của mình (chủ game 21/10 "làm hết đi": nghề phải tương tác người chơi với người chơi). game/wed_services.py, game/wed_services_content.py, public/js/v4/wed-services.js (+ public/css/wed-services.css). Không đổi phiên bản, chưa có dòng Có gì mới.
 - Bốn dịch vụ đăng ký qua 🛎️ Phố dịch vụ (service_market.register): 🍽️ Tiệc cưới: nấu & phục vụ (Nhà hàng tiệc, theo bàn, tối đa 30), 💐 Hoa cưới: cổng hoa, bàn tiệc, hoa cầm tay (Tiệm hoa), 👰 Váy cưới & vest chú rể (Shop quần áo), 💄 Trang điểm & làm tóc cô dâu (Salon tóc). 📸 Ảnh cưới dùng lại gói "Ảnh đôi · cưới" của Tiệm ảnh người chơi (game/photo_studio.py), không làm trùng. Không có nghề nào hợp với MC / ban nhạc: hai mục NPC đó giữ nguyên.
@@ -204,7 +208,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Dữ liệu: SCHEMA_VERSION 69 (67–68 của nhánh khác): bảng mới wedsvc_jobs + 2 index; không FK, không backfill, không khóa save mới. Kết quả đám cưới có thêm khóa tùy chọn `services`. 2.4.66 chạy trên 69 không DDL, giữ dòng, hiện đám cưới có đội ngũ, tự quyết ngày cưới của nó, đọc được save đã trả / đã nhận tiền (tests/test_wed_services_compat.py).
 - Tests: tests/test_wed_services.py (giá ×3 giữ đúng một lần, yêu cầu theo đơn, ai được thuê, công tắc tắt, hoàn tiền, chấm từng bước một lần, giao chờ đủ bước rồi trả 95 %, đổi phút chót đổi bước kiểm cuối, làm ẩu ít sao, thêm bàn, đơn đặt từ danh mục chung, thương lượng, thẻ Hôn nhân / thiệp mời / ngày cưới, không thuê ai thì y như cũ, bộ nhớ đệm có giới hạn, truy vấn của dịch vụ trực tiếp), tests/test_wed_services_compat.py. Tiếng Anh: i18n/overrides.json + build.
 
-# Chưa phát hành — service-market
+## service-market
 
 🛎️ Phố dịch vụ: người chơi phục vụ người chơi qua mọi nghề (chủ game 21/10). Không đổi phiên bản, chưa có Có gì mới. Chi tiết: docs/SERVICE_MARKET.md.
 - Giá cho khách là người chơi: mặc định ×3 giá thường (NPC). Người bán chọn ×1–×10 cho từng dịch vụ, hoặc 🤝 Thương lượng: khách trả giá, người bán Đồng ý / Trả giá / Từ chối, tối đa 6 lượt, 12 giờ không trả lời thì hết hạn; giá luôn trong [max(giá sàn, giá thường), min(giá thường ×10, giá tối đa)]; chốt giá là giữ tiền ngay.
@@ -217,7 +221,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Tests: tests/test_service_market.py (giá ×3/×N/sàn/số lượng, thương lượng 6 lượt + hết hạn, escrow đúng một lần khi nhiều yêu cầu cùng lúc, phí đốt + bảo toàn tiền, hoàn tiền, cùng mạng/vợ chồng/trần cặp/tài khoản mới/chặn, hook giao + on_buyer, svc_done, uy tín/khách quen/báo cáo, đơn chỗ làm ×3 + thương lượng + 95 %, trần thưởng quầy, lãi thật nhân viên, xóa tài khoản), tests/test_service_market_http.py, tests/test_service_market_compat.py; scripts/browser_service_market.py (2 người chơi, 390×844 + 844×390). tests/test_work_visits.py cập nhật theo ×3 và 95 %. Dev: MNL_SVC_DEMO=1 thêm 🧋 Pha trà tại nhà để thử.
 - 🏥 Phòng sinh của người chơi và 📸 thợ ảnh người chơi hiện trong 🛎️ Phố dịch vụ (trước đây register() bị từ chối vì khóa spec sai, lỗi bị nuốt nên không hiện): thẻ có giá, ⭐ và nút mở đúng luồng riêng (Nhà & Gia đình › 👶 Đón con chung chọn sẵn phòng; tờ đặt chụp của tiệm, chọn sẵn gói). Đặt, giữ tiền, trả tiền vẫn ở birth_stays / photo_orders: Phố dịch vụ từ chối đặt / trả giá / cài ×N cho các dịch vụ này (own_flow / own_settings), không có đường trả tiền thứ hai. Spec mới `open` + `providers` + `offer` + `setup`; server gọi service_market.install_own() lúc khởi động; tests/test_service_market.py OwnFlow, tests/test_birth.py, tests/test_photo_studio.py. Không đổi schema, không khóa save mới.
 
-# Chưa phát hành — birth
+## birth
 
 🏥 Phòng sinh & nhận nuôi: đón con chung (và con riêng) giờ phải mất tiền, có giá sàn (chủ game 21/10: "sinh con ok rồi, và phải mất tiền ra, đặt tiền tối thiểu và không được ít hơn mức đó. Thay luồng nhận con như hiện tại luôn"). game/birth.py, public/js/v4/birth.js. Không đổi phiên bản, chưa có dòng Có gì mới.
 - 🏥 Sinh con: vợ hoặc chồng chọn phòng sinh ở Nhà & Gia đình › 👶 Đón con chung: **Nhà hộ sinh Phố Mây** (NPC, giá cố định 800.000 xu, luôn còn chỗ: không ai bị chặn) hoặc **phòng sinh của người chơi** (chủ homestay, giá do chủ đặt, **không dưới 500.000 xu**, tối đa 5.000.000 xu). Đặt tên bé, chọn **ai trả** ("Tôi trả" / "Nhờ người ấy trả"), tùy chọn mời điều dưỡng. Lời mời gửi người kia; **chưa trừ đồng nào cho tới khi người kia bấm Đồng ý**. Lúc đó người trả trả trọn giá: ví trước rồi tài khoản, không quẹt thẻ tín dụng, không mắc nợ, không dùng quỹ chung; dòng Sổ ví ≤ 10 triệu.
@@ -234,7 +238,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Rollback: 2.4.66 (a808cb79) khởi động trên DB 65 không DDL, giữ dòng; bé sinh qua phòng hiện, chăm, chia bản giữ riêng bình thường trên 2.4.66; save đã trả / được hoàn / nhận con riêng có phí validate + migrate + nhận lệnh trên 2.4.66 (tests/test_birth_compat.py). Trên 2.4.66 lượt đặt đang mở chỉ đứng yên (không ai mất tiền); quay lại bản này thì tiếp tục.
 - Kiểm tra: tests/test_birth.py (22: sàn giá, giá đã thấy, đồng ý hai bên, không trừ khi chưa đồng ý, ví rồi tài khoản không thẻ/không nợ, hủy hoàn đủ, đúng một lần khi 2 vợ chồng + lần đọc cùng bấm, 3 lần đồng ý cùng lúc trừ một lần, phí nhận nuôi chung/riêng, escrow 95%/5%, đánh giá, sức chứa, phòng của nhà mình, điều dưỡng, bé cũ không đổi, lời mời cũ vẫn miễn phí, ly hôn hoàn tiền, chấm đỏ), tests/test_birth_compat.py (3), tests/test_family.py / test_household.py / test_cradle.py cập nhật (lời mời cũ chèn như 2.4.66 để lại; con riêng trả phí); scripts/browser_birth.py (4 trình duyệt 390×844: chủ homestay, vợ, chồng, điều dưỡng; ảnh từng bước). Tiếng Anh: i18n/overrides.json + build.
 
-# Chưa phát hành — photo
+## photo
 
 📸 Nhiếp ảnh cho người chơi (chủ game 21/10: thợ ảnh người chơi chụp cho người chơi khác, giá ×3 NPC hoặc giá thương lượng; game/photo_studio.py, public/js/v4/portrait.js, portrait-art.js). Chưa có Có gì mới, chưa đổi phiên bản.
 - 🛒 Đặt chụp (người mua): từ thẻ chỗ làm của tiệm ảnh (Ghé chỗ làm › 📸 Đặt chụp ảnh) hoặc hồ sơ Phố nghề của thợ. 5 gói, giá NPC → mặc định ×3: Chân dung 300 → 900, Ảnh đôi · cưới 500 → 1.500 (cần người thương đính hôn/cưới), Gia đình 700 → 2.100 (thêm người thương, bé hoặc pet), Đầy tháng 600 → 1.800 (cần bé ở nhà; nhánh sinh con nối vào gói `day_thang`), Sản phẩm 400 → 1.200 (món của một chỗ làm đã mở). Thợ tự đặt giá, người mua trả giá được, luôn trong khoảng ×1 → ×5 giá NPC. Chọn phông mong muốn và không khí (tươi tắn / sang trọng / tinh nghịch / tình cảm), lời nhắn 80 ký tự. Xu được giữ (ví trước, rồi tài khoản; không vay) cùng một giao dịch với đơn. Ảnh chụp từ "bản chụp vẻ ngoài" lấy lúc đặt (tủ đồ + màu, vẻ ngoài người thương lấy từ bản lưu của người đó, bé, pet), nên hai người không cần online cùng lúc.
@@ -246,7 +250,7 @@ Có gì mới 2.4.72: 1 dòng.
 - 🔌 Chỗ nối Chợ dịch vụ (service_market, nhánh khác, schema 63): khởi động gọi `service_market.register('photobooth', gói, spec)` nếu module có (getattr; không có thì bỏ qua), spec có base/floor/cap/default ×3, `snapshot` và `deliver`. Cho tới lúc đó dùng đường đặt trực tiếp ở trên; MNL_PHOTO_DIRECT_OFF=1 tắt đặt trực tiếp mới, MNL_PHOTO_OFF=1 tắt cả tính năng.
 - Kỹ thuật: GET/POST /api/photo/<op> (nhẹ, tự đọc/ghi bản lưu qua marriage._mutate), housekeeping hết hạn mỗi phút. SCHEMA_VERSION 66 (chỉ thêm bảng/index: photo_studios, photo_orders, photos, photo_pfp; không FK, không backfill; 63–65 của nhánh khác). Bản lưu: chỉ khóa tùy chọn journey.photo_wall; 2.4.66 tải, chơi và giữ nguyên bản lưu có khung ảnh (kể cả đang treo), khởi động trên schema 66 không chạy DDL, để hàng 'photo' chờ (tests/test_photo_studio_compat.py). Tiếng Anh: i18n/overrides.json.
 
-# Chưa phát hành — le-tan
+## le-tan
 
 🔑 Nghề mới Lễ tân Khách sạn Hoa Sứ (chủ game 21/10: "thêm nghề lễ tân và nhiều cái oái oăm của lễ tân nữa nhé"; game/careers/reception.py, reception_content.py, public/js/careers/reception.js). Chưa có dòng Có gì mới, không đổi phiên bản, không đổi schema (không bảng mới).
 - Khách sạn nhỏ sáu phòng trên hai tầng, quầy ngay dưới: cả bảng phòng vừa một màn điện thoại dọc. Nghề làm công (operations.SALARIED, lương hợp đồng 50–64 xu khi khép ca + thưởng nhỏ mỗi việc theo chất lượng), mở từ chương 3 (journey.LATE_UNLOCKS), chưa làm thì không lưu (engine.DORMANT).
@@ -260,7 +264,7 @@ Có gì mới 2.4.72: 1 dòng.
 - Kiểm thử: tests/test_career_reception.py (đăng ký, mọi việc sinh ra tự giải được, sáu loại việc đầu–cuối có sửa sai, luật xếp phòng/xe, chống sửa phiếu, ca thử việc giữ phần đạt, tình huống và hậu quả, kỳ thi theo bậc, hướng đi, tuyển dụng đủ bước, rollback 2.4.66), tests/reception-ui.mjs (mọi bước của sáu loại việc và ba phần thử việc vẽ đúng, không lộ đáp án); các test đếm nghề 57 → 58; tests/test_bang.py và tests/test_auto_order_desk.py gửi bản lưu cho bản cũ ở dạng lưu thật (tests/helpers.unknown_out: lễ tân chưa đụng tới không có trong text lưu). check_task_compat với origin/main: OK. Toàn bộ test Python và node: không có lỗi mới so với origin/main (các lỗi còn lại có sẵn ở origin/main, phần lớn là test lùi bản cần git hoặc node_modules).
 
 
-# Chưa phát hành — ngan-hang
+## ngan-hang
 
 🏦 Nghề mới **Ngân hàng — giao dịch viên** ("Quầy số 3 xin chào!", đề xuất đã duyệt mục 2; game/careers/teller.py, teller_content.py, public/js/careers/teller.js, public/css/careers/teller.css). Không có Có gì mới, không đổi __version__.
 - Quầy số 3 ở Phòng giao dịch Bến Chợ của Ngân hàng Phố, mở từ chương 3 (journey.LATE_UNLOCKS, không ghi vào unlocked khi chưa làm). Nghề làm công (operations.SALARIED): lương hợp đồng 56–70 xu/ngày khi khép ca, thưởng nhỏ mỗi khách theo chất lượng (6–8 xu × chất lượng × hệ số học việc 50% / tập sự 75% / chính thức 100%, +15% mỗi bậc của nhánh). Tiền ở quầy là tiền của ngân hàng tính bằng nghìn đồng: không bao giờ đụng ví, tài khoản hay game/bank.py của người chơi.

@@ -32,6 +32,22 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.0", date="2026-10-21", items=(
+        dict(emoji='🧑‍💼', text="5 nghề mới: Lễ tân khách sạn, Giao dịch viên ngân hàng, Thợ phục chế đồ xưa, Viện nghiên cứu, Đài phát thanh Sóng Mây."),
+        dict(emoji='🛎️', text="Phố dịch vụ: thuê người chơi khác chụp ảnh, lo đám cưới, phục chế xe và nhà, nghiên cứu giống cây, lên sóng radio."),
+        dict(emoji='🏥', text="Sinh con: đặt phòng sinh ở khách sạn, homestay của người chơi, hoặc nhận nuôi bé."),
+        dict(emoji='🎪', text="Hội chợ việc làm chiều thứ Bảy: mọi nghề dựng gian, sưu tầm tem, nhận phần thưởng."),
+        dict(emoji='💰', text="Tiền công các nghề tăng 8–20%, nghề lương thấp tăng nhiều hơn. Hết mỗi việc xem rõ từng khoản lương."),
+        dict(emoji='🎉', text="Tuần lễ tay nghề 22–28/10: +20% tiền công mọi nghề, làm đủ 5 việc mỗi ngày có thưởng chuyên cần."),
+        dict(emoji='🧰', text="Bộ đồ nghề 5 bậc và Mối khách quen cho từng nghề, mua ở nút ⋯ trong màn làm việc."),
+        dict(emoji='💛', text="Thân thiết với người quen: khách ruột trả thêm, hàng xóm bớt giá, giúp mỗi tuần, và những điều bí mật 🔒 chờ bạn khám phá."),
+        dict(emoji='🧋', text="Màn làm việc dễ nhìn hơn: phiếu khách rõ ràng, bày hết lựa chọn để chọn, ly trà sữa, tô mì, bó hoa hiện dần khi làm."),
+        dict(emoji='🌸', text="Quầy chuỗi: tiền thuê và điện có mức trần, phí chuỗi không còn làm giảm thưởng lãi nhân viên."),
+        dict(emoji='🔨', text="Đấu giá thêm 50 món dùng được: xe bản giới hạn, biển số, danh hiệu, nội thất độc bản, đồ thú cưng SSS, đồ nghề."),
+        dict(emoji='🛋️', text="55 món trang trí mới và 8 bộ góc mới, cửa hàng có tìm kiếm, lọc và đặt nhanh."),
+        dict(emoji='🏡', text="Đảo riêng có 15 kiểu nhà mới, 3 màu, sơn lại được. Bang: kiểu đại sảnh, trang trí đảo bang, nhiệm vụ tuần."),
+        dict(emoji='🎃', text="Lễ hội Ma Phố 26–31/10: săn bí ngô, gõ cửa xin kẹo, đổi danh hiệu, khung và màu tên Halloween độc quyền!"),
+    )),
     dict(version="2.4.72", date="2026-10-21", items=(
         dict(emoji='💐', text="Mùa thiệp 20/10 khép lại: 922 tấm thiệp đã gửi tới người thương, cảm ơn cả phố! Thiệp mở được tới hết 25/10."),
     )),
