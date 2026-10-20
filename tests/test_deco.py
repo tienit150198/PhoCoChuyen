@@ -87,7 +87,8 @@ class Catalogue(unittest.TestCase):
         self.assertEqual(len(DC.KNOWN_199), 171)
         self.assertEqual(len(DC.KNOWN_1911), 171 + len(EC.ITEMS))           # 🏰 the villa pieces (game/estates_content.py)
         uq = [k for k, v in DC.ITEMS.items() if v.get('uq')]                 # 🔨 the paintings won at auction, after them
-        self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq))
+        self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq) + DC.NEW_2026)   # 🛋️ 21/10/2026: the new pieces, last
+        self.assertEqual(DC.KNOWN_2471, DC.KNOWN_1911 + tuple(uq))
         self.assertEqual(uq[-1], 'anh_chup')                                  # 📸 a framed player photo (game/photo_studio.py), last
         self.assertTrue(uq and all(k.startswith('uq_tr_') and DC.ITEMS[k]['price'] == 0 for k in uq[:-1]))
         self.assertEqual(DC.ITEMS['anh_chup']['price'], 0)

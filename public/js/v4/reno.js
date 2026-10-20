@@ -4,8 +4,10 @@
  * `jr_reno_fix|up`. The checks below only colour the live preview: the server decides.
  * Edit mode (since 1.4, free placement): press a piece and drag it anywhere in its zone (the floor, the wall); small
  * things snap onto tables, beds, shelves and the kitchen counter and travel with them. Drag a card up out of the
- * drawer into the room, or tap a card then tap the room. Tap a piece for its tools (flip, up/down, another room, put
- * away, sell). Undo keeps the last moves (jr_deco_layout). 🎨 Tường & sàn: wallpaper and floor per room. The cats
+ * drawer into the room, or tap a card then tap the room, or (📍 Đặt nhanh, góp ý #443: no dragging, no aiming, every
+ * button named for a screen reader) tap a card then one of the ready-made spots under it. Tap a piece for its tools
+ * (flip, up/down, another room, put away, sell). The shop and the bag filter by 🔎 name, 🆕 Mới về, a style and a
+ * category, so a phone never scrolls through every piece. Undo keeps the last moves (jr_deco_layout). 🎨 Tường & sàn: wallpaper and floor per room. The cats
  * wander and nap (cosmetic; still with reduced motion). The light follows the hour of the day.
  * Pointer moves only move a transform (no re-render); a drop sends one jr_deco_put.
  * Opened from 🏠 Nhà của bạn (v4/house.js); the back button returns there. Styles: bank.css + house.css + reno.css.
@@ -32,8 +34,9 @@ import {babyRoom,babyPortrait} from './baby-art.js';
 import {PALETTE} from './look.js';
 import {flagSVG,flagBadge} from './bang-tag.js';   // ⚔️ 🚩 the bang's flag on the wall of my first room (the 3D view: in its corner), while I am in that bang
 import {sceneSession} from './home-3d.js';
+import {t as tr} from './i18n.js';
 
-const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
+const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',style:'',q:'',qTimer:0,busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
   try:null,nudge:null,tryTint:null,mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0,view3d:true,gesture3d:false};
 const home3d={session:null,mount(...args){return (this.session??=sceneSession()).mount(...args);},close(){this.session?.close();},detach(){this.session?.detach();},camera(action){this.session?.camera(action);}};
@@ -44,7 +47,7 @@ const readGuest=code=>S.env.api.json(`/api/home-guests/${S.coop?'deco/':''}view?
 const COOP={jr_deco_put:'put',jr_deco_pick:'pick',jr_deco_layout:'layout'};
 // 'floor' only switches which villa floor's rooms the rail shows (F#280: a housemate could not reach floor 2).
 const VISIT_OPS=new Set(['scroll','close','back','room','floor','guests','hwEmote','hwReply','view3d','camera']);
-const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','hold','unhold','move','flip','pin','face','zup','zdown','pick','undo','tipOk']);
+const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','style','unfilter','hold','unhold','spot','move','flip','pin','face','zup','zdown','pick','undo','tipOk']);
 const post=(url,body)=>S.env.api.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':S.env.api.csrf},body:JSON.stringify(body)});
 const U=A.U;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -124,6 +127,10 @@ function dialog(){
     e.preventDefault();onClick(el.dataset.dc,el.dataset);
   });
   d.addEventListener('keydown',onKey);
+  d.addEventListener('input',e=>{   // 🔎 the drawer's search: a short pause, then the cards follow (morph keeps the field's focus)
+    const f=e.target.closest?.('[data-dc-search]');if(!f)return;
+    S.q=f.value.slice(0,40);clearTimeout(S.qTimer);S.qTimer=setTimeout(()=>{S.resetStrip=true;render();},160);
+  });
   d.addEventListener('pointerdown',onDown);
   d.addEventListener('pointermove',onMove);
   d.addEventListener('pointerup',onUp);
@@ -164,7 +171,7 @@ export async function openReno(env,mode,guestCode=''){
     if(!await guest.open(guestCode,readGuest)||seq!==openSeq)return;
     if(S.coop){S.undo=[];S.undoKey='';S.drawer='bag';}
   }else{S.coop=false;guest.close();}
-  S.tab=mode==='fix'&&R()?'fix':'deco';S.edit=mode==='decor'||S.coop;S.held=null;S.sel='';S.flash=null;S.photo=null;S.cat='';S.try=null;
+  S.tab=mode==='fix'&&R()?'fix':'deco';S.edit=mode==='decor'||S.coop;S.held=null;S.sel='';S.flash=null;S.photo=null;S.cat='';S.style='';S.q='';S.try=null;
   const v=V();
   if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';if(!S.remote)S.drawer=v.bag.length?'bag':'shop';}
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
@@ -624,6 +631,11 @@ async function onClick(op,data){
     case'done':S.edit=false;S.held=null;S.sel='';S.flash=null;S.toTop=true;sfx('click');render();return;
     case'drawer':S.drawer=data.d;S.cat='';S.resetStrip=true;S.held=S.drawer==='skin'?null:S.held;render();return;
     case'cat':S.cat=data.cat||'';S.resetStrip=true;render();return;
+    case'style':S.style=S.style===data.style?'':data.style||'';S.resetStrip=true;render();return;
+    case'unfilter':S.cat='';S.style='';S.q='';S.resetStrip=true;render();return;
+    case'spot':{const it=heldItem(),rm=roomOf(S.room);if(!it||!rm)return;   // 📍 Đặt nhanh: a ready-made spot (quickSpots)
+      const f=S.held.src==='room'?placed(S.held.uid)?.f||0:0,q={r:rm.id,x:Number(data.x)||0,y:Number(data.y)||0,f};if(data.on)q.on=data.on;
+      await dropAt(q);return;}
     case'hold':{const it=ITEM(data.k);if(!it)return;
       if(S.held&&S.held.k===data.k&&S.held.src===data.src){S.held=null;render();return;}
       S.held={k:data.k,src:data.src};S.sel='';sfx('pop');
@@ -1060,8 +1072,46 @@ function heldBar(v){
   const full=here&&inRoom(rm,new Set(S.held.uid?[S.held.uid]:[])).length>=rm.cap;
   const hint=!where.length?esc('Món này không hợp chỗ ở này.'):!here?`Món này đặt ở ${where.map(w=>`<i>${esc(w)}</i>`).join(', ')}.`:esc(full?`${rm.name} bày đủ ${rm.cap}/${rm.cap} món. Cất bớt hoặc bày sang phòng khác nhé.`:it.spot==='top'?'Chạm hoặc kéo vào phòng: lên bàn, kệ, giường hay sàn đều được.':S.held.src==='room'?'Chạm chỗ muốn dời tới.':'Chạm hoặc kéo vào chỗ muốn đặt.');
   const sub=S.held.src==='shop'?`${xu(it.price)} · ấm cúng +${it.cozy}`:S.held.src==='bag'?`Trong túi · ấm cúng +${it.cozy}`:'Đang dời';
+  const spots=here&&!full?quickSpots(rm,it,new Set(S.held.uid?[S.held.uid,...ridersOf(S.held.uid)]:[])):[];
+  const pick=spots.length?`<div class="dc-spots" role="group" aria-label="${esc(`Đặt nhanh ${low(it.name)} vào ${low(rm.name)}`)}"><small>📍 Đặt nhanh:</small>${spots.map(o=>
+    btn(esc(o.label),'spot',{x:o.q.x,y:o.q.y,on:o.q.on||''},'ghost small',` aria-label="${esc(`Đặt ${low(it.name)}: ${o.label}, ${low(rm.name)}`)}"`)).join('')}</div>`:'';
   return `<div class="dc-held" role="status">${A.thumb(it,40)}<p><b>${esc(it.name)}</b><small>${esc(sub)}</small><small class="dc-held-hint">${hint}</small></p>
-    <span class="dc-held-go">${S.held.src==='shop'?btn('🎒 Mua cất túi','buyBag',{},'ghost small',it.price>v.ready?' disabled':''):''}${btn('Thôi','unhold',{},'ghost small')}</span></div>`;
+    <span class="dc-held-go">${S.held.src==='shop'?btn('🎒 Mua cất túi','buyBag',{},'ghost small',it.price>v.ready?' disabled':''):''}${btn('Thôi','unhold',{},'ghost small')}</span>${pick}</div>`;
+}
+/** 📍 Đặt nhanh (góp ý #443, a player who cannot see the room): a few ready-made spots for the held piece in room `rm`,
+ * as buttons a screen reader names ("Góc trái sàn", "Lên bàn trà"): no dragging, no aiming at the drawing. Each spot
+ * passes the same checks as a tap (checkQ; the server decides) and overlaps the other pieces of its layer as little as
+ * the room allows. Small things first try the surfaces with room left on them. */
+const SPOT_WORDS={wall:['Bên trái tường','Giữa tường','Bên phải tường'],floor:['Góc trái sàn','Giữa sàn','Góc phải sàn'],rug:['Thảm bên trái','Thảm ở giữa','Thảm bên phải']};
+function quickSpots(rm,it,skip=new Set()){
+  if(!rm||!it||!it.rooms.includes(rm.type))return [];
+  const list=inRoom(rm,skip),out=[],f=S.held?.src==='room'?placed(S.held.uid)?.f||0:0;
+  if(list.length>=rm.cap)return out;
+  if(it.spot==='top'){
+    for(const s of surfaces(rm,list,A.geom(rm))){
+      const box=hostBox(rm,s.on,list);if(!box)continue;
+      const riders=list.filter(o=>o.q.on===s.on);if(riders.length>=box.cap)continue;
+      let best=0,bs=1e9;
+      for(let x=0;x<=Math.max(0,box.w-it.w*U);x+=U/2){const sc=riders.reduce((a,o)=>a+ov(x,x+it.w*U,o.q.x,o.q.x+o.it.w*U),0);if(sc<bs){bs=sc;best=x;}}
+      const q={r:rm.id,x:best,y:0,f,on:s.on};if(checkQ(rm,it,q,list))continue;
+      const host=s.on[0]==='#'?(CD().fix_names||{})[s.on.slice(1)]||'kệ có sẵn':low(list.find(o=>o.id===s.on)?.it.name||'');
+      out.push({q,label:`Lên ${host}`});
+      if(out.length>=4)break;
+    }
+  }
+  const z=zoneOf(rm,it),layer=sp=>sp==='wall'?'wall':sp==='rug'?'rug':'floor',mine=layer(it.spot);
+  if(!z)return out;
+  const others=list.filter(o=>!o.q.on&&layer(o.it.spot)===mine),W=it.w*U,H=it.h*U,step=U/2;
+  SPOT_WORDS[mine].forEach((label,i)=>{
+    const a=z[0]*i/3,b=z[0]*(i+1)/3;let best=null,bs=1e9;
+    for(let x=Math.ceil(a/step)*step;x<=b+.01;x+=step)for(let y=0;y<=z[1]+.01;y+=step){
+      const q={r:rm.id,x:Math.round(x),y:Math.round(y),f};if(checkQ(rm,it,q,list))continue;
+      const sc=others.reduce((t,o)=>t+ov(q.x,q.x+W,o.q.x,o.q.x+o.it.w*U)*ov(q.y,q.y+H,o.q.y,o.q.y+o.it.h*U),0)*10+(mine==='floor'?q.y:Math.abs(q.y-z[1]/2));
+      if(sc<bs){bs=sc;best=q;}
+    }
+    if(best&&!out.some(o=>!o.q.on&&o.q.x===best.x&&o.q.y===best.y))out.push({q:best,label});
+  });
+  return out;
 }
 /** The selected piece's buttons (one string each: easy to add one). */
 function toolButtons(v,p,it){
@@ -1080,30 +1130,48 @@ function tools(v){
   const by=agedBy(p.id),badge=by?`<small class="rs-badge" title="Đã phục chế bởi ${esc(by)}">✨ Cổ điển · ${esc(by)}</small>`:'';
   return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b>${badge}</span><span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
 }
+/** 🔎 Search folds case and Vietnamese marks ("den long" finds "Đèn lồng"); an English player's own words match too. */
+const fold=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+/** The drawer's filters: 🔎 the name, 🆕 Mới về (S.cat 'new'), a category, a style (deco.catalogue `styles`). */
+function passes(it){
+  if(S.cat==='new'?!it.new:S.cat&&it.cat!==S.cat)return false;
+  if(S.style){const st=(CD().styles||[]).find(x=>x.id===S.style);if(st&&!st.items.includes(it.id))return false;}
+  const q=fold(S.q).trim();
+  return !q||fold(it.name).includes(q)||fold(tr(it.name)).includes(q);
+}
 function drawer(v){
   const C=CD(),types=new Set(v.rooms.map(r=>r.type)),rm=roomOf(S.room);
   const fits=it=>it.rooms.some(t=>types.has(t)),here=it=>rm&&it.rooms.includes(rm.type);
-  let cards='',cats=new Set();
+  let cards='',cats=new Set(),all=[],shownN=0,fresh=false;
   if(S.drawer==='skin')cards=skinStrip(v,rm);
   else if(S.drawer==='bag'){
     const groups=new Map();for(const b of v.bag){if(!groups.has(b.k))groups.set(b.k,[]);groups.get(b.k).push(b.id);}
     const list=[...groups.entries()].map(([k,ids])=>({it:ITEM(k),n:ids.length})).filter(x=>x.it);
-    list.forEach(x=>cats.add(x.it.cat));
-    const shown=list.filter(x=>!S.cat||x.it.cat===S.cat).sort((a,b)=>(here(b.it)-here(a.it))||(fits(b.it)-fits(a.it))||a.it.name.localeCompare(b.it.name,'vi'));
+    list.forEach(x=>cats.add(x.it.cat));all=list.map(x=>x.it);fresh=all.some(it=>it.new);
+    const shown=list.filter(x=>passes(x.it)).sort((a,b)=>(here(b.it)-here(a.it))||(fits(b.it)-fits(a.it))||a.it.name.localeCompare(b.it.name,'vi'));
+    shownN=shown.length;
     cards=shown.map(({it,n})=>card(it,'bag',`${n>1?`<i class="dc-n">×${n}</i>`:''}`,fits(it)?`Ấm cúng +${it.cozy}`:'Không hợp chỗ này',!fits(it))).join('');
     if(!list.length)cards=S.coop?'<div class="dc-empty"><p>Túi đồ của chủ nhà đang trống. Dời những món đã bày nhé!</p></div>'
       :`<div class="dc-empty"><p>Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!</p>${btn('🛒 Cửa hàng','drawer',{d:'shop'},'primary small')}</div>`;
   }else{
     const have=new Set([...v.items.map(i=>i.k),...v.bag.map(b=>b.k)]);
-    const list=C.items.filter(it=>fits(it)&&!it.uq);list.forEach(it=>cats.add(it.cat));   // 🔨 a painting won at auction is never sold
-    const shown=list.filter(it=>!S.cat||it.cat===S.cat).sort((a,b)=>(here(b)-here(a))||a.price-b.price);
-    cards=shown.map(it=>card(it,'shop',have.has(it.id)?'<i class="dc-have">Đã có</i>':'',`${xu(it.price)} · +${it.cozy}`,false,it.price>v.ready)).join('');
+    const list=C.items.filter(it=>fits(it)&&!it.uq);list.forEach(it=>cats.add(it.cat));all=list;fresh=list.some(it=>it.new);   // 🔨 a painting won at auction is never sold
+    const shown=list.filter(passes).sort((a,b)=>(here(b)-here(a))||a.price-b.price);
+    shownN=shown.length;
+    cards=shown.map(it=>card(it,'shop',have.has(it.id)?'<i class="dc-have">Đã có</i>':it.new?'<i class="dc-new">Mới</i>':'',`${xu(it.price)} · +${it.cozy}`,false,it.price>v.ready)).join('');
   }
-  const chips=S.drawer==='skin'?[]:[['','Tất cả'],...C.cats.filter(c=>cats.has(c.id)).map(c=>[c.id,`${c.emoji} ${c.name}`])];
+  const filtered=S.drawer!=='skin'&&!!(S.cat||S.style||S.q.trim());
+  if(filtered&&!shownN&&all.length)cards=`<div class="dc-empty"><p>Không có món nào hợp bộ lọc này.</p>${btn('Bỏ lọc','unfilter',{},'ghost small')}</div>`;
+  const chips=S.drawer==='skin'?[]:[['','Tất cả'],...(fresh?[['new','🆕 Mới về']]:[]),...C.cats.filter(c=>cats.has(c.id)).map(c=>[c.id,`${c.emoji} ${c.name}`])];
+  const styles=S.drawer==='skin'?[]:(C.styles||[]).filter(st=>all.some(it=>st.items.includes(it.id)));
+  const find=S.drawer==='skin'||all.length<8?'':`<div class="dc-find"><label class="dc-search"><span aria-hidden="true">🔎</span><input type="search" data-dc-search value="${esc(S.q)}" placeholder="Tìm món: đèn, sofa, cây…" aria-label="Tìm đồ trang trí theo tên" maxlength="40" autocomplete="off" enterkeyhint="search"></label>
+    <small class="dc-count" aria-live="polite">${filtered?`${shownN}/${all.length} món`:`${all.length} món`}</small></div>`;
   return `<section class="dc-drawer" aria-label="Đồ đạc">
     <div class="dc-drawer-top"><div class="segmented dc-seg" role="tablist">${(S.coop?[['bag',`🎒 Túi chủ nhà · ${v.bag.length}`]]:[['bag',`🎒 Túi · ${v.bag.length}`],['shop','🛒 Cửa hàng'],['skin','🎨 Tường & sàn']]).map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.drawer===id}" class="${S.drawer===id?'active':''}" data-dc="drawer" data-d="${id}">${l}</button>`).join('')}</div>
     ${S.coop?'':`<span class="dc-money" title="Tài khoản + ví">💰 ${xu(v.ready)}</span>`}</div>
-    ${chips.length>2?scrollRail('cats',`<div class="dc-cats" data-dc-rail="cats">${chips.map(([id,l])=>`<button type="button" class="dc-catchip${S.cat===id?' on':''}" data-dc="cat" data-cat="${id}" aria-pressed="${S.cat===id}">${l}</button>`).join('')}</div>`):''}
+    ${find}
+    ${chips.length>2?scrollRail('cats',`<div class="dc-cats" data-dc-rail="cats" role="group" aria-label="Loại đồ">${chips.map(([id,l])=>`<button type="button" class="dc-catchip${S.cat===id?' on':''}" data-dc="cat" data-cat="${id}" aria-pressed="${S.cat===id}">${l}</button>`).join('')}</div>`):''}
+    ${styles.length>1?scrollRail('styles',`<div class="dc-cats dc-styles" data-dc-rail="styles" role="group" aria-label="Phong cách">${styles.map(st=>`<button type="button" class="dc-catchip dc-stylechip${S.style===st.id?' on':''}" data-dc="style" data-style="${st.id}" aria-pressed="${S.style===st.id}">${st.emoji} ${esc(st.name)}</button>`).join('')}</div>`):''}
     ${S.drawer==='skin'?cards:scrollRail('items',`<div class="dc-strip" data-dc-rail="items" role="list">${cards}</div>`)}</section>`;
 }
 /** 🎨 the wallpapers and floors this room may take, as swatches. */

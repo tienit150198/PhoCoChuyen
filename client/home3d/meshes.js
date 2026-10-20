@@ -17,20 +17,20 @@ function sculpt(group,R,wall=''){
   return {box:(...a)=>shape('box',...a),ball:(...a)=>shape('ball',...a),cyl:(...a)=>shape('cylinder',...a),cone:(...a)=>shape('cone',...a),ring:(...a)=>shape('ring',...a)};
 }
 const sets={
-  sofa:'sofa sofa_don ghe_da_bo ghe_rap_doi',bed:'giuong giuong_don giuong_king nem sap_go',
-  shelf:'ke_sach ke_go ke_tivi ke_giay ke_bep ke_treo ke_go_treo ke_tron ke_khan ke_tam ke_my_pham ke_chen tu_giay',
-  wardrobe:'tu_quan_ao tu_ngan_keo tu_dau_giuong tu_thuoc chan_bat',
-  fridge:'tu_lanh tu_lanh_magnet',washer:'may_giat',screen:'tv may_choi_game ban_gaming',
+  sofa:'sofa sofa_don ghe_da_bo ghe_rap_doi sofa_goc ghe_doc_sach',bed:'giuong giuong_don giuong_king nem sap_go sap_gu giuong_may',
+  shelf:'ke_sach ke_go ke_tivi ke_giay ke_bep ke_treo ke_go_treo ke_tron ke_khan ke_tam ke_my_pham ke_chen tu_giay ke_bac_thang tu_sach_cao ke_sach_treo ke_cau_vong ke_tre_tam ke_tay_cam tu_bep_treo',
+  wardrobe:'tu_quan_ao tu_ngan_keo tu_dau_giuong tu_thuoc chan_bat tu_che binh_phong',
+  fridge:'tu_lanh tu_lanh_magnet',washer:'may_giat may_rua_bat',screen:'tv may_choi_game ban_gaming man_hinh_cong',
   fan:'quat quat_mini quat_tran',guitar:'dan dan_bau',piano:'piano',speaker:'loa loa_cot radio hop_nhac',
-  plush:'gau_bong gau_bong_lon tho_bong goi_om goi_tua',rug:'tham tham_hoa tham_tam tham_tron tham_dai',
+  plush:'gau_bong gau_bong_lon tho_bong goi_om goi_tua gau_dau_tay ghe_tho',rug:'tham tham_hoa tham_tam tham_tron tham_dai',
   curtain:'rem rem_voan rem_giuong man_tuyn ao_choang',mirror:'guong guong_tam guong_dung ban_trang_diem',
   clock:'dong_ho dong_ho_qua_lac dong_ho_cuc_cu dong_ho_bao_thuc',
-  tub:'bon_tam bon_rua',shower:'buong_tam',basket:'gio_do_tam gio_giat gio_trai_cay mam_ngu_qua ro_rau',
-  vessel:'am_chen noi_com am_sieu_toc may_ca_phe may_xay hu_dua binh_gom chum_nuoc binh_tuoi coc_ban_chai thung_ruou',
+  tub:'bon_tam bon_rua chau_ngam_chan',shower:'buong_tam',basket:'gio_do_tam gio_giat gio_trai_cay mam_ngu_qua ro_rau gio_banh_mi',
+  vessel:'am_chen noi_com am_sieu_toc may_ca_phe may_xay hu_dua binh_gom chum_nuoc binh_tuoi coc_ban_chai thung_ruou am_tich noi_dat',
   oven:'lo_nuong lo_vi_song lo_nuong_banh bep_ga lo_suoi_ngoai',umbrella:'du_che ban_ngoai',
-  swing:'xich_du ghe_trung',hammock:'vong',float:'phao phao_hong_hac',water:'be_ca ho_ca_koi',
+  swing:'xich_du ghe_trung',hammock:'vong',float:'phao phao_hong_hac',water:'be_ca ho_ca_koi hon_non_bo',
   birdcage:'long_chim',bike:'xe_dap xe_may_co xe_do_choi',tent:'leu_choi nha_cho',
-  globe:'qua_dia_cau cau_tuyet',gym:'may_chay_bo gia_ta',telescope:'kinh_thien_van',rack:'moc_ao treo_noi',
+  globe:'qua_dia_cau cau_tuyet',gym:'may_chay_bo gia_ta',telescope:'kinh_thien_van',rack:'moc_ao treo_noi thang_khan',lamp:'den_nang_luong',
 };
 const byId=new Map(Object.entries(sets).flatMap(([family,ids])=>ids.split(' ').map(id=>[id,family])));
 export function familyOf(it){
@@ -58,7 +58,7 @@ export function furniture(it,tint,R){
     case 'table':{const h=tabletop();if(it.id==='ban_co_tuong'){B(0,h+.08,0,w*.65,.03,d*.7,P.cream);for(let i=0;i<5;i++)C(-w*.25+i*.2,h+.12,-d*.15,.08,.05,.08,P.ink);}if(it.id==='may_may'){B(0,h+.25,0,.5,.4,.3,P.ink);B(.2,h+.15,.1,.1,.2,.1,P.gold);}break;}
     case 'chair':{const stool=it.id==='ghe_dau',lounge=/tam_nang|bap_benh|luoi/.test(it.id);legs(.42);B(0,.48,0,w,.17,d,color);if(!stool)B(0,lounge?.66:.9,-d*.38,w*.95,lounge?.45:.9,.16,color);if(!stool)for(const x of [-w*.43,w*.43])B(x,.68,0,.1,.1,d*.9,P.wood);break;}
     case 'shelf':{const h=it.spot==='wall'?.75:1.5;B(-w*.46,h/2,0,.09,h,d,P.dark);B(w*.46,h/2,0,.09,h,d,P.dark);B(0,h/2,-d*.43,w,h,.07,P.wood);for(let j=0;j<3;j++){B(0,j*h/2+.04,0,w,.08,d,color);for(let i=0;i<3;i++)B(-w*.28+i*w*.27,j*h/2+.19,0,w*.17,.28,d*.6,[P.mint,P.pink,P.gold][i]);}break;}
-    case 'wardrobe':{const h=it.id==='tu_dau_giuong'?surfaceHeight(it):1.75;B(0,h/2,0,w,h,d,color);for(const x of [-w*.24,w*.24]){B(x,h/2,d*.5,w*.45,h*.9,.06,P.cream);C(x*.45,h*.55,d*.56,.06,.13,.06,P.gold);}break;}
+    case 'wardrobe':{const h=it.id==='tu_dau_giuong'||it.id==='tu_che'?surfaceHeight(it):1.75;B(0,h/2,0,w,h,d,color);for(const x of [-w*.24,w*.24]){B(x,h/2,d*.5,w*.45,h*.9,.06,P.cream);C(x*.45,h*.55,d*.56,.06,.13,.06,P.gold);}break;}
     case 'fridge':B(0,.93,0,w,1.86,d,color);for(const [h,y] of [[.56,1.55],[1.13,.68]]){B(0,y,d*.5,w*.92,h,.05,P.cream);B(w*.3,y,d*.56,.07,.3,.07,P.dark);}if(it.id.endsWith('magnet'))for(let i=0;i<3;i++)B(-.18+i*.16,1.4,d*.55,.1,.1,.03,[P.pink,P.gold,P.blue][i]);break;
     case 'washer':B(0,.57,0,w,1.12,d,color);B(0,1.02,d*.5,w*.9,.12,.04,P.cream);Q(0,.51,d*.51,.9,.9,.8,P.cream);C(0,.51,d*.5,.52,.06,.52,P.blue).rotation.x=Math.PI/2;break;
     case 'screen':{const h=it.id==='ban_gaming'?tabletop():.18;B(0,h,0,w*.65,.12,d*.55,P.dark);B(0,h+.2,-.12,.15,.4,.12,P.dark);B(0,h+.7,-.12,w,1,.14,P.ink);B(0,h+.7,-.035,w*.9,.85,.035,P.blue,true);B(-w*.18,h+.5,-.01,w*.4,.22,.025,P.mint);break;}

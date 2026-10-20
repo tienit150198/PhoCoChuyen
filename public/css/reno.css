@@ -134,6 +134,18 @@
 .dc-buycard:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dc-n,.dc-have{position:absolute;top:6px;right:6px;padding:1px 7px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:800 .72rem/1.5 var(--font);font-style:normal}
 .dc-have{background:var(--good);color:#fff}
+/* 🔎 the drawer's filters (search, 🆕 Mới về, styles) and 📍 Đặt nhanh (ready-made spots, góp ý #443) */
+.dc-new{position:absolute;top:6px;right:6px;padding:1px 7px;border-radius:999px;background:var(--warn,#e8a33d);color:#fff;font:800 .72rem/1.5 var(--font);font-style:normal}
+.dc-find{display:flex;align-items:center;gap:8px;min-width:0}
+.dc-search{flex:1 1 auto;display:flex;align-items:center;gap:6px;min-width:0;min-height:42px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.dc-search:focus-within{outline:3px solid var(--focus);outline-offset:1px}
+.dc-search input{flex:1 1 auto;min-width:0;border:0;background:transparent;color:var(--ink);font:600 16px/1.2 var(--font);outline:none;padding:8px 0}
+.dc-count{flex:none;color:var(--muted);font-size:.8rem;font-weight:700}
+.dc-styles .dc-catchip{background:var(--surface-2)}
+.dc-styles .dc-catchip.on{background:var(--good);border-color:var(--good);color:#fff}
+.dc-spots{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.dc-spots>small{color:var(--ink-2);font-weight:700}
+.dc-spots .btn{min-height:40px}
 .dc-seg>button{flex:1 1 auto;min-width:0;padding-inline:6px;white-space:nowrap}
 @media (max-width:420px){.dc-seg>button{font-size:.8rem;padding-inline:4px}.dc-money{margin-left:auto}}
 /* 🎨 Tường & sàn: swatches */

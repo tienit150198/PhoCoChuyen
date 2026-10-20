@@ -486,3 +486,133 @@ for _k, _it in _AC.ART_PIECE.items():
 # id} says which photo each frame holds (the client draws it with public/js/v4/portrait-art.js). 2.4.66 keeps the piece in
 # reno.items, unshown.
 ITEMS['anh_chup'] = dict(_i('wall', 'wall', 2, 2, 0, 2, _UQ_ROOMS, 'Ảnh chụp đóng khung', '🖼️', ('art',)), price=0, uq=True)
+
+# ---------------------------------------------------------------- 🛋️ Thêm đồ trang trí (owner 21/10/2026: "thêm đồ trang trí cho nhà")
+# 55 evergreen pieces for every room and style (nét Việt xưa, tối giản, pastel, góc gaming, góc đọc sách, bếp, nhà tắm,
+# ban công), appended last: an older build (2.4.71 and before) keeps them in reno.items, unshown (its validate checks
+# kinds by shape only), and places them nowhere, so a rollback loses nothing. New pieces are priced as written (like the
+# villa pieces, never through game/price_index.py) and fit the villa rooms by BASE (game/estates_content.py). `new`:
+# the shop's 🆕 Mới về chip.
+KNOWN_2471 = tuple(ITEMS)         # what 2.4.71 knows
+
+
+def _n(cat, spot, w, h, price, cozy, rooms, name, emoji, tags=(), surface=0, ledge=0):
+    return dict(_i(cat, spot, w, h, price, cozy, rooms, name, emoji, tags, surface=surface, ledge=ledge), price=price, new=True)
+
+
+MORE_2026 = {
+    # 🏮 Nét Việt xưa
+    'sap_gu': _n('table', 'floor', 3, 1, 1200, 3, ('living',), 'Sập gụ chân quỳ', '🪵', ('seat', 'viet'), surface=16),
+    'tu_che': _n('bed', 'floor', 2, 1, 950, 3, ('living',), 'Tủ chè khảm trai', '🗄️', ('viet',), surface=26),
+    'den_hoi_an': _n('light', 'wall', 1, 1, 60, 1, WALLS, 'Đèn lồng Hội An', '🏮', ('lamp', 'viet')),
+    'chum_den_hoi_an': _n('light', 'wall', 2, 1, 170, 2, IN + ('loft',), 'Chùm đèn lồng Hội An', '🏮', ('lamp', 'viet')),
+    'tranh_ga_dh': _n('wall', 'wall', 1, 2, 75, 2, IN, 'Tranh Đông Hồ đàn gà', '🐓', ('art', 'viet')),
+    'tranh_chuot_dh': _n('wall', 'wall', 2, 1, 85, 2, IN + ('loft',), 'Tranh Đông Hồ đám cưới chuột', '🐭', ('art', 'viet')),
+    'binh_phong': _n('fun', 'floor', 2, 1, 460, 3, ('living', 'bed'), 'Bình phong gỗ chạm', '🪵', ('viet',)),
+    'chieu_hoa': _n('bed', 'rug', 3, 2, 50, 2, IN + ('loft',), 'Chiếu hoa trải sàn', '🟥', ('rug', 'viet')),
+    'am_tich': _n('fun', 'top', 1, 1, 45, 1, SMALL + OUT + ('pool',), 'Ấm tích giỏ ủ', '🫖', ('tea', 'viet')),
+    'non_la': _n('wall', 'wall', 1, 1, 25, 1, WALLS, 'Nón lá treo tường', '👒', ('viet',)),
+    'den_dau': _n('light', 'top', 1, 1, 35, 1, SMALL + OUT, 'Đèn dầu hoa kỳ', '🪔', ('lamp', 'viet')),
+    'tranh_theu': _n('wall', 'wall', 2, 1, 150, 2, IN + ('loft',), 'Tranh thêu hoa sen', '🪷', ('art', 'viet')),
+    # 🤍 Tối giản
+    'sofa_goc': _n('table', 'floor', 3, 2, 560, 3, ('living', 'studio'), 'Sofa góc chữ L', '🛋️', ('seat', 'soft', 'minimal')),
+    'den_san_cong': _n('light', 'floor', 1, 1, 190, 2, LIVE + ('loft',), 'Đèn sàn cần câu', '💡', ('lamp', 'minimal')),
+    'tranh_truu_tuong': _n('wall', 'wall', 2, 1, 130, 2, IN + ('loft',), 'Tranh trừu tượng tối giản', '🖼️', ('art', 'minimal')),
+    'ban_tra_tron': _n('table', 'floor', 1, 1, 110, 1, LIVE + ('loft',) + OUT, 'Bàn trà tròn mặt đá', '⚪', ('table', 'minimal'), surface=14),
+    'ke_bac_thang': _n('bed', 'floor', 1, 1, 130, 1, IN + ('loft',) + BATH, 'Kệ bậc thang', '🪜', ('books', 'minimal'), surface=30),
+    'den_giay': _n('light', 'wall', 1, 1, 45, 1, IN + ('loft',), 'Đèn giấy tròn', '🌕', ('lamp', 'minimal')),
+    'binh_canh_kho': _n('plant', 'top', 1, 1, 45, 1, SMALL + BATH, 'Bình gốm cành khô', '🌾', ('minimal',)),
+    # 🎀 Pastel dễ thương
+    'giuong_may': _n('bed', 'floor', 3, 2, 520, 3, SLEEP, 'Giường đám mây', '☁️', ('bed', 'soft', 'pastel'), surface=16),
+    'ghe_tho': _n('table', 'floor', 1, 1, 120, 2, LIVE + ('loft',), 'Ghế lười tai thỏ', '🐇', ('seat', 'soft', 'pastel')),
+    'den_may': _n('light', 'wall', 1, 1, 55, 1, WALLS, 'Đèn đám mây', '⛅', ('lamp', 'pastel')),
+    'ke_cau_vong': _n('wall', 'wall', 2, 1, 65, 1, WALLS, 'Kệ treo cầu vồng', '🌈', ('pastel',), ledge=22),
+    'tham_may': _n('bed', 'rug', 2, 1, 55, 1, IN + ('loft',) + BATH, 'Thảm đám mây', '☁️', ('rug', 'soft', 'pastel')),
+    'gau_dau_tay': _n('fun', 'top', 1, 1, 40, 1, LIVE + ('loft', 'bunk'), 'Gấu bông dâu tây', '🍓', ('soft', 'toy', 'pastel')),
+    'den_keo_bong': _n('light', 'top', 1, 1, 45, 1, SMALL, 'Đèn kẹo bông', '🍭', ('lamp', 'pastel')),
+    # 🎮 Góc gaming
+    'man_hinh_cong': _n('fun', 'top', 1, 1, 290, 2, LIVE + ('loft',), 'Màn hình cong', '🖥️', ('gaming', 'screen')),
+    'ban_phim_led': _n('fun', 'top', 1, 1, 95, 1, LIVE + ('loft', 'bunk'), 'Bàn phím cơ LED', '⌨️', ('gaming',)),
+    'tai_nghe': _n('fun', 'top', 1, 1, 50, 1, LIVE + ('loft', 'bunk'), 'Giá treo tai nghe', '🎧', ('gaming', 'music')),
+    'den_thanh_rgb': _n('light', 'floor', 1, 1, 130, 2, LIVE + ('loft',), 'Đèn thanh RGB', '🚥', ('lamp', 'gaming')),
+    'poster_game': _n('wall', 'wall', 1, 2, 40, 1, IN + ('bunk',), 'Poster game cổ điển', '👾', ('art', 'gaming')),
+    'ke_tay_cam': _n('wall', 'wall', 2, 1, 75, 1, LIVE + ('loft', 'bunk'), 'Kệ trưng tay cầm', '🎮', ('gaming',)),
+    # 📖 Góc đọc sách
+    'tu_sach_cao': _n('bed', 'floor', 2, 1, 280, 3, LIVE + ('loft',), 'Tủ sách kịch trần', '📚', ('books', 'reading')),
+    'ghe_doc_sach': _n('table', 'floor', 1, 1, 240, 2, LIVE + ('loft',), 'Ghế bành đọc sách', '🛋️', ('seat', 'soft', 'reading')),
+    'den_doc_sach': _n('light', 'floor', 1, 1, 90, 1, LIVE + ('loft',), 'Đèn đọc sách cổ ngỗng', '🔦', ('lamp', 'reading')),
+    'chan_len': _n('bed', 'top', 1, 1, 35, 1, SLEEP + ('living', 'loft', 'bunk'), 'Chăn len gấp', '🧶', ('soft', 'reading')),
+    'ke_sach_treo': _n('wall', 'wall', 1, 1, 45, 1, WALLS, 'Kệ sách treo góc', '📕', ('books', 'reading')),
+    'ban_do': _n('wall', 'wall', 2, 1, 55, 1, IN + ('loft', 'bunk'), 'Bản đồ thế giới', '🧭', ('art', 'reading')),
+    # 🍳 Bếp & ăn uống
+    'ban_an_tron': _n('table', 'floor', 2, 1, 280, 3, ('kitchen', 'living'), 'Bàn ăn tròn gỗ', '🍽️', ('table',), surface=24),
+    'noi_dat': _n('bep', 'top', 1, 1, 30, 1, ('kitchen', 'studio'), 'Nồi đất kho cá', '🍲', ('kitchen', 'viet')),
+    'tu_bep_treo': _n('bep', 'wall', 2, 1, 140, 1, ('kitchen', 'studio'), 'Tủ bếp treo', '🗄️', ('kitchen',)),
+    'may_rua_bat': _n('bep', 'floor', 1, 1, 320, 1, ('kitchen',), 'Máy rửa bát', '🫧', ('kitchen',)),
+    'gio_banh_mi': _n('bep', 'top', 1, 1, 25, 1, ('kitchen', 'studio', 'living'), 'Giỏ bánh mì', '🥖', ('kitchen',)),
+    # 🛁 Nhà tắm
+    'thang_khan': _n('bath', 'floor', 1, 1, 65, 1, BATH, 'Thang treo khăn gỗ', '🪜', ('towel',)),
+    'chau_ngam_chan': _n('bath', 'floor', 1, 1, 120, 2, BATH, 'Chậu gỗ ngâm chân', '🪣', ('soak',)),
+    'den_muoi': _n('light', 'top', 1, 1, 60, 1, SMALL + BATH, 'Đèn đá muối', '🧂', ('lamp',)),
+    'ke_tre_tam': _n('bath', 'wall', 2, 1, 45, 1, BATH, 'Kệ tre nhà tắm', '🎋', ('towel',), ledge=22),
+    # 🌿 Ban công, sân vườn, cây
+    'ban_ghe_ban_cong': _n('pool', 'floor', 2, 1, 210, 2, OUT + ('pool',), 'Bộ bàn ghế ban công', '☕', ('table', 'seat'), surface=20),
+    'chau_lan': _n('plant', 'floor', 1, 1, 130, 2, IN + OUT + ('loft',) + BATH, 'Chậu lan hồ điệp', '🌸', ('plant', 'flower')),
+    'gian_muop': _n('plant', 'floor', 2, 1, 80, 2, OUT, 'Giàn mướp leo', '🥒', ('plant',)),
+    'hon_non_bo': _n('pool', 'floor', 1, 1, 230, 3, OUT + ('living',), 'Hòn non bộ', '⛰️', ('water', 'viet')),
+    'den_nang_luong': _n('pool', 'floor', 1, 1, 75, 1, OUT + ('pool',), 'Đèn năng lượng mặt trời', '☀️', ('lamp',)),
+    'chau_sen_da': _n('plant', 'top', 1, 1, 22, 1, SMALL + OUT + BATH + ('pool',), 'Chậu sen đá', '🪴', ('plant',)),
+    'cay_bang_sing': _n('plant', 'floor', 1, 1, 140, 2, IN + OUT + ('loft',), 'Cây bàng Singapore', '🌳', ('plant',)),
+    'tham_tho_cam': _n('bed', 'rug', 3, 1, 120, 2, IN + ('loft',), 'Thảm thổ cẩm', '🧶', ('rug', 'viet')),
+}
+for _k, _it in MORE_2026.items():   # the villa rooms take them by BASE, like the older furniture (estates_content.register)
+    _it['rooms'] = tuple(_it['rooms']) + tuple(t for t, (_e, _nm, base) in _EC.ROOM_TYPES.items()
+                                              if set(base) & set(_it['rooms']) and t not in _it['rooms'])
+    ITEMS[_k] = _it
+NEW_2026 = tuple(MORE_2026)
+
+# Theme sets (the SETS rules: one distinct piece per entry, all in one room, each set counted once per home). Every
+# set's bonus stays within SET_BONUS_MAX, the most any set ever gave: Ấm cúng only moves the morning tinh thần by its
+# capped steps (reno.COZY_STEPS, deco.RENT_STEPS), so more sets never mean more money.
+SET_BONUS_MAX = 3
+SETS.update({
+    'nha_xua': dict(emoji='🏯', name='Gian nhà xưa', bonus=3,
+                    need=(('sap_gu',), ('tu_che',), ('binh_phong', 'tranh_ga_dh', 'tranh_chuot_dh', 'tranh_theu'))),
+    'hoi_an': dict(emoji='🏮', name='Phố Hội lên đèn', bonus=2,
+                   need=(('den_hoi_an', 'chum_den_hoi_an'), ('am_tich', 'den_dau'), ('non_la', 'chieu_hoa', 'tham_tho_cam'))),
+    'toi_gian': dict(emoji='🤍', name='Phòng khách tối giản', bonus=3,
+                     need=(('sofa_goc',), ('den_san_cong', 'den_giay'), ('tranh_truu_tuong', 'binh_canh_kho', 'ban_tra_tron'))),
+    'pastel': dict(emoji='🎀', name='Phòng ngủ pastel', bonus=3,
+                   need=(('giuong_may',), ('den_may', 'den_keo_bong'), ('tham_may', 'gau_dau_tay', 'ghe_tho', 'ke_cau_vong'))),
+    'stream': dict(emoji='🎧', name='Góc stream', bonus=2,
+                   need=(('man_hinh_cong',), ('ban_phim_led', 'tai_nghe'), ('den_thanh_rgb', 'ke_tay_cam', 'poster_game'))),
+    'doc_sach': dict(emoji='📖', name='Góc đọc sách', bonus=2,
+                     need=(('ghe_doc_sach',), ('den_doc_sach',), ('tu_sach_cao', 'ke_sach_treo', 'chan_len'))),
+    'ban_cong': dict(emoji='🌿', name='Ban công xanh mát', bonus=2,
+                     need=(('ban_ghe_ban_cong',), ('chau_lan', 'gian_muop', 'chau_sen_da', 'cay_bang_sing'), ('den_nang_luong',))),
+    'bep_viet': dict(emoji='🍲', name='Bữa cơm nhà', bonus=2,
+                     need=(('ban_an_tron',), ('noi_dat',), ('tu_bep_treo', 'may_rua_bat', 'gio_banh_mi'))),
+})
+NEW_SETS_2026 = ('nha_xua', 'hoi_an', 'toi_gian', 'pastel', 'stream', 'doc_sach', 'ban_cong', 'bep_viet')
+
+
+# 🔎 Phong cách: the shop's style filter (the drawer's second row of chips; deco.catalogue `styles`). A style lists
+# pieces by tag (the new ones) and by id (older pieces that suit it). Shown only, never stored.
+def _style(tags=(), ids=()):
+    return tuple(k for k, it in ITEMS.items() if not it.get('uq') and (set(tags) & set(it['tags']) or k in ids))
+
+
+STYLES = (
+    ('viet', '🏮', 'Nét Việt xưa', _style(('viet',), ('sap_go', 'am_chen', 'tranh_dong_ho', 'dong_ho_qua_lac', 'dan_bau', 'binh_sen',
+                                                      'radio', 'may_may', 'binh_gom', 'chum_nuoc', 'long_chim', 'ban_co_tuong',
+                                                      'den_long', 'chan_bat', 'bonsai', 'chuong_gio', 'man_tuyn'))),
+    ('toi_gian', '🤍', 'Tối giản', _style(('minimal',), ('ke_go_treo', 'ke_tron', 'den_cay', 'guong_dung', 'rem_voan', 'cay_luoi_ho',
+                                                        'tham_dai', 'khung_anh_bo', 'sofa_don', 'ke_tivi', 'tu_ngan_keo'))),
+    ('pastel', '🎀', 'Pastel dễ thương', _style(('pastel',), ('ghe_luoi', 'gau_bong', 'tho_bong', 'goi_om', 'o_meo', 'den_ngu',
+                                                             'den_trang', 'den_sao', 'rem', 'poster', 'hop_nhac', 'gau_bong_lon',
+                                                             'leu_choi', 'tham', 'tham_tron', 'ban_trang_diem'))),
+    ('gaming', '🎮', 'Góc gaming', _style(('gaming',))),
+    ('doc', '📖', 'Góc đọc sách', _style(('reading', 'books'), ('ban_hoc', 'den_ban', 'ban_lam_viec', 'sach_mo', 'ghe_hoc'))),
+    ('xanh', '🌿', 'Cây xanh & ban công', _style(('plant',), ('ban_ghe_ban_cong', 'den_nang_luong', 'hon_non_bo', 'ghe_trung',
+                                                           'xich_du', 'vong', 'ban_ngoai', 'ghe_dai', 'binh_tuoi', 'nha_cho'))),
+)
