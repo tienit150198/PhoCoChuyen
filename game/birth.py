@@ -154,7 +154,7 @@ def install(strict: bool = False) -> bool:
     if sm is None or not callable(getattr(sm, 'register', None)):
         return False
     try:
-        for career in ('homestay', 'hotel'):
+        for career in CAREERS:   # homestay owners only: 'hotel' is a hired job, its player owns no rooms (owner 21/10 batch)
             sm.register(career, SERVICE, market_spec(career))
     except Exception:
         if strict:

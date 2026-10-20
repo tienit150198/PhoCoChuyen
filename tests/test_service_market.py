@@ -555,7 +555,7 @@ class OwnFlow(_Helpers):
         super().setUp()
         from game import photo_studio as P
         self.P = P
-        self.OWN = [('homestay', 'phong_sinh'), ('hotel', 'phong_sinh')] + [('photobooth', k) for k in P.PKGS]
+        self.OWN = [('homestay', 'phong_sinh')] + [('photobooth', k) for k in P.PKGS]
 
     def room(self, tok, price=700_000, open_=True, career='homestay', name='Phòng Đồi Thông'):
         sid = self.sid(tok)
