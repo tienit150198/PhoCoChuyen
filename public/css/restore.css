@@ -5,8 +5,9 @@
 .rs-h{margin:6px 0 2px;font-size:16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}.rs-h small{font-weight:400;color:var(--muted,#6b6158)}
 .rs-desc,.rs-foot,.rs-none,.rs-empty{margin:0;font-size:13px;line-height:1.5;color:var(--muted,#5f554b)}
 .rs-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.rs-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line,#e2d6c5);border-radius:12px;background:var(--card,#fff);min-width:0}
-.rs-item .grow{display:grid;gap:2px;min-width:0;flex:1}.rs-item small{color:var(--muted,#6b6158);overflow-wrap:anywhere}
+.rs-item{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line,#e2d6c5);border-radius:12px;background:var(--card,#fff);min-width:0}
+.rs-item .grow{display:grid;gap:2px;min-width:0;flex:1 1 170px}
+.rs-acts{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.rs-item small{color:var(--muted,#6b6158);overflow-wrap:anywhere}
 .rs-item .btn{flex-shrink:0;min-height:40px}
 .rs-svc{display:grid;gap:6px}
 .rs-card,.rs-order{display:grid;gap:10px;padding:14px;border:1px solid var(--line,#e2d6c5);border-radius:14px;background:var(--card,#fff)}
