@@ -10,6 +10,8 @@
  *   FACES            [{id, emoji, name}]          the expressions ("Biểu cảm"), first 'auto' (= the pose's own face)
  *   FACE, knownFace  {id: row}, id → bool         a face this build does not know is drawn as 'auto'
  *   paintPeople(c, people, w, h) → [{x, s}]      people [{lk, g, pose, prop, face}] side by side in a w × h photo
+ *                                                (📸 ./portrait-art.js also: bb a baby in the arms {g, o}, eyes a
+ *                                                blink 'closed', lean / tilt the pose gone)
  *                                                (origin its corner), whole (no head, hat, raised item cut off), not
  *                                                overlapping; returns each one's centre x and the scale
  *                                                ({scale}: no bigger than this; {measure: true}: only the scale;
@@ -25,6 +27,7 @@
  * with the phone in a squished selfie…); a group pose with nobody next to them in it is drawn as its own solo pose.
  * Ids are short lowercase words (live/booth.py clean_id); the 1.5.1 client draws an id it does not know as 'dung'. */
 import {CANVAS,FRONT,figureOf,defaultLook,paintLegs,paintDress,paintHairBack,paintTop,paintHairFront,paintAcc} from './look.js';
+import {paintCarried} from './baby-art.js';   // 📸 a portrait's baby in the arms (./portrait-art.js: person.bb)
 import {t as tr} from './i18n.js';
 
 const {R,E,L,P,heart}=CANVAS;
@@ -524,10 +527,11 @@ function body(c,F,sp,prop,hold,sign){
   if(sit)c.translate(0,sit);
   headT(c,sp,()=>paintHairBack(c,F,K));
   R(c,-23,-52,46,36,F.topC||F.classic,15);
-  if(sp.arms.l==null)E(c,-25,-36,8,14,sk.hand);
-  if(sp.arms.r==null)E(c,25,-36,8,14,sk.hand);
+  if(sp.arms.l==null&&!sp.bb)E(c,-25,-36,8,14,sk.hand);
+  if(sp.arms.r==null&&!sp.bb)E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
   if(F.L.acc==='tui_cheo')paintAcc(c,F,K);
+  if(sp.bb)paintCarried(c,sp.bb,K,F);   // 📸 held to the chest (./portrait-art.js)
   if(sp.legs==='squat'){c.save();c.translate(0,-sit);squatLegs(c,F);c.restore();}
   for(const it of itemsOf(sp,'mid'))ink(it);
   for(const [s,a] of armsOf(sp,'mid'))drawArm(c,F,s,a);
@@ -590,8 +594,13 @@ export function paintPeople(c,people,w,h,{sign='VUI QUÁ!',scale=0,measure=false
   const items=ppl.map((p,i)=>{
     const F=figureOf(p.lk&&typeof p.lk==='object'?p.lk:defaultLook(p.g),p.g);
     const prop=typeof p.prop==='string'?p.prop:'none';
-    const held=withProp(specOf(rs[i]),prop),hold=held.hold,sp=withFace(held.sp,knownFace(p.face)?p.face:'auto');
-    return {F,sp,prop,hold,ext:extent(sp,prop,hold),role:rs[i]};
+    const bb=p.bb&&typeof p.bb==='object'?p.bb:null;   // 📸 a baby in the arms: standing, the arms hold it
+    const held=withProp(bb?solo(DEFAULT):specOf(rs[i]),bb&&HAND[prop]?'none':prop),hold=held.hold;
+    let sp=withFace(held.sp,knownFace(p.face)?p.face:'auto');
+    // 📸 a portrait's moment (./portrait-art.js): eyes closed (a blink), the pose gone (turned away): over the face
+    if(bb||p.eyes||p.lean!=null||p.tilt!=null)sp={...sp,...(bb?{bb}:{}),...(typeof p.eyes==='string'?{eyes:p.eyes}:{}),
+      ...(Number.isFinite(p.lean)?{lean:p.lean}:{}),...(Number.isFinite(p.tilt)?{tilt:p.tilt}:{})};
+    return {F,sp,prop:bb&&HAND[prop]?'none':prop,hold,ext:extent(sp,prop,hold),role:rs[i]};
   });
   // the distance from each one to the next: a group pose's own (so hands meet), else side by side with a little room
   const PAD=4,links=[],head=it=>it.prop==='non_la'?47:it.prop==='mu_tn'?39:34;

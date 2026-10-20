@@ -480,3 +480,9 @@ _UQ_ROOMS = tuple(WALLS) + tuple(t for t, (_e, _n, base) in _EC.ROOM_TYPES.items
 for _k, _it in _AC.ART_PIECE.items():
     ITEMS[_k] = dict(_i('wall', 'wall', 2, 2, 0, _AC.ART_COZY, _UQ_ROOMS, f'Tranh “{_it["name"]}” · {_it["artist"]}', '🖼️', ('art',)),
                      price=0, uq=True)
+
+# 📸 A framed photo a player photographer made for this save (game/photo_studio.py hang, SCHEMA_VERSION 66): 2 × 2 wall
+# cells, unique like the paintings (price 0, `uq`: never in the shop, never sold back). journey['photo_wall'] {uid: photo
+# id} says which photo each frame holds (the client draws it with public/js/v4/portrait-art.js). 2.4.66 keeps the piece in
+# reno.items, unshown.
+ITEMS['anh_chup'] = dict(_i('wall', 'wall', 2, 2, 0, 2, _UQ_ROOMS, 'Ảnh chụp đóng khung', '🖼️', ('art',)), price=0, uq=True)

@@ -128,12 +128,22 @@ function shopView(env,pid){
   // button, then the workplaces and the reviews, three of each in sight and "Xem thêm" for the rest.
   const owns=`${rideChip(p)}${phoneChip(p)}${luxChip(p)}${uniqChip(p)}`;
   const jobCards=jobs.map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Cấp ${c.level} · ${fmtN(c.served)} khách${c.rating?` · ${c.rating}★`:''}</small></div>`);
-  return `${back}<section class="shop-hero card"><span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span><div class="grow"><h3>${bgBadge(p.bang)}<span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${p.bang?`<p class="small">${bgChip(p.bang,false)}</p>`:''}${titlesLine(p,'small')}${p.bio?`<p class="muted">${esc(p.bio)}</p>`:''}<div class="row wrap small">${pill(`👀 ${fmtN(d.visits)} lượt ghé`)}${d.rating?pill(`${d.rating}★`,'amber'):''}${pill(`${fmtN(p.served)} ${T(p.shop?.current,'served')}`,'green')}</div></div>
+  return `${back}<section class="shop-hero card">${p.pfp?.data?pfpHTML(p,fr):`<span class="avatar huge${fr.cls}"${fr.attrs}>${esc(p.avatar)}</span>`}<div class="grow"><h3>${bgBadge(p.bang)}<span${nameAttrs(api,st)}>${esc(p.name)}</span>${titleChip(api,st)}</h3>${p.bang?`<p class="small">${bgChip(p.bang,false)}</p>`:''}${titlesLine(p,'small')}${p.bio?`<p class="muted">${esc(p.bio)}</p>`:''}<div class="row wrap small">${pill(`👀 ${fmtN(d.visits)} lượt ghé`)}${d.rating?pill(`${d.rating}★`,'amber'):''}${pill(`${fmtN(p.served)} ${T(p.shop?.current,'served')}`,'green')}</div></div>
     ${owns?`<div class="row wrap small soc-owns">${owns}</div>`:''}
     ${me?'':`<div class="row wrap soc-acts">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}${hqInspector(api.state)?button('🛃 Kiểm tra kho','hqInspect',{pid},'small ghost'):''}</div>`}</section>
     ${button(me?'Chỗ làm của tôi':'🏪 Ghé chỗ làm','workVisit',me?{scope:'mine'}:{pid},'primary full')}
+    ${p.studio&&!me?button('📸 Đặt chụp ảnh','photoStudio',{tab:'order',place:p.studio},'ghost full'):''}
     <h4 class="section-title">Nơi làm việc <small class="muted">${jobs.length}</small></h4>${jobs.length?moreList(jobCards,3,'nơi','shop-careers'):'<p class="muted small">Chưa mở chỗ làm nào.</p>'}
     ${giftForm}${reviewForm}${listings}<h4 class="section-title">Hàng xóm chấm sao <small class="muted">${reviews.length}</small></h4>${reviews.length?moreList(reviews,3,'đánh giá','stack'):'<p class="muted small">Chưa có hàng xóm nào chấm sao.</p>'}`;
+}
+
+/** 🙂 The profile photo a player photographer made (game/photo_studio.py photo_pfp): the game's own render, drawn after
+ * this sheet is on screen by ./portrait-art.js (loaded then, not with this sheet). */
+function pfpHTML(p,fr){
+  const id=String(p.pfp.id||'');
+  requestAnimationFrame(()=>import('./portrait-art.js').then(m=>m.photoURL({...p.pfp.data,id},{width:200,preview:true})).then(url=>{
+    if(url)for(const im of document.querySelectorAll(`img[data-soc-pfp="${CSS.escape(id)}"]`))im.src=url;}).catch(()=>{}));
+  return `<img class="avatar huge soc-pfp${fr.cls}"${fr.attrs} data-soc-pfp="${esc(id)}" alt="Ảnh hồ sơ" width="84" height="84" style="object-fit:cover;object-position:50% 18%;border-radius:20px;background:var(--surface-2)">`;
 }
 
 function listingCard(m){
@@ -168,10 +178,10 @@ function inbox(env){
   const {ui}=env,d=load(env,'inbox','inbox');
   if(!d)return loading;if(d.error)return failed(d);
   if(d.unread&&!ui.socInboxRead){ui.socInboxRead=true;env.api.socialPost('inbox_read').then(()=>{if(env.api.social)env.api.social.unread=0;}).catch(()=>{});}
-  const kindIcon={visit:'👀',review:'⭐',reply:'💬',gift:'🎁',sale:'🧺',comment:'💬',jail:'🚔',jail_out:'🤝',hq:'🛃'};
+  const kindIcon={visit:'👀',review:'⭐',reply:'💬',gift:'🎁',sale:'🧺',comment:'💬',jail:'🚔',jail_out:'🤝',hq:'🛃',photo:'📸'};
   return `${d.notes?.length?`<div class="notice success">${icon('check',17)}<div>${d.notes.map(esc).join('<br>')}</div></div>`:''}
     ${d.gifts.length?`<h4 class="section-title">Quà đã nhận</h4><div class="gift-row">${d.gifts.map(g=>`<div class="gift"><span>${esc(g.sticker)}</span><small><b>${esc(g.author)}</b>${g.coins?` · ${g.coins} xu`:''}${g.note?`<br>“${esc(g.note)}”`:''}</small></div>`).join('')}</div>`:''}
-    <h4 class="section-title">Thông báo</h4>${d.items.length?`<ul class="inbox">${d.items.map(x=>`<li class="${x.read?'':'unread'}"><span>${kindIcon[x.kind]||'🔔'}</span><p class="grow">${esc(x.text)}<small class="muted block">${ago(x.at)}</small></p>${x.ref&&/^[0-9a-f]{16}$/.test(x.ref)?button('Xem','socShop',{pid:x.ref},'small ghost'):x.kind==='jail'?button('Bảo lãnh','friends',{},'small primary'):x.kind==='hq'?button('Hồ sơ','hqMine',{},'small ghost'):''}</li>`).join('')}</ul>`:`<div class="empty">${icon('inbox',28)}<p>Chưa có gì mới.</p></div>`}`;
+    <h4 class="section-title">Thông báo</h4>${d.items.length?`<ul class="inbox">${d.items.map(x=>`<li class="${x.read?'':'unread'}"><span>${kindIcon[x.kind]||'🔔'}</span><p class="grow">${esc(x.text)}<small class="muted block">${ago(x.at)}</small></p>${x.ref&&/^[0-9a-f]{16}$/.test(x.ref)?button('Xem','socShop',{pid:x.ref},'small ghost'):x.kind==='jail'?button('Bảo lãnh','friends',{},'small primary'):x.kind==='hq'?button('Hồ sơ','hqMine',{},'small ghost'):x.kind==='photo'&&(x.ref==='studio'||x.ref==='album')?button('Xem','photoStudio',{tab:x.ref},'small ghost'):''}</li>`).join('')}</ul>`:`<div class="empty">${icon('inbox',28)}<p>Chưa có gì mới.</p></div>`}`;
 }
 
 export function socialView(env){
