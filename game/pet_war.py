@@ -10,6 +10,16 @@ The weekly war (start(): Saturday WAR_HOUR, outside the 17:30–20:00 peak; PET_
 * Until LOCK_MIN minutes before the start, each member of a team may field exactly one pet (`war_pick`; again to
   change it, `war_unpick` to leave the slot). A team fields at most SIZE (5), first come first in; the provider may
   refuse a member (`can_pick`). Every jr_pet_* command refreshes the fielded pet's snapshot (on_pet_commit).
+* 👑 The team's leaders may choose the lineup instead (owner: "bang chủ được quyền chọn danh sách thú để xuất
+  chiến nhé"; the provider's `can_lead`: a bang's Trưởng lão and up, as for the ⚔️ Thách đấu roster). `war_team` lists
+  the members with their pets (each member's save read only, the strongest first: the suggestion), `war_lineup` saves
+  1…SIZE member + pet pairs (one pet a member, the member's own pet at home or in the kennel, `can_pick` and the
+  provider's island rule as for `war_pick`): it replaces the team's picks of the week, under the same team lock, with
+  the same snapshots (they follow the pets until the lock; a pet gone meanwhile fights as its last snapshot, as a
+  member's own pick does). A marker row in pet_war_picks (sid LEAD + kind|id, no pet, never a member: every reader
+  skips it, an older build too since no team owns that sid) says the lineup is the leaders' own: members can no longer
+  pick or leave it themselves (`lead_set`) until a leader hands it back (`war_lineup_off`, the picks kept). The team
+  gets a line in its log and chat group naming the members picked. No table or column added.
 * At the lock (server.py housekeeping, or the first page that looks after it) the war is played at once, on the
   server, exactly once (an advisory lock and the pet_war row): the teams with at least one pet fielded enter a single-
   elimination bracket (seeded by the teams' rating across weeks, byes to the best seeds), round r starting at
@@ -25,7 +35,7 @@ The weekly war (start(): Saturday WAR_HOUR, outside the 17:30–20:00 peak; PET_
   its level adds TRAINING_PCT % (at most TRAINING_MAX) to its fighters' stats in this war only.
 
 API for other modules (the Bang agent): register(kind, provider), team_match(a, b, key), standings(db, t), ladder(db,
-kind, week), team_rating(db, kind, id), training_bonus(db, kind, id).
+kind, week), team_rating(db, kind, id), training_bonus(db, kind, id), lead_of(db, week, kind, id).
 """
 from __future__ import annotations
 
@@ -44,6 +54,8 @@ TRAINING_KEY = 'san_luyen_pet'
 TRAINING_PCT, TRAINING_MAX = 1, 5
 K_TEAM = 32
 PTS_WIN, PTS_CHAMP = 3, 5
+LEAD = '~lead|'            # the sid of the marker row of a lineup chosen by the team's leaders (never a save's sid)
+PETS_SHOWN = 8             # a member's strongest pets the lineup editor lists (and the one fielded now)
 
 
 def _env_int(name: str, default: int, lo: int, hi: int) -> int:
@@ -85,6 +97,27 @@ class TeamProvider:
     def facility(self, db, team_id: str, key: str) -> int:
         """The level of a team facility (TRAINING_KEY: the training ground), 0 without one."""
         return 0
+
+    # 👑 the leaders' lineup (none by default: every member picks their own)
+    lead_who = 'Đội trưởng'
+
+    def can_lead(self, db, team_id: str, sid: str) -> bool:
+        """May this member choose the team's lineup?"""
+        return False
+
+    def role_of(self, db, team_id: str, sid: str) -> str:
+        """The member's title as the lineup's notices name it ('Bang chủ')."""
+        return ''
+
+    def roster(self, db, team_id: str) -> list:
+        """The members now: [{sid, pid, name, role}] (pid: the id the page shows, never a sid)."""
+        return []
+
+    def lock_team(self, db, team_id: str) -> None:
+        """Take the team's own row lock first (its module's lock order), before the war's team lock."""
+
+    def announce(self, db, team_id: str, sid: str, text: str, t: float) -> None:
+        """A line for the team (its log, its chat group)."""
 
 
 PROVIDERS: dict = {}
@@ -197,6 +230,10 @@ def act(store, token, op, data, state, ip=''):
         return view(store, token)
     if op == 'war_match':
         return match_view(store, token, data)
+    if op == 'war_team':
+        return team_view(store, token)
+    if op in ('war_lineup', 'war_lineup_off'):
+        return set_lineup(store, token, data, op == 'war_lineup_off')
     A.need(op in ('war_pick', 'war_unpick'), 'Thao tác không hợp lệ.', 'unknown', 404)
     sid, display = A._who(store, token)
     A._gate(state, display)
@@ -209,6 +246,10 @@ def act(store, token, op, data, state, ip=''):
         A.need(team, 'Vào một bang để cùng ra trận nhé.', 'no_team', 409)
         kind, tid, tname, _ = team
         db.execute('SELECT pg_advisory_xact_lock(?, hashtext(?))', (LOCK_KEY, f'{week}|{kind}|{tid}'))
+        lead = lead_of(db, week, kind, tid)
+        if lead:   # 👑 the leaders chose the lineup: theirs wins until they hand it back
+            A.need(False, f'👑 {lead["role"]} đã chọn đội hình bang chiến tuần này, bạn không tự đổi được. Nhờ {lead["role"]} đổi giúp nhé.',
+                   'lead_set', 409)
         if op == 'war_unpick':
             db.execute('DELETE FROM pet_war_picks WHERE week=? AND sid=?', (week, sid))
             return dict(ok=True, message='Đã rút bé khỏi đội hình.')
@@ -235,10 +276,162 @@ def current_picks(db, week: str, kind: str, tid: str, exclude: str = '') -> list
                       (week, kind, tid, exclude)).fetchall()
     out = []
     for r in rows:
+        if r['sid'].startswith(LEAD):
+            continue
         now_team = team_of(db, r['sid'])
         if now_team and (now_team[0], now_team[1]) == (kind, tid):
             out.append(r['sid'])
     return out
+
+
+# ---------------------------------------------------------------- 👑 the leaders' lineup
+def _lead_sid(kind: str, tid: str) -> str:
+    return f'{LEAD}{kind}|{tid}'
+
+
+def lead_of(db, week: str, kind: str, tid: str) -> dict | None:
+    """{role, by (the leader's pid), at} when the team's leaders chose the week's lineup, else None."""
+    r = db.execute('SELECT snap, at FROM pet_war_picks WHERE week=? AND sid=?', (week, _lead_sid(kind, tid))).fetchone()
+    if not r:
+        return None
+    d = A._j(r['snap'], {})
+    return dict(role=str(d.get('role') or 'Đội trưởng')[:24], by=str(d.get('by') or ''), at=float(r['at']))
+
+
+def _states(store, db, sids: list) -> dict:
+    """{sid: save} of these players, read only (parsed, migrated in memory when an older shape: never written)."""
+    from . import archive as ar
+    from .engine import migrate_state, needs_migration
+    out = {}
+    if not sids:
+        return out
+    for r in db.execute('SELECT sid, state FROM sessions WHERE sid = ANY(?)', (list(sids),)).fetchall():
+        try:
+            s = store.parse_state(r['state'], r['sid'])
+            if needs_migration(s):
+                with ar.collect():
+                    s = migrate_state(s, owned=True)
+        except Exception:  # noqa: BLE001 - one unreadable save never breaks the editor: that member shows no pet
+            continue
+        out[r['sid']] = s
+    return out
+
+
+def _leader(db, sid: str) -> tuple:
+    """(kind, team id, team name, provider) of the player's team when they may choose its lineup."""
+    team = team_of(db, sid)
+    A.need(team, 'Vào một bang để cùng ra trận nhé.', 'no_team', 409)
+    kind, tid, tname, _ = team
+    prov = _providers()[kind]
+    A.need(prov.can_lead(db, tid, sid), f'Chọn đội hình cần {prov.lead_who}.', 'role', 403)
+    return kind, tid, tname, prov
+
+
+def _eligible(db, prov, tid: str, m: dict, s) -> str:
+    """'' when member `m` may fight for the team with one of the pets of save `s`, else why not."""
+    if not prov.can_pick(db, tid, m['sid']):
+        return 'Chưa được ra trận tuần này'
+    if not s or not A._story(s).get('story'):
+        return 'Chưa vào hành trình'
+    if not A.candidates(s):
+        return 'Chưa có bé'
+    return ''
+
+
+def team_view(store, token) -> dict:
+    """👑 The lineup editor: every member with their pets (the strongest first, each with its rank and power), who is
+    fielded now, and whether the lineup is the leaders' already."""
+    from . import pet_tiers as px
+    sid, display = A._who(store, token)
+    A.need(display, 'Tạo tài khoản để vào đấu trường nhé.', 'account_required', 403)
+    t = A.now()
+    week, start, lock = _week_open(t)
+    with store.connect() as db:
+        kind, tid, tname, prov = _leader(db, sid)
+        members = prov.roster(db, tid)
+        states = _states(store, db, [m['sid'] for m in members])
+        picked = {r['sid']: r['pet'] for r in db.execute('SELECT sid, pet FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=?',
+                                                         (week, kind, tid)).fetchall() if not r['sid'].startswith(LEAD)}
+        lead = lead_of(db, week, kind, tid)
+        why = {m['sid']: _eligible(db, prov, tid, m, states.get(m['sid'])) for m in members}
+    rows, picks = [], []
+    for m in members:
+        s = states.get(m['sid'])
+        pets = []
+        if s and not why[m['sid']]:
+            ranked = sorted(A.candidates(s), key=lambda p: -px.power(s, p))
+            shown = ranked[:PETS_SHOWN]
+            now_pet = next((p for p in ranked if p['id'] == picked.get(m['sid'])), None)
+            if now_pet and now_pet not in shown:
+                shown.append(now_pet)
+            pets = [A.pet_view(A.fighter(s, p)) | dict(id=p['id']) for p in shown]
+        cur = picked.get(m['sid'])
+        if cur and any(p['id'] == cur for p in pets):
+            picks.append(dict(pid=m['pid'], pet=cur))
+        rows.append(dict(pid=m['pid'], name=m['name'], role=m['role'], me=m['sid'] == sid, ok=not why[m['sid']] and bool(pets),
+                         why=why[m['sid']], pets=pets, best=pets[0]['id'] if pets else '', pw=pets[0].get('pw', 0) if pets else 0))
+    rows.sort(key=lambda r: (not r['ok'], -int(r['pw'] or 0), r['name']))
+    return dict(ok=True, week=week, start=start, lock=lock, now=t, open=t < lock, size=SIZE, team=dict(kind=kind, id=tid, name=tname),
+                members=rows, picks=picks, lead=dict(role=lead['role'], at=lead['at']) if lead else None)
+
+
+def set_lineup(store, token, data, off: bool = False) -> dict:
+    """👑 `war_lineup` {picks: [{pid, pet}]} (1…SIZE, one pet a member, in their order): the team's lineup for this
+    week's war, replacing every pick of the team; `war_lineup_off`: members pick their own again (picks kept)."""
+    sid, display = A._who(store, token)
+    A.need(display, 'Tạo tài khoản để vào đấu trường nhé.', 'account_required', 403)
+    want = [] if off else data.get('picks')
+    if not off:
+        A.need(isinstance(want, list) and 1 <= len(want) <= SIZE, f'Chọn từ 1 tới {SIZE} bé nhé.', 'bad_picks')
+        A.need(all(isinstance(x, dict) and isinstance(x.get('pid'), str) and 0 < len(x['pid']) <= 40 and isinstance(x.get('pet'), str)
+                   and 0 < len(x['pet']) <= 60 for x in want), 'Đội hình không hợp lệ.', 'bad_picks')
+        A.need(len({x['pid'] for x in want}) == len(want), 'Mỗi người chỉ ra trận 1 bé thôi.', 'twice')
+    t = A.now()
+    week, start, lock = _week_open(t)
+    A.need(t < lock, 'Đã khóa đội hình bang chiến tuần này. Tuần sau chọn sớm nhé!', 'locked', 409)
+
+    def run(db):
+        team = team_of(db, sid)
+        A.need(team, 'Vào một bang để cùng ra trận nhé.', 'no_team', 409)
+        _providers()[team[0]].lock_team(db, team[1])          # the team's own row first (its lock order), then the war's
+        db.execute('SELECT pg_advisory_xact_lock(?, hashtext(?))', (LOCK_KEY, f'{week}|{team[0]}|{team[1]}'))
+        kind, tid, tname, prov = _leader(db, sid)
+        A.need((kind, tid) == tuple(team[:2]), 'Bạn vừa đổi bang. Mở lại nhé.', 'retry', 409)
+        who = (prov.role_of(db, tid, sid) or prov.lead_who)[:24]
+        roster = prov.roster(db, tid)
+        me = next((m for m in roster if m['sid'] == sid), None)
+        if off:
+            n = db.execute('DELETE FROM pet_war_picks WHERE week=? AND sid=?', (week, _lead_sid(kind, tid))).rowcount
+            A.need(n, 'Mọi người đang tự chọn bé rồi.', 'none', 409)
+            prov.announce(db, tid, sid, f'🛡️ {who} {display[:24]} để mọi người tự chọn bé ra Bang chiến pet tuần này.', t)
+            return dict(ok=True, message='Đã để mọi người tự chọn bé ra trận.')
+        members = {m['pid']: m for m in roster}
+        chosen = []
+        for x in want:
+            A.need(x['pid'] in members, 'Có người vừa rời bang. Mở lại nhé.', 'not_member', 409)
+            chosen.append((members[x['pid']], x['pet']))
+        states = _states(store, db, [m['sid'] for m, _ in chosen])
+        rows = []
+        for m, pid in chosen:
+            s = states.get(m['sid'])
+            why = _eligible(db, prov, tid, m, s)
+            A.need(not why, f'{m["name"]}: {why}.', 'not_allowed', 403)
+            pet = next((p for p in A.candidates(s) if p['id'] == pid), None)
+            A.need(pet, f'Bé này không phải của {m["name"]}, hoặc không ở nhà hay trại nuôi.', 'not_owned', 409)
+            rows.append((m, pet, A.fighter(s, pet)))
+        db.execute('DELETE FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=?', (week, kind, tid))
+        db.execute('INSERT INTO pet_war_picks(week, sid, team_kind, team_id, name, pet, snap, at) VALUES(?,?,?,?,?,?,?,?) '
+                   'ON CONFLICT (week, sid) DO UPDATE SET snap=EXCLUDED.snap, at=EXCLUDED.at',
+                   (week, _lead_sid(kind, tid), kind, tid, '', '', A._dump(dict(lead=1, role=who, by=me['pid'] if me else '')), t))
+        for i, (m, pet, f) in enumerate(rows):
+            db.execute('INSERT INTO pet_war_picks(week, sid, team_kind, team_id, name, pet, snap, at) VALUES(?,?,?,?,?,?,?,?) '
+                       'ON CONFLICT (week, sid) DO UPDATE SET team_kind=EXCLUDED.team_kind, team_id=EXCLUDED.team_id, name=EXCLUDED.name, '
+                       'pet=EXCLUDED.pet, snap=EXCLUDED.snap, at=EXCLUDED.at',
+                       (week, m['sid'], kind, tid, m['name'][:24], pet['id'], A._dump(f), t + (i + 1) / 1000))
+        names = ', '.join(f'{m["name"]} ({pet["n"]})' for m, pet, _ in rows)
+        prov.announce(db, tid, sid, f'🛡️ {who} {display[:24]} chọn đội hình Bang chiến pet tuần này: {names}.', t)
+        return dict(ok=True, message=f'👑 Đã chọn đội hình {len(rows)}/{SIZE} bé cho {tname}!')
+    return store.transaction(run)
 
 
 def on_pet_commit(db, sid: str, after: dict) -> None:
@@ -282,6 +475,8 @@ def play(db, week: str, t: float) -> bool:
     start = start_of(t)
     teams = {}
     for r in db.execute('SELECT * FROM pet_war_picks WHERE week=? ORDER BY at, sid', (week,)).fetchall():
+        if r['sid'].startswith(LEAD):      # 👑 the leaders' marker: not a fighter
+            continue
         key = (r['team_kind'], r['team_id'])
         now_team = team_of(db, r['sid'])
         if not now_team or (now_team[0], now_team[1]) != key:   # left the team since: their pick does not count
@@ -437,8 +632,14 @@ def view(store, token) -> dict:
     with store.connect() as db:
         team = team_of(db, sid) if sid else None
         war = db.execute('SELECT * FROM pet_war WHERE week=?', (week,)).fetchone()
-        picks = []
+        picks, lead, can_lead = [], None, False
         if team:
+            lead = lead_of(db, week, team[0], team[1])
+            prov = _providers().get(team[0])
+            try:
+                can_lead = bool(prov and prov.can_lead(db, team[1], sid))
+            except Exception:  # noqa: BLE001 - a provider's fault never breaks the page
+                can_lead = False
             still = set(current_picks(db, week, team[0], team[1]))
             picks = [dict(r) for r in db.execute('SELECT sid, name, pet, snap FROM pet_war_picks WHERE week=? AND team_kind=? AND team_id=? ORDER BY at, sid',
                                                  (week, team[0], team[1])).fetchall() if r['sid'] in still]
@@ -468,7 +669,8 @@ def view(store, token) -> dict:
                picks=[dict(name=p['name'], me=p['sid'] == sid, pet=A.pet_view(A._j(p['snap'], {}))) for p in picks],
                rounds=[dict(rd=r, name=round_name(r, rounds)) for r in range(1, rounds + 1)], bracket=bracket,
                champ=war['champ_name'] if war and phase == 'done' else None, ladder=board,
-               last=dict(week=last['week'], champ=last['champ_name']) if last else None, kinds=sorted(_providers()))
+               last=dict(week=last['week'], champ=last['champ_name']) if last else None, kinds=sorted(_providers()),
+               lead=dict(role=lead['role'], at=lead['at']) if lead else None, can_lead=can_lead)
     return out
 
 

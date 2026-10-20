@@ -49,7 +49,7 @@ NPC_X = (85, 100, 118)              # % of the player's own strength: Dễ, Vừ
 NPC_NAMES = ('Dễ', 'Vừa', 'Khó')
 NPC_OWNER = '🐾 Bé nhà Mây'
 RECENT_LIST = 12
-LIGHT = frozenset({'replay', 'ladder', 'cup_board', 'war', 'war_match', 'tc', 'tc_find', 'tc_match', 'tc_unreg', 'tc_order', 'tc_send',
+LIGHT = frozenset({'replay', 'ladder', 'cup_board', 'war', 'war_match', 'war_team', 'war_lineup', 'war_lineup_off', 'tc', 'tc_find', 'tc_match', 'tc_unreg', 'tc_order', 'tc_send',
                    'tc_answer', 'tc_cancel', 'tc_set'})   # server.py: these read no save (⚔️ Thách đấu: game/bang_challenge.py LIGHT)
 DAY = 86400
 
@@ -714,7 +714,7 @@ def rules() -> dict:
 
 
 OPS = ('view', 'lineup', 'fight', 'friend', 'friends', 'npc', 'replay', 'ladder', 'cup_join', 'cup_leave', 'cup_board',
-       'war', 'war_pick', 'war_unpick', 'war_match',
+       'war', 'war_pick', 'war_unpick', 'war_match', 'war_team', 'war_lineup', 'war_lineup_off',   # 👑 the leaders' lineup (game/pet_war.py)
        # ⚔️ Thách đấu bang (game/bang_challenge.py, owner 21/10): view, find, replay, roster, order, send, answer, cancel, mode
        'tc', 'tc_find', 'tc_match', 'tc_reg', 'tc_unreg', 'tc_order', 'tc_send', 'tc_answer', 'tc_cancel', 'tc_set')
 
@@ -743,7 +743,7 @@ def act(store, token, op: str, data: dict, state, ip: str = '') -> dict:
         # closed while BANG_ONLY
         need(not op.startswith('cup_'), 'Giải tuần đang đóng: đấu trường giờ chỉ dành cho bang.', 'cup_closed', 409)
         need_bang(store, _who(store, token)[0], island=True)
-    if op == 'war_pick':   # 🏝️ a bang member's pick: the island first (game/bang_pets.py can_pick refuses too; other teams: pet_war)
+    if op in ('war_pick', 'war_team', 'war_lineup'):   # 🏝️ a bang member's pick or a leader's lineup: the island first (game/bang_pets.py can_pick refuses too; other teams: pet_war)
         with store.connect() as db:
             sid = _who(store, token)[0]
             b = bang_of(db, sid) if sid else None
