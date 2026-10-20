@@ -33,7 +33,7 @@ from pathlib import Path
 
 ENTRIES = (
     dict(version="2.4.66", date="2026-10-21", items=(
-        dict(emoji='🔧', text='Sửa lỗi và cập nhật cho Bang, đảo, đấu trường và cửa hàng.'),
+        dict(emoji='🔧', text='Sửa lỗi và cập nhật: hướng dẫn từng bước khi vào nghề mới, Bang, đảo, đấu trường, cửa hàng.'),
     )),
     dict(version="2.4.63", date="2026-10-21", items=(
         dict(emoji='⚔️', text='Bang: lập bang, góp quỹ xây 7 công trình, danh hiệu, cửa hàng bang và giờ vàng riêng do chủ bang chọn.'),

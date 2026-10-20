@@ -2,7 +2,7 @@
  * Release notes for the "Có gì mới" card (whatsnew.js), newest first. Loaded only after the game is up. */
 export default [
  {"version":"2.4.66","date":"2026-10-21","items":[
-  {"emoji":"🔧","text":"Sửa lỗi và cập nhật cho Bang, đảo, đấu trường và cửa hàng."}
+  {"emoji":"🔧","text":"Sửa lỗi và cập nhật: hướng dẫn từng bước khi vào nghề mới, Bang, đảo, đấu trường, cửa hàng."}
  ]},
  {"version":"2.4.63","date":"2026-10-21","items":[
   {"emoji":"⚔️","text":"Bang: lập bang, góp quỹ xây 7 công trình, danh hiệu, cửa hàng bang và giờ vàng riêng do chủ bang chọn."},
