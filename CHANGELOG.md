@@ -1,4 +1,16 @@
-# Chưa phát hành — pet-autofuse
+# v2.4.68 — 2026-10-20
+
+Không có mục Có gì mới (chủ game: không thông báo).
+
+## bang-disband
+
+- 👑 Giải tán bang chỉ cần bấm hai lần (chủ game 21/10 "chưa giải tán được bang nhé"): 2.4.67 còn bắt gõ đúng tên bang từng ký tự, mọi lần thử trên production đều bị từ chối (400). Giờ không cần gõ; app cũ còn gửi tên thì tên được so như khóa trùng tên (bỏ hoa thường, dấu cách, dấu).
+
+## pet-buy
+
+- 🐾 Mua thú không còn giới hạn 10 bé một lần (chủ game 21/10 "mua thú thì k cần giới hạn tối đa đâu"): chỉ còn giới hạn chỗ ở (3 ở nhà + 30 ở trại nuôi). pets_content.BUY_QTY_MAX = 33.
+
+## pet-autofuse
 
 🤖 Ghép tự động đồ thú cưng (chủ game: "ghép thú thì thêm chế độ ghép tự động cho áo quần nhé"). game/pet_wardrobe.py, public/js/v4/pets.js.
 - Lệnh mới jr_pet_wfuse_auto {scope: 'all' hoặc một món, max_rank (mặc định SSS), keep_worn (mặc định true), budget (bắt buộc), confirm}: ghép liên tiếp từng bộ 3 món giống hệt chưa mặc, hạng thấp trước (cùng hạng: theo thứ tự trong tiệm); trượt thì thử lại bộ đó; món mới ra ghép tiếp được. Dừng khi hết bộ ba, lượt tiếp theo vượt ngân sách hoặc số tiền đang có, hoặc đủ 50 lượt. Một lệnh = một lần lưu, trừ tiền một lần (ví trước, thiếu lấy tài khoản, như _pay); trả về tóm tắt {n, ok, lux, spent, stop, used, made, left}.
