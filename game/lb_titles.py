@@ -76,7 +76,7 @@ CAREER_NOUN = dict(
     tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách', oil='giàn khoan',
     corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
     hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng', railway='gác chắn', nurse='khoa Nội', lighthouse='hải đăng', rescue='tổng đài cứu hộ', lifeguard='hồ bơi', police='công an phường', zpop='tiệm album', customs='hải quan', hotel='khách sạn', banquet='nhà hàng tiệc', reception='quầy lễ tân', teller='quầy giao dịch',
-    lawyer='văn phòng luật', art_studio='xưởng vẽ', post_office='bưu điện', laundry='giặt ủi')
+    lawyer='văn phòng luật', art_studio='xưởng vẽ', post_office='bưu điện', laundry='giặt ủi', restore='phục chế')
 # A workplace whose top 1 is not a "Trùm": nobody is the boss of a pagoda (game/pagoda_voice.py).
 CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders

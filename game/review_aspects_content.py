@@ -32,7 +32,7 @@ FAMILY = {
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
     'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
-    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office',
+    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office', 'restore': 'service',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -66,6 +66,15 @@ ASPECTS = dict((
       word=('Kiểm lại phiếu.', 'Tem phiếu rõ.'), sig_neg=('crit:tag:lo',), sig_pos=('crit:tag:hi',)),
     A('laundry_fold', ('service',), 'Cách xếp đồ', 'cách xếp đồ chưa hợp ý', topic='ambience', only=('laundry',), subjective=True,
       neg=['mình thích cách xếp đồ gọn nhỏ hơn nữa'], pos=['đồ xếp gọn đúng kiểu mình thích'], word=('Thích gọn hơn.', 'Xếp gọn.')),
+    A('restore_craft', ('service',), 'Giữ hồn món đồ', 'có bước phục chế phải làm lại', topic='clean', only=('restore',),
+      neg=['có công đoạn phục chế phải làm lại mới giữ được nước gốc'],
+      pos=['món đồ về còn nguyên hồn, chỗ hư được sửa kỹ'],
+      word=('Phải làm lại.', 'Còn nguyên hồn.'), sig_neg=('crit:craft:lo',), sig_pos=('crit:craft:hi',)),
+    A('restore_talk', ('service',), 'Nói thật, ghi phiếu', 'yêu cầu của mình phải chốt lại', topic='method', only=('restore',),
+      neg=['phải nói lại yêu cầu mấy lần thợ mới ghi đúng phiếu'], pos=['thợ nói thật tuổi đồ, ghi rõ từng hạng mục'],
+      word=('Chốt lại yêu cầu.', 'Nói thật, rõ ràng.'), sig_neg=('crit:talk:lo',), sig_pos=('crit:talk:hi',)),
+    A('restore_look', ('service',), 'Vẻ cổ điển', 'màu sáp chưa hợp ý', topic='ambience', only=('restore',), subjective=True,
+      neg=['mình thích màu sáp sẫm hơn một chút'], pos=['màu gỗ trầm ấm đúng kiểu đồ xưa'], word=('Thích sẫm hơn.', 'Trầm ấm.')),
     A('hotel_room', ('service',), 'Phòng đúng yêu cầu', 'có bước làm phòng phải làm lại', topic='clean', only=('hotel',),
       neg=['có bước dọn hoặc giao phòng phải làm lại cho đúng phiếu'],
       pos=['phòng sạch, đúng loại giường và đúng hướng mình đặt'],
@@ -793,6 +802,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                            'harsh': {'male': 'anh họa sĩ', 'female': 'chị họa sĩ', None: 'họa sĩ'}},
              'laundry': {'polite': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'},
                          'harsh': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'}},
+             'restore': {'polite': {'male': 'anh thợ phục chế', 'female': 'chị thợ phục chế', None: 'thợ phục chế'},
+                         'harsh': {'male': 'anh thợ phục chế', 'female': 'chị thợ phục chế', None: 'thợ phục chế'}},
              'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},
                         'harsh': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'}},
              'teller': {'polite': {'male': 'anh giao dịch viên', 'female': 'chị giao dịch viên', None: 'giao dịch viên'},

@@ -69,6 +69,10 @@ let itemMap=null,itemSrc=null;
 const ITEM=k=>{const list=CD().items;if(itemSrc!==list){itemSrc=list;itemMap=new Map(list.map(i=>[i.id,i]));}return itemMap.get(k);};
 const SKIN=id=>(CD().skins||[]).find(s=>s.id===id)||null;
 const PART=id=>CR().parts.find(x=>x.id===id)||{};
+/** 🧰 A piece a player restorer made "cổ điển" (journey.restored, game/restore_service.py): an aged patina, nothing else. */
+const aged=uid=>!S.remote&&!!S.env?.api?.state?.journey?.restored?.['decor:'+uid];
+const AGED=' style="filter:sepia(.55) saturate(.8) contrast(1.04)"';
+const agedBy=uid=>S.env?.api?.state?.journey?.restored?.['decor:'+uid]?.by||'';
 /** A piece's colour: the one being tried in the picker, else its own from the palette (state.colors.deco). */
 const tintOf=uid=>S.tryTint?.uid===uid?S.tryTint.c:(S.remote?S.remote.colors:S.env?.api?.state?.colors)?.deco?.[uid]||null;
 const POCKET=['account','wallet'];
@@ -432,7 +436,7 @@ function roomMarkup(rm,opts={}){
     }   // the spouse's may be used while walking; editing keeps every ownership control with its owner
     const [bx,by,bw,bh]=bbox(it,a);
     const sel=S.sel===o.id,pop=S.pop===o.id,ghost=S.held?.src==='room'&&S.held.uid===o.id;
-    out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
+    out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece${aged(o.id)?' rs-aged':''}"${aged(o.id)?AGED:''}>${body}</g>`
       +`<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/>${sel?`<rect class="dc-selbox" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/>`:''}${pop?sparkles(bx,by,bw,bh):''}</g>`);
   }
   if(all.some(o=>o.k==='may_chieu'))out.push(A.galaxy(rm,G,Lt));   // 🌌 the star projector lights up the wall
@@ -642,6 +646,7 @@ async function onClick(op,data){
         onTry:c=>{S.tryTint={uid:p.id,c};if(S.view3d)sync3d();else paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
         onClose:()=>{S.tryTint=null;render();}});return;}
     case'pick':return pick(data.uid);
+    case'restore':S.dlg?.close();await (await import('./restore.js')).openRestore(S.env,{service:'co_dien',ref:data.uid});return;   // 🧰 Làm cổ điển by a player restorer
     case'sell':{const p=placed(data.uid)||v.bag.find(b=>b.id===data.uid),it=ITEM(p?.k);if(!it)return;
       if(await S.env.confirmAction(`Bán lại ${low(it.name)}?`,`Nhận ${xu(it.sell)} (${CD().sell_pct}% giá mua).`,`Bán · ${xu(it.sell)}`)){
         const r=await send('jr_deco_sell',{uid:p.id,confirm:true,n:nonce()});if(r){sfx('coins');S.sel='';S.undo=S.undo.filter(u=>!(p.id in u));render();}}return;}
@@ -1065,13 +1070,15 @@ function toolButtons(v,p,it){
   if((CD().facing||[]).includes(p.k))out.unshift(tb(`↻ Xoay hướng · ${p.face==='back'?'Mặt sau':'Mặt trước'}`,'face',`Xoay hướng sang ${p.face==='back'?'mặt trước':'mặt sau'} (R)`));
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
   if(S.view3d||v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb(S.view3d?'↗ Dời / đổi phòng':'🚪 Đổi phòng','move','Chọn vị trí hoặc phòng muốn đặt'));
+  if(!S.coop&&!S.remote&&!agedBy(p.id)&&['table','bed','light','le'].includes(it.cat)&&!it.uq&&S.env?.api?.state?.journey?.story)out.push(tb('🧰 Làm cổ điển','restore','Nhờ một người chơi làm Thợ phục chế'));
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'));
   if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
   return out;
 }
 function tools(v){
   const p=placed(S.sel),it=ITEM(p?.k);if(!it)return '';
-  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b></span><span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
+  const by=agedBy(p.id),badge=by?`<small class="rs-badge" title="Đã phục chế bởi ${esc(by)}">✨ Cổ điển · ${esc(by)}</small>`:'';
+  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b>${badge}</span><span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
 }
 function drawer(v){
   const C=CD(),types=new Set(v.rooms.map(r=>r.type)),rm=roomOf(S.room);

@@ -17,16 +17,16 @@ const extraIds=[...extra.match(/^NEW_CAREERS = \(([^)]+)\)/m)[1].matchAll(/'([a-
 const plugins=await readFile('game/careers/__init__.py','utf8');
 const pluginIds=[...plugins.split('ORDER = (')[1].split('\n)')[0].matchAll(/^\s*([^#\n]*)/gm)].flatMap(([_,line])=>[...line.matchAll(/'([a-z_]+)'/g)].map(m=>m[1]));
 const ids=[...new Set([...coreIds,...extraIds,...pluginIds])];
-const fallbacks={art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',customs:'office',hotel:'office',banquet:'pho',reception:'home',teller:'office'};
+const fallbacks={art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',customs:'office',hotel:'office',banquet:'pho',reception:'home',teller:'office',restore:'garage'};
 const paintedIds=ids.filter(id=>!Object.hasOwn(fallbacks,id));
 
-test('the original 50 professions retain their own painted exteriors and nine new careers use shipped fallbacks',()=>{
+test('the original 50 professions retain their own painted exteriors and ten new careers use shipped fallbacks',()=>{
   const keys=new Set();
   for(const id of paintedIds){
     assert.equal(art.BUILDING_ART[id],'career-'+id,`${id} loads its own building instead of a shared house with a badge`);
     keys.add(art.BUILDING_ART[id]);
   }
-  assert.equal(ids.length,59);assert.equal(keys.size,50);
+  assert.equal(ids.length,60);assert.equal(keys.size,50);
   for(const [id,base] of Object.entries(fallbacks))assert.equal(art.BUILDING_ART[id],base);
 });
 
@@ -87,9 +87,9 @@ test('texture keys distinguish careers and base sources while unknown IDs stay b
   assert.equal(facade.careerFacadeTextureKey('unknown','home'),null);
 });
 
-test('nine new careers receive distinct composed fallback facades',()=>{
+test('ten new careers receive distinct composed fallback facades',()=>{
   const factory=canvasFactory(),cache=new facade.CareerFacadeCache(factory.create),source={width:292,height:390};
   const keys=new Set();
   for(const [id,base] of Object.entries(fallbacks)){const canvas=cache.get(id,base,source);assert.ok(canvas);assert.ok(canvas.calls.length>30);keys.add(facade.careerFacadeTextureKey(id,base));assert.equal(cache.get(id,base,source),canvas);}
-  assert.equal(keys.size,9);assert.equal(factory.canvases.length,9);
+  assert.equal(keys.size,10);assert.equal(factory.canvases.length,10);
 });

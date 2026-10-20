@@ -62,6 +62,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   laundry:identity('Đọc nhãn vải · giặt và trả đúng khách','Bàn xử lý & gấp đồ','Giặt & xử lý vết bẩn','Gấp & kiểm phiếu'),
   post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
+  restore:identity('Khám dấu hiệu · chốt yêu cầu khách rồi mới phục hồi','Bàn khám & phục hồi','Tủ linh kiện & sáp ong','Quầy nhận và trả đồ'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
@@ -101,6 +102,12 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('workbench','counter',r(3.1,3.4,5.6,4.25),4.4,4.85,57,mint);
     f('washer',r(2.9,.65,4.1,1.85),83,cream);f('washer',r(4.65,.65,5.75,1.85),83,mint);f('sink',r(6.05,.65,6.55,1.85),62,blue);
     z(r(2.65,.35,6.8,2.1),'tile',0xcbdedd);z(r(2.8,3.1,5.9,4.55),'checker',0xe8dfcb);
+  }else if(career==='restore'){
+    // The parts wall on the left, the long restoring bench in front, old pieces waiting on racks and crates behind.
+    clear(false,'plank');s('shelf','tools',r(.55,1.7,1.5,4),2,2.9,118,0xa4865f);
+    s('workbench','desk',r(3.05,3.25,5.75,4.2),4.4,4.8,58,0xc9a77b);
+    f('rack',r(2.9,.6,4.25,1.45),112,0xb48d63);f('crate',r(4.7,.7,5.5,1.5),52,0xc2a171);f('tools',r(5.85,.6,6.5,1.6),96,0x8f7a5c);
+    z(r(2.7,.35,6.7,1.95),'plank',0xd8c3a3);z(r(2.85,3,6.4,4.5),'mat',0xe4cfae);
   }else if(career==='post_office'){
     clear();s('workbench','counter',r(3.05,3.05,5.3,4.05),4.2,4.65,62,0xc7a576);
     refurnish('shelf','shelf',117);refurnish('evidence','routeboard',112,blue);

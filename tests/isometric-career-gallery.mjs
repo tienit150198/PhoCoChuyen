@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {build} from 'esbuild';
 
 const html=readFileSync('public/career-gallery.html','utf8');
-const fallback={art_studio:'/icons/cozy-v3/office.webp',lawyer:'/icons/cozy-v3/office.webp',laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',customs:'/icons/cozy-v3/office.webp',hotel:'/icons/cozy-v3/office.webp',banquet:'/icons/cozy-v2/pho.webp',reception:'/icons/isometric/home.webp',teller:'/icons/cozy-v3/office.webp'};
+const fallback={art_studio:'/icons/cozy-v3/office.webp',lawyer:'/icons/cozy-v3/office.webp',laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',customs:'/icons/cozy-v3/office.webp',hotel:'/icons/cozy-v3/office.webp',banquet:'/icons/cozy-v2/pho.webp',reception:'/icons/isometric/home.webp',teller:'/icons/cozy-v3/office.webp',restore:'/icons/cozy-v2/garage.webp'};
 const ids=[...new Set([...JSON.parse(readFileSync('game/town_layout.json','utf8')).careerOrder,...Object.keys(fallback)])];
 const catalogue=ids.map(id=>({id,short:id,place:'Nơi làm việc '+id,focus:'Công việc '+id,playable:false}));
 catalogue.find(c=>c.id==='teacher').short='Giáo viên';
@@ -84,9 +84,9 @@ test('the HTML mounts the tested gallery module and accessible career controls',
   assert.match(html,/id="status"[^>]*role="status"[^>]*aria-live="polite"/);
 });
 
-test('all 59 catalogue professions are reachable through cards, selector and wrapping pager without unlocks',async()=>{
+test('all 60 catalogue professions are reachable through cards, selector and wrapping pager without unlocks',async()=>{
   const h=harness();await flush();
-  assert.equal(h.nodes.get('gallery').children.length,59);assert.equal(h.nodes.get('career').children.length,59);assert.equal(h.worlds.length,0,'outside collection does not construct a renderer');
+  assert.equal(h.nodes.get('gallery').children.length,60);assert.equal(h.nodes.get('career').children.length,60);assert.equal(h.worlds.length,0,'outside collection does not construct a renderer');
   for(const id of ids){h.click('card-'+id);await flush();assert.equal(h.nodes.get('career').value,id);assert.equal(h.nodes.get('building').src,fallback[id]||'/icons/careers-v1/'+id+'.webp');assert.equal(h.nodes.get('viewer').hidden,false);}
   h.click('next');await flush();assert.equal(h.nodes.get('career').value,ids[0]);h.click('previous');await flush();assert.equal(h.nodes.get('career').value,ids.at(-1));
   h.click('inside');await flush();h.worlds[0].resolve();await flush();
@@ -151,7 +151,7 @@ test('Vietnamese search is case-insensitive including uppercase Đ',async()=>{
   const h=harness();await flush();h.search('giao vien');assert.equal(h.nodes.get('card-teacher').hidden,false);
   h.search('duong sat');assert.equal(h.nodes.get('card-railway').hidden,false,'uppercase Đ in a career title folds to d');
   h.search('ĐƯỜNG SẮT');assert.equal(h.nodes.get('card-railway').hidden,false);
-  h.search('');assert.equal(h.nodes.get('count').textContent,'59 / 59 nghề');
+  h.search('');assert.equal(h.nodes.get('count').textContent,'60 / 60 nghề');
 });
 
 test('catalogue failures show an accessible error without creating a renderer',async()=>{

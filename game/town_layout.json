@@ -676,7 +676,8 @@
     "hotel",
     "banquet",
     "reception",
-    "teller"
+    "teller",
+    "restore"
   ],
   "lots": [
     {
@@ -1739,6 +1740,24 @@
         "y0": 43.5,
         "x1": 55.7,
         "y1": 47.7
+      }
+    },
+    {
+      "career": "restore",
+      "district": "residential",
+      "at": {
+        "x": -1.2,
+        "y": 34.7
+      },
+      "door": {
+        "x": -0.8,
+        "y": 36.65
+      },
+      "footprint": {
+        "x0": -3.0,
+        "y0": 31.5,
+        "x1": 1.2,
+        "y1": 35.7
       }
     }
   ],

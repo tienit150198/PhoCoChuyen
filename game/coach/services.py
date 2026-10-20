@@ -1,5 +1,5 @@
 """🧭 Coach steps of the service trades (see game/coach/__init__.py): the airline crew (pilot, flight attendant), the
-offshore rig, the album shop, the laundry and the painting studio. Each opens on its intro card where it has one,
+offshore rig, the album shop, the laundry, the painting studio and the restoration workshop. Each opens on its intro card where it has one,
 then walks the first day's own loop; the album shop ends with its stock round."""
 from . import S, V, stock  # noqa: F401
 
@@ -15,6 +15,14 @@ LD_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.ld-submit'])
 
 def _ld(stage: str, what: str = 'items') -> str:
     return f'.ld-stage[data-stage="{stage}"] [data-coach="laundry-{what}"]'
+
+
+# Restoration: every stage is a choice (per sign, demand, part or damage), then its "Xác nhận …" button.
+RS_NEXT = V('Chọn đủ rồi bấm Xác nhận.', (), ['.rs-submit'])
+
+
+def _rs(stage: str, what: str) -> str:
+    return f'.rs-stage[data-stage="{stage}"] [data-coach="restore-{what}"]'
 
 
 STEPS: dict[str, list[dict]] = {
@@ -141,6 +149,20 @@ STEPS: dict[str, list[dict]] = {
           v=V('Bấm nốt các mục kiểm còn lại.', (), ['[data-action="car:artCheck"]:not(.primary)'])),
         S('🎁', 'Giao tranh đúng người nhận ghi trên phiếu.', (), ['.art-options:has([data-command="art_deliver"])'], g=3),
     ],
+    'restore': [
+        S('🧰', 'Bấm Hỏi khách và nhận phiếu.', ['Hỏi khách và nhận phiếu'], ['[data-command="ask"]'], g=0),
+        S('🔎', 'Đọc từng dấu hiệu, chọn đúng tên hư hỏng.', (), [_rs('inspect', 'signs')], g=0),
+        S('✅', 'Bấm Xác nhận. Sai thì sửa ngay ở bước đó.', (), ['.rs-submit[data-stage="inspect"]'], g=2),
+        S('🌀', 'Khách dặn điều oái oăm: chọn cách trả lời thật thà.', (), [_rs('talk', 'talk')], g=1, v=RS_NEXT),
+        S('🔩', 'Linh kiện: còn thì lấy, thiếu thì chế lại.', (), [_rs('parts', 'parts')], g=2, v=RS_NEXT),
+        S('🧽', 'Làm sạch: chọn cách hợp chất liệu.', (), [_rs('clean', 'clean')], g=2, v=RS_NEXT),
+        S('🪵', 'Phục hồi: chọn cách cho từng chỗ hư.', (), [_rs('fix', 'fix')], g=2, v=RS_NEXT),
+        S('✨', 'Hoàn thiện theo điều đã chốt với khách.', (), [_rs('finish', 'finish')], g=3, v=RS_NEXT),
+        S('📋', 'Kiểm lần cuối: đánh dấu đủ bốn mục.', (), [_rs('check', 'checks')], g=3, v=RS_NEXT),
+        S('🎫', 'Chọn đúng phiếu khách đưa ra.', (), [_rs('deliver', 'tags')], g=3, v=RS_NEXT),
+        S('🤝', 'Bấm Đối chiếu và trả đồ.', ['Đối chiếu và trả đồ'], ['.rs-submit[data-stage="deliver"]'], g=3),
+        S('🛎️', 'Đồ của người chơi: 🧰 Bàn thợ ở cuối bảng việc.', x=True, o=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -254,4 +276,13 @@ EN: dict[str, str] = {
     'Bấm Chốt kiểm tranh.': 'Tap Finish the check.',
     'Bấm nốt các mục kiểm còn lại.': 'Tap the remaining checks.',
     'Giao tranh đúng người nhận ghi trên phiếu.': 'Hand the painting to the person named on the order.',
+    # restoration workshop
+    'Đọc từng dấu hiệu, chọn đúng tên hư hỏng.': 'Read each sign and pick the right name for the damage.',
+    'Khách dặn điều oái oăm: chọn cách trả lời thật thà.': 'The customer asks for something awkward: pick the honest answer.',
+    'Linh kiện: còn thì lấy, thiếu thì chế lại.': 'Parts: take them from the drawer, or remake the missing one.',
+    'Làm sạch: chọn cách hợp chất liệu.': 'Cleaning: pick the way that suits the material.',
+    'Phục hồi: chọn cách cho từng chỗ hư.': 'Restoring: pick a technique for each damaged spot.',
+    'Hoàn thiện theo điều đã chốt với khách.': 'Finish the piece the way you agreed with the customer.',
+    'Kiểm lần cuối: đánh dấu đủ bốn mục.': 'Final check: tick all four lines.',
+    'Đồ của người chơi: 🧰 Bàn thợ ở cuối bảng việc.': 'Other players\' things: 🧰 Workbench at the bottom of the work page.',
 }

@@ -53,6 +53,7 @@ export async function openServiceMarket(env,data={}){
   }
   S.flash=null;S.step='';S.pick=null;S.card=null;
   S.tab=data.tab||(data.inbox?'inbox':data.pid?'dir':S.tab||'dir');
+  if(data.career&&!data.pid){S.tab='dir';S.card=null;S.career=data.career;}   // 🧰 Phục chế đồ: straight to the restorers
   if(!S.dlg.open){S.dlg.showModal();S.dlg.scrollTop=0;}
   render();
   if(!S.cat)S.cat=await api().json('/api/svc/catalog').catch(()=>null);

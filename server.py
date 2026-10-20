@@ -100,6 +100,7 @@ from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/phot
 from game import wed_services  # 💒 Dịch vụ cưới từ người chơi: its services into game/service_market.py at import (/api/wedsvc/…)
 from game import service_market as _svc_market  # 🛎️ Phố dịch vụ
 _svc_market.install_own()  # 🏥 player birth rooms + 📸 photo packages listed in Phố dịch vụ (own flows: game/birth.py, game/photo_studio.py; a refusal is logged, never a crash)
+from game import restore_service  # 🧰 Thợ phục chế for other players (/api/restore/…; its services in Phố dịch vụ register at import)
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -923,6 +924,11 @@ class Handler(BaseHTTPRequestHandler):
                 token,_,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("wedsvc-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,wed_services.get(self.server.store,token,None,route[len("/api/wedsvc/"):],{k:v[0] for k,v in parse_qs(split.query).items()}));return
+            if route.startswith("/api/restore/"):  # 🧰 mine (what I can bring, my tickets, my marks: the save is read) · bench (my orders to work)
+                sub=route[len("/api/restore/"):]
+                token,state,_,_=self.require_session(light=sub!="mine")
+                if not self.server.rate_limit("restore-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,restore_service.get(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()}));return
             if route=="/api/admin/svc":  # 🛎️ reports and totals of Phố dịch vụ; admin only
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -1325,6 +1331,9 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/wedsvc/"):  # 💒 hire (through Phố dịch vụ), step (one work step of a job), deliver, sell (game/wed_services.py)
                 if not self.server.rate_limit("wedsvc:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,wed_services.post(self.server.store,token,None,route[len("/api/wedsvc/"):],data,ip=self.client_ip()));return
+            if route.startswith("/api/restore/"):  # 🧰 ticket (bring a thing) · drop (withdraw it) · work (one bench step) (game/restore_service.py)
+                if not self.server.rate_limit("restore:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,restore_service.post(self.server.store,token,state,route[len("/api/restore/"):],data));return
             if route=="/api/admin/svc":  # 🛎️ close a report (game/service_market.py admin_act); admin only, nothing automatic
                 if not self.server.rate_limit("admin-svc:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.require_admin(token)

@@ -44,6 +44,7 @@ EMP_TITLES = {
 OWN_TITLES = {
     'art_studio': ('Họa sĩ vững tay', 'Họa sĩ có tiếng', 'Chủ xưởng Màu Nắng', 'Nghệ nhân được tín nhiệm'),
     'laundry': ('Thợ giặt vững tay', 'Thợ chăm vải có tiếng', 'Chủ tiệm Nếp Thơm', 'Nghệ nhân chăm vải'),
+    'restore': ('Thợ phục chế vững tay', 'Thợ phục chế có tiếng', 'Chủ xưởng Hồn Xưa', 'Nghệ nhân Hồn Xưa'),
     'shop': ('Chủ quầy vững tay', 'Chủ tiệm có tiếng', '{chu} được nể', '{ong} chuỗi tiệm'),
     'accounting': ('Sổ sách vững tay', 'Kế toán có tiếng', 'Trưởng nhóm sổ', 'Chủ văn phòng sổ sách'),
     'homemaker': ('Nội trợ khéo tay', 'Nội trợ có tiếng', 'Quản gia', 'Quản gia trưởng'),
@@ -97,6 +98,7 @@ _OWN_HIGH = {
     'shop': ('{chu} xây dựng thương hiệu', '{chu} phát triển chuỗi bền vững', '{chu} truyền nghề cho phố'),
     'art_studio': ('Chủ xưởng nghệ thuật có tiếng', 'Nghệ nhân dẫn dắt xưởng vẽ', 'Người truyền nghề Màu Nắng'),
     'laundry': ('Chủ xưởng chăm vải', 'Chuyên gia bảo dưỡng vải', 'Người truyền nghề Nếp Thơm'),
+    'restore': ('Chủ xưởng phục chế có tiếng', 'Chuyên gia phục chế đồ xưa', 'Người truyền nghề Hồn Xưa'),
     'accounting': ('Chủ văn phòng kế toán có tiếng', 'Chuyên gia đối soát độc lập', 'Người truyền nghề sổ sách'),
     'homemaker': ('Quản gia điều phối nhiều nhà', 'Chuyên gia tổ chức gia đình', 'Người truyền nghề chăm nhà'),
     'giupviec': ('Điều phối viên chăm nhà', 'Chuyên gia vệ sinh gia đình', 'Người truyền nghề giúp việc'),
@@ -149,7 +151,7 @@ GROUP = {
     'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs', 'hotel', 'banquet'),
+                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs', 'hotel', 'banquet', 'restore'),
     'call': ('rescue',),
     'desk': ('reception',),
 }   # every other career: 'trade'

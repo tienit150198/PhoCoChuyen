@@ -68,6 +68,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   banquet:style('cloche','awning','stools','#b5473a','#f3dcb4'),
   reception:style('key','scallop','luggage','#b0546f','#fbecef'),
   teller:style('vault','civic','planter','#1f6f6b','#e3efe6'),
+  restore:style('clock','workshop','toolbox','#8a5a2b','#f1dcb8'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -322,6 +323,10 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
       round(-40,-38,62,76,6,s.main);ellipse(-9,0,26,26,body);ellipse(-9,0,20,20,s.light);
       for(const a of [0,Math.PI/3,2*Math.PI/3])line([[-9+Math.cos(a)*15,Math.sin(a)*15],[-9-Math.cos(a)*15,-Math.sin(a)*15]],ink,3);
       ellipse(-9,0,5,5,cream);for(const y of [30,22,14])ellipse(32,y,13,5,'#e3c26b');line([[19,14],[19,30]],ink,1);line([[45,14],[45,30]],ink,1);break;
+    case 'clock':  // a restored pendulum clock on a wax tin, a little brush beside it: the restoration workshop
+      round(-24,-40,48,74,8,body);ellipse(0,-20,17,17,cream);ellipse(0,-20,13,13,s.light);line([[0,-20],[0,-30]],ink,3);line([[0,-20],[8,-16]],ink,3);
+      round(-14,4,28,24,4,cream);line([[0,4],[0,20]],ink,2);ellipse(0,22,6,6,s.main);round(-38,30,76,10,4,s.main);
+      line([[30,-26],[42,-6]],'#876c50',5);round(38,-8,9,10,3,s.light);break;
     case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
       round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
       round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;

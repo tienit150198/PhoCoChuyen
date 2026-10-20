@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6937,6 +6937,19 @@ CAREERS.update({
         prep=['Ứng tuyển ở phòng giao dịch Bến Chợ (mở từ chương 3). Học ba bài ngắn, thi thực hành ba phần, rồi hai ca có chị Hạnh kèm.',
               'Đứng quầy một mình rồi chọn nhánh: Giao dịch, Tư vấn, Vận hành hoặc Quản lý; bậc then chốt có bài xét lên chức.'],
         surprises=['Quầy hay có chuyện oái oăm: ca trước bàn giao thiếu, khách quen giám đốc đòi chen ngang, tờ tiền nghi giả, sếp ép bán gói không hợp… Chọn cách nào cũng có hậu quả về sau.'], buttons=[]),
+    'restore': dict(emoji='🧰', name='Phục chế', place='Xưởng phục chế Hồn Xưa',
+        intro='Khách mang đồ xưa tới: đồng hồ ông nội, ghế mây bà, áo dài cưới của mẹ… Đọc dấu hiệu hư hỏng, chốt yêu cầu oái oăm của khách, rồi phục chế mà vẫn giữ hồn món đồ.',
+        jobs=[dict(emoji='🔎', name='Khám và chốt yêu cầu', how='Gọi đúng tên từng hư hỏng từ dấu hiệu trên phiếu; trả lời từng yêu cầu oái oăm của khách thật thà, có ghi phiếu.'),
+              dict(emoji='🪵', name='Phục hồi và hoàn thiện', how='Lo linh kiện (thiếu thì chế lại), làm sạch theo chất liệu, chọn cách sửa từng chỗ hư, hoàn thiện theo món đồ hoặc theo điều khách đã chốt.'),
+              dict(emoji='🛎️', name='Đồ của người chơi', how='Bật dịch vụ ở 🛎️ Phố dịch vụ: người chơi khác gửi xe hỏng, phần nhà xuống cấp hay đồ gỗ muốn làm cổ điển; bạn làm ở 🧰 Bàn thợ, giao xong là đồ của họ được phục hồi.')],
+        steps=['Hỏi khách và nhận phiếu; đọc từng dấu hiệu rồi gọi đúng tên hư hỏng.',
+               'Chốt từng yêu cầu oái oăm của khách: nói thật, ghi phiếu, không làm giả, không giấu khách.',
+               'Lo linh kiện, làm sạch theo chất liệu, chọn cách phục hồi cho từng chỗ hư; sai thì sửa ngay ở bước đó.',
+               'Hoàn thiện, kiểm đủ bốn mục rồi đối chiếu phiếu khách trước khi trả đồ.'],
+        stars=['Không sai bước nào giữ chất lượng 100%.', 'Khách đòi giữ vết xước kỷ niệm thì đừng chà nhám; khách ký làm mới thì mới làm mới.'],
+        mistakes=[dict(bad='Ghi tuổi đồ theo lời khách, tháo linh kiện của khách khác, hay đóng dấu giả đồ cổ.', result='Bước đó giữ lại để sửa; chất lượng và tiền công giảm.')],
+        prep=['Xưởng ứng vật tư và linh kiện theo phiếu, trừ một lần khi thu tiền; xem công chuẩn sau vật tư trên phiếu.'],
+        surprises=['Khách oái oăm lắm: đồ “gia truyền trăm năm” còn tem nhà máy, đồ của bà mà đòi mới tinh, thiếu linh kiện, mặc cả nửa giá, thư cũ trong ngăn bí mật… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

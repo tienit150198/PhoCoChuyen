@@ -132,6 +132,17 @@ _profile('laundry', 'Thùy Dung | Hoàng Nam | Yến Nhi',
     'đã tìm đúng chủ túi đồ lụa bằng mã nhận và kiểm đủ món với khách // matched the silk bag to its owner using the intake code and confirmed every item with the customer',
     'đối chiếu mã nhận và tình trạng vải trước trả // intake-code reconciliation and fabric-condition checks before return')
 
+_profile('restore', 'Minh Khoa | Bảo Ngọc | Quốc Thắng',
+    'Hội nghề phục chế · chủ xưởng Hồn Xưa // Restorers guild · Hồn Xưa workshop owner',
+    'giữ hồn đồ xưa, ghi đúng tuổi đồ và nói thật với khách // keeping old pieces true, recording their real age, and being honest with customers',
+    'đọc dấu hiệu hư hỏng | chốt yêu cầu khách | ghi nguồn linh kiện // reading damage signs | settling customer requests | recording part sources',
+    'Một tủ thờ gỗ gụ có mọt và bong sơn, khách muốn giữ mùi long não nhưng bên trong có mốc. // A rosewood altar cabinet has woodworm and flaking paint; the customer wants to keep its camphor smell, but there is mould inside.',
+    'Giao {a} khám dấu hiệu từng chỗ hư, {b} chốt yêu cầu với khách có ghi phiếu, {c} lo linh kiện và ảnh trước sau. // Have {a} examine each damaged spot, {b} settle the request with the customer in writing, and {c} handle parts and before-and-after photos.',
+    'Một tay nắm đồng bị thay bằng đồ nhựa mà phiếu không ghi; tuổi đồ trên phiếu theo lời khách, không theo tem đáy. // A brass handle was replaced with plastic without a note on the ticket, and the age on the ticket follows the customer, not the maker stamp.',
+    'Dừng bàn giao, chế lại tay nắm cùng vật liệu, sửa tuổi đồ theo tem và báo khách trước khi trả. // Hold the handover, remake the handle in the same material, correct the age from the stamp, and tell the customer before returning it.',
+    'đã giữ nguyên mùi gỗ cũ, lau mốc từng chỗ và giao tủ kèm biên bản phục chế có ảnh // kept the old wood smell, cleaned the mould spot by spot, and handed back the cabinet with an illustrated restoration report',
+    'đối chiếu tuổi đồ và nguồn linh kiện trước khi trả // checking the piece\'s age and part sources before return')
+
 _profile('mother_baby', 'Thanh Mai | Đức Huy | Tú Anh',
     'Hội tiểu thương · chủ tiệm Mây Nhỏ // Traders association · Little Cloud shop owner',
     'quà đúng độ tuổi, đủ đơn và đổi trả rõ ràng // age-appropriate gifts, complete orders, and clear returns',
