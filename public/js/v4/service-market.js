@@ -21,6 +21,7 @@ const ACT={accept:'Đồng ý',counter:'Trả giá',decline:'Từ chối',cancel
 const MAIN=new Set(['accept','take','done','confirm']);
 /** 🏨 a room of a homestay / hotel player (game/hotel_stay.py): its stay is run in 🏨 Sổ phòng, not by "Xong việc" */
 const isStay=o=>['homestay','hotel'].includes(o.career)&&/^stay_/.test(o.service);
+const WED=new Set(['tiec_cuoi','hoa_cuoi','vay_cuoi','trang_diem_cuoi']);   // 💒 game/wed_services.py: done step by step in Đơn cưới
 const S={dlg:null,env:null,tab:'dir',view:null,dir:null,inbox:null,mine:null,cat:null,card:null,pick:null,career:'',sort:'rating',busy:false,
   flash:null,step:'',open:{},draft:{},timer:0,seq:0};
 
@@ -116,6 +117,7 @@ async function click(op,d){
   if(op==='legacy'){S.dlg.close();await (await import('./workplace-visit.js')).openWorkplaceVisit(S.env,{inbox:true});return;}
   if(op==='place'){S.dlg.close();await (await import('./workplace-visit.js')).openWorkplaceVisit(S.env,{place:d.place});return;}
   if(op==='hotel'){S.dlg.close();await (await import('./hotel-stay.js')).openHotel(S.env,{order:d.id||'',tab:d.tab||''});return;}
+  if(op==='wed'){S.dlg.close();await (await import('./wed-services.js')).openWedServices(S.env,{tab:'work'});return;}
   if(op==='set')return setting(d);
   if(op==='retry'){await load();return;}
 }
@@ -261,7 +263,8 @@ function order(o){
     :open==='rate'?`<div class="svc-form"><div class="svc-starpick" role="radiogroup" aria-label="Số sao">${[1,2,3,4,5].map(n=>`<button type="button" role="radio" aria-checked="${(x.stars||5)===n}" class="svc-star${(x.stars||5)>=n?' on':''}" data-svc="star" data-id="${esc(o.id)}" data-n="${n}" aria-label="${n} sao">★</button>`).join('')}</div><label class="svc-field"><span>Nhận xét (không bắt buộc)</span><input id="svc-r-${esc(o.id)}" data-k="${esc(o.id)}" data-f="comment" type="text" maxlength="300" value="${esc(x.comment)}"></label>${btn('Gửi đánh giá','do',{action:'rate',id:o.id},'primary')}</div>`
     :open==='flag'?`<div class="svc-form"><label class="svc-field"><span>Chuyện gì đã xảy ra?</span><textarea id="svc-f-${esc(o.id)}" data-k="${esc(o.id)}" data-f="text" maxlength="300" rows="3">${esc(x.text)}</textarea></label><p class="svc-note">Quản trị sẽ xem. Không tự trừ tiền ai.</p>${btn('Gửi báo cáo','do',{action:'flag',id:o.id},'primary')}</div>`:'';
   const stay=isStay(o)&&!['refunded','declined','cancelled','expired'].includes(o.status);
-  const acts=(stay&&o.status!=='held'?o.actions.filter(a=>a!=='done'&&a!=='decline'):o.actions).map(a=>{const armed=S.arm===a+o.id;return btn(armed?'Bấm lần nữa':(ACT[a]||a),'do',{action:a,id:o.id},MAIN.has(a)?'primary':armed?'danger':'ghost');}).join('');
+  const wed=WED.has(o.service)&&o.role==='provider'&&o.status==='working';   // 💒 a wedding order: its job is done in Đơn cưới (v4/wed-services.js)
+  const acts=(wed?btn('💒 Làm đơn cưới','wed',{},'primary'):'')+(stay&&o.status!=='held'?o.actions.filter(a=>a!=='done'&&a!=='decline'):o.actions).filter(a=>!(wed&&a==='done')).map(a=>{const armed=S.arm===a+o.id;return btn(armed?'Bấm lần nữa':(ACT[a]||a),'do',{action:a,id:o.id},MAIN.has(a)?'primary':armed?'danger':'ghost');}).join('');
   return `<article class="svc-order${S.focus===o.id?' focus':''}" data-k="${esc(o.id)}"><div class="svc-row">${face(o.other)}<div class="grow"><b>${esc(o.icon)} ${esc(o.name)}${o.qty>1?` <small>× ${o.qty}</small>`:''}</b><small class="svc-muted">${role}: ${esc(o.other?.name||'')}</small>${o.label?`<small class="svc-muted">${esc(o.label)}</small>`:''}</div>${price}</div>
     <p><span class="svc-pill s-${esc(o.status)}">${esc(STATUS[o.status]||o.status)}</span>${o.flagged?' <span class="svc-pill s-flag">🚩 Đã báo cáo</span>':''}</p>${turn}${o.note?`<blockquote>${esc(o.note)}</blockquote>`:''}${res}${money}
     ${acts||stay?`<div class="svc-acts">${acts}${stay?btn('🏨 Sổ phòng','hotel',{id:o.id,tab:o.role==='provider'?'host':'guest'},o.status==='working'?'primary':'ghost'):''}</div>`:''}${forms}</article>`;

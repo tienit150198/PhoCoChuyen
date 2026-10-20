@@ -38,6 +38,8 @@ function loadCss(){
 const Q={queue:[],seen:new Set(),dlg:null,timer:0,calm:0,openedAt:0,back:null,fetching:null};
 
 /** The card's markup; `preview`: inside the sending sheet (no ids, nothing to press). */
+/** 💒 The players serving the wedding (game/wed_services.py invite_svc): "Đội ngũ: 🍽️ Lan · 💐 Mai". An older server sends none. */
+const team=list=>Array.isArray(list)&&list.length?`<p class="wi-team"><small>Đội ngũ người chơi</small><span>${list.slice(0,5).map(x=>`<span>${esc(x.icon)} ${esc(x.label)}: <b>${esc(x.name)}</b></span>`).join('')}</span></p>`:'';
 export function cardHTML(c,{preview=false}={}){
   const p=c.party,live=p&&nowS()>=p.at-300&&nowS()<p.end;
   const kicker=p?'Thiệp mời cưới':'Thông báo cưới';
@@ -47,7 +49,7 @@ export function cardHTML(c,{preview=false}={}){
   const go=p?`<button type="button" class="btn cream big full" data-wi="go"${preview?' tabindex="-1"':''}>${live?'🎊 Vào dự ngay':'📅 Xem lịch cưới'}</button>`:'';
   return `<div class="wi-top"><span class="wi-hy" aria-hidden="true">囍</span><span class="wi-env" aria-hidden="true">💌</span>`+
     `<p class="wi-kicker">${kicker}</p><h2 class="wi-names"${id}><span>${esc(c.a)}</span><span class="wi-amp" aria-hidden="true">💞</span><span class="sr-only"> và </span><span>${esc(c.b)}</span></h2></div>`+
-    `<blockquote class="wi-text"${tid}>${esc(c.text)}</blockquote>${when}`+
+    `<blockquote class="wi-text"${tid}>${esc(c.text)}</blockquote>${when}${team(c.svc)}`+
     `<div class="wi-foot"><button type="button" class="btn primary big full" data-wi="cheer"${preview?' tabindex="-1"':''}>Chúc mừng 🎉</button>${go}`+
     `<button type="button" class="btn ghost full" data-wi="close"${preview?' tabindex="-1"':''}>Đóng</button></div>`;
 }
