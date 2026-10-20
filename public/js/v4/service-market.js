@@ -4,7 +4,9 @@
  * or 🤝 thương lượng, the floor shown, my reputation and khách quen).
  * Buyer: pick a provider → see the price (or offer one) → confirm → the money is held → the provider works → confirm & ⭐.
  * GET /api/svc/dir|provider|inbox|mine|catalog · POST /api/svc/order|offer|answer|take|decline|cancel|done|confirm|rate|flag|settings.
- * One rid per confirmed order/offer, the same one on a retry (the server holds the money once per rid). */
+ * One rid per confirmed order/offer, the same one on a retry (the server holds the money once per rid).
+ * Own-flow listings (x.own: 🏥 a player's birth room, 📸 a photographer's package): the card shows the module's price and
+ * rating and its button opens the module's own sheet (x.open = {action, data, label}); never an order or ×N here. */
 import {escapeHTML as esc,icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
@@ -21,6 +23,9 @@ const ACT={accept:'Đồng ý',counter:'Trả giá',decline:'Từ chối',cancel
 const MAIN=new Set(['accept','take','done','confirm']);
 /** 🏨 a room of a homestay / hotel player (game/hotel_stay.py): its stay is run in 🏨 Sổ phòng, not by "Xong việc" */
 const isStay=o=>['homestay','hotel'].includes(o.career)&&/^stay_/.test(o.service);
+/** the module sheets an own-flow listing may open (app.js handleAction): 🏥 Nhà & Gia đình, 📸 Tiệm ảnh */
+const OWN=new Set(['marriage','photoStudio']);
+const itemKey=x=>`${x.pid}.${x.career}.${x.service}`;
 const S={dlg:null,env:null,tab:'dir',view:null,dir:null,inbox:null,mine:null,cat:null,card:null,pick:null,career:'',sort:'rating',busy:false,
   flash:null,step:'',open:{},draft:{},timer:0,seq:0};
 
@@ -103,6 +108,8 @@ async function click(op,d){
   if(op==='sort'){S.sort=d.sort;await load();return;}
   if(op==='more'){const q=new URLSearchParams({sort:S.sort,offset:S.dir?.next||0});if(S.career)q.set('career',S.career);try{const v=await api().json('/api/svc/dir?'+q);S.dir={...v,items:[...(S.dir?.items||[]),...v.items]};}catch(e){S.flash={kind:'bad',text:e.message};}render();return;}
   if(op==='provider'){await openProvider(d.pid,{career:d.career,service:d.service});return;}
+  if(op==='own'){const x=[...(S.dir?.items||[]),...(S.card?.items||[])].find(i=>itemKey(i)===d.id);await openOwn(x?.open);return;}
+  if(op==='setup'){const m=S.mine?.services?.find(i=>`${i.career}.${i.service}`===d.id);await openOwn(m?.setup);return;}
   if(op==='back'){if(S.step){S.step='';render();return;}S.card=null;S.pick=null;await load();return;}
   if(op==='pickItem'){const item=S.card.items.find(x=>`${x.career}.${x.service}`===d.id);S.pick={item,offer:item?.offers?.[0]||null};S.step='';render();return;}
   if(op==='pickOffer'){S.pick.offer=S.pick.item.offers.find(o=>o.offer_id===d.id)||null;render();return;}
@@ -118,6 +125,12 @@ async function click(op,d){
   if(op==='hotel'){S.dlg.close();await (await import('./hotel-stay.js')).openHotel(S.env,{order:d.id||'',tab:d.tab||''});return;}
   if(op==='set')return setting(d);
   if(op==='retry'){await load();return;}
+}
+
+/** 🏥 / 📸 the module's own sheet (its own booking, escrow and payout): the market only lists it. */
+async function openOwn(link){
+  if(!link||!OWN.has(link.action)||!S.env?.act)return;
+  S.dlg.close();await S.env.act(link.action,{...(link.data||{})});
 }
 
 const key=()=>S.pick?`${S.pick.item.pid}.${S.pick.item.career}.${S.pick.item.service}.${S.pick.offer?.offer_id||''}`:'';
@@ -165,6 +178,14 @@ async function setting(d){
   }
   m._dirty=true;render();
 }
+/** 🏥 / 📸 set up in the module (price, open / closed): shown here, with a link there (no ×N, no switch). */
+function ownSetting(m){
+  const id=`${m.career}.${m.service}`;
+  return `<article class="svc-set svc-own${m.on?' on':''}" data-k="${esc(id)}"><div class="svc-row"><span class="sd-ico" aria-hidden="true">${esc(m.icon)}</span><div class="grow"><b>${esc(m.name)}</b><small class="svc-muted">${esc(m.desc||m.career_name)}</small></div>
+    <span class="svc-pill ${m.on?'s-working':'s-cancelled'}">${m.on?'🟢 Đang hiện':'⚪ Chưa hiện'}</span></div>
+    ${m.why?`<p class="sd-why">${esc(m.why)}</p>`:''}${m.price?`<p class="svc-total"><span>${m.note?esc(m.note):'Giá của bạn'}</span><b>${fmt(m.price)} xu</b></p>`:''}
+    <p class="svc-note">Giá và mở / đóng đặt ở mục riêng của nghề; khách đặt và trả tiền ở đó.</p>${btn(`${esc(m.setup?.label||'Cài đặt')} ›`,'setup',{id},'ghost full')}</article>`;
+}
 const unit=(m,mult)=>Math.max(m.lo,Math.min(m.hi,m.base*mult));
 
 /* ---------------------------------------------------------------- views */
@@ -202,11 +223,21 @@ function priceLine(x){
     :`<span class="svc-price"><b>${fmt(x.price)}</b> <small>xu</small>${x.mult?` <i class="svc-mult">×${x.mult}</i>`:''}</span>`;
 }
 function card(x){
+  if(x.own)return ownCard(x);
   return `<button type="button" class="svc-card${x.mine?' mine':''}" data-svc="provider" data-pid="${esc(x.pid)}" data-career="${esc(x.career)}" data-service="${esc(x.service)}"${x.available===false?' aria-disabled="true"':''}>
     ${face(x.who)}<span class="grow"><b class="svc-name">${esc(x.who?.name||'')}${x.online?' <i class="svc-on" title="Đang online">●</i>':''}</b>
     <span class="svc-what">${esc(x.icon)} ${esc(x.name)} <small>· ${esc(careerName(x.career))}</small></span>
     <span class="svc-meta">${stars(x.rep)}${x.rep?.deals?` <small>· ${fmt(x.rep.deals)} đơn</small>`:''}</span></span>
     <span class="svc-right">${priceLine(x)}${x.available===false?'<small class="svc-off">Tạm nghỉ</small>':''}</span></button>`;
+}
+
+/** 🏥 / 📸 a provider of an own-flow listing: tap opens the module's order sheet (its own price, its own escrow). */
+function ownCard(x){
+  return `<button type="button" class="svc-card svc-own${x.mine?' mine':''}" data-svc="own" data-id="${esc(itemKey(x))}">
+    ${face(x.who)}<span class="grow"><b class="svc-name">${esc(x.who?.name||'')}${x.online?' <i class="svc-on" title="Đang online">●</i>':''}</b>
+    <span class="svc-what">${esc(x.icon)} ${esc(x.name)}${x.note?` · <small>${esc(x.note)}</small>`:''} <small>· ${esc(careerName(x.career))}</small></span>
+    <span class="svc-meta">${stars(x.rep)}${x.rep?.deals?` <small>· ${fmt(x.rep.deals)} ${esc(x.unit)}</small>`:''}</span></span>
+    <span class="svc-right"><span class="svc-price"><b>${fmt(x.price)}</b> <small>xu</small></span><span class="svc-open">${esc(x.open?.label||'Mở')} ›</span></span></button>`;
 }
 
 function providerView(){
@@ -218,6 +249,11 @@ function providerView(){
   if(!v.items.length)return [head+'<p class="svc-note">Người này đang tạm nghỉ mọi dịch vụ.</p>'+extra,''];
   const tabs=v.items.length>1?`<div class="sd-chips">${v.items.map(x=>`<button type="button" class="sd-chip${S.pick?.item===x?' on':''}" data-svc="pickItem" data-id="${esc(x.career+'.'+x.service)}">${esc(x.icon)} ${esc(x.name)}</button>`).join('')}</div>`:'';
   const it=S.pick?.item;if(!it)return [head+tabs+extra,''];
+  if(it.own){   // its module books and holds the money: a button to its sheet, no order here
+    const body=head+tabs+`<section class="sd-card svc-buy"><h3>${esc(it.icon)} ${esc(it.name)}</h3>${it.desc?`<p class="svc-muted">${esc(it.desc)}</p>`:''}${it.note?`<p class="svc-quote">“${esc(it.note)}”</p>`:''}
+      <p class="svc-total"><span>Giá</span><b>${fmt(it.price)} xu</b></p><p class="svc-note">Đặt, giữ tiền và thanh toán ở mục riêng của nghề này (không qua đơn Phố dịch vụ).</p></section>${extra}`;
+    return [body,it.mine?'<p class="sd-why">Đây là dịch vụ của bạn.</p>':btn(`${esc(it.open?.label||'Mở')} ›`,'own',{id:itemKey(it)},'primary sd-main')];
+  }
   const x=draft(key()),nego=it.mode==='nego',[lo,hi]=bounds(),price=priceOf();
   if(S.step==='confirm')return confirmView(head,it,x,price,nego);
   const offers=it.legacy?(it.offers?.length?`<div class="svc-offers" role="radiogroup" aria-label="Chọn việc">${it.offers.map(o=>`<button type="button" role="radio" aria-checked="${S.pick.offer===o}" class="sd-item${S.pick.offer===o?' on':''}" data-svc="pickOffer" data-id="${esc(o.offer_id)}"><b>${esc(o.label)}</b><em>${nego?'🤝 ':''}${fmt(nego?o.lo:o.price)} xu</em></button>`).join('')}</div>${btn('🏡 Ghé chỗ làm','place',{place:it.offers[0].place},'ghost')}`:'<p class="svc-note">Chỗ làm này chưa có việc nhận khách lúc này.</p>'):'';
@@ -277,6 +313,7 @@ function mineView(){
   return rep+[...groups].map(([g,rows])=>`<section class="svc-sec"><h3 class="tp-h">${esc(g)}</h3>${rows.map(svcSetting).join('')}</section>`).join('');
 }
 function svcSetting(m){
+  if(m.own)return ownSetting(m);
   const id=`${m.career}.${m.service}`,R=S.mine.rules,price=unit(m,m.mult||R.default_mult),nego=m.mode==='nego';
   return `<article class="svc-set${m.on?' on':''}" data-k="${esc(id)}"><div class="svc-row"><span class="sd-ico" aria-hidden="true">${esc(m.icon)}</span><div class="grow"><b>${esc(m.name)}</b><small class="svc-muted">${esc(m.legacy?m.career_name:(m.desc||m.career_name))}</small></div>
     <button type="button" class="svc-switch${m.on?' on':''}" role="switch" aria-checked="${!!m.on}" aria-label="Bật dịch vụ" data-svc="set" data-id="${esc(id)}" data-what="on"${m.why&&!m.on?' disabled':''}${S.busy?' disabled':''}><i></i></button></div>

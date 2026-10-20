@@ -92,12 +92,39 @@ sm.fee_of(price) -> int ; sm.FEE_PCT ; sm.ServiceError (a refusal: ServiceError(
 | `check` | `callable(db, buyer_sid, buyer_state) -> str` | '' or the refusal shown to the buyer |
 | `can_provide` | `callable(provider_state) -> str` | '' or why this player cannot sell it (default: the career is started) |
 | `pay_to` | `'wallet'` \| `'career'` | where the provider's 95 % goes |
+| `open` | `{action, data, label}` | **own-flow listing**: the module books, holds and pays; the card's button runs this client action (app.js `handleAction`, allowlisted in service-market.js) with `data` + the provider row's `data` |
+| `providers` | `callable(db, limit, offset) -> [row]` | own-flow: the providers listed now; row = `{sid, price, on, stars (sum), rated, deals, at, data, title?, why?}` |
+| `offer` | `callable(db, provider_sid) -> row \| None` | own-flow: one provider's row, listed (`on`) or not (`why`), for the provider card and 🧰 |
+| `setup` | `{action, data, label}` | own-flow: where the provider sets price and open / closed (🧰 links there) |
 
 The `order` dict given to hooks: `{id, career, service, buyer, provider (sids), buyer_pid, provider_pid, qty, price, fee,
 paid, note, input (what the provider sent with deliver), result, created_at}`.
 
 Example (the childbirth room): `sm.register('nurse', 'birth_room', dict(name='Phòng sinh', icon='🍼', base=200_000,
 floor=500_000, unit='lượt', requires=dict(married=True), deliver=assist_birth, on_buyer=add_baby_card))`.
+
+## Own-flow listings (🏥 player birth rooms, 📸 player photographers)
+
+`game/birth.py` (birth_stays, SCHEMA 65) and `game/photo_studio.py` (photo_orders, SCHEMA 66) keep their own booking,
+escrow and payout. They register **listings** here with `open` (`birth.install()`: `('homestay' | 'hotel', 'phong_sinh')`;
+`photo_studio.install()`: `('photobooth', <package>)` for each of the five packages). `server.py` calls
+`service_market.install_own()` at start and the market's seed calls it too; a refused spec is logged, never a crash
+(`install(strict=True)` raises: the tests).
+
+* Directory: own-flow rows come from `providers` (not svc_settings) and merge into the same sort (⭐ uy tín with the
+  module's stars, 💰 giá, 🟢 online, 🤝 nhiều đơn = births / photos delivered) and pages. A birth room: open rooms of
+  that career (`birth_rooms.career`; only homestay owners may open one today, the hotel listing stays empty). A
+  photographer: a **public** photobooth place, the studio open, the account ≥ `ACCOUNT_DAYS` (3) old, each package at
+  that studio's price.
+* The card opens the module's sheet: 🏥 Nhà & Gia đình › 👶 Đón con chung with that room preselected
+  (`marriage` `{tab:'family', section:'children', room}`); 📸 the order sheet of that studio and package
+  (`photoStudio` `{tab:'order', place, pkg}`).
+* Refused here (409): `POST order` / `offer` (`own_flow`), `settings` (`own_settings`), `sm.quote` (`own_flow`): never a
+  second payment path or a second escrow. Hooks `deliver`, `on_buyer`, `on_provider`, `confirm`, `pay_to`, `legacy` and
+  `qty_max` > 1 are refused at register.
+* 🧰 Dịch vụ của tôi shows them (listed or not, and why) with a button to the module's settings (birth room: price ≥
+  500 000, ≤ 5 000 000, open; photo: ×1–×5 of the NPC base, open); no ×N, no switch.
+* No table, column or save key (works on SCHEMA 68 as is).
 
 Dev only: `MNL_SVC_DEMO=1` registers 🧋 Pha trà tại nhà (milk_tea) for the browser walk-through.
 

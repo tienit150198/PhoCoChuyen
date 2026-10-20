@@ -1,5 +1,19 @@
 {
   "strings": {
+  "Chỗ làm chưa mở cho mọi người: chọn “Mọi người” ở chỗ làm để hiện ở Phố dịch vụ.": "Your workplace isn't open to everyone: choose “Everyone” at your workplace to show up in Service Street.",
+  "Cần sở hữu homestay (quy mô nghề Homestay từ cấp 1) để mở phòng sinh.": "You need to own a homestay (Homestay career scale level 1 or higher) to open a birth room.",
+  "Dịch vụ này cài giá và mở / đóng ở mục riêng của nghề.": "This service's price and open / closed are set in its career's own section.",
+  "Dịch vụ này đặt ở mục riêng của nghề: bấm “Mở” trên thẻ dịch vụ nhé.": "This service is booked in its career's own section: tap “Open” on the service card.",
+  "Giá của bạn": "Your price",
+  "Giá và mở / đóng đặt ở mục riêng của nghề; khách đặt và trả tiền ở đó.": "Price and open / closed are set in the career's own section; customers book and pay there.",
+  "Phòng sinh đang tạm đóng: mở lại ở Nhà & Gia đình.": "Your birth room is closed for now: reopen it in Home & Family.",
+  "Tiệm ảnh đang tạm nghỉ nhận đơn: mở lại ở 📸 Khách đặt chụp.": "Your studio isn't taking orders for now: reopen it in 📸 Photo orders.",
+  "buổi chụp": "photo session",
+  "Đặt, giữ tiền và thanh toán ở mục riêng của nghề này (không qua đơn Phố dịch vụ).": "Booking, holding the money and payment happen in this career's own section (not through a Service Street order).",
+  "⚪ Chưa hiện": "⚪ Not shown",
+  "🟢 Đang hiện": "🟢 Shown",
+  "👶 Đặt phòng sinh": "👶 Book a birth room",
+  "📸 Khách đặt chụp": "📸 Photo orders",
   "Phòng nghỉ qua đêm": "Overnight room",
   "Một đêm = 3 giờ thật. Ngủ ngon, có bữa sáng: tỉnh táo, no bụng, tinh thần lên.": "One night = 3 real hours. Sleep well, breakfast included: more awake, full, better spirits.",
   "Nghỉ vài giờ": "A few hours' rest",
@@ -30213,6 +30227,9 @@
   "Khoa được đề xuất thưởng tháng. Bạn thì không.": "Khoa is put up for the monthly bonus. You are not."
   },
   "patterns": {
+  "Phòng cho một ca sinh $1 giờ của vợ chồng. Giá không dưới $2 xu.": "A room for a married couple's $1-hour birth. Never less than $2 xu.",
+  "Thợ ảnh người chơi chụp bạn, giao ảnh vào 🖼️ Album. Giá từ $1 đến $2 xu.": "A player photographer shoots you and delivers to your 🖼️ Album. From $1 to $2 xu.",
+  "Tiệm ảnh hiện ở Phố dịch vụ khi tài khoản đủ $1 ngày.": "Your studio shows in Service Street once your account is $1 days old.",
   "$1 $2 · 😊 hài lòng $3%": "$1 $2 · 😊 $3% satisfied",
   "🏨 Trả phòng $1: hài lòng $2%.": "🏨 Checked out of $1: $2% satisfied.",
   "Đã trả phòng. Khách hài lòng $1%.": "Checked out. The guest is $1% satisfied.",

@@ -545,3 +545,151 @@ class Legacy(_Helpers):
                 pst.credit_staff_bonus(s, 'milk_tea', 'o1', 300, paid=285, base=30)
                 pst.credit_staff_bonus(s, 'milk_tea', 'o1', 300)
         self.assertEqual(calls, [30 - 10, 300 - 10])
+
+
+class OwnFlow(_Helpers):
+    """🏥 player birth rooms (game/birth.py) and 📸 player photographers (game/photo_studio.py) are LISTED in Phố dịch vụ:
+    their own booking, escrow and payout stay in their modules; the market never orders, holds or sets them up."""
+
+    def setUp(self):
+        super().setUp()
+        from game import photo_studio as P
+        self.P = P
+        self.OWN = [('homestay', 'phong_sinh'), ('hotel', 'phong_sinh')] + [('photobooth', k) for k in P.PKGS]
+
+    def room(self, tok, price=700_000, open_=True, career='homestay', name='Phòng Đồi Thông'):
+        sid = self.sid(tok)
+        self.store.transaction(lambda db: db.execute(
+            'INSERT INTO birth_rooms(sid,career,name,price,open,at) VALUES(?,?,?,?,?,?) ON CONFLICT (sid) DO UPDATE SET '
+            'career=EXCLUDED.career,name=EXCLUDED.name,price=EXCLUDED.price,open=EXCLUDED.open', (sid, career, name, price, open_, time.time())))
+        with self.store.connect() as db:
+            return int(db.execute('SELECT id FROM birth_rooms WHERE sid=?', (sid,)).fetchone()['id'])
+
+    def shooter(self, name='sm_tho'):
+        from game import work_visits as wv
+        tok = Base.user(self, name)
+        self.cmd(tok, 'select_career', career='photobooth')
+        self.cmd(tok, 'start_day', career='photobooth')
+        wv.post(self.store, tok, self.state(tok), 'visibility', dict(place=self.P.place_id(self.sid(tok)), visibility='public'))
+        return tok
+
+    def own_items(self, tok, **q):
+        return [x for x in self.get(tok, 'dir', **q)['items'] if x.get('own')]
+
+    # ------------------------------------------------------------ the registry
+    def test_registry_holds_every_own_listing_after_server_start(self):
+        import server  # noqa: F401  (server start: service_market.install_own())
+        for key in self.OWN:
+            self.assertIn(key, sm.REGISTRY, f'{key} missing: its register() call was refused')
+            self.assertTrue(sm.is_own(sm.REGISTRY[key]), key)
+        self.assertTrue(sm.install_own(strict=True), 'every spec is valid (strict: a refusal raises here)')
+        # the market's own seed wires them too, whatever imported first
+        saved = dict(sm.REGISTRY)
+        try:
+            sm.REGISTRY.clear()
+            sm._seeded[0] = False
+            for key in self.OWN:
+                self.assertIn(key, sm.specs())
+        finally:
+            sm.REGISTRY.clear()
+            sm.REGISTRY.update(saved)
+            sm._seeded[0] = True
+        # the old seam keys are what the registry refuses (they failed silently before)
+        with self.assertRaises(ValueError):
+            sm.register('homestay', 'phong_sinh_x', dict(name='Phòng sinh', emoji='🏥', base=1, max=5, hours=3))
+        # an own-flow listing never takes the escrow hooks; providers / offer need open
+        prov, offer = (lambda db, limit, offset: []), (lambda db, sid: None)
+        link = dict(action='marriage', data=dict(tab='family'))
+        for bad in (dict(deliver=_deliver), dict(on_buyer=_on_buyer), dict(confirm='buyer'), dict(pay_to='career'), dict(qty_max=2), dict(providers=None)):
+            with self.assertRaises(ValueError, msg=bad):
+                sm.register('milk_tea', 'own_bad', dict(dict(name='X', base=10, open=link, providers=prov, offer=offer), **bad))
+        with self.assertRaises(ValueError):
+            sm.register('milk_tea', 'own_bad', dict(name='X', base=10, providers=prov, offer=offer))
+        with self.assertRaises(ValueError):
+            sm.register('milk_tea', 'own_bad', dict(name='X', base=10, open=dict(action='bad action!'), providers=prov, offer=offer))
+        self.assertNotIn(('milk_tea', 'own_bad'), sm.REGISTRY)
+        self.assertTrue(all(x['own'] for x in sm.catalog()['services'] if (x['career'], x['service']) in self.OWN))
+
+    # ------------------------------------------------------------ 🏥 birth rooms
+    def test_birth_room_listed_with_its_price_and_opens_the_family_sheet(self):
+        a, b = self.user('sm_nha'), self.user('sm_cap')
+        rid = self.room(a, 700_000)
+        items = self.own_items(b, career='homestay', service='phong_sinh')
+        self.assertEqual(len(items), 1)
+        x = items[0]
+        self.assertEqual((x['pid'], x['price'], x['note'], x['mine'], x['available']), (self.pid(a), 700_000, 'Phòng Đồi Thông', False, True))
+        self.assertEqual(x['open'], dict(action='marriage', data=dict(tab='family', section='children', room=rid), label='👶 Đặt phòng sinh'))
+        self.assertIn(x['pid'], [i['pid'] for i in self.own_items(b)], 'listed with every career too')
+        self.assertIn(('homestay', 'phong_sinh'), {(c['career'], c['service']) for c in self.get(b, 'dir', career='milk_tea')['counts']})
+        self.assertEqual(self.own_items(b, career='hotel'), [], 'a homestay room is not a hotel one')
+        # the module's rating and record
+        self.store.transaction(lambda db: db.execute('UPDATE birth_rooms SET stars=9, rated=2, born=3 WHERE id=?', (rid,)))
+        self.assertEqual(self.own_items(b, career='homestay')[0]['rep'], dict(n=2, avg=4.5, deals=3))
+        # closed: gone from the directory
+        self.room(a, 700_000, open_=False)
+        self.assertEqual(self.own_items(b, career='homestay'), [])
+
+    def test_birth_room_never_ordered_or_set_up_through_the_market(self):
+        a, b = self.user('sm_nha2'), self.user('sm_cap2')
+        self.room(a, 900_000)
+        self.fund(b, 5_000_000)
+        before = self.total(b)
+        for sub, extra in (('order', dict(expected_price=900_000)), ('offer', dict(price=900_000))):
+            self.rid += 1
+            self.refused('own_flow', self.post, b, sub, pid=self.pid(a), career='homestay', service='phong_sinh', rid=f'own-{self.rid:08d}', **extra)
+        self.refused('own_settings', self.post, a, 'settings', career='homestay', service='phong_sinh', on=True, mode='fixed', mult=1)
+        with self.store.connect() as db:
+            self.refused('own_flow', sm.quote, db, self.sid(a), 'homestay', 'phong_sinh')
+            self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM svc_orders WHERE service='phong_sinh'").fetchone()['n'], 0)
+            self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM svc_settings WHERE service='phong_sinh'").fetchone()['n'], 0)
+        self.assertEqual(self.total(b), before, 'nothing held: the booking (and its escrow) is Nhà & Gia đình’s')
+
+    # ------------------------------------------------------------ 📸 photographers
+    def test_photographer_packages_listed_and_never_ordered_here(self):
+        P = self.P
+        sh, b = self.shooter(), self.user('sm_khach')
+        items = {x['service']: x for x in self.own_items(b, career='photobooth')}
+        self.assertEqual(set(items), set(P.PKGS))
+        place = P.place_id(self.sid(sh))
+        for pkg, x in items.items():
+            self.assertEqual(x['price'], P.default_of(pkg))
+            self.assertEqual(x['open'], dict(action='photoStudio', data=dict(tab='order', place=place, pkg=pkg), label='📸 Đặt chụp'))
+        # the photographer's own prices (×1–×5) and open flag, set in their studio
+        P.post(self.store, sh, None, 'studio', dict(prices=dict(chan_dung=1200)), '10.0.0.9')
+        self.assertEqual({x['service']: x['price'] for x in self.own_items(b, career='photobooth')}['chan_dung'], 1200)
+        mine = {m['service']: m for m in self.get(sh, 'mine')['services'] if m['career'] == 'photobooth' and m['own']}
+        self.assertEqual(set(mine), set(P.PKGS))
+        self.assertTrue(mine['chan_dung']['on'] and mine['chan_dung']['own'])
+        self.assertEqual((mine['chan_dung']['price'], mine['chan_dung']['setup']['action']), (1200, 'photoStudio'))
+        prov = self.get(b, 'provider', pid=self.pid(sh))
+        self.assertEqual({x['service'] for x in prov['items'] if x.get('own')}, set(P.PKGS))
+        self.rid += 1
+        self.refused('own_flow', self.post, b, 'order', pid=self.pid(sh), career='photobooth', service='chan_dung', rid=f'own-{self.rid:08d}')
+        self.refused('own_settings', self.post, sh, 'settings', career='photobooth', service='chan_dung', on=True, mode='fixed', mult=3)
+        # closed studio, then a friends-only place: not listed (its order sheet would refuse), 🧰 says why
+        P.post(self.store, sh, None, 'studio', dict(open=False), '10.0.0.9')
+        self.assertEqual(self.own_items(b, career='photobooth'), [])
+        self.assertFalse(next(m for m in self.get(sh, 'mine')['services'] if m['service'] == 'chan_dung')['on'])
+        P.post(self.store, sh, None, 'studio', dict(open=True), '10.0.0.9')
+        from game import work_visits as wv
+        wv.post(self.store, sh, self.state(sh), 'visibility', dict(place=place, visibility='friends'))
+        self.assertEqual(self.own_items(b, career='photobooth'), [])
+        self.assertIn('Mọi người', next(m for m in self.get(sh, 'mine')['services'] if m['service'] == 'chan_dung')['why'])
+
+    def test_own_rows_merge_into_the_sort_and_the_pages(self):
+        a, b, c = self.user('sm_mix_a'), self.user('sm_mix_b'), self.user('sm_mix_c')
+        self.sell(a, mult=3)            # 🧋 3 000 xu
+        self.room(b, 600_000)           # 🏥 600 000 xu
+        self.room(c, 550_000)
+        viewer = self.user('sm_mix_v')
+        full = self.get(viewer, 'dir', sort='price')['items']
+        prices = [x['price'] for x in full]
+        self.assertEqual(prices, sorted(prices))
+        self.assertTrue({3000, 550_000, 600_000} <= set(prices))
+        with patch.object(sm, 'PAGE', 2):
+            seen, offset = [], 0
+            while offset is not None:
+                d = self.get(viewer, 'dir', sort='price', offset=offset)
+                seen += [(x['pid'], x['career'], x['service']) for x in d['items']]
+                offset = d['next']
+        self.assertEqual(seen, [(x['pid'], x['career'], x['service']) for x in full], 'every card once, in order, across pages')

@@ -80,6 +80,7 @@ export async function openMarriage(env,tab,section){
 export async function marriageAction(action,data,el,env){
   if(action!=='marriage'&&action!=='friends')return false;
   // "Hôn nhân" never reopens on the Bạn bè tab (a pending proposal would stay hidden there).
+  if(data?.room!=null&&data.room!==''){S.family.mode='birth';S.family.where=String(data.room);}   // 🛎️ Phố dịch vụ: that player's birth room preselected
   await openMarriage(env,action==='friends'?'friends':data?.tab||(S.tab==='friends'?'home':''),data?.section);return true;
 }
 
@@ -378,7 +379,7 @@ function render(){
   keepFocus(()=>{S.dlg.querySelector('.mr-root').innerHTML=page();});
   if(S.tab==='family')birthClock(S.dlg);   // 🏥 the birth room's countdown ticks between polls
   S.dlg.setAttribute('aria-busy',String(S.busy||S.loading));
-  if(S.familySection&&!S.loading&&S.tab==='family'){const section=S.familySection==='children'?'children':'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
+  if(S.familySection&&!S.loading&&S.tab==='family'){const section=['children','room'].includes(S.familySection)?S.familySection:'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
 }
 function head(sub){
   return `<header class="sheet-head"><div class="grow"><span class="eyebrow">PHỐ CÓ CHUYỆN</span><h2 id="mr-title">${S.tab==='friends'?'👥 Bạn bè':S.tab==='family'?'🏡 Nhà &amp; Gia đình':'💍 Hôn nhân'}</h2><p>${sub}</p></div>

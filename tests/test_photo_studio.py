@@ -449,15 +449,19 @@ class Lists(Base):
                 self.assertEqual(burn, price * 5 // 100)
 
     def test_marketplace_seam(self):
-        self.assertFalse(P.install(), 'no game.service_market on this branch: nothing registered')
-        got = []
-        fake = type('M', (), {'register': staticmethod(lambda career, sid, spec: got.append((career, sid, spec)))})
-        with mock.patch.dict('sys.modules', {'game.service_market': fake}):
-            import game
-            with mock.patch.object(game, 'service_market', fake, create=True):
-                self.assertTrue(P.install())
-        P.MARKET['on'] = False
-        self.assertEqual([g[1] for g in got], list(P.PKGS))
-        spec = got[0][2]
-        self.assertEqual((spec['base'], spec['default'], spec['floor'], spec['cap']), (300, 900, 300, 1500))
-        self.assertTrue(callable(spec['deliver']) and callable(spec['snapshot']))
+        """🛎️ Phố dịch vụ lists the packages (own flow): the real registry takes every spec (strict: a refusal raises)."""
+        from game import service_market as sm
+        self.assertTrue(P.install(strict=True))
+        for pkg in P.PKGS:
+            spec = sm.REGISTRY[(P.CAREER, pkg)]
+            self.assertTrue(sm.is_own(spec))
+            self.assertEqual((spec['base'], spec['floor'], spec['max_price']), (P.PKGS[pkg]['base'], P.floor_of(pkg), P.cap_of(pkg)))
+            self.assertEqual(spec['open']['action'], 'photoStudio')
+            self.assertIsNone(spec['deliver'], 'never the market escrow: the order, the session and the payout stay here')
+        # a registry that refuses never breaks the studio at runtime (logged), and fails loudly when strict
+        with mock.patch.object(sm, 'register', side_effect=ValueError('no')):
+            with self.assertLogs('game.photo_studio', 'ERROR'):
+                self.assertFalse(P.install())
+            with self.assertRaises(ValueError):
+                P.install(strict=True)
+        self.assertTrue(P.install())
