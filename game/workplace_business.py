@@ -100,6 +100,8 @@ ORDERS = {
     'teller': ('Việc riêng: hướng dẫn một tiệm trong phố lập sổ thu chi', 16, 3, {}),
     'research': ('Việc riêng: thử nảy mầm một túi hạt cho nhà khách quen', 16, 3, {}),
     'radio': ('Việc riêng: thu một đoạn lời chúc cho nhà khách quen', 14, 3, {}),
+    'moto': ('Đơn riêng: bảo dưỡng chiếc xe số của nhà khách quen', 16, 4, {}),
+    'vet': ('Việc riêng: ghé nhà khách quen cắt móng, xem tai cho bé mèo', 14, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

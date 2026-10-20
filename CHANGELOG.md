@@ -1,3 +1,24 @@
+# Chưa phát hành — moto
+
+🏍️ Nghề mới Tiệm sửa xe Út Lanh (thợ sửa xe máy đầu hẻm), có dịch vụ người chơi ↔ người chơi (chủ game 21/10 "tính toán làm thêm nghề khác luôn nhé"; đợt nghề 3, docs/CAREERS_BATCH_3.md). game/careers/moto.py, moto_content.py, game/careers/stepkit.py (bộ bước dùng chung), game/moto_service.py, public/js/careers/moto.js + slip_kit.js.
+- Nghề tiệm (mở từ chương 2, LATE_UNLOCKS; nằm ngủ trong save tới khi chơi, engine.DORMANT). Mỗi phiếu một chiếc xe: nghe khách tả bệnh → chốt lỗi (8 bệnh: thủng săm, quá hạn nhớt, bugi, sên chùng, má phanh mòn, đèn pha, ắc quy yếu, xe lội nước) → chốt 1–2 yêu cầu oái oăm → các bước theo sổ tay (tính km từ tem nhớt, ml nhớt, độ chùng sên, má phanh còn bao nhiêu mm, đúng ampe cầu chì, giờ sạc theo Ah, súc nhớt hai lần…) → giao đúng xe theo biển số giữa ba chiếc giống hệt. Tên bệnh chỉ hiện sau bước đầu.
+- Máy chủ chấm từng bước; sai một bước −8% chất lượng (phanh, xe ngập: sai thì trừ sao). Lãi 9–16 xu / xe + 2 xu mỗi yêu cầu + cấp, nhân chất lượng; phụ tùng tiệm ứng trước, trừ khi giao.
+- "Oái oăm": 15 yêu cầu khách (nhớt xe số đổ xe tay ga "cũng được", cầu chì to hơn "cho khỏi đứt", đề thử xe vừa lội nước, tháo bộ hạn chế xe 50 phân khối, lùi đồng hồ km để bán xe, ắc quy bảo hành mà đòi ghi "hỏng do tiệm", đòi xem lại đồ thay ra…) và 14 chuyện bất ngờ ở tiệm (thùng phụ tùng rẻ không hóa đơn rồi công an phường ghé hỏi, mưa ngập năm xe chết máy xếp hàng, xăng pha nước, mèo ngủ trên lốc máy, đòi độ pô kêu to, Bà Chín xẹp bánh mà không đủ tiền…).
+- 🛎️ Phố dịch vụ: 🔧 Bảo dưỡng xe máy (NPC 50 xu, người chơi mặc định ×3 = 150 xu, một xe mỗi đơn; người mua cần có xe máy). Thợ làm 3 bước chấm điểm ở bàn thợ (áp suất bánh sau, thay nhớt đúng thứ tự, kiểm an toàn) rồi mới Giao được (moto_bench). Xe của người mua: gỡ cảnh báo 🎲 "xe sắp hỏng" và 10 ngày ít hỏng vặt (rủi ro hỏng chia đôi). 🛑 MNL_MOTO_SVC_OFF=1.
+- Đủ bộ: hướng dẫn ngày đầu (coach) hai giao diện, lô mới khu hành chính (phố 2.5D) + biển ở phố cổ điển, chứng chỉ Kỹ thuật sửa xe máy cơ bản (chứng chỉ nghề, không phỏng vấn: có nó thì đại lý bớt 1 xu phụ tùng mỗi xe), mạch truyện "Chiếc cờ lê số 10" (5 đoạn), danh hiệu, thăng chức, 10 gói chuyên môn, thi đua NPC, quy mô, tip, quà, đánh giá, đồ nghề, tiếng Anh.
+- Dữ liệu: không đổi schema (79 vẫn để dành). Khóa save tùy chọn journey.xe_care {v, cars} mà 2.4.71 giữ nguyên không đọc. Lùi bản: `scripts/strip_new_careers.py strip --careers …,moto,vet` (mặc định đã có), `restore` trả lại từng byte (tests/test_moto_vet_compat.py).
+- Số nghề: 62 → 63.
+
+# Chưa phát hành — vet
+
+🩺 Nghề mới Bác sĩ thú y ở Phòng khám Thú y Cỏ May (phòng khám mà 🐾 thú cưng vẫn đưa tới), có dịch vụ người chơi ↔ người chơi. game/careers/vet.py, vet_content.py, game/vet_service.py, public/js/careers/vet.js.
+- Nghề lương (56–72 xu/ca, mở từ chương 3, nằm ngủ trong save tới khi chơi) + thưởng chất lượng mỗi ca khám (5–9 xu theo bệnh + 1 mỗi yêu cầu, nhân chất lượng, tối thiểu 3). Mỗi ca một bé: nghe chủ kể → chốt bệnh (8 ca: tiêm phòng, cắt móng, ve và bọ chét, ăn nhầm sô-cô-la, nôn ra máu nghi parvo, mèo đực tắc tiểu, nuốt dị vật, triệt sản) → yêu cầu oái oăm của chủ → cân bằng hiệu số (chó: chị Duyên bế lên cân người; mèo: trừ lồng), đo thân nhiệt, liều theo cân, dịch truyền, giờ nhịn ăn trước mổ → trả đúng bé theo phiếu chuồng.
+- "Oái oăm": 14 yêu cầu của chủ (cho mèo uống paracetamol, thuốc giảm đau của người cho chó, bôi tỏi trị ve, cắt tai cắt đuôi cho đẹp, viết giấy tiêm khống, bán vắc xin về tự tiêm, cho ăn no rồi đòi mổ…; chỉ hiện yêu cầu hợp loài) và 14 chuyện bất ngờ (khách ôm rắn cảnh tới, chó cắn nhau ở phòng chờ, mèo hoang bị xe tông → được nhận nuôi, nhờ chích thuốc cho chó hàng xóm "im", gà đá đòi "thuốc tăng lực", ông Sáu hỏi chuyện cho bé Mun đi, sổ tiêm khống bị cán bộ phường kiểm, vắc xin mua online, cúp điện tủ vắc xin…).
+- 🛎️ Phố dịch vụ: 🩺 Khám thú cưng (NPC 150 → 450 xu) và 💉 Tiêm phòng (NPC 250 → 750 xu), một bé mỗi đơn, chỉ bác sĩ còn làm ở phòng khám mới nhận; bác sĩ làm 3 bước ở bàn khám rồi mới Giao được (vet_bench). Hiệu ứng như phòng khám NPC (hồi sức khỏe, gia hạn tiêm, thân thiết). 🛑 MNL_VET_SVC_OFF=1.
+- Đủ bộ như nghề trên: coach, lô cạnh tiệm thú cưng, Chứng chỉ Chăm sóc thú y cơ bản, mạch truyện "Chiếc ống nghe một phút", danh hiệu, 10 gói chuyên môn, tiếng Anh.
+- Dữ liệu: không bảng mới, không khóa save mới. Lùi bản như nghề sửa xe.
+- Số nghề: 63 → 64.
+
 # Chưa phát hành — restoration
 
 🧰 Thợ phục chế (nghề thứ 60 trong careers-integ): Xưởng phục chế Hồn Xưa của chú Khải, phục chế đồ xưa đồ hỏng; và phục chế đồ của người chơi khác qua 🛎️ Phố dịch vụ (chủ game 21/10: "làm hết đi"). game/careers/restore.py + restore_content.py (nghề), game/restore_service.py (người chơi với người chơi), public/js/careers/restore.js + public/css/careers/restore.css (bàn làm việc), public/js/v4/restore.js + public/css/restore.css (🧰 Phục chế đồ). Không đổi phiên bản, chưa có dòng Có gì mới.

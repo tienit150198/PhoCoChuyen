@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6983,6 +6983,38 @@ CAREERS.update({
                   dict(bad='Mất điện mà không xử lý tới cuối ca.', result='Đài câm, đánh giá 2 sao, ca đó không tính thử việc.')],
         prep=['Ứng tuyển ở Sóng Mây trước khi làm (mở từ chương 3). Phát thanh viên thử việc 3 ca đạt thì làm được DJ.'],
         surprises=['Đài hay có chuyện lạ: mèo nhảy lên bàn trộn âm, người giả giọng ca sĩ gọi vào, mưa dột trên tủ máy… chọn cách xử lý cho khéo.'], buttons=[]),
+    'moto': dict(emoji='🏍️', name='Sửa xe máy', place='Tiệm sửa xe Út Lanh',
+        intro='Bạn đứng tiệm sửa xe đầu hẻm với Út Lanh: nghe khách tả bệnh, chốt lỗi, chốt với khách những điều oái oăm rồi mới cầm cờ lê.',
+        jobs=[dict(emoji='🛞', name='Vá săm, bơm lốp', how='Vá đúng thứ tự từ tháo bánh tới lắp lại; bơm theo tem càng xe, chở thêm người cộng 3 psi bánh sau.'),
+              dict(emoji='🛢️', name='Thay nhớt', how='Tính số km từ tem thay nhớt, chọn đúng loại (xe số hay tay ga), làm đúng thứ tự, đổ đúng lượng “thay nhớt”.'),
+              dict(emoji='⚡', name='Bugi, sên, phanh, đèn, ắc quy', how='Soi bugi cũ, chỉnh sên về giữa khoảng, đo má phanh tới giới hạn thì thay, cầu chì đúng ampe, đọc đồng hồ vôn ắc quy.'),
+              dict(emoji='🌊', name='Xe lội nước', how='Không đề, không đạp: tháo bugi, đẩy nước, súc nhớt hai lần rồi mới đề.'),
+              dict(emoji='🛎️', name='Xe của người chơi', how='Ở Phố dịch vụ, người chơi đặt 🔧 Bảo dưỡng xe máy. Nhận đơn, làm ba bước ở thẻ Xe của người chơi rồi bấm Giao: xe họ bớt hỏng vặt mười ngày.')],
+        steps=['Nghe khách tả bệnh, nhìn xe rồi chốt lỗi.',
+               'Khách dặn điều oái oăm: chọn cách nói thật, đúng luật.',
+               'Làm từng bước theo sổ tay của tiệm: thứ tự, áp suất, lượng nhớt, số đo.',
+               'Kiểm trước khi giao rồi giao đúng xe theo biển số trên phiếu.'],
+        stars=['Không sai bước nào: chất lượng 100%, tiền công đủ.', 'Mỗi bước phải làm lại bớt chất lượng; tiền công giảm theo chất lượng.'],
+        mistakes=[dict(bad='Đề xe vừa lội nước, đổ nhớt xe số cho xe tay ga, lắp cầu chì to hơn.', result='Phải làm lại bước đó; chất lượng và tiền công giảm.'),
+                  dict(bad='Mua phụ tùng không rõ nguồn, lùi đồng hồ km.', result='Có thể bị phạt và bị khách chê ở những ngày sau.')],
+        prep=['Mở từ chương 2. Phụ tùng tiệm ứng theo phiếu, trừ một lần khi giao xe.'],
+        surprises=['Tiệm hay có chuyện oái oăm: chìa khóa cắm quên, mèo ngủ trên lốc máy, mưa ngập xe xếp hàng, người lạ nhờ lùi đồng hồ km… chọn cách xử lý cho khéo.'], buttons=[]),
+    'vet': dict(emoji='🩺', name='Bác sĩ thú y', place='Phòng khám Thú y Cỏ May',
+        intro='Bạn là bác sĩ thú y ở phòng khám Cỏ May, nơi cả phố mang chó mèo tới: nghe chủ kể, cân bé, chốt bệnh rồi mới làm.',
+        jobs=[dict(emoji='💉', name='Tiêm phòng', how='Đo thân nhiệt trước: sốt thì hoãn; không sốt thì tiêm đúng thứ tự và mời chủ chờ 30 phút.'),
+              dict(emoji='✂️', name='Cắt móng, gỡ ve', how='Cắt cách tủy 2 mm, lỡ trúng tủy thì cầm máu và nói thật; gỡ ve bằng nhíp, chọn ống thuốc nhỏ gáy theo cân.'),
+              dict(emoji='🍫', name='Cấp cứu', how='Ngộ độc sô-cô-la: tính liều theo cân; cún nôn ra máu: cách ly, tính dịch truyền; mèo đực tắc tiểu: làm ngay.'),
+              dict(emoji='🩹', name='Mổ', how='Nhịn ăn 8 tiếng trước mổ, làm đúng thứ tự, dặn chủ đeo loa và giữ vết mổ khô.'),
+              dict(emoji='🛎️', name='Bé của người chơi', how='Ở Phố dịch vụ, người chơi đặt 🩺 Khám hoặc 💉 Tiêm cho thú cưng. Nhận đơn, làm ba bước ở thẻ Bé của người chơi rồi bấm Giao.')],
+        steps=['Nghe chủ kể, khám rồi chốt bệnh.',
+               'Chủ nuôi dặn điều oái oăm: nói thật, không chiều sai.',
+               'Cân, đo, làm từng bước theo sổ tay: liều theo cân, dịch truyền, thứ tự.',
+               'Dặn chủ rồi trả đúng bé theo số chuồng và vòng cổ.'],
+        stars=['Không sai bước nào: chất lượng 100%, thưởng đủ.', 'Mỗi bước phải làm lại bớt chất lượng; thưởng giảm theo chất lượng.'],
+        mistakes=[dict(bad='Tiêm khi bé đang sốt, ước chừng cân, kéo sợi chỉ trong miệng mèo.', result='Phải làm lại bước đó; chất lượng và thưởng giảm.'),
+                  dict(bad='Ký sổ tiêm khống, dùng vắc xin mất lạnh.', result='Có thể bị phạt và bị chủ nuôi chê ở những ngày sau.')],
+        prep=['Ứng tuyển ở Phòng khám Cỏ May trước khi làm (mở từ chương 3). Bạn nhận lương hợp đồng; thưởng chất lượng nhỏ theo từng ca.'],
+        surprises=['Phòng khám hay có chuyện oái oăm: rắn cảnh tới khám, chó cắn nhau ở phòng chờ, mèo trốn gầm tủ, tủ vắc xin mất điện… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

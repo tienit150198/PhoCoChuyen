@@ -1,0 +1,250 @@
+{
+  "vet": [
+    {
+      "tier": 1,
+      "title": "Lập quy trình cân bé bằng hiệu số",
+      "output_unit": "quy trình cân bé",
+      "inputs": [
+        {
+          "name": "Bộ thẻ cân nặng hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi hai cách cân: người ôm bé trừ người đứng một mình, lồng xách trừ lồng rỗng.",
+        "Tập trên các số liệu giả lập, ghi đơn vị kg hoặc gam rõ ràng.",
+        "Dán quy trình cạnh cân và cho bác sĩ trưởng ký."
+      ],
+      "check": {
+        "prompt": "Quy trình nào được duyệt?",
+        "good": "Có cả hai cách hiệu số, ghi rõ đơn vị và số cân vào phiếu.",
+        "bad": "Ước chừng bằng mắt cho nhanh, bé nhỏ thì khỏi cân.",
+        "why": "Liều thuốc theo cân; cân sai là liều sai."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn bảng thân nhiệt và quyết định tiêm",
+      "output_unit": "bảng thân nhiệt",
+      "inputs": [
+        {
+          "name": "Xấp phiếu thân nhiệt giả lập",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi khoảng bình thường 38–39 °C cho chó mèo theo sổ tay.",
+        "Xếp các số đo giả lập vào hai cột: tiêm được và hoãn tiêm.",
+        "Thêm dòng việc tiếp theo khi sốt: khám tìm nguyên nhân, hẹn lại."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Số đo trên 39 °C nằm ở cột hoãn tiêm và có việc khám tiếp.",
+        "bad": "Tiêm luôn rồi cho thêm thuốc hạ sốt.",
+        "why": "Tiêm khi đang sốt làm bé mệt thêm và vắc xin kém hiệu quả."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Sắp khay tiêm phòng theo thứ tự",
+      "output_unit": "khay tiêm phòng",
+      "inputs": [
+        {
+          "name": "Khay tiêm giả lập",
+          "unit": "khay",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Xếp sổ tiêm, vắc xin trong hộp lạnh, bông cồn, bơm tiêm theo thứ tự dùng.",
+        "Dán nhắc “kiểm hạn dùng” trên hộp lạnh và “lắc đều” trên lọ.",
+        "Thêm ô tem lọ dán sổ và đồng hồ đếm 30 phút theo dõi."
+      ],
+      "check": {
+        "prompt": "Khay nào được nghiệm thu?",
+        "good": "Đồ xếp đúng thứ tự, có nhắc kiểm hạn, tem sổ và giờ theo dõi.",
+        "bad": "Để vắc xin ngoài bàn cho tiện lấy cả buổi.",
+        "why": "Vắc xin ra khỏi lạnh lâu là hỏng; thứ tự đúng thì không quên bước."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập bảng ống thuốc nhỏ gáy theo cân",
+      "output_unit": "bảng thuốc nhỏ gáy",
+      "inputs": [
+        {
+          "name": "Hộp ống nhỏ gáy mẫu",
+          "unit": "hộp",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Chia các khoảng cân: dưới 4 kg, 4–10 kg, 10–25 kg, 25–40 kg.",
+        "Ghi rõ thuốc của chó không dùng cho mèo.",
+        "Thêm thứ tự gỡ ve bằng nhíp và lọ cồn bỏ ve."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Đúng khoảng cân, có dòng cấm dùng thuốc chó cho mèo và thứ tự gỡ ve.",
+        "bad": "Một ống chung cho mọi bé, mèo dùng chung với chó.",
+        "why": "Có thuốc trị ve của chó gây ngộ độc nặng cho mèo."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Soạn phiếu cấp cứu ngộ độc sô-cô-la",
+      "output_unit": "phiếu cấp cứu sô-cô-la",
+      "inputs": [
+        {
+          "name": "Xấp phiếu cấp cứu hư cấu",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi mốc 2 tiếng: trước mốc gây nôn tại phòng khám, sau mốc truyền dịch theo dõi.",
+        "Ghi liều gây nôn 1 ml cho mỗi 5 kg và ô ghi số cân thật.",
+        "Thêm phần dặn chủ: cất sô-cô-la, nho, hành tỏi, kẹo xylitol."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được duyệt?",
+        "good": "Có mốc 2 tiếng, liều theo cân thật và phần dặn chủ.",
+        "bad": "Cho uống sữa giải độc rồi về theo dõi ở nhà.",
+        "why": "Gây nôn đúng lúc và đúng liều thì bé không ngấm độc."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập quy trình phòng cách ly",
+      "output_unit": "quy trình cách ly",
+      "inputs": [
+        {
+          "name": "Bộ áo choàng và găng dùng một lần",
+          "unit": "bộ",
+          "quantity": 4,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi thứ tự mặc áo choàng, đeo găng trước khi vào phòng cách ly.",
+        "Ghi cách gom chất thải vào túi riêng và lau sát trùng chuồng, sàn.",
+        "Đặt chậu rửa tay ở cửa, cởi đồ trước khi khám bé khác."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Mặc đồ trước khi vào, gom chất thải riêng, cởi đồ và rửa tay ở cửa.",
+        "bad": "Khám cún bệnh ngay ở phòng chờ cho nhanh.",
+        "why": "Bệnh lây qua tay, áo và sàn; cách ly đúng thì bé khác không mắc."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Tính bảng dịch truyền theo cân",
+      "output_unit": "bảng dịch truyền",
+      "inputs": [
+        {
+          "name": "Bộ thẻ dịch truyền giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi công thức: ml mỗi kg mỗi giờ × cân × số giờ.",
+        "Tính sẵn cho các cân và tốc độ giả lập, ghi tổng ml.",
+        "Thêm ô bác sĩ trưởng kiểm lại trước khi treo chai."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi dòng có tốc độ, cân, số giờ và tổng đúng, có chữ ký kiểm lại.",
+        "bad": "Treo một chai cho mọi bé, chảy hết thì thôi.",
+        "why": "Bé nhỏ truyền quá nhiều cũng nguy hiểm như thiếu dịch."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Soạn phiếu theo dõi mèo tắc tiểu",
+      "output_unit": "phiếu tắc tiểu",
+      "inputs": [
+        {
+          "name": "Xấp phiếu theo dõi tiết niệu",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi dấu hiệu cấp cứu: mèo đực rặn tiểu không ra, bàng quang căng.",
+        "Ghi lượng nước mỗi ngày 50 ml cho mỗi kg và cách cho uống thêm.",
+        "Thêm phần dặn chủ: hạt tiết niệu, khay cát sạch, không cá khô mặn."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Dấu hiệu cấp cứu rõ ràng, lượng nước theo cân và phần dặn chủ.",
+        "bad": "Ghi “để mai coi sao” khi mèo chưa tiểu được.",
+        "why": "Tắc tiểu quá một ngày có thể làm mèo chết."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Lập quy trình chuẩn bị mổ",
+      "output_unit": "quy trình chuẩn bị mổ",
+      "inputs": [
+        {
+          "name": "Bộ dụng cụ mổ tập huấn",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 25000
+        },
+        {
+          "name": "Loa chống liếm mẫu",
+          "unit": "cái",
+          "quantity": 3,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Ghi giờ nhịn ăn 8 tiếng trước giờ mổ và hỏi lại chủ trước khi gây mê.",
+        "Ghi thứ tự: khám tiền mê, cạo lông, sát trùng, gây mê, mổ, theo dõi tỉnh.",
+        "Thêm phần dặn sau mổ: đeo loa, giữ khô 10 ngày, hẹn cắt chỉ."
+      ],
+      "check": {
+        "prompt": "Quy trình nào được duyệt?",
+        "good": "Có giờ nhịn ăn, câu hỏi lại chủ, đủ thứ tự và phần dặn sau mổ.",
+        "bad": "Mổ luôn khi bé vừa ăn sáng cho chủ khỏi đi lại.",
+        "why": "Bé chưa nhịn đủ giờ có thể sặc khi gây mê."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Chuẩn hóa phiếu trả bé",
+      "output_unit": "bộ phiếu trả bé",
+      "inputs": [
+        {
+          "name": "Xấp phiếu chuồng hư cấu",
+          "unit": "xấp",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi số chuồng, tên bé, giống, màu và vòng cổ trên mỗi phiếu giả lập.",
+        "Thêm ô dặn chủ: thuốc, liều, ngày tái khám, dấu hiệu phải quay lại.",
+        "Tập trả bé: so số chuồng và vòng cổ với phiếu chủ cầm."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được nghiệm thu?",
+        "good": "Có số chuồng, vòng cổ, lời dặn và bước so phiếu trước khi trả.",
+        "bad": "Chủ chỉ bé nào thì trả bé đó.",
+        "why": "Ba bé giống nhau thì chỉ số chuồng và vòng cổ mới chắc đúng bé."
+      }
+    }
+  ]
+}

@@ -263,6 +263,14 @@ _ROWS['radio'] = dict(place='đài phát thanh', self='đài', people='thính gi
                      invite='Mời {who} nghe lại chương trình tối nay, Sóng Mây sẽ đọc đính chính nếu đài sai ạ.',
                      process='Đài làm theo phiếu: kiểm phòng thu đầu ca, chỉ đọc bản đã duyệt, sai thì đính chính trên sóng. Hôm đó {fact} ạ.')
 
+_ROWS['vet'] = dict(place='phòng khám thú y', self='phòng khám', people='chủ nuôi', who='anh chị', owner='bác sĩ thú y',
+                   served='ca khám', record='phiếu khám', review='góp ý của chủ nuôi', reply='phản hồi',
+                   books='Sổ ca phòng khám', rail_in='Ở phòng khám thú y', confirm='Xác nhận ca khám', team='Ca trực Thú y Cỏ May',
+                   daily='Sổ tiêm và lịch hẹn hôm nay đã mở. Cân bé, khám kỹ ở Cỏ May nhé!',
+                   invite_label='Mời tái khám miễn phí', offers=dict(drink=None, gift=None, refund=None),
+                   invite='Mời {who} đưa bé ghé tái khám, Cỏ May sẽ khám lại kỹ cho bé ạ.',
+                   process='Phòng khám làm theo sổ tay: cân bé, đo nhiệt, tính liều theo cân rồi mới làm. Hôm đó {fact} ạ.')
+
 _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='khách đặt tiệc', who='anh chị', owner='nhân viên nhà hàng',
                        served='bữa tiệc đã lo', record='phiếu tiệc', review='góp ý của khách', reply='phản hồi',
                        books='Sổ ca nhà hàng', rail_in='Ở nhà hàng tiệc', confirm='Xác nhận việc trong ca', team='Ca bếp và sảnh Hồng Mây',
@@ -396,7 +404,7 @@ _SALARIED = frozenset((
     'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
     'pilot', 'flight_attendant', 'oil',
     'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
-    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio',
+    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio', 'vet',
 ))
 
 

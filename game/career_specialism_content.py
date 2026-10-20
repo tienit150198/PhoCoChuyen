@@ -75,6 +75,8 @@ CAREER_IDS = (
     "restore",
     "research",
     "radio",
+    "moto",
+    "vet",
 )
 _FILES = (
     "career_specialisms.json",
@@ -88,6 +90,8 @@ _FILES = (
     "career_specialisms_restore.json",
     "career_specialisms_research.json",
     "career_specialisms_radio.json",
+    "career_specialisms_moto.json",
+    "career_specialisms_vet.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -157,6 +161,8 @@ _TITLE_DIGESTS = {
     "restore": "b623ffe118153120542d6545d796723d10472abc6319590f4fa55787bc19a669",
     "research": "f6d9c2de043adb3b8ea70065064d7887218d92bdac020f02390f8f0621c59484",
     "radio": "b82b3980ff10a04779e0e9b212732d34035a0a167814c269a1cd977c32cf1aea",
+    "moto": "ebf0cfe2d167baa4427d6211f07d3991b93de2cd26c20304dee1384de5d7c56f",
+    "vet": "05f95481948816ea7d681248b8686366eaab370a68aa520a7f029386aa3c279d",
 }
 
 

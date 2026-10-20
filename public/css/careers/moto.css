@@ -1,0 +1,5 @@
+/* 🏍️ Tiệm sửa xe Út Lanh: rust orange like a shop rag, a grease-blue second colour for the players' bikes. */
+.career-job.moto{--sk-accent:#c0562b;--sk-accent-2:#3d6a8a}
+.moto .sl-ticket{background:#fdf5ef}
+html[data-theme="dem"] .career-job.moto{--sk-accent:#ef9a6c;--sk-accent-2:#8fb6d4}
+html[data-theme="dem"] .moto .sl-ticket{background:transparent}

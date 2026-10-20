@@ -39,6 +39,8 @@ NAMES = {
  'teller':'Máy đếm tiền và đèn soi tiền giả',
  'restore':'Bộ dao trổ, kẹp gỗ và đèn soi phục chế',
  'research':'Kính hiển vi và cân phân tích',
+ 'moto':'Bộ cờ lê, đồng hồ đo áp suất và đồng hồ vôn',
+ 'vet':'Ống nghe, cân điện tử và nhiệt kế thú y',
  'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)

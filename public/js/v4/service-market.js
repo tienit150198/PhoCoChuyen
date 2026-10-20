@@ -25,6 +25,7 @@ const MAIN=new Set(['accept','take','done','confirm']);
 /** 🏨 a room of a homestay / hotel player (game/hotel_stay.py): its stay is run in 🏨 Sổ phòng, not by "Xong việc" */
 const isStay=o=>['homestay','hotel'].includes(o.career)&&/^stay_/.test(o.service);
 const WED=new Set(['tiec_cuoi','hoa_cuoi','vay_cuoi','trang_diem_cuoi']);   // 💒 game/wed_services.py: done step by step in Đơn cưới
+const BENCH={moto:'🏍️ Làm ở tiệm sửa xe',vet:'🩺 Khám ở phòng khám'};   // worked step by step in the career's own card (careers/slip_kit.js)
 /** the module sheets an own-flow listing may open (app.js handleAction): 🏥 Nhà & Gia đình, 📸 Tiệm ảnh */
 const OWN=new Set(['marriage','photoStudio']);
 const itemKey=x=>`${x.pid}.${x.career}.${x.service}`;
@@ -132,6 +133,7 @@ async function click(op,d){
   if(op==='place'){S.dlg.close();await (await import('./workplace-visit.js')).openWorkplaceVisit(S.env,{place:d.place});return;}
   if(op==='hotel'){S.dlg.close();await (await import('./hotel-stay.js')).openHotel(S.env,{order:d.id||'',tab:d.tab||''});return;}
   if(op==='wed'){S.dlg.close();await (await import('./wed-services.js')).openWedServices(S.env,{tab:'work'});return;}
+  if(op==='bench'){S.dlg.close();const env=S.env;if(env.api?.state?.current!==d.career)await env.act('choose',{career:d.career});if(env.api?.state?.current===d.career)await env.act('job',{});return;}
   if(op==='set')return setting(d);
   if(op==='retry'){await load();return;}
   if(op==='need'){const n=S.needs[d.id];if(!n?.go)return;S.dlg.close();await goNeed(S.env,n.go);return;}
@@ -310,7 +312,8 @@ function order(o){
     :open==='flag'?`<div class="svc-form"><label class="svc-field"><span>Chuyện gì đã xảy ra?</span><textarea id="svc-f-${esc(o.id)}" data-k="${esc(o.id)}" data-f="text" maxlength="300" rows="3">${esc(x.text)}</textarea></label><p class="svc-note">Quản trị sẽ xem. Không tự trừ tiền ai.</p>${btn('Gửi báo cáo','do',{action:'flag',id:o.id},'primary')}</div>`:'';
   const stay=isStay(o)&&!['refunded','declined','cancelled','expired'].includes(o.status);
   const wed=WED.has(o.service)&&o.role==='provider'&&o.status==='working';   // 💒 a wedding order: its job is done in Đơn cưới (v4/wed-services.js)
-  const acts=(wed?btn('💒 Làm đơn cưới','wed',{},'primary'):'')+(stay&&o.status!=='held'?o.actions.filter(a=>a!=='done'&&a!=='decline'):o.actions).filter(a=>!(wed&&a==='done')).map(a=>{const armed=S.arm===a+o.id;return btn(armed?'Bấm lần nữa':(ACT[a]||a),'do',{action:a,id:o.id},MAIN.has(a)?'primary':armed?'danger':'ghost');}).join('');
+  const bench=BENCH[o.career]&&o.role==='provider'&&o.status==='working'?BENCH[o.career]:'';   // 🏍️ / 🩺 the job is done in the career screen, then Giao
+  const acts=(wed?btn('💒 Làm đơn cưới','wed',{},'primary'):'')+(bench?btn(bench,'bench',{career:o.career},'primary'):'')+(stay&&o.status!=='held'?o.actions.filter(a=>a!=='done'&&a!=='decline'):o.actions).filter(a=>!(wed&&a==='done')).map(a=>{const armed=S.arm===a+o.id;return btn(armed?'Bấm lần nữa':(ACT[a]||a),'do',{action:a,id:o.id},MAIN.has(a)?'primary':armed?'danger':'ghost');}).join('');
   return `<article class="svc-order${S.focus===o.id?' focus':''}" data-k="${esc(o.id)}"><div class="svc-row">${face(o.other)}<div class="grow"><b>${esc(o.icon)} ${esc(o.name)}${o.qty>1?` <small>× ${o.qty}</small>`:''}</b><small class="svc-muted">${role}: ${esc(o.other?.name||'')}</small>${o.label?`<small class="svc-muted">${esc(o.label)}</small>`:''}</div>${price}</div>
     <p><span class="svc-pill s-${esc(o.status)}">${esc(STATUS[o.status]||o.status)}</span>${o.flagged?' <span class="svc-pill s-flag">🚩 Đã báo cáo</span>':''}</p>${turn}${o.note?`<blockquote>${esc(o.note)}</blockquote>`:''}${res}${money}
     ${acts||stay?`<div class="svc-acts">${acts}${stay?btn('🏨 Sổ phòng','hotel',{id:o.id,tab:o.role==='provider'?'host':'guest'},o.status==='working'?'primary':'ghost'):''}</div>`:''}${forms}</article>`;

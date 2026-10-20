@@ -1,0 +1,5 @@
+/* 🩺 Phòng khám Thú y Cỏ May: clinic teal, a soft paw pink for the players' pets. */
+.career-job.vet{--sk-accent:#2f8f7a;--sk-accent-2:#d4708f}
+.vet .sl-ticket{background:#effaf6}
+html[data-theme="dem"] .career-job.vet{--sk-accent:#7dd3bd;--sk-accent-2:#f0a3bb}
+html[data-theme="dem"] .vet .sl-ticket{background:transparent}

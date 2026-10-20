@@ -931,3 +931,33 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Dựng chương trình ca nhạc đủ giờ
 9. Diễn tập xử lý mất điện giữa sóng
 10. Điều phối đài trong ngày bão
+
+## 63. Tiệm sửa xe máy (`moto`)
+
+Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng áp suất lốp theo tem càng xe
+2. Soạn phiếu thay nhớt theo loại xe
+3. Sắp khay vá săm theo thứ tự
+4. Lập sổ soi bugi cũ
+5. Chuẩn hóa cách chỉnh sên
+6. Lập bảng giới hạn má phanh
+7. Soạn sổ dò điện đèn và cầu chì
+8. Lập sổ đo và sạc ắc quy
+9. Diễn tập cứu xe lội nước
+10. Chuẩn hóa phiếu giao xe
+
+## 64. Bác sĩ thú y (`vet`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập quy trình cân bé bằng hiệu số
+2. Soạn bảng thân nhiệt và quyết định tiêm
+3. Sắp khay tiêm phòng theo thứ tự
+4. Lập bảng ống thuốc nhỏ gáy theo cân
+5. Soạn phiếu cấp cứu ngộ độc sô-cô-la
+6. Lập quy trình phòng cách ly
+7. Tính bảng dịch truyền theo cân
+8. Soạn phiếu theo dõi mèo tắc tiểu
+9. Lập quy trình chuẩn bị mổ
+10. Chuẩn hóa phiếu trả bé

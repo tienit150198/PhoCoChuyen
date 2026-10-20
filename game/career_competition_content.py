@@ -517,6 +517,28 @@ _profile('radio', 'Thu Trang | Quang Vinh | Bích Ngọc',
     'đã đọc tin khẩn trước, chỉ phát quảng cáo đã duyệt và xử lý mất điện theo sổ sự cố // read urgent items first, aired only approved ads, and handled the power cut by the incident log',
     'sổ duyệt kịch bản và sổ sự cố kỹ thuật // the script approval log and the technical incident log')
 
+_profile('moto', 'Văn Tài | Minh Khôi | Ngọc Hân',
+    'Út Lanh · chủ tiệm sửa xe đầu hẻm // Út Lanh · owner of the alley motorbike shop',
+    'chốt đúng bệnh xe, làm theo sổ tay và giao đúng xe đúng biển // the right fault named, the notebook followed, and the right bike handed back by its plate',
+    'chẩn đoán máy | bảo dưỡng định kỳ | điện và phanh // engine diagnosis | routine servicing | electrics and brakes',
+    'Chiều mưa ngập, năm chiếc xe chết máy xếp hàng, một khách đòi đề thử ngay và thùng phụ tùng giá rẻ không hóa đơn vừa chở tới. // A flooded afternoon: five stalled bikes queue up, one customer wants the engine cranked at once, and a box of cheap parts with no invoice has just arrived.',
+    'Giao {a} phát số và dặn không ai đề xe, {b} xả nước buồng đốt và nhớt theo sổ tay, {c} kiểm nguồn phụ tùng trước khi nhận. // Have {a} hand out numbers and tell everyone not to crank, {b} clear the cylinder and the oil by the notebook, and {c} check where the parts come from before taking any.',
+    'Một chiếc xe ngập đã được đề thử ba lần trước khi tháo bugi, nhớt trắng đục vẫn trong máy. // One flooded bike was cranked three times before its plug came out, and the milky oil is still in the engine.',
+    'Dừng đề, tháo bugi, đẩy nước ra, súc nhớt hai lần, ghi phiếu thật cho khách và báo chủ tiệm. // Stop cranking, pull the plug, push the water out, flush the oil twice, write the real story on the slip, and tell the owner.',
+    'đã không đề xe ngập, súc đủ nhớt, từ chối phụ tùng không rõ nguồn và giao đúng xe // cranked no flooded bike, flushed the oil fully, refused untraceable parts, and handed back the right bikes',
+    'phiếu sửa xe ghi số km và túi đồ cũ trả khách // the repair slip with the odometer reading and the bag of old parts returned')
+
+_profile('vet', 'Hồng Nhung | Đức Anh | Phương Vy',
+    'Bác sĩ Thảo · trưởng phòng khám thú y // Dr Thảo · head of the vet clinic',
+    'cân trước khi cho thuốc, ca cấp cứu ưu tiên và nói thật với chủ nuôi // weighing before dosing, emergencies first, and honesty with owners',
+    'tiêm phòng | cấp cứu ngộ độc | phẫu thuật nhỏ // vaccinations | poisoning emergencies | minor surgery',
+    'Sáng thứ bảy phòng chờ đông, một cún nôn ra máu chưa tiêm phòng, một mèo đực rặn tiểu không ra, và tủ vắc xin vừa cúp điện đêm qua. // Saturday morning: a full waiting room, an unvaccinated puppy vomiting blood, a tom cat that cannot pee, and the vaccine fridge lost power overnight.',
+    'Giao {a} đưa cún vào phòng cách ly và sát trùng phòng chờ, {b} xử lý ngay ca tắc tiểu, {c} kiểm nhiệt độ tủ và loại vắc xin mất lạnh. // Have {a} take the puppy to isolation and disinfect the waiting room, {b} handle the blocked cat at once, and {c} check the fridge log and discard any vaccine that warmed up.',
+    'Liều thuốc gây nôn trong phiếu tính theo cân ước chừng, không có số cân thật. // The dose on the slip was worked out from a guessed weight, with no real reading from the scale.',
+    'Cân lại bé, tính lại liều theo sổ tay, ghi số cân vào phiếu và báo bác sĩ trưởng trước khi cho thuốc. // Weigh the dog again, redo the dose by the notebook, write the weight on the slip, and tell the head vet before giving anything.',
+    'đã cách ly đúng lúc, tính liều theo cân thật và loại vắc xin mất lạnh // isolated in time, dosed by real weights, and discarded the warmed vaccines',
+    'phiếu khám ghi số cân và sổ nhiệt độ tủ vắc xin // the case slip with the weight and the vaccine fridge temperature log')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',
