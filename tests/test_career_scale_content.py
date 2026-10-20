@@ -19,8 +19,8 @@ def catalogue():
 def test_catalogue_covers_all_58_careers_with_464_immutable_stages():
     c = catalogue()
     assert set(c.PROFILES) == set(CAREERS)
-    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 34, 'agency': 23, 'community': 1}
-    assert sum(len(p.stages) for p in c.PROFILES.values()) == 464   # + 📻 radio's eight
+    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 34, 'agency': 24, 'community': 1}
+    assert sum(len(p.stages) for p in c.PROFILES.values()) == 472   # + reception's and 📻 radio's eight
     for cid, p in c.PROFILES.items():
         assert c.profile(cid) is p
         assert [s.tier for s in p.stages] == list(range(1, 9))

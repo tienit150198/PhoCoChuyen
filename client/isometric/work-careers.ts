@@ -64,6 +64,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
   radio:identity('Kiểm phòng thu · đọc tin, quảng cáo duyệt và lời chúc đúng tên','Phòng thu','Bàn trộn âm & micro','Phòng máy & lịch phát sóng'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
+  reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
 
@@ -126,6 +127,14 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
     f('stove',r(2.85,.55,4.2,1.45),64,0xb5473a);f('sink',r(4.6,.6,5.2,1.45),62,blue);f('coldcabinet',r(5.5,.55,6.4,1.5),112,mint);f('desk',r(5.95,3.3,6.5,4.1),46,0xf3dcb4);
     z(r(2.6,.3,6.6,1.85),'tile',0xe6d2c8);z(r(2.85,2.95,6.75,4.45),'checker',0xf0e2cf);
+  }else if(career==='reception'){
+    // Khách sạn Hoa Sứ: the front desk counter in front, the key hook board in the left alcove, the room board behind,
+    // the brass luggage cart, the lobby sofa under a frangipani and Bơ the hotel cat's basket beside the desk.
+    clear(false,'tile');s('shelf','shelf',r(.55,1.95,1.45,3.95),1.95,2.95,112,0xd8a3b1);
+    s('workbench','counter',r(3.15,3.3,5.75,4.2),4.45,4.8,62,0xc9798e);
+    s('evidence','board',r(6.95,.55,8.25,1.3),7.6,1.95,106,cream);
+    f('rack',r(2.85,.6,3.95,1.45),96,0xd8b25e);f('sofa',r(4.4,.65,6.05,1.45),42,0xe7b8c4);f('crate',r(5.95,3.5,6.5,4.05),24,0xd2a86e);f('planter',r(6.3,.6,6.75,1.3),74,0x9fb98f);
+    z(r(2.6,.3,6.8,1.85),'carpet',0xe8c3cd);z(r(2.85,2.95,6.75,4.45),'checker',0xf3e4e7);
   }else if(career==='customs'){
     // Declaration files on the left wall, the paper check desk in front, the scanner and the held goods behind.
     clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);

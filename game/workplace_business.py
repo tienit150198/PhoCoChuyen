@@ -95,6 +95,7 @@ ORDERS = {
     'customs': ('Việc riêng: hướng dẫn một hộ kinh doanh khai tờ khai', 16, 3, {}),
     'hotel': ('Việc riêng: dọn và bày lại một phòng cho khách quen', 16, 3, {}),
     'banquet': ('Việc riêng: nấu một mâm cỗ nhỏ cho nhà khách quen', 18, 4, {}),
+    'reception': ('Việc riêng: lo đặt phòng và đón một đoàn khách quen của phố', 16, 3, {}),
     'radio': ('Việc riêng: thu một đoạn lời chúc cho nhà khách quen', 14, 3, {}),
 }
 REASONS = {

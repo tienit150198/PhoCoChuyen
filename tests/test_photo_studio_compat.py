@@ -17,6 +17,8 @@ import unittest
 from pathlib import Path
 
 from game import deco as dc
+from game.engine import migrate_state
+from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 as the stored text leaves them out
 from game import live_effects as lfx
 from game import pg_schema
 from game import photo_studio as P
@@ -112,8 +114,9 @@ class Saves(unittest.TestCase):
 
     def test_a_framed_photo_save_plays_on_2_4_66_and_comes_back(self):
         s, a, b = self.framed()
-        got = run(self, PROG, stdin=json.dumps([s]))
+        got = run(self, PROG, stdin=json.dumps([unknown_out(s)]))
         before, after, back = got[0]
+        back = migrate_state(back, owned=True)   # 💤 as storage reads it: the careers 2.4.66 left out come back
         mine = json.dumps([s['journey']['photo_wall'], [x for x in s['journey']['reno']['items'] if x['k'] == 'anh_chup']], sort_keys=True)
         self.assertEqual(before, mine)
         self.assertEqual(after, mine)

@@ -12,7 +12,7 @@ NEW = ('art_studio', 'lawyer', 'laundry', 'post_office')
 
 class Registration(unittest.TestCase):
     def test_new_careers_have_stable_appended_ids(self):
-        self.assertEqual(ORDER[-8:], NEW + ('customs', 'hotel', 'banquet', 'radio'))   # 🛃 customs (16/10), 🛎️ hotel, 👨‍🍳 banquet and 📻 radio appended after the four
+        self.assertEqual(ORDER[-9:], NEW + ('customs', 'hotel', 'banquet', 'reception', 'radio'))   # 🛃 customs (16/10), 🛎️ hotel, 👨‍🍳 banquet, 🔑 reception and 📻 radio appended after the four
         self.assertEqual(len(ORDER), len(set(ORDER)))
 
     def test_fifty_career_save_gains_four_without_resetting_old_work(self):
