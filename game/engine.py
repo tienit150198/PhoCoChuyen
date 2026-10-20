@@ -424,6 +424,8 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
             if type(s.get('journey')) is dict and type(s['journey'].get('lab')) is dict:  # 🍳 a recipe from a Viện nghiên cứu player (game/research_lab.py)
                 from . import research_lab
                 research_lab.recipe_bonus(s,c,t,reward)
+            from . import goodwill  # 💛 a close regular pays a little more (game/goodwill.py)
+            goodwill.pay_bonus(s,c,t,reward if bonus_base is None else max(0,min(reward,bonus_base)))  # on a shop's margin, like the gear
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
     if not pm.managing(s,c,t["career"]):

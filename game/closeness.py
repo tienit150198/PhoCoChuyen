@@ -28,6 +28,7 @@ from __future__ import annotations
 import random
 
 from . import archive as ar
+from . import goodwill as gw
 from .closeness_content import (ADULT_POOL, CARE, CAST_TASTE, CHAT, CHAT_NPC, ENVELOPE, ENVELOPE_ARRIVE, GIFT_ARRIVE,
                                 GIFT_LINES, GIFTS, INVITE_COST, INVITES, KID_NOT, KID_POOL, RECEIVED, STALL, TAGS,
                                 THANK, TIERS, TIRED, UNTHANKED, WARN_INSPECT)
@@ -357,12 +358,15 @@ def _talk(s: dict, pid: str, rude: bool = False) -> int:
         rec['seen'] = day
         return 0
     rec['talk'] = day
-    gain = _rng(s, 'talk', pid, day).randint(*TALK)
+    gain = gw.cap(s, pid, _rng(s, 'talk', pid, day).randint(*TALK))   # 💛 at most gw.VN_GAIN_CAP a Vietnam day
+    gw.touch(s, pid)
     return change(s, pid, gain, 'Trò chuyện hỏi thăm.', 'talk')
 
 
-def _gift_item(career: str | None, gift: str, src: str) -> dict | None:
+def _gift_item(career: str | None, gift: str, src: str, s: dict | None = None) -> dict | None:
     if src == 'buy':
+        if s is not None and gift == gw.HIDDEN_GIFT['id']:
+            return gw.hidden_gift(s)     # 🫙 under Cô Ba's counter, once you are close to her
         return GIFTS.get(gift)
     if src == 'stall':
         x = STALL.get(career or '')
@@ -404,7 +408,10 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
         text = p.get('text') if isinstance(p.get('text'), str) else ''
         from . import ai
         pid = home(p['npc'])
-        notes.append(_note(pid, _talk(s, pid, rude=bool(text) and ai.abusive(text))))
+        rude = bool(text) and ai.abusive(text)
+        notes.append(_note(pid, _talk(s, pid, rude=rude)))
+        if not rude:
+            notes += gw.after_chat(s, pid)   # 🤝 a customer at Như người nhà sends friends once a week
     if isinstance(c, dict):
         notes += _reviews(s, st, c)
     st['mark'] = max(st['mark'], int(s.get('seq', 0)))
@@ -413,10 +420,19 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     if d > st['day']:
         notes += _new_day(s, st, c if isinstance(c, dict) else None, career, d)
         st['day'] = d
+    notes += _goodwill(s)
     notes = [n for n in notes if n]
     if notes and isinstance(result, dict):
         result.setdefault('effects', [])
         result['effects'].extend(notes)
+
+
+def _goodwill(s: dict) -> list[str]:
+    """💛 game/goodwill.py on every command: today's việc nhờ, and a hidden perk just reached is told once."""
+    if gw.off() or not isinstance(s.get('journey'), dict):
+        return []
+    gw.errand(s, ensure=True)
+    return gw.reveal(s)
 
 
 def _reviews(s: dict, st: dict, c: dict) -> list[str]:
@@ -597,7 +613,7 @@ def _warn(s: dict, st: dict, c: dict, career: str | None, close: list, d: int) -
 
 
 # ---------------------------------------------------------------- commands
-COMMANDS = ('qn_chat', 'qn_gift', 'qn_thank', 'qn_invite', 'qn_use')
+COMMANDS = ('qn_chat', 'qn_gift', 'qn_thank', 'qn_invite', 'qn_use') + gw.COMMANDS
 
 
 def _fund(s: dict, career: str | None) -> tuple[str | None, dict | None]:
@@ -614,6 +630,10 @@ def apply(s: dict, career: str | None, name: str, p: dict) -> dict:
     need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     st = _state(s)
     d = today(s)
+    if name in gw.COMMANDS:
+        result = gw.apply(s, career, name, p)
+        result['effects'] += _goodwill(s)
+        return result
     result = dict(message='', effects=[])
     if name in ('qn_chat', 'qn_gift'):
         pid = home(p.get('who'))
@@ -637,14 +657,20 @@ def apply(s: dict, career: str | None, name: str, p: dict) -> dict:
             result['effects'].append(_note(pid, got))
         elif not first:
             result['effects'].append('Hôm nay hai bên trò chuyện rồi. Mai hỏi thăm tiếp nhé.')
+        else:
+            result['effects'].append(f'Hôm nay {name_of(pid)} đã vui lắm rồi. Mai hỏi thăm tiếp nhé.')   # 💛 the day's cap
+        result['effects'] += gw.after_chat(s, pid)
     elif name == 'qn_gift':
         need(set(p) == {'who', 'gift', 'src'} and p['src'] in SOURCES and isinstance(p['gift'], str), 'Chọn một món quà nhé.')
         cid, c = _fund(s, career)
-        item = _gift_item(cid, p['gift'], p['src'])
+        item = _gift_item(cid, p['gift'], p['src'], s)
         need(item, 'Món quà này không có sẵn.')
+        if p['src'] == 'buy':
+            item = dict(item, price=gw.gift_price(s, item['price']))   # 🛒 Cô Ba's price for someone close
         rec = _rec(st, pid, d)
         need(rec['gift'] != d, f'Hôm nay đã tặng {name_of(pid)} rồi. Mai hãy tặng tiếp nhé.', 'already_done')
         need(not (is_kid(pid) and set(item['tags']) & set(KID_NOT)), 'Món này không hợp để tặng trẻ nhỏ.')
+        need(gw.room(s, pid) > 0, f'Hôm nay {name_of(pid)} đã nhận nhiều quý mến rồi. Mai tặng tiếp nhé.', 'already_done')
         if p['src'] == 'bag':
             need(st['bag'].get(p['gift'], 0) > 0, 'Túi quà không còn món này.')
             st['bag'][p['gift']] -= 1
@@ -656,6 +682,9 @@ def apply(s: dict, career: str | None, name: str, p: dict) -> dict:
             e.money(s, c, -item['price'], f'Quà cho {name_of(pid)}: {item["name"]}'[:120], f'qn-gift-{st["seq"] + 1}', category='gift_out')
             st['seq'] += 1
         how, delta = gift_effect(pid, item)
+        if how != 'disliked' and item.get('extra'):
+            delta += item['extra']
+        delta = gw.cap(s, pid, delta)
         rec['gift'] = d
         rec['given'] += 1
         if how in ('liked', 'disliked'):
@@ -664,6 +693,7 @@ def apply(s: dict, career: str | None, name: str, p: dict) -> dict:
         line = _fill(s, _rng(s, 'giftline', pid, d).choice(GIFT_LINES[how]), who=name_of(pid), gift=_lc(item['name']))
         result.update(message=line, how=how, gain=got, who=pid)
         result['effects'].append(_note(pid, got))
+        result['effects'] += gw.on_gift(s, pid, item, got)   # 🎂 birthday, 📝 việc nhờ
     elif name == 'qn_thank':
         need(set(p) == {'id'}, 'Dữ liệu thao tác không hợp lệ.')
         row = next((r for r in st['inbox'] if r['id'] == p['id']), None)
@@ -706,6 +736,7 @@ def apply(s: dict, career: str | None, name: str, p: dict) -> dict:
             life['spirit'] += lift
         x = RECEIVED[p['item']]
         result['message'] = f'Bạn thưởng thức {_lc(x["name"])}. Ấm lòng ghê.' + (f' Tinh thần +{lift}.' if lift else '')
+    result['effects'] += _goodwill(s)
     result['effects'] = [n for n in result['effects'] if n]
     return result
 
@@ -795,9 +826,11 @@ def public(s: dict, career: str | None = None) -> dict:
            for k, q in st['bag'].items() if k in RECEIVED]
     inbox = [dict(r, who_name=name_of(r['who']) if home(r['who']) else '', item_view=dict(name=RECEIVED[r['item']]['name'], emoji=RECEIVED[r['item']]['emoji'])
                   if r['item'] in RECEIVED else None) for r in reversed(st['inbox'])]
-    return dict(day=d, people=people, gifts=gifts, bag=bag, inbox=inbox, fund=c['money'] if c else 0, fund_ok=bool(c and c.get('started')),
-                career=cid, alias=dict(ALIAS), pending=sum(1 for r in st['inbox'] if r['state'] == 'new'), invite_cost=INVITE_COST,
-                tiers=[dict(tier=i + 1, low=row[0], name=row[1], emoji=row[2]) for i, row in enumerate(TIERS)])
+    out = dict(day=d, people=people, gifts=gifts, bag=bag, inbox=inbox, fund=c['money'] if c else 0, fund_ok=bool(c and c.get('started')),
+               career=cid, alias=dict(ALIAS), pending=sum(1 for r in st['inbox'] if r['state'] == 'new'), invite_cost=INVITE_COST,
+               tiers=[dict(tier=i + 1, low=row[0], name=row[1], emoji=row[2]) for i, row in enumerate(TIERS)])
+    gw.public(s, out)   # 💛 what being close is worth (game/goodwill.py)
+    return out
 
 
 # ---------------------------------------------------------------- validation
@@ -847,3 +880,4 @@ def validate(s: dict) -> None:
     need(isinstance(st['snap'], dict) and set(st['snap']) <= set(_cast()), bad, 'invalid_save')
     for v in st['snap'].values():
         integer(v, 0, 100)
+    gw.validate(s)

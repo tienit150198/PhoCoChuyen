@@ -680,7 +680,8 @@ def _transfer(s: dict, c: dict, amount: int, reason: str, category: str) -> None
 
 def living_cost(j: dict) -> dict:
     """{total, rent, meals, label, where}: Bà Tám's rent, or a rented room's, or điện nước at home (game/housing.py)."""
-    return es.living(j, hs.living(j, LIVING.get(j['chapter'], LIVING[LAST])))   # 🏰 a villa you live in: its điện nước
+    from . import goodwill   # 💛 Bà Tám takes less rent from someone close (game/goodwill.py)
+    return goodwill.living(j, es.living(j, hs.living(j, LIVING.get(j['chapter'], LIVING[LAST]))))   # 🏰 a villa you live in: its điện nước
 
 
 # ---------------------------------------------------------------- engine hooks
@@ -779,6 +780,8 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     j['clean_days'] = j['clean_days'] + 1 if j['wallet'] >= 0 else 0
     j['life_day'] += 1
     line = f'Ngày sống {day}: {cost["label"].lower()} {cost["total"]} xu'
+    if cost.get('perk'):   # 💛 Bà Tám's discount for someone close (game/goodwill.py)
+        line += f' (bà Tám bớt {cost["perk"]} xu)'
     notes.insert(0, line + '.')
     if j['wallet'] < 0:
         notes.append(f'Ví đang nợ {-j["wallet"]} xu. Rút tiền lời từ một nơi làm việc để trả nhé.')
