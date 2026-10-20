@@ -922,7 +922,14 @@ def alerts(store, sid: str) -> dict | None:
                     target = w['target_' + side]
                 if w['status'] == 'done' and not w['seen_' + side]:
                     n += 1
-    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer)
+    svc = 0
+    try:   # 🛎️ Phố dịch vụ: what waits for my answer (game/service_market.py); 0 on a database without its tables
+        with store.connect() as db:
+            from .service_market import alert_count
+            svc = alert_count(db, sid)
+    except Exception:
+        svc = 0
+    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer, svc=svc)
 
 
 # ---------------------------------------------------------------- loading a save: due weddings and the inbox

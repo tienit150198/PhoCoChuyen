@@ -85,6 +85,16 @@ def _accessible(db, row, me):
     return row['visibility'] == 'public' or bool(db.execute('SELECT 1 FROM friends WHERE sid=? AND friend=?', (me, row['owner'])).fetchone())
 
 
+def _open_to(db, row, me):
+    """Accessible (visibility), or 🛎️ listed in Phố dịch vụ by its owner (game/service_market.py listed): never blocked or closed."""
+    if _accessible(db, row, me):
+        return True
+    if row['owner'] == me or row['visibility'] == 'closed' or _blocked(db, me, row['owner']):
+        return False
+    from . import service_market as sm
+    return sm.listed(db, row)
+
+
 def _place_id(owner, kind, target):
     return 'wp_' + hashlib.sha256(f'work-visit|{owner}|{kind}|{target}'.encode()).hexdigest()[:24]
 
@@ -289,6 +299,10 @@ def _settle_one(store, order):
     data = _data(order)
     recipient = order['provider'] if status == 'ready' else order['customer']
     new_status = 'completed' if status == 'ready' else data.get('end_status', 'cancelled')
+    # 🛎️ an order made through this build (data.market): the provider gets 95 %, 5 % is burned; an older one: its old terms
+    from . import service_market as sm
+    fee = sm.fee_of(order['price']) if status == 'ready' and data.get('market') else 0
+    paid = order['price'] - fee
     state_box = {}
     if status == 'refund_pending' and not mr._read_state(store, recipient):
         # The buyer deleted their account; discard its refund but release any
@@ -313,18 +327,19 @@ def _settle_one(store, order):
         state_box['before'] = copy.deepcopy(state)
         quay_business.settle(state)
         workplace_business.settle(state)
+        extra = {'paid': paid} if fee else {}
         if status == 'ready' and data['kind'] == 'quay':
             exists = any(st['id'] == data['target'] for st in state['journey'].get('quay', {}).get('stalls', []))
             if exists:
-                _bridge().credit_visit(state, data['target'], order['id'], order['price'])
+                _bridge().credit_visit(state, data['target'], order['id'], order['price'], **extra)
             else:
-                journey._wallet(state['journey'], order['price'], 'salary', 'Thanh toán đơn đã phục vụ tại quầy đã đóng', data.get('career'))
+                journey._wallet(state['journey'], paid, 'salary', 'Thanh toán đơn đã phục vụ tại quầy đã đóng', data.get('career'))
         elif status == 'ready':
             from . import engine
             c = state['careers'][data['career']]
-            engine.money(state, c, order['price'], 'Thanh toán đơn khách thật', order['id'], 'revenue')
+            engine.money(state, c, paid, 'Thanh toán đơn khách thật', order['id'], 'revenue')
             credit_bonus = getattr(_bridge(), 'credit_staff_bonus', None)
-            if credit_bonus: credit_bonus(state, data['career'], order['id'], order['price'])
+            if credit_bonus: credit_bonus(state, data['career'], order['id'], order['price'], **(dict(extra, base=data.get('base', order['price'])) if fee else {}))
         else:
             journey._wallet(state['journey'], order['price'], 'draw',
                             'Thanh toán đơn khách thật' if status == 'ready' else 'Hoàn tiền đơn chỗ làm', data.get('career'))
@@ -332,9 +347,11 @@ def _settle_one(store, order):
             _ack(state, order['id'])
         state_box['state'] = state
     def finish(db):
-        if db.execute('UPDATE work_service_orders SET status=?,updated_at=? WHERE id=? AND status=?',
-                      (new_status, time.time(), order['id'], status)).rowcount != 1:
+        if db.execute('UPDATE work_service_orders SET status=?,fee=?,updated_at=? WHERE id=? AND status=?',
+                      (new_status, fee, time.time(), order['id'], status)).rowcount != 1:
             raise _Replay()
+        if new_status == 'completed':
+            sm.rep_legacy_done(db, order['provider'], order['price'])
         command_commit(db, recipient, state_box['before'], state_box['state'], data.get('career'), 'work_visits_payment', {})
     try:
         callbacks = {recipient: change}
@@ -378,10 +395,23 @@ def _rating(db, place, owner=None):
     return dict(count=counted, average=round(float(average or 0), 2), total=len(rows))
 
 
-def _place_view(db, row, sid):
+def _place_view(db, row, sid, cache=None):
+    """🛎️ The offers carry the player-buyer price (NPC price × the provider's multiplier, or 🤝 thương lượng: game/
+    service_market.py decorate_offers; `base` keeps the NPC price), the provider's reputation and market listing."""
+    from . import service_market as sm
     data = _data(row)
+    cache = {} if cache is None else cache
+    data['offers'] = sm.decorate_offers(db, row['owner'], row['kind'], row['target'], data.get('offers', []), cache)
+    key = sm.legacy_key(row['kind'], row['target'])
+    if ('rep', row['owner']) not in cache:
+        cache[('rep', row['owner'])] = sm._rep_row(db, row['owner'])
+    r = cache[('rep', row['owner'])]
+    setting = sm._setting(db, row['owner'], *key)
+    market = dict(pid=social.pid_of(row['owner']), career=key[0], service=key[1], listed=bool(setting and setting['on_']),
+                  mode=setting['mode'] if setting else 'fixed', mult=int(setting['mult']) if setting else sm.DEFAULT_MULT,
+                  fee_pct=sm.FEE_PCT, rep=dict(n=int(r['n']), avg=round(r['stars'] / r['n'], 2) if r['n'] else 0.0, deals=int(r['deals'])))
     return dict(id=row['id'], kind=row['kind'], target=row['target'], visibility=row['visibility'],
-                mine=row['owner'] == sid, rating=_rating(db, row['id'], row['owner']), **data)
+                mine=row['owner'] == sid, rating=_rating(db, row['id'], row['owner']), market=market, **data)
 
 
 def _order_view(db, row, sid):
@@ -391,7 +421,8 @@ def _order_view(db, row, sid):
         place_name=data.get('place_name', ''), kind=data.get('kind'), career=data.get('career'),
         offer_id=data.get('offer', {}).get('offer_id'), label=data.get('offer', {}).get('label', ''),
         customer=data.get('customer', {}), provider=data.get('provider', {}), note=data.get('note', ''),
-        task_id=data.get('task_id'), staffed=bool(data.get('offer', {}).get('staffed')),
+        task_id=data.get('task_id'), staffed=bool(data.get('offer', {}).get('staffed')), market=bool(data.get('market')),
+        fee=int(row.get('fee') or 0), base=data.get('base', row['price']),
         served_by='staff' if data.get('offer', {}).get('staffed') else 'owner', target=data.get('target'), created_at=row['created_at'], updated_at=row['updated_at'],
         can_review=row['customer'] == sid and row['status'] == 'completed' and not reviewed)
 
@@ -416,7 +447,7 @@ def get(store, token, state, sub, query):
     if sub == 'place':
         with store.connect() as db:
             target = _row(db, 'SELECT * FROM work_visit_places WHERE id=?', (query.get('place'),))
-            need(target and _accessible(db, target, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
+            need(target and _open_to(db, target, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
         # A work commit already syncs the snapshot. Otherwise reuse the save
         # read for the due check, still guarded by its revision below.
         _advance_provider(store, target['owner'], refresh_snapshot=True)
@@ -447,11 +478,12 @@ def get(store, token, state, sub, query):
             except (ValueError, TypeError):
                 raise WorkVisitError('Trang không hợp lệ.')
             rows = _rows(db, 'SELECT * FROM work_visit_places WHERE ' + ' AND '.join(clauses) + ' ORDER BY updated_at DESC,id LIMIT 60 OFFSET ?', tuple(args + [offset]))
-            return dict(places=[_place_view(db, row, sid) for row in rows if _accessible(db, row, sid)],
+            cache = {}
+            return dict(places=[_place_view(db, row, sid, cache) for row in rows if _accessible(db, row, sid)],
                         next=offset + LIMIT if len(rows) == LIMIT else None, scope=scope)
         if sub == 'place':
             row = _row(db, 'SELECT * FROM work_visit_places WHERE id=?', (query.get('place'),))
-            need(row and _accessible(db, row, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
+            need(row and _open_to(db, row, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
             reviews = []
             counted = {r['order_id']: r['counted'] for r in _weighed(db, row['id'], row['owner'])[0]}
             for review in _rows(db, 'SELECT r.*,o.data AS order_data FROM work_service_reviews r JOIN work_service_orders o ON o.id=r.order_id WHERE r.place=? ORDER BY r.created_at DESC LIMIT 30', (row['id'],)):
@@ -467,8 +499,26 @@ def get(store, token, state, sub, query):
     raise WorkVisitError('Không có mục này.', 'not_found', 404)
 
 
-def _create(store, sid, data):
-    from . import journey
+def market_order(store, sid, data, ip='', talk=None):
+    """🛎️ Phố dịch vụ (game/service_market.py): a legacy order bought from the directory (fixed price) or agreed in a
+    talk (talk = {id, price, rounds, actor, provider_agreed}: that price, and the talk row flips to 'linked' in the same
+    transaction as the buyer's escrow). The provider who agreed takes it at once when they can."""
+    out = _create(store, sid, data, ip=ip, talk=talk)
+    if talk and talk.get('provider_agreed') and out.get('order', {}).get('status') == 'requested':
+        from .engine import GameError
+        with store.connect() as db:
+            row = _row(db, 'SELECT provider FROM work_service_orders WHERE id=?', (out['order']['id'],))
+        try:
+            _accept(store, row['provider'], {'order': out['order']['id']})
+        except (mr.MarriageError, GameError):
+            pass  # not in that career right now: the request waits in their inbox (refundable)
+        with store.connect() as db:
+            out['order'] = _order_view(db, _row(db, 'SELECT * FROM work_service_orders WHERE id=?', (out['order']['id'],)), sid)
+    return out
+
+
+def _create(store, sid, data, ip='', talk=None):
+    from . import service_market as sm
     need(set(data) <= {'place', 'offer_id', 'qty', 'note', 'rid', 'expected_price'}, 'Thông tin đặt dịch vụ không hợp lệ.')
     rid = data.get('rid')
     need(isinstance(rid, str) and re.fullmatch(r'[A-Za-z0-9_-]{8,80}', rid), 'Thiếu mã thao tác đặt đơn.', 'bad_rid')
@@ -481,17 +531,28 @@ def _create(store, sid, data):
             need(existing['fingerprint'] == fingerprint, 'Mã thao tác đã dùng cho nội dung khác.', 'rid_conflict', 409)
             return dict(order=_order_view(db, existing, sid), changed=False)
         place = _row(db, 'SELECT * FROM work_visit_places WHERE id=?', (data.get('place'),))
-        need(place and _accessible(db, place, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
+        need(place and _open_to(db, place, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
         need(place['owner'] != sid, 'Hãy ghé chỗ làm của người khác nhé.', 'own_place')
         snapshot = _data(place)
         offer = next((o for o in snapshot.get('offers', []) if o['offer_id'] == data.get('offer_id')), None)
         need(offer and snapshot.get('available'), 'Dịch vụ này hiện chưa sẵn sàng.', 'unavailable', 409)
+        # 🛎️ a player buyer pays the NPC price × the provider's multiplier (×3 by default), or the price agreed in a talk
+        quote = sm.legacy_quote(db, place['owner'], place['kind'], offer.get('career') or place['target'], offer['price'])
+        if talk:
+            price = talk['price']
+            need(type(price) is int and quote['lo'] <= price <= quote['hi'], 'Giá đã chốt không còn hợp lệ với phiếu này.', 'quote_changed', 409)
+        else:
+            need(quote['mode'] != 'nego', 'Chỗ này thương lượng giá: trả giá ở 🛎️ Phố dịch vụ nhé.', 'negotiate', 409)
+            price = quote['price']
         if 'expected_price' in data:
-            need(type(data['expected_price']) is int and data['expected_price'] == offer['price'], 'Giá đã thay đổi. Xem lại giá trước khi đặt nhé.', 'quote_changed', 409)
+            need(type(data['expected_price']) is int and data['expected_price'] == price, 'Giá đã thay đổi. Xem lại giá trước khi đặt nhé.', 'quote_changed', 409)
+        guard_spec = sm.get_spec(*sm.legacy_key(place['kind'], place['target']))
+        sm.guard(db, sid, place['owner'], price, guard_spec, ip, (talk or {}).get('actor') or sid, money=False)
         customer, provider = _person(db, sid), _person(db, place['owner'])
-    price, oid, at = offer['price'], 'wo_' + secrets.token_hex(12), time.time()
+    oid, at = 'wo_' + secrets.token_hex(12), time.time()
     body = dict(kind=place['kind'], target=place['target'], career=offer.get('career') or snapshot.get('career') or place['target'],
-                place_name=snapshot['name'], offer=offer, customer=customer, provider=provider, note=note)
+                place_name=snapshot['name'], offer=offer, customer=customer, provider=provider, note=note,
+                market=1, base=offer['price'], mult=0 if talk else quote['mult'], fee_pct=sm.FEE_PCT, **({'talk': talk['id']} if talk else {}))
     def debit(s):
         with store.connect() as db:
             previous = _row(db, 'SELECT * FROM work_service_orders WHERE customer=? AND request_id=?', (sid, rid))
@@ -499,8 +560,7 @@ def _create(store, sid, data):
             need(previous['fingerprint'] == fingerprint, 'Mã thao tác đã dùng cho nội dung khác.', 'rid_conflict', 409)
             raise _Replay()
         need(s.get('journey', {}).get('story'), 'Dịch vụ khách thật dùng ví hành trình.', 'not_story')
-        need(s['journey']['wallet'] >= price, f'Cần {price} xu trong ví để giữ tiền cho đơn.', 'no_money')
-        journey._wallet(s['journey'], -price, 'invest', 'Giữ tiền đơn chỗ làm', body['career'])
+        sm.debit(s, price, 'Giữ tiền đơn chỗ làm')   # the wallet, then the bank account; never into debt
         if body['career'] == 'pet_care':   # 🐾 the pets at home go to the groomer (game/pets.py); no money moves here
             from . import pets
             pets.groom_by_player(s)
@@ -511,12 +571,19 @@ def _create(store, sid, data):
             raise _Replay()
         db.execute('SELECT pg_advisory_xact_lock(hashtextextended(?,0))', ('work-orders:' + place['owner'],))
         current = _row(db, 'SELECT * FROM work_visit_places WHERE id=? FOR UPDATE', (place['id'],))
-        need(current and _accessible(db, current, sid), 'Chỗ làm hiện không nhận đơn.', 'unavailable', 409)
+        need(current and _open_to(db, current, sid), 'Chỗ làm hiện không nhận đơn.', 'unavailable', 409)
         updated = _data(current)
         current_offer = next((o for o in updated.get('offers', []) if o['offer_id'] == offer['offer_id']), None)
         need(updated.get('available') and current_offer == offer, 'Thông tin dịch vụ đã đổi. Xem giá mới trước nhé.', 'quote_changed', 409)
         need(db.execute("SELECT COUNT(*) FROM work_service_orders WHERE customer=? AND status IN ('requested','accepted')", (sid,)).fetchone()[0] < 20, 'Bạn đang có nhiều đơn chờ. Hoàn thành hoặc hủy bớt nhé.', 'too_many_orders')
         need(db.execute("SELECT COUNT(*) FROM work_service_orders WHERE provider=? AND status IN ('requested','accepted')", (place['owner'],)).fetchone()[0] < 50, 'Chỗ làm đang có nhiều khách chờ.', 'busy')
+        actor = (talk or {}).get('actor') or sid
+        sm.record_net(db, actor, ip, at)
+        sm.guard(db, sid, place['owner'], price, guard_spec, ip, actor, money=True, t=at)   # 🛎️ same network, pair caps, new accounts
+        if talk:
+            need(db.execute("UPDATE svc_orders SET status='linked',link=?,price=?,held_at=?,updated_at=?,due_at=NULL WHERE id=? AND status='talk' "
+                            'AND rounds=? AND ask=?', (oid, price, at, at, talk['id'], talk['rounds'], price)).rowcount == 1,
+                 'Giá vừa đổi. Xem lại nhé.', 'ask_changed', 409)
         db.execute('INSERT INTO work_service_orders(id,place,customer,provider,status,price,request_id,fingerprint,data,created_at,updated_at) '
                    "VALUES(?,?,?,?,'requested',?,?,?,?,?,?)", (oid, place['id'], sid, place['owner'], price, rid, fingerprint, _json(body), at, at))
     try:
@@ -553,7 +620,7 @@ def _accept(store, sid, data, automatic=False):
         quay_business.settle(s)
         workplace_business.settle(s)
         request = dict(id=order['id'], offer_id=body['offer']['offer_id'], digest=body['offer'].get('digest'),
-                       price=order['price'], buyer={**{k:body['customer'].get(k,'') for k in ('name','code','fc')}, 'av':body['customer'].get('avatar','🙂')}, note=body['note'])
+                       price=order['price'], base=body['offer']['price'], buyer={**{k:body['customer'].get(k,'') for k in ('name','code','fc')}, 'av':body['customer'].get('avatar','🙂')}, note=body['note'])
         if body['kind'] == 'quay':
             from . import quay
             staffed = bool(quay.stall(s, body['target'])['staff'])
@@ -569,7 +636,7 @@ def _accept(store, sid, data, automatic=False):
         current = _row(db, 'SELECT * FROM work_service_orders WHERE id=? FOR UPDATE', (order['id'],))
         need(current and current['status'] == 'requested', 'Đơn đã được xử lý.', 'gone', 409)
         place = _row(db, 'SELECT * FROM work_visit_places WHERE id=?', (order['place'],))
-        need(place and _accessible(db, place, order['customer']) and place['visibility'] != 'closed', 'Chỗ làm không còn nhận khách này.', 'unavailable', 409)
+        need(place and _open_to(db, place, order['customer']) and place['visibility'] != 'closed', 'Chỗ làm không còn nhận khách này.', 'unavailable', 409)
         db.execute("UPDATE work_service_orders SET status='accepted',data=?,updated_at=? WHERE id=? AND status='requested'", (_json(body), time.time(), order['id']))
         command_commit(db, sid, state_box['before'], state_box['state'], body['career'], 'work_visits_accept', {})
     mr._mutate_retry(store, {sid: bind}, assign)
@@ -594,11 +661,11 @@ def _cancel(store, sid, sub, data):
     return dict(changed=True, message='Đơn đã dừng và tiền đã hoàn về ví khách.')
 
 
-def post(store, token, state, sub, data):
+def post(store, token, state, sub, data, ip=''):
     sid = _actor(store, token)
     need(isinstance(data, dict), 'Dữ liệu không hợp lệ.')
     if sub == 'order':
-        return _create(store, sid, data)
+        return _create(store, sid, data, ip=ip)
     if sub == 'accept':
         return _accept(store, sid, data)
     if sub in ('decline', 'cancel'):
@@ -637,6 +704,8 @@ def post(store, token, state, sub, data):
                     return
                 db.execute('INSERT INTO work_service_reviews(order_id,place,customer,provider,stars,tags,comment,reply,created_at,updated_at) VALUES(?,?,?,?,?,?,?,\'\',?,?)',
                            (order['id'], order['place'], order['customer'], order['provider'], stars, _json(tags), comment, at, at))
+                from . import service_market as sm
+                sm.rate_legacy(db, order, stars, at)   # 🛎️ the provider's reputation in Phố dịch vụ
             else:
                 old = _row(db, 'SELECT * FROM work_service_reviews WHERE order_id=?', (order['id'],))
                 need(old, 'Chưa có đánh giá để trả lời.', 'no_review')

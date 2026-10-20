@@ -904,6 +904,18 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("home-guests-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 self.json(200,home_guests.get(self.server.store,token,state,route[len("/api/home-guests"):].lstrip('/'),query));return
+            if route.startswith("/api/svc/"):  # 🛎️ Phố dịch vụ: directory, a provider, my inbox, my services (game/service_market.py; the save only for 'mine')
+                sub=route[len("/api/svc/"):]
+                token,state,_,_=self.require_session(light=sub!="mine")
+                if not self.server.rate_limit("svc-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import service_market
+                self.json(200,service_market.get(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()},ip=self.client_ip()));return
+            if route=="/api/admin/svc":  # 🛎️ reports and totals of Phố dịch vụ; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                from game import service_market
+                self.json(200,service_market.admin_view(self.server.store));return
             if route.startswith("/api/work-visits/"):
                 token,state,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("work-visits-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1062,7 +1074,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1280,7 +1292,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,home_guests.post(self.server.store,token,state,route[len("/api/home-guests/"):],data));return
             if route.startswith("/api/work-visits/"):
                 if not self.server.rate_limit("work-visits:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
-                self.json(200,work_visits.post(self.server.store,token,state,route[len("/api/work-visits/"):],data));return
+                self.json(200,work_visits.post(self.server.store,token,state,route[len("/api/work-visits/"):],data,ip=self.client_ip()));return
+            if route.startswith("/api/svc/"):  # 🛎️ order, offer, answer, take, done, confirm, rate, flag, settings… (game/service_market.py)
+                if not self.server.rate_limit("svc:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import service_market
+                self.json(200,service_market.post(self.server.store,token,state,route[len("/api/svc/"):],data,ip=self.client_ip()));return
+            if route=="/api/admin/svc":  # 🛎️ close a report (game/service_market.py admin_act); admin only, nothing automatic
+                if not self.server.rate_limit("admin-svc:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                from game import service_market
+                self.json(200,service_market.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route.startswith("/api/social/"):
                 if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,social.post(self.server.store,token,state,route[len("/api/social/"):],data));return
@@ -1828,6 +1849,8 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         pet_arena.run_housekeeping(store)  # 🏟️ 🛡️ the weekly pet cup and the bang war when their time comes (advisory locks: exactly once); 🗄️ old matches to the archive
         from game import bang
         bang.run_housekeeping(store)  # 🗄️ ⚔️ old bang_log / bang_points / closed bang_stints rows to their archive tables (batched, off-peak, never dropped)
+        from game import service_market
+        service_market.run_housekeeping(store)  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
 
 

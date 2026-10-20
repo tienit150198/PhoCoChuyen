@@ -385,7 +385,8 @@ function navItems(c){
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story)items.push(['townProjects','building','Công trình của phố']);  // 🏗️ cả phố góp tiền xây (v4/town-projects.js, own dialog)
-  if(api.state?.journey?.story&&!api.content?.off?.bang)items.push(['bang','shield','Bang',api.bangAlerts||0]);  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
+  if(api.state?.journey?.story&&!api.content?.off?.bang)items.push(['bang','shield','Bang',api.bangAlerts||0]);
+  if(api.state?.journey?.story)items.push(['svcMarket','bell','Phố dịch vụ',api.svcAlerts||0]);  // 🛎️ người chơi phục vụ người chơi (v4/service-market.js, own dialog; badge from v4/ticker.js me.svc)  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)
@@ -407,7 +408,7 @@ function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)retur
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={svcMarket:'Thuê người chơi khác làm giúp',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
@@ -418,7 +419,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang']],
+  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1747,7 +1748,8 @@ async function handleAction(action,data,el){
       if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
       if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='townProjects'){await (await import('./v4/town-projects.js')).openTownProjects(env(),data);break;}  // 🏗️ Công trình của phố: lazy
-      if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}  // ⚔️ Bang: lazy
+      if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}
+      if(action==='svcMarket'){await (await import('./v4/service-market.js')).openServiceMarket(env(),data);break;}  // 🛎️ Phố dịch vụ: lazy  // ⚔️ Bang: lazy
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}
