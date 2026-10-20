@@ -25,7 +25,6 @@
 .rd-kind{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--surface-2);font-size:1.2rem;flex:none}
 .rd-note{margin:8px 0 6px;padding:6px 10px;border-radius:10px;background:var(--surface-2);font-size:.88rem;color:var(--ink-2)}
 .rd-preview{margin:6px 0;padding:8px 10px;border-radius:10px;background:#16233a;color:#f3f6fb;font-size:.9rem;line-height:1.45}
-.rd-tick{margin-right:4px}
 .rd-why{margin:6px 0;padding:8px 10px;border-radius:10px;background:var(--bad-soft);color:var(--bad);font-size:.88rem;line-height:1.4}
 .rd-picks{border:0;margin:8px 0 4px;padding:0;display:grid;gap:6px}
 .rd-picks legend{font-size:.86rem;font-weight:700;margin-bottom:4px}

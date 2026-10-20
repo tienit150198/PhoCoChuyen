@@ -100,7 +100,7 @@ function orderCard(o){
   const [emoji,name]=KIND[o.kind]||['📻','Đơn'],pick=S.pick[o.id]||o.picks[0]?.id,ok=Boolean(S.ok[o.id]);
   const picks=`<fieldset class="rd-picks"><legend>${o.kind==='tang_bai'?'Chọn bài hát':'Chọn nhạc nền'}</legend>${o.picks.map(p=>`<label class="rd-pickrow${p.id===pick?' on':''}"><input type="radio" name="rd-pick-${esc(o.id)}" value="${esc(p.id)}" data-rd-pick="${esc(o.id)}"${p.id===pick?' checked':''}><span>${esc(p.label)}</span></label>`).join('')}</fieldset>`;
   const verdict=o.why?`<p class="rd-why" role="alert">⛔ ${esc(o.why)} Từ chối để khách nhận lại đủ tiền.</p>`
-    :`<p class="rd-preview" aria-label="Dòng sẽ chạy trên bảng tin"><span class="rd-tick" aria-hidden="true">📣</span> ${esc(o.preview)}</p>`;
+    :`<p class="rd-preview" aria-label="Dòng sẽ chạy trên bảng tin">${esc(o.preview)}</p>`;
   const check=o.why?'':`<label class="rd-okrow"><input type="checkbox" data-rd-ok="${esc(o.id)}"${ok?' checked':''}> <span>Đã đọc kỹ: không link, không số điện thoại, không lời xúc phạm ai</span></label>`;
   return `<article class="rd-order ${esc(o.status)}"><div class="rd-order-top"><span class="rd-kind" aria-hidden="true">${emoji}</span><div class="grow"><b>${esc(o.who)}</b><small>${esc(name)} · <b>${fmt(o.price)} xu</b> · ${esc(STATUS[o.status]||o.status)}</small></div></div>
     <p class="rd-note">✏️ “${esc(o.note)}”</p>${verdict}${o.why?'':picks}${check}
