@@ -141,7 +141,10 @@ def solve_activity(j,spec,practice=False):
         for card in a['cards']:j.act('life_activity_assign',card=card['id'],target=card['bin'] if a['kind']=='sort' else card['id'])
     return j.c['life']['activity']
 
-def unknown_out(s,careers=('reception',)):
+NEWER_THAN_LIVE=('reception',)   # careers 2.4.66 (a808cb79) does not know: add each new career here
+
+
+def unknown_out(s,careers=NEWER_THAN_LIVE):
     """A save as the stored text holds it for a release older than `careers` (engine.DORMANT): each of them left out
     while untouched; every other career, dormant on this build or not, stays (the older release knows it)."""
     from game.engine import initial_career

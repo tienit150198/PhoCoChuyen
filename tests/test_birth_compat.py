@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 from game import birth as bt
+from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 as the stored text leaves them out
 from game import marriage as mr
 from game import pg_schema
 from game.engine import validate_state
@@ -141,7 +142,7 @@ class Rollback(BirthBase):
         saves = [paid, refunded, personal]
         for x in saves:
             validate_state(x)
-        got = self.run_old(SAVES, stdin=json.dumps(saves))
+        got = self.run_old(SAVES, stdin=json.dumps([unknown_out(x) for x in saves]))
         for before, after in got:
             self.assertEqual(before, after)
         self.assertEqual(json.loads(got[2][0])[0]['child']['name'], 'Mây')
