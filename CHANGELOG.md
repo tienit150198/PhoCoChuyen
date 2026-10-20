@@ -2,6 +2,10 @@
 
 Không có mục Có gì mới (chủ game: cho người dùng mua, không thông báo).
 
+## bang-rejoin-24h
+
+- 🚪 Rời bang chờ 24 giờ (thay vì 48) mới vào hoặc lập bang khác (chủ game: "chỉnh lại rời bang chờ 24h nhé"). bang_content.REJOIN_HOURS = 24.
+
 ## accessories
 
 🧰 Phụ kiện nghề (chủ game: "thêm phụ kiện vào cho người ta nhé", "phụ kiện kiểm tra tuổi hay gì đó... để check"). game/career_gadgets.py: mỗi món mua một lần bằng quỹ nghề, hiện trong Trang trí & nâng cấp (mục 🧰 Phụ kiện nghề, trên Thiết bị nghề), lệnh mới `gadget_buy {item}` (không tốn giờ tiệm).

@@ -1,4 +1,4 @@
-"""🚪 Rời bang thì 48 giờ sau mới vào bang khác (owner 21/10), and a Bang chủ disbands without handing over.
+"""🚪 Rời bang thì 24 giờ sau mới vào bang khác (owner 21/10), and a Bang chủ disbands without handing over.
 
 Leaving (Rời bang) starts the wait for any OTHER bang: join, ask, an invitation accepted, an officer's approval, founding
 (nothing paid when refused). The same bang takes you back at once. A kick or a disband never makes anyone wait. A member of
@@ -14,13 +14,13 @@ from game import bang
 from game.engine import GameError
 from tests.test_bang import Base
 
-H = 48 * 3600
+H = 24 * 3600
 
 
 class Rejoin(Base):
     def setUp(self):
         super().setUp()
-        p = patch.dict(os.environ, {'MNL_BANG_REJOIN_HOURS': '48'})
+        p = patch.dict(os.environ, {'MNL_BANG_REJOIN_HOURS': '24'})
         p.start()
         self.addCleanup(p.stop)
         self.a = self.player(name='Lan')
