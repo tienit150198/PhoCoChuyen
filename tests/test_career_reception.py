@@ -115,7 +115,7 @@ class Registration(unittest.TestCase):
     def test_registered_last_dormant_salaried_late_unlock(self):
         from game import operations
         from game.career_voice import salaried_set
-        self.assertEqual(ORDER[-1], 'reception')
+        self.assertEqual(tuple(ORDER[-2:]), ('reception', 'teller'))   # 🏦 teller was appended right after
         self.assertIn('reception', DORMANT)
         self.assertIn('reception', salaried_set())
         self.assertIn('reception', operations.SALARIED)

@@ -871,3 +871,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Quy trình xử lý phàn nàn có kiểm chứng
 9. Sổ đồ thất lạc theo lộ trình khách
 10. Điều phối đoàn và sự kiện cuối tuần
+
+## 59. Ngân hàng — giao dịch viên (`teller`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập quy trình đếm tiền hai lần ở quầy
+2. Chia cọc tiền lẻ theo yêu cầu chủ quán
+3. Đối chiếu người nhận khi có hai người trùng tên
+4. Xử lý phiếu có số và chữ lệch nhau
+5. Kế hoạch gửi góp theo mục tiêu của khách
+6. Tiếp quỹ ATM có kiểm soát kép
+7. Nhận diện tiền nghi giả và lập biên bản
+8. Bàn giao quỹ và giao dịch treo cuối ca
+9. Điều phối quầy ngày nhận lương hưu
+10. Xếp lịch nhân sự cả phòng giao dịch

@@ -1,0 +1,195 @@
+{
+ "teller": [
+  {
+   "tier": 1,
+   "title": "Lập quy trình đếm tiền hai lần ở quầy",
+   "output_unit": "bảng quy trình đếm tiền",
+   "inputs": [
+    {"name": "Bộ thẻ quy trình đếm tiền hư cấu", "unit": "bộ", "quantity": 2, "unit_cost": 6000}
+   ],
+   "procedure": [
+    "Ghi thứ tự đếm bằng máy rồi đếm tay từng cọc trước mặt khách giả lập.",
+    "Đặt chỗ để cọc đã đếm và cọc chưa đếm tách hẳn hai bên khay.",
+    "Dán bảng cạnh máy đếm và cho trưởng quầy ký duyệt."
+   ],
+   "check": {
+    "prompt": "Bảng nào được nghiệm thu?",
+    "good": "Mỗi cọc được đếm hai lần, lần hai trước mặt khách, cọc đã đếm để riêng.",
+    "bad": "Máy đếm một lần là đủ, đếm tay chỉ khi máy hỏng.",
+    "why": "Đếm hai lần trước mặt khách chặn được cả lỗi máy lẫn tranh cãi sau đó."
+   }
+  },
+  {
+   "tier": 2,
+   "title": "Chia cọc tiền lẻ theo yêu cầu chủ quán",
+   "output_unit": "phiếu chia cọc",
+   "inputs": [
+    {"name": "Dây thun và kẹp ghi mệnh giá", "unit": "bộ", "quantity": 3, "unit_cost": 2000}
+   ],
+   "procedure": [
+    "Đọc phiếu đổi tiền giả lập: tiền khách đưa và số cọc từng mệnh giá cần.",
+    "Tính phần còn lại theo mệnh giá khách chọn, mỗi cọc mười tờ.",
+    "Buộc từng cọc, kẹp giấy ghi mệnh giá rồi ghi bảng kê hai bên ký."
+   ],
+   "check": {
+    "prompt": "Phiếu chia cọc nào đúng?",
+    "good": "Đủ số cọc khách cần, phần còn lại đúng mệnh giá, tổng bằng tiền khách đưa.",
+    "bad": "Đưa toàn tờ năm mươi cho nhanh, khách tự chia.",
+    "why": "Chủ quán cần đúng cọc để thối tiền cả ngày."
+   }
+  },
+  {
+   "tier": 3,
+   "title": "Đối chiếu người nhận khi có hai người trùng tên",
+   "output_unit": "phiếu đối chiếu người nhận",
+   "inputs": [
+    {"name": "Thẻ hồ sơ người nhận hư cấu", "unit": "thẻ", "quantity": 4, "unit_cost": 2500}
+   ],
+   "procedure": [
+    "Xếp các thẻ người nhận trùng tên cạnh nhau.",
+    "So tên, ảnh và một chi tiết khác với lời khách trên phiếu giả lập.",
+    "Đọc lại cho khách và ghi chi tiết đã đối chiếu vào phiếu."
+   ],
+   "check": {
+    "prompt": "Phiếu nào được duyệt?",
+    "good": "Người nhận khớp đủ tên, ảnh và nghề, khách đã xác nhận khi đọc lại.",
+    "bad": "Chọn người đầu tiên trong danh sách vì trùng tên.",
+    "why": "Hai người trùng tên là chuyện thường; chỉ đủ ba chi tiết mới chắc."
+   }
+  },
+  {
+   "tier": 4,
+   "title": "Xử lý phiếu có số và chữ lệch nhau",
+   "output_unit": "biên bản làm rõ phiếu",
+   "inputs": [
+    {"name": "Mẫu phiếu giao dịch hư cấu", "unit": "tờ", "quantity": 5, "unit_cost": 1500}
+   ],
+   "procedure": [
+    "Khoanh chỗ số và chữ trên phiếu giả lập không bằng nhau.",
+    "Hỏi lại khách, đếm tiền thật cùng khách nếu là phiếu nộp.",
+    "Cho khách viết phiếu mới, ký xác nhận số đúng rồi mới làm."
+   ],
+   "check": {
+    "prompt": "Biên bản nào đạt?",
+    "good": "Có chữ ký khách trên số đã làm rõ, giao dịch làm sau khi ký.",
+    "bad": "Làm theo số vì số dễ đọc hơn chữ.",
+    "why": "Số tiền chưa rõ thì chưa làm gì cả."
+   }
+  },
+  {
+   "tier": 5,
+   "title": "Kế hoạch gửi góp theo mục tiêu của khách",
+   "output_unit": "kế hoạch tích lũy",
+   "inputs": [
+    {"name": "Sổ tích lũy mẫu hư cấu", "unit": "cuốn", "quantity": 2, "unit_cost": 7000}
+   ],
+   "procedure": [
+    "Hỏi mục tiêu, số đã có, số tháng và lúc nào có thể phải rút.",
+    "Tính tiền góp mỗi tháng, làm tròn lên tới mười nghìn.",
+    "Chọn sản phẩm hợp nhu cầu và hẹn ngày góp đúng lúc khách có tiền."
+   ],
+   "check": {
+    "prompt": "Kế hoạch nào được duyệt?",
+    "good": "Số góp đủ tới mục tiêu, sản phẩm hợp việc khách có phải rút giữa chừng hay không.",
+    "bad": "Mời gói kỳ hạn dài nhất vì lãi cao nhất.",
+    "why": "Sản phẩm đúng là sản phẩm khách giữ được tới ngày mục tiêu."
+   }
+  },
+  {
+   "tier": 6,
+   "title": "Tiếp quỹ ATM có kiểm soát kép",
+   "output_unit": "biên bản tiếp quỹ ATM",
+   "inputs": [
+    {"name": "Tem niêm phong hộp tiền hư cấu", "unit": "cái", "quantity": 4, "unit_cost": 3000}
+   ],
+   "procedure": [
+    "Đọc màn hình số tờ từng khe, chọn hộp dưới mức phải tiếp.",
+    "Hai người cùng lắp hộp đúng khe đúng mệnh giá, cùng đếm, cùng ký.",
+    "Niêm phong, chạy thử một giao dịch rồi ghi sổ ATM."
+   ],
+   "check": {
+    "prompt": "Biên bản nào đạt?",
+    "good": "Hai chữ ký, đúng khe đúng mệnh giá, có lần chạy thử sau niêm phong.",
+    "bad": "Một người lắp cho nhanh, ký hộ người kia sau.",
+    "why": "Mở máy một mình là mở cửa cho sai sót không ai thấy."
+   }
+  },
+  {
+   "tier": 7,
+   "title": "Nhận diện tiền nghi giả và lập biên bản",
+   "output_unit": "biên bản tạm giữ",
+   "inputs": [
+    {"name": "Bộ mẫu tờ tiền huấn luyện hư cấu", "unit": "bộ", "quantity": 1, "unit_cost": 15000}
+   ],
+   "procedure": [
+    "Soi đèn, sờ nét nổi, xem hình chìm của tờ mẫu giả lập.",
+    "Mời khách chứng kiến, giải thích vì sao phải tạm giữ.",
+    "Lập biên bản hai bên ký, giao một liên cho khách."
+   ],
+   "check": {
+    "prompt": "Biên bản nào đúng quy trình?",
+    "good": "Khách chứng kiến, có chữ ký hai bên, khách giữ một liên.",
+    "bad": "Trả lại tờ nghi giả cho khách đi tiêu chỗ khác.",
+    "why": "Trả lại là để tờ giả tiếp tục đi khắp chợ."
+   }
+  },
+  {
+   "tier": 8,
+   "title": "Bàn giao quỹ và giao dịch treo cuối ca",
+   "output_unit": "sổ bàn giao quỹ",
+   "inputs": [
+    {"name": "Sổ bàn giao quỹ hư cấu", "unit": "cuốn", "quantity": 1, "unit_cost": 9000}
+   ],
+   "procedure": [
+    "Khớp từng biên nhận với sổ giao dịch trong ngày giả lập.",
+    "Ghi giao dịch treo, báo trưởng quầy, để biên bản cho ca sau.",
+    "Tính tiền quầy phải có, đếm thực tế rồi hai ca cùng ký."
+   ],
+   "check": {
+    "prompt": "Sổ bàn giao nào đạt?",
+    "good": "Khoản treo có biên bản, tiền quầy khớp sổ, hai ca cùng ký.",
+    "bad": "Tự hủy giao dịch treo cho sổ đẹp.",
+    "why": "Giao dịch treo phải có người biết, không phải biến mất."
+   }
+  },
+  {
+   "tier": 9,
+   "title": "Điều phối quầy ngày nhận lương hưu",
+   "output_unit": "kế hoạch quầy cao điểm",
+   "inputs": [
+    {"name": "Bảng phân quầy hư cấu", "unit": "tờ", "quantity": 3, "unit_cost": 2500}
+   ],
+   "procedure": [
+    "Ước số khách buổi sáng và số khách một quầy làm được.",
+    "Mở đủ quầy, ưu tiên người già yếu, tách giao dịch lớn cần kiểm soát.",
+    "Đặt ghế chờ, nước uống và người hướng dẫn ở sảnh."
+   ],
+   "check": {
+    "prompt": "Kế hoạch nào được duyệt?",
+    "good": "Đủ quầy theo số khách, có ưu tiên và kiểm soát giao dịch lớn.",
+    "bad": "Mở một quầy, ai tới trước làm trước, người già đứng chờ.",
+    "why": "Ngày cao điểm cần chuẩn bị từ trước, không chờ hàng dài mới xoay."
+   }
+  },
+  {
+   "tier": 10,
+   "title": "Xếp lịch nhân sự cả phòng giao dịch",
+   "output_unit": "lịch nhân sự tuần",
+   "inputs": [
+    {"name": "Bảng lịch tuần hư cấu", "unit": "tờ", "quantity": 4, "unit_cost": 2000},
+    {"name": "Thẻ nguyện vọng nhân viên hư cấu", "unit": "thẻ", "quantity": 6, "unit_cost": 1000}
+   ],
+   "procedure": [
+    "Ghi nguyện vọng nghỉ và ngày cao điểm của tuần giả lập.",
+    "Xếp người theo quầy và ATM, luôn đủ hai người cho mỗi lần mở máy.",
+    "Công khai lịch, ghi đúng tên người làm từng việc trên nhật ký."
+   ],
+   "check": {
+    "prompt": "Lịch nào đạt?",
+    "good": "Đủ quầy ngày cao điểm, ATM luôn hai người, nguyện vọng hợp lý được giữ.",
+    "bad": "Để người hay nhận việc làm hết cho chắc, người khác nghỉ.",
+    "why": "Lịch công bằng giữ được cả phòng và cả khách."
+   }
+  }
+ ]
+}

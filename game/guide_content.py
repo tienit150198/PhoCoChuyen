@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6919,6 +6919,24 @@ CAREERS.update({
         surprises=['Quầy Hoa Sứ toàn chuyện oái oăm: bán trùng phòng, đặt hai người mà tới cả nhóm, khách dọa đánh giá, gấu bông mất trước giờ xe chạy, mèo Bơ “không phải quản lý”…',
                    'Cách bạn chọn được nhớ: khách quen, đồng nghiệp và chị Quyên đổi thái độ theo đó.'],
         buttons=['Đọc phiếu việc', 'Chốt yêu cầu', 'Xác nhận xếp phòng', 'Giao chìa', 'Xếp xong xe', 'Ghi sổ giao ca']),
+    'teller': dict(emoji='🏦', name='Ngân hàng', place='Phòng giao dịch Bến Chợ · Ngân hàng Phố',
+        intro='Bạn là giao dịch viên ở Quầy số 3. Khách là người trong phố; tiền ở quầy là tiền của ngân hàng, không phải tiền của bạn.',
+        jobs=[dict(emoji='💵', name='Rút tiền', how='So tên, ảnh, CCCD và số với chữ trên phiếu; kéo tờ tiền vào khay đúng số, theo lời dặn của khách và ngăn két đang hết.'),
+              dict(emoji='🪙', name='Đổi tiền lẻ', how='Đếm tiền khách đưa, đưa đúng số cọc (10 tờ một cọc), phần còn lại theo mệnh giá khách chọn; buộc cọc, ghi bảng kê.'),
+              dict(emoji='🔁', name='Chuyển tiền', how='Chọn người nhận khớp cả tên, ảnh và nghề (hay có hai người trùng tên); thu tiền chuyển cộng phí nếu khác ngân hàng; đọc lại rồi mới chuyển.'),
+              dict(emoji='🐷', name='Gửi tiết kiệm theo mục tiêu', how='Hỏi mục tiêu, tính tiền góp mỗi tháng, chọn sản phẩm hợp nhu cầu. Bà Lựu đang để dành mua xe trà mới.'),
+              dict(emoji='🏧', name='Tiếp quỹ ATM', how='Chọn hộp dưới 100 tờ, lắp đúng khe đúng mệnh giá, tính số tờ nạp đầy, hai người cùng ký.'),
+              dict(emoji='🧾', name='Bàn giao cuối ca', how='Khớp biên nhận với giao dịch, tìm giao dịch treo, tính tiền quầy phải có.')],
+        steps=['Đầu ca: đếm quỹ, so sổ bàn giao, khớp thì ký nhận, lệch thì lập biên bản.',
+               'Mỗi khách: nhận yêu cầu, kiểm tra thông tin, xử lý tiền, xác nhận, giao biên nhận.',
+               'Khay tiền tự cộng: sai thì bỏ bớt, sửa xong mới xác nhận.',
+               'Cuối ca: bàn giao quỹ, khớp từng biên nhận.'],
+        stars=['Không sai bước nào giữ chất lượng 100%.', 'Đếm hai lần trước mặt khách, đọc lại tên người nhận rồi mới chuyển.'],
+        mistakes=[dict(bad='Chuyển cho người trùng tên mà chưa so ảnh và nghề.', result='Bước đó giữ lại để sửa; chất lượng và thưởng giảm.'),
+                  dict(bad='Về mà chưa bàn giao quỹ.', result='Chị Hạnh chấm 2 sao; ngày đó không tính vào tập sự hay lên chức.')],
+        prep=['Ứng tuyển ở phòng giao dịch Bến Chợ (mở từ chương 3). Học ba bài ngắn, thi thực hành ba phần, rồi hai ca có chị Hạnh kèm.',
+              'Đứng quầy một mình rồi chọn nhánh: Giao dịch, Tư vấn, Vận hành hoặc Quản lý; bậc then chốt có bài xét lên chức.'],
+        surprises=['Quầy hay có chuyện oái oăm: ca trước bàn giao thiếu, khách quen giám đốc đòi chen ngang, tờ tiền nghi giả, sếp ép bán gói không hợp… Chọn cách nào cũng có hậu quả về sau.'], buttons=[]),
 })
 
 

@@ -36,6 +36,7 @@ NAMES = {
  'hotel':'Xe đẩy buồng phòng và máy cài thẻ từ',
  'banquet':'Bộ dao bếp và nhiệt kế đầu dò',
  'reception':'Bảng móc chìa dán màu và xe đẩy hành lý',
+ 'teller':'Máy đếm tiền và đèn soi tiền giả',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

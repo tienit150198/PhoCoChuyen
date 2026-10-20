@@ -67,6 +67,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   hotel:style('bell','banner','luggage','#7a5a9e','#efe0c8'),
   banquet:style('cloche','awning','stools','#b5473a','#f3dcb4'),
   reception:style('key','scallop','luggage','#b0546f','#fbecef'),
+  teller:style('vault','civic','planter','#1f6f6b','#e3efe6'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -317,6 +318,10 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
       for(const [i,x] of [-30,-11,8].entries()){ellipse(x,-14,2.5,2.5,ink);line([[x,-12],[x,-4]],ink,2);ellipse(x,-1,4,4,'#e3b65a');round(x-6,4,12,13,3,i===1?s.main:cream);}
       for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;ellipse(-30+Math.cos(a)*6,-29+Math.sin(a)*6,4.5,4.5,cream,undefined);}ellipse(-30,-29,3,3,'#e8c25c',undefined);
       ellipse(30,-14,14,14,'#e3b65a');ellipse(30,-14,6,6,s.main);round(26,-1,8,40,2,'#e3b65a');round(33,24,9,5,1,'#e3b65a');round(33,32,6,5,1,'#e3b65a');break;
+    case 'vault':  // a round vault door with its spoke wheel and a short stack of coins: no real bank's mark
+      round(-40,-38,62,76,6,s.main);ellipse(-9,0,26,26,body);ellipse(-9,0,20,20,s.light);
+      for(const a of [0,Math.PI/3,2*Math.PI/3])line([[-9+Math.cos(a)*15,Math.sin(a)*15],[-9-Math.cos(a)*15,-Math.sin(a)*15]],ink,3);
+      ellipse(-9,0,5,5,cream);for(const y of [30,22,14])ellipse(32,y,13,5,'#e3c26b');line([[19,14],[19,30]],ink,1);line([[45,14],[45,30]],ink,1);break;
     case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
       round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
       round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;
