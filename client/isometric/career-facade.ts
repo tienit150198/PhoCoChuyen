@@ -66,6 +66,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   customs:style('seal','civic','luggage','#4f7f66','#eadcae'),
   hotel:style('bell','banner','luggage','#7a5a9e','#efe0c8'),
   banquet:style('cloche','awning','stools','#b5473a','#f3dcb4'),
+  restore:style('clock','workshop','toolbox','#8a5a2b','#f1dcb8'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -311,6 +312,10 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;
+    case 'clock':  // a restored pendulum clock on a wax tin, a little brush beside it: the restoration workshop
+      round(-24,-40,48,74,8,body);ellipse(0,-20,17,17,cream);ellipse(0,-20,13,13,s.light);line([[0,-20],[0,-30]],ink,3);line([[0,-20],[8,-16]],ink,3);
+      round(-14,4,28,24,4,cream);line([[0,4],[0,20]],ink,2);ellipse(0,22,6,6,s.main);round(-38,30,76,10,4,s.main);
+      line([[30,-26],[42,-6]],'#876c50',5);round(38,-8,9,10,3,s.light);break;
     case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
       round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
       round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;

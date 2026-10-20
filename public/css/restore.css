@@ -1,0 +1,21 @@
+/* 🧰 Phục chế đồ (public/js/v4/restore.js) on top of spend.css (the sd-sheet frame and tabs). */
+.rs-sheet .rs-head{display:flex;align-items:center;gap:10px}.rs-sub{display:block;margin:2px 0 0;font-size:13px;color:var(--muted,#6b6158)}
+.rs-tabs button{font-size:14px;min-height:44px}.rs-tl{font-size:13px}
+.rs-body{display:grid;gap:12px;min-width:0}
+.rs-h{margin:6px 0 2px;font-size:16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}.rs-h small{font-weight:400;color:var(--muted,#6b6158)}
+.rs-desc,.rs-foot,.rs-none,.rs-empty{margin:0;font-size:13px;line-height:1.5;color:var(--muted,#5f554b)}
+.rs-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rs-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line,#e2d6c5);border-radius:12px;background:var(--card,#fff);min-width:0}
+.rs-item .grow{display:grid;gap:2px;min-width:0;flex:1}.rs-item small{color:var(--muted,#6b6158);overflow-wrap:anywhere}
+.rs-item .btn{flex-shrink:0;min-height:40px}
+.rs-svc{display:grid;gap:6px}
+.rs-card,.rs-order{display:grid;gap:10px;padding:14px;border:1px solid var(--line,#e2d6c5);border-radius:14px;background:var(--card,#fff)}
+.rs-card h3{margin:0}.rs-card p{margin:0;line-height:1.5}
+.rs-styles{border:1px solid var(--line,#e2d6c5);border-radius:10px;padding:8px 12px;margin:0}.rs-styles legend{padding:0 6px;font-weight:700}
+.rs-tick{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}.rs-tick input{width:20px;height:20px;accent-color:#8a5a2b}
+.rs-actions{display:flex;flex-wrap:wrap;gap:8px}.rs-actions .btn{min-height:44px}
+.rs-oh{display:grid;gap:2px}.rs-oh small{color:var(--muted,#6b6158)}
+.rs-step{margin:0}.rs-opts{display:grid;gap:8px;width:100%}.rs-opts .btn{justify-content:flex-start;text-align:left;white-space:normal;min-height:44px}
+.rs-note{margin:0;font-size:13px;background:#f4f1ea;padding:8px 10px;border-radius:8px}
+.rs-flash{margin:0;padding:10px 12px;border-radius:10px;font-size:14px}.rs-flash.good{background:#e8f4e8;color:#24572b}.rs-flash.bad{background:#fdeceb;color:#8a2a22}
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]) .rs-note{background:#2c2620;color:#e9dccb}html:not([data-theme="light"]) .rs-flash.good{background:#1f3322;color:#cfe8d2}html:not([data-theme="light"]) .rs-flash.bad{background:#3a1f1d;color:#f3d0cc}}

@@ -17,7 +17,7 @@ assert.ok(!workLayout('drugstore','unknown').fixtures.some(o=>o.kind==='bed'),'f
 // Every row reflects the existing vocabulary/tasks: this guards against a family
 // fallback importing an unrelated profession's equipment into a new career.
 const required={
-  art_studio:['desk','board','rack','sink'],lawyer:['bookcase','desk','sofa'],laundry:['washer','rack','sink'],post_office:['shelf','crate','routeboard'],customs:['bookcase','desk','console','crate'],banquet:['shelf','counter','board','stove','sink','coldcabinet'],hotel:['shelf','counter','board','rack','sofa','planter'],
+  restore:['tools','desk','rack','crate'],art_studio:['desk','board','rack','sink'],lawyer:['bookcase','desk','sofa'],laundry:['washer','rack','sink'],post_office:['shelf','crate','routeboard'],customs:['bookcase','desk','console','crate'],banquet:['shelf','counter','board','stove','sink','coldcabinet'],hotel:['shelf','counter','board','rack','sofa','planter'],
   milk_tea:['counter','display'],cafe_bakery:['oven','display'],restaurant:['stove','sink'],grocery:['shelf','crate'],florist:['planter','sink'],
   mother_baby:['shelf','crib'],pharmacy:['medicine','coldcabinet','counter'],salon:['mirror','sink'],pet_care:['sink','bench'],repair:['tools','rack'],nail:['desk','display'],
   teacher:['chalkboard','bookcase'],accounting:['bookcase','desk'],corp_accounting:['bookcase','desk'],tax_payroll:['bookcase','board'],group_accounting:['bookcase','desk'],
@@ -28,7 +28,7 @@ const required={
   library:['bookcase','desk'],pilot:['console','seatrow'],flight_attendant:['seatrow','counter'],oil:['pipework','tools'],railway:['signal'],nurse:['bed','sink'],
   lighthouse:['beacon','planter'],rescue:['console','routeboard'],lifeguard:['pool','seatrow'],police:['bookcase','seatrow'],zpop:['bookcase','display'],
 };
-assert.deepEqual(Object.keys(required).sort(),Object.keys(KIND_OF).sort(),'all 57 careers receive a semantic review');
+assert.deepEqual(Object.keys(required).sort(),Object.keys(KIND_OF).sort(),'all 58 careers receive a semantic review');
 const exclusive={bed:['nurse','homestay'],crib:['babysitter','mother_baby'],stove:['restaurant','homemaker','naucom','com','pho','banquet'],oven:['cafe_bakery'],
   washer:['giupviec','homemaker','laundry'],freezer:['ice_cream'],coldcabinet:['pharmacy','homemaker','naucom','banquet'],pool:['lifeguard'],beacon:['lighthouse'],signal:['railway'],photobooth:['photobooth']};
 const fixtures=new Map();
@@ -39,7 +39,7 @@ for(const [career,wanted] of Object.entries(required)){
   const footprint=JSON.stringify(room.fixtures.map(({kind,footprint})=>({kind,footprint})).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
   assert.ok(!fixtures.has(footprint),`${career}: fixture geometry duplicates ${fixtures.get(footprint)}`);fixtures.set(footprint,career);
 }
-assert.equal(fixtures.size,57,'each career has its own equipment arrangement without relying on labels, colors or walls');
+assert.equal(fixtures.size,58,'each career has its own equipment arrangement without relying on labels, colors or walls');
 for(const career of ['homemaker','naucom'])assert.equal(layout(career).stations.find(s=>s.id==='shelf').kind,'coldcabinet',`${career}: refrigerator vocabulary binds to a refrigerator`);
 assert.equal(layout('pagoda').stations.find(s=>s.id==='shelf').kind,'planter','pagoda ornamental plants are not an office bookcase');
 assert.equal(layout('photobooth').stations.find(s=>s.id==='workbench').kind,'photobooth','camera booth is not the generic merchandise/bottle display');
@@ -79,4 +79,4 @@ for(const career of ['pharmacy','homemaker','naucom','photobooth']){
     assert.ok(!draws.slice(lensIndex+1).filter(c=>c.name==='fillPoints').some(c=>covers(c.args[0],x,y)),'the booth cutaway roof and curtains must leave the camera lens visible');
   }
 }
-console.log('PASS 57 career equipment semantics: no pharmacy bed, correct cold storage/photobooth/temple plants, 57 unique fixture plans');
+console.log('PASS 58 career equipment semantics: no pharmacy bed, correct cold storage/photobooth/temple plants, 58 unique fixture plans');
