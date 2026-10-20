@@ -17,3 +17,4 @@
 .rs input:focus-visible,.rs select:focus-visible,.rs button:focus-visible,.rs summary:focus-visible{outline:3px solid #d09540;outline-offset:3px}
 @media(max-width:560px){.rs-list{grid-template-columns:minmax(0,1fr)}.rs-ticket{padding:14px}.rs-progress li{font-size:11px;padding:7px 4px}.rs-row{padding:12px}.rs-stage>h3{font-size:18px}}
 @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .rs-ticket{background:linear-gradient(135deg,#3b2c1d,#2a231c);color:#f1e2cb;border-color:#5d4630}html:not([data-theme="light"]) .rs-quote{background:#33281d;color:#f3e3cb}html:not([data-theme="light"]) .rs-stats,html:not([data-theme="light"]) .rs-note{background:#2c2620;color:#e9dccb}}
+.rs-chips{display:flex;flex-wrap:wrap;gap:6px}.rs-chips .tag{font-size:12px}
