@@ -21,9 +21,9 @@ from . import price_index as pi   # 💹 07/10: COMFORT, COPE, ASK, IMPULSE and 
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
             'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil',
-            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'lawyer', 'post_office', 'customs', 'hotel', 'banquet')
+            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'radio')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'lawyer', 'post_office', 'customs')
-FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec', 'library', 'zpop', 'art_studio', 'lawyer', 'laundry', 'post_office', 'customs', 'hotel', 'banquet')
+FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec', 'library', 'zpop', 'art_studio', 'lawyer', 'laundry', 'post_office', 'customs', 'hotel', 'banquet', 'radio')
 CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
 OWNERS = tuple(c for c in ALL if c not in EMPLOYED + CALLING)
 STOCKED = RETAIL + ('farm',)
@@ -119,6 +119,7 @@ WORK = {
     'customs': ('Chị Lam với Đội Thủ tục Bến Mây', '🛃'),
     'hotel': ('Chị Hằng với Cô Tư ở Sông Mây', '🛎️'),
     'banquet': ('Chú Tâm với Chị Loan ở Hồng Mây', '👨‍🍳'),
+    'radio': ('Chị Hoa với anh Tuấn ở Sóng Mây', '📻'),
 }
 
 

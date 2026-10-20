@@ -462,6 +462,17 @@ _profile('banquet', 'Bảo Trân | Gia Huy | Thanh Tùng',
     'đã sát khuẩn đầu ca, ra món đúng nhiệt và đúng thẻ dị ứng, tắt điện cuối ca // sanitised at the start of the shift, served at the right temperature with the right allergy cards, and powered down at closing',
     'sổ vệ sinh đầu ca và phiếu kiểm quầy ra món // the opening hygiene log and the pass temperature sheet')
 
+_profile('radio', 'Thu Trang | Quang Vinh | Bích Ngọc',
+    'Chị Hoa · trưởng đài phát thanh phường // Hoa · ward radio station head',
+    'tin đọc đúng thứ tự, chỉ đọc bản quảng cáo đã duyệt và không để sóng câm khi mất điện // bulletins read in the right order, only approved ad scripts on air, and no dead air in a power cut',
+    'đọc bản tin | dựng chương trình ca nhạc | kỹ thuật phòng máy // reading bulletins | building music shows | studio engineering',
+    'Sáng thứ hai có cảnh báo mưa bão, nhà tài trợ gửi kịch bản mới lúc chín giờ năm mươi chín, và máy phát dự phòng chưa ai thử từ tuần trước. // Monday morning brings a storm warning, a sponsor sends a new script at 9:59, and nobody has tested the backup generator since last week.',
+    'Giao {a} đọc bản tin theo thứ tự tin khẩn trước, {b} chỉ dựng quảng cáo theo bản đã ký duyệt, {c} thử máy phát và bộ lưu điện trước giờ lên sóng. // Have {a} read the bulletin urgent items first, {b} build the ad only from the signed script, and {c} test the generator and the UPS before air time.',
+    'Spot quảng cáo đã lên lịch nhưng là bản gửi qua tin nhắn chưa ai duyệt, còn câu “dùng là khỏi bệnh”. // The ad spot is scheduled, but it is the unapproved version sent by text and still says “cures any illness”.',
+    'Rút spot khỏi lịch, đọc bản đã ký duyệt gần nhất, gạch câu phóng đại và báo nhà tài trợ trước khung quảng cáo. // Pull the spot, read the latest signed script, strike the exaggerated claim, and tell the sponsor before the ad break.',
+    'đã đọc tin khẩn trước, chỉ phát quảng cáo đã duyệt và xử lý mất điện theo sổ sự cố // read urgent items first, aired only approved ads, and handled the power cut by the incident log',
+    'sổ duyệt kịch bản và sổ sự cố kỹ thuật // the script approval log and the technical incident log')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

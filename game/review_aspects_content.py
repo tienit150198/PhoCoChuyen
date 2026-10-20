@@ -32,7 +32,7 @@ FAMILY = {
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
     'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
-    'hotel': 'service', 'banquet': 'service',
+    'hotel': 'service', 'banquet': 'service', 'radio': 'service',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -85,6 +85,15 @@ ASPECTS = dict((
     A('banquet_decor', ('service',), 'Màu trang trí', 'màu trang trí chưa hợp ý', topic='ambience', only=('banquet',), subjective=True,
       neg=['mình thích màu khăn bàn nhạt hơn một chút'], pos=['màu hoa và khăn bàn đúng kiểu mình thích'],
       word=('Thích màu nhạt hơn.', 'Màu đẹp.')),
+    A('radio_names', ('service',), 'Đọc đúng tên', 'đài đọc sai tên phải đính chính', topic='clean', only=('radio',),
+      neg=['đài đọc nhầm tên rồi mới đính chính'], pos=['đài đọc đúng tên, đúng người, rõ ràng'],
+      word=('Đọc nhầm tên.', 'Đúng tên.'), sig_neg=('crit:steps:lo',), sig_pos=('crit:steps:hi',)),
+    A('radio_air', ('service',), 'Sóng ổn định', 'sóng còn chập chờn', topic='comms', only=('radio',),
+      neg=['nghe đài còn lúc rè lúc câm'], pos=['sóng rõ, chương trình chạy đúng giờ'],
+      word=('Còn rè.', 'Sóng rõ.'), sig_neg=('crit:care:lo',), sig_pos=('crit:care:hi',)),
+    A('radio_music', ('service',), 'Gu nhạc', 'nhạc chưa hợp gu', topic='ambience', only=('radio',), subjective=True,
+      neg=['mình thích nhạc trữ tình hơn một chút'], pos=['nhạc đúng kiểu mình hay nghe'],
+      word=('Thích nhạc khác.', 'Nhạc hay.')),
     A('lawyer_evidence', ('office',), 'Căn cứ hồ sơ', 'đối chiếu hồ sơ còn phải sửa', topic='method', only=('lawyer',),
       neg=['có phần chứng cứ hoặc tính toán phải đối chiếu lại'],
       pos=['chứng cứ và các khoản đã nhận được đối chiếu rõ ràng'],
@@ -777,6 +786,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                          'harsh': {'male': 'anh thợ giặt', 'female': 'chị thợ giặt', None: 'thợ giặt'}},
              'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},
                         'harsh': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'}},
+             'radio': {'polite': {'male': 'anh phát thanh viên', 'female': 'chị phát thanh viên', None: 'phát thanh viên'},
+                       'harsh': {'male': 'anh phát thanh viên', 'female': 'chị phát thanh viên', None: 'phát thanh viên'}},
              'banquet': {'polite': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'},
                          'harsh': {'male': 'anh nhân viên nhà hàng', 'female': 'chị nhân viên nhà hàng', None: 'nhân viên nhà hàng'}},
              'hotel': {'polite': {'male': 'anh nhân viên khách sạn', 'female': 'chị nhân viên khách sạn', None: 'nhân viên khách sạn'},

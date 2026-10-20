@@ -856,3 +856,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Lên phương án trang trí sảnh theo chủ đề
 9. Kiểm điện và âm thanh trước giờ đón khách
 10. Điều phối bếp và sảnh ngày lễ cao điểm
+
+## 58. Đài phát thanh (`radio`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng kiểm phòng thu đầu ca
+2. Xếp thứ tự tin cho bản tin phường
+3. Tính thời lượng bản tin đúng khung giờ
+4. Duyệt kịch bản quảng cáo của nhà tài trợ
+5. Đọc lời chúc đúng tên đúng giờ
+6. Tìm bài theo lời kể của thính giả
+7. Trực đường dây thính giả gọi vào sóng
+8. Dựng chương trình ca nhạc đủ giờ
+9. Diễn tập xử lý mất điện giữa sóng
+10. Điều phối đài trong ngày bão

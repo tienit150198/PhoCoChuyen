@@ -140,7 +140,7 @@ def _pid(sid: str) -> str:
 # ---------------------------------------------------------------- the registry
 SPEC_KEYS = frozenset(('name', 'icon', 'desc', 'base', 'unit', 'duration', 'floor', 'max_price', 'qty_max', 'work_hours',
                        'deliver', 'on_buyer', 'on_provider', 'confirm', 'requires', 'check', 'can_provide', 'pay_to',
-                       'note_hint', 'legacy'))
+                       'note_hint', 'legacy', 'note_check'))
 REQUIRES = frozenset(('life_day', 'chapter', 'story', 'married'))
 REGISTRY: dict = {}
 _seeded = [False]
@@ -174,6 +174,8 @@ def register(career: str, service_id: str, spec: dict) -> dict:
                   started in the save)
       pay_to      'wallet' (default) | 'career': the provider's 95 % into the wallet or into the career's fund
       note_hint   str: the placeholder of the buyer's note box
+      note_check  callable(note) -> str: '' or why this note is refused, checked before any money moves (📻 a ticker
+                  line must pass its moderation at the order, not only at the delivery)
 
     The order dict given to the hooks: {id, career, service, buyer, provider (sids), buyer_pid, provider_pid, qty,
     price (escrow, xu), fee, paid (= price − fee, at settlement), note, input (what the provider sent with the
@@ -207,7 +209,8 @@ def _norm(key, spec) -> dict:
                deliver=spec.get('deliver'), on_buyer=spec.get('on_buyer'), on_provider=spec.get('on_provider'),
                confirm=spec.get('confirm') or ('auto' if spec.get('deliver') else 'buyer'),
                requires=dict(spec.get('requires') or {}), check=spec.get('check'), can_provide=spec.get('can_provide'),
-               pay_to=spec.get('pay_to') or 'wallet', note_hint=str(spec.get('note_hint') or '')[:80], legacy=legacy)
+               pay_to=spec.get('pay_to') or 'wallet', note_hint=str(spec.get('note_hint') or '')[:80], legacy=legacy,
+               note_check=spec.get('note_check'))
     if not 0 <= out['floor'] <= PRICE_CEIL or not 1 <= out['max_price'] <= PRICE_CEIL:
         raise ValueError(f'service_market.register {key}: floor / max_price')
     if legacy:
@@ -218,7 +221,7 @@ def _norm(key, spec) -> dict:
         raise ValueError(f'service_market.register {key}: confirm / pay_to')
     if set(out['requires']) - REQUIRES:
         raise ValueError(f'service_market.register {key}: requires keys {sorted(set(out["requires"]) - REQUIRES)}')
-    for k in ('deliver', 'on_buyer', 'on_provider', 'check', 'can_provide'):
+    for k in ('deliver', 'on_buyer', 'on_provider', 'check', 'can_provide', 'note_check'):
         if out[k] is not None and not callable(out[k]):
             raise ValueError(f'service_market.register {key}: {k} must be callable')
     if out['confirm'] == 'auto' and out['deliver'] is None and not legacy:
@@ -876,7 +879,7 @@ def _listing(db, s: dict, sid: str, t: float, online: set, places: dict) -> dict
         return None
     rep = dict(n=int(s.get('rn') or 0), avg=round(int(s.get('rs') or 0) / int(s['rn']), 2) if s.get('rn') else 0.0, deals=int(s.get('rd') or 0))
     out = dict(pid=s['pid'] or _pid(s['provider']), career=s['career'], service=s['service'], name=spec['name'], icon=spec['icon'],
-               desc=spec['desc'], unit=spec['unit'], mode=s['mode'], mult=int(s['mult']), note=s['note'], rep=rep,
+               desc=spec['desc'], unit=spec['unit'], mode=s['mode'], mult=int(s['mult']), note=s['note'], rep=rep, note_hint=spec['note_hint'],
                online=s['provider'] in online, mine=s['provider'] == sid, legacy=spec['legacy'] or '', qty_max=spec['qty_max'])
     if spec['legacy']:
         rows = places.get(s['provider'], [])
@@ -1114,6 +1117,9 @@ def _order(store, sid: str, data: dict, ip: str) -> dict:
             need(old['fingerprint'] == fp, 'Mã thao tác đã dùng cho nội dung khác.', 'rid_conflict', 409)
             return dict(order=_view(db, old, sid), changed=False)
         provider, spec, row = _target(db, data, sid)
+        if spec['note_check']:
+            why = spec['note_check'](note)
+            need(not why, str(why)[:200], 'bad_note')
         need(row['mode'] == 'fixed', 'Dịch vụ này thương lượng giá: hãy gửi giá bạn muốn trả.', 'negotiate', 409)
         if spec['legacy']:
             place, offer = _legacy_offer(db, spec, provider, data)
@@ -1167,6 +1173,9 @@ def _offer(store, sid: str, data: dict, ip: str) -> dict:
             need(old['fingerprint'] == fp, 'Mã thao tác đã dùng cho nội dung khác.', 'rid_conflict', 409)
             return dict(order=_view(db, old, sid), changed=False)
         provider, spec, row = _target(db, data, sid)
+        if spec['note_check']:
+            why = spec['note_check'](note)
+            need(not why, str(why)[:200], 'bad_note')
         need(row['mode'] == 'nego', 'Dịch vụ này có giá cố định: đặt theo giá niêm yết nhé.', 'fixed_price', 409)
         extra = {}
         if spec['legacy']:

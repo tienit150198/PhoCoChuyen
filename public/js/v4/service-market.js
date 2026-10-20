@@ -224,7 +224,7 @@ function providerView(){
     :`<p class="svc-total"><span>Giá</span><b>${fmt(price)} xu</b>${it.mult?`<i class="svc-mult">×${it.mult}</i>`:''}</p>`;
   const body=head+tabs+`<section class="sd-card svc-buy"><h3>${esc(it.icon)} ${esc(it.name)}</h3>${it.desc&&!it.legacy?`<p class="svc-muted">${esc(it.desc)}</p>`:''}${it.note?`<p class="svc-quote">“${esc(it.note)}”</p>`:''}
     ${offers}${qty}${priceBox}
-    <label class="svc-field"><span>Lời nhắn (không bắt buộc)</span><input id="svc-note-${esc(key())}" data-k="${esc(key())}" data-f="note" type="text" maxlength="160" value="${esc(x.note)}" placeholder="Ví dụ: làm giúp mình buổi tối nhé"></label></section>
+    <label class="svc-field"><span>${it.note_hint?'Lời nhắn':'Lời nhắn (không bắt buộc)'}</span><input id="svc-note-${esc(key())}" data-k="${esc(key())}" data-f="note" type="text" maxlength="160" value="${esc(x.note)}" placeholder="${esc(it.note_hint||'Ví dụ: làm giúp mình buổi tối nhé')}"></label></section>
     <details class="svc-rules"><summary>Tiền được giữ thế nào?</summary><ul><li>Tiền lấy từ ví, thiếu thì từ tài khoản. Không cho nợ.</li><li>Người bán xong việc và bạn xác nhận thì người bán nhận tiền (Phố giữ 5%).</li><li>Hủy, bị từ chối hoặc quá hạn: hoàn đủ tiền.</li><li>Có vấn đề: báo cáo trong 24 giờ sau khi giao.</li></ul></details>${extra}`;
   const ready=it.legacy?!!S.pick.offer:true,ok=ready&&price>=lo&&price<=hi&&!it.mine&&it.available!==false;
   const foot=it.mine?'<p class="sd-why">Đây là dịch vụ của bạn.</p>':btn(nego?(price?`🤝 Gửi giá ${fmt(price)} xu`:'🤝 Gửi giá'):`Đặt · ${fmt(price)} xu`,'review',{},'primary sd-main',ok?'':' disabled');

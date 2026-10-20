@@ -1,0 +1,55 @@
+/* ==========================================================================
+   📻 Đơn lên sóng (public/js/v4/radio.js; game/radio_station.py). Theme tokens only.
+   Phone first (390 px): one column, 44 px targets; landscape keeps the same column, centred.
+   ========================================================================== */
+.sheet.rd-sheet{width:min(560px,calc(100vw - 32px))}
+.rd-root{display:flex;flex-direction:column;min-height:100%}
+.rd-head{align-items:center;padding:12px 14px 10px 16px;gap:8px}
+.rd-head h2{font-size:1.15rem;margin:0}
+.rd-head small{display:block;color:var(--muted);font-size:.8rem}
+.rd-logo{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--accent-soft);font-size:1.35rem}
+.sheet.rd-sheet .rd-body{flex:1 1 auto;padding:10px 14px 16px;overflow-wrap:anywhere}
+.rd-body h4{margin:16px 0 6px;font-size:.95rem}
+.rd-empty{text-align:center;font-size:2rem;margin:14px 0 4px}
+.rd-muted{color:var(--muted);font-size:.86rem;line-height:1.45;margin:6px 0}
+.rd-center{text-align:center}
+.rd-flash{margin:0 0 8px;padding:8px 10px;border-radius:10px;font-size:.9rem;line-height:1.4}
+.rd-flash.good{background:var(--good-soft);color:var(--good)}
+.rd-flash.bad{background:var(--bad-soft);color:var(--bad)}
+.rd-caps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px}
+.rd-caps span{padding:4px 10px;border-radius:999px;background:var(--surface-2);font-size:.85rem;font-weight:700;color:var(--ink-2)}
+.rd-order{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:10px 12px;margin:0 0 10px}
+.rd-order.working{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.rd-order-top{display:flex;align-items:center;gap:10px}
+.rd-order-top small{display:block;color:var(--muted);font-size:.84rem}
+.rd-kind{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--surface-2);font-size:1.2rem;flex:none}
+.rd-note{margin:8px 0 6px;padding:6px 10px;border-radius:10px;background:var(--surface-2);font-size:.88rem;color:var(--ink-2)}
+.rd-preview{margin:6px 0;padding:8px 10px;border-radius:10px;background:#16233a;color:#f3f6fb;font-size:.9rem;line-height:1.45}
+.rd-tick{margin-right:4px}
+.rd-why{margin:6px 0;padding:8px 10px;border-radius:10px;background:var(--bad-soft);color:var(--bad);font-size:.88rem;line-height:1.4}
+.rd-picks{border:0;margin:8px 0 4px;padding:0;display:grid;gap:6px}
+.rd-picks legend{font-size:.86rem;font-weight:700;margin-bottom:4px}
+.rd-pickrow{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-size:.9rem}
+.rd-pickrow.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.rd-pickrow input,.rd-okrow input{width:20px;height:20px;flex:none}
+.rd-okrow{display:flex;align-items:flex-start;gap:8px;min-height:44px;padding:6px 2px;font-size:.88rem;line-height:1.4;cursor:pointer}
+.rd-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:6px}
+.rd-row .btn{min-height:44px;flex:1 1 140px}
+.rd-lines{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rd-line{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface)}
+.rd-line p{margin:0 0 4px;font-size:.9rem;line-height:1.4}
+.rd-line-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.rd-line-foot small{color:var(--muted);font-size:.8rem;margin-right:auto}
+.rd-line-foot .btn{min-height:40px}
+.rd-pill{padding:2px 8px;border-radius:999px;background:var(--surface-2);font-size:.78rem;font-weight:700}
+.rd-pill.live{background:#fbe3e1;color:#b3261e}
+.rd-mine{margin-top:14px}
+.rd-mine summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
+.rd-none .btn{margin-top:6px;min-height:44px;width:100%}
+.rd-sheet button:focus-visible,.rd-sheet summary:focus-visible,.rd-sheet input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (orientation:landscape) and (max-height:520px){
+  .sheet.rd-sheet{max-height:calc(100vh - 16px)}
+  .rd-head{padding:8px 12px 6px}
+  .rd-picks{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+html[data-theme="dem"] .rd-pill.live{background:#4a1f1c;color:#ffb4ab}

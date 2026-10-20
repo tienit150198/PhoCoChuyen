@@ -40,6 +40,7 @@ ORDER = (
     'customs',                     # hải quan: Chi cục Hải quan cửa khẩu Bến Mây (lanes, smuggling, duties, controls; org ladder 'hq')
     'hotel',                       # khách sạn: Khách sạn Sông Mây, salaried shift staff rotating desk, rooms, laundry, breakfast, repairs, decor
     'banquet',                     # nhà hàng tiệc: Nhà hàng tiệc Hồng Mây, salaried kitchen (phụ bếp → đầu bếp) or event-hall shifts
+    'radio',                       # đài phát thanh: Đài phát thanh Sóng Mây, salaried phát thanh viên (DJ after probation); players' ads and songs on the town ticker
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

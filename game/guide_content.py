@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'radio')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -6898,6 +6898,22 @@ CAREERS.update({
                   dict(bad='Về mà chưa tắt thiết bị điện.', result='Có thể cháy bếp: đền bù 8% lương ca (2 đến 6 xu) trừ vào ví, không bao giờ quá số tiền đang có.')],
         prep=['Ứng tuyển ở Hồng Mây trước khi làm (mở từ chương 3). Phụ bếp thử việc 3 ca bếp đạt thì lên Đầu bếp.'],
         surprises=['Nhà hàng hay có chuyện lạ: khách nhờ giấu nhẫn cầu hôn, chú cún muốn làm phù dâu, chú rể xin vào bếp nếm… chọn cách xử lý cho khéo.'], buttons=[]),
+    'radio': dict(emoji='📻', name='Đài phát thanh', place='Đài phát thanh Sóng Mây',
+        intro='Bạn là phát thanh viên ở đài phát thanh Sóng Mây: đọc bản tin phường, quảng cáo, lời chúc; hết thử việc thì làm DJ ca nhạc buổi tối.',
+        jobs=[dict(emoji='📰', name='Bản tin phường', how='Chỉ đọc tin của phường đã kiểm chứng: tin khẩn trước, tin dịch vụ công, rồi tin sự kiện; tính thời lượng; đính chính khi có đổi phút chót.'),
+              dict(emoji='📢', name='Quảng cáo nhà tài trợ', how='Chỉ đọc bản mới nhất đã được chị Hoa duyệt, gạch câu phóng đại, tính độ dài spot, giữ đúng hợp đồng.'),
+              dict(emoji='💌', name='Lời chúc thính giả', how='Bỏ lời có số điện thoại, link, địa chỉ, lời bêu riếu; đọc theo giờ gửi; tên không dấu thì hỏi lại; đọc sai thì xin lỗi, đọc lại.'),
+              dict(emoji='🎧', name='DJ ca nhạc (sau thử việc)', how='Tìm bài khách tả, từ chối khéo bài không được phát, canh lời dẫn cho kịp bản tin, xóa trễ câu chửi, xếp chương trình đúng khung.'),
+              dict(emoji='📻', name='Dịch vụ cho người chơi', how='Ở Phố dịch vụ, người chơi đặt quảng cáo tiệm hoặc gửi bài hát tặng người thương. Bạn duyệt lời, chọn nhạc rồi bấm Lên sóng: dòng chữ chạy trên bảng tin cả phố.')],
+        steps=['Đầu ca kiểm phòng thu theo đúng thứ tự: bàn trộn, mic, tai nghe, đường truyền, đèn ĐANG PHÁT SÓNG.',
+               'Chọn vị trí ca này: Phát thanh viên, hoặc DJ ca nhạc khi đã hết thử việc.',
+               'Đọc phiếu việc rồi làm lần lượt từng bước; sai thì sửa tại chỗ, chất lượng giảm.',
+               'Mất điện giữa sóng: xử lý theo sổ sự cố cho đủ bước rồi mới lên sóng tiếp.'],
+        stars=['Không sai bước nào giữ chất lượng 100%.', 'Mất điện mà xử lý gọn: được cộng kinh nghiệm; sai nhiều bước thì sóng câm lâu, thính giả chê.'],
+        mistakes=[dict(bad='Đọc bản quảng cáo chưa duyệt, đọc tin đồn.', result='Phải làm lại bước đó; chất lượng và thưởng giảm.'),
+                  dict(bad='Mất điện mà không xử lý tới cuối ca.', result='Đài câm, đánh giá 2 sao, ca đó không tính thử việc.')],
+        prep=['Ứng tuyển ở Sóng Mây trước khi làm (mở từ chương 3). Phát thanh viên thử việc 3 ca đạt thì làm được DJ.'],
+        surprises=['Đài hay có chuyện lạ: mèo nhảy lên bàn trộn âm, người giả giọng ca sĩ gọi vào, mưa dột trên tủ máy… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

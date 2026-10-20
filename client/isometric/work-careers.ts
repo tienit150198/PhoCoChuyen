@@ -62,6 +62,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   laundry:identity('Đọc nhãn vải · giặt và trả đúng khách','Bàn xử lý & gấp đồ','Giặt & xử lý vết bẩn','Gấp & kiểm phiếu'),
   post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
+  radio:identity('Kiểm phòng thu · đọc tin, quảng cáo duyệt và lời chúc đúng tên','Phòng thu','Bàn trộn âm & micro','Phòng máy & lịch phát sóng'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
@@ -111,6 +112,13 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,110,cream);
     f('rack',r(2.9,.6,4.2,1.5),104,0xb9a3cf);f('sofa',r(4.7,.7,6.3,1.5),42,mint);f('planter',r(6,3.35,6.5,4.15),70,0x9fb98f);
     z(r(2.6,.3,6.6,1.9),'carpet',0xcdbfd8);z(r(2.85,2.95,6.75,4.45),'checker',0xe6dccb);
+  }else if(career==='radio'){
+    // The soundproofed booth: the mixing desk and mic in front, record shelves on the left wall, the on-air board and the transmitter rack behind.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.95,1.45,3.95),1.95,2.95,118,cream);
+    s('workbench','desk',r(3.15,3.2,5.65,4.15),4.4,4.75,58,0x8fa8c8);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('console',r(2.85,.55,4.25,1.45),78,0x3f6fb0);f('rack',r(4.65,.6,5.95,1.5),110,0x9aa7b8);f('sofa',r(6.15,.7,6.6,1.5),40,mint);f('planter',r(6,3.35,6.5,4.15),70,0x9fb98f);
+    z(r(2.6,.3,6.6,1.85),'carpet',0xc5d2e2);z(r(2.85,2.95,6.75,4.45),'checker',0xe2e8ef);
   }else if(career==='banquet'){
     // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
     clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);

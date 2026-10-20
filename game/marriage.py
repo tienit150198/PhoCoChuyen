@@ -892,6 +892,11 @@ def news(store, since, token: str | None = None) -> dict:
             pass
     from . import event2010   # 💐 Thiệp 20/10 while writing is open: once a day on a device (an older page ignores it)
     out['event'] = event2010.news_line(t)
+    try:   # 📻 players' ads and songs on air now (game/radio_station.py: at most LIVE_MAX, cached; an older page ignores it)
+        from . import radio_station
+        out['radio'] = radio_station.ticker(store)
+    except Exception:  # noqa: BLE001 - the ticker never fails for this
+        out['radio'] = []
     return out
 
 

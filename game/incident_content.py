@@ -22,9 +22,9 @@ ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tou
        'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
        'corp_accounting', 'tax_payroll', 'group_accounting', 'tra_da', 'clothing', 'pet_shop',
        'fruit', 'garbage', 'drain', 'homemaker', 'ice_cream', 'nail', 'pagoda', 'pho', 'com', 'photobooth', 'giupviec', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil', 'hr_admin', 'secretary', 'it_helpdesk', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'zpop',
-       'art_studio', 'lawyer', 'laundry', 'post_office', 'customs', 'hotel', 'banquet')
+       'art_studio', 'lawyer', 'laundry', 'post_office', 'customs', 'hotel', 'banquet', 'radio')
 EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting', 'pilot', 'flight_attendant', 'oil',
-            'hr_admin', 'secretary', 'it_helpdesk', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'lawyer', 'post_office', 'customs', 'hotel', 'banquet')
+            'hr_admin', 'secretary', 'it_helpdesk', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'radio')
 RETAIL = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon', 'repair',
           'clothing', 'pet_shop')
 FOOD = ('milk_tea', 'cafe_bakery', 'restaurant')
