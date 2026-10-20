@@ -769,6 +769,8 @@ def _receive_lot(c: dict, career: str, order: dict, it: dict, sup: dict) -> None
     if mod and hasattr(mod, 'on_receive'):
         mod.on_receive(c, order)
     life = _life(it) + (sup.get('fresh', 0) if it.get('life') else 0)
+    if it.get('life') and mod and hasattr(mod, 'life_bonus'):
+        life += mod.life_bonus(c, it['id'])   # e.g. 🧊 Tủ trữ sữa riêng (game/career_gadgets.py): fresh milk +1 day
     add_lot(c, it['id'], order['actual'], order['unit_cost'], life, order['supplier'])
 
 

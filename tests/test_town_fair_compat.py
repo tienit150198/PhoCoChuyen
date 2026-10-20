@@ -24,7 +24,7 @@ from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 as the 
 from tests.test_town_fair import FairBase, H
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = '289df99d'   # 2.4.68 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
+RELEASE = '2808dc10'   # 2.4.69 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 TABLES = ('fair_events', 'fair_booths', 'fair_stamps', 'fair_rewards', 'fair_config', 'svc_orders', 'live_effects')
 
 STARTUP = '''import json,sys

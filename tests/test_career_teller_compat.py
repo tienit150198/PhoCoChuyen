@@ -25,7 +25,7 @@ from game.careers import PLUGINS
 from game.engine import apply_action, dormant_out, migrate_state, public_state, validate_state
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = '289df99d'   # 2.4.68 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
+RELEASE = '2808dc10'   # 2.4.69 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 sys.path.insert(0, str(ROOT / 'scripts'))
 import strip_new_careers as SNC   # noqa: E402
 
@@ -186,7 +186,7 @@ class RollbackTo2466(unittest.TestCase):
         stored = json.loads(json.dumps(dormant_out(s)))
         self.assertNotIn('teller', stored['careers'])
         got = self.run_old([stored])[0]
-        self.assertEqual(got['version'], '2.4.68')
+        self.assertEqual(got['version'], '2.4.69')
         self.assertFalse(got['teller'])
 
     def test_a_played_bank_goes_back_with_the_strip_and_comes_back_with_restore(self):
@@ -215,7 +215,7 @@ class RollbackTo2466(unittest.TestCase):
             removed.append(rem)
         got = self.run_old([json.loads(json.dumps(dormant_out(n))) for n in stripped])   # as stored: untouched newer careers (🔑 reception) left out
         for s, g, rem in zip(saves, got, removed):
-            self.assertEqual(g['version'], '2.4.68')
+            self.assertEqual(g['version'], '2.4.69')
             self.assertFalse(g['teller'])
             self.assertEqual(g['money'][0], s['journey']['wallet'])   # nothing moved on the way out
             back, problems = SNC.restore(g['state'], rem)

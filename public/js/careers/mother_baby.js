@@ -166,9 +166,26 @@ function kitDesk(t,x){
 function safetyNote(t,x){
   const v=t.gift||{},n=t.needs||{},want=product(x,n.product),lb=label(x,n.product);
   if(v.swap)return clean()?`<p class="mb-note good">🛡️ → <b>${x.esc(product(x,v.swap).name)}</b></p>`:`<p class="mb-note good">🛡️ Khách đã đồng ý đổi sang <b>${x.esc(product(x,v.swap).name)}</b>. Lấy đúng món này nhé.</p>`;
-  // Clean layout: the label against the baby's age stays (the deciding cue); what to do about it goes to "?".
-  if(clean())return `<p class="mb-note">🔎 <b>${x.esc(want.name)}</b>${lb?` · 🏷️ ${x.esc(lb.label)}`:''} · 👶 ${v.age} tháng${tip('Nhãn chưa hợp tuổi bé → “💬 Gợi ý thay” một món hợp.','🔎 Đọc nhãn tuổi')}</p>`;
-  return `<p class="mb-note">🔎 <b>${x.esc(want.name)}</b>${lb?` · 🏷️ ${x.esc(lb.label)}`:''} · 👶 ${v.age} tháng. Chưa hợp tuổi → “💬 Gợi ý thay”.${x.room.open?'':' <b>Mở cửa tiệm trước.</b>'}</p>`;
+  // Clean layout: the label against the baby's age stays (the deciding cue), with the way out in a few words; the rest in "?".
+  // Feedback #452 ("khách mua mà độ tuổi nó bé hơn cái món quy định thì làm sao để bán đc"): the way out is said in
+  // both layouts: do not sell this box, offer a box made for the baby's age (“💬 Gợi ý thay” on it), within the budget.
+  if(clean())return `<p class="mb-note">🔎 <b>${x.esc(want.name)}</b>${lb?` · 🏷️ ${x.esc(lb.label)}`:''} · 👶 ${v.age} tháng <span>→ <b>💬 Gợi ý thay</b> <span>ở một món hợp tuổi</span></span>${tip('Hộp khách hỏi ghi tuổi lớn hơn bé: đừng bán hộp này. Tìm trên kệ một món có nhãn hợp tuổi bé, giá trong ngân sách, bấm “💬 Gợi ý thay” ở món đó. Khách đồng ý thì lấy đúng món mới, gói và kiểm như thường.','🔎 Đọc nhãn tuổi')}</p>`;
+  return `<p class="mb-note">🔎 <b>${x.esc(want.name)}</b>${lb?` · 🏷️ ${x.esc(lb.label)}`:''} · 👶 ${v.age} tháng. <span>Hộp này chưa hợp tuổi bé: đừng bán, chọn một món có nhãn hợp tuổi, trong ngân sách, rồi bấm “💬 Gợi ý thay” ở món đó.</span>${x.room.open?'':' <b>Mở cửa tiệm trước.</b>'}</p>`;
+}
+/* 📏 Máy kiểm tra độ tuổi (game/career_gadgets.py, owned): x.room.age_check[task] from game/giftshop.py age_check. The
+ * baby's age against the asked box, and the suitable boxes in stock within the budget; the player still advises, picks,
+ * wraps and checks. Not owned (or an older server): nothing. */
+const ageOf=(x,t)=>x.room.age_check?.[t.id]||null;
+function ageCheck(t,x){
+  const a=ageOf(x,t);if(!a)return '';
+  const head=`<b>📏 Máy kiểm tra độ tuổi</b> · 👶 ${x.esc(a.age_text)}`;
+  if(!a.asked)return `<section class="mb-agecheck"><p>${head}</p><p class="small"><span>Kệ đã đánh dấu</span> <span class="mb-fit ok">✓ hợp</span> / <span class="mb-fit no">✗ chưa hợp</span> <span>theo tuổi bé.</span></p></section>`;
+  const want=product(x,a.asked);
+  if(a.ok)return `<section class="mb-agecheck good"><p>${head}</p><p class="small">✓ <b>${x.esc(want.name)}</b> · <span>🏷️ ${x.esc(a.rule)}</span> · <b>hợp bé</b></p></section>`;
+  const alts=a.alternatives||[];
+  const rows=alts.length?`<p class="small">Món hợp tuổi, còn hàng, trong ngân sách:</p><div class="mb-agecheck-alts">${alts.map(o=>`<button type="button" class="btn small cream" ${cmdAttr(x,'gift_advise',{task:t.id,item:o.id})}${x.room.open?'':' disabled'}><span>💬 ${x.esc(o.name)} · ${o.price} xu</span><small>🏷️ ${x.esc(o.label)}</small></button>`).join('')}</div>`
+    :`<p class="small">Trên kệ chưa còn món hợp tuổi trong ngân sách: nhập thêm ở Kho rồi gợi ý.</p>${x.button('🧺 Kho & nhập hàng','warehouse',{},'ghost small')}`;
+  return `<section class="mb-agecheck"><p>${head}</p><p class="small">✗ <b>${x.esc(want.name)}</b> · <span>🏷️ ${x.esc(a.rule)}</span> · <b>chưa hợp bé</b>${a.warn?`<br><span>⚠️ ${x.esc(a.warn)}</span>`:''}</p>${rows}</section>`;
 }
 function bulkList(t,x,steps=[]){
   const items=t.gift?.items||{};
@@ -188,15 +205,16 @@ function shelf(t,x){
   // Clean layout: an age label decides only when the baby's age is known or choosing is the job (kit, occasion,
   // safety); on a plain named order it goes to the card's title. Price and the add button are numbers and signs.
   const ageMatters=v.age!=null||['kit','occasion','safety','bulk'].includes(v.kind)||!hasNamed;
+  const ac=ageOf(x,t),fit=id=>ac&&id in (ac.fits||{})?(ac.fits[id]?'<span class="mb-fit ok">📏 ✓ hợp bé</span>':'<span class="mb-fit no">📏 ✗ chưa hợp</span>'):'';
   const cards=list.map(p=>{
     const lb=label(x,p.id),stock=x.room.available?.[p.id]??0,inBasket=t.basket?.[p.id]||0,asked=v.kind==='safety'&&t.needs?.product===p.id,want=p.id in named;
     const canPick=t.known&&x.room.open&&stock>0&&v.kind!=='return';
     if(cl)return `<article class="mb-card ${inBasket?'on':''} ${asked?'asked':''} ${want?'want':''}"${lb&&!ageMatters?` title="🏷️ ${x.esc(lb.label)}"`:''}><div class="mb-art">${art(p,64)}<em class="mb-stock ${stock<=0?'zero':''}" aria-label="Còn ${stock}">${stock}</em>${inBasket?`<em class="mb-inbasket">×${inBasket}</em>`:''}</div>
-      <h5>${x.esc(p.name)}</h5>${lb&&ageMatters?`<span class="mb-label ${lb.warn?'warn':''}" title="${x.esc(lb.warn||'')}">🏷️ ${x.esc(lb.label)}</span>`:''}${asked?'<span class="mb-asked">Khách hỏi</span>':want?`<span class="mb-want" aria-label="Khách cần ${named[p.id]}">🎯 ${named[p.id]}</span>`:''}
+      <h5>${x.esc(p.name)}</h5>${lb&&ageMatters?`<span class="mb-label ${lb.warn?'warn':''}" title="${x.esc(lb.warn||'')}">🏷️ ${x.esc(lb.label)}</span>`:''}${fit(p.id)}${asked?'<span class="mb-asked">Khách hỏi</span>':want?`<span class="mb-want" aria-label="Khách cần ${named[p.id]}">🎯 ${named[p.id]}</span>`:''}
       <div class="mb-card-foot"><b class="mb-price" aria-label="${price(x,p.id)} xu">${price(x,p.id)}</b><div class="mb-card-btns">${inBasket?`<button type="button" class="btn small ghost" ${cmdAttr(x,'basket_remove',{task:t.id,item:p.id})} aria-label="Bớt một ${x.esc(p.name)}">−</button>`:''}${canPick?`<button type="button" class="btn small mb-add" ${cmdAttr(x,'shop_pick',{task:t.id,item:p.id})} aria-label="Thêm ${x.esc(p.name)} vào giỏ">＋</button>`:stock<=0&&t.known?`<button type="button" class="btn small ghost mb-out" data-action="warehouse" aria-label="Hết hàng: nhập thêm">📦 Nhập</button>`:''}</div></div>
       ${safety&&!asked&&lb?.use!=='card'?`<button type="button" class="btn small cream full" ${cmdAttr(x,'gift_advise',{task:t.id,item:p.id})}${x.room.open?'':' disabled'}>💬 Gợi ý thay</button>`:''}</article>`;
     return `<article class="mb-card ${inBasket?'on':''} ${asked?'asked':''} ${want?'want':''}"><div class="mb-art">${art(p,64)}<em class="mb-stock ${stock<=0?'zero':''}" aria-label="Còn ${stock}">${stock}</em>${inBasket?`<em class="mb-inbasket">×${inBasket}</em>`:''}</div>
-      <h5>${x.esc(p.name)}</h5>${lb?`<span class="mb-label ${lb.warn?'warn':''}" title="${x.esc(lb.warn||'')}">🏷️ ${x.esc(lb.label)}</span>`:''}${asked?'<span class="mb-asked">Khách hỏi món này</span>':want?`<span class="mb-want">🎯 Khách cần ${named[p.id]}</span>`:''}
+      <h5>${x.esc(p.name)}</h5>${lb?`<span class="mb-label ${lb.warn?'warn':''}" title="${x.esc(lb.warn||'')}">🏷️ ${x.esc(lb.label)}</span>`:''}${fit(p.id)}${asked?'<span class="mb-asked">Khách hỏi món này</span>':want?`<span class="mb-want">🎯 Khách cần ${named[p.id]}</span>`:''}
       <div class="mb-card-foot"><b class="mb-price">${price(x,p.id)} xu</b><div class="mb-card-btns">${inBasket?`<button type="button" class="btn small ghost" ${cmdAttr(x,'basket_remove',{task:t.id,item:p.id})} aria-label="Bớt một ${x.esc(p.name)}">−</button>`:''}${canPick?`<button type="button" class="btn small primary" ${cmdAttr(x,'shop_pick',{task:t.id,item:p.id})} aria-label="Thêm ${x.esc(p.name)} vào giỏ">＋ Thêm</button>`:stock<=0&&t.known?x.button('Hết · nhập','warehouse',{},'small ghost mb-out'):''}</div></div>
       ${safety&&!asked&&lb?.use!=='card'?`<button type="button" class="btn small cream full" ${cmdAttr(x,'gift_advise',{task:t.id,item:p.id})}${x.room.open?'':' disabled'}>💬 Gợi ý thay</button>`:''}</article>`;
   }).join('');
@@ -463,9 +481,9 @@ function orderSteps(t,x){
     }
   }else if(v.kind==='safety'&&!v.swap){
     const asked=product(x,n.product);
-    const safe=cheapest(x,k=>!isCard(x,k)&&fits(x,k,age)&&price(x,k)*(n.qty||1)<=n.budget&&stockOf(x,k)>=(n.qty||1));
-    rows.push({ok:null,label:`Đọc nhãn tuổi trên hộp ${asked.name} (bé ${age} tháng)`,
-      go:!first?{sel:'.mb-card.asked'}:safe?go('gift_advise',{task:id,item:safe},`💬 Gợi ý ${x.esc(product(x,safe).name)}: hợp bé ${age} tháng`):toStock(x,cheapest(x,k=>!isCard(x,k)&&fits(x,k,age)&&price(x,k)*(n.qty||1)<=n.budget),n.qty||1)});
+    const safe=ageOf(x,t)?.alternatives?.[0]?.id||cheapest(x,k=>!isCard(x,k)&&fits(x,k,age)&&price(x,k)*(n.qty||1)<=n.budget&&stockOf(x,k)>=(n.qty||1));
+    rows.push({ok:null,label:`Hộp ${asked.name} chưa hợp bé ${age} tháng: 💬 Gợi ý thay một món hợp tuổi`,
+      go:!first&&!ageOf(x,t)?{sel:'.mb-card.asked'}:safe?go('gift_advise',{task:id,item:safe},`💬 Gợi ý ${x.esc(product(x,safe).name)}: hợp bé ${age} tháng`):toStock(x,cheapest(x,k=>!isCard(x,k)&&fits(x,k,age)&&price(x,k)*(n.qty||1)<=n.budget),n.qty||1)});
   }else if(v.kind==='occasion'&&v.pick==='open'){
     const ok=k=>!isCard(x,k)&&fits(x,k,age)&&price(x,k)<=n.budget&&stockOf(x,k)>0;
     const best=ok(n.product)?n.product:age!=null?cheapest(x,ok):null;
@@ -551,7 +569,7 @@ export default {
     if(!t.known)main='';
     else if(v.kind==='return')main=returnDesk(t,x);
     else{
-      const top=v.kind==='kit'?kitDesk(t,x):v.kind==='bulk'?bulkList(t,x,list):v.kind==='safety'?safetyNote(t,x):'';
+      const top=(v.kind==='kit'?kitDesk(t,x):v.kind==='bulk'?bulkList(t,x,list):v.kind==='safety'?safetyNote(t,x):'')+ageCheck(t,x);
       const panel=tab==='pack'?packDesk(t,x):tab==='checkout'?checkout(t,x,list):shelf(t,x);
       main=`${top}${steps(t,x,tab)}${panel}`;
     }

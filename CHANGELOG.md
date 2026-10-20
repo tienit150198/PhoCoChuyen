@@ -151,6 +151,24 @@
 - Bản lưu / rollback: không DDL, không bảng mới, SCHEMA_VERSION giữ 62. Khối nghề `careers.teller` ngủ (engine.DORMANT) khi chưa đụng tới nên 2.4.66 đọc nguyên save. Save đã làm ngân hàng: chạy `scripts/strip_new_careers.py strip --careers teller` trước khi lùi (nay cất cả chứng chỉ teller_service: journey.certificates, study, cert_paper, khung đeo), `restore` trả lại khi lên lại. tests/test_career_teller_compat.py: 2.4.66 (a808cb79, git archive) đọc save chưa đụng; save story đã ứng tuyển, học, thi, làm 2 ngày, chuyện oái oăm, chặng Bà Lựu, chứng chỉ đeo, ca đang mở dở khách — strip xong 2.4.66 validate/migrate/public và chơi trọn một ngày nghề khác, ví không đổi; restore trên bản này trả khối nghề y từng byte. tests/helpers.as_stored: các test rollback cũ gửi save đúng như máy chủ lưu (ngân hàng chưa đụng thì không có trong bản lưu).
 - Tests: tests/test_career_teller.py (28), tests/test_career_teller_compat.py (2), tests/teller-ui.mjs (14); đếm nghề 57→58 ở các test đếm (59 khi gộp cùng Lễ tân trong careers-integ).
 
+# v2.4.69 — 2026-10-20
+
+Không có mục Có gì mới (chủ game: cho người dùng mua, không thông báo).
+
+## bang-rejoin-24h
+
+- 🚪 Rời bang chờ 24 giờ (thay vì 48) mới vào hoặc lập bang khác (chủ game: "chỉnh lại rời bang chờ 24h nhé"). bang_content.REJOIN_HOURS = 24.
+
+## accessories
+
+🧰 Phụ kiện nghề (chủ game: "thêm phụ kiện vào cho người ta nhé", "phụ kiện kiểm tra tuổi hay gì đó... để check"). game/career_gadgets.py: mỗi món mua một lần bằng quỹ nghề, hiện trong Trang trí & nâng cấp (mục 🧰 Phụ kiện nghề, trên Thiết bị nghề), lệnh mới `gadget_buy {item}` (không tốn giờ tiệm).
+- 🧊 Tủ trữ sữa riêng · 220 xu (Tiệm bánh & cà phê, góp ý #454 "Xác suất sữa bị hỏng trong ngày khá cao… thêm phụ kiện tủ trữ đồ riêng"): sữa tươi nhập về để được 3 ngày thay vì 2 (game/inventory.py `_receive_lot` hỏi `life_bonus` của nghề), sữa tươi đang trên kệ lúc lắp tủ cũng thêm 1 ngày; chuyện "Ca sữa tươi vừa mở có mùi chua" còn ~3,6% số ngày.
+- 🥛 Tỷ lệ sữa chua giảm cho mọi người: trước đây ~22,3% số ngày từ ngày 2 (mô phỏng 20.000 ngày), giờ ~13,7% (SOUR_KEEP 0,6); có tủ ~3,6% (SOUR_KEEP_FRIDGE 0,15). Lượt bị bỏ thay bằng một chuyện bất ngờ khác chưa có trong ngày (số chuyện mỗi ngày giữ nguyên), cố định theo ngày nên tải lại không đổi.
+- 📏 Máy kiểm tra độ tuổi · 120 xu (Tiệm quà mẹ & bé, góp ý #452 "khách mua mà độ tuổi nó bé hơn cái món quy định thì làm sao để bán đc"): đơn đã biết tuổi bé thì mỗi món trên kệ hiện ✓ hợp / ✗ chưa hợp; hộp khách hỏi chưa hợp tuổi thì khung 📏 nêu nhãn, lời cảnh báo và tối đa 3 món hợp tuổi, còn hàng, trong ngân sách (nút 💬 Gợi ý thay ngay trên món), bước hướng dẫn trỏ thẳng món đó. Người chơi vẫn tự tư vấn, lấy hàng, gói, kiểm. Bố mẹ lần đầu: chỉ ✓/✗ sau khi đã hỏi tuổi bé. game/giftshop.py `age_check`, chỉ là dữ liệu xem (`careers.mother_baby.age_check`), không lưu.
+- Không có phụ kiện: hướng dẫn rõ hơn ở đơn "chọn quà cho bé" (cả giao diện gọn): "Hộp này chưa hợp tuổi bé: đừng bán, chọn một món có nhãn hợp tuổi, trong ngân sách, rồi bấm “💬 Gợi ý thay” ở món đó", bước hướng dẫn ghi "Hộp … chưa hợp bé N tháng: 💬 Gợi ý thay một món hợp tuổi". Không có kẹt: với giá mặc định luôn có vài món hợp tuổi trong ngân sách (ngân sách = giá hộp khách hỏi + 20 xu); hết hàng thì nhập ở Kho.
+- Bản lưu: khóa tùy chọn `careers.<nghề>.gadgets = {id: {paid, day}}` (không phải mã nâng cấp: 2.4.68 từ chối mã lạ trong `upgrades`). 2.4.68 đọc được, giữ nguyên, bỏ qua (tests/test_career_gadgets.py chạy trên `git archive 289df99d`). check_task_compat OK. Tiếng Anh: i18n/overrides.json, đã build public/i18n/en.json.
+- tests/test_career_gadgets.py: mua (quỹ, một lần, sai nghề, thiếu quỹ), sữa +1 ngày (kệ lúc lắp và hàng nhập), tỷ lệ sữa chua trước/sau, máy kiểm tra (gợi ý hợp tuổi, trong ngân sách, còn hàng; hết hàng; bố mẹ lần đầu), không có phụ kiện = như cũ, bản lưu chạy trên 2.4.68.
+
 # v2.4.68 — 2026-10-20
 
 Không có mục Có gì mới (chủ game: không thông báo).

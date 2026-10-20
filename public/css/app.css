@@ -2771,6 +2771,10 @@ html[data-layout="phone"] .upgrade-card>h3{grid-column:2;grid-row:1;margin:0;min
 html[data-layout="phone"] .upgrade-card>p{grid-column:2/-1;grid-row:2;margin:0;line-height:1.4}
 html[data-layout="phone"] .upgrade-card>:is(.btn,select,.tag){grid-column:1/-1;margin-top:6px}
 html[data-layout="phone"] .upgrade-card>.tag{justify-self:start}
+/* 🧰 Phụ kiện nghề (work-equipment.js gadgetSection): the emoji in the icon box, what it does as a short list. */
+.gadget-card .gadget-emoji{display:grid;place-items:center;font-size:26px;line-height:1}
+.gadget-effects{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:4px;line-height:1.45}
+html[data-layout="phone"] .upgrade-card>.gadget-effects{grid-column:1/-1;margin-top:4px}
 
 /* A tap held while another command is on the wire (app.js holdMark): it waits its turn, and says so. */
 .is-held{cursor:progress}

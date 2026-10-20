@@ -547,7 +547,7 @@ def _migrate(c: dict) -> dict:
 
 
 def _plan(c: dict) -> dict:
-    return FS.plan(c, ID, MODS, EVENTS)
+    return _milk_luck(c, FS.plan(c, ID, MODS, EVENTS))
 
 
 def _peek_plan(c: dict) -> dict:
@@ -555,7 +555,63 @@ def _peek_plan(c: dict) -> dict:
     p = kit.data(c).get('plan')
     if isinstance(p, dict) and p.get('day') == c['day']:
         return p
-    return FS.new_plan(ID, c['day'], MODS, EVENTS)
+    return _milk_luck(c, FS.new_plan(ID, c['day'], MODS, EVENTS))
+
+
+# --- 🥛 how often a fresh-milk batch turns (feedback #454) ----------------------
+# Every surprise is equally likely, so "Ca sữa tươi vừa mở có mùi chua" came on ~23 % of days from day 2 (simulated over
+# 3000 days), and it costs the whole fresh-milk shelf that nearly every drink uses. Now only SOUR_KEEP of those rolls
+# keep it (~14 % of days); with 🧊 Tủ trữ sữa riêng (game/career_gadgets.py) SOUR_KEEP_FRIDGE (~3 %, about once a
+# month). A dropped roll becomes another surprise of the day that is not in the plan yet (the day keeps its pace), or
+# 'skipped' when there is none. The rolls are fixed by the game day, so reloading never changes them.
+SOUR_KEEP = 0.6
+SOUR_KEEP_FRIDGE = 0.15
+FRIDGE = 'milk_fridge'
+FRIDGE_ITEMS = ('milk',)
+
+
+def _fridge(c: dict) -> bool:
+    from .. import career_gadgets as cg
+    return cg.owned(c, FRIDGE)
+
+
+def sour_keep(c: dict) -> float:
+    return SOUR_KEEP_FRIDGE if _fridge(c) else SOUR_KEEP
+
+
+def _milk_luck(c: dict, p: dict) -> dict:
+    """A sour-milk surprise still waiting keeps its place only if today's roll is under sour_keep(c)."""
+    for e in p['events']:
+        if e['id'] != 'sour_milk' or e['status'] != 'waiting':
+            continue
+        if kit.rng(ID, 'sour_keep', p['day']).random() < sour_keep(c):
+            continue
+        have = {x['id'] for x in p['events']}
+        pool = [x['id'] for x in EVENTS if x['id'] not in have and x.get('min_day', 1) <= p['day']
+                and p['mod'] not in x.get('not_mods', ()) and (not x.get('mods') or p['mod'] in x['mods'])]
+        if pool:
+            e['id'] = pool[kit.rng(ID, 'sour_swap', p['day']).randrange(len(pool))]
+        else:
+            e['status'] = 'skipped'
+    return p
+
+
+def life_bonus(c: dict, item_id: str) -> int:
+    """game/inventory.py _receive_lot: 🧊 Tủ trữ sữa riêng keeps fresh milk one more day."""
+    return 1 if item_id in FRIDGE_ITEMS and _fridge(c) else 0
+
+
+def on_gadget(s: dict, c: dict, gid: str) -> str:
+    """Just bought (game/career_gadgets.py buy): the fresh milk already on the shelf goes into the fridge too."""
+    if gid != FRIDGE:
+        return ''
+    x = (c.get('ext') or {}).get('inv')
+    n = 0
+    for lot in (x or {}).get('lots', []):
+        if lot['item'] in FRIDGE_ITEMS and lot['qty'] > 0 and lot['expires'] >= c['day']:
+            lot['expires'] += 1
+            n += lot['qty']
+    return f'{n} ca sữa tươi trên kệ được cất vào tủ, để thêm 1 ngày.' if n else 'Sữa tươi nhập về từ nay để được 3 ngày.'
 
 
 def _mult(c: dict) -> float:

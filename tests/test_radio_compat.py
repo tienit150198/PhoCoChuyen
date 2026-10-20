@@ -28,7 +28,7 @@ from tests.test_career_radio import clear_desk, shift, solve
 from tests.test_radio_station import Base
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = '289df99d'   # 2.4.68 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
+RELEASE = '2808dc10'   # 2.4.69 (live; 2.4.67 5ba2e147 and 2.4.66 a808cb79 before it): schema 73 (bang_code), none of this branch's tables or careers
 OLD_LOAD = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action;'
             's=migrate_state(json.load(sys.stdin));validate_state(s);'
             's,_=apply_action(s,"milk_tea","select_career",{});s,_=apply_action(s,"milk_tea","start_day",{});'

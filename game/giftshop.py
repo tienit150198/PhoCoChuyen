@@ -1308,6 +1308,49 @@ def public_task(t: dict, v: dict) -> dict:
     return v
 
 
+# ---------------------------------------------------------------- 📏 Máy kiểm tra độ tuổi (game/career_gadgets.py)
+def age_check(c: dict, t: dict) -> dict | None:
+    """What the age checker shows on one open order whose baby age the player knows (a first-time parent's only once
+    asked, like public_task): ✓ / ✗ of every box against that age and, when the asked box is not for it, the suitable
+    items in stock within the budget (same use first, then cheapest). View only, never saved."""
+    if not (t.get('career') == CAREER and t.get('gen') and t.get('known') and _open(t)):
+        return None
+    kind = t['gift_kind']
+    age = t['gift'].get('age')
+    if age is None or kind == 'return' or (kind == 'kit' and 'age' not in t['gs']['asked']):
+        return None
+    e = _e()
+    names = _catalog()
+    fits = {k: suits(k, age) for k in LABELS if LABELS[k]['use'] != 'card'}
+    out = dict(task=t['id'], age=age, age_text=age_text(age), fits=fits, asked=None, ok=None, alternatives=[])
+    if kind == 'kit' or (kind == 'occasion' and t['gift'].get('pick') == 'open'):
+        return out   # choosing is the job: the ✓ / ✗ only
+    asked = t['gs'].get('swap') or t['needs']['product']
+    lab = LABELS[asked]
+    out.update(asked=asked, ok=fits.get(asked, True), rule=lab['label'], warn=lab['warn'])
+    if out['ok'] or kind != 'safety':
+        return out
+    n = t['needs']
+    qty = n['qty']
+
+    def free(k):
+        return e.available(c, k) + t['basket'].get(k, 0)
+    alts = [k for k, ok in fits.items() if ok and k != asked and _total(c, {k: qty}) <= n['budget'] and free(k) >= qty]
+    alts.sort(key=lambda k: (LABELS[k]['use'] != lab['use'], _total(c, {k: qty}), k))
+    out['alternatives'] = [dict(id=k, name=names[k]['name'], label=LABELS[k]['label'], price=_total(c, {k: qty})) for k in alts[:3]]
+    return out
+
+
+def age_checks(c: dict) -> dict:
+    """{task id: age_check} for the open orders (the career view's age_check while 📏 is owned)."""
+    out = {}
+    for t in c.get('tasks', []):
+        v = age_check(c, t)
+        if v:
+            out[t['id']] = v
+    return out
+
+
 # ---------------------------------------------------------------- validation
 def validate_task(t: dict) -> None:
     e = _e()
