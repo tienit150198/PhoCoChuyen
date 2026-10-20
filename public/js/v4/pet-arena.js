@@ -7,6 +7,10 @@
  * ⚔️ Thách đấu bang (owner 21/10, game/bang_challenge.py): the 🛡️ tab has two sections, ⚔️ Thách đấu (any day: the bang's
  * roster and its order, challenges to answer or send, results and the town's latest matches, each a 5-duel replay) and
  * 🗓️ Bang chiến tuần (the weekly war). data-sec="tc" | "war" opens one, data-watch="<challenge id>" plays a replay.
+ * 👑 Chọn đội hình (owner: "bang chủ được quyền chọn danh sách thú để xuất chiến"): Bang chủ and Phó bang open the
+ * lineup editor of the weekly war (war_team: the members, each with their strongest pets; suggestion: each one's
+ * strongest) and save up to 5 member + pet pairs (war_lineup); while it stands members see who chose it and cannot
+ * change their own pick (war_lineup_off hands it back).
  * Styles: /css/pet-arena.css (and /css/pets.css for the pets' own motions). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
@@ -20,7 +24,9 @@ const STEP=450;   // ms an action at ×1
 const S={dlg:null,env:null,tab:'war',sub:'',busy:false,flash:null,v:null,lad:null,cup:null,war:null,friends:null,pick:[],npc:1,
   wpet:'',fight:null,fast:false,at:0,watch:0,
   // ⚔️ Thách đấu bang (game/bang_challenge.py): the 🛡️ tab's section, its view, sub-screens (find | order), the search, the pet picked
-  wsec:'tc',tc:null,tcAt:0,tcsub:'',tfind:null,tq:'',tpet:'',ord:null};
+  wsec:'tc',tc:null,tcAt:0,tcsub:'',tfind:null,tq:'',tpet:'',ord:null,
+  // 👑 the leaders' lineup editor (game/pet_war.py war_team / war_lineup): its view and the pairs chosen [{pid, pet}]
+  wt:null,lsel:[]};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const CAT=()=>S.env?.api?.content?.journey?.pets||null;
 const hm=t=>{try{return new Date(t*1000).toLocaleString('vi-VN',{weekday:'long',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'});}catch{return '';}};
@@ -74,6 +80,7 @@ export async function openArena(env,tab,extra={}){
   if(S.tab!=='fight')await loadTab();
   if(extra?.find&&S.tab==='war'&&S.wsec==='tc'&&S.tc?.mine?.officer){S.tcsub='find';S.tfind=null;render();findLoad();}   // ⚔️ Gửi thách đấu from the Bang sheet
   if(extra?.watch)await watchChallenge(String(extra.watch));
+  if(extra?.lineup&&S.tab==='war'&&S.wsec==='war'&&S.war?.can_lead)await openLineup();   // 👑 Chọn đội hình from the Bang sheet's war card
 }
 export async function petArenaAction(action,data,el,env){
   if(action!=='petArena')return false;
@@ -130,6 +137,11 @@ async function onClick(op,data){
   if(op==='replay'){S.busy=true;render();try{const r=await post('replay',{id:data.id});startFight(r.match,'replay');}catch(e){S.flash={text:e.message,kind:'bad'};}finally{S.busy=false;render();}return;}
   if(op==='wpet'){S.wpet=data.id;render();return;}
   if(op==='unpick'){const r=await run('war_unpick',{});if(r){S.war=null;await loadTab();await load();}return;}
+  if(op==='lineup'){await openLineup();return;}
+  if(op==='lsug'){S.lsel=suggest(S.wt);render();return;}
+  if(op==='lmem'){toggleMember(data.pid);render();return;}
+  if(op==='lpet'){pickPet(data.pid,data.id);render();return;}
+  if(op==='leadoff'){const r=await run('war_lineup_off',{});if(r){await loadTab();await load();}return;}
   if(op==='watch'){await watchWar(Number(data.rd),Number(data.slot));return;}
   if(op==='cupleave'){const r=await run('cup_leave',{});if(r)await load();return;}
   if(op==='fast'){S.fast=!S.fast;S.dlg.querySelector('[data-pa="fast"]')?.classList.toggle('on',S.fast);return;}
@@ -146,6 +158,8 @@ async function main(){
   if(op==='npc'){await run('npc',{stage:S.npc},'npc');return;}
   if(op==='cupjoin'){const r=await run('cup_join',{});if(r){await load();await loadTab();}return;}
   if(op==='warpick'){const r=await run('war_pick',{pet:S.wpet});if(r){await loadTab();await load();}return;}
+  if(op==='lineup'){await openLineup();return;}
+  if(op==='lineupsave'){const r=await run('war_lineup',{picks:S.lsel});if(r){S.sub='';S.wt=null;await loadTab();await load();}return;}
   if(op==='tofight'){S.tab='war';S.sub='';render();}
   if(op==='tcreg'){const r=await run('tc_reg',{pet:S.tpet});if(r){S.tpet='';await tcLoad();}return;}
   if(op==='tcfind'){S.tcsub='find';S.tfind=null;render();findLoad();return;}
@@ -166,12 +180,15 @@ function mainButton(){
   const v=S.v;if(!v||v.locked||v.error)return ['','',''];
   if(S.sub==='team')return [S.pick.length?`💾 Lưu đội · ${S.pick.length} bé`:'👆 Chọn 1–3 bé','save',S.pick.length?'':' '];
   if(S.sub==='friends')return ['','',''];
+  if(S.sub==='lineup'){const t=S.wt;if(!t||t.error)return ['','',''];if(!t.open)return ['🔒 Đã chốt đội hình','',' '];
+    const n=S.lsel.length;return [n?`💾 Lưu đội hình · ${n}/${t.size||5} bé`:'👆 Chọn ít nhất 1 bé','lineupsave',n?'':' '];}
   const t=v.today||{};
   if(S.tab==='fight')return ['⚔️ Tìm đối thủ','fight',t.rank>=t.rank_max?'Hôm nay đã đấu đủ, mai đấu tiếp nhé':''];
   if(S.tab==='npc'){const st=(v.npc||[])[S.npc];return [st?`🎯 Thử thách ${st.name}`:'🎯 Thử thách','npc',t.npc>=t.npc_max?'Hôm nay đã thử đủ':''];}
   if(S.tab==='cup'){const c=v.cup||{};if(!c.open)return ['🏟️ Giải tuần sau mở từ thứ Hai','',' '];return c.joined?['✅ Đã đăng ký giải tuần','',' ']:['🏟️ Đăng ký giải tuần','cupjoin',''];}
   if(S.tab==='war'&&S.wsec==='tc')return tcButton(v);
   if(S.tab==='war'){const w=S.war||{};if(!w.team)return ['','',''];if(w.phase!=='pick')return ['','',''];
+    if(w.lead)return w.can_lead?['👑 Đổi đội hình bang','lineup','']:[`👑 ${w.lead.role} đã chọn đội hình`,'',' '];
     const p=(v.pets||[]).find(x=>x.id===S.wpet),now=v.war?.pick?.id;
     if(p&&p.id===now)return [`✅ ${p.n} đã ra trận`,'',' '];
     return p?[`🛡️ Cho ${p.n} ra trận`,'warpick','']:['👆 Chọn 1 bé ra trận','',' '];}
@@ -208,7 +225,7 @@ function page(){
   const t=TABS.find(x=>x[0]===S.tab)||TABS[0];
   const sub=S.sub||(S.tab==='war'&&S.wsec==='tc'?S.tcsub:'');
   const head=`<header class="sheet-head pa-head">${sub?`<button class="icon-btn" type="button" data-pa="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="pa-logo" aria-hidden="true">🐾</span>'}
-    <div class="grow"><h2 id="pa-title">${S.sub==='team'?'Xếp đội':S.sub==='friends'?'Đấu với đồng đội':sub==='find'?'Chọn bang':sub==='order'?'Xếp đội hình':'Đấu trường bang'}</h2></div>
+    <div class="grow"><h2 id="pa-title">${S.sub==='lineup'?'Đội hình bang chiến':S.sub==='team'?'Xếp đội':S.sub==='friends'?'Đấu với đồng đội':sub==='find'?'Chọn bang':sub==='order'?'Xếp đội hình':'Đấu trường bang'}</h2></div>
     ${S.v?.me?`<span class="pa-score" title="Điểm xếp hạng tuần">🏆 ${fmt(S.v.me.rating)}</span>`:''}<button class="icon-btn" type="button" data-pa="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   const tabs=sub?'':`<nav class="pa-tabs" role="tablist" aria-label="Đấu trường">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-pa="tab" data-tab="${id}"><span aria-hidden="true">${e}</span><small>${esc(l)}</small></button>`).join('')}</nav>`;
   const v=S.v;
@@ -218,6 +235,7 @@ function page(){
   else if(v.locked)inner=locked(v.locked,v.island);
   else if(S.sub==='team')inner=teamPicker(v);
   else if(S.sub==='friends')inner=friendsList();
+  else if(S.sub==='lineup')inner=lineupView();
   else if(sub==='find')inner=findView();
   else if(sub==='order')inner=orderView();
   else inner=S.tab==='npc'?npcTab(v):S.tab==='rank'?rankTab():S.tab==='cup'?cupTab(v):S.tab==='war'?warTab(v):fightTab(v);
@@ -324,9 +342,11 @@ function warWeek(v){
   else{
     const slots=[];for(let i=0;i<w.size;i++){const p=w.picks[i];slots.push(p?`<div class="pa-slot${p.me?' me':''}">${pic(p.pet,44)}<small data-no-translate>${esc(p.name)}</small></div>`:`<div class="pa-slot empty"><span>?</span><small>Trống</small></div>`);}
     const mine=w.picks.find(p=>p.me);
-    const choose=w.phase==='pick'?`<h4>${mine?'Đổi bé ra trận':'Chọn bé ra trận'}</h4><div class="pa-picks sm">${(v.pets||[]).map(p=>`<button type="button" class="pa-pick${S.wpet===p.id?' on':''}" data-pa="wpet" data-id="${esc(p.id)}" aria-pressed="${S.wpet===p.id}">${pic(p,52)}<b data-no-translate>${esc(p.n)}</b><small>${rk(p.r)}${elTag(p.e)} 💪${fmt(p.pw)}</small></button>`).join('')}</div>
+    const lead=w.lead?`<p class="pa-lead">👑 <b>${esc(w.lead.role)} đã chọn đội hình</b>${w.phase!=='pick'?'':w.can_lead?' · bạn đổi được tới lúc chốt.':' · bạn không tự đổi được.'}</p>`:'';
+    const boss=w.can_lead&&w.phase==='pick'?`<div class="pa-chips"><button type="button" class="pa-chip on" data-pa="lineup">👑 ${w.lead?'Đổi':'Chọn'} đội hình bang</button>${w.lead?'<button type="button" class="pa-chip" data-pa="leadoff">↩️ Để mọi người tự chọn</button>':''}</div>`:'';
+    const choose=w.lead?'':w.phase==='pick'?`<h4>${mine?'Đổi bé ra trận':'Chọn bé ra trận'}</h4><div class="pa-picks sm">${(v.pets||[]).map(p=>`<button type="button" class="pa-pick${S.wpet===p.id?' on':''}" data-pa="wpet" data-id="${esc(p.id)}" aria-pressed="${S.wpet===p.id}">${pic(p,52)}<b data-no-translate>${esc(p.n)}</b><small>${rk(p.r)}${elTag(p.e)} 💪${fmt(p.pw)}</small></button>`).join('')}</div>
       ${mine?'<button type="button" class="pa-chip" data-pa="unpick">Rút bé khỏi đội</button>':''}`:'';
-    team=`<section class="pa-card"><h4 data-no-translate>${esc(w.team.name)}</h4><div class="pa-slots">${slots.join('')}</div>${choose}</section>`;
+    team=`<section class="pa-card"><h4 data-no-translate>${esc(w.team.name)}</h4>${lead}<div class="pa-slots">${slots.join('')}</div>${boss}${choose}</section>`;
   }
   return head+team+bracket(w)+(w.champ?`<p class="pa-champ">🏆 ${esc(w.champ)} vô địch!</p>`:'')+warLadder(w);
 }
@@ -342,6 +362,53 @@ function bracket(w){
 function warLadder(w){
   if(!w.ladder?.length)return w.last?`<p class="pa-muted">Tuần trước: 🏆 ${esc(w.last.champ||'—')}</p>`:'';
   return `<section class="pa-card"><h4>Bảng xếp hạng bang</h4><ol class="pa-ladder">${w.ladder.map(r=>`<li><span class="pa-rank r${Math.min(r.rank,4)}">${r.champ?'🏆':r.rank}</span><b data-no-translate>${esc(r.name)}</b><small>${r.w}–${r.l}</small><em>${fmt(r.pts)} đ</em></li>`).join('')}</ol></section>`;
+}
+
+/* ---------------------------------------------------------------- 👑 the leaders' lineup of the weekly war */
+/** Each eligible member's strongest pet, the strongest members first, up to the team's size. */
+function suggest(t){return (t?.members||[]).filter(m=>m.ok&&m.best).slice(0,t.size||5).map(m=>({pid:m.pid,pet:m.best}));}
+/** What the editor opens with: the leaders' lineup as it stands, else the members' own picks topped up with the suggestion. */
+function prefill(t){
+  const out=(t?.picks||[]).map(x=>({pid:x.pid,pet:x.pet}));if(t?.lead)return out;
+  for(const m of (t?.members||[]).filter(x=>x.ok&&x.best)){if(out.length>=(t.size||5))break;if(!out.some(x=>x.pid===m.pid))out.push({pid:m.pid,pet:m.best});}
+  return out;
+}
+async function openLineup(){
+  S.sub='lineup';S.wt=null;S.lsel=[];S.flash=null;render();
+  try{S.wt=await post('war_team');S.lsel=prefill(S.wt);}
+  catch(e){S.wt={error:e.message||'Chưa tải được.'};}
+  if(S.dlg?.open)render();
+}
+const lmax=()=>S.wt?.size||5;
+function toggleMember(pid){
+  const i=S.lsel.findIndex(x=>x.pid===pid);if(i>=0){S.lsel.splice(i,1);return;}
+  const m=(S.wt?.members||[]).find(x=>x.pid===pid);if(!m?.ok)return;
+  if(S.lsel.length>=lmax()){S.flash={text:`Đủ ${lmax()} bé rồi. Bỏ bớt 1 người nhé.`,kind:'bad'};return;}
+  S.flash=null;S.lsel.push({pid,pet:m.best});
+}
+function pickPet(pid,pet){
+  const x=S.lsel.find(y=>y.pid===pid);if(x){x.pet=pet;return;}
+  if(S.lsel.length>=lmax()){S.flash={text:`Đủ ${lmax()} bé rồi. Bỏ bớt 1 người nhé.`,kind:'bad'};return;}
+  S.flash=null;S.lsel.push({pid,pet});
+}
+function lineupView(){
+  const t=S.wt;if(!t)return '<p class="pa-empty">⏳</p>';
+  if(t.error)return `<p class="pa-empty">${esc(t.error)}</p>`;
+  const size=t.size||5,by=Object.fromEntries((t.members||[]).map(m=>[m.pid,m]));
+  const slots=[];
+  for(let i=0;i<size;i++){const x=S.lsel[i],m=x&&by[x.pid],p=m?.pets.find(q=>q.id===x.pet);
+    slots.push(p?`<button type="button" class="pa-slot on" data-pa="lmem" data-pid="${esc(m.pid)}" aria-label="Bỏ ${esc(m.name)}"><em class="pa-num">${i+1}</em>${pic(p,44)}<small data-no-translate>${esc(m.name)}</small></button>`
+      :`<div class="pa-slot empty"><span>${i+1}</span><small>Trống</small></div>`);}
+  const rows=(t.members||[]).map(m=>{const i=S.lsel.findIndex(x=>x.pid===m.pid),sel=i>=0?S.lsel[i]:null;
+    const pets=m.ok?m.pets.map(p=>`<button type="button" class="pa-lp${sel?.pet===p.id?' on':''}" data-pa="lpet" data-pid="${esc(m.pid)}" data-id="${esc(p.id)}" aria-pressed="${sel?.pet===p.id}">${pic(p,40)}<b data-no-translate>${esc(p.n)}</b><small>${rk(p.r)}${elTag(p.e)} 💪${fmt(p.pw)}</small></button>`).join(''):'';
+    return `<li class="pa-lm${sel?' on':''}${m.ok?'':' off'}"><button type="button" class="pa-lm-who" data-pa="lmem" data-pid="${esc(m.pid)}" aria-pressed="${!!sel}"${m.ok?'':' disabled'}>
+      <span class="pa-lm-box" aria-hidden="true">${sel?i+1:''}</span><span class="grow"><b data-no-translate>${esc(m.name)}${m.me?' (bạn)':''}</b><small>${esc(m.role||'')}${m.ok?` · 💪 ${fmt(m.pw)}`:` · ${esc(m.why||'Chưa có bé')}`}</small></span></button>
+      ${pets?`<div class="pa-lm-pets">${pets}</div>`:''}</li>`;}).join('');
+  const lead=t.lead?`<p class="pa-lead">👑 <b>${esc(t.lead.role)} đã chọn đội hình</b> · lưu lại để đổi.</p>`:'';
+  return `${lead}<section class="pa-card pa-lsum"><div class="pa-slots">${slots.join('')}</div>
+    <p class="pa-muted">Chọn tối đa ${size} người, mỗi người 1 bé. Gợi ý sẵn bé mạnh nhất của mỗi người. Thứ tự 5 trận bốc ngẫu nhiên lúc vào trận. Chốt đội ${esc(clock(t.lock))}.</p>
+    <div class="pa-chips"><button type="button" class="pa-chip" data-pa="lsug">✨ Gợi ý mạnh nhất</button></div></section>
+    <ul class="pa-lms">${rows||'<li class="pa-muted">Bang chưa có ai.</li>'}</ul>`;
 }
 
 /* ---------------------------------------------------------------- ⚔️ Thách đấu bang */

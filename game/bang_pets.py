@@ -4,10 +4,18 @@
   or disbanded bang fields nobody; its picks drop out at the lock, game/pet_war.py play re-reads every pick's team).
 * name: '<emoji> <name>' of the bang (what the bracket, the ladder and the titles show).
 * can_pick: any member fields their own pet ("mỗi người chọn 1 pet", owner 19/10): one pet a member, the first
-  pet_war.SIZE members to pick fill the five slots (pet_war counts them under its team lock). No officer step. 🏝️ Only
-  while the bang holds its island (owner 21/10 "phải có mua đảo bang thì mới chơi được": game/bang.py has_island): a
-  bang without one fields nobody (its members still see the war; team_of stays, so their page names their bang). An
+  pet_war.SIZE members to pick fill the five slots (pet_war counts them under its team lock) unless the officers chose
+  the lineup (can_lead below). 🏝️ Only while the bang holds its island (owner 21/10 "phải có mua đảo bang thì mới chơi
+  được": game/bang.py has_island): a bang without one fields nobody (its members still see the war; team_of stays, so their page names their bang). An
   island is never taken back, so a pick made stays valid until the lock.
+* 👑 can_lead (owner: "bang chủ được quyền chọn danh sách thú để xuất chiến nhé"): Bang chủ and Phó bang (LEAD_FROM, the
+  same officers who arrange the ⚔️ Thách đấu roster, game/bang_challenge.py OFFICER) choose the war's lineup from the
+  members (roster: pid, display name, title); lock_team takes the bang row first (game/bang.py's lock order: the bang
+  row, then the war's team lock and its pick rows, as a member leaving does); announce writes the line in the bang's
+  log ('war') and its chat group (🛡️ Bang chiến pet), and bumps the bang so its pages refresh.
+* ⏰ remind: the hour before the lock (pet_war.remind_due, the housekeeping), a 'war_remind' line in the log and chat
+  group of every active, shown bang holding its island, once a week: a bang with such a log row since the reminder's
+  hour began is skipped (that row is the marker; no table, no column). No bang row is locked or bumped.
 * facility(TRAINING_KEY): the level of the bang's 🐾 Sân luyện pet ('san_pet'), counting a build whose time is up even if
   nobody opened the bang page since (read only: finish_builds writes it later). pet_war turns it into +1 %/level of the
   fighters' stats in the war, at most pet_war.TRAINING_MAX.
@@ -17,10 +25,12 @@ Registered once on import (server.py imports this module); a fault here never br
 from __future__ import annotations
 
 from . import bang as BG
+from . import bang_content as BC
 from . import pet_war as PW
 
 KIND = 'bang'
 FAC = 'san_pet'            # game/bang_content.py FACILITIES key of 🐾 Sân luyện pet
+LEAD_FROM = BC.KICK_FROM      # 4: Bang chủ and Phó bang choose the war's lineup (owner: "bang chủ được quyền"; the Phó acts for the Chủ)
 
 
 def _member(db, sid: str):
@@ -49,6 +59,56 @@ class BangTeams(PW.TeamProvider):
     def can_pick(self, db, team_id: str, sid: str) -> bool:
         r = _member(db, sid)
         return bool(r) and str(r['bang']) == str(team_id) and BG.has_island(db, str(team_id))
+
+    lead_who = 'Trưởng lão trở lên'
+
+    def _role(self, db, team_id: str, sid: str):
+        r = _member(db, sid)
+        return r['role'] if r and str(r['bang']) == str(team_id) else None
+
+    def can_lead(self, db, team_id: str, sid: str) -> bool:
+        role = self._role(db, team_id, sid)
+        return role is not None and BC.ROLES.get(role, BC.ROLES['tv'])[3] >= LEAD_FROM
+
+    def role_of(self, db, team_id: str, sid: str) -> str:
+        role = self._role(db, team_id, sid)
+        return BC.ROLES.get(role, BC.ROLES['tv'])[0] if role else ''
+
+    def roster(self, db, team_id: str) -> list:
+        rows = db.execute("SELECT m.sid, m.pid, m.role, a.display FROM bang_members m LEFT JOIN accounts a ON a.sid=m.sid "
+                          "WHERE m.bang=? AND m.status='in' ORDER BY m.joined, m.sid", (team_id,)).fetchall()
+        return [dict(sid=r['sid'], pid=r['pid'], name=(str(r['display'])[:24] if r['display'] else BG.GONE),
+                     role=BC.ROLES.get(r['role'], BC.ROLES['tv'])[0]) for r in rows]
+
+    def lock_team(self, db, team_id: str) -> None:
+        BG._lock(db, team_id)
+
+    def announce(self, db, team_id: str, sid: str, text: str, t: float) -> None:
+        BG._log(db, team_id, sid, 'war', text, t)
+        r = db.execute('SELECT channel FROM bangs WHERE id=?', (team_id,)).fetchone()
+        if r and r['channel']:
+            from . import live_chat
+            c = db.execute("INSERT INTO chat_messages(channel, pid, name, av, text, at, adm) VALUES(?, 'admin', ?, '🛡️', ?, ?, 1) RETURNING id",
+                           (r['channel'], '🛡️ Bang chiến pet', text[:300], t)).fetchone()
+            if c:
+                live_chat.notify(db, dict(op='unhide', id=int(c['id'])))
+        BG._bump(db, team_id)
+
+    def remind(self, db, text: str, t: float, since: float, limit: int) -> tuple:
+        if limit <= 0:
+            return 0, True
+        rows = db.execute("SELECT b.id, b.channel FROM bangs b WHERE b.status='active' AND b.hidden=0 AND b.isle>=1 AND NOT EXISTS "
+                          "(SELECT 1 FROM bang_log l WHERE l.bang=b.id AND l.kind='war_remind' AND l.at>=?) ORDER BY b.id LIMIT ?",
+                          (since, limit + 1)).fetchall()
+        from . import live_chat
+        for r in rows[:limit]:
+            BG._log(db, r['id'], '', 'war_remind', text, t)
+            if r['channel']:
+                c = db.execute("INSERT INTO chat_messages(channel, pid, name, av, text, at, adm) VALUES(?, 'admin', ?, '🛡️', ?, ?, 1) RETURNING id",
+                               (r['channel'], '🛡️ Bang chiến pet', text[:300], t)).fetchone()
+                if c:
+                    live_chat.notify(db, dict(op='unhide', id=int(c['id'])))
+        return min(len(rows), limit), len(rows) > limit
 
     def facility(self, db, team_id: str, key: str) -> int:
         if key != PW.TRAINING_KEY:

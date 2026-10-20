@@ -151,6 +151,36 @@
 - Bản lưu / rollback: không DDL, không bảng mới, SCHEMA_VERSION giữ 62. Khối nghề `careers.teller` ngủ (engine.DORMANT) khi chưa đụng tới nên 2.4.66 đọc nguyên save. Save đã làm ngân hàng: chạy `scripts/strip_new_careers.py strip --careers teller` trước khi lùi (nay cất cả chứng chỉ teller_service: journey.certificates, study, cert_paper, khung đeo), `restore` trả lại khi lên lại. tests/test_career_teller_compat.py: 2.4.66 (a808cb79, git archive) đọc save chưa đụng; save story đã ứng tuyển, học, thi, làm 2 ngày, chuyện oái oăm, chặng Bà Lựu, chứng chỉ đeo, ca đang mở dở khách — strip xong 2.4.66 validate/migrate/public và chơi trọn một ngày nghề khác, ví không đổi; restore trên bản này trả khối nghề y từng byte. tests/helpers.as_stored: các test rollback cũ gửi save đúng như máy chủ lưu (ngân hàng chưa đụng thì không có trong bản lưu).
 - Tests: tests/test_career_teller.py (28), tests/test_career_teller_compat.py (2), tests/teller-ui.mjs (14); đếm nghề 57→58 ở các test đếm (59 khi gộp cùng Lễ tân trong careers-integ).
 
+# v2.4.71 — 2026-10-20
+
+Không có mục Có gì mới.
+
+## war-lineup
+
+- 👑 Bang chủ chọn đội hình Bang chiến pet tuần (chủ game: "bang chủ được quyền chọn danh sách thú để xuất chiến nhé, hiện tại bang chủ không chọn thú xuất chiến được"). Bang chủ và Phó bang (không phải Trưởng lão) lên (như người xếp đội hình ⚔️ Thách đấu) mở 🛡️ Bang chiến › 🗓️ Bang chiến tuần › 👑 Chọn đội hình bang: danh sách thành viên với các bé của từng người (hạng, 💪), gợi ý sẵn bé mạnh nhất của mỗi người; chọn tối đa 5 người, mỗi người 1 bé, lưu trước giờ chốt (19:50). Đội hình của bang chủ thay mọi lượt tự chọn của bang tuần đó; thành viên thấy "👑 Bang chủ đã chọn đội hình" và không tự đổi hay rút được; người chọn đổi được tới lúc chốt, hoặc ↩️ Để mọi người tự chọn (giữ đội hình đang có). Chuyện trong bang và nhóm chat bang có dòng nêu tên người được chọn.
+- Máy chủ kiểm: chức vụ, giờ chốt, tối đa 5, mỗi người 1 bé, bé phải là của chính người đó (ở nhà hoặc trại nuôi), đủ điều kiện như tự chọn (đang trong bang, bang có 🏝️ Đảo bang). Ảnh chụp chỉ số bé như khi tự chọn (đọc save chỉ để xem, không ghi), vẫn theo bé tới giờ chốt.
+- game/pet_war.py: lệnh mới `war_team` (danh sách cho người chọn), `war_lineup {picks: [{pid, pet}]}`, `war_lineup_off`; `war` trả thêm `lead`, `can_lead`; `war_pick` / `war_unpick` trả lỗi `lead_set` khi bang chủ đã chọn. Đánh dấu bằng một dòng trong pet_war_picks (sid `~lead|bang|<id>`, không phải người chơi: mọi chỗ đọc đều bỏ qua, bản 2.4.70 cũng vậy vì không bang nào có sid đó). Không thêm bảng hay cột, SCHEMA_VERSION giữ 73, không khóa save mới. game/bang_pets.py: can_lead, role_of, roster, lock_team (khóa hàng bang trước), announce.
+- Kiểm thử: tests/test_pet_war_lineup.py (đặt đội hình, thành viên không ghi đè được, Trưởng lão trở xuống bị từ chối, sau giờ chốt bị từ chối, bé của người khác bị từ chối, tự chọn vẫn chạy khi chưa có đội hình bang chủ, trận đánh bằng đội hình bang chủ; bản 2.4.70 (aeb68cc0) đọc cùng bảng vẫn đánh đúng đội hình đó).
+
+## war-card
+
+- 🛡️ Thẻ Bang chiến tuần cho mọi thành viên ở 🏯 trang chủ bang (chủ game: "có nơi nào đó cho mọi người ở bang thấy sự kiện bang chiến cuối tuần đi"): ngày giờ trận (CN 20:00), giờ chốt đội (19:50) và đếm ngược từng giây; trạng thái ⏳ Đang chờ / 🔒 Đội hình đã chốt / 🔴 Đang đánh / 🏁 Kết quả tuần (vô địch, á quân, dừng ở vòng nào, điểm) hoặc tuần không đủ bang; đội hình 5 ô (tên thành viên, bé, hạng, 💪, hoặc "Còn trống"), ai chọn (👑 Bang chủ/Phó bang hay mọi người tự chọn); các trận của bang (vòng, đối thủ khi đã biết, tỉ số). Nút: 👑 Chọn đội hình (Bang chủ, Phó bang: mở thẳng màn chọn đội hình), 🐾 Ghi danh / Đổi bé của tôi (khi chưa có đội hình bang chủ), 📺 Xem trận (đang đánh hoặc đã xong). Mục ⚔️ Bang có thêm dòng nhỏ trong ngày bang chiến ("🛡️ Bang chiến 20:00 hôm nay", "Đã chốt đội, sắp đánh", "đang đánh").
+- ⏰ Nhắc trước 1 tiếng (18:50–19:50): mỗi bang đang hoạt động, có Đảo bang nhận một dòng ở Chuyện trong bang và nhóm chat bang "🛡️ Bang chiến 20:00 tối nay, đội hình chốt lúc 19:50…", đúng một lần mỗi tuần (bước housekeeping của đấu trường; dòng nhật ký 'war_remind' của chính bang là dấu đã nhắc, 200 bang mỗi lượt 30 giây, khóa advisory theo tuần).
+- game/pet_war.py team_card (dữ liệu thẻ: một truy vấn lượt chọn của bang, thành viên, hàng pet_war; các trận và bảng xếp hạng chỉ khi đã đánh), remind_due; game/bang.py page['war'] (GET /api/bang có sẵn) và me_view mine.war (giờ trận, không truy vấn); game/bang_pets.py remind. Không đổi bảng, cột hay save. Màn đấu trường: sau giờ chốt dòng "Bang chủ đã chọn đội hình" không còn ghi "bạn không tự đổi được".
+- Kiểm thử: tests/test_pet_war_card.py (thành viên, bang chủ/phó, trước và sau giờ chốt, đang đánh, sau trận: vô địch, á quân, bang không ra trận, tuần không đủ bang; giờ trận cho mục ⚔️ Bang; nhắc đúng một lần mỗi bang, bỏ bang chưa có đảo hoặc bị ẩn, theo lượt, không nhắc ngoài giờ).
+
+# v2.4.70 — 2026-10-20
+
+Không có mục Có gì mới.
+
+## bang-rename
+
+- ✏️ Bang chủ đổi được tên bang (tối đa 2 lần mỗi bang, chủ game "giới hạn 1 bang được đổi 2 lần"; theo luật tên như khi lập, không trùng bang đang hoạt động; ghi vào Chuyện trong bang, nhóm chat đổi tên theo) và huy hiệu (biểu tượng, cũng tối đa 2 lần) ở ⚙️ Cài đặt bang (chủ game: "tên bang và huy hiệu cho phép đổi nhé").
+
+## bang-found-7d
+
+- ⚔️ Lập bang: tài khoản đủ 7 ngày (đời thực) là lập được, thay vì 14 (chủ game: "7 ngày là tạo được bang, k phải 14 ngày"). bang_content.FOUND_ACCOUNT_DAYS = 7; vẫn cần 5 triệu xu.
+
 # v2.4.69 — 2026-10-20
 
 Không có mục Có gì mới (chủ game: cho người dùng mua, không thông báo).

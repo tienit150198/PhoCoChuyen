@@ -211,3 +211,35 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 .bg-sheet .sd-tabs button.dot{position:relative}
 .bg-sheet .sd-tabs button.dot::after{content:'';position:absolute;top:5px;right:6px;width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 2px var(--surface)}
 @media (orientation:landscape) and (max-height:500px){.bg-nq-edit textarea{min-height:90px;max-height:40vh}}
+/* 🛡️ Bang chiến tuần (v4/bang.js warCard): when, status with a live countdown, the five slots, matches, result */
+.bg-war{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.bg-war h3{margin:0 0 4px}
+.bg-war-when{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0 0 4px;font-size:1.02rem}
+.bg-war-when span{color:var(--ink-2);font-size:.88rem}
+.bg-war-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:0 0 6px;font-size:.9rem}
+.bg-war-line b{font-variant-numeric:tabular-nums}
+.bg-war-st{display:inline-flex;align-items:center;min-height:28px;padding:2px 10px;border-radius:999px;font-weight:800;font-size:.85rem;background:var(--surface-2)}
+.bg-war-st.pick{background:var(--accent-soft);color:var(--accent-text)}
+.bg-war-st.live{background:var(--bad-soft);color:var(--bad)}
+.bg-war-st.done{background:var(--good-soft);color:var(--good)}
+.bg-war-who{margin:4px 0}
+.bg-war-slots,.bg-war-ms{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:4px}
+.bg-war-slots li{display:flex;align-items:center;gap:8px;min-height:48px;padding:2px 8px;border-radius:12px;background:var(--surface-2);min-width:0}
+.bg-war-slots li.me{outline:1px solid var(--accent);outline-offset:-1px}
+.bg-war-slots li.empty{opacity:.7}
+.bg-war-slots li>svg,.bg-war-slots li>.pet-svg{flex:none;width:40px;height:40px}
+.bg-war-slots .grow,.bg-war-ms .grow{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.bg-war-slots b{font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bg-war-slots small{font-size:.76rem;font-weight:700;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bg-war-slots .pt-rk{font-style:normal}
+.bg-war-paw{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:2px dashed var(--line);color:var(--muted);font-weight:800}
+.bg-war-ms li{display:flex;align-items:center;gap:8px;min-height:40px;padding:2px 10px;border-radius:12px;border:1px solid var(--line);font-size:.88rem}
+.bg-war-ms li .grow{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.bg-war-ms li em{flex:none;font-style:normal;font-weight:800}
+.bg-war-ms li.win em{color:var(--good)}.bg-war-ms li.loss em{color:var(--bad)}.bg-war-ms li.live{border-color:var(--bad)}
+.bg-war-res{margin:0 0 6px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-weight:800}
+.bg-war-res.champ{background:var(--good-soft);color:var(--good)}
+.bg-war-res small{font-weight:700;color:var(--ink-2)}
+.bg-war-acts{flex-wrap:wrap;border-top:0}
+.bg-war-acts .btn{flex:1 1 140px;min-height:44px}
+@media (orientation:landscape) and (max-height:480px){.bg-war-slots{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
