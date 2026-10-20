@@ -70,6 +70,7 @@ CAREER_IDS = (
     "customs",
     "hotel",
     "banquet",
+    "restore",
 )
 _FILES = (
     "career_specialisms.json",
@@ -78,6 +79,7 @@ _FILES = (
     "career_specialisms_55.json",
     "career_specialisms_56.json",
     "career_specialisms_57.json",
+    "career_specialisms_restore.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -142,6 +144,7 @@ _TITLE_DIGESTS = {
     "post_office": "2e15eb95dcac32a33c4edc12ac71ed905086b6b2021ddea28b0c7be4c9f92c67",
     "hotel": "372bd9593dbb412193fe6a5c9e7aa88c81328689c5c02d017269eeecabe7ee97",
     "banquet": "4c87d50c65d7875e9232a413317936b185728a25bd6af89b38bb866c2a5eb6cc",
+    "restore": "b623ffe118153120542d6545d796723d10472abc6319590f4fa55787bc19a669",
 }
 
 

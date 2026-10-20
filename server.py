@@ -97,6 +97,7 @@ from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_
 from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
 from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/photo_studio.py: /api/photo/…, its own reads and writes)
 photo_studio.install()  # 🔌 the packages into game/service_market.py when that module exists (another branch; no-op without it)
+from game import restore_service  # 🧰 Thợ phục chế for other players (/api/restore/…; its services in Phố dịch vụ register at import)
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -912,6 +913,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("svc-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import service_market
                 self.json(200,service_market.get(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()},ip=self.client_ip()));return
+            if route.startswith("/api/restore/"):  # 🧰 mine (what I can bring, my tickets, my marks: the save is read) · bench (my orders to work)
+                sub=route[len("/api/restore/"):]
+                token,state,_,_=self.require_session(light=sub!="mine")
+                if not self.server.rate_limit("restore-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,restore_service.get(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()}));return
             if route=="/api/admin/svc":  # 🛎️ reports and totals of Phố dịch vụ; admin only
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -1308,6 +1314,9 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("svc:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import service_market
                 self.json(200,service_market.post(self.server.store,token,state,route[len("/api/svc/"):],data,ip=self.client_ip()));return
+            if route.startswith("/api/restore/"):  # 🧰 ticket (bring a thing) · drop (withdraw it) · work (one bench step) (game/restore_service.py)
+                if not self.server.rate_limit("restore:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,restore_service.post(self.server.store,token,state,route[len("/api/restore/"):],data));return
             if route=="/api/admin/svc":  # 🛎️ close a report (game/service_market.py admin_act); admin only, nothing automatic
                 if not self.server.rate_limit("admin-svc:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.require_admin(token)

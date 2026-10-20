@@ -102,7 +102,7 @@ CH_UNLOCKS = {
 # 🛎️ A workplace added after a release opens from a chapter without entering `unlocked` until it is worked: a
 # chapter list would put it in every story save (upgrade() re-runs the chapters), and an older build, whose CAREERS
 # lacks it, refuses such a save. Untouched it stays dormant (engine.DORMANT), so a rollback keeps loading the save.
-LATE_UNLOCKS = {'hotel': 3, 'banquet': 3}
+LATE_UNLOCKS = {'hotel': 3, 'banquet': 3, 'restore': 2}
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 CAST = {
@@ -289,6 +289,7 @@ TITLES = [
     _t('c_police', 'career', '👮', 'Người giữ bình yên hẻm', 'Đạt cấp 3 ở Công an phường Mây.', lambda x: x['lv'].get('police', 1) >= 3),
     _t('c_hotel', 'career', '🛎️', 'Người giữ chìa khóa Sông Mây', 'Đạt cấp 3 ở Khách sạn Sông Mây.', lambda x: x['lv'].get('hotel', 1) >= 3),
     _t('c_banquet', 'career', '👨‍🍳', 'Chiếc mũ trắng Hồng Mây', 'Đạt cấp 3 ở Nhà hàng tiệc Hồng Mây.', lambda x: x['lv'].get('banquet', 1) >= 3),
+    _t('c_restore', 'career', '🧰', 'Người giữ hồn đồ xưa', 'Đạt cấp 3 ở Xưởng phục chế Hồn Xưa.', lambda x: x['lv'].get('restore', 1) >= 3),
     _t('c_customs', 'career', '🛃', 'Người gác cửa khẩu', 'Đạt cấp 3 ở Chi cục Hải quan cửa khẩu Bến Mây.', lambda x: x['lv'].get('customs', 1) >= 3),
     _t('c_zpop', 'career', '💿', 'Người giữ seal nguyên vẹn', 'Đạt cấp 3 ở tiệm album Mây Pop.', lambda x: x['lv'].get('zpop', 1) >= 3),
     # Skills at level 3.
@@ -1133,6 +1134,11 @@ def suggested(s: dict, ctx: dict | None = None) -> str | None:
     return (started or open_ids or [None])[0]
 
 
+def _restored_public(s: dict):
+    from . import restore_service
+    return restore_service.public(s)
+
+
 def public(s: dict) -> dict:
     j = s['journey']
     ctx = _context(s)
@@ -1168,6 +1174,7 @@ def public(s: dict) -> dict:
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'islb': ibp} if (ibp := _islb_public(s)) else {}),   # 🏗️ only once something was built (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
+        **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
 
@@ -1330,6 +1337,8 @@ def validate(s: dict) -> None:
     bang.validate(s)   # ⚔️ journey['bang'] (optional)
     from . import photo_studio
     photo_studio.validate(s)   # 📸 journey['photo_wall'] (optional): the framed photos hung at home
+    from . import restore_service
+    restore_service.validate(s)   # 🧰 journey['restored'] (optional): the marks of things a player restorer restored
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)

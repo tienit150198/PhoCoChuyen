@@ -856,3 +856,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Lên phương án trang trí sảnh theo chủ đề
 9. Kiểm điện và âm thanh trước giờ đón khách
 10. Điều phối bếp và sảnh ngày lễ cao điểm
+
+## 58. Phục chế (`restore`)
+
+Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập phiếu khám dấu hiệu hư hỏng
+2. Chốt yêu cầu khách bằng phiếu ký
+3. Ghi tuổi thật của món đồ
+4. Sổ linh kiện chế lại
+5. Bảng làm sạch theo chất liệu
+6. Quy trình trị mọt đồ gỗ
+7. Làm lại mộng gỗ không đinh
+8. Hoàn thiện giữ dấu thời gian
+9. Biên bản phục chế cho bảo tàng phường
+10. Từ chối làm giả đồ cổ

@@ -241,6 +241,7 @@ def _seed() -> None:
         REGISTRY[(career, 'job')] = _norm((career, 'job'), dict(
             name='Đơn khách riêng', icon='🧾', desc=str(meta.get('short') or career)[:160], legacy='career',
             base=_legacy_base(career), unit='đơn', duration=10, can_provide=_career_started(career)))
+    from . import restore_service   # noqa: F401  🧰 its services register at import: every process that settles knows its on_buyer
     if ('quay', 'dish') not in REGISTRY:
         REGISTRY[('quay', 'dish')] = _norm(('quay', 'dish'), dict(
             name='Món ở quầy', icon='🏪', desc='Quầy của bạn', legacy='quay', base=_legacy_base('quay'), unit='món',
