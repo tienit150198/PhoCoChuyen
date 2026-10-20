@@ -134,8 +134,9 @@ function tabs(x,idle=false){
   const owed=sum((d.ledger_view||[]).map(r=>r.balance)),n=alerts(x)+(d.rotation||[]).length;
   const due=(d.lists_view||[]).filter(l=>l.when==='today'&&l.items.some(i=>i.packed<i.qty)).length;
   const worry=(d.ledger_view||[]).some(r=>r.hard||r.risk||r.overdue);
-  // Clean layout: every tab keeps its icon and badge, only the open one its word (the word stays in aria-label).
-  const b=(label,id,aria)=>{const short=clean()&&tab!==id?label.replace(/^(\S+)\s+[^<]+/,'$1'):label;
+  // Every tab keeps its icon, word and badge (owner 21/10: a row of bare icons was hard to read); the clean layout
+  // keeps them short (Giỏ quen → Giỏ; the full name stays in aria-label).
+  const b=(label,id,aria)=>{const short=clean()?label.replace('Giỏ quen','Giỏ'):label;
     return `<button type="button" role="tab" aria-selected="${tab===id}" class="btn small ${tab===id?'primary':'ghost'}" data-action="car:tab" data-tab="${id}"${aria||short!==label?` aria-label="${x.esc(aria||label.replace(/<[^>]*>/g,'').trim())}"`:''}>${short}</button>`;};
   return `<div class="gr-tabs ${idle?'three':''}" role="tablist">${idle?'':b('🛒 Quầy','counter')}${b(`🏷️ Kho${n?` <span class="gr-badge">${n}</span>`:''}`,'stock',n?`Kho & giá, ${n} việc cần xem`:'Kho & giá')}${b(`📒 Sổ nợ${worry?' <span class="gr-badge">!</span>':owed?` <span class="gr-badge soft">${x.fmt(owed)}</span>`:''}`,'ledger',`Sổ nợ, hàng xóm đang nợ ${owed} xu`)}${b(`🧺 Giỏ quen${due?` <span class="gr-badge">${due}</span>`:''}`,'lists',due?`Giỏ quen, ${due} giỏ cần soạn hôm nay`:'Giỏ quen')}</div>`;
 }

@@ -3,7 +3,7 @@
  * Local state is only what is being picked before sending (services, tubes, parts, length, products) and the open step tab.
  * The bowl preview runs the server's own verdict (salon_mix.js) on what the stylist has found out; nothing is mixed until "Trộn bát".
  * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
-import {reqList,fold,clean,tip,helpBtn,actBar,withWhy} from '../ui-kit.js';
+import {reqList,fold,clean,tip,helpBtn,actBar,withWhy,slip,steps as ckSteps,fixAttrs} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,stepBar,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
@@ -34,6 +34,7 @@ const cardFormula=(x,t)=>(x.room.data?.card_for||[]).includes(t.id)?cardOf(x,t)?
 const deskBusy=x=>!!x.room.data?.desk?.ev;
 
 /* ---------- clean layout (docs/UI_KIT.md, wave 5): short labels, explanations behind "?" ---------- */
+const STEP_WORD={finish:'Sấy',bill:'Tính tiền'};
 const SVC_WORD={color:'Nhuộm',bleach:'Tẩy',toner:'Toner',cut:'Cắt',treatment:'Phục hồi',style:'Sấy'};
 const TOPIC_WORD={history:'Hóa chất',patch:'Dị ứng',lifestyle:'Thói quen',length:'Độ dài',budget:'Ngân sách'};
 const svcWord=(x,id)=>clean()?SVC_WORD[id]||svc(x,id).name:svc(x,id).name;
@@ -77,6 +78,9 @@ function current(t){
 }
 function nav(t,x,list,at,tab){
   const ai=list.indexOf(at);
+  // Clean layout (owner 21/10): numbered steps with their words (not a row of bare icons); a reached step opens its panel.
+  if(clean())return ckSteps(list.map((s,i)=>{const open=i<=ai||(s==='plan'&&!t.plan);
+    return {label:STEP_WORD[s]||STAGES[s][1],state:i<ai?'done':s===at?'now':'',attrs:open?fixAttrs({act:'car:tab',data:{task:t.id,tab:s,at}})+(s===tab?' aria-pressed="true"':''):''};}),{label:'Các bước làm tóc',cls:'sl-steps-ck'});
   return `<nav class="sl-nav" style="--n:${list.length}" aria-label="Các bước làm tóc">${list.map((s,i)=>{
     const [e,l]=STAGES[s],open=i<=ai||(s==='plan'&&!t.plan),done=i<ai;
     return `<button type="button" class="${done?'done':''} ${s===at?'now':''} ${s===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:s,at})} aria-current="${s===tab?'step':'false'}" ${open?'':'disabled'}><span aria-hidden="true">${done?'✓':e}</span>${clean()&&s!==tab?`<span class="sr-only">${x.esc(l)}</span>`:x.esc(l)}</button>`;
@@ -210,7 +214,34 @@ function palette(x){
     <h5 class="sl-sub">Pha hai tuýp</h5><ul><li>Level bát = trung bình theo số phần: 1 phần 3.0 + 1 phần 7.3 ra level 5; 2 phần 3.0 + 1 phần 6.1 ra level 4.</li><li>Ánh tro kéo màu lạnh đi, ánh vàng hay đỏ kéo màu ấm lên; tuýp .0 giữ màu tự nhiên.</li><li>Thuốc nhuộm không làm sáng màu nhuộm cũ: muốn sáng hơn thì tẩy trước, rồi toner khử ánh còn lại.</li></ul></details>`;
 }
 
+/** Clean layout (owner 21/10): the client as one "Phiếu khách": the photo they brought beside the mirror (the hair as it
+ * is now, changing colour and length as the work goes), then one row per service with its ✓. */
+function slipTicket(t,x){
+  const who=x.npc(t.npc),n=t.needs,ph=n.photo,cs=caseOf(t),ci=cs?x.cc.cases?.[cs]:null,left=rushLeft(t,x),plan=t.plan?.services;
+  const patch={file:['🩹 Có hồ sơ thử dị ứng','green'],log:['🩹 Sổ tiệm: đã thử','green'],none:['🩹 Chưa thử dị ứng','danger'],allergy:['🩹 Sổ dị ứng: từng phản ứng','danger']}[t.patch_record]||null;
+  const tags=[t.budget!=null?x.pill('💰 '+x.money(t.budget),'amber'):`<span class="tag" aria-label="Chưa hỏi ngân sách" title="Chưa hỏi ngân sách">💰 ?</span>`];
+  if(ci)tags.push(`<span class="tag sl-case">${x.esc(ci.emoji)} ${x.esc(ci.label)}</span>`);
+  if(left!=null)tags.push(`<span class="tag ${left>=0?(left<=4?'danger':'green'):'danger'} sl-rush">⏱️ ${left>=0?`còn ${left} nhịp · +${x.esc(x.money(n.rush.bonus))}`:'đã trễ hẹn'}</span>`);
+  if(patch)tags.push(x.pill(patch[0],patch[1]));
+  if(t.reacted)tags.push(x.pill('🚫 Không nhuộm: có phản ứng','danger'));
+  if(t.plan)tags.push(x.pill(`🗓️ ${t.plan.sessions} buổi`,t.plan.overpromise?'danger':''));
+  if(t.health!=null)tags.push(x.pill(`💧 Tóc ${t.health}/100`,t.weak?'danger':''));
+  if(t.mistakes)tags.push(x.pill(`⚠️ ${t.mistakes} lỗi`,'danger'));
+  const ids=[...new Set([...(plan||[]),...n.services])];
+  const rows=ids.map(s=>{const done=t.done.includes(s),off=plan&&!plan.includes(s),add=plan&&!n.services.includes(s);
+    return {icon:svc(x,s).emoji,value:svc(x,s).name,note:off?'không làm':add?'thêm':'',state:done?'ok':off?'none':''};});
+  const need=rows.filter(r=>r.state!=='none'),ok=need.filter(r=>r.state==='ok').length;
+  const sw=ph.level?`<span class="sl-swatch" style="--sw:${x.esc(levelColor(x,ph.level))}" aria-hidden="true"></span>`:'<span class="sl-swatch cut" aria-hidden="true">✂️</span>';
+  const real=t.real?`<small class="sl-real">📸 Ảnh gốc: level ${t.real.level} · ${x.esc(bandName(x,t.real.tone))}</small>`:'';
+  const top=`<div class="sl-slip-top"><div class="sl-slip-what"><p class="sl-wantline">${x.esc(n.want)}</p><div class="sl-photo slim">${sw}<div class="grow"><b>📸 ${x.esc(ph.style)}</b>${ph.level?`<small>${x.esc(ph.tone)} · level ${ph.level}${ph.filtered&&!t.real?' · ảnh có filter?':''}</small>`:''}</div></div>${real}</div>
+    <figure class="sl-slip-mirror" aria-label="Gương">${mirror(t,x)}<figcaption>Tóc bây giờ${t.look?.level?` · L${t.look.level}`:''}${t.look?.length?` · ${t.look.length} cm`:''}</figcaption></figure></div>`;
+  const head=`${x.portrait(who,30)}<b class="sl-slip-name">${x.esc(who.display_name)}</b><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div>${helpQ(x)}`;
+  const foot=`<details class="sl-more"><summary>💬 Lời dặn</summary><p class="muted small">“${x.esc(n.note)}”</p></details>${t.calm!=null&&!t.done.includes('cut')?calmBar(t):''}<div class="row wrap sl-tags">${tags.join('')}</div>${cardFold(t,x)}`;
+  // The sheet header already carries the to-do chip (stepRows): the slip says its count in its own head.
+  return slip({head:`${head}<small class="sl-slip-n">${ok}/${need.length} ✓</small>`,top,rows,foot,cls:'sl-ticket sl-slip',label:'Phiếu khách'});
+}
 function ticket(t,x){
+  if(clean())return slipTicket(t,x);
   const who=x.npc(t.npc),n=t.needs,ph=n.photo,cs=caseOf(t),ci=cs?x.cc.cases?.[cs]:null,left=rushLeft(t,x);
   const sw=ph.level?`<span class="sl-swatch" style="--sw:${x.esc(levelColor(x,ph.level))}" aria-hidden="true"></span>`:'<span class="sl-swatch cut" aria-hidden="true">✂️</span>';
   const patch={file:['🩹 Có hồ sơ thử dị ứng','green'],log:['🩹 Sổ tiệm: đã thử','green'],none:['🩹 Chưa thử dị ứng','danger'],allergy:['🩹 Sổ dị ứng: từng phản ứng','danger']}[t.patch_record]||null;
@@ -817,7 +848,7 @@ export default {
     const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" data-sl-key="${x.esc(key)}" data-sl-reveal="${moved?1:0}" data-sl-focus="${focus}" aria-live="polite">${clean()?(back?`<p class="sl-back">${back}</p>`:''):`<h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>`}${PANELS[tab](t,x)}</section>`;
     return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${lastDesk(x)}${ticket(t,x)}${nav(t,x,list,at,tab)}
       <div class="sl-bench"><div class="sl-main">${panel}${foot(x,true)}${apptBook(x,false)}</div>
-      <aside class="sl-side">${gb.rows}${mirror(t,x)}${tab==='bill'?'':receipt(t,x,true)}</aside></div>${gb.bar}</div>`;
+      <aside class="sl-side">${gb.rows}${clean()?'':mirror(t,x)}${tab==='bill'?'':receipt(t,x,true)}</aside></div>${gb.bar}</div>`;
   },
   actions:{
     tab(d,el,x){const u=x.ui[d.task];if(!u)return;u.tab=d.tab;u.tabAt=d.at;x.render();},

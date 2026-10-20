@@ -222,3 +222,24 @@ html:not([data-layout="desktop"]) .career-job.rs .rs-side .rs-tabs{display:none}
 /* Clean layout (UI wave 4): the order card already lists every part of the order as steps; the compact copy (asm_kit
    reqPin) waits behind its header chip (🧾 k/n) instead of repeating it in the flow. */
 html[data-clean] .career-job.rs .asm-pin:not(.ui-pop){display:none}
+
+/* Clean layout, owner 21/10 ("show hết ra rồi chọn"): one slip with the bowl filling beside the order, numbered steps,
+   and the kitchen as numbered parts with every choice open (ui-kit slip / steps / secHead). */
+html[data-clean] .career-job.rs .rs-slip-name{font-size:var(--fs-3);font-weight:800;min-width:0;overflow-wrap:anywhere}
+html[data-clean] .career-job.rs .rs-slip .price{margin-left:auto;font-size:var(--fs-3)}
+html[data-clean] .career-job.rs .rs-slip-tags{display:flex;flex-wrap:wrap;gap:4px;flex-basis:100%}
+html[data-clean] .career-job.rs .rs-slip-top{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
+html[data-clean] .career-job.rs .rs-slip-what{flex:1 1 auto;display:grid;gap:var(--sp-1);min-width:0}
+html[data-clean] .career-job.rs .rs-slip-what>*{margin:0}
+html[data-clean] .career-job.rs .rs-slip .rs-status{font-size:var(--fs-1);font-weight:700;color:var(--ink-2)}
+html[data-clean] .career-job.rs .rs-slip-art{flex:none;display:grid;justify-items:center;gap:2px;margin:0}
+html[data-clean] .career-job.rs .rs-slip-art .bowl-art{zoom:.5;min-height:0;padding:0;border:0;background:none}
+html[data-clean] .career-job.rs .rs-slip-art figcaption{font-size:.6875rem;font-weight:700;color:var(--muted)}
+html[data-clean] .career-job.rs .bowl-broth{transform-origin:50% 100%;animation:ck-pour .45s ease-out both}
+html[data-clean] .career-job.rs .bowl-noodle,html[data-clean] .career-job.rs .bowl-tops>span{animation:ck-drop .35s ease-out both}
+html[data-clean] .career-job.rs .rs-steps{margin:var(--sp-2) 0}
+html[data-clean] .career-job.rs .rs-board{display:grid;gap:var(--sp-2)}
+html[data-clean] .career-job.rs .rs-sec>.rs-grid,html[data-clean] .career-job.rs .rs-sec>.rs-stove{margin-top:0}
+html[data-clean] .career-job.rs .rs-sec .rs-tile.is-selected::before{content:"✓";position:absolute;top:-7px;left:-7px;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--good);color:var(--surface);font-size:var(--fs-1);font-weight:900;box-shadow:0 0 0 2px var(--surface)}
+html[data-clean] .career-job.rs .rs-sec[data-sec="chili"] .rs-chili{display:flex;align-items:center;gap:var(--sp-3)}
+html[data-clean] .career-job.rs .rs-sec[data-sec="chili"] .rs-bottle{flex:none;width:96px}

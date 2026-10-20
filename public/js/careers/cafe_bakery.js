@@ -9,7 +9,7 @@
  * yesterday's pastries each morning, and the regulars' notes card. */
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {splitMai} from './tomorrow_kit.js';
-import {fold,actBar,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+import {fold,actBar,clean,tip,helpBtn,withWhy,slip,steps as ckSteps,secHead,fixAttrs,headChip,reqSlipRow} from '../ui-kit.js';
 import {nextHint,barParts,finalGo,todoAttrs,todoArrow} from '../v4/guide.js';
 import {restockFor,restockGo} from '../v4/restock.js';
 
@@ -357,7 +357,38 @@ function trayTabs(t,x){
       <span class="cb-cupno" aria-hidden="true">${done?'✓':i+1}</span><span class="cb-cuptext"><small>Ly ${i+1} · ${done?'trên khay · bấm để sửa':on?'đang làm':busy?'chờ ly đang làm':'bấm để làm'}</small><span>${drinkLine(sp,x)}${sp.lactose||sp.decaf?' <b class="cb-warn">⚠️</b>':''}</span></span></button>`;
   }).join('')}</div>`;
 }
+/** Clean layout: the order as one "Phiếu khách" (ui-kit slip): every line the guest asked for with its live mark, and
+ * the cup (the bag, the cake) being made beside it, filling up as the player works. */
+function slipTicket(t,x){
+  const who=x.npc(t.npc),n=t.needs,g=t.guest||{},tags=[`<span class="tag">${x.esc(g.emoji||'🙂')} ${x.esc(g.label||'Khách')}</span>`];
+  let top='',rows=[],art='',what='Ly của bạn',title='Phiếu khách';
+  if(n.kind==='drink'){
+    art=hidden(t)?'':cupArt(t,x)+(Object.keys(n.pastry||{}).length?bagArt(t,x):'');
+    if(hidden(t)){tags.push('<span class="tag amber">💭 Đoán ý khách</span>');top=moodCard(t,x);}
+    else{
+      if(n.style==='mood'&&n.mood?.text)top=`<p class="cb-bubble small">💭 “${x.esc(n.mood.text)}”</p>`;
+      if(isTray(t)){title=`Phiếu khách · khay ${n.party.length} ly`;top+=trayTabs(t,x);}
+      else top+=`<p class="cb-order-head">${drinkLine(n,x)}</p>`;
+      rows=drinkRows(t,x);
+    }
+  }else if(n.kind==='pastry'){
+    top=`<p class="cb-order-head">🛍️ <b>Bánh ở tủ kính</b> · ${n.takeaway?'mang về':'tại quán'}</p>`;rows=pastryRows(t,x);art=bagArt(t,x);what='Khay bánh';
+    if(n.day_old_ok)tags.push('<span class="tag amber">Bánh hôm qua −50%</span>');
+    if(n.allergy)tags.push(`<span class="tag danger">⚠️ Dị ứng ${x.esc((cc(x).allergen_label||{})[n.allergy]||n.allergy)}</span>`);
+  }else{
+    top=`<p class="cb-order-head">🎂 <b>Bánh kem đặt trước</b> · <i class="cb-dot" style="background:${x.esc(color(x,n.color).hex)}"></i> ${x.esc(lower(color(x,n.color).name))}</p>`;rows=cakeRows(t,x);art=cakeArt(t,x);what='Bánh kem';
+  }
+  const list=rows.map(r=>reqSlipRow(r,todoAttrs(r))),need=rows,done=need.filter(r=>r.ok===true).length;
+  const price=t.quoted_price!=null?x.money(t.quoted_price):'';
+  const head=`${x.portrait(who,30)}<b class="cb-slip-name">${x.esc(who.display_name)}</b><b class="price">${price}</b><span class="cb-slip-tags">${tags.join('')}</span>`;
+  const foot=`${n.note?`<p class="cb-note">💬 “${x.esc(n.note)}”</p>`:''}${regularNotes(t,x)}${patience(t.patience)}`;
+  const chip=rows.length?headChip('🧾',`Phiếu ${done}/${need.length}`,'.cb-slip',{label:`Phiếu order: ${done}/${need.length} đúng`,tone:rows.some(r=>r.ok===false)?'bad':done===need.length?'ok':''}):'';
+  // The cup sits beside the order's headline (the rows keep the full width for their words).
+  const lead=art?`<div class="cb-slip-top"><div class="cb-slip-what">${top}</div><figure class="cb-slip-art" aria-label="${what}">${art}<figcaption>${what}</figcaption></figure></div>`:top;
+  return `${chip}${slip({title,head,top:lead,rows:list,foot,cls:'cb-ticket cb-slip',label:'Phiếu order'})}${cbStepper(t,x)}`;
+}
 function ticket(t,x){
+  if(clean())return slipTicket(t,x);
   const who=x.npc(t.npc),n=t.needs,g=t.guest||{};
   const tags=[`<span class="tag">${x.esc(g.emoji||'🙂')} ${x.esc(g.label||'Khách')}</span>`];
   let body='';
@@ -418,9 +449,42 @@ function stationNow(t,x){
 /** One bar station: open when it is the current one (until the player folds it), else one line
  * "✓ 2 · Xay … · 18 g" that a tap opens. Not a <details>: the sheet host restores every <details> by
  * position after a re-render, which would keep the old station open. The body is drawn only when open. */
-function station(x,t,cur,no,title,note,done,body){
+function station(x,t,cur,no,title,note,done,body,idx=0){
+  // Clean layout (owner 21/10 "show hết ra rồi chọn"): every part this order needs is open, numbered like the steps
+  // under the slip; a part the order does not need stays one line (still reachable: a wrong tap still costs).
+  if(clean()&&idx){
+    const st=done?'done':no===cur?'now':'';
+    return `<section class="cb-sec ck-sec${st?' '+st:''}" data-st="${no}">${secHead({n:idx,title,hint:st==='done'?note:'',state:st})}<div class="cb-st-body">${body}</div></section>`;
+  }
+  if(clean()&&!done)note='khách không gọi';
   const key=`${t.id}-${t.cur||0}-${cur}-${no}`,open=x.ui.cbSt?.[key]??no===cur;
   return `<section class="cb-st${no===cur?' now':''}${done?' done':''}${open?' open':''}"><button type="button" class="cb-st-sum" data-action="car:st" data-key="${x.esc(key)}" data-open="${open?1:0}" aria-expanded="${open}">${done?'✓ ':''}${no} · ${x.esc(title)}${note?` <small>· ${x.esc(note)}</small>`:''}</button>${open?`<div class="cb-st-body">${body}</div>`:''}</section>`;
+}
+/** The bar parts this drink needs, in making order, each {no, icon, title, done} (the stations' own numbers):
+ * the steps under the slip and the numbered parts of the bar read it. Powder drinks and trays on the plate: none. */
+function cbParts(t,x){
+  if(t.needs?.kind!=='drink'||hidden(t)||plated(t))return [];
+  const n=spec(t),d=t.drink,dk=drink(x,n.drink);
+  if(dk.base)return [];
+  const picked=t.bag.items.length,want=Object.values(n.pastry||{}).reduce((a,b)=>a+b,0);
+  return [
+    {no:1,icon:'🥤',title:'Ly',done:!!d.container&&(!n.iced||!!d.ice)&&(!dk.water||!!d.water)},
+    {no:2,icon:'⚖️',title:'Xay',done:d.shots.length>=n.shots||!!d.dose},
+    {no:3,icon:'☕',title:'Chiết',done:d.shots.length>=n.shots&&!d.pulling&&!d.dose},
+    n.milk&&{no:4,icon:'🥛',title:'Sữa',done:!!d.milk&&!d.steaming},
+    n.art&&{no:5,icon:'🎨',title:'Vẽ',done:!!d.art},
+    n.takeaway&&{no:6,icon:'🏷️',title:'Nắp',done:!!d.lid},
+    want&&{no:7,icon:'🥐',title:'Bánh',done:picked>=want},
+  ].filter(Boolean);
+}
+/** The numbered steps of the cup in hand (clean layout): Ly → Xay → Chiết → (Sữa) → (Vẽ) → (Nắp) → (Bánh) → Giao; a tap
+ * jumps to that part of the bar. */
+function cbStepper(t,x){
+  const parts=cbParts(t,x);if(!parts.length)return '';
+  const cur=stationNow(t,x),ready=canServe(t)&&parts.every(p=>p.done);
+  const list=parts.map(p=>({label:p.title,state:p.done?'done':p.no===cur?'now':'',attrs:fixAttrs({sel:`.cb-stations .cb-sec[data-st="${p.no}"]`})}));
+  list.push({label:isTray(t)&&pendingOthers(t).length?'Lên khay':'Giao',state:ready?'now':'',attrs:fixAttrs({sel:'.cb-dock .gd-final, .cb-dock .gd-cta'})});
+  return ckSteps(list,{label:'Các bước pha ly',cls:'cb-steps'});
 }
 function barPanel(t,x){
   if(hidden(t))return `<p class="notice amber">🤔 Chưa rõ khách muốn món gì.</p>`;
@@ -459,7 +523,7 @@ function barPanel(t,x){
     const wait=d.art?'':artWait(d);
     return tile(x,{emoji:a.emoji,name:a.name,sub:locked?`cấp ${a.unlock}`:wait||'rót tạo hình',cmd:'cb_art',payload:{task:t.id,pattern:a.id},locked,selected:d.art===a.id,wanted:!d.art&&!wait&&n.art===a.id,
       disabled:!!wait||!!d.art,label:locked?`Hình ${a.name}, mở ở cấp ${a.unlock}`:wait?`Rót hình ${a.name}: ${wait.toLowerCase()}`:`Rót hình ${a.name}`});}).join('');
-  const pastry=Object.keys(n.pastry||{}).length,cur=stationNow(t,x),dk=drink(x,n.drink),S=(...a)=>station(x,t,cur,...a);
+  const pastry=Object.keys(n.pastry||{}).length,cur=stationNow(t,x),dk=drink(x,n.drink),order=cbParts(t,x).map(p=>p.no),S=(...a)=>station(x,t,cur,...a,order.indexOf(a[0])+1);
   const cname=(cc(x).containers||[]).find(c=>c.id===d.container)?.name||'';
   const shotLine=d.shots.map((s,i)=>`Shot ${i+1}: ${s.sec}s`).join(' · ');
   const picked=t.bag.items.length,wantPastry=Object.values(n.pastry||{}).reduce((a,b)=>a+b,0);
@@ -689,13 +753,14 @@ export default {
     }
     const n=t.needs,ui=x.ui;
     if(ui.tabFor!==t.id){ui.tabFor=t.id;ui.tab=n.kind==='drink'?'bar':n.kind==='pastry'?'case':'cake';ui.cakeText='';}
+    const TAB_WORD={bar:'Quầy',oven:'Lò',case:'Tủ',cake:'Bánh kem'};
     const tabs=[['bar','☕','Quầy pha'],['oven','🔥','Lò & ủ bột'],['case','🥐','Tủ kính'],['cake','🎂','Bánh kem']];
     const racks=(d.oven||[]).length,ready=(d.proof||[]).filter(p=>!p.left).length+(d.cold||[]).filter(c=>c.bakeable).length+(d.starter&&!d.starter.fed_today?1:0),inCase=(d.case||[]).filter(l=>l.state==='fresh'&&!l.sale).reduce((a,l)=>a+l.qty,0);
     const badge=k=>k==='oven'&&(racks||ready)?`<em class="cb-badge">${racks+ready}</em>`:k==='case'?`<em class="cb-badge${inCase?' calm':' zero'}">${inCase}</em>`:'';
     // Clean layout: the open tab keeps its word, the others their icon (the name is the tab's label); the "?" at the
     // end lists what this screen folded away (the pace rule, …).
     const c=clean(),help=c?helpBtn('cb-bench','☕ Quầy cà phê & bánh',[{title:'Một order',body:'<ul class="ui-rows"><li>📝 Nhận order, đọc phiếu</li><li>☕ Pha, 🔥 nướng, 🥐 lấy bánh theo phiếu</li><li>🛎️ Giao cho khách</li></ul>'}],{tips:true,cls:'cb-help'}):'';
-    const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}" aria-label="${l}">${e}${c&&ui.tab!==k?'':` ${l}`}${badge(k)}</button>`).join('')}${help}</div>`;
+    const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}" aria-label="${l}">${e} ${c?TAB_WORD[k]:l}${badge(k)}</button>`).join('')}${help}</div>`;
     const panel={bar:()=>n.kind==='drink'?barPanel(t,x):'<p class="notice">Order này không có đồ uống.</p>',oven:()=>ovenPanel(t,x),case:()=>casePanel(t,x),cake:()=>n.kind==='cake'?cakePanel(t,x):'<p class="notice">Order này không phải bánh kem.</p>'}[ui.tab]?.()||'';
     const preview=n.kind==='drink'?cupArt(t,x)+(Object.keys(n.pastry||{}).length?bagArt(t,x):''):n.kind==='pastry'?bagArt(t,x):cakeArt(t,x);
     const part=n.kind==='cake'?'cake':'drink';
@@ -705,7 +770,7 @@ export default {
     // phone one is the guide's .gd-cta, so the first-time pulse lands on the visible one.
     // The one main button lives in the shared bar on every screen size (ui-kit actBar, UI wave 4).
     const {next,main}=barParts(x,g.steps,g.final||{label:'🛎️ Giao cho khách',go:null,ready:false,why:''});
-    const side=`<div class="cb-side"><div class="cb-look">${preview}<div class="cb-look-txt"><p class="cb-status" aria-live="polite">${x.esc(status(t,x))}</p>${trayCups(t)}</div></div>
+    const side=c?`<div class="cb-side"><div class="fk-wide-only">${dump}</div></div>`:`<div class="cb-side"><div class="cb-look">${preview}<div class="cb-look-txt"><p class="cb-status" aria-live="polite">${x.esc(status(t,x))}</p>${trayCups(t)}</div></div>
       <div class="fk-wide-only">${dump}</div></div>`;
     const tools=`<p class="row wrap cb-tools">${dump?`<span class="cb-narrow-only">${dump}</span>`:''}${d.clean_day===x.room.day?'<span class="tag green">🧽 Đã vệ sinh máy hôm nay</span>':x.cmd('🧽 Vệ sinh máy pha','cb_clean',{},'ghost small')}</p>`;
     return `<div class="career-job cb food">${hint}${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${actBar({next:next||`<p class="cb-dock-status">${x.esc(status(t,x))}</p>`,main,cls:'fk-bar cb-dock'})}</div>`;

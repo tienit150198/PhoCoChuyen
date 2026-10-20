@@ -9,7 +9,7 @@ import {keepBarAboveFooter} from './food_kit.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {data,cc,lower,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
-import {withWhy} from '../ui-kit.js';
+import {withWhy,slip} from '../ui-kit.js';
 
 /** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
  * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
@@ -39,8 +39,27 @@ const pick=(x,key,val,label,cls='',why='')=>clean()?`<span class="nl-b">${withWh
 function svcLine(x,n){
   return (n.svc||[]).map(s=>(s==='son_gel'||s==='son_thuong')&&n.colour?`${SVC(x,s)} ${lower(COL(x,n.colour).name)}`:SVC(x,s)).join(' · ');
 }
+/** The customer's hand as it is now (clean layout): five nails in the shape and length filed so far, the last colour
+ * painted (natural pink before), glossy once a top coat is on; it changes with each tap. */
+function handArt(t,x){
+  const c=t.cond||{},coats=t.coats||[],col=[...coats].reverse().find(k=>k.l==='color'),top=coats.some(k=>k.l==='top');
+  const len=t.tip?'dai':t.len||c.nat||'vua',shape=t.shape||'tron',art=coats.some(k=>k.l==='art');
+  return `<span class="nl-hand nl-${x.esc(shape)} nl-${x.esc(len)}${top?' gloss':''}${art?' art':''}" style="--nc:${x.esc(col?COL(x,col.k).hex:'#f2c7bd')}" aria-hidden="true">${'<i></i>'.repeat(5)}</span>`;
+}
+/** Clean layout (owner 21/10): the order as a slip (services, colour, shape and length, the photo) beside the hand. */
+function slipTicket(t,x){
+  const n=t.needs||{},col=n.colour?COL(x,n.colour):null;
+  const tags=[n.rush?'<span class="tag amber">⏰ Đang vội</span>':'',n.check?'<span class="tag">🧐 Soi từng móng</span>':''].join('');
+  const shapeOk=t.shape?(t.shape===n.shape&&t.len===n.length?'ok':'bad'):'';
+  const rows=[...(n.svc||[]).map(s=>({icon:'💅',value:SVC(x,s),note:(s==='son_gel'||s==='son_thuong')&&col?lower(col.name):''})),
+    {icon:'💅',value:`Dáng ${lower(SHAPE(x,n.shape))}, móng ${LEN(x,n.length)}`,state:shapeOk},
+    ...(n.photo?[{icon:'🖼️',value:n.photo}]:[])];
+  const side=`${handArt(t,x)}<small>Tay khách</small>`;
+  return person(x,t,`${slip({rows,side,cls:'ck-flat nl-slip',label:'Phiếu làm móng'})}${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tags?`<span class="nl-tags">${tags}</span>`:'');
+}
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Hỏi khách muốn làm gì');
+  if(clean()&&t.stage!=='pay')return slipTicket(t,x);
   const n=t.needs||{};
   const tags=[n.rush?'<span class="tag amber">⏰ Đang vội</span>':'',n.check?'<span class="tag">🧐 Soi từng móng</span>':''].join('');
   const body=`<p class="nl-want"><b>${x.esc(svcLine(x,n))}</b><br><small>Dáng ${x.esc(lower(SHAPE(x,n.shape)))}, móng ${x.esc(LEN(x,n.length))}</small></p>

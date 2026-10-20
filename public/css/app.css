@@ -2083,9 +2083,9 @@ html[data-layout="phone"] dialog.sheet .ui-bar .gd-alt{min-height:36px}
 .ck-row[role="button"]{cursor:pointer}
 .ck-mark{order:3;margin-left:auto;flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface);font-style:normal;font-size:var(--fs-1);font-weight:900;line-height:1}
 .ck-ico{flex:none;font-size:1.15rem;line-height:1}
-.ck-txt{flex:1 1 auto;display:flex;align-items:baseline;gap:var(--sp-2);min-width:0}
+.ck-txt{flex:1 1 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--sp-2);min-width:0}
 .ck-txt small{flex:none;width:4.6em;font-size:var(--fs-1);font-weight:700;color:var(--muted);line-height:1.2;overflow-wrap:anywhere}
-.ck-txt b{flex:1 1 auto;min-width:0;font-size:var(--fs-2);font-weight:800;overflow-wrap:anywhere;line-height:1.25}
+.ck-txt b{flex:1 1 8em;min-width:0;font-size:var(--fs-2);font-weight:800;overflow-wrap:anywhere;line-height:1.25}
 .ck-row.ok{border-color:var(--good);background:var(--good-soft)}
 .ck-row.ok .ck-mark{border-color:var(--good);background:var(--good);color:var(--surface)}
 .ck-row.ok .ck-txt b{color:var(--good)}
@@ -2094,8 +2094,14 @@ html[data-layout="phone"] dialog.sheet .ui-bar .gd-alt{min-height:36px}
 .ck-row.bad .ck-txt b{color:var(--bad)}
 .ck-row.warn{border-color:var(--warn);background:var(--warn-soft)}
 .ck-row.warn .ck-mark{border-color:var(--warn);color:var(--warn)}
+.ck-row.alert{border-color:var(--bad);border-style:dashed}
+.ck-row.alert .ck-mark{border-color:var(--bad);color:var(--bad)}
+.ck-row.alert .ck-txt b{color:var(--bad)}
+.ck-note{flex:none;margin-left:auto;padding-left:var(--sp-1);font-style:normal;font-size:var(--fs-1);font-weight:800;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ck-row.none{border-style:dashed;background:transparent}
 .ck-row.none .ck-txt b{color:var(--muted);font-weight:600}
+.ck-slip.ck-flat{padding:0;border:0;background:none;box-shadow:none}
+.ck-slip.ck-flat>.ck-slip-head{display:none}
 .ck-slip-side{flex:none;display:grid;justify-items:center;gap:2px;min-width:72px;max-width:40%}
 .ck-slip-side>small{font-size:.6875rem;font-weight:700;color:var(--muted);text-align:center}
 /* Numbered steps: one row, the current step filled with the career colour, done ones green with ✓. */
@@ -2106,7 +2112,7 @@ html[data-layout="phone"] dialog.sheet .ui-bar .gd-alt{min-height:36px}
 .ck-step-b{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;min-height:44px;padding:var(--sp-1) 0;border:0;background:none;color:var(--ink-2);font:inherit;text-align:center;cursor:pointer}
 span.ck-step-b{cursor:default}
 .ck-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink-2);font-size:var(--fs-2);font-weight:900;line-height:1;flex:none}
-.ck-step-l{font-size:.6875rem;font-weight:700;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ck-step-l{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;font-size:.6875rem;font-weight:700;line-height:1.2;max-width:100%;overflow:hidden;overflow-wrap:break-word}
 .ck-step.done .ck-n{border-color:var(--good);background:var(--good);color:var(--surface)}
 .ck-step.done .ck-step-l{color:var(--good)}
 .ck-step.bad .ck-n{border-color:var(--bad);background:var(--bad);color:var(--on-bad)}

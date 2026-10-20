@@ -111,3 +111,10 @@ html[data-theme="dem"] .career-job.ph{--ph-bowl:#2c2834;--ph-rim:#7fa8dc;--ph-ba
   .career-job.ph .ph-read{font-size:24px}
 }
 @media (prefers-reduced-motion:reduce){.career-job.ph .ph-fill{will-change:auto}}
+
+/* Clean layout, owner 21/10: the bench reads in the order a bowl is made, each part numbered ① ② ③ (ui-kit .ck-n look);
+   the order is slip rows (ui-kit slip, flat) inside the customer card. */
+html[data-clean] .career-job.ph .wb-main{counter-reset:ph-part}
+html[data-clean] .career-job.ph .wb-main>section.card>h4:first-child{display:flex;align-items:center;gap:var(--sp-2)}
+html[data-clean] .career-job.ph .wb-main>section.card>h4:first-child::before{counter-increment:ph-part;content:counter(ph-part);display:grid;place-items:center;flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--career,var(--sk-accent));color:var(--career-text,var(--sk-accent));font-size:var(--fs-1);font-weight:900;line-height:1}
+html[data-clean] .career-job.ph .ph-slip{margin:var(--sp-1) 0}

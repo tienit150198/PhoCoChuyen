@@ -137,8 +137,12 @@ whose app booking still waits to sync, fix "📥 Đơn chờ") and `can.hs_pick`
 Owner, 21/10: "coi UI sắp xếp cho dễ hiểu ở từng nghề… show hết thông tin ra xong người ta chọn, kiểu show trà sữa, các
 loại hoa xong ruy băng này kia để chọn". The compact side of an order screen reads top to bottom as:
 
-1. **`slip({title, head, rows, side, foot, cls})`**: "🧾 Phiếu khách". One row per part of the ask, in plain words
-   (`{icon, label, value, state:'ok'|'bad'|'warn'|'none'|'', attrs}`), the mark at the end of the row. `side` holds the
+1. **`slip({title, head, top, rows, side, foot, cls})`**: "🧾 Phiếu khách". One row per part of the ask, in plain words
+   (`{icon, label, value, note, state:'ok'|'bad'|'warn'|'alert'|'none'|'', attrs}`), the mark at the end of the row; `note`
+   is a measure at the row's end ("0/1", "55–68 °C"). A requirement row (reqList / guide step) converts with
+   `reqSlipRow(row, todoAttrs(row))` (a red rule not yet met, e.g. an allergy, is `alert` "!"). `top` sits between the head and
+   the rows (the dish's headline with the work beside it when the rows need the full width); `cls:'ck-flat'` drops the
+   slip's own frame and title inside a customer card (street careers). `side` holds the
    work so far (milk tea: the cup being made, the tea pours in and the ice drops in). A row with a guide step gets
    `todoAttrs(step)` and is a tap target.
 2. **`steps(list)`**: the numbered steps of the order (`{label, state:'done'|'now'|'bad'|'', attrs}`); the step being
@@ -149,8 +153,12 @@ loại hoa xong ruy băng này kia để chọn". The compact side of an order s
 4. **The bar** (on a phone, both sides): the next step on its own line, then ONE full-width main button. A passing note
    is a calm line with the career's stripe, never a dark pill that looks like a button.
 
-Done: milk tea and the florist (compact side). The asm_kit pin (repair, restaurant, clothing) draws its chips as a two-column
-list of rows and its tabs as one numbered segmented control on the compact side. Not changed: grading, payouts, saves.
+Done (compact side): milk tea, the florist, café & bakery (cup beside the dish, numbered bar stations), the noodle shop (bowl
+beside the order, 4 numbered kitchen parts), the salon (photo beside the mirror, numbered stages with words), phở (slip rows
+in the customer card, bench in bowl-making order, numbered), nail (slip beside the customer's hand, 9 numbered parts), pet
+care (numbered grooming steps with words), grocery (tabs keep their words). The asm_kit pin (repair, restaurant, clothing)
+draws its chips as a two-column list of rows and its tabs as one numbered segmented control. Not changed: grading,
+payouts, saves.
 
 ## Typed quantity: `qtyBox({...})` (qty-input.js)
 

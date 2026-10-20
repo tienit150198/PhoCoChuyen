@@ -109,16 +109,20 @@ export function headChip(icon,text,target,{label='',tone='',flow=false}={}){
  *  - slip: "🧾 Phiếu khách", what the customer asked for, one row per part in plain words with its mark;
  *  - steps: the numbered steps of one order (where the player is, a tap jumps to that part of the bench);
  *  - secHead: the numbered heading of one part of the menu board ("② 🫖 Trà nền · chọn 1"). */
-const CK_MARK={ok:'✓',bad:'✗',warn:'!',none:'–'};
-const CK_SAID={ok:'đã đúng',bad:'sai',warn:'cần chỉnh',none:'',todo:'chưa làm'};
+const CK_MARK={ok:'✓',bad:'✗',warn:'!',none:'–',alert:'!'};
+const CK_SAID={ok:'đã đúng',bad:'sai',warn:'cần chỉnh',none:'',todo:'chưa làm',alert:'nhớ kỹ'};
 /** rows: [{icon, label (what part: "Trà"), value (what they want: "Matcha"), state:'ok'|'bad'|'warn'|'none'|'', attrs}].
  * head: HTML beside the title (face, name, price); side: HTML on the right (the work so far: a cup, a bouquet);
  * foot: HTML under the rows (patience). attrs on a row make it tappable (a guide pointer). */
-export function slip({title='Phiếu khách',icon='🧾',head='',rows=[],side='',foot='',cls='',label=''}={}){
+export function slip({title='Phiếu khách',icon='🧾',head='',top='',rows=[],side='',foot='',cls='',label=''}={}){
   const row=r=>{const st=r.state||'todo',mark=CK_MARK[st]||'';
-    return `<li class="ck-row ${e(st)}"${r.attrs||''} aria-label="${e(`${r.label?r.label+': ':''}${r.value||''}${CK_SAID[st]?` (${CK_SAID[st]})`:''}`)}"><i class="ck-mark" aria-hidden="true">${mark}</i>${r.icon?`<span class="ck-ico" aria-hidden="true">${e(r.icon)}</span>`:''}<span class="ck-txt">${r.label?`<small>${e(r.label)}</small>`:''}<b>${e(r.value||'')}</b></span></li>`;};
-  return `<section class="ck-slip${cls?' '+cls:''}" aria-label="${e(label||title)}"><div class="ck-slip-head"><b class="ck-slip-title"><span aria-hidden="true">${e(icon)}</span> ${e(title)}</b>${head}</div><div class="ck-slip-body"><ul class="ck-rows">${rows.map(row).join('')}</ul>${side?`<div class="ck-slip-side">${side}</div>`:''}</div>${foot}</section>`;
+    return `<li class="ck-row ${e(st)}"${r.attrs||''} aria-label="${e(`${r.label?r.label+': ':''}${r.value||''}${r.note?` · ${r.note}`:''}${CK_SAID[st]?` (${CK_SAID[st]})`:''}`)}"><i class="ck-mark" aria-hidden="true">${mark}</i>${r.icon?`<span class="ck-ico" aria-hidden="true">${e(r.icon)}</span>`:''}<span class="ck-txt">${r.label?`<small>${e(r.label)}</small>`:''}<b>${e(r.value||'')}</b>${r.note?`<em class="ck-note">${e(r.note)}</em>`:''}</span></li>`;};
+  return `<section class="ck-slip${cls?' '+cls:''}" aria-label="${e(label||title)}"><div class="ck-slip-head"><b class="ck-slip-title"><span aria-hidden="true">${e(icon)}</span> ${e(title)}</b>${head}</div>${top}<div class="ck-slip-body"><ul class="ck-rows">${rows.map(row).join('')}</ul>${side?`<div class="ck-slip-side">${side}</div>`:''}</div>${foot}</section>`;
 }
+/** A requirement row ({ok, icon, label, value, tone}: reqList / guide steps) as a slip row: the label is the line, the
+ * value (a count, a temperature) sits at its end; a red rule not yet checked (an allergy) shows "!". */
+export const reqSlipRow=(r,attrs='')=>({icon:r.icon||'',value:r.label,note:r.value||'',attrs,
+  state:r.ok===true?'ok':r.ok===false?'bad':r.tone==='danger'?'alert':''});
 /** list: [{icon, label, state:'done'|'now'|'bad'|'', attrs}]: one numbered step per part of the order; the current one
  * stands out, done ones show ✓, a wrong one ✗. attrs (e.g. fixAttrs({sel})) make a step jump to its part. */
 export function steps(list,{label='Các bước',cls=''}={}){
