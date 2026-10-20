@@ -81,7 +81,9 @@ class Chain(unittest.TestCase):
                          [0, 0, 2, 2, 5, 5, 10, 10, 15, 15, 20, 20])
         st = dict(place='kiot', staff=[], business=dict())
         base, power = qb._rates(st)['rent'], qb._rates(st)['power']
-        for n, rent, pw, tax in ((5, base, power, 7), (10, base, power * 2, 9), (64, base * 64 // 10, power * 64 // 5, 27)):
+        # 🌸 21/10: rent stops at ×1.5 (RENT_MAX 15 counters), power at ×2 (POWER_MAX 10); tests/test_quay_chain_bonus.py
+        for n, rent, pw, tax in ((5, base, power, 7), (10, base, power * 2, 9), (12, base * 12 // 10, power * 2, 12),
+                                 (64, base * 15 // 10, power * 2, 27)):
             token = qb._CHAIN.set(n)
             try:
                 self.assertEqual((qb._rates(st)['rent'], qb._rates(st)['power'], qb.tax_percent()), (rent, pw, tax), n)

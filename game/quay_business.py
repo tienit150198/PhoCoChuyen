@@ -41,9 +41,17 @@ STAFF_BONUS_PERCENT = 236
 # counted after tax, so it shrinks with it), and above RENT_FREE counters each counter's rent grows × n / RENT_FREE.
 # ⚡ Owner 19/10 ("điện nước theo chuỗi thì tăng", mức vừa): above POWER_FREE counters each counter's power × n / POWER_FREE.
 # The owner's counter count comes from the save being settled (chain_scope); a stall read on its own counts as 1.
+# 🌸 Owner 21/10 (a 64-kiosk florist chain fell to ~half from 20/10; "quầy hoa"): the chain's part of every charge, the
+# rent and power above the base and the tax points above INCOME_TAX_PERCENT, is paid at face value but never shrinks
+# the profit bonus (reward_margin counts the base costs only: _charge, income_tax_parts; their fractions of a xu carry
+# in the optional business['chain_carry'] {rent, power, tax}, which older builds ignore), and the rent and power growth
+# stop at RENT_MAX / POWER_MAX counters (×1.5 rent, ×2 power): a normal-speed chain of any trade and place keeps ≥ ~70 %
+# of its pre-20/10 take per counter (the slowest, a clothing ki-ốt, ~75 %).
 CHAIN_TAX = ((50, 20), (30, 15), (20, 10), (10, 5), (5, 2))
 RENT_FREE = 10
+RENT_MAX = 15          # rent × min(n, RENT_MAX) / RENT_FREE: ×1.5 at most
 POWER_FREE = 5
+POWER_MAX = 10         # power × min(n, POWER_MAX) / POWER_FREE: ×2 at most
 _CHAIN = contextvars.ContextVar('quay_chain', default=1)
 
 
@@ -68,6 +76,16 @@ def chain_scope(s):
 
 def tax_percent():
     return market.INCOME_TAX_PERCENT + chain_tax(_CHAIN.get())
+
+
+def rent_x(n):
+    """Rent multiplier of an n-counter chain, in RENT_FREE-ths."""
+    return min(RENT_MAX, max(RENT_FREE, n))
+
+
+def power_x(n):
+    """Power multiplier of an n-counter chain, in POWER_FREE-ths."""
+    return min(POWER_MAX, max(POWER_FREE, n))
 
 
 def staff_wage(st, member):
@@ -233,9 +251,12 @@ def status(st):
     return 'running'
 
 
-def _rates(st):
+def _rates(st, chain=None):
+    """Time costs per PERIOD. `chain`: the counter count to price rent and power for (default: the chain in scope;
+    1 gives the base rates the profit bonus counts, see _charge)."""
     p = qy.PLACES[st['place']]
-    return dict(wages=sum(staff_wage(st, e) for e in st['staff']), rent=p['rent'] // qy.MONTH_DAYS * max(RENT_FREE, _CHAIN.get()) // RENT_FREE, power=p['power'] * max(POWER_FREE, _CHAIN.get()) // POWER_FREE,
+    n = _CHAIN.get() if chain is None else chain
+    return dict(wages=sum(staff_wage(st, e) for e in st['staff']), rent=p['rent'] // qy.MONTH_DAYS * rent_x(n) // RENT_FREE, power=p['power'] * power_x(n) // POWER_FREE,
                 environment={'xe': 1, 'sap': 2, 'kiot': 4}[st['place']],
                 protection=_protection_plans(st)[st['business'].get('protection', {}).get('level', 'none')]['period_cost'])
 
@@ -287,7 +308,7 @@ def _charge(st, elapsed, *, direct=False, start=None):
     blocked = st.get('business', {}).get('certificate_block')
     if blocked and not direct:
         return True
-    b, rates = st['business'], _rates(st)
+    b, rates, base = st['business'], _rates(st), _rates(st, chain=1)
     if blocked:
         rates = {'wages': rates['wages']}
     # Keep the last coin reserved. A zero balance otherwise stops small polls
@@ -311,8 +332,12 @@ def _charge(st, elapsed, *, direct=False, start=None):
         charge, b['carry'][k] = divmod(b['carry'][k] + paid * rate, DEN)
         qy._from_till_fund(st, charge)
         b['expenses'][k] += charge
-        _profit_state(st)['costs'] += charge
-        b['income_tax']['loss'] += charge
+        counted = charge
+        if rate != base[k]:   # 🌸 the chain's extra rent / power is paid in full; the profit bonus counts the base rate
+            cc = b.setdefault('chain_carry', {})
+            counted, cc[k] = divmod(cc.get(k, 0) + paid * base[k], DEN)
+        _profit_state(st)['costs'] += counted
+        b['income_tax']['loss'] += counted   # the tax, like the bonus, sees the base costs (as before 20/10)
     if dt < elapsed:
         b['halted'] = st['till'] + st['fund']
     return dt == elapsed
@@ -350,14 +375,28 @@ def reward_margin(st, revenue, costs, percent=BONUS_PERCENT, owner=None):
 
 def charge_income_tax(st, revenue, costs):
     """One margin ledger for counter, online, and actual visitor receipts."""
+    return sum(income_tax_parts(st, revenue, costs))
+
+
+def income_tax_parts(st, revenue, costs):
+    """Charge the income tax on one receipt: (base, chain). The base INCOME_TAX_PERCENT keeps income_tax.carry exactly as
+    before 20/10 and is what the profit bonus counts; the chain's extra points (chain_tax) carry their own fraction in
+    chain_carry['tax'] and are paid at face value only (🌸 owner 21/10). Two carries, so that small receipts round
+    neither part away."""
     b = st['business']
     tax = b['income_tax']
     margin = revenue - costs - tax['loss']
     tax['loss'] = max(0, -margin)
-    charge, tax['carry'] = divmod(tax['carry'] + max(0, margin) * tax_percent(), 100)
-    paid = qy._from_till_fund(st, charge)
-    b['expenses']['income_tax'] += paid
-    return paid
+    taxed = max(0, margin)
+    charge, tax['carry'] = divmod(tax['carry'] + taxed * market.INCOME_TAX_PERCENT, 100)
+    base = qy._from_till_fund(st, charge)
+    chain, extra = 0, chain_tax(_CHAIN.get())
+    if extra:
+        cc = b.setdefault('chain_carry', {})
+        charge, cc['tax'] = divmod(cc.get('tax', 0) + taxed * extra, 100)
+        chain = qy._from_till_fund(st, charge)
+    b['expenses']['income_tax'] += base + chain
+    return base, chain
 
 
 def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=0, extra_loss=0, employee=None, owner=None):
@@ -385,7 +424,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
         paid = qy._from_till_fund(st, extra_loss)
         b['expenses']['loss'] += paid
         costs += paid
-    costs += charge_income_tax(st, amount, costs)
+    costs += income_tax_parts(st, amount, costs)[0]   # 🌸 the chain's tax points are paid, not taken off the bonus
     from . import golden_hour   # ⏰ Giờ vàng / Ngày vàng (owner 15/10): the owner's take ×2 / ×1.5 at the sale's own time
     from . import bang   # ⚔️ ⏰ Giờ vàng của bang (game/bang.py): ×2 at the sale's own time, the larger of it and the street's
     percent = golden_hour.scale_take(income_gear.profit_percent(st,BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT), at / 1000,
@@ -582,7 +621,7 @@ def income(st, at):
     iv = _intervals(st)
     if not iv:
         return None
-    rates = _rates(st)
+    rates, base = _rates(st), _rates(st, chain=1)
     online = qs.ONLINE_FEE if st.get('online') else 0
 
     def run(ms, work):   # work: the market's demand over that time, in percent-milliseconds
@@ -591,8 +630,10 @@ def income(st, at):
         costs = sum(q * unit_cost(st, d) for d, q in sold.items()) + sum(rates.values()) * ms / DEN \
             + revenue * income_gear.online_rate(st) / (200 + income_gear.online_rate(st)) * online / 100
         margin = revenue - costs
-        tax = max(0, margin) * market.INCOME_TAX_PERCENT / 100
-        bonus = max(0, margin - tax) * income_gear.profit_percent(st,STAFF_BONUS_PERCENT) / 100
+        chain = (sum(rates.values()) - sum(base.values())) * ms / DEN   # 🌸 paid, but neither taxed off nor taken off the bonus
+        taxed = max(0, margin + chain)
+        tax = taxed * tax_percent() / 100
+        bonus = max(0, taxed - taxed * market.INCOME_TAX_PERCENT / 100) * income_gear.profit_percent(st,STAFF_BONUS_PERCENT) / 100
         return dict(sold=round(sum(sold.values()), 1), revenue=round(revenue), costs=round(costs + tax),
                     bonus=round(bonus), net=round(margin - tax + bonus))
     hour_ms = 3600 * 1000
@@ -648,7 +689,7 @@ def public(st):
         price_effect=price_effect(st), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
         rates=rates, income_tax_percent=tax_percent(), chain=_CHAIN.get(), chain_tax=chain_tax(_CHAIN.get()),
-        rent_x=round(max(RENT_FREE, _CHAIN.get()) / RENT_FREE, 1), power_x=round(max(POWER_FREE, _CHAIN.get()) / POWER_FREE, 1),
+        rent_x=round(rent_x(_CHAIN.get()) / RENT_FREE, 1), power_x=round(power_x(_CHAIN.get()) / POWER_FREE, 1),
         bonus_percent=income_gear.profit_percent(st,BONUS_PERCENT), staff_bonus_percent=income_gear.profit_percent(st,STAFF_BONUS_PERCENT),
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],
@@ -711,6 +752,10 @@ def validate(st, need, integer):
     if 'protection_quote' in b:
         q = b['protection_quote']
         need(isinstance(q, dict) and set(q) == {'day', 'wealth'} and integer(q['day'], 1, 10**12) and wealth_pricing.valid_wealth(q['wealth']))
+    if 'chain_carry' in b:
+        cc = b['chain_carry']
+        need(isinstance(cc, dict) and set(cc) <= {'rent', 'power', 'tax'}
+             and all(integer(v, 0, 99 if k == 'tax' else DEN - 1) for k, v in cc.items()))
     if 'income_tax' in b:
         need(isinstance(b['income_tax'], dict) and set(b['income_tax']) == {'loss', 'carry'} and integer(b['income_tax']['loss'], 0, 10**16) and integer(b['income_tax']['carry'], 0, 99))
     need(all(integer(b[k], 0, 10**16) for k in ('revenue', 'sold', 'seq', 'manual_seq')) and integer(b['halted'], -1, 2 * qy.MONEY_MAX))
