@@ -42,6 +42,7 @@ ORDER = (
     'banquet',                     # nhà hàng tiệc: Nhà hàng tiệc Hồng Mây, salaried kitchen (phụ bếp → đầu bếp) or event-hall shifts
     'reception',                   # lễ tân: the front desk of Khách sạn Hoa Sứ (six rooms), its own ca thử việc, desk oddities with lasting consequences
     'teller',                      # ngân hàng: Quầy số 3 at the Bến Chợ office of Ngân hàng Phố (NPC customers; never the player's own bank)
+    'research',                    # viện nghiên cứu: Viện nghiên cứu Sông Mây, salaried shifts on seeds, recipes or inventions; player research orders (game/research_lab.py)
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

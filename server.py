@@ -100,6 +100,8 @@ from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/phot
 from game import wed_services  # 💒 Dịch vụ cưới từ người chơi: its services into game/service_market.py at import (/api/wedsvc/…)
 from game import service_market as _svc_market  # 🛎️ Phố dịch vụ
 _svc_market.install_own()  # 🏥 player birth rooms + 📸 photo packages listed in Phố dịch vụ (own flows: game/birth.py, game/photo_studio.py; a refusal is logged, never a crash)
+from game import research_lab  # 🔬 Đơn nghiên cứu (game/research_lab.py: /api/lab/…, three Phố dịch vụ services of the Viện nghiên cứu career)
+research_lab.install()
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -923,6 +925,11 @@ class Handler(BaseHTTPRequestHandler):
                 token,_,_,_=self.require_session(light=True)
                 if not self.server.rate_limit("wedsvc-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,wed_services.get(self.server.store,token,None,route[len("/api/wedsvc/"):],{k:v[0] for k,v in parse_qs(split.query).items()}));return
+            if route.startswith("/api/lab/"):  # 🔬 a researcher's open research orders, a buyer's running effects (game/research_lab.py; the save only for 'mine')
+                sub=route[len("/api/lab/"):]
+                token,state,_,_=self.require_session(light=sub!="mine")
+                if not self.server.rate_limit("lab-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,research_lab.get_(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()}));return
             if route=="/api/admin/svc":  # 🛎️ reports and totals of Phố dịch vụ; admin only
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -1096,7 +1103,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/"))
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1325,6 +1332,9 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/wedsvc/"):  # 💒 hire (through Phố dịch vụ), step (one work step of a job), deliver, sell (game/wed_services.py)
                 if not self.server.rate_limit("wedsvc:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,wed_services.post(self.server.store,token,None,route[len("/api/wedsvc/"):],data,ip=self.client_ip()));return
+            if route.startswith("/api/lab/"):  # 🔬 take an order, one research step (the last one delivers through Phố dịch vụ: game/research_lab.py)
+                if not self.server.rate_limit("lab:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,research_lab.post(self.server.store,token,state,route[len("/api/lab/"):],data,ip=self.client_ip()));return
             if route=="/api/admin/svc":  # 🛎️ close a report (game/service_market.py admin_act); admin only, nothing automatic
                 if not self.server.rate_limit("admin-svc:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.require_admin(token)

@@ -6,7 +6,7 @@ import * as legacy from '../public/js/scenes/index.js';
 assert.ok(existsSync(new URL('../public/js/scenes/vocabulary.js',import.meta.url)),
   'career words must be importable without the legacy scene loader');
 const vocabulary=await import('../public/js/scenes/vocabulary.js');
-assert.equal(Object.keys(vocabulary.KIND_OF).length,59,'all current careers keep their scene family');
+assert.equal(Object.keys(vocabulary.KIND_OF).length,60,'all current careers keep their scene family');
 for(const symbol of ['KIND_OF','kindOf','wordsFor'])assert.equal(legacy[symbol],vocabulary[symbol],`${symbol} keeps the legacy API`);
 for(const career of Object.keys(vocabulary.KIND_OF)){
   const words=vocabulary.wordsFor(career);

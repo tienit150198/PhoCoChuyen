@@ -1,0 +1,250 @@
+{
+  "research": [
+    {
+      "tier": 1,
+      "title": "Lập sổ thí nghiệm đánh số trang",
+      "output_unit": "cuốn sổ thí nghiệm",
+      "inputs": [
+        {
+          "name": "Sổ bìa cứng giả lập",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Đánh số từng trang, chừa ô ngày, giờ và chữ ký ở đầu trang.",
+        "Ghi mục đích, đối chứng và số lần lặp trước khi làm.",
+        "Cho người chứng kiến ký trang đầu và trang cuối mỗi tuần."
+      ],
+      "check": {
+        "prompt": "Sổ nào được nghiệm thu?",
+        "good": "Mọi trang có số, ngày và chữ ký; lần hỏng vẫn được ghi.",
+        "bad": "Chỉ chép lại lần đẹp nhất vào sổ cho gọn.",
+        "why": "Sổ chỉ là bằng chứng khi ghi đủ, kể cả lần thất bại."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Bố trí khay đối chứng cho mẫu ươm",
+      "output_unit": "bộ khay ươm",
+      "inputs": [
+        {
+          "name": "Khay ươm nhựa mô phỏng",
+          "unit": "khay",
+          "quantity": 6,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chia khay giống mới và khay giống cũ cùng một loại đất.",
+        "Đặt các khay xen kẽ ở cùng một kệ, cùng ánh sáng.",
+        "Tưới bằng một bình, cùng giờ, cùng lượng cho mọi khay."
+      ],
+      "check": {
+        "prompt": "Cách bố trí nào được nghiệm thu?",
+        "good": "Khay đối chứng cùng đất, cùng nước, cùng chỗ với khay mới.",
+        "bad": "Khay giống cũ để chỗ râm cho giống mới trông tốt hơn.",
+        "why": "Đối chứng chỉ có nghĩa khi mọi điều kiện khác giống nhau."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tính số hạt gieo theo tỷ lệ nảy mầm",
+      "output_unit": "phiếu gieo hạt",
+      "inputs": [
+        {
+          "name": "Phiếu tính toán in sẵn",
+          "unit": "tờ",
+          "quantity": 20,
+          "unit_cost": 500
+        }
+      ],
+      "procedure": [
+        "Ghi số cây con cần cho khảo nghiệm lên phiếu.",
+        "Nhân số cây với 100 rồi chia cho tỷ lệ nảy mầm đã thử.",
+        "Làm tròn lên và ghi kết quả kèm người tính."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được nghiệm thu?",
+        "good": "Số hạt làm tròn lên để đủ cây con.",
+        "bad": "Làm tròn xuống cho đỡ tốn hạt giống.",
+        "why": "Thiếu cây con là khảo nghiệm không đủ ô."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Loại ô hỏng khỏi kết quả khảo nghiệm",
+      "output_unit": "bảng kết quả ruộng",
+      "inputs": [
+        {
+          "name": "Bảng ghi năng suất ruộng giả lập",
+          "unit": "bảng",
+          "quantity": 3,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đánh dấu ô bị ngập, trâu giẫm hoặc thuốc bay sang trong sổ ruộng.",
+        "Ghi lý do ngoài thí nghiệm bên cạnh từng ô bị bỏ.",
+        "Tính trung bình trên các ô còn lại và nộp kèm bảng gốc."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Ô hỏng vì lý do ngoài thí nghiệm được bỏ và ghi lý do.",
+        "bad": "Bỏ thêm ô năng suất thấp cho số trung bình đẹp.",
+        "why": "Chỉ bỏ ô hỏng có lý do ghi rõ, không bỏ ô vì số xấu."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Sấy và cất hạt vào kho lạnh",
+      "output_unit": "lô hạt giống",
+      "inputs": [
+        {
+          "name": "Túi hút chân không mô phỏng",
+          "unit": "túi",
+          "quantity": 20,
+          "unit_cost": 800
+        },
+        {
+          "name": "Gói hút ẩm",
+          "unit": "gói",
+          "quantity": 20,
+          "unit_cost": 300
+        }
+      ],
+      "procedure": [
+        "Làm sạch hạt, loại hạt lép trước khi đưa vào máy sấy.",
+        "Đo độ ẩm, sấy đủ giờ rồi đo lại tới mức chuẩn.",
+        "Đóng túi kín, dán nhãn mã giống, ngày và độ ẩm, cất kho lạnh."
+      ],
+      "check": {
+        "prompt": "Lô nào được nghiệm thu?",
+        "good": "Hạt đo lại đúng độ ẩm chuẩn, túi kín có nhãn, ở kho lạnh.",
+        "bad": "Hạt chưa đo lại độ ẩm đã đóng túi cho kịp giờ.",
+        "why": "Hạt còn ẩm cất kín sẽ mốc và mất sức nảy mầm."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Chuẩn hóa định lượng món cho bếp ăn",
+      "output_unit": "công thức chuẩn",
+      "inputs": [
+        {
+          "name": "Cân điện tử giả lập",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 15000
+        }
+      ],
+      "procedure": [
+        "Cân từng nguyên liệu của mẻ gốc bốn suất bằng gam.",
+        "Nhân theo số suất bếp ăn đặt rồi chia bốn cho từng dòng.",
+        "Nấu thử một mẻ theo định lượng mới và ghi sổ."
+      ],
+      "check": {
+        "prompt": "Công thức nào được nghiệm thu?",
+        "good": "Mọi nguyên liệu được nhân đúng tỷ lệ theo số suất.",
+        "bad": "Chỉ nhân nguyên liệu chính, gia vị nêm theo cảm tính.",
+        "why": "Định lượng chuẩn phải lặp lại được ở mọi mẻ."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Tổ chức buổi nếm mù có mã hóa",
+      "output_unit": "biên bản buổi nếm",
+      "inputs": [
+        {
+          "name": "Chén nếm có mã số",
+          "unit": "chén",
+          "quantity": 30,
+          "unit_cost": 400
+        }
+      ],
+      "procedure": [
+        "Gán mã ngẫu nhiên ba chữ số cho từng mẫu, giấu tên công thức.",
+        "Xáo thứ tự đưa mẫu cho từng người nếm.",
+        "Bỏ điểm của người không khách quan, ghi lý do vào biên bản."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được nghiệm thu?",
+        "good": "Mẫu mang mã ba chữ số, người nấu không ngồi nếm.",
+        "bad": "Ghi tên công thức lên chén để người nếm dễ nhớ.",
+        "why": "Biết tên mẫu thì điểm nếm không còn khách quan."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Làm nhãn món có đủ chất gây dị ứng",
+      "output_unit": "mẫu nhãn món",
+      "inputs": [
+        {
+          "name": "Giấy in nhãn giả lập",
+          "unit": "tờ",
+          "quantity": 25,
+          "unit_cost": 600
+        }
+      ],
+      "procedure": [
+        "Liệt kê đủ thành phần theo công thức chuẩn của món.",
+        "Đánh dấu mọi chất gây dị ứng có trong danh sách.",
+        "Bỏ mọi câu chữ về công dụng chữa bệnh trước khi in."
+      ],
+      "check": {
+        "prompt": "Nhãn nào được nghiệm thu?",
+        "good": "Ghi đủ chất gây dị ứng, không có lời hứa chữa bệnh.",
+        "bad": "Ghi “thần dược giảm cân” cho món bán chạy hơn.",
+        "why": "Nhãn sai làm người dị ứng gặp nguy và lừa người mua."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Chạy thử an toàn mẫu thiết bị nhỏ",
+      "output_unit": "biên bản chạy thử",
+      "inputs": [
+        {
+          "name": "Bộ linh kiện mẫu thử giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Kiểm mạch khi chưa cấp điện, đúng pin có mạch bảo vệ.",
+        "Cấp điện thấp đo dòng, chạy mười phút đo nhiệt vỏ.",
+        "Chạy đầy tải khi có người canh và ghi từng số đo."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được nghiệm thu?",
+        "good": "Thử từ mạch nguội tới đầy tải, có người canh và số đo.",
+        "bad": "Cắm điện đầy tải ngay để xem máy có chạy không.",
+        "why": "Thử từng bước mới phát hiện được lỗi trước khi cháy."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Nộp hồ sơ sáng chế đúng tác giả",
+      "output_unit": "bộ hồ sơ sáng chế",
+      "inputs": [
+        {
+          "name": "Bộ hồ sơ in sẵn giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Tra các thiết bị đã biết, ghi rõ đặc điểm nào là mới.",
+        "Đính kèm sổ thí nghiệm có ngày, chữ ký và người chứng kiến.",
+        "Ghi tên tác giả theo đóng góp thật, người góp ý vào phần cảm ơn."
+      ],
+      "check": {
+        "prompt": "Hồ sơ nào được nghiệm thu?",
+        "good": "Điểm mới có tra cứu, tác giả đúng theo sổ thí nghiệm.",
+        "bad": "Để người có chức vụ cao nhất đứng tên tác giả chính.",
+        "why": "Tác giả là người làm ra, không phải người đứng gần nhất."
+      }
+    }
+  ]
+}

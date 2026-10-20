@@ -886,3 +886,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Bàn giao quỹ và giao dịch treo cuối ca
 9. Điều phối quầy ngày nhận lương hưu
 10. Xếp lịch nhân sự cả phòng giao dịch
+
+## 59. Viện nghiên cứu (`research`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập sổ thí nghiệm đánh số trang
+2. Bố trí khay đối chứng cho mẫu ươm
+3. Tính số hạt gieo theo tỷ lệ nảy mầm
+4. Loại ô hỏng khỏi kết quả khảo nghiệm
+5. Sấy và cất hạt vào kho lạnh
+6. Chuẩn hóa định lượng món cho bếp ăn
+7. Tổ chức buổi nếm mù có mã hóa
+8. Làm nhãn món có đủ chất gây dị ứng
+9. Chạy thử an toàn mẫu thiết bị nhỏ
+10. Nộp hồ sơ sáng chế đúng tác giả

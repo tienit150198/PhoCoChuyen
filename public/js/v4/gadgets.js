@@ -159,14 +159,27 @@ function mineView(v){
       <div class="bk-actions">${(v.perks||[]).includes('selfie')?btn('📸 Chụp selfie','selfie',{},'primary'):`<span class="bk-hint">📸 Selfie có khung mở từ ${esc(CAT().items.find(x=>(x.perks||[]).includes('selfie'))?.name||'máy tầm trung')}.</span>`}${btn('Cất máy, không khoe','use',{},'ghost small')}</div></section>`
     :`<section class="bk-card gd-hand gd-oldcard"><div class="gd-hand-top">${artHTML(null,'big')}<div class="grow"><small>${v.old?'Bạn đã đổi máy cũ':'Đang dùng'}</small><h3>${v.old?'Chưa cầm máy nào':esc(old.name)}</h3><p>${v.old?'Chọn một chiếc điện thoại bên dưới để dùng và khoe.':esc(old.desc)}</p></div></div>
       ${!v.old&&cheapest?`<p class="bk-alert good">🔁 Thu cũ đổi mới: mua điện thoại đầu tiên, đưa máy cũ cho tiệm, bớt ${xu(CAT().trade_in)}.</p><div class="bk-actions">${btn(`Lên đời · ${esc(cheapest.name)} ${xu(cheapest.price-tradeOff(cheapest))}`,'look',{id:cheapest.id},'primary')}</div>`:''}</section>`;
-  if(!v.own.length)return lead;
+  if(!v.own.length)return lead+labShelf();
   const rows=v.own.map(o=>{
     const it=item(o.id);if(!it)return '';
     const on=v.hand?.id===o.id;
     return `<li class="hs-home gd-item${on?' mine':''}" style="--hs-tone:${esc(it.color)}"><div class="hs-home-top">${artHTML(it)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'✋ Đang dùng':`Mua ngày ${fmt(o.day)}`}</small></div></div>
       <div class="gd-row-actions">${isPhone(it)&&!on?btn('Dùng máy này','use',{id:o.id},'ghost'):''}<span class="gd-sell"><small>Bán lại ${xu(o.sell)}</small>${btn('Bán','sell',{id:o.id},'ghost small danger')}</span></div></li>`;
   }).join('');
-  return `${lead}<section class="bk-card"><h3>Đồ của bạn</h3><p class="bk-hint">Máy đang dùng và 3 món đắt nhất hiện trên hồ sơ, cho cả phố cùng xem.</p><ul class="hs-market">${rows}</ul></section>`;
+  return `${lead}<section class="bk-card"><h3>Đồ của bạn</h3><p class="bk-hint">Máy đang dùng và 3 món đắt nhất hiện trên hồ sơ, cho cả phố cùng xem.</p><ul class="hs-market">${rows}</ul></section>${labShelf()}`;
+}
+
+/* 🔬 Inventions a Viện nghiên cứu player made for you (game/research_lab.py, journey.lab): one-offs with their inventor's
+ * name, cosmetic only (never sold, no income), and the institute's seed and recipe effects still running. */
+function labShelf(){
+  const lab=J().lab;if(!lab)return '';
+  const g=lab.gadgets||[];
+  const fx=[lab.seed?`🌱 «${lab.seed.name}» · +${lab.seed.add} sản lượng mỗi vụ · còn ${lab.seed.left} vụ`:'',
+    lab.recipe?`🍳 «${lab.recipe.name}» · khách trả thêm ${lab.recipe.pct}% · còn ${lab.recipe.left} đơn`:''].filter(Boolean);
+  if(!g.length&&!fx.length)return '';
+  const rows=g.map(x=>`<li class="hs-home gd-item"><div class="hs-home-top"><span class="gd-tile" aria-hidden="true"><span>${esc(x.emoji||'🛠️')}</span></span><div class="grow"><b>${esc(x.name)}</b><small>Người sáng chế: ${esc(x.by)}${Number(x.q)<90?' · Bản thử nghiệm':''}</small></div></div></li>`).join('');
+  return `<section class="bk-card gd-lab"><h3>🔬 Đồ sáng chế (Viện nghiên cứu)</h3>${rows?`<ul class="hs-market">${rows}</ul><p class="bk-hint">Món đồ độc bản để khoe, không bán được.</p>`:''}
+    ${fx.length?`<h4>Hiệu ứng từ Viện đang chạy</h4><ul class="gd-lab-fx">${fx.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}${lab.paused?'<p class="bk-hint">Viện tạm nghỉ: hiệu ứng tạm dừng, không mất.</p>':''}</section>`;
 }
 
 /* One tab of the shop: cheapest first, "còn thiếu N xu" when the money is not there yet. */
