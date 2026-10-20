@@ -45,3 +45,6 @@ os.environ.setdefault("MNL_FAIR_OFF", "1")
 # 🎃 Lễ hội Ma Phố (game/halloween.py) follows the real calendar (26/10 → 01/11/2026): off, so a test's bootstrap, ticker and
 # menu do not depend on the day it runs; tests/test_halloween.py turns it on.
 os.environ.setdefault("MNL_HALLOWEEN_OFF", "1")
+# 💰 Tiền công +% / 🎉 Tuần lễ tay nghề / 🧰 Bộ đồ nghề (game/pay_boost.py): off, so the older tests keep their exact pay
+# (each earning would get its own +8–20 % row); tests/test_pay_boost.py turns it on where it checks it.
+os.environ.setdefault("MNL_PAYBOOST_OFF", "1")

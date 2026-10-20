@@ -819,7 +819,8 @@ class Buff(unittest.TestCase):
         self.assertEqual(callers, {'income_gear.py', 'employment.py', 'accounting_school.py', 'workplace_business.py',
                                    'quay_business.py', 'career_scale_contracts.py',
                                    'career_specialism_jobs.py', 'clothing_abroad.py', 'engine.py', 'journey.py',
-                                   'pet_tiers.py'})   # 🐾 its own fund_bonus, called from tile_match.fund_bonus
+                                   'pet_tiers.py',   # 🐾 its own fund_bonus, called from tile_match.fund_bonus
+                                   'pay_boost.py'})   # 💰 Tiền công +%: its own row, called from tile_match.fund_bonus (docstring)
 
     def test_gifts_and_bank_interest_are_untouched(self):
         from game import bank as bk, system_gift

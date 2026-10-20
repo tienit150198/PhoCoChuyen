@@ -1,4 +1,5 @@
 import {escapeHTML as esc,icon} from '../icons.js';
+import {paySection} from './paykit.js';   // 🧰 Bộ đồ nghề / 📒 Sổ khách quen / ⏩ Làm nhanh (game/pay_boost.py)
 
 export function equipmentView(c,career,upgrades){
  const items=upgrades.filter(u=>u.kind==='equipment'&&u.careers.includes(career)),owned=new Set(c.upgrades),fmt=n=>Number(n).toLocaleString('vi-VN');
@@ -25,7 +26,7 @@ export function equipmentView(c,career,upgrades){
  // 🔁 Tự đặt hàng (game/auto_order.py, warehouse.reorder): one paid unlock per workplace with a stock room; quỹ first, then the wallet.
  const ro=c.warehouse?.reorder,esq=v=>esc(JSON.stringify(v));
  const roCard=ro?`<section class="space-top" data-gear-group="reorder" aria-label="Tự đặt hàng"><div class="row spread wrap"><h3>🔁 Tự đặt hàng</h3><span class="tag green">${ro.owned?'Đã mở':'Chưa mở'}</span></div><div class="upgrade-grid"><article class="upgrade-card"><div class="row spread">${icon('box',27)}<span class="tag">Kho tự đặt</span></div><h3>🔁 Tự đặt hàng</h3><p>Món nào sắp hết thì tự đặt lại, trả bằng quỹ. Chỉnh ở Kho.</p>${ro.owned?`<button class="btn ghost full" type="button" disabled>Đã mở</button>`:`<button class="btn primary full" type="button" data-action="v4Cmd" data-op="stock_reorder" data-payload="${esq({buy:true})}" data-confirm="${esc(`Mua 🔁 Tự đặt hàng? ${fmt(ro.price)} xu: quỹ trả trước, thiếu thì lấy ví.`)}"${ro.short?' disabled':''}>${ro.short?`Thiếu ${fmt(ro.short)} xu`:`Mua · ${fmt(ro.price)} xu`}</button>`}</article>${boxCard(ro)}</div></section>`:'';
- return `<section class="work-equipment" aria-labelledby="work-equipment-title"><span class="eyebrow">THIẾT BỊ NGHỀ</span><h3 id="work-equipment-title">Đầu tư để kiếm thêm</h3><p>Trả bằng quỹ của nghề này. Mỗi nhóm nâng riêng; bậc cao thay bậc thấp. Khách đang chờ giữ lịch cũ, lượt kế tiếp dùng nhịp mới. Thu nhập phụ thuộc hàng tồn, giá bán và chi phí.</p>${gadgetSection(c)}${sections}${roCard}</section>`;
+ return `<section class="work-equipment" aria-labelledby="work-equipment-title"><span class="eyebrow">THIẾT BỊ NGHỀ</span><h3 id="work-equipment-title">Đầu tư để kiếm thêm</h3><p>Trả bằng quỹ của nghề này. Mỗi nhóm nâng riêng; bậc cao thay bậc thấp. Khách đang chờ giữ lịch cũ, lượt kế tiếp dùng nhịp mới. Thu nhập phụ thuộc hàng tồn, giá bán và chi phí.</p>${paySection(c)}${gadgetSection(c)}${sections}${roCard}</section>`;
 }
 
 /** 🧰 Phụ kiện nghề (game/career_gadgets.py, `c.gadgets`): one purchase each, from the fund. An older server sends no

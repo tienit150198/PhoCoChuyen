@@ -69,6 +69,8 @@ def completion_bonus(s,c,pay,title,ref):
         if _BONUS.get() is not None:_BONUS.set(_BONUS.get()+bonus)
     from .tile_match import fund_bonus   # 🧩 Phúc lợi: the same terminal jobs, the same base, its own row
     fund_bonus(s,c,max(0,pay),title,ref)
+    from .pay_boost import on_job   # 📒 Sổ khách quen's tip, 🎉 the event day's Chuyên cần (game/pay_boost.py)
+    on_job(s,c,max(0,pay),title,ref)
     return bonus
 
 

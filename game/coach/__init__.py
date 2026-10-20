@@ -114,6 +114,8 @@ ENGINE_EN: dict[str, str] = {
     'Đã tắt. Xem lại: ⋯ → 🧭 Hướng dẫn': 'Turned off. See it again: ⋯ → 🧭 Guide',
     'Xong hướng dẫn nghề này! Xem lại: ⋯ → 🧭 Hướng dẫn': 'Guide done! See it again: ⋯ → 🧭 Guide',
     '🧭 Hướng dẫn': '🧭 Guide',
+    'Tuần lễ tay nghề: +20% tiền công, đủ 5 việc mỗi ngày có thưởng.': 'Craft Week: +20% pay, and a bonus for 5 jobs a day.',
+    'Tiền công từng khoản ở đây. Bộ đồ nghề giúp kiếm thêm.': 'Your pay, item by item. Better Tools earn you more.',
 }
 
 MODULES = ('shops', 'food', 'street', 'office', 'care', 'services')

@@ -6,7 +6,7 @@
  * textContent only. The same answer carries my own alerts (badges on "Hôn nhân" and "Bạn bè", a toast
  * when someone proposes, asks to be friends, a plan arrives, the spouse sends something or the wedding day came). */
 import {language} from './i18n.js';
-const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',TFAIR='mnl.tfairSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
+const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',TFAIR='mnl.tfairSeen',PAYWEEK='mnl.payweekSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
 let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
@@ -43,6 +43,9 @@ function handle(d){
   // 💐 a season's line (game/event2010.py news_line: Thiệp 20/10): once per key (a day) on this device
   const ev=d.event;if(ev&&typeof ev.text==='string'&&typeof ev.key==='string'){let k='';try{k=localStorage.getItem(EVENT)||'';}catch{k=ev.key;}
     if(k!==ev.key){write(EVENT,ev.key);queue.push({id:0,text:ev.text.slice(0,200)});}}
+  // 🎉 Tuần lễ tay nghề (game/pay_boost.py news_line): once per key (a day) on this device
+  const pw=d.payweek;if(pw&&typeof pw.text==='string'&&typeof pw.key==='string'){let k='';try{k=localStorage.getItem(PAYWEEK)||'';}catch{k=pw.key;}
+    if(k!==pw.key){write(PAYWEEK,pw.key);queue.push({id:0,text:pw.text.slice(0,200)});}}
   if(Array.isArray(d.radio)){const t=Date.now();
     for(const r of d.radio.slice(0,8)){if(!r||typeof r.text!=='string'||typeof r.id!=='string'||!(Number(r.until)*1000>t))continue;
       const gap=Math.max(60,Number(r.replay)||480)*1000,last=AIRED.get(r.id)||0;
