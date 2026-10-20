@@ -17,6 +17,7 @@ from pathlib import Path
 from game import pg_schema
 from game.engine import validate_state
 from tests.test_wed_services import WedBase
+from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 as the stored text leaves them out
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = 'a808cb79'   # 2.4.66
@@ -131,7 +132,7 @@ store.close_pool()
         saves = [self.state(t) for t in (self.a, self.b, self.hoa)]
         for s in saves:
             validate_state(s)
-        got = self.run_old(SAVES, stdin=json.dumps(saves))
+        got = self.run_old(SAVES, stdin=json.dumps([unknown_out(x) for x in saves]))
         for (before, after, keys), s in zip(got, saves):
             self.assertEqual(before, after)
             self.assertEqual(keys, sorted(s), 'no new save key')
