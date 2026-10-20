@@ -270,7 +270,7 @@ async function onClick(op,d,el){
     case'color':if(S.form){S.form.color=d.c;render();}else await post('set',{color:d.c},el);return;
     case'motto':{const v=S.dlg.querySelector('input[name="bg-motto"]')?.value||'';await post('set',{motto:v},el);return;}
     case'leave':if(!armed('leave'))return;await post('leave',{confirm:true},el);return;
-    case'disband':{const v=S.dlg.querySelector('input[name="bg-disband"]')?.value||'';if(!armed('disband'))return;await post('disband',{confirm:true,name:v},el);return;}
+    case'disband':{if(!armed('disband'))return;await post('disband',{confirm:true},el);return;}
     case'found':{
       const f=S.form;if(!f)return;if(!armed('found'))return;
       const r=await command('jr_bang_found',{name:String(f.name||'').trim(),emoji:f.emoji,color:f.color,motto:String(f.motto||'').trim(),open:!!f.open,confirm:true},el);
@@ -730,7 +730,7 @@ function moreTab(){
   const rules=rank(me.role)>=4?rulesCard():(c.req||[]).length||modeOf(c)!=='auto'?`<section class="sd-card"><h3>🚪 Cách nhận người</h3><p>${esc(MODES[modeOf(c)])}</p>${reqLine(c)}</section>`:'';
   set=rules+set;
   const wait=CAT().rejoin_hours?` Rời rồi ${CAT().rejoin_hours} giờ sau mới vào được bang khác (quay lại bang này thì được ngay).`:'';
-  const leave=lead?`<section class="sd-card bg-danger"><h3>Giải tán bang</h3><p class="tp-note">Bang chủ rời bang bằng cách giải tán, không cần trao chức. Mọi thành viên ra khỏi bang (họ vào bang khác được ngay). Quỹ ${fmt(p.fund)} xu bị đốt, không trả lại ai. Gõ đúng tên bang để giải tán.</p><div class="bg-code"><input name="bg-disband" placeholder="${esc(c.name)}" autocomplete="off">${btn('disband',S.arm==='disband'?'Bấm lần nữa':'Giải tán','','btn ghost bg-kick')}</div></section>`:`<section class="sd-card"><h3>Rời bang</h3><p class="tp-note">Điểm và đồ bang vẫn giữ nếu quay lại. Rời là mất danh hiệu ngay.${wait}</p>${btn('leave',S.arm==='leave'?'Bấm lần nữa để rời':'Rời bang','','btn ghost bg-kick')}</section>`;
+  const leave=lead?`<section class="sd-card bg-danger"><h3>Giải tán bang</h3><p class="tp-note">Bang chủ rời bang bằng cách giải tán, không cần trao chức. Mọi thành viên ra khỏi bang (họ vào bang khác được ngay). Quỹ ${fmt(p.fund)} xu bị đốt, không trả lại ai.</p>${btn('disband',S.arm==='disband'?'Bấm lần nữa để giải tán':'Giải tán bang','','btn ghost bg-kick')}</section>`:`<section class="sd-card"><h3>Rời bang</h3><p class="tp-note">Điểm và đồ bang vẫn giữ nếu quay lại. Rời là mất danh hiệu ngay.${wait}</p>${btn('leave',S.arm==='leave'?'Bấm lần nữa để rời':'Rời bang','','btn ghost bg-kick')}</section>`;
   const tag=`<section class="sd-card"><h3>🏷️ Thẻ tên của bạn</h3><p>${chip({n:c.name,e:c.emoji,c:c.color,r:me.role,k:p.crowned?1:0},false)}</p><p class="tp-note">Hiện cạnh tên bạn trên bản đồ, trong chat và hồ sơ: ${esc(tagLine({n:c.name,e:c.emoji,c:c.color,r:me.role}))}.</p></section>`;
   return tag+set+leave;
 }

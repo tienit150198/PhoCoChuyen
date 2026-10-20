@@ -1799,8 +1799,11 @@ def _op_rules(db, sid, data, t):
 
 def _op_disband(db, sid, data, t):
     bang, me = _officer(db, sid, 5)
-    need(data.get('confirm') is True and data.get('name') == bang['name'],
-         f'Gõ đúng tên bang "{bang["name"]}" để giải tán. Quỹ {fmt(bang["fund"])} xu sẽ mất, không trả lại ai.', 'confirm')
+    # owner 21/10 "cho phép giải tán luôn": a confirmation is enough (the client asks for a second tap); a name sent by an
+    # older client still has to be this bang's, read like the uniqueness key (case, spaces and diacritics ignored)
+    name = data.get('name')
+    need(data.get('confirm') is True and (name is None or name == '' or name_key(name) == name_key(bang['name'])),
+         f'Xác nhận giải tán bang {bang["name"]}. Quỹ {fmt(bang["fund"])} xu sẽ mất, không trả lại ai.', 'confirm')
     _disband(db, bang, sid, t, 'Bang chủ giải tán bang.')
     return dict(message=f'Bang {bang["name"]} đã giải tán. Quỹ không trả lại (đã đốt).')
 

@@ -84,6 +84,16 @@ class Rejoin(Base):
         self.found(self.a, 'Rồng Xanh')                                       # and so is the leader
         self.assertEqual(self.mine(self.a)['role'], 'chu')
 
+    def test_disband_needs_only_a_confirmation(self):
+        self.refused_op(self.a, 'disband', 'confirm')                         # a tap alone is not enough
+        self.refused_op(self.a, 'disband', 'confirm', confirm=True, name='Hổ Xám')   # an older client: another bang's name
+        self.op(self.a, 'disband', confirm=True)                              # the new client: the second tap
+        self.assertIsNone(self.mine(self.a))
+
+    def test_an_older_client_name_is_read_loosely(self):
+        self.op(self.c, 'disband', confirm=True, name='  hổ xám ')            # case, spaces, diacritics as typed on a phone
+        self.assertIsNone(self.mine(self.c))
+
     def test_off_switch(self):
         with patch.dict(os.environ, {'MNL_BANG_REJOIN_HOURS': '0'}):
             self.op(self.b, 'join', bang=self.other)                          # the old free switch

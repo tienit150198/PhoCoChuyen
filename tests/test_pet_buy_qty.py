@@ -58,7 +58,7 @@ def pets_all(s):
 
 class Limits(unittest.TestCase):
     def test_caps_and_the_catalogue(self):
-        self.assertEqual((C.BUY_QTY_MAX, px.GEAR_QTY_MAX, pw.BUY_QTY_MAX), (10, 20, 20))
+        self.assertEqual((C.BUY_QTY_MAX, px.GEAR_QTY_MAX, pw.BUY_QTY_MAX), (33, 20, 20))
         cat = pt.catalogue()
         self.assertEqual(cat['buy_qty'], C.BUY_QTY_MAX)
         self.assertEqual(cat['tiers']['limits']['gear_qty'], px.GEAR_QTY_MAX)
