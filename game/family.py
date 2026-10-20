@@ -3,6 +3,12 @@
 Personal journey.household children/pets are never changed. On separation each
 parent keeps an independent copy here; deleting an account removes only its copy.
 Home ownership, mortgages and furniture remain with their original owners.
+
+🏥 21/10 (owner: "sinh con … phải mất tiền ra … Thay luồng nhận con như hiện tại luôn"): a NEW shared child comes
+through game/birth.py (a paid birth room, NPC or a player's, or the adoption paperwork fee; both spouses agree first).
+family_child_request no longer creates a free request (an older client is told to reload); an old free request that
+was pending at the deploy is still accepted exactly as before (_child, BIRTH_WAIT_DAYS). Existing children and custody
+copies are never touched.
 """
 from __future__ import annotations
 
@@ -11,7 +17,7 @@ import hashlib
 import json
 import re
 
-from . import household as hh, housing as hs, marriage as mr, archive as ar, cradle as cr
+from . import household as hh, housing as hs, marriage as mr, archive as ar, cradle as cr, birth as bt
 from .engine import GameError, migrate_state, validate_state
 
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -56,7 +62,7 @@ def _public(data, child_id, personal=False):
     age = 0 if waiting else cr.calendar_age(m['born'], today())   # 👶 how the baby is drawn (game/cradle.py)
     return dict(id=child_id, name=m['name'], kind='child', emoji='👶', origin=m['origin'], born=m['born'], waiting=waiting,
                 age=age, grow=cr.grow(age),
-                personal=personal, care_days=days, stage='Chờ đón bé' if waiting else 'Em bé' if days < 5 else 'Bé tập đi' if days < 20 else 'Bé đi học',
+                personal=personal, birth=bt.valid_birth(m.get('birth')), care_days=days, stage='Chờ đón bé' if waiting else 'Em bé' if days < 5 else 'Bé tập đi' if days < 20 else 'Bé đi học',
                 bond=m['bond'], needs={k:m[k] for k in ('food','clean','joy')}, outfit=m['outfit'], owned=m['owned'],
                 acts=[dict(id=k, **x, done=waiting or x['slot'] in done) for k,x in hh.ACTS.items() if 'child' in x['kinds']])
 
@@ -69,6 +75,7 @@ def view(db, sid, c, state):
                outfits=[dict(id=k, **v) for k,v in hh.OUTFITS.items()])
     for r in db.execute('SELECT child,state FROM family_custody WHERE sid=? ORDER BY child', (sid,)):
         out['copies'].append(_public(json.loads(r['state']), f'copy:{r["child"]}', True))
+    out['birth'] = bt.public(db, sid, c, state)   # 🏥 prices, rooms, the booking (game/birth.py)
     if not c or c['status'] != 'married':
         return out
     child = db.execute('SELECT state FROM family_children WHERE couple=?', (c['id'],)).fetchone()
@@ -104,6 +111,7 @@ def babies(store, token) -> dict:
         if not sid:
             return {}
         out = dict(day=today(), child=None, copies=[], acts=cr.catalog())
+        bt.settle_due(store, sid)   # 🏥 a birth whose hours are over: the baby is home now (once)
         with store.connect() as db:
             for r in db.execute('SELECT child,state FROM family_custody WHERE sid=? ORDER BY child', (sid,)):
                 out['copies'].append(_public(json.loads(r['state']), f'copy:{r["child"]}', True))
@@ -136,10 +144,14 @@ def act(store, sid, op, p):
     with store.connect() as db:
         snapshot = mr._bond(db,sid)
     shared = p.get('child','shared') == 'shared'
-    needs_couple = op in ('family_child_request','family_home_request','family_answer','family_cancel','family_home_leave') or shared
+    solo = op in bt.SOLO   # 🏥 a provider's room, a nurse joining a birth: their own save only
+    # 🏥 a booking or an adoption is the married couple's whatever `child` says (an engaged pair never adopts); only the
+    # care of a personal custody copy ('copy:N') needs no couple
+    needs_couple = not solo and (op in ('family_child_request','family_home_request','family_answer','family_cancel','family_home_leave')
+                                 or op in bt.COUPLE or shared)
     if needs_couple:
         _need(snapshot and snapshot['status']=='married', 'Cần kết hôn để dùng gia đình chung.', 'not_married',409)
-    members = sorted({sid, mr._other(snapshot,sid)} if snapshot and snapshot['status']=='married' else {sid})
+    members = sorted({sid, mr._other(snapshot,sid)} if snapshot and snapshot['status']=='married' and not solo else {sid})
 
     def run(db):
         from .storage import _archive_rows
@@ -173,12 +185,14 @@ def act(store, sid, op, p):
 
 def _apply(db,sid,c,states,op,p,rid,changed):
     state = states[sid]
+    if op in bt.OPS:   # 🏥 the paid birth room and the adoption fee (game/birth.py)
+        return bt.apply(db,sid,c,states,op,p,rid,changed)
     if op in ('family_child_request','family_home_request'):
         other = mr._other(c,sid)
         kind = 'child' if op=='family_child_request' else 'home'
         _need(all(bool((s.get('journey') or {}).get('story')) for s in states.values()),'Cả hai cần mở hành trình.','locked')
-        if kind=='child':
-            _need(_ready(state) and _ready(states[other]), 'Cả hai mở hành trình đến ngày sống 10 trước nhé.', 'locked')
+        if kind=='child':   # 🏥 21/10: a new child is booked (game/birth.py); only an old pending request is still answered
+            _need(False, 'Đón con giờ cần đặt phòng sinh hoặc làm giấy tờ nhận nuôi. Tải lại trang để xem cách mới nhé.', 'new_flow', 409)
         _need(not db.execute("SELECT 1 FROM family_requests WHERE couple=? AND kind=? AND status='pending'",(c['id'],kind)).fetchone(), 'Đã có lời mời đang chờ trả lời.', 'pending',409)
         if kind=='child':
             _need(not db.execute('SELECT 1 FROM family_children WHERE couple=?',(c['id'],)).fetchone(), 'Hai bạn đã có con chung.', 'already_owned',409)
@@ -293,6 +307,7 @@ def end(db,c,deleted=None):
                 db.execute('INSERT INTO family_custody(child,sid,state) VALUES(?,?,?) ON CONFLICT DO NOTHING',(c['id'],sid,child['state']))
         db.execute('DELETE FROM family_children WHERE couple=?',(c['id'],))
     db.execute("UPDATE family_requests SET status='cancelled' WHERE couple=? AND status='pending'",(c['id'],))
+    bt.end(db, c, deleted)   # 🏥 an open booking closes, money paid goes back to the payer
     if deleted:
         forget(db, deleted)
 
@@ -301,8 +316,9 @@ def forget(db, sid):
     db.execute('DELETE FROM family_custody WHERE sid=?',(sid,))
     db.execute('DELETE FROM family_requests WHERE from_sid=? OR to_sid=?',(sid,sid))
     db.execute('DELETE FROM family_receipts WHERE sid=?',(sid,))
+    bt.forget(db, sid)
 
 
 ACTIONS={name:(lambda store,sid,display,p,op=name:act(store,sid,op,p)) for name in (
     'family_child_request','family_home_request','family_answer','family_cancel','family_home_leave',
-    'family_child_care','family_child_style','family_child_rename','family_child_moment')}
+    'family_child_care','family_child_style','family_child_rename','family_child_moment', *bt.OPS)}

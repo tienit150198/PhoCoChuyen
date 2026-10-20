@@ -10,6 +10,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {myPortrait} from './look.js';
 import {confirmPurchase} from './payment.js';
 import {familyView,familyAction,familyRefresh} from './family.js';
+import {birthClock} from './birth.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox} from '../qty-input.js';
 
@@ -79,6 +80,7 @@ export async function openMarriage(env,tab,section){
 export async function marriageAction(action,data,el,env){
   if(action!=='marriage'&&action!=='friends')return false;
   // "Hôn nhân" never reopens on the Bạn bè tab (a pending proposal would stay hidden there).
+  if(data?.room!=null&&data.room!==''){S.family.mode='birth';S.family.where=String(data.room);}   // 🛎️ Phố dịch vụ: that player's birth room preselected
   await openMarriage(env,action==='friends'?'friends':data?.tab||(S.tab==='friends'?'home':''),data?.section);return true;
 }
 
@@ -100,7 +102,7 @@ function take(view){
   S.view=view;
   const h=view.home||{};
   const alerts=view.guest?0:(view.incoming?.length||0)+(view.me?.notice?1:0)+(view.wedding&&view.wedding.status==='proposed'&&!view.wedding.mine?1:0)+(view.wedding?.status==='done'&&!view.wedding.seen?1:0)
-    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length;
+    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length+(view.family?.birth?.stay?.can_answer?1:0);
   badges(alerts,view.friends?.incoming?.length||0);
   const married=view.couple?.status==='married';
   if(['fund','love'].includes(S.tab)&&!married)S.tab='home';
@@ -228,8 +230,8 @@ const clampTables=n=>{const max=venueOf(S.plan.venue).max_tables;return Math.max
 
 async function onClick(mr,data,el){
   if(S.busy&&mr.startsWith('fam:'))return;
-  if(mr==='fam:request'||mr==='fam:rename'){const field=el.closest('section')?.querySelector('input[data-mr-field]');if(field&&!field.value.trim()){field.value='';field.reportValidity();return;}}
-  if(await familyAction(mr,data,{env:S.env,family:S.view?.family,form:S.family,post}))return;
+  if(mr==='fam:request'||mr==='fam:rename'||mr==='fam:birth-book'){const field=el.closest('section')?.querySelector('input[data-mr-field]');if(field&&!field.value.trim()){field.value='';field.reportValidity();return;}}
+  if(await familyAction(mr,data,{env:S.env,family:S.view?.family,form:S.family,post,render}))return;
   const {env}=S;
   switch(mr){
     case'close':S.dlg.close();return;
@@ -248,6 +250,7 @@ async function onClick(mr,data,el){
     case'seen':post('seen',data.wedding?{wedding:Number(data.wedding)}:{},{quiet:true});return;
     case'party':post('party',{at:S.partyAt||partyDefault()});return;
     case'pinvite':post('party_invite');return;
+    case'wedsvc':S.dlg.close();import('./wed-services.js').then(m=>m.openWedServices(env,{tab:'couple'})).catch(e=>console.warn('marriage: wedsvc',e));return;
     case'wedinv':S.dlg.close();import('./wedinvite.js').then(m=>m.openWedInvite(env)).catch(e=>console.warn('marriage: wedinvite',e));return;
     case'pgo':S.dlg.close();import('./walk.js').then(m=>m.openWalk(env,{wedding:Number(data.id)})).catch(e=>console.warn('marriage: walk',e));return;
     case'ring_buy':{
@@ -375,8 +378,9 @@ function keepFocus(fn){
 function render(){
   if(!S.dlg)return;
   keepFocus(()=>{S.dlg.querySelector('.mr-root').innerHTML=page();});
+  if(S.tab==='family')birthClock(S.dlg);   // 🏥 the birth room's countdown ticks between polls
   S.dlg.setAttribute('aria-busy',String(S.busy||S.loading));
-  if(S.familySection&&!S.loading&&S.tab==='family'){const section=S.familySection==='children'?'children':'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
+  if(S.familySection&&!S.loading&&S.tab==='family'){const section=['children','room'].includes(S.familySection)?S.familySection:'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
 }
 function head(sub){
   return `<header class="sheet-head"><div class="grow"><span class="eyebrow">PHỐ CÓ CHUYỆN</span><h2 id="mr-title">${S.tab==='friends'?'👥 Bạn bè':S.tab==='family'?'🏡 Nhà &amp; Gia đình':'💍 Hôn nhân'}</h2><p>${sub}</p></div>
@@ -392,7 +396,7 @@ function page(){
   const c=v.couple,engaged=c?.status==='engaged',married=c?.status==='married';
   const fn=v.friends?.incoming?.length||0,hn=(v.home?.moments||[]).filter(m=>m.new).length,rq=(v.home?.requests||[]).filter(r=>!r.mine).length+(v.home?.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length;
   const dot=n=>n?` <em class="mr-dot">${n}</em>`:'';
-  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length)}`],['home','💍 Hai bạn'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
+  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length+(v.family?.birth?.stay?.can_answer?1:0))}`],['home','💍 Hai bạn'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
     :engaged?[['family','🏡 Nhà & Gia đình'],['home','💞 Hai bạn'],['plan','📋 Kế hoạch cưới'],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
     :[['family','🏡 Nhà & Gia đình'],['friends',`👥 Bạn bè${dot(fn)}`],['home',`💌 Cầu hôn${dot(v.incoming.length)}`],['shop','💍 Tiệm nhẫn']];
   if(!tabs.some(([id])=>id===S.tab))S.tab='home';
@@ -563,7 +567,17 @@ function couple(){
     <label class="field" for="mr-confirm">Gõ <b>${word}</b> để xác nhận<input class="input" id="mr-confirm" data-mr-field="confirm" value="${esc(S.confirm)}" autocomplete="off" spellcheck="false"></label>
     ${btn(married?'Ly hôn':'Hủy hôn ước','divorce',{},'danger',S.confirm.trim()?'':' disabled')}</details>`;
   const split=married?`<p class="mr-hint">Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.</p>`:'';
-  return `${notice()}${top}${married?`<section class="mr-card"><h3>🏡 Nhà &amp; Gia đình</h3><p>${(v.family?.requests||[]).some(r=>!r.mine)?'Có lời mời đang chờ bạn trả lời.':'Vào nhà, mời người ấy về ở và cùng chăm con.'}</p>${btn('Mở Nhà & Gia đình','tab',{tab:'family'},'primary')}</section>`:''}${partyCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
+  return `${notice()}${top}${married?`<section class="mr-card"><h3>🏡 Nhà &amp; Gia đình</h3><p>${(v.family?.requests||[]).some(r=>!r.mine)?'Có lời mời đang chờ bạn trả lời.':'Vào nhà, mời người ấy về ở và cùng chăm con.'}</p>${btn('Mở Nhà & Gia đình','tab',{tab:'family'},'primary')}</section>`:''}${partyCard(c)}${wedsvcCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
+}
+/** 💒 Dịch vụ cưới từ người chơi (v4/wed-services.js, game/wed_services.py): who serves the wedding, and the way to hire
+ * them. Hidden on an older server (no couple.wedsvc) and once the party is over with nobody hired. */
+function wedsvcCard(c){
+  const list=c.wedsvc;if(!Array.isArray(list))return '';
+  const over=c.status==='married'&&(!c.party||c.party.state==='done');
+  if(over&&!list.length)return '';
+  const rows=list.map(x=>`<li class="${esc(x.state)}"><span aria-hidden="true">${esc(x.icon)}</span><div class="grow"><b>${esc(x.line)}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}</div><small>${x.state==='done'?(x.stars?'★'.repeat(x.stars):'✅'):'⏳'}</small></li>`).join('');
+  return `<section class="mr-card mr-wedsvc"><h3>💒 Dịch vụ cưới từ người chơi</h3>${rows?`<ul class="mr-team">${rows}</ul>`:'<p>Thuê bạn bè làm nghề tiệc, hoa, váy cưới, trang điểm, chụp ảnh cho đám cưới của hai bạn. Không thuê ai thì cưới với NPC như kế hoạch.</p>'}
+    ${over?'':`<div class="mr-actions">${btn(rows?'Xem & thuê thêm':'💒 Thuê người chơi','wedsvc',{},rows?'cream':'primary')}</div>`}</section>`;
 }
 const viDate=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:'';};
 
@@ -585,6 +599,7 @@ function resultCard(w){
       <div class="${profit>=0?'good':'bad'}"><dt>${profit>=0?'Lời':'Lỗ'}</dt><dd>${signed(profit)}</dd></div></dl>
     <p class="mr-share">Phần của bạn (${esc(myname)}, góp ${w.side==='a'?r.split_a:100-r.split_a}%): cọc ${xu(me.deposit)}, trả nốt ${xu(me.balance)}, nhận mừng ${xu(me.gift)}${me.late?` + ${xu(me.late)} gửi sau`:''} → <b class="${me.net>=0?'good':'bad'}">${signed(me.net)}</b>. ${esc(pname)} nhận phần còn lại.</p>
     ${close}${hl}${groups?`<h4>Khách mời</h4>${groups}`:''}
+    ${r.services?.length?`<h4>💒 Đội ngũ người chơi</h4><ul class="mr-team">${r.services.map(x=>`<li><span aria-hidden="true">${esc(x.icon)}</span><div class="grow"><b>${esc(x.line)}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}</div><small>${x.stars?'★'.repeat(x.stars):''}</small></li>`).join('')}</ul>`:''}
     <h4>Lời chúc</h4><ul class="mr-speeches">${r.speeches.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><p class="mr-gossip">${esc(r.gossip)}</p></article>`;
 }
 

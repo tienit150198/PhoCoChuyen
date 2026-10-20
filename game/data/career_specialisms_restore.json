@@ -1,0 +1,244 @@
+{
+  "restore": [
+    {
+      "tier": 1,
+      "title": "Lập phiếu khám dấu hiệu hư hỏng",
+      "output_unit": "phiếu khám đồ",
+      "inputs": [
+        {
+          "name": "Bộ phiếu khám đồ hư cấu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi từng dấu hiệu nhìn thấy: nứt, gỉ, mọt, bong sơn, lỏng mộng trên món đồ giả lập.",
+        "Đánh số vị trí từng chỗ hư trên hình phác món đồ.",
+        "Cho chủ xưởng ký xác nhận phiếu trước khi báo giá."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được nghiệm thu?",
+        "good": "Mỗi chỗ hư có dấu hiệu, vị trí và tên hư hỏng riêng.",
+        "bad": "Ghi chung chung “đồ cũ, hư nhiều chỗ”.",
+        "why": "Có gọi đúng tên từng chỗ hư thì mới chọn được cách sửa đúng."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Chốt yêu cầu khách bằng phiếu ký",
+      "output_unit": "phiếu yêu cầu khách",
+      "inputs": [
+        {
+          "name": "Mẫu phiếu yêu cầu hư cấu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi điều khách muốn giữ lại và điều khách muốn làm mới, từng dòng một.",
+        "Ghi rõ phần nào sẽ mất lớp gốc nếu làm mới.",
+        "Mời khách đọc lại và ký trước khi nhận đồ."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Khách ký sau khi đọc rõ phần sẽ giữ và phần sẽ mất lớp gốc.",
+        "bad": "Nhận đồ trước, hỏi khách muốn gì sau.",
+        "why": "Yêu cầu chốt trước bằng chữ thì không cãi nhau lúc trả đồ."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Ghi tuổi thật của món đồ",
+      "output_unit": "biên bản tuổi đồ",
+      "inputs": [
+        {
+          "name": "Bộ tem nhà máy mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Tìm tem, dấu thợ và kiểu ốc vít trên món đồ giả lập.",
+        "So với bảng mốc kiểu dáng để ước tuổi đồ.",
+        "Ghi tuổi theo dấu vết, không theo lời kể, rồi báo khách nhẹ nhàng."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được duyệt?",
+        "good": "Tuổi đồ ghi theo tem và dấu vết, có ảnh kèm.",
+        "bad": "Ghi “trăm năm” vì khách nói vậy.",
+        "why": "Ghi đúng tuổi đồ là giữ uy tín cho cả xưởng lẫn khách."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Sổ linh kiện chế lại",
+      "output_unit": "sổ linh kiện",
+      "inputs": [
+        {
+          "name": "Phôi linh kiện cùng vật liệu mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Liệt kê linh kiện còn trong ngăn và linh kiện phải chế lại.",
+        "Chế lại từ vật liệu cùng loại, ghi nguồn và ngày làm.",
+        "Đánh dấu linh kiện chế lại trên biên bản bàn giao."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Linh kiện chế lại có ghi vật liệu, nguồn và ghi chú trên phiếu.",
+        "bad": "Tháo tạm linh kiện từ đồ của khách khác.",
+        "why": "Đồ của khách nào thì linh kiện của khách đó, không bao giờ tháo đồ người khác."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Bảng làm sạch theo chất liệu",
+      "output_unit": "bảng làm sạch",
+      "inputs": [
+        {
+          "name": "Bộ dụng cụ làm sạch mô phỏng",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Chia món đồ theo chất liệu: gỗ, kim loại, gốm, vải, giấy, da, mây.",
+        "Gán cách làm sạch nhẹ nhất cho từng chất liệu.",
+        "Thử trên một góc khuất trước khi làm cả món."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi chất liệu một cách làm sạch nhẹ, có thử góc khuất trước.",
+        "bad": "Xịt nước áp lực cho sạch hẳn mọi món.",
+        "why": "Làm sạch quá tay là mất luôn lớp gốc của món đồ."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Quy trình trị mọt đồ gỗ",
+      "output_unit": "phiếu trị mọt",
+      "inputs": [
+        {
+          "name": "Thuốc trị mọt mô phỏng",
+          "unit": "chai",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Khoanh vùng lỗ mọt và bột gỗ trên món đồ giả lập.",
+        "Bơm thuốc theo từng lỗ, bọc kín và để đủ thời gian.",
+        "Trám bột gỗ cùng màu rồi kiểm lại sau một tuần."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Lỗ mọt được bơm thuốc, bọc kín, trám cùng màu và hẹn kiểm lại.",
+        "bad": "Sơn đè lên lỗ mọt cho kín.",
+        "why": "Sơn đè không diệt mọt, mọt vẫn ăn từ bên trong."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Làm lại mộng gỗ không đinh",
+      "output_unit": "bản vẽ mộng gỗ",
+      "inputs": [
+        {
+          "name": "Bộ đục và phôi mộng mô phỏng",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Tháo mộng lỏng, đo lại độ hở từng mộng.",
+        "Đẽo chốt mới cùng loại gỗ, lắp khít không bắn đinh.",
+        "Kẹp giữ đủ thời gian keo khô rồi thử lắc."
+      ],
+      "check": {
+        "prompt": "Bản vẽ nào được duyệt?",
+        "good": "Mộng làm lại khít bằng chốt gỗ, không một cây đinh.",
+        "bad": "Bắn đinh xuyên mộng cho nhanh chắc.",
+        "why": "Đinh làm nứt gỗ cũ và phá cách ghép của người thợ xưa."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Hoàn thiện giữ dấu thời gian",
+      "output_unit": "bảng hoàn thiện",
+      "inputs": [
+        {
+          "name": "Sáp ong phục chế",
+          "unit": "hộp",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Ghi vết xước, vết mòn khách muốn giữ lại.",
+        "Phủ sáp mỏng nhiều lớp, chừa nguyên những vết đã chốt.",
+        "Chụp ảnh trước và sau đặt cạnh nhau cho khách xem."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Vết kỷ niệm còn nguyên, lớp sáp bảo vệ quanh vết.",
+        "bad": "Chà nhám hết cho mặt gỗ láng như mới.",
+        "why": "Có những vết xước là kỷ niệm, giữ lại mới là phục chế."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Biên bản phục chế cho bảo tàng phường",
+      "output_unit": "biên bản phục chế",
+      "inputs": [
+        {
+          "name": "Mẫu biên bản trưng bày hư cấu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Liệt kê phần còn gốc và phần đã chế lại, kèm ảnh.",
+        "Ghi vật liệu, cách làm và ngày làm từng hạng mục.",
+        "Ký tên thợ, không ghi “nguyên bản trăm phần trăm”."
+      ],
+      "check": {
+        "prompt": "Biên bản nào được nhận?",
+        "good": "Ghi rõ phần gốc và phần chế lại, có ảnh và chữ ký thợ.",
+        "bad": "Ký “nguyên bản 100%” cho bảo tàng vui.",
+        "why": "Một biên bản thật thà giữ được niềm tin của người xem."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Từ chối làm giả đồ cổ",
+      "output_unit": "phiếu từ chối",
+      "inputs": [
+        {
+          "name": "Mẫu phiếu từ chối dịch vụ hư cấu",
+          "unit": "xấp",
+          "quantity": 1,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Nghe yêu cầu làm cũ, đóng dấu giả của khách.",
+        "Giải thích xưởng chỉ phục chế và ghi đúng tuổi đồ.",
+        "Đề nghị dịch vụ phục chế thật, ghi lại cuộc trao đổi."
+      ],
+      "check": {
+        "prompt": "Cách xử lý nào đạt?",
+        "good": "Từ chối làm giả, đề nghị phục chế thật và ghi đúng tuổi đồ.",
+        "bad": "Đóng dấu giả rồi chia lời với thương lái.",
+        "why": "Làm giả đồ cổ là lừa người mua, xưởng không bao giờ làm."
+      }
+    }
+  ]
+}

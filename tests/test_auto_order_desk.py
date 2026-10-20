@@ -16,6 +16,7 @@ from pathlib import Path
 
 from game import auto_order as ao, business, engine
 from game.engine import GameError, apply_action, public_state, validate_state
+from tests.helpers import unknown_out   # 🔑 careers newer than 2.4.66 (reception, teller) as the stored text leaves them out
 from tests.helpers import Journey
 from tests.test_inventory_flow import set_money
 
@@ -276,7 +277,7 @@ class Rollback(unittest.TestCase):
                 'import game;print(json.dumps([game.__version__,out]))')
         env = {k: v for k, v in os.environ.items() if k != 'MNL_CAREERS'}
         env['PYTHONPATH'] = old
-        got = subprocess.run([sys.executable, '-c', prog], input=json.dumps(saves), capture_output=True, text=True,
+        got = subprocess.run([sys.executable, '-c', prog], input=json.dumps([unknown_out(x) for x in saves]), capture_output=True, text=True,
                              cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(got.returncode, 0, got.stderr[-3000:])
         version, keys = json.loads(got.stdout)

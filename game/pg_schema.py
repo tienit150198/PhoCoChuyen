@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 73  # 73: 📜 Nội quy bang, a bang's two rules texts (bang_code: one row per bang and kind, 'pub' 📢 the public rules shown outside the bang (the list, its page; what an applicant agrees to before joining) and 'in' 📜 the members-only rules, the text, its version (compare-and-set edits, the version an applicant saw), who and when, an admin hide that keeps the text; bang_code_hist: every edit, hide and show with the text of that version, append-only, the edits' rate limit; bang_code_seen: the versions each member has read (the 📜 Nội quy mới badge) and the public version they agreed to when joining or asking: game/bang_code.py; new tables and indexes only, no FK, no backfill, no save key: 2.4.66 never reads them, owner 21/10 "thiếu nội quy bang rồi", "công bố bên ngoài thì có nội quy bang riêng nữa, có text và giới hạn chữ"; 67–72: other branches' steps); 63–72: steps of the careers release, shipped later (their tables are created then); 62: 🏝️ Đảo bang bought and upgraded from the fund (bangs.isle, isle_to, isle_started, isle_ready, isle_paid, isle_how: columns added with ADD COLUMN IF NOT EXISTS, constant defaults, no rewrite, no backfill; isle's default 1 is the grant: every bang written without it (before this release, or by a 2.4.64 process during the rollout) holds cấp 1 for free, a bang founded from now on is written with 0 and buys it; 2.4.64 never reads these columns, owner 21/10); 61: ⚔️ Thách đấu bang, bang against bang with pets any day (bang_chal_roster: a bang's standing roster, one pet a member in the order its officers set; bang_chal_team: a bang's challenge Elo, record and how it takes challenges; bang_chal: every challenge, open → done | declined | cancelled | expired, a played one with its five duels: game/bang_challenge.py; pet_power: each player's strongest pet power, the 💪 Chiến lực of the bang ranking, owner 21/10 "top bang thì bằng cách cống hiến và tính điểm chiến lực bằng pets": game/pet_arena.py power_commit, game/bang.py standings; new tables and indexes only, no FK, no backfill, no save key: 2.4.64 and older never read them, owner 21/10); 60: ⚔️ a bang's join rules (bangs.rules: join mode đóng / cần duyệt / tự động duyệt and the optional requirements, a JSON text column added with ADD COLUMN IF NOT EXISTS and a constant default '{}': no rewrite, no backfill; 2.4.60 never reads the bang tables, owner 20/10); 59: review fixes of the 19/10 integration (archive tables bang_log_old, bang_points_old, bang_stints_old, pet_arena_matches_old: rows past their keep are moved there by the housekeeping, never dropped; indexes bang_stints_bang_joined, bang_stints_left, bang_log_at, bang_points_at, pet_arena_matches_at for the Giờ vàng snapshot and those cheap batched moves; new tables and indexes only, no FK, no backfill, no save key: 2.4.60 and older never read them); 58: ⚔️ Đấu trường pet, 🏟️ Giải đấu pet tuần, 🛡️ Bang chiến pet (pet_arena, pet_arena_season, pet_arena_matches, pet_cup, pet_cup_entries, pet_war, pet_war_picks, pet_war_matches, pet_team_ladder, pet_team_rating: game/pet_arena.py, game/pet_cup.py, game/pet_war.py; new tables and indexes only, no FK, no backfill, no save key: 2.4.60 and older never read them, owner 19/10); 57: ⚔️ Bang, player guilds (bangs, bang_members, bang_stints, bang_asks, bang_fund, bang_points, bang_facilities, bang_items, bang_gh, bang_log, bang_week_win: game/bang.py, live/bangs.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 56: 🏗️ Xây trên đảo + 🌍 đảo mở cửa (island_builds: the buildings on private islands, a copy of journey.islb written in the save's transaction; island_public, island_visitors: islands open to everyone and their visitors: game/island_build.py, game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 75  # 75: review fixes of the 22/10 careers integration, new indexes only on this release's own tables (svc_orders_due_all: every due timer and money step of Phố dịch vụ, 'refund' included; svc_orders_working: 🏨 stays waiting for their row; svc_orders_buyer_alert: a buyer's talks and deliveries; birth_stays_pair: a player birth room in the market's pair caps; no FK, no backfill, nothing dropped, no save key); 74: 🎪 Hội chợ việc làm, a weekly town fair where every career opens a booth player to player (fair_events: one row per fair, weekly or opened by an admin, open → final with its leaderboard snapshot archived in the row, never deleted; fair_booths: one booth per player and fair, its career, the fair discount −10…−30 % on the provider's own Phố dịch vụ prices (never below the floor / NPC base: game/service_market.py quote), its mood (điểm gian hàng) from the shows and the oái oăm moments; fair_stamps: one 🎟️ stamp per visitor, fair and career (a completed order at that booth, or a show watched); fair_rewards: one row per visitor, fair and stamp tier (exactly once); fair_config: the admin's weekly switch and a one-off fair: game/town_fair.py; money stays svc_orders' (63), rewards are 🎨 Phong cách cosmetics through live_effects kind 'tfair' that 2.4.66 leaves pending; new tables and indexes only, no FK, no backfill, no save key, owner 21/10); 73: 📜 Nội quy bang, a bang's two rules texts (bang_code: one row per bang and kind, 'pub' 📢 the public rules shown outside the bang (the list, its page; what an applicant agrees to before joining) and 'in' 📜 the members-only rules, the text, its version (compare-and-set edits, the version an applicant saw), who and when, an admin hide that keeps the text; bang_code_hist: every edit, hide and show with the text of that version, append-only, the edits' rate limit; bang_code_seen: the versions each member has read (the 📜 Nội quy mới badge) and the public version they agreed to when joining or asking: game/bang_code.py; new tables and indexes only, no FK, no backfill, no save key: 2.4.66 never reads them, owner 21/10 "thiếu nội quy bang rồi", "công bố bên ngoài thì có nội quy bang riêng nữa, có text và giới hạn chữ"); 72: 🧰 Thợ phục chế, a restorer player restores another player's broken or worn things through Phố dịch vụ (restore_tickets: the thing a buyer brings, open → bound (to a svc_orders order, at the restorer's first bench step) → done (delivered) | dropped (withdrawn); a bound ticket whose order ended without delivery opens again; the bench steps and the grade: game/restore_service.py; a new table and indexes only, no FK, no backfill; save: only the optional journey.restored marks, which 2.4.66 keeps unread, owner 21/10); 71: 🔬 Đơn nghiên cứu, a Viện nghiên cứu player researches for another player (research_jobs: the three graded research steps of one Phố dịch vụ order, work → done, its quality and the name the researcher gave the result: game/research_lab.py; a new table and an index only, no FK, no backfill; save: only the optional journey.lab, which 2.4.66 keeps unread, owner 21/10); 70: 📻 Đài phát thanh Sóng Mây, players buy airtime from a radio player (radio_lines: every line a radio DJ put on the town ticker for another player, a shop ad 📢 or a song with a message 🎵, its text after moderation, its time window, hidden by the buyer, the DJ or an admin, never deleted: game/radio_station.py; the escrow and the 95/5 split stay in svc_orders (game/service_market.py); a new table and indexes only, no FK, no backfill, no save key: 2.4.66 and older never read it, owner 21/10); 69: 💒 Dịch vụ cưới từ người chơi, a couple hires other players for their wedding (wedsvc_jobs: one row per wedding order of Phố dịch vụ, the couple's brief, the provider's seven rolled work steps with their oái ăm demands, the answers, score and stars, the couple it serves: game/wed_services.py; money, escrow and the 5 % burn stay svc_orders' (63); a new table and indexes only, no FK, no backfill, no save key: 2.4.66 and older never read it, owner 21/10; 67–68: other branches' steps); 68: 🏨 Phòng cho người chơi, a homestay or hotel player rents rooms to other players through Phố dịch vụ (hotel_stays: one row per market order of a stay, booked → arrived → in → out | gone, the room, the arrival / night / check-out situations and the host's choices, the guest's satisfaction, the couple's partner and its rest step; hotel_hosts: a host's record (stays, satisfaction sum, situations handled / missed); hotel_rest: one rest a Vietnam day per player: game/hotel_stay.py; the money stays in svc_orders (63); new tables and indexes only, no FK, no backfill, no save key: the rest only moves journey.needs and journey.life.spirit values that 2.4.66 already validates, owner 21/10); 66: 📸 Chụp ảnh cho người chơi, a photographer player shoots another player (photo_studios: a photographer's prices, open flag, last network tag and record; photo_orders: every order, open → shoot → done | declined | cancelled | expired, the escrowed price, the look snapshot taken at order time and the session's shots; photos: the delivered photos (the game's own render data, no image bytes), the buyer's album (archived past 60, never deleted) and the photographer's portfolio; photo_pfp: a player's profile photo: game/photo_studio.py; new tables and indexes only, no FK, no backfill; save: only the optional journey.photo_wall, which 2.4.66 keeps unread, owner 21/10; 63–65: other branches' steps); 65: 🏥 Phòng sinh & nhận nuôi, a new shared child now costs money (birth_rooms: the birth room a homestay owner offers, one per save, price never below the 500 000 xu floor; birth_stays: every booking or adoption of a couple, proposed → booked → staying → born | declined | cancelled | refunded, at most one open per couple (partial unique index): game/birth.py; new tables and indexes only, no FK, no backfill, no save key: 2.4.66 and older never read them, owner 21/10); 63: 🛎️ Phố dịch vụ, players serve players across careers (svc_settings: a provider's offer per service, on/off, ×1–×10 or thương lượng; svc_orders: talks and escrow-backed orders talk → held → working → delivered | ready → done, refunds back in full; svc_reviews, svc_rep: ratings and each provider's reputation; svc_flags: a buyer's report within 24 h for the admin, never an automatic punishment; svc_net: keyed network tags of market users, never an address: game/service_market.py; work_service_orders.fee: the 5 % burned on a completed legacy order, ADD COLUMN IF NOT EXISTS with a constant default; work_reviews_provider index; new tables, one column and indexes only, no FK, no backfill, no save key: 2.4.66 never reads them, owner 21/10); 62: 🏝️ Đảo bang bought and upgraded from the fund (bangs.isle, isle_to, isle_started, isle_ready, isle_paid, isle_how: columns added with ADD COLUMN IF NOT EXISTS, constant defaults, no rewrite, no backfill; isle's default 1 is the grant: every bang written without it (before this release, or by a 2.4.64 process during the rollout) holds cấp 1 for free, a bang founded from now on is written with 0 and buys it; 2.4.64 never reads these columns, owner 21/10); 61: ⚔️ Thách đấu bang, bang against bang with pets any day (bang_chal_roster: a bang's standing roster, one pet a member in the order its officers set; bang_chal_team: a bang's challenge Elo, record and how it takes challenges; bang_chal: every challenge, open → done | declined | cancelled | expired, a played one with its five duels: game/bang_challenge.py; pet_power: each player's strongest pet power, the 💪 Chiến lực of the bang ranking, owner 21/10 "top bang thì bằng cách cống hiến và tính điểm chiến lực bằng pets": game/pet_arena.py power_commit, game/bang.py standings; new tables and indexes only, no FK, no backfill, no save key: 2.4.64 and older never read them, owner 21/10); 60: ⚔️ a bang's join rules (bangs.rules: join mode đóng / cần duyệt / tự động duyệt and the optional requirements, a JSON text column added with ADD COLUMN IF NOT EXISTS and a constant default '{}': no rewrite, no backfill; 2.4.60 never reads the bang tables, owner 20/10); 59: review fixes of the 19/10 integration (archive tables bang_log_old, bang_points_old, bang_stints_old, pet_arena_matches_old: rows past their keep are moved there by the housekeeping, never dropped; indexes bang_stints_bang_joined, bang_stints_left, bang_log_at, bang_points_at, pet_arena_matches_at for the Giờ vàng snapshot and those cheap batched moves; new tables and indexes only, no FK, no backfill, no save key: 2.4.60 and older never read them); 58: ⚔️ Đấu trường pet, 🏟️ Giải đấu pet tuần, 🛡️ Bang chiến pet (pet_arena, pet_arena_season, pet_arena_matches, pet_cup, pet_cup_entries, pet_war, pet_war_picks, pet_war_matches, pet_team_ladder, pet_team_rating: game/pet_arena.py, game/pet_cup.py, game/pet_war.py; new tables and indexes only, no FK, no backfill, no save key: 2.4.60 and older never read them, owner 19/10); 57: ⚔️ Bang, player guilds (bangs, bang_members, bang_stints, bang_asks, bang_fund, bang_points, bang_facilities, bang_items, bang_gh, bang_log, bang_week_win: game/bang.py, live/bangs.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 56: 🏗️ Xây trên đảo + 🌍 đảo mở cửa (island_builds: the buildings on private islands, a copy of journey.islb written in the save's transaction; island_public, island_visitors: islands open to everyone and their visitors: game/island_build.py, game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.60 and older never read them, owner 19/10); 55: 🗄️ chat_archive (Cả phố's messages past the newest 500, moved by live/chat.py prune_town; a new table only, no FK: older releases never read it, owner 17/10); 54: 🏝️ Đảo riêng trips with friends (island_trips, island_guests: game/island_trips.py, live/island.py; new tables and indexes only, no FK, no backfill: 2.4.34 and older never read them; 51 and 53: other branches' steps); 52: 🏗️ Công trình của phố (town_projects, town_gifts: game/town_projects.py; new tables and indexes only, no FK, no backfill: older releases never read them, owner 16/10); 50: 🎨 sticker packs (sticker_packs, sticker_pack_images: one pack of ≥ 12 stickers per account, owner 16/10 afternoon; new tables only); 49: 🎨 Thi làm sticker (sticker_entries, sticker_rewards: game/sticker_event.py; new tables only, no FK, owner 16/10); 48: 🛃 Hải quan across players (hq_roster: the customs ladder's seats and reviewers, game/cand_roster.py; hq_cases: warehouse inspections of players' shops, game/hq_ops.py; new tables and indexes only, no FK, no backfill: 2.4.26 and older never read them); 47: unused (the sticker contest took 49); 46: 💐 Thiệp 20/10 (ev2010_cards, ev2010_reports, ev2010_rewards: game/event2010.py; new tables only, no FK, no save key, owner 16/10 "làm 1 cái / riêng đi"); 45: 📜 old shared lời chúc on the wish trees (chua_card_marks, chua_card_prayers: 🙏 / reports / admin hide of chua_public_cards rows, game/chua_wish.py; new tables only, no FK, no backfill, owner 15/10 "đưa vào 1 cái đi"); 44: 🌳 Cây ước nguyện (chua_wishes, chua_wish_prayers: game/chua_wish.py; new tables only, owner 15/10); 43: 🏆 weekly Top lời index (fair_loss_week_win, net > 0: game/fair_loss.py view_win; index only, older releases ignore it); 42: explicit temple-card sharing (new table, no backfill); 41: 👮 the Chợ đen patrol (cand_stops.stake, cand_acts_by, cand_acts_day, cand_stops_open: game/cand_ops.py), a step of its own so a database already at 40 gains them; 40: 👮 Công an across players (cand_roster, cand_stops, cand_acts: game/cand_roster.py, game/cand_ops.py); 39: persistent unclaimed town treasure; 38: durable private feedback images; 37: shared town treasure; 36: weekly fair net-loss ledger; 35: verified competitive bark matches; 34: 🐕 Kéo co chó sủa (bark_tickets: game/dog_bark.py, live/dog_bark.py); 33: 🚔 Trại tạm giữ marks (jail_marks: game/jail.py); 32: 💌 Thiệp mời cưới cả phố (wed_invites, wed_invite_seen: game/wed_invite.py); 31: 🎨 Cho trang trí (home_deco_grants, home_deco_log: game/home_coop.py); 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -1103,6 +1103,187 @@ CREATE INDEX IF NOT EXISTS bang_chal_done ON bang_chal(answered) WHERE status='d
 CREATE TABLE IF NOT EXISTS pet_power (
   sid {T} PRIMARY KEY, pw integer NOT NULL DEFAULT 0, at double precision NOT NULL
 );
+-- 🛎️ Phố dịch vụ (game/service_market.py; SCHEMA_VERSION 63, owner 21/10 "players serve players across careers"). A
+-- provider's offer of one registered service (career, service): on/off, mode 'fixed' (unit price = NPC base × mult, 1–10)
+-- or 'nego' (the buyer offers, the provider answers), `price` the last unit price shown (the directory's sort), `note`
+-- one short line. No row: a legacy workplace order keeps ×3 at its place; a registered service is simply not offered.
+CREATE TABLE IF NOT EXISTS svc_settings (
+  provider {T} NOT NULL, pid {T} NOT NULL DEFAULT '', career {T} NOT NULL, service {T} NOT NULL, on_ integer NOT NULL DEFAULT 0,
+  mode {T} NOT NULL DEFAULT 'fixed', mult integer NOT NULL DEFAULT 3, price bigint NOT NULL DEFAULT 0,
+  note {T} NOT NULL DEFAULT '', updated_at double precision NOT NULL, PRIMARY KEY(provider, career, service)
+);
+CREATE INDEX IF NOT EXISTS svc_settings_on ON svc_settings(career, service) WHERE on_=1;
+CREATE INDEX IF NOT EXISTS svc_settings_pid ON svc_settings(pid);
+-- One talk or order between a buyer and a provider. kind 'svc': the escrow is held here (price, then fee + paid at
+-- done); kind 'wo': a talk about a legacy workplace order, `link` the work_service_orders row made at agreement (its
+-- own escrow). status: talk (no money) → held (paid, waiting for the provider) → working → delivered (buyer confirms,
+-- or auto after 24 h) | ready (a career's proof) → done (provider paid, fee burned); refunded (money back in full);
+-- declined / cancelled / expired (a talk, nothing paid); linked (a 'wo' talk agreed). ask/ask_by/rounds: the price on
+-- the table while talking.
+CREATE TABLE IF NOT EXISTS svc_orders (
+  id {T} PRIMARY KEY, buyer {T} NOT NULL, provider {T} NOT NULL, career {T} NOT NULL, service {T} NOT NULL,
+  kind {T} NOT NULL DEFAULT 'svc', status {T} NOT NULL, qty integer NOT NULL DEFAULT 1,
+  price bigint NOT NULL DEFAULT 0 CHECK(price >= 0), ask bigint NOT NULL DEFAULT 0, ask_by {T} NOT NULL DEFAULT '',
+  rounds integer NOT NULL DEFAULT 0, base bigint NOT NULL DEFAULT 0, mult integer NOT NULL DEFAULT 0,
+  fee bigint NOT NULL DEFAULT 0, paid bigint NOT NULL DEFAULT 0, link {T} NOT NULL DEFAULT '',
+  request_id {T} NOT NULL, fingerprint {T} NOT NULL, data {T} NOT NULL DEFAULT '{{}}',
+  created_at double precision NOT NULL, updated_at double precision NOT NULL, due_at double precision,
+  held_at double precision, delivered_at double precision, done_at double precision,
+  UNIQUE(buyer, request_id)
+);
+CREATE INDEX IF NOT EXISTS svc_orders_provider ON svc_orders(provider, status, created_at);
+CREATE INDEX IF NOT EXISTS svc_orders_buyer ON svc_orders(buyer, created_at);
+CREATE INDEX IF NOT EXISTS svc_orders_due ON svc_orders(due_at) WHERE status IN ('talk','held','working','delivered','ready');
+CREATE INDEX IF NOT EXISTS svc_orders_pair ON svc_orders(buyer, provider, created_at);
+-- ⭐ One rating per completed order (svc_orders, or a legacy order: src 'wo', its own review stays in
+-- work_service_reviews). `counted`: it moved the provider's reputation (one counted rating per buyer and provider a week).
+CREATE TABLE IF NOT EXISTS svc_reviews (
+  order_id {T} PRIMARY KEY, src {T} NOT NULL DEFAULT 'svc', provider {T} NOT NULL, buyer {T} NOT NULL,
+  stars integer NOT NULL CHECK(stars BETWEEN 1 AND 5), comment {T} NOT NULL DEFAULT '', reply {T} NOT NULL DEFAULT '',
+  counted integer NOT NULL DEFAULT 1, created_at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS svc_reviews_provider ON svc_reviews(provider, created_at);
+CREATE INDEX IF NOT EXISTS svc_reviews_pair ON svc_reviews(provider, buyer, created_at);
+-- A provider's reputation: counted ratings (n, stars), completed deals and their xu (both kinds of orders).
+CREATE TABLE IF NOT EXISTS svc_rep (
+  provider {T} PRIMARY KEY, n bigint NOT NULL DEFAULT 0, stars bigint NOT NULL DEFAULT 0,
+  deals bigint NOT NULL DEFAULT 0, xu bigint NOT NULL DEFAULT 0, updated_at double precision NOT NULL
+);
+-- 🚩 A buyer's report on an order (within FLAG_HOURS of its delivery): the admin reads and closes it; nothing automatic.
+CREATE TABLE IF NOT EXISTS svc_flags (
+  order_id {T} PRIMARY KEY, src {T} NOT NULL DEFAULT 'svc', buyer {T} NOT NULL, provider {T} NOT NULL,
+  text {T} NOT NULL, status {T} NOT NULL DEFAULT 'open', note {T} NOT NULL DEFAULT '', by_admin {T} NOT NULL DEFAULT '',
+  created_at double precision NOT NULL, closed_at double precision
+);
+CREATE INDEX IF NOT EXISTS svc_flags_open ON svc_flags(status, created_at);
+-- Keyed network tags (game/lixi.py ip_tag: a hash, never the address) of the market's users: buyer and provider of one
+-- network never trade (spouses excepted).
+CREATE TABLE IF NOT EXISTS svc_net (
+  sid {T} NOT NULL, tag {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY(sid, tag)
+);
+-- The 5 % burned on a legacy workplace order paid through this build (0: paid in full by an older one).
+ALTER TABLE work_service_orders ADD COLUMN IF NOT EXISTS fee bigint NOT NULL DEFAULT 0;
+-- 🏥 Phòng sinh & nhận nuôi (game/birth.py; SCHEMA_VERSION 65, owner 21/10 "sinh con … phải mất tiền ra, đặt tiền tối thiểu"):
+-- birth_rooms: the birth room a player offers (a homestay owner; one per save), its price (≥ the floor, checked in
+-- game/birth.py), open or closed, and its ratings. birth_stays: one row per booking or adoption of a couple; the price
+-- paid is held by the row (escrow) until the baby is born (a player room: 5 % burned, the rest to the provider as a
+-- pending marriage_effects row) or refunded on a cancel before check-in. At most one open row per couple.
+CREATE TABLE IF NOT EXISTS birth_rooms (
+  id {ID} PRIMARY KEY, sid {T} NOT NULL UNIQUE, career {T} NOT NULL, name {T} NOT NULL, price bigint NOT NULL,
+  open boolean NOT NULL DEFAULT true, stars bigint NOT NULL DEFAULT 0, rated bigint NOT NULL DEFAULT 0,
+  born bigint NOT NULL DEFAULT 0, at double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS birth_stays (
+  id {ID} PRIMARY KEY, couple bigint NOT NULL, kind {T} NOT NULL, status {T} NOT NULL,
+  from_sid {T} NOT NULL, to_sid {T} NOT NULL, payer {T} NOT NULL, name {T} NOT NULL,
+  provider {T} NOT NULL, room bigint, provider_sid {T}, price bigint NOT NULL, burn bigint NOT NULL DEFAULT 0,
+  nurse {T}, nurse_ok boolean NOT NULL DEFAULT true, starts double precision, ends double precision,
+  data {T} NOT NULL DEFAULT '{{}}', rating integer, at double precision NOT NULL, done double precision
+);
+CREATE UNIQUE INDEX IF NOT EXISTS birth_stays_open ON birth_stays(couple) WHERE status IN ('proposed','booked','staying');
+CREATE INDEX IF NOT EXISTS birth_stays_room ON birth_stays(room, status) WHERE status IN ('booked','staying');
+CREATE INDEX IF NOT EXISTS birth_stays_to ON birth_stays(to_sid) WHERE status='proposed';
+CREATE INDEX IF NOT EXISTS birth_stays_nurse ON birth_stays(nurse, status) WHERE nurse IS NOT NULL;
+CREATE INDEX IF NOT EXISTS birth_stays_calls ON birth_stays(id) WHERE status IN ('booked','staying') AND nurse IS NULL AND nurse_ok;
+CREATE INDEX IF NOT EXISTS birth_stays_couple ON birth_stays(couple, status);
+CREATE INDEX IF NOT EXISTS birth_rooms_open ON birth_rooms(price, id) WHERE open;
+-- 📸 Chụp ảnh cho người chơi (game/photo_studio.py; SCHEMA_VERSION 66, owner 21/10). New tables and indexes only, no FK, no
+-- backfill: 2.4.66 and older never read them. photo_studios: a photographer's prices (JSON, package id to xu, kept between the
+-- package's floor and cap), open flag, last network tag (a keyed hash, never the address) and record (done, stars).
+CREATE TABLE IF NOT EXISTS photo_studios (
+  sid {T} PRIMARY KEY, pid {T} NOT NULL, name {T} NOT NULL DEFAULT '', open integer NOT NULL DEFAULT 1, prices {T} NOT NULL DEFAULT '{{}}',
+  ip {T} NOT NULL DEFAULT '', done bigint NOT NULL DEFAULT 0, stars bigint NOT NULL DEFAULT 0, at double precision NOT NULL
+);
+-- photo_orders: one row per order (`rid` the buyer's request id: a retry finds its row). open (the price held: the buyer's
+-- save paid it in the same transaction) → shoot (accepted) → done (delivered: `pay` to the photographer, `burn` burned,
+-- pay + burn = price), or declined / cancelled / expired (the price back: the buyer's own cancel into their save, the others
+-- a live_effects row 'photo:<id>:back', `refund` 1). `snap`: the look snapshot taken at order time; `sess`: the shots.
+CREATE TABLE IF NOT EXISTS photo_orders (
+  id {T} PRIMARY KEY, rid {T} NOT NULL, buyer {T} NOT NULL, buyer_pid {T} NOT NULL, buyer_name {T} NOT NULL DEFAULT '',
+  shooter {T} NOT NULL, shooter_pid {T} NOT NULL, shooter_name {T} NOT NULL DEFAULT '', pkg {T} NOT NULL,
+  price bigint NOT NULL, list_price bigint NOT NULL DEFAULT 0, pay bigint NOT NULL DEFAULT 0, burn bigint NOT NULL DEFAULT 0,
+  status {T} NOT NULL CHECK (status IN ('open','shoot','done','declined','cancelled','expired')),
+  snap {T} NOT NULL, wish {T} NOT NULL DEFAULT '{{}}', sess {T} NOT NULL DEFAULT '{{}}', note {T} NOT NULL DEFAULT '',
+  ip {T} NOT NULL DEFAULT '', day {T} NOT NULL, at double precision NOT NULL, until double precision NOT NULL,
+  answered double precision, done_at double precision, photo {T} NOT NULL DEFAULT '', refund integer NOT NULL DEFAULT 0,
+  via {T} NOT NULL DEFAULT 'direct', CHECK (buyer <> shooter)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS photo_orders_rid ON photo_orders(buyer, rid);
+CREATE INDEX IF NOT EXISTS photo_orders_shooter ON photo_orders(shooter, status, at);
+CREATE INDEX IF NOT EXISTS photo_orders_buyer ON photo_orders(buyer, status, at);
+CREATE INDEX IF NOT EXISTS photo_orders_day ON photo_orders(day, buyer, shooter);
+CREATE INDEX IF NOT EXISTS photo_orders_due ON photo_orders(until) WHERE status IN ('open','shoot');
+-- photos: a delivered photo. `data`: the game's own render data (look snapshot, the session's choices, the retouch;
+-- ~1-2 KB, drawn by public/js/v4/portrait-art.js: no image bytes, nothing uploaded). The buyer's album: archived 0
+-- (the newest 60), 1 the archive ("Xem cũ hơn"), never deleted; `folio` 1: in the photographer's public portfolio.
+CREATE TABLE IF NOT EXISTS photos (
+  id {T} PRIMARY KEY, order_id {T} NOT NULL DEFAULT '', buyer {T} NOT NULL, buyer_pid {T} NOT NULL, shooter {T} NOT NULL,
+  shooter_pid {T} NOT NULL, shooter_name {T} NOT NULL DEFAULT '', pkg {T} NOT NULL, data {T} NOT NULL,
+  stars integer NOT NULL DEFAULT 0, at double precision NOT NULL, archived integer NOT NULL DEFAULT 0, folio integer NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS photos_buyer ON photos(buyer, archived, at);
+CREATE INDEX IF NOT EXISTS photos_shooter ON photos(shooter, at);
+CREATE INDEX IF NOT EXISTS photos_folio ON photos(shooter_pid, at) WHERE folio=1;
+-- photo_pfp: a player's profile photo (one of their album; photo '' when cleared), shown on the profile card.
+CREATE TABLE IF NOT EXISTS photo_pfp (
+  sid {T} PRIMARY KEY, pid {T} NOT NULL, photo {T} NOT NULL DEFAULT '', at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS photo_pfp_pid ON photo_pfp(pid);
+-- 🏨 Phòng cho người chơi (game/hotel_stay.py; SCHEMA_VERSION 68, owner 21/10). New tables and indexes only, no FK, no
+-- backfill: 2.4.66 and older never read them. The price, its escrow, the 95 % / 5 % and every refund are Phố dịch vụ's
+-- (svc_orders, SCHEMA 63); hotel_stays is the stay of one such order (`order_id` = svc_orders.id): booked (the host took
+-- it) → arrived → in (a room, `due_at` its end, `late` minutes granted) → out (checked out: `result` is what the market's
+-- deliver hook keeps) | gone (refunded or ended by the market). `ev`: the stay's situations (JSON, ≤ ~12 short entries) and
+-- the host's choices; `mood` the guest's satisfaction; `open_n` / `next_at` keep the badge one indexed query; `partner`:
+-- the spouse of a couple's stay, `partner_rest` 0 none, 1 due, 2 applied (its own exactly-once step).
+CREATE TABLE IF NOT EXISTS hotel_stays (
+  order_id {T} PRIMARY KEY, host {T} NOT NULL, guest {T} NOT NULL, partner {T} NOT NULL DEFAULT '', career {T} NOT NULL,
+  service {T} NOT NULL, qty integer NOT NULL DEFAULT 1, stage {T} NOT NULL CHECK (stage IN ('booked','arrived','in','out','gone')),
+  room {T} NOT NULL DEFAULT '', wish {T} NOT NULL DEFAULT '', temper {T} NOT NULL DEFAULT '', booked_at double precision NOT NULL,
+  arrived_at double precision, in_at double precision, due_at double precision, out_at double precision,
+  mood integer NOT NULL DEFAULT 70, ev {T} NOT NULL DEFAULT '[]', asks integer NOT NULL DEFAULT 0, want_out integer NOT NULL DEFAULT 0,
+  late integer NOT NULL DEFAULT 0, open_n integer NOT NULL DEFAULT 0, next_at double precision, partner_rest integer NOT NULL DEFAULT 0,
+  result {T} NOT NULL DEFAULT '{{}}', updated_at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS hotel_stays_host ON hotel_stays(host, stage, updated_at);
+CREATE INDEX IF NOT EXISTS hotel_stays_guest ON hotel_stays(guest, stage, updated_at);
+CREATE INDEX IF NOT EXISTS hotel_stays_partner ON hotel_stays(partner) WHERE partner<>'';
+CREATE INDEX IF NOT EXISTS hotel_stays_live ON hotel_stays(stage, updated_at) WHERE stage IN ('booked','arrived','in');
+CREATE INDEX IF NOT EXISTS hotel_stays_rest ON hotel_stays(partner_rest) WHERE partner_rest=1;
+-- A host's record: stays checked out, the sum of their guests' satisfaction, situations handled and missed.
+CREATE TABLE IF NOT EXISTS hotel_hosts (
+  sid {T} PRIMARY KEY, stays bigint NOT NULL DEFAULT 0, mood_sum bigint NOT NULL DEFAULT 0, handled bigint NOT NULL DEFAULT 0,
+  missed bigint NOT NULL DEFAULT 0, updated_at double precision NOT NULL
+);
+-- One rest a Vietnam day per player (a second stay that day still completes, without the rest).
+CREATE TABLE IF NOT EXISTS hotel_rest (
+  sid {T} NOT NULL, day {T} NOT NULL, order_id {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY(sid, day)
+);
+-- 💒 Dịch vụ cưới từ người chơi (game/wed_services.py; SCHEMA_VERSION 69, owner 21/10). A new table and indexes only, no FK,
+-- no backfill: 2.4.66 and older never read it. wedsvc_jobs: one row per wedding order (svc_orders.id; the money, escrow and
+-- the 5 % burn stay there): the couple's brief (JSON, the CURRENT one: an agreed last-minute change moves it), the seven work
+-- steps rolled once from the order id (plan), the provider's answers, the score and stars, the couple it serves; status work
+-- (steps left) → ready (all answered) → delivered (handed over through service_market.deliver, exactly once there).
+CREATE TABLE IF NOT EXISTS wedsvc_jobs (
+  order_id {T} PRIMARY KEY, svc {T} NOT NULL, career {T} NOT NULL, service {T} NOT NULL, provider {T} NOT NULL, buyer {T} NOT NULL,
+  couple bigint, brief {T} NOT NULL DEFAULT '{{}}', plan {T} NOT NULL DEFAULT '[]', answers {T} NOT NULL DEFAULT '[]',
+  status {T} NOT NULL DEFAULT 'work' CHECK (status IN ('work','ready','delivered')), score integer NOT NULL DEFAULT 0,
+  stars integer NOT NULL DEFAULT 0, created_at double precision NOT NULL, updated_at double precision NOT NULL,
+  delivered_at double precision
+);
+CREATE INDEX IF NOT EXISTS wedsvc_jobs_couple ON wedsvc_jobs(couple, status);
+CREATE INDEX IF NOT EXISTS wedsvc_jobs_provider ON wedsvc_jobs(provider, status, updated_at);
+-- 🔬 Đơn nghiên cứu (game/research_lab.py; SCHEMA_VERSION 71, owner 21/10). A new table and an index only, no FK, no
+-- backfill: 2.4.66 and older never read it. One row per Phố dịch vụ order of the career 'research' (svc_orders.id): the
+-- research step reached (`at`, of three), the wrong tries, work → done (moved forward once, under the row lock and the old
+-- `at`), the quality and the result's name. Never deleted; bounded by the market's open-order caps.
+CREATE TABLE IF NOT EXISTS research_jobs (
+  order_id {T} PRIMARY KEY, provider {T} NOT NULL, buyer {T} NOT NULL, service {T} NOT NULL,
+  at integer NOT NULL DEFAULT 0, wrong integer NOT NULL DEFAULT 0, quality integer NOT NULL DEFAULT 100,
+  status {T} NOT NULL CHECK (status IN ('work','done')), name {T} NOT NULL DEFAULT '', data {T} NOT NULL DEFAULT '{{}}',
+  created_at double precision NOT NULL, updated_at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS research_jobs_provider ON research_jobs(provider, status);
 -- 📜 Nội quy bang (game/bang_code.py; SCHEMA_VERSION 73, owner 21/10 "bang thì thêm cái nội quy bang nữa nhé", "công bố
 -- bên ngoài thì có nội quy bang riêng nữa, có text và giới hạn chữ"). bang_code: one row per bang and kind ('pub': 📢 the
 -- public rules, shown outside the bang, what an applicant agrees to; 'in': 📜 the members-only rules). `ver` grows with
@@ -1126,6 +1307,86 @@ CREATE TABLE IF NOT EXISTS bang_code_seen (
   sid {T} NOT NULL, bang {T} NOT NULL, pub bigint NOT NULL DEFAULT 0, inn bigint NOT NULL DEFAULT 0, agreed bigint NOT NULL DEFAULT 0,
   agreed_at double precision, at double precision NOT NULL DEFAULT 0, PRIMARY KEY (sid, bang)
 );
+-- 🧰 Thợ phục chế (game/restore_service.py; SCHEMA_VERSION 72, owner 21/10). A new table and indexes only, no FK, no backfill:
+-- 2.4.66 and older never read it. restore_tickets: the thing a buyer brings to a restorer (`ref` a vehicle id, 'home:part'
+-- or a furniture uid of the buyer's save; `label` its name then), open → bound (`order_id`: the svc_orders order it is
+-- worked for, `provider`, `steps` the bench progress) → done (`grade` 1–3, `done_at`) | dropped (the buyer withdrew it);
+-- a bound ticket whose order ended without delivery opens again (status back to open, order_id NULL). Never deleted.
+CREATE TABLE IF NOT EXISTS restore_tickets (
+  id {T} PRIMARY KEY, buyer {T} NOT NULL, service {T} NOT NULL, ref {T} NOT NULL, label {T} NOT NULL DEFAULT '',
+  style {T} NOT NULL DEFAULT 'giu', status {T} NOT NULL CHECK (status IN ('open','bound','done','dropped')),
+  order_id {T}, provider {T}, steps {T} NOT NULL DEFAULT '{{}}', grade integer NOT NULL DEFAULT 0,
+  at double precision NOT NULL, updated_at double precision NOT NULL, done_at double precision
+);
+CREATE UNIQUE INDEX IF NOT EXISTS restore_tickets_order ON restore_tickets(order_id) WHERE order_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS restore_tickets_item ON restore_tickets(buyer, service, ref) WHERE status IN ('open','bound');
+CREATE INDEX IF NOT EXISTS restore_tickets_buyer ON restore_tickets(buyer, service, status, at);
+CREATE INDEX IF NOT EXISTS restore_tickets_provider ON restore_tickets(provider, status) WHERE provider IS NOT NULL;
+-- 📻 Đài phát thanh Sóng Mây for players (game/radio_station.py; SCHEMA_VERSION 70, owner 21/10). New table and indexes only,
+-- no FK, no backfill: 2.4.66 and older never read it. radio_lines: one row per line a radio DJ aired for another player through
+-- Phố dịch vụ (`order_id` the svc_orders row, unique: a retried delivery finds its line), `kind` quang_cao | tang_bai, `text` the
+-- ticker line as shown (moderated), `note` the buyer's own words, `pick` the bed or the song, on the ticker from `start_at` to
+-- `end_at`; `hidden` 1 when the buyer, the DJ or an admin took it down (`hidden_by`), never deleted. `day` the Vietnam date
+-- (the buyer's and the DJ's daily caps).
+CREATE TABLE IF NOT EXISTS radio_lines (
+  id {T} PRIMARY KEY, order_id {T} NOT NULL, kind {T} NOT NULL CHECK (kind IN ('quang_cao','tang_bai')), buyer {T} NOT NULL,
+  provider {T} NOT NULL, text {T} NOT NULL, note {T} NOT NULL DEFAULT '', pick {T} NOT NULL DEFAULT '', day {T} NOT NULL,
+  start_at double precision NOT NULL, end_at double precision NOT NULL, hidden integer NOT NULL DEFAULT 0,
+  hidden_by {T} NOT NULL DEFAULT '', hidden_at double precision, created_at double precision NOT NULL, CHECK (buyer <> provider)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS radio_lines_order ON radio_lines(order_id);
+CREATE INDEX IF NOT EXISTS radio_lines_live ON radio_lines(end_at) WHERE hidden=0;
+CREATE INDEX IF NOT EXISTS radio_lines_buyer ON radio_lines(buyer, day);
+CREATE INDEX IF NOT EXISTS radio_lines_dj ON radio_lines(provider, day);
+CREATE INDEX IF NOT EXISTS radio_lines_at ON radio_lines(created_at);
+-- 🎪 Hội chợ việc làm (game/town_fair.py; SCHEMA_VERSION 74, owner 21/10 "làm hết đi"). New tables and indexes only, no FK, no
+-- backfill, no save key: 2.4.66 and older never read them. The money of every fair order stays in svc_orders /
+-- work_service_orders (63): a booth only lowers its owner's own Phố dịch vụ price while the fair is on.
+-- fair_events: one row per fair (id 'w<YYYYMMDD>' of the weekly Saturday, 'x<epoch>' of one an admin opened), open until
+-- its settle time, then final with its leaderboard snapshot (`board`, JSON) kept for the archive. Never deleted.
+CREATE TABLE IF NOT EXISTS fair_events (
+  id {T} PRIMARY KEY, kind {T} NOT NULL DEFAULT 'week', starts double precision NOT NULL, ends double precision NOT NULL,
+  status {T} NOT NULL DEFAULT 'open' CHECK (status IN ('open','final')), board {T} NOT NULL DEFAULT '{{}}',
+  announced integer NOT NULL DEFAULT 0, created_at double precision NOT NULL, final_at double precision
+);
+CREATE INDEX IF NOT EXISTS fair_events_open ON fair_events(ends) WHERE status='open';
+-- One booth per player and fair: its career, the discount (pct), open or closed, the mood (0–100) and its counters, the
+-- show running (show_until) and the next one allowed (show_next), the next oái oăm moment (next_moment); data: the moment
+-- waiting for an answer, the log of answers, the watchers of the current show.
+CREATE TABLE IF NOT EXISTS fair_booths (
+  event {T} NOT NULL, sid {T} NOT NULL, pid {T} NOT NULL DEFAULT '', career {T} NOT NULL, pct integer NOT NULL DEFAULT 15,
+  open_ integer NOT NULL DEFAULT 1, mood integer NOT NULL DEFAULT 70, shows integer NOT NULL DEFAULT 0,
+  watchers integer NOT NULL DEFAULT 0, moments integer NOT NULL DEFAULT 0, handled integer NOT NULL DEFAULT 0,
+  missed integer NOT NULL DEFAULT 0, show_until double precision NOT NULL DEFAULT 0, show_next double precision NOT NULL DEFAULT 0,
+  next_moment double precision NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}', opened_at double precision NOT NULL,
+  updated_at double precision NOT NULL, PRIMARY KEY(event, sid)
+);
+CREATE INDEX IF NOT EXISTS fair_booths_career ON fair_booths(event, career);
+CREATE INDEX IF NOT EXISTS fair_booths_sid ON fair_booths(sid, event);
+-- 🎟️ One stamp per visitor, fair and career: src 'order' (a completed order at that career's booth, ref = the order) or
+-- 'show' (a show watched while it ran, ref = the show).
+CREATE TABLE IF NOT EXISTS fair_stamps (
+  event {T} NOT NULL, sid {T} NOT NULL, career {T} NOT NULL, src {T} NOT NULL, ref {T} NOT NULL DEFAULT '',
+  booth {T} NOT NULL DEFAULT '', at double precision NOT NULL, PRIMARY KEY(event, sid, career)
+);
+-- One row per visitor, fair and stamp tier claimed (the reward's live_effects row is written in the same transaction).
+CREATE TABLE IF NOT EXISTS fair_rewards (
+  event {T} NOT NULL, sid {T} NOT NULL, tier integer NOT NULL, item {T} NOT NULL, at double precision NOT NULL,
+  PRIMARY KEY(event, sid, tier)
+);
+-- The admin's switches: 'weekly' ('1' on, '0' off) and 'special' (JSON {{id, starts, ends}} of a one-off fair, or '').
+CREATE TABLE IF NOT EXISTS fair_config (
+  k {T} PRIMARY KEY, v {T} NOT NULL DEFAULT '', by_admin {T} NOT NULL DEFAULT '', updated_at double precision NOT NULL
+);
+-- 🛎️ SCHEMA_VERSION 75 (review fixes 22/10): indexes only, on this release's own tables (no FK, no backfill, nothing
+-- dropped: svc_orders_due stays). svc_orders_due_all: every due timer and money step (settle_for's predicates, the
+-- 'refund' status included); svc_orders_working: the 🏨 stays waiting for their row (game/hotel_stay.py sync);
+-- svc_orders_buyer_alert: a buyer's talks and deliveries (service_market.alert_count, each /api/news poll);
+-- birth_stays_pair: a player birth room in service_market.pair_usage (payer → provider).
+CREATE INDEX IF NOT EXISTS svc_orders_due_all ON svc_orders(due_at) WHERE status IN ('talk','held','working','delivered','ready','refund');
+CREATE INDEX IF NOT EXISTS svc_orders_working ON svc_orders(career, service, updated_at) WHERE status='working';
+CREATE INDEX IF NOT EXISTS svc_orders_buyer_alert ON svc_orders(buyer) WHERE status IN ('talk','delivered');
+CREATE INDEX IF NOT EXISTS birth_stays_pair ON birth_stays(payer, provider_sid, at) WHERE provider='room';
 
 """
 
@@ -1181,6 +1442,7 @@ CREATE INDEX IF NOT EXISTS work_places_public ON work_visit_places(visibility,up
 CREATE INDEX IF NOT EXISTS work_orders_provider ON work_service_orders(provider,status,created_at);
 CREATE INDEX IF NOT EXISTS work_orders_customer ON work_service_orders(customer,created_at);
 CREATE INDEX IF NOT EXISTS work_reviews_place ON work_service_reviews(place,created_at);
+CREATE INDEX IF NOT EXISTS work_reviews_provider ON work_service_reviews(provider,created_at);
 CREATE INDEX IF NOT EXISTS proposals_from ON proposals (from_sid, at);
 CREATE INDEX IF NOT EXISTS weddings_couple ON weddings (couple, status);
 CREATE INDEX IF NOT EXISTS marriage_effects_sid ON marriage_effects (sid, status, due);
@@ -1506,9 +1768,33 @@ TABLES = [
     dict(name='bang_chal_team', identity=None),
     dict(name='bang_chal', identity=None),
     dict(name='pet_power', identity=None),
+    dict(name='svc_settings', identity=None),
+    dict(name='svc_orders', identity=None),
+    dict(name='svc_reviews', identity=None),
+    dict(name='svc_rep', identity=None),
+    dict(name='svc_flags', identity=None),
+    dict(name='svc_net', identity=None),
+    dict(name='birth_rooms', identity='id'),
+    dict(name='birth_stays', identity='id'),
+    dict(name='photo_studios', identity=None),
+    dict(name='photo_orders', identity=None),
+    dict(name='photos', identity=None),
+    dict(name='photo_pfp', identity=None),
+    dict(name='hotel_stays', identity=None),
+    dict(name='hotel_hosts', identity=None),
+    dict(name='hotel_rest', identity=None),
+    dict(name='wedsvc_jobs', identity=None),
+    dict(name='research_jobs', identity=None),
     dict(name='bang_code', identity=None),
     dict(name='bang_code_hist', identity='id'),
     dict(name='bang_code_seen', identity=None),
+    dict(name='restore_tickets', identity=None),
+    dict(name='radio_lines', identity=None),
+    dict(name='fair_events', identity=None),
+    dict(name='fair_booths', identity=None),
+    dict(name='fair_stamps', identity=None),
+    dict(name='fair_rewards', identity=None),
+    dict(name='fair_config', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 
@@ -1564,26 +1850,31 @@ def repair_character_names(conn) -> None:
     """)
 
 
-def ensure(conn, stages=None, force: bool = False) -> bool:
-    """Create what is missing, idempotently, in the connection's current schema (search_path).
-    `stages`: a subset of ("tables", "indexes", "triggers", "tuning").
-    Without `force`, a database already at SCHEMA_VERSION is left alone (no DDL, no locks).
-    Returns True when an upgrade ran. DDL and data repair commit separately
-    so live player transactions can finish before repair takes their row locks.
-    Requires an autocommit connection."""
-    raw = getattr(conn, 'raw', conn)
-    everything = stages is None
-    previous_version = installed_version(raw)
-    if everything and not force and previous_version >= SCHEMA_VERSION and not missing_tables(raw):
-        return False
+def _ddl_tries() -> list:
+    """[(lock_timeout, pause before the next try)] of ensure(): MNL_DDL_LOCK_TIMEOUT (default 3s) for the first tries,
+    MNL_DDL_LOCK_TRIES of them (default 6), then one last try at MNL_DDL_LOCK_LAST (default 30s)."""
+    import os
+    short = (os.environ.get('MNL_DDL_LOCK_TIMEOUT') or '3s').strip()
+    last = (os.environ.get('MNL_DDL_LOCK_LAST') or '30s').strip()
+    try:
+        n = max(0, min(50, int(os.environ.get('MNL_DDL_LOCK_TRIES') or 6)))
+    except ValueError:
+        n = 6
+    return [(short, min(30.0, 1.0 * 2 ** i)) for i in range(n)] + [(last, 0.0)]
+
+
+def _ensure_once(raw, everything: bool, stages, force: bool, lock_timeout: str):
+    """One try of ensure()'s DDL transaction. (None, previous version) when it ran, (False, _) when nothing was to do."""
     with raw.transaction():
-        # Serialize startup upgrades in this schema, rechecking after the wait.
+        # Serialize startup upgrades in this schema, rechecking after the wait (not bound by lock_timeout: set after).
         raw.execute("SELECT pg_advisory_xact_lock(17822, hashtext(current_schema()))")
         previous_version = installed_version(raw)
         if everything and not force and previous_version >= SCHEMA_VERSION and not missing_tables(raw):
-            return False
+            return False, previous_version
         # one-off DDL (an index on a big table, a slow disk): not bound by the request timeout
         raw.execute("SELECT set_config('statement_timeout', '600s', true)")
+        # never queue live requests behind a DDL lock for long: give up, roll back, try again (ensure)
+        raw.execute("SELECT set_config('lock_timeout', %s, true)", (lock_timeout,))
         for name, ddl in STAGES:
             if everything or name in stages:
                 raw.execute(ddl)
@@ -1593,6 +1884,40 @@ def ensure(conn, stages=None, force: bool = False) -> bool:
             version = 21 if previous_version < 22 else SCHEMA_VERSION
             raw.execute("INSERT INTO mnl_meta (key, value) VALUES ('schema_version', %s) "
                         "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value", (str(version),))
+    return None, previous_version
+
+
+def ensure(conn, stages=None, force: bool = False) -> bool:
+    """Create what is missing, idempotently, in the connection's current schema (search_path).
+    `stages`: a subset of ("tables", "indexes", "triggers", "tuning").
+    Without `force`, a database already at SCHEMA_VERSION is left alone (no DDL, no locks).
+    Returns True when an upgrade ran. DDL and data repair commit separately
+    so live player transactions can finish before repair takes their row locks.
+    Requires an autocommit connection.
+
+    🔒 Live servers keep serving during an upgrade: a DDL lock (ALTER TABLE … ADD COLUMN takes ACCESS EXCLUSIVE, CREATE
+    INDEX a SHARE lock) waiting behind a long player transaction would queue every request on that table behind it.
+    Each lock wait is bounded by lock_timeout (_ddl_tries); the whole upgrade then rolls back (every statement here is
+    idempotent) and is tried again after a pause. The last try waits longer and raises when it still cannot get its
+    locks: the start fails loudly with nothing half-applied, and the next start tries again."""
+    import time
+    import psycopg
+    raw = getattr(conn, 'raw', conn)
+    everything = stages is None
+    previous_version = installed_version(raw)
+    if everything and not force and previous_version >= SCHEMA_VERSION and not missing_tables(raw):
+        return False
+    tries = _ddl_tries()
+    for attempt, (timeout, pause) in enumerate(tries):
+        try:
+            done, previous_version = _ensure_once(raw, everything, stages, force, timeout)
+            break
+        except psycopg.errors.LockNotAvailable:
+            if attempt == len(tries) - 1:
+                raise
+            time.sleep(pause)
+    if done is False:
+        return False
     if everything and previous_version < 22:
         with raw.transaction():
             raw.execute("SELECT pg_advisory_xact_lock(17822, hashtext(current_schema()))")

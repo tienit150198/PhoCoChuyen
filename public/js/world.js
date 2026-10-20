@@ -111,7 +111,8 @@ export class World {
     if(c.upgrades?.includes('assistant'))add('assistant','Nhờ bạn phụ việc',6.7,2.35,38,34);
     this.navBuild();
   }
-  npcName(id){return this.game?.npcs.find(n=>n.id===id)?.display_name||'Khách';}
+  // A job may carry its own guest (t.guest: a passing hotel guest, not one of the career's people): the scene names them.
+  npcName(id){const g=this.c?.tasks?.find(t=>t.npc===id&&t.guest?.name&&!['completed','referred','cancelled'].includes(t.status))?.guest;return g?.name||this.game?.npcs.find(n=>n.id===id)?.display_name||'Khách';}
   coords(e){const r=this.canvas.getBoundingClientRect();return {x:(e.clientX-r.left-this.offset.x)/this.scale,y:(e.clientY-r.top-this.offset.y)/this.scale};}
   hit(pos){return this.hotspots.map(h=>({h,d:Math.hypot(pos.x-h.point.x,pos.y-h.point.y)/h.range})).filter(x=>x.d<1).sort((a,b)=>a.d-b.d)[0]?.h||null;}
   pointerMove(e){this.hover=this.hit(this.coords(e));this.canvas.style.cursor=this.hover?'pointer':'default';}

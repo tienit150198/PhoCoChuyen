@@ -1,0 +1,177 @@
+{
+  "radio": [
+    {
+      "tier": 1,
+      "title": "Lập bảng kiểm phòng thu đầu ca",
+      "output_unit": "bảng kiểm phòng thu",
+      "inputs": [{"name": "Bộ thẻ kiểm phòng thu hư cấu", "unit": "bộ", "quantity": 2, "unit_cost": 5000}],
+      "procedure": [
+        "Ghi thứ tự bàn trộn, mic, tai nghe, đường truyền cho từng ca giả lập.",
+        "Đặt đèn ĐANG PHÁT SÓNG ở bước cuối, chỉ bật khi mọi mục đã đạt.",
+        "Dán bảng cạnh bàn trộn âm và cho trưởng đài ký duyệt."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Đèn lên sóng chỉ bật sau khi bàn trộn, mic, tai nghe và đường truyền đã kiểm.",
+        "bad": "Bật đèn lên sóng trước cho kịp giờ rồi vừa đọc vừa thử mic.",
+        "why": "Kiểm xong mới mở mic thì cả phố không nghe tiếng rè hay tiếng thử."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Xếp thứ tự tin cho bản tin phường",
+      "output_unit": "bản tin xếp thứ tự",
+      "inputs": [{"name": "Xấp tin phường hư cấu", "unit": "xấp", "quantity": 3, "unit_cost": 4000}],
+      "procedure": [
+        "Chia từng mẩu tin giả lập thành tin khẩn, tin dịch vụ công và tin sự kiện.",
+        "Bỏ ra ngoài các tin đồn chưa kiểm chứng và các quảng cáo trá hình.",
+        "Đánh số thứ tự đọc: khẩn trước, dịch vụ công sau, sự kiện cuối."
+      ],
+      "check": {
+        "prompt": "Bản tin nào được duyệt?",
+        "good": "Tin cảnh báo đọc đầu tiên, không có tin đồn nào trong danh sách.",
+        "bad": "Đọc tin văn nghệ trước cho vui rồi mới tới cảnh báo bão.",
+        "why": "Người nghe cần tin khẩn sớm nhất, tin đồn làm cả phố hoang mang."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tính thời lượng bản tin đúng khung giờ",
+      "output_unit": "bảng thời lượng",
+      "inputs": [{"name": "Phiếu canh giờ phát sóng hư cấu", "unit": "tờ", "quantity": 10, "unit_cost": 800}],
+      "procedure": [
+        "Cộng giây nhạc hiệu, giây mỗi tin và giây lời chào cuối cho từng bản tin mẫu.",
+        "So tổng với khung giờ của đài, đánh dấu bản tin nào lố giờ.",
+        "Đề xuất bớt tin sự kiện chứ không cắt tin khẩn khi bị lố."
+      ],
+      "check": {
+        "prompt": "Phiếu canh giờ nào đúng?",
+        "good": "Tổng giây khớp phép cộng, bản lố giờ được bớt tin sự kiện.",
+        "bad": "Đọc nhanh hơn cho vừa khung, không tính lại giây.",
+        "why": "Đọc vội làm mất chữ; bớt đúng tin mới giữ được bản tin rõ ràng."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Duyệt kịch bản quảng cáo của nhà tài trợ",
+      "output_unit": "kịch bản đã duyệt",
+      "inputs": [{"name": "Bản kịch bản quảng cáo hư cấu", "unit": "bản", "quantity": 4, "unit_cost": 3000}],
+      "procedure": [
+        "Xếp các bản kịch bản giả lập theo giờ gửi, ghi bản nào đã có chữ ký trưởng đài.",
+        "Gạch các câu phóng đại, không kiểm chứng được hoặc dọa người nghe.",
+        "Chốt bản mới nhất đã ký để phát, báo nhà tài trợ về câu bị gạch."
+      ],
+      "check": {
+        "prompt": "Kịch bản nào được lên sóng?",
+        "good": "Bản mới nhất có chữ ký duyệt, đã bỏ câu “dùng là khỏi bệnh”.",
+        "bad": "Bản gửi qua tin nhắn lúc 9 giờ 59, chưa ai ký, còn nguyên câu phóng đại.",
+        "why": "Chữ nào lên sóng là chữ đó phải có người chịu trách nhiệm."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Đọc lời chúc đúng tên đúng giờ",
+      "output_unit": "lượt lời chúc",
+      "inputs": [{"name": "Hộp thư lời chúc hư cấu", "unit": "hộp", "quantity": 2, "unit_cost": 6000}],
+      "procedure": [
+        "Bỏ các lời có số điện thoại, đường link, địa chỉ hoặc lời bêu riếu người khác.",
+        "Xếp các lời còn lại theo giờ đài nhận được, sớm trước muộn sau.",
+        "Gọi lại người gửi để hỏi đúng dấu các tên viết không dấu."
+      ],
+      "check": {
+        "prompt": "Lượt đọc nào đạt?",
+        "good": "Mọi tên đọc đúng dấu đã hỏi lại, thứ tự theo giờ gửi.",
+        "bad": "Đọc đại tên không dấu và đọc luôn lời có số điện thoại bán đất.",
+        "why": "Một cái tên đọc sai làm người được chúc buồn cả buổi tối."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Tìm bài theo lời kể của thính giả",
+      "output_unit": "lượt tìm bài",
+      "inputs": [{"name": "Thẻ kho nhạc có bản quyền hư cấu", "unit": "thẻ", "quantity": 20, "unit_cost": 500}],
+      "procedure": [
+        "Ghi lại câu hát, giọng ca sĩ và thể loại thính giả tả trong cuộc gọi giả lập.",
+        "Dò thẻ kho nhạc theo câu hát rồi theo ca sĩ, loại bài chưa có bản quyền.",
+        "Báo thính giả bài tìm được hoặc gợi ý một bài cùng kiểu có trong kho."
+      ],
+      "check": {
+        "prompt": "Lượt tìm bài nào đạt?",
+        "good": "Bài phát ra đúng câu hát khách tả và có trong kho bản quyền.",
+        "bad": "Mở bản thu lậu từ điện thoại khách qua mic cho nhanh.",
+        "why": "Đài chỉ phát bài được phép, và nghe đúng điều người gọi nhớ."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Trực đường dây thính giả gọi vào sóng",
+      "output_unit": "giờ trực máy",
+      "inputs": [{"name": "Sổ cuộc gọi vào sóng hư cấu", "unit": "cuốn", "quantity": 1, "unit_cost": 9000}],
+      "procedure": [
+        "Đặt tay trên nút xóa trễ bảy giây suốt lúc nối máy thính giả giả lập.",
+        "Cắt khỏi sóng các cuộc gọi chào bán, kêu gọi chuyển tiền hay kể chuyện riêng người khác.",
+        "Ghi giờ gọi, nội dung tóm tắt và việc đã xóa trễ vào sổ cuộc gọi."
+      ],
+      "check": {
+        "prompt": "Giờ trực nào đạt?",
+        "good": "Câu chửi thề bị xóa trong độ trễ, sổ ghi đủ giờ và nội dung.",
+        "bad": "Đọc số điện thoại người gọi phá lên sóng cho cả phố biết.",
+        "why": "Sóng là của cả phố; số điện thoại và lời chửi không thuộc về sóng."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Dựng chương trình ca nhạc đủ giờ",
+      "output_unit": "chương trình ca nhạc",
+      "inputs": [{"name": "Băng nhạc hiệu và bài dự phòng hư cấu", "unit": "cuộn", "quantity": 3, "unit_cost": 4000}],
+      "procedure": [
+        "Xếp nhạc hiệu mở, bài mở màn, quảng cáo, bài theo yêu cầu, lời chúc và nhạc hiệu kết.",
+        "Bỏ các bài chưa có bản quyền hoặc có lời không phù hợp phát sóng.",
+        "Tính giây lời dẫn còn lại sau các bài và hai khung quảng cáo."
+      ],
+      "check": {
+        "prompt": "Chương trình nào được duyệt?",
+        "good": "Khung đúng thứ tự, không có bài cấm, lời dẫn tính khớp tổng giờ.",
+        "bad": "Bỏ khung quảng cáo đã bán để chèn thêm bài remix lời thô.",
+        "why": "Khung chương trình là lời hứa với người nghe và với nhà tài trợ."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Diễn tập xử lý mất điện giữa sóng",
+      "output_unit": "buổi diễn tập",
+      "inputs": [
+        {"name": "Ắc quy bộ lưu điện hư cấu", "unit": "bình", "quantity": 1, "unit_cost": 20000},
+        {"name": "Băng dự phòng phát sóng hư cấu", "unit": "cuộn", "quantity": 2, "unit_cost": 3000}
+      ],
+      "procedure": [
+        "Ngắt điện giả lập rồi chuyển máy phát sang bộ lưu điện trong mười giây.",
+        "Bật băng dự phòng, khởi động máy phát, kiểm bàn trộn và mic trước khi quay lại sóng.",
+        "Lên sóng xin lỗi thính giả và ghi giờ mất, giờ có lại vào sổ sự cố."
+      ],
+      "check": {
+        "prompt": "Buổi diễn tập nào đạt?",
+        "good": "Sóng chỉ nghe băng dự phòng, quay lại có lời xin lỗi và sổ ghi đủ giờ.",
+        "bad": "Chờ có điện lại rồi phát tiếp như không có chuyện gì.",
+        "why": "Sóng câm lâu làm người nghe tưởng đài đã tắt, kể cả lúc có bão."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Điều phối đài trong ngày bão",
+      "output_unit": "ngày phát sóng khẩn",
+      "inputs": [{"name": "Bộ lịch phát sóng khẩn hư cấu", "unit": "bộ", "quantity": 2, "unit_cost": 8000}],
+      "procedure": [
+        "Chia ca người đọc tin, người trực máy phát và người nghe điện thoại theo giờ bão.",
+        "Đọc lại tin khẩn mỗi đầu giờ, dời quảng cáo khỏi các khung tin bão.",
+        "Bàn giao sổ sự cố và sổ cuộc gọi cho ca sau trước khi rời đài."
+      ],
+      "check": {
+        "prompt": "Ngày phát sóng khẩn nào đạt?",
+        "good": "Tin khẩn nhắc mỗi đầu giờ, không có quảng cáo chen vào tin bão.",
+        "bad": "Để một người vừa đọc tin vừa chạy ra máy phát suốt đêm.",
+        "why": "Ngày bão, sóng đài là thứ bà con bám vào nhiều nhất."
+      }
+    }
+  ]
+}

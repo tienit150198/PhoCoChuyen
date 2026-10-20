@@ -47,7 +47,7 @@ function harness(id,{mode='town',interfaceMode='new',screen='phone',full=false}=
     meta:()=>({icon:'briefcase',work:'Công việc',station:'Bàn làm việc'}),plugin:()=>!legacy.includes(id),EXT:['teacher','tour_guide','milk_tea'],
     careerUI:cid=>modules[cid],careerContext:()=>({}),env:()=>({}),wordsFor,layout:()=>screen,esc:String,icon:()=>'',
     lowOpen:()=>0,feedUnread:()=>false,openSituation:()=>null,L:{inc:{},people:{},live:full?{m:{live:enabledLive,liveNav:()=>['liveChat','chat','Chat'],dateNav:()=>['liveDate','heart','Hẹn hò']}}:{}},boardUnread:()=>0,needsJob:()=>false,
-    certBadge:()=>0,quayBadge:()=>0,crates:()=>({ready:[]}),lowItems:()=>[]});
+    certBadge:()=>0,quayBadge:()=>0,crates:()=>({ready:[]}),lowItems:()=>[],seedFair:()=>{},fairNow:()=>null});   // 🎪 the town fair stays off here (no ui.tfair)
   vm.runInContext(appSource+';globalThis.routes={sceneActions,navItems,dockItems,railHTML};',context);
   return {state,ui,...context.routes};
 }
@@ -129,8 +129,8 @@ if(process.env.UPDATE_ISOMETRIC_PARITY==='1'){
   writeFileSync(inventoryPath,JSON.stringify(inventory,null,2)+'\n');
 }
 
-test('inventory enumerates all 57 server careers, their real menu/dock variants and current utility routes',()=>{
-  assert.equal(catalogue.length,57);
+test('inventory enumerates all 62 server careers, their real menu/dock variants and current utility routes',()=>{
+  assert.equal(catalogue.length,62);
   assert.deepEqual([...catalogue.map(c=>c.id)].sort(),[...layout.careerOrder].sort());
   assert.equal(careerRows.length,inventory.careers.length);
   for(const [index,row] of careerRows.entries())assert.deepEqual(JSON.parse(JSON.stringify(row)),inventory.careers[index],row.id+' retains its actual scene, menu and phone dock');

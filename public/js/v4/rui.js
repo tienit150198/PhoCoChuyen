@@ -109,7 +109,7 @@ function ruiPage(){
   const alert=now?`<button type="button" class="rui-now" data-rui="pop"><span aria-hidden="true">${now.emoji}</span><span class="grow"><b>${esc(now.title)}</b><small>${esc(now.text)}</small></span>${icon('chevron',18)}</button>`:'';
   const calm=r.calm?`<p class="rui-calm">🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.</p>`:'';
   const pending=r.hack_pending?`<p class="rui-calm">${esc(r.hack_pending.days?`🚔 Đã trình báo ${r.hack_pending.n} vụ hack. Kết quả gần nhất sau ${r.hack_pending.days} ngày sống.`:'🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.')}</p>`:'';
-  const broken=(r.broken||[]).length?`<h3 class="rui-h">🔧 Đang hỏng</h3><ul class="rui-list">${r.broken.map(b=>`<li class="rui-row"><span class="rui-ico" aria-hidden="true">${b.kind==='xe'?'🚗':'🏠'}</span><span class="grow"><b>${esc(b.name)}</b></span><button type="button" class="btn primary small" data-rui="fix" data-kind="${b.kind}" data-ref="${esc(b.ref)}"${S.busy?' disabled':''}>Sửa · ${xu(b.cost)}</button></li>`).join('')}</ul>`:'';
+  const broken=(r.broken||[]).length?`<h3 class="rui-h">🔧 Đang hỏng</h3><ul class="rui-list">${r.broken.map(b=>`<li class="rui-row"><span class="rui-ico" aria-hidden="true">${b.kind==='xe'?'🚗':'🏠'}</span><span class="grow"><b>${esc(b.name)}</b></span><button type="button" class="btn primary small" data-rui="fix" data-kind="${b.kind}" data-ref="${esc(b.ref)}"${S.busy?' disabled':''}>Sửa · ${xu(b.cost)}</button><button type="button" class="btn ghost small" data-rui="restore" data-kind="${b.kind}" data-ref="${esc(b.ref)}" title="Nhờ một người chơi làm Thợ phục chế"${S.busy?' disabled':''}>🧰 Nhờ thợ</button></li>`).join('')}</ul>`:'';
   return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${wealthNote}${pending}${broken}`+
     `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list rui-pols">${(r.pol||[]).map(polRow).join('')}</ul>`+
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
@@ -234,6 +234,7 @@ async function onClick(d,op,data){
     case'gear':{const it=CAT().gear.find(x=>x.id===data.id);if(!it)return;
       if(await ask(`Mua ${it.name.toLowerCase()}?`,it.what,`Mua · ${xu(it.price)}`,{cost:it.price,pocket:POCKET}))send('jr_rui_gear',{id:it.id});return;}
     case'fix':send('jr_rui_fix',{kind:data.kind,ref:data.ref});return;
+    case'restore':close(d);await (await import('./restore.js')).openRestore(S.env,{kind:data.kind,ref:data.ref});return;   // 🧰 a player restorer instead (game/restore_service.py)
     case'qty':{const step=S.qty>=10?10:1;S.qty=Math.max(1,Math.min(100000,S.qty+Number(data.d)*step));render();return;}
     case'set':S.qty=Number(data.n)||10;render();return;
     // A typed number (qty-input.js): no redraw under the finger; the price on the two buttons follows it.

@@ -3,6 +3,11 @@
 One child and one cat/dog belong to this save. No recurring charges, death,
 automatic adoption or shared-spouse mutation. Purchases use the existing bank
 payment reducer and command receipts. The optional block is ignored by old builds.
+
+🏥 21/10 (owner: "phải mất tiền ra … Thay luồng nhận con như hiện tại luôn"): the personal child is no longer free:
+the adoption paperwork at Trung tâm bảo trợ Phố Mây costs game/birth.py ADOPT_FEE, wallet then account, never the
+card (birth.take). The command carries `fee` (the fee the player saw); without it (an older client) it is refused with
+the price, nothing charged. The household block keeps its exact shape: a child adopted here loads on 2.4.66.
 """
 from __future__ import annotations
 
@@ -37,6 +42,16 @@ def _e():
 def _cr():
     from . import cradle
     return cradle
+
+
+def _fee() -> int:
+    from . import birth
+    return birth.ADOPT_FEE
+
+
+def _where() -> str:
+    from . import birth
+    return birth.AGENCY['name']
 
 
 def _name(value):
@@ -76,7 +91,8 @@ def public(s):
                             bond=m['bond'], needs=_meters(j, m), outfit=m['outfit'], owned=list(m['owned']),
                             acts=[dict(id=k, **x, done=x['slot'] in done) for k, x in ACTS.items() if m['kind'] in x['kinds']]))
     return dict(members=members, locked=j.get('life_day', 1) < 10, day=j.get('life_day', 1),
-                adopt=[dict(id=k, emoji=v[0], name=v[1], cost=v[2]) for k, v in KINDS.items()],
+                adopt=[dict(id=k, emoji=v[0], name=v[1], cost=_fee() if k == 'child' else v[2],
+                            **(dict(fee=True, where=_where()) if k == 'child' else {})) for k, v in KINDS.items()],
                 outfits=[dict(id=k, **v) for k, v in OUTFITS.items()])
 
 
@@ -86,7 +102,7 @@ def action(s, name, p):
     e.need(j and j.get('story'), 'Chăm sóc gia đình chỉ có trong hành trình.', 'locked')
     e.need(j['life_day'] >= 10, 'Mở góc gia đình từ ngày sống 10.', 'locked')
     allowed = {
-        'jr_hh_adopt': {'kind', 'name', 'confirm', 'pay'},
+        'jr_hh_adopt': {'kind', 'name', 'confirm', 'pay', 'fee'},
         'jr_hh_care': {'member', 'act', 'pay'},
         'jr_hh_rename': {'member', 'name'},
         'jr_hh_style': {'member', 'item', 'confirm', 'pay'},
@@ -101,8 +117,16 @@ def action(s, name, p):
         e.need(not h or not h.get(key), 'Nhà đã có thành viên này rồi.', 'already_owned')
         who = _name(p.get('name'))
         e.need(p.get('confirm') is True, 'Xác nhận đón thành viên mới về nhà.')
-        cost = KINDS[kind][2]
-        payment = bank.pay(s, cost, 'Đồ dùng đón thú cưng', method=p.get('pay', 'auto'), kind='life') if cost else None
+        if kind == 'child':   # 🏥 21/10: the paperwork fee at Trung tâm bảo trợ (game/birth.py), never on credit
+            from . import birth
+            fee = birth.ADOPT_FEE
+            e.need(p.get('fee') == fee, f'Nhận nuôi bé cần phí giấy tờ {fee:,} xu ở {birth.AGENCY["name"]}. '.replace(',', '.')
+                   + 'Tải lại trang để xem rồi xác nhận nhé.', 'fee_changed')
+            paid = birth.take(s, fee, f'📄 Phí nhận nuôi · {birth.AGENCY["name"]}', e.need)
+            payment = dict(text=f'Phí giấy tờ: {paid["text"]}.')
+        else:
+            cost = KINDS[kind][2]
+            payment = bank.pay(s, cost, 'Đồ dùng đón thú cưng', method=p.get('pay', 'auto'), kind='life') if cost else None
         if h is None:
             h = j['household'] = dict(v=1, child=None, pet=None)
         h[key] = dict(kind=kind, name=who, since=j['life_day'], day=j['life_day'], did=[], care_days=0,

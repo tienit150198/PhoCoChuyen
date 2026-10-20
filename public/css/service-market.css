@@ -1,0 +1,149 @@
+/* ==========================================================================
+   🛎️ Phố dịch vụ (public/js/v4/service-market.js), over /css/spend.css (sd-*). Theme tokens only. Phone first
+   (360–390 px): one column, 44 px targets, the main button in the sticky bottom bar; landscape phones (844×390) keep
+   the bar slim and scroll the body.
+   ========================================================================== */
+.svc-stick{position:sticky;top:0;z-index:6;background:var(--surface)}
+.svc-stick .sheet-head{position:static}
+.svc-sheet .sd-head .grow{min-width:0}
+.svc-sub{display:block;font-size:.8rem;color:var(--muted);font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-sheet .sd-tabs button{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding:4px 6px;font-size:1.15rem}
+.svc-sheet .sd-tabs button small{font-size:.8rem;font-weight:800;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.svc-sheet .sd-tabs .badge{position:absolute;top:2px;right:8px;font-size:.7rem;font-style:normal;min-width:18px;height:18px;line-height:18px;padding:0 5px;border-radius:999px;background:var(--bad);color:#fff;font-weight:800}
+.svc-bar{gap:6px}
+.svc-bar .sd-flash{margin:0}
+.svc-bar .btn{min-height:46px}
+.svc-bar:has(.btn+.btn){flex-direction:row;flex-wrap:wrap}
+.svc-bar:has(.btn+.btn) .sd-flash{flex-basis:100%}
+.svc-bar:has(.btn+.btn) .btn.ghost{flex:0 0 auto}
+.svc-bar:has(.btn+.btn) .sd-main{flex:1 1 auto;width:auto}
+.svc-note{margin:6px 0;font-size:.86rem;line-height:1.45;color:var(--muted)}
+.svc-muted{display:block;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.svc-filter{display:flex;gap:8px;margin:0 0 8px}
+.svc-filter .sd-select{flex:1 1 auto}
+/* the four sorts as a 2×2 grid on phones, one row when there is room (sideways scrolling cut "🤝 Nhiều đơn" with no hint) */
+.svc-sorts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.svc-sorts .sd-chip{min-width:0;min-height:40px;padding:0 8px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:520px){.svc-sorts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* 🧰 / 🔬 what the buyer needs first (v4/svc-needs.js) */
+.svc-need-line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;font-size:.78rem;font-weight:700;line-height:1.35;color:var(--warn)}
+.svc-need{margin:8px 0;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2)}
+.svc-need.hard{border-color:var(--warn);background:var(--warn-soft,var(--surface-2))}
+.svc-need p{margin:0 0 6px;font-size:.86rem;font-weight:700;line-height:1.45;color:var(--ink)}
+.svc-need .btn{width:100%;min-height:44px}
+.svc-list{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:0 0 10px}
+.svc-list>*{min-width:0}
+.svc-card{display:flex;align-items:center;gap:10px;width:100%;min-height:64px;padding:8px 10px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.svc-card:hover,.svc-card:focus-visible{border-color:var(--accent)}
+.svc-card.mine{border-style:dashed}
+.svc-card .grow{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto}
+.svc-name{font-size:.98rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svc-what{font-size:.86rem;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svc-what small{color:var(--muted)}
+.svc-meta{margin:0;font-size:.8rem;color:var(--muted)}
+.svc-right{flex:none;max-width:42%;display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.svc-off{color:var(--warn);font-weight:700}
+/* 🏥 / 📸 own-flow listings: the button opens the module's own order sheet */
+.svc-set.svc-own .svc-pill{flex:none;white-space:nowrap}
+.svc-open{display:inline-flex;align-items:center;gap:.3em;min-height:28px;padding:2px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink,#fff);font-size:.8rem;font-weight:800;white-space:nowrap}
+.svc-av{display:inline-grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--surface-2);font-size:1.4rem}
+.svc-av svg{width:100%;height:100%}
+.svc-on{font-style:normal;color:var(--good);font-size:.8rem}
+.svc-stars b{color:var(--ink)}
+.svc-stars.none{opacity:.75}
+.svc-price{display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap}
+.svc-price b{font-size:1.05rem;font-weight:900;color:var(--ink)}
+.svc-price small{color:var(--muted);font-weight:700}
+.svc-mult{font-style:normal;font-size:.75rem;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text)}
+.svc-mult.big{font-size:1.1rem;padding:4px 12px;min-width:56px;text-align:center}
+.svc-back{margin:0 0 8px}
+.svc-who{display:flex;align-items:center;gap:10px}
+.svc-who h3{margin:0}
+.svc-who .svc-av{width:54px;height:54px;font-size:1.8rem}
+.svc-buy h3{margin:0 0 6px}
+.svc-quote{margin:0 0 8px;font-style:italic;color:var(--ink-2)}
+.svc-offers{display:grid;gap:6px;margin:0 0 8px}
+.svc-offers .sd-item b{font-size:.9rem}
+.svc-qty,.svc-mult-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.svc-qty .btn,.svc-mult-row .btn{min-width:44px;min-height:44px}
+.svc-qty b{min-width:28px;text-align:center;font-size:1.1rem}
+.svc-eq{margin-left:auto;font-weight:700;color:var(--ink-2)}
+.svc-eq b{font-size:1.1rem;color:var(--ink)}
+.svc-total{display:flex;align-items:baseline;gap:8px;margin:8px 0}
+.svc-total span{color:var(--muted);font-weight:700}
+.svc-total b{font-size:1.5rem;font-weight:900}
+.svc-field{display:flex;flex-direction:column;gap:4px;margin:8px 0;font-size:.85rem;font-weight:700;color:var(--ink-2)}
+.svc-field input,.svc-field textarea{min-height:44px;border:1px solid var(--field-line,var(--line));border-radius:12px;padding:8px 12px;font:inherit;font-weight:600;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.svc-chips{margin:0 0 4px}
+.svc-chips .sd-chip{font-size:.9rem}
+.svc-rules{margin:0 0 10px;font-size:.86rem;color:var(--ink-2)}
+.svc-rules summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
+.svc-rules ul{margin:0;padding-left:18px;line-height:1.5}
+.svc-dl{margin:0 0 8px}
+.svc-dl div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px dashed var(--line)}
+.svc-dl div:first-child{border-top:0}
+.svc-dl dt{color:var(--muted);font-weight:700}
+.svc-dl dd{margin:0;text-align:right}
+.svc-sec{margin:0 0 12px}
+.svc-order{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:10px;margin:0 0 8px}
+.svc-order.focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.svc-order.small{padding:8px 10px}
+.svc-order p{margin:6px 0 0}
+.svc-order blockquote{margin:6px 0 0;padding:6px 10px;border-left:3px solid var(--line-strong,var(--line));color:var(--ink-2);font-size:.88rem}
+.svc-row{display:flex;align-items:center;gap:8px}
+.svc-row .grow{min-width:0;flex:1 1 auto;display:flex;flex-direction:column}
+.svc-row b{overflow:hidden;text-overflow:ellipsis}
+.svc-pill{display:inline-block;font-size:.78rem;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.svc-pill.s-talk,.svc-pill.s-held,.svc-pill.s-requested{background:var(--accent-soft);color:var(--accent-text)}
+.svc-pill.s-working,.svc-pill.s-accepted,.svc-pill.s-delivered,.svc-pill.s-ready{background:var(--warn-soft,var(--surface-2));color:var(--warn)}
+.svc-pill.s-done,.svc-pill.s-completed{background:var(--good-soft);color:var(--good)}
+.svc-pill.s-refunded,.svc-pill.s-declined,.svc-pill.s-cancelled,.svc-pill.s-expired,.svc-pill.s-flag{background:var(--bad-soft);color:var(--bad)}
+.svc-turn{font-size:.85rem;font-weight:700;color:var(--accent-text)}
+.svc-result{font-size:.88rem;color:var(--good)}
+.svc-acts{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.svc-acts .btn{min-height:44px;flex:1 1 auto}
+.svc-form{margin:8px 0 0;padding:8px;border-radius:12px;background:var(--surface-2)}
+.svc-starpick{display:flex;gap:4px}
+.svc-star{min-width:44px;min-height:44px;border:0;background:transparent;font-size:1.7rem;color:var(--line-strong,#ccc);cursor:pointer}
+.svc-star.on{color:#f2b01e}
+.svc-set{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:10px;margin:0 0 8px}
+.svc-set.on{border-color:var(--good);box-shadow:inset 3px 0 0 var(--good)}
+.svc-mode{margin:8px 0 4px}
+.svc-mode .btn{min-height:44px;font-size:.88rem}
+.svc-switch{position:relative;flex:none;width:56px;height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);cursor:pointer;padding:0}
+.svc-switch i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm);transition:left .15s ease}
+.svc-switch.on{background:var(--good);border-color:var(--good)}
+.svc-switch.on i{left:27px}
+.svc-switch:disabled{opacity:.5}
+.svc-switch::after{content:'';position:absolute;inset:-7px}
+.svc-empty{text-align:center}
+.svc-rep h3{margin:0 0 4px}
+.svc-sheet .btn.full{width:100%}
+.svc-sheet .btn.danger{background:var(--bad);color:#fff;border-color:var(--bad)}
+@media (max-height:480px){
+  .svc-card{min-height:52px}
+  .svc-av{width:36px;height:36px}
+  /* landscape phones (844×390): the head and the tabs share one row, the provider's card and the bar shrink, so the
+     order form has room between them */
+  .svc-stick{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+  .svc-stick .sheet-head{flex:1 1 auto;min-width:0;border-bottom:0;padding:4px 0 4px 12px}
+  .svc-stick .sd-logo{display:none}
+  .svc-stick .sd-tabs{flex:0 0 auto;border-bottom:0;padding:4px 12px 4px 0}
+  .svc-stick .sd-tabs button{flex:0 0 auto}
+  .svc-sheet .sd-tabs button{min-height:38px;padding:2px 10px}
+  .svc-sheet .sd-body{padding-top:8px}
+  .svc-back{float:left;margin:0 8px 6px 0;min-height:38px}
+  .svc-who{overflow:hidden;padding:6px 10px}
+  .svc-sheet .sd-body .sd-chip{min-height:38px;font-size:.88rem}
+  .svc-who .svc-av{width:36px;height:36px;font-size:1.2rem}
+  .svc-who .svc-muted{display:none}
+  .svc-bar .btn{min-height:40px}
+  .svc-bar .sd-flash:empty{display:none}
+}
+.svc-gold{color:#e0a106;letter-spacing:1px}
+.svc-reg{padding:6px 0;border-top:1px dashed var(--line)}
+.svc-reg:first-of-type{border-top:0}
+.svc-reg .svc-av{width:32px;height:32px;font-size:1.1rem}
+/* 🎪 Hội chợ việc làm: a booth's fair price (game/town_fair.py) beside the usual one */
+.svc-fair{font-style:normal;font-size:.76rem;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--bad-soft);color:var(--bad);white-space:nowrap}
+.svc-price s{color:var(--muted);font-size:.8em}

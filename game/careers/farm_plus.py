@@ -241,6 +241,11 @@ def _harvest(s: dict, c: dict, g: dict, i: int, now: int) -> str:
     cap = capacity.limit(c, 'farm', STORE_CAP)
     room = cap - _store_units(g)
     kit.need(room >= qty, f'Kho trang trại đầy ({_store_units(g)}/{cap}). Bán bớt ở chợ hoặc giao đơn trước nhé.')
+    lab_add, lab_note = 0, ''
+    if isinstance((s.get('journey') or {}).get('lab'), dict):   # 🔬 a seed batch from a Viện nghiên cứu player (game/research_lab.py)
+        from .. import research_lab
+        lab_add, lab_note = research_lab.seed_bonus(s, room - qty, crop['id'])
+        qty += lab_add
     _put(g, crop['id'], grade, qty)
     st = g['stats']
     st['harvests'] += 1
@@ -273,6 +278,8 @@ def _harvest(s: dict, c: dict, g: dict, i: int, now: int) -> str:
     head = f'Thu {qty} {crop["unit"]} {crop["name"].lower()} loại {grade}'
     why = (' (bỏ lỡ: ' + ', '.join(CARES[k]['label'].lower() for k in missed) + ')') if missed else ''
     why += ' (để quá lứa)' if stage == 'over' else ''
+    if lab_note:
+        extra.append(lab_note)
     return f'{crop["emoji"]} {head}{why} · +{gain} điểm nông.' + (' ' + ' '.join(extra) if extra else '')
 
 

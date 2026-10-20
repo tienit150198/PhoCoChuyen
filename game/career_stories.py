@@ -1921,6 +1921,45 @@ ARCS = {
                 ('me', 'Em sẽ giữ như chị: đúng luồng, đúng số, không nhận của ai cái gì.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🔑 Lễ tân Khách sạn Hoa Sứ (sau chương 3)
+    'reception': dict(
+        title='Phòng 102 của ông Tư Bến', emoji='🔑',
+        keepsake=dict(emoji='🔑', name='Chiếc chìa 102 cũ', desc='Chiếc chìa đồng phòng 102 đời đầu, ông Tư Bến giữ ba mươi năm rồi trả lại cho quầy, nhờ bạn treo ở móc đầu tiên.'),
+        cast={'quyen': _p('Chị Quyên', '📒', 'Trưởng ca lễ tân', 'reception_npc_01'),
+              'khoa': _p('Khoa', '😏', 'Lễ tân ca chiều', 'reception_npc_02'),
+              'na': _p('Na', '🙋', 'Lễ tân mới', 'reception_npc_03'),
+              'tu': _p('Ông Tư Bến', '👴', 'Khách quen tháng nào cũng về', 'reception_npc_05')},
+        beats=[
+            _b('Sổ giao ca đầu tiên', '📒', 'Chị Quyên đặt cuốn sổ giao ca dày cộm lên quầy.', [
+                ('quyen', 'Ở đây sổ là luật. Việc gì còn dở thì ghi, ghi tên khách, ghi giờ. Ca sau không phải gọi hỏi em.'),
+                ('me', 'Dạ. Việc xong rồi thì khỏi ghi hả chị?'),
+                ('quyen', 'Ghi việc xong là chôn việc dở. Nhớ vậy là được.')]),
+            _b('Ông khách của phòng 102', '👴', 'Một ông cụ đứng ngắm cây sứ trước cửa, tay cầm mũ.', [
+                ('tu', 'Phòng 102 còn không cháu? Bà nhà ông hồi trước thích ngồi bên cửa sổ đó nhìn hoa sứ rụng.'),
+                ('na', 'Ông Tư tháng nào cũng về một tuần đó anh chị. Ông kể chuyện bến sông hoài.'),
+                ('me', 'Dạ còn ạ. Cháu giữ phòng 102 cho ông.')],
+                _c('Ông Tư hỏi bạn có muốn nghe chuyện bến sông không?',
+                   _o('a', 'Rót ấm trà, ngồi nghe ông kể lúc quầy vắng', [('tu', 'Hồi đó chỗ này là bến đò. Bà nhà ông bán nước ngay gốc sứ này nè.')], rel='tu'),
+                   _o('b', 'Hẹn ông tối hết ca rồi nghe', [('tu', 'Ừ, tối ông ngồi sân chờ cháu.')], rel='tu'))),
+            _b('Ai làm vụ hộ chiếu?', '🏅', 'Họp đầu ca, chị Quyên khen Khoa vì một việc bạn làm.', [
+                ('khoa', 'Dạ có gì đâu chị, khách quên đồ thì mình gửi ra thôi.'),
+                ('quyen', 'Lần sau ai làm thì ghi tên vào sổ. Chị đọc sổ chứ không đọc nét mặt.'),
+                ('me', 'Dạ, em ghi giờ và tên rõ rồi chị, trang hôm qua.')],
+                days=4, served=10, gap=1),
+            _b('Na và chiếc chìa 108', '🔑', 'Na đưa nhầm chìa kho cho khách, mặt tái mét.', [
+                ('na', 'Em xin lỗi… em tưởng 108 là 103.'),
+                ('me', 'Hồi tuần đầu anh chị cũng nhầm y vậy. Mình dán màu cho móc nha.'),
+                ('quyen', 'Ừ. Người cũ nhớ lỗi của mình thì người mới đỡ phải mắc.')],
+                _c('Na hỏi xin bạn mẹo nhớ bảng móc chìa.',
+                   _o('a', 'Chỉ Na đọc to số chìa trước khi đưa khách', [('na', 'Đọc to lên là tự nghe ra mình sai liền!')], rel='na'),
+                   _o('b', 'Cùng Na vẽ lại bảng móc chìa có màu', [('na', 'Em dán lên cửa tủ, nhìn là nhớ.')], rel='na')),
+                days=6, served=14, gap=1),
+            _b('Chiếc chìa đồng', '🔑', 'Ông Tư về lần cuối trước khi lên thành phố ở với con.', [
+                ('tu', 'Chìa 102 đời đầu đây. Bà nhà ông giữ, giờ ông trả lại quầy. Cháu treo nó ở móc đầu tiên giùm ông.'),
+                ('quyen', 'Từ mai quầy trông vào em đó. Sổ ghi như em là ca nào cũng yên.'),
+                ('me', 'Cháu sẽ giữ quầy như chị: nghe hết lời khách, đúng phòng, đúng chìa, việc dở ghi đủ.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ 🛎️ Khách sạn Sông Mây (sau chương 3)
     'hotel': dict(
         title='Chùm chìa khóa của chị Hằng', emoji='🗝️',
@@ -1998,6 +2037,123 @@ ARCS = {
                 ('tam', 'Ba mươi năm, chú chưa để bếp cháy lần nào. Không phải vì may, mà vì tối nào cũng đi thêm một vòng điện.'),
                 ('loan', 'Từ mai bếp với sảnh đều trông vào em đó.'),
                 ('me', 'Con sẽ giữ như chú: tay sạch mới vào bếp, khách dặn gì làm nấy, về thì tắt hết điện.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🏦 Quầy số 3, Ngân hàng Phố (sau chương 3)
+    'teller': dict(
+        title='Chiếc ghế xoay ở Quầy số 3', emoji='🏦',
+        keepsake=dict(emoji='🪪', name='Bảng tên Quầy số 3', desc='Bảng tên đầu tiên chị Hạnh cài cho bạn, góc còn dán chữ “Tập sự” đã bóc. Mười hai mùa lương hưu, chị bảo, mới đổi một chiếc ghế.'),
+        cast={'hanh': _p('Chị Hạnh', '👩‍💼', 'Trưởng quầy', 'teller_npc_01'),
+              'quan': _p('Anh Quân', '🙃', 'Giao dịch viên ca sáng', 'teller_npc_02'),
+              'luu': _p('Bà Lựu', '🍵', 'Chủ quán trà đá gốc bàng', 'teller_npc_03'),
+              'vy': _p('Chị Vy', '📈', 'Giám đốc phòng giao dịch', 'teller_npc_10')},
+        beats=[
+            _b('Đếm hai lần', '💵', 'Ngày đầu, chị Hạnh đặt cọc tiền đầu tiên vào tay bạn.', [
+                ('hanh', 'Máy đếm một lần, tay đếm một lần, trước mặt khách. Chậm mười giây mà khỏi cãi nhau cả buổi.'),
+                ('me', 'Dạ, em đếm lại cả cọc này trước mặt dì Bảy.'),
+                ('hanh', 'Ừ. Quầy số 3 xin chào là chào bằng sự cẩn thận đó.')]),
+            _b('Hai anh An', '🔁', 'Chị Thơ chuyển tiền cho “Nguyễn Văn An”, danh sách có hai người.', [
+                ('hanh', 'Tên giống nhau thì nhìn ảnh, nhìn nghề. Thiếu một trong ba là chưa chắc.'),
+                ('me', 'Anh An bán bánh mì, ảnh tóc xoăn. Em đọc lại cho chị Thơ rồi mới bấm.'),
+                ('hanh', 'Đúng. Bấm nhầm thì đòi lại cực lắm.')],
+                _c('Anh Quân dúi tập hồ sơ nhờ làm hộ. Bạn làm gì?',
+                   _o('a', 'Làm hộ nhưng ghi đúng tên người thực hiện trên nhật ký', [('quan', 'Ờ… ghi tên em cũng được. Cảm ơn nha.')], rel='quan'),
+                   _o('b', 'Làm hộ, không nói gì', [('hanh', 'Lần sau ghi tên mình vào nhật ký nhé. Công ai nấy nhận.')], rel='hanh'))),
+            _b('Túi vải của bà Lựu', '🍵', 'Bà Lựu mang túi vải tới góp tháng đầu cho chiếc xe trà mới.', [
+                ('luu', 'Đủ một triệu hai đó con, bà đếm ba lần rồi.'),
+                ('me', 'Bà ơi túi thiếu ba chục ạ. Bà gửi một triệu một trăm bảy mươi hay bù thêm ạ?'),
+                ('luu', 'Trời, thế mà bà cứ tưởng. Con thật thà quá, bà gửi chỗ con là yên tâm.')],
+                days=4, served=10, gap=1),
+            _b('Chỉ tiêu của giám đốc', '📈', 'Giám đốc Vy nhắn tin lúc mười giờ tối về chỉ tiêu bảo hiểm.', [
+                ('vy', 'Quầy 3 còn thiếu bốn hợp đồng. Mai mời hết các cụ gửi tiết kiệm.'),
+                ('me', 'Chị ơi các cụ chỉ cần chỗ cất tiền thuốc. Em ghi lý do vào sổ tư vấn, em tìm khách có nhu cầu thật.'),
+                ('vy', 'Ừ… sổ tư vấn của em chị đọc rồi. Khi xét chức chị sẽ nhớ.')],
+                _c('Một cụ hỏi gói 15 năm có hợp không. Bạn nói gì?',
+                   _o('a', 'Nói thật: cụ cần linh hoạt, gói đó không hợp', [('hanh', 'Nói thật là giữ khách cả đời.')], rel='hanh'),
+                   _o('b', 'Nói chung chung cho cụ tự chọn', [('hanh', 'Cụ hỏi mình là tin mình. Lần sau nói rõ hơn nhé.')], rel='hanh')),
+                days=6, served=14, gap=1),
+            _b('Ly trà đầu tiên', '🍵', 'Chiếc xe trà inox mới đứng dưới gốc bàng đầu phố.', [
+                ('luu', 'Ly đầu tiên từ xe mới, bà mời con. Không lấy tiền, cấm từ chối!'),
+                ('hanh', 'Em làm quầy mấy tháng mà cả chợ tin. Mai chị giao em kèm bạn mới.'),
+                ('me', 'Em sẽ dạy như chị: đếm hai lần, đọc lại một lần, không ai ký thay ai.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🔬 Viện nghiên cứu Sông Mây (sau chương 3)
+    'research': dict(
+        title='Cuốn sổ thí nghiệm bìa xanh', emoji='🔬',
+        keepsake=dict(emoji='📗', name='Cuốn sổ thí nghiệm bìa xanh', desc='Cuốn sổ đầu tiên chị Nhàn đánh số trang cho bạn. Trang nào cũng có ngày, chữ ký, và cả những lần hỏng được ghi thật thà.'),
+        cast={'linh': _p('Cô Diệu Linh', '👩‍🔬', 'Viện trưởng', 'research_npc_01'),
+              'quy': _p('Anh Quý', '🦹', 'Nghiên cứu viên cùng phòng', 'research_npc_02'),
+              'nhan': _p('Chị Nhàn', '🧪', 'Kỹ thuật viên', 'research_npc_03'),
+              'tu': _p('Bác Tư', '👨‍🌾', 'Nông dân nhận khảo nghiệm', 'research_npc_07')},
+        beats=[
+            _b('Trang đầu tiên', '📗', 'Ngày đầu, chị Nhàn đưa bạn cuốn sổ bìa xanh đã đánh số trang.', [
+                ('nhan', 'Ở đây cái gì không có trong sổ là chưa từng xảy ra. Ghi cả lần hỏng nhé.'),
+                ('me', 'Dạ, lần hỏng cũng ghi ạ?'),
+                ('nhan', 'Lần hỏng mới quý. Nó cho mình biết chỗ nào không được làm lại.')]),
+            _b('Khay đối chứng', '🌱', 'Ông Hưng ghé phòng ươm, muốn chụp ảnh giống mới cho tờ rơi.', [
+                ('nhan', 'Khay giống cũ để cạnh khay mới, cùng đất, cùng nước. Ông Hưng muốn để khay cũ chỗ râm cho ảnh đẹp.'),
+                ('me', 'Vậy thì ảnh đẹp mà số liệu sai mất.'),
+                ('nhan', 'Đúng. Mình làm khoa học, không làm tờ rơi.')],
+                _c('Ông Hưng nài “để khay cũ ra sau một chút thôi”. Bạn làm gì?',
+                   _o('a', 'Giữ nguyên chỗ cũ, mời ông chụp cả hai khay cạnh nhau', [('nhan', 'Giỏi. Ảnh thật mới đáng in.')], rel='nhan'),
+                   _o('b', 'Dời khay cũ ra sau một chút cho ông vui', [('nhan', 'Lần này chị chụp lại ảnh khác. Lần sau đừng nhé.')], rel='nhan'))),
+            _b('Con trâu tò mò', '🐃', 'Bác Tư gọi điện từ ruộng thử, giọng vừa lo vừa buồn cười.', [
+                ('tu', 'Con Mực nhà bác vào giẫm nát ô số ba rồi con ơi. Bác xin lỗi nghen.'),
+                ('me', 'Dạ không sao bác. Con ghi ô ba hỏng vì trâu giẫm, bỏ khỏi kết quả, ba ô kia vẫn tính.'),
+                ('tu', 'Vậy là khỏi phải làm lại hả? Mai bác rào thêm lớp tre.')],
+                days=4, served=10, gap=1),
+            _b('Tên ai trên bản tin', '🦹', 'Bản tin của viện đăng ảnh anh Quý cầm khay mạ của bạn.', [
+                ('quy', 'Ơ, người ta chụp thì anh cầm giùm thôi mà. Chú thích là do bên truyền thông ghi.'),
+                ('me', 'Em có sổ thí nghiệm từng ngày. Mình nhờ bên truyền thông đính chính giúp em nhé.'),
+                ('quy', 'Ừ… thôi được. Lần sau anh đứng cạnh khay của anh.')],
+                _c('Cô Diệu Linh hỏi bạn muốn xử lý chuyện này thế nào?',
+                   _o('a', 'Chỉ xin đính chính, không cần phạt ai', [('linh', 'Được. Sổ của em đủ để ai cũng hiểu.')], rel='linh'),
+                   _o('b', 'Xin ghi rõ phân công trong mọi đề tài từ nay', [('linh', 'Ý hay. Viện sẽ làm bảng phân công từ tuần sau.')], rel='linh')),
+                days=6, served=14, gap=1),
+            _b('Cuốn sổ bìa xanh', '🔬', 'Cô Diệu Linh gọi bạn lên phòng, trên bàn là cuốn sổ đầu tiên của bạn.', [
+                ('linh', 'Hội đồng duyệt đề tài của em mà không ghi chú bút đỏ nào. Ba mươi năm cô mới thấy GS. Bảo làm vậy.'),
+                ('nhan', 'Vì sổ của em ghi cả lần hỏng. Ông ấy tin những người ghi cả lần hỏng.'),
+                ('me', 'Em sẽ giữ như chị dạy: có đối chứng, ghi đủ, kết luận đúng mức.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 📻 Đài phát thanh Sóng Mây (sau chương 3)
+    'radio': dict(
+        title='Chiếc micro bọc mút xanh', emoji='📻',
+        keepsake=dict(emoji='🎙️', name='Chiếc micro bọc mút xanh của chị Hoa', desc='Chiếc micro cũ dán băng keo ở chân, hai mươi năm đọc bản tin phường. Chị Hoa đọc qua cả trăm trận bão bằng nó, giờ nó nằm trên bàn của bạn.'),
+        cast={'hoa': _p('Chị Hoa', '🎙️', 'Trưởng đài', 'radio_npc_01'),
+              'tuan': _p('Anh Tuấn', '🔧', 'Kỹ thuật viên', 'radio_npc_02'),
+              'ba': _p('Cô Ba Gánh', '🍙', 'Thính giả gọi mỗi sáng', 'radio_npc_04'),
+              'hung': _p('Chú Hùng', '😤', 'Thính giả nóng tính', 'radio_npc_06')},
+        beats=[
+            _b('Đèn đỏ trên cửa', '🔴', 'Ngày đầu ở đài, chị Hoa chỉ chiếc đèn đỏ trên cửa phòng thu.', [
+                ('hoa', 'Đèn này sáng là cả phố đang nghe. Kéo cần về 0, thử mic, đeo tai nghe, kiểm đường truyền rồi mới bật nó.'),
+                ('me', 'Dạ, em làm đúng thứ tự dán cạnh bàn trộn.'),
+                ('hoa', 'Ừ. Đọc chậm thôi, ở đầu hẻm có bà cụ nghe không rõ.')]),
+            _b('Bản kịch bản lúc 9 giờ 59', '📢', 'Ông Lực nhà tài trợ gửi bản quảng cáo mới qua tin nhắn, một phút trước giờ phát.', [
+                ('tuan', 'Bản này chưa có chữ ký chị Hoa đâu nghe em.'),
+                ('me', 'Vậy em đọc bản đã duyệt, còn bản mới em gửi chị Hoa xem cho khung sau.'),
+                ('hoa', 'Đúng. Ở đài, chữ nào lên sóng là chữ đó đã có người chịu trách nhiệm.')],
+                _c('Ông Lực gọi điện đòi đọc tên cửa hàng năm lần. Bạn trả lời sao?',
+                   _o('a', 'Giữ đúng hợp đồng hai lần, mời ông bàn thêm với chị Hoa', [('hoa', 'Em nói khéo đó. Ông Lực cằn nhằn mà vẫn ký tiếp hợp đồng.')], rel='hoa'),
+                   _o('b', 'Đọc năm lần cho ông vui', [('hoa', 'Lần sau ai cũng đòi năm lần thì đài thành chợ đó em.')], rel='hoa'))),
+            _b('Câu chửi bảy giây', '☎️', 'Chú Hùng gọi vào sóng, câu đầu tiên đã chửi thề.', [
+                ('tuan', 'Bấm nút xóa trễ đi em, còn bảy giây!'),
+                ('me', 'Dạ em bấm rồi. Chú ơi, chú bình tĩnh, chú muốn góp ý chuyện gì ạ?'),
+                ('hung', 'Ừ… thì nhạc đài dạo này toàn bài cũ. Mở giùm tôi bài Sông quê.')],
+                days=4, served=10, gap=1),
+            _b('Đêm mất điện', '⚡', 'Đang bản tin bão thì cả phòng thu tối om.', [
+                ('tuan', 'Bộ lưu điện chỉ chịu được mười phút, anh chạy ra máy phát!'),
+                ('me', 'Em bật băng dự phòng, có điện là em xin lỗi thính giả rồi đọc tiếp tin bão.'),
+                ('ba', 'Cô nghe đài qua cái radio pin, may mà đài nói lại đường vòng, cô gánh xôi về kịp.')],
+                _c('Có điện lại, bạn làm gì đầu tiên?',
+                   _o('a', 'Kiểm lại bàn trộn và mic, xin lỗi thính giả, đọc lại tin khẩn', [('hoa', 'Đúng. Tin khẩn đọc lại lần nữa, người vừa bật đài cũng biết.')], rel='hoa'),
+                   _o('b', 'Mở nhạc vui cho đỡ căng', [('ba', 'Đài mở nhạc mà không nói gì, cô cứ tưởng hết bão rồi.')], rel='ba')),
+                days=6, served=14, gap=1),
+            _b('Chiếc micro bọc mút xanh', '🎙️', 'Chị Hoa lên phường làm việc khác, trao lại chiếc micro cũ.', [
+                ('hoa', 'Hai mươi năm, chị chưa đọc sai tên ai mà không đính chính. Không phải vì chị giỏi, mà vì chị chịu hỏi lại.'),
+                ('tuan', 'Từ mai cả phòng máy trông vào em đó.'),
+                ('me', 'Em sẽ giữ như chị: đúng tin, đúng tên, chỉ đọc bản đã duyệt, mất điện thì bình tĩnh theo sổ.')],
                 days=9, served=22, gap=2, level=4),
         ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)

@@ -132,6 +132,17 @@ _profile('laundry', 'Thùy Dung | Hoàng Nam | Yến Nhi',
     'đã tìm đúng chủ túi đồ lụa bằng mã nhận và kiểm đủ món với khách // matched the silk bag to its owner using the intake code and confirmed every item with the customer',
     'đối chiếu mã nhận và tình trạng vải trước trả // intake-code reconciliation and fabric-condition checks before return')
 
+_profile('restore', 'Minh Khoa | Bảo Ngọc | Quốc Thắng',
+    'Hội nghề phục chế · chủ xưởng Hồn Xưa // Restorers guild · Hồn Xưa workshop owner',
+    'giữ hồn đồ xưa, ghi đúng tuổi đồ và nói thật với khách // keeping old pieces true, recording their real age, and being honest with customers',
+    'đọc dấu hiệu hư hỏng | chốt yêu cầu khách | ghi nguồn linh kiện // reading damage signs | settling customer requests | recording part sources',
+    'Một tủ thờ gỗ gụ có mọt và bong sơn, khách muốn giữ mùi long não nhưng bên trong có mốc. // A rosewood altar cabinet has woodworm and flaking paint; the customer wants to keep its camphor smell, but there is mould inside.',
+    'Giao {a} khám dấu hiệu từng chỗ hư, {b} chốt yêu cầu với khách có ghi phiếu, {c} lo linh kiện và ảnh trước sau. // Have {a} examine each damaged spot, {b} settle the request with the customer in writing, and {c} handle parts and before-and-after photos.',
+    'Một tay nắm đồng bị thay bằng đồ nhựa mà phiếu không ghi; tuổi đồ trên phiếu theo lời khách, không theo tem đáy. // A brass handle was replaced with plastic without a note on the ticket, and the age on the ticket follows the customer, not the maker stamp.',
+    'Dừng bàn giao, chế lại tay nắm cùng vật liệu, sửa tuổi đồ theo tem và báo khách trước khi trả. // Hold the handover, remake the handle in the same material, correct the age from the stamp, and tell the customer before returning it.',
+    'đã giữ nguyên mùi gỗ cũ, lau mốc từng chỗ và giao tủ kèm biên bản phục chế có ảnh // kept the old wood smell, cleaned the mould spot by spot, and handed back the cabinet with an illustrated restoration report',
+    'đối chiếu tuổi đồ và nguồn linh kiện trước khi trả // checking the piece\'s age and part sources before return')
+
 _profile('mother_baby', 'Thanh Mai | Đức Huy | Tú Anh',
     'Hội tiểu thương · chủ tiệm Mây Nhỏ // Traders association · Little Cloud shop owner',
     'quà đúng độ tuổi, đủ đơn và đổi trả rõ ràng // age-appropriate gifts, complete orders, and clear returns',
@@ -461,6 +472,50 @@ _profile('banquet', 'Bảo Trân | Gia Huy | Thanh Tùng',
     'Giữ khay lại, hâm món tới từ 75°C, dán thẻ dị ứng đúng bàn rồi đo lại trước khi ra món. // Hold the tray, reheat the food to at least 75°C, label the allergy table\'s tray, and measure again before it goes out.',
     'đã sát khuẩn đầu ca, ra món đúng nhiệt và đúng thẻ dị ứng, tắt điện cuối ca // sanitised at the start of the shift, served at the right temperature with the right allergy cards, and powered down at closing',
     'sổ vệ sinh đầu ca và phiếu kiểm quầy ra món // the opening hygiene log and the pass temperature sheet')
+
+_profile('reception', 'Thu Hà | Minh Quân | Bảo Anh',
+    'Chị Quyên · trưởng ca lễ tân Hoa Sứ // Quyên · Hoa Sứ front desk shift lead',
+    'đúng phòng đúng người, đủ yêu cầu của khách và sổ giao ca không sót việc // the right room for the right party, every guest need met, and a handover log that misses nothing',
+    'nhận khách | điều phối phòng | dịch vụ và phàn nàn // check-in | room coordination | services and complaints',
+    'Chiều thứ sáu: một đoàn mười khách tới sớm, một bà cụ cần tầng trệt, ba phòng chưa dọn và hai chuyến xe sân bay sáng mai trùng giờ. // Friday afternoon: a party of ten arrives early, an elderly guest needs the ground floor, three rooms are not cleaned yet, and two airport rides tomorrow morning overlap.',
+    'Giao {a} nhận đoàn theo bảng phòng và yêu cầu từng nhóm, {b} xếp lịch dọn phòng theo giờ khách tới, {c} xếp lịch xe và báo thức, ghi sổ giao ca. // Have {a} check the party in by the room board and each group\'s needs, {b} plan the cleaning by arrival time, and {c} schedule the rides and wake-up calls and write the handover.',
+    'Hai phòng của một nhà đã giao nhưng không sát vách, còn sổ giao ca thiếu cuộc báo thức 5:30 khách đã nhờ. // The family\'s two rooms were given but are not side by side, and the handover log is missing the 5:30 wake-up call the guest asked for.',
+    'Đổi sang hai phòng sát vách còn trống, đổi chìa, ghi lý do và thêm cuộc báo thức 5:30 vào sổ giao ca. // Move them to two free rooms side by side, swap the keys, note why, and add the 5:30 wake-up call to the handover log.',
+    'đã xếp đúng phòng đủ yêu cầu, giao đúng chìa và ghi đủ việc còn dở vào sổ giao ca // put each party in a room that met every need, handed the right keys, and logged every pending job in the handover',
+    'bảng phòng đã chốt và sổ giao ca // the final room board and the handover log')
+
+_profile('teller', 'Thu Trang | Minh Đức | Ngọc Ánh',
+    'Chị Hạnh · trưởng quầy giao dịch // Hạnh · teller counter lead',
+    'đúng người, đúng tiền, quỹ khớp từng đồng và không lộ thông tin khách // the right person, the right money, a drawer that balances to the last note, and no customer data exposed',
+    'đếm tiền và đổi cọc | đối chiếu người nhận | quỹ ATM và bàn giao // counting and bundling | recipient checks | ATM cash and handover',
+    'Sáng ngày lương hưu có ba việc: các cụ xếp hàng từ sớm, dì Bảy cần đổi tiền lẻ gấp, và ATM trước cửa báo sắp hết tiền. // A pension-day morning has three jobs: retirees queuing early, dì Bảy needing small change fast, and the ATM outside running low.',
+    'Giao {a} mở quầy đếm tiền chậm rãi cho các cụ, {b} đổi cọc cho dì Bảy và đối chiếu từng chuyển khoản, {c} cùng một người nữa tiếp quỹ ATM và ký sổ. // Have {a} open a counter and count slowly for the retirees, {b} bundle change for dì Bảy and check every transfer, and {c} refill the ATM with a second person and sign the log.',
+    'Sổ bàn giao ghi đủ quỹ nhưng đếm thực tế hụt 200 nghìn và có một phiếu rút đã ký mà chưa chi. // The handover book says the drawer is full, but the count is 200k short and one signed withdrawal slip was never paid out.',
+    'Chưa ký nhận: đối chiếu từng biên nhận, ghi khoản treo, lập biên bản với trưởng quầy rồi mới bàn giao. // Do not sign yet: match every receipt, log the pending item, and write a report with the counter lead before handing over.',
+    'đã đếm hai lần trước mặt khách, chuyển đúng người nhận và bàn giao quỹ khớp sổ // counted twice in front of the customer, sent money to the right recipient, and handed over a drawer that matched the book',
+    'biên nhận từng giao dịch và sổ bàn giao quỹ // a receipt for every transaction and the drawer handover book')
+
+_profile('research', 'Minh Thư | Quốc Huy | Gia Bảo',
+    'Cô Diệu Linh · viện trưởng Viện nghiên cứu Sông Mây // Diệu Linh · director of the Sông Mây research institute',
+    'thí nghiệm có đối chứng, sổ ghi đủ cả lần hỏng và kết luận đúng mức dữ liệu // experiments with a control, a lab book that records the failures too, and conclusions the data supports',
+    'lai tạo giống | thử công thức món | làm mẫu sáng chế // plant breeding | recipe trials | prototype building',
+    'Hội đồng họp sáng thứ hai: một giống lúa chịu hạn chưa đủ lần lặp, ba công thức chè chờ nếm, và một mẫu quạt cầm tay vừa nứt ở bàn thả rơi. // The council meets on Monday morning: a drought-tolerant rice line short of repeats, three dessert recipes waiting to be tasted, and a handheld fan prototype that just cracked on the drop rig.',
+    'Giao {a} làm thêm lần lặp có khay đối chứng, {b} mã hóa mẫu và chủ trì buổi nếm, {c} gia cố mẫu quạt rồi thử lại cả lô. // Have {a} run the extra repeats with a control tray, {b} code the samples and run the tasting, and {c} reinforce the fan and test a fresh batch.',
+    'Biểu đồ đã in cho hội đồng nhưng có hai ô ruộng ngập nước vẫn được tính vào trung bình, và sổ thí nghiệm thiếu chữ ký ngày thứ ba. // The chart is printed for the council, but two flooded plots are still counted in the mean, and the lab book is missing the third day\'s signature.',
+    'Giữ biểu đồ lại, bỏ hai ô ngập có ghi lý do, tính lại trung bình và xin chữ ký bổ sung có ghi chú ngày sửa. // Hold the chart, drop the two flooded plots with the reason written down, recompute the mean, and get the missing signature with a dated correction note.',
+    'đã giữ số liệu thật, có đối chứng, ghi đủ mẫu hỏng và trình hội đồng đúng mức kết quả // kept the real numbers, used a control, logged every spoiled sample, and presented the council only what the results show',
+    'sổ thí nghiệm đánh số trang và biên bản hội đồng // the page-numbered lab book and the council minutes')
+
+_profile('radio', 'Thu Trang | Quang Vinh | Bích Ngọc',
+    'Chị Hoa · trưởng đài phát thanh phường // Hoa · ward radio station head',
+    'tin đọc đúng thứ tự, chỉ đọc bản quảng cáo đã duyệt và không để sóng câm khi mất điện // bulletins read in the right order, only approved ad scripts on air, and no dead air in a power cut',
+    'đọc bản tin | dựng chương trình ca nhạc | kỹ thuật phòng máy // reading bulletins | building music shows | studio engineering',
+    'Sáng thứ hai có cảnh báo mưa bão, nhà tài trợ gửi kịch bản mới lúc chín giờ năm mươi chín, và máy phát dự phòng chưa ai thử từ tuần trước. // Monday morning brings a storm warning, a sponsor sends a new script at 9:59, and nobody has tested the backup generator since last week.',
+    'Giao {a} đọc bản tin theo thứ tự tin khẩn trước, {b} chỉ dựng quảng cáo theo bản đã ký duyệt, {c} thử máy phát và bộ lưu điện trước giờ lên sóng. // Have {a} read the bulletin urgent items first, {b} build the ad only from the signed script, and {c} test the generator and the UPS before air time.',
+    'Spot quảng cáo đã lên lịch nhưng là bản gửi qua tin nhắn chưa ai duyệt, còn câu “dùng là khỏi bệnh”. // The ad spot is scheduled, but it is the unapproved version sent by text and still says “cures any illness”.',
+    'Rút spot khỏi lịch, đọc bản đã ký duyệt gần nhất, gạch câu phóng đại và báo nhà tài trợ trước khung quảng cáo. // Pull the spot, read the latest signed script, strike the exaggerated claim, and tell the sponsor before the ad break.',
+    'đã đọc tin khẩn trước, chỉ phát quảng cáo đã duyệt và xử lý mất điện theo sổ sự cố // read urgent items first, aired only approved ads, and handled the power cut by the incident log',
+    'sổ duyệt kịch bản và sổ sự cố kỹ thuật // the script approval log and the technical incident log')
 
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',

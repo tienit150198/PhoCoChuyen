@@ -813,6 +813,8 @@ def _move(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
 def _draw_qs(s: dict, career: str, rec: dict, day: int) -> list[str]:
     n = _rank(rec)
     bank = PC.QUESTIONS[PC.EXEC_GROUP[career] if n + 1 > TOP and career in PC.EXEC_GROUP else group(career)]
+    if career in PC.STEP_BANK and n < len(PC.STEP_BANK[career]):
+        bank = PC.QUESTIONS[PC.STEP_BANK[career][n]]   # 🛎️ the step's own exam (đón đoàn, trực ca tối, điều phối sự kiện)
     r = _rng('pm-qs', _seed(s), career, n, len(_logs(rec)), day)
     return [q['id'] for q in r.sample(bank, 2)]
 
@@ -1211,8 +1213,9 @@ def _due_view(s: dict, c: dict, career: str, rec: dict) -> dict | None:
         return None
     emp = track(career) == 'emp'
     left = [q for q in due['qs'] if q not in due['ans']]
-    v = dict(to=due['to'], title=title(s, c, career, due['to']), n=len(due['ans']), of=len(due['qs']),
-             who='Phòng sếp' if emp else 'Hội buôn phố')
+    exams = PC.EXAM_NAME.get(career) or ()
+    who = exams[due['to'] - 1] if 0 < due['to'] <= len(exams) else 'Phòng sếp' if emp else 'Hội buôn phố'   # 🛎️ the step's own exam
+    v = dict(to=due['to'], title=title(s, c, career, due['to']), n=len(due['ans']), of=len(due['qs']), who=who)
     if left:
         q = PC.QUESTION_INDEX[left[0]]
         opts = [dict(id=o['id'], label=o['label']) for o in q['options']]
@@ -1309,6 +1312,8 @@ def public(s: dict, c: dict, career: str) -> dict | None:
              pcts=[step_pct(career, i) for i in range(1, t + 1)])
     # The whole way up, for "Xem thêm" and the job card (#249: every career shows its ladder, not only the long ones).
     v['ladder'] = [title(s, c, career, i) for i in range(1, t + 1)]
+    if career in PC.EXAM_NAME and n < len(PC.EXAM_NAME[career]):
+        v['exam'] = PC.EXAM_NAME[career][n]   # 🛎️ the next step's exam by name
     v['base_title'] = title(s, c, career, 0)
     if career in PC.INSIGNIA:
         x = PC.INSIGNIA[career][n]

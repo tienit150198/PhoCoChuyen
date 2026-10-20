@@ -2,6 +2,7 @@ import copy
 import unittest
 
 from game import household as hh
+from game.birth import ADOPT_FEE
 from game.engine import GameError, validate_state, public_state
 from tests.test_bank import story
 from tests.test_bank import opened, B, with_card
@@ -15,6 +16,12 @@ from game.engine import apply_action
 
 def act(s, action, **params):
     return apply_action(s, None, action, params)
+
+
+def adopt(s, name='Bông'):
+    """🏥 21/10: the personal child's paperwork fee (game/birth.py ADOPT_FEE), funded on top: the wallet is as before."""
+    s['journey']['wallet'] += ADOPT_FEE
+    return act(s, 'jr_hh_adopt', kind='child', name=name, confirm=True, fee=ADOPT_FEE)
 
 
 class Household(unittest.TestCase):
@@ -38,7 +45,7 @@ class Household(unittest.TestCase):
 
     def test_care_daily_slots_growth_and_offline_no_charge(self):
         s = self.ready()
-        s, _ = act(s, 'jr_hh_adopt', kind='child', name='Bông', confirm=True)
+        s, _ = adopt(s)
         for day in range(12, 32):
             s['journey']['life_day'] = day
             s, _ = act(s, 'jr_hh_care', member='child', act='milk')
@@ -59,7 +66,7 @@ class Household(unittest.TestCase):
         for kind, name in [('dragon', 'Miu'), ('child', '<script>'), ('cat', ''), ('cat', 'a'*25)]:
             with self.assertRaises(GameError):
                 act(s, 'jr_hh_adopt', kind=kind, name=name, confirm=True)
-        s, _ = act(s, 'jr_hh_adopt', kind='child', name='Bông', confirm=True)
+        s, _ = adopt(s)
         s['journey']['wallet'] = 0
         before = copy.deepcopy(s)
         with self.assertRaises(GameError):
@@ -71,7 +78,7 @@ class Household(unittest.TestCase):
 
     def test_rename_clothes_and_validation(self):
         s = self.ready()
-        s, _ = act(s, 'jr_hh_adopt', kind='child', name='Bông', confirm=True)
+        s, _ = adopt(s)
         s, _ = act(s, 'jr_hh_style', member='child', item='yem', confirm=True)
         self.assertEqual(hh.public(s)['members'][0]['outfit'], 'yem')
         s, _ = act(s, 'jr_hh_rename', member='child', name='Mây')
@@ -106,7 +113,7 @@ class Household(unittest.TestCase):
         s = opened(wallet=500, deposit=2)
         s['journey']['life_day'] = 12
         B(s)['pref'] = 'account'
-        s, _ = act(s, 'jr_hh_adopt', kind='child', name='Bông', confirm=True)
+        s, _ = adopt(s)
         before = copy.deepcopy(s)
         for action, params in [('jr_hh_care', dict(member='child', act='milk')), ('jr_hh_style', dict(member='child', item='yem', confirm=True)), ('jr_hh_adopt', dict(kind='dog', name='Mun', confirm=True))]:
             with self.subTest(action=action), self.assertRaises(GameError):
@@ -125,12 +132,12 @@ class Household(unittest.TestCase):
             store = Store(Path(tmp)/'household.db', story=True)
             try:
                 token, _, _ = store.session()
-                seed = opened(wallet=200, deposit=200)
+                seed = opened(wallet=ADOPT_FEE + 200, deposit=200)   # 🏥 the child's paperwork fee comes from the wallet first
                 seed['journey']['life_day'] = 12
                 B(seed)['pref'] = 'account'
                 mr._mutate(store, {store.key(token):lambda s:s.update(copy.deepcopy(seed))})
                 spend = 0
-                purchases = [('jr_hh_adopt', dict(kind='child', name='Bông', confirm=True), 0), ('jr_hh_adopt', dict(kind='cat', name='Miu', confirm=True), 33), ('jr_hh_care', dict(member='child', act='milk'), 4), ('jr_hh_style', dict(member='child', item='yem', confirm=True), 20)]
+                purchases = [('jr_hh_adopt', dict(kind='child', name='Bông', confirm=True, fee=ADOPT_FEE), 0), ('jr_hh_adopt', dict(kind='cat', name='Miu', confirm=True), 33), ('jr_hh_care', dict(member='child', act='milk'), 4), ('jr_hh_style', dict(member='child', item='yem', confirm=True), 20)]
                 for i, (action, payload, cost) in enumerate(purchases):
                     rev = store.read(token)[1]
                     args = (token, f'household-replay-{i:04d}', rev, None, action, payload)

@@ -5,10 +5,18 @@
  * prefers-reduced-motion (or Cài đặt → Giảm chuyển động) gets a still banner. Text goes in with
  * textContent only. The same answer carries my own alerts (badges on "Hôn nhân" and "Bạn bè", a toast
  * when someone proposes, asks to be friends, a plan arrives, the spouse sends something or the wedding day came). */
-const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
+import {language} from './i18n.js';
+const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',TFAIR='mnl.tfairSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
 let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
+// 📻 Players' ads and songs on air (game/radio_station.py ticker: at most a few at once, each with its end time): a line plays
+// once when it shows up, then at most every `replay` seconds on this device while it is on air; one pass, not three.
+const AIRED=new Map(),AIRED_MAX=32;
+// 🎵 A song line (game/radio_station.py line_text) in English: the frame is translated here and the song's title and the
+// buyer's own words stay as they were written (the pack's pattern gives up on a lowercase Vietnamese message).
+const SONG=/^🎵 (.+?) gửi tặng bài “(.+?)” qua DJ (.+?): “([\s\S]*)”$/u;
+const songEn=text=>{if(language()!=='en')return null;const m=SONG.exec(text);return m?`🎵 ${m[1]} dedicates “${m[2]}” via DJ ${m[3]}: “${m[4]}”`:null;};
 
 export function tickerBoot(envFn){
   if(booted)return;booted=true;getEnv=envFn;since=read(SEEN);
@@ -35,12 +43,22 @@ function handle(d){
   // 💐 a season's line (game/event2010.py news_line: Thiệp 20/10): once per key (a day) on this device
   const ev=d.event;if(ev&&typeof ev.text==='string'&&typeof ev.key==='string'){let k='';try{k=localStorage.getItem(EVENT)||'';}catch{k=ev.key;}
     if(k!==ev.key){write(EVENT,ev.key);queue.push({id:0,text:ev.text.slice(0,200)});}}
+  if(Array.isArray(d.radio)){const t=Date.now();
+    for(const r of d.radio.slice(0,8)){if(!r||typeof r.text!=='string'||typeof r.id!=='string'||!(Number(r.until)*1000>t))continue;
+      const gap=Math.max(60,Number(r.replay)||480)*1000,last=AIRED.get(r.id)||0;
+      if(t-last<gap||queue.some(q=>q.radio===r.id))continue;
+      AIRED.delete(r.id);AIRED.set(r.id,t);while(AIRED.size>AIRED_MAX)AIRED.delete(AIRED.keys().next().value);
+      queue.push({id:0,text:r.text.slice(0,200),radio:r.id,passes:1});}}
+  // 🎪 Hội chợ việc làm (game/town_fair.py news_line): its status for the menu and the 2.5D signpost, and its line once per key
+  if('tfair' in d){const tf=d.tfair;import('./town-fair-data.js').then(m=>m.setFair(tf)).catch(()=>{});
+    if(tf&&typeof tf.text==='string'&&typeof tf.key==='string'){let k='';try{k=localStorage.getItem(TFAIR)||'';}catch{k=tf.key;}
+      if(k!==tf.key){write(TFAIR,tf.key);queue.push({id:0,text:tf.text.slice(0,200)});}}}
   if(typeof d.last==='number')since=d.last;  // polling cursor; SEEN (on this device) moves when a line has played
   if(queue.length&&!playing)next();
   const env=getEnv?.();if(!env)return;
   const me=d.me||null;
   let moved=false;
-  for(const [action,key,n] of [['marriage','marriageAlerts',Number(me?.alerts)||0],['friends','friendAlerts',Number(me?.friends)||0]]){
+  for(const [action,key,n] of [['marriage','marriageAlerts',Number(me?.alerts)||0],['friends','friendAlerts',Number(me?.friends)||0],['svcMarket','svcAlerts',Number(me?.svc)||0],['wedWork','wedsvcAlerts',Number(me?.wedsvc)||0]]){  // 🛎️ Phố dịch vụ: what waits for my answer; 💒 wedding orders waiting for my work
     if((env.api[key]||0)===n)continue;
     env.api[key]=n;moved=true;
     document.querySelectorAll(`[data-action="${action}"]`).forEach(b=>{if(b.closest('.mr-sheet'))return;b.querySelector('em.badge')?.remove();if(n){const em=document.createElement('em');em.className='badge';em.textContent=String(n);b.append(em);}});
@@ -76,12 +94,14 @@ async function next(){
     bar.append(ic,track,x);document.body.append(bar);
   }
   const text=bar.querySelector('.mr-ticker-text');
-  text.textContent=item.text;
+  const en=item.radio?songEn(item.text):null;
+  text.toggleAttribute('data-no-translate',Boolean(en));
+  text.textContent=en||item.text;
   bar.classList.toggle('still',still());
   text.getAnimations?.().forEach(a=>a.cancel());
   if(still()||!text.animate){setTimeout(next,STILL_MS);return;}
   const track=bar.querySelector('.mr-ticker-track'),w=track.clientWidth,tw=text.scrollWidth,ms=Math.max(7000,(w+tw)*16);
-  const anim=text.animate([{transform:`translateX(${w}px)`},{transform:`translateX(${-tw}px)`}],{duration:ms,iterations:PASSES,easing:'linear'});
+  const anim=text.animate([{transform:`translateX(${w}px)`},{transform:`translateX(${-tw}px)`}],{duration:ms,iterations:item.passes||PASSES,easing:'linear'});
   anim.onfinish=()=>{clearInterval(hold);next();};
   // 🐢 Perf 19/10 (iPad "phản hồi rất lag"): a sheet opened while the line plays. Under a modal (its blurred ::backdrop
   // on a tablet, the masked track) every frame of the scroll redrew the sheet: in WebKit (iPad profile) the main thread

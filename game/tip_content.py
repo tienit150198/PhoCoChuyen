@@ -78,6 +78,14 @@ NORMS = {
     'hotel': dict(rate=.14, cash=.60, lo=1, hi=5, bill=20),
     # 👨‍🍳 Nhà hàng tiệc Hồng Mây: the party's host slips the kitchen a little after a good night now and then
     'banquet': dict(rate=.12, cash=.60, lo=1, hi=5, bill=20),
+    # 🛎️ Lễ tân Hoa Sứ: a guest slips the desk a little after a smooth check-in now and then
+    'reception': dict(rate=.12, cash=.60, lo=1, hi=4, bill=20),
+    # 🏦 Quầy số 3: a bank teller never takes cash; regulars leave thanks and small gifts
+    'teller': dict(rate=.05, cash=0, lo=0, hi=0, bill=10),
+    # 🔬 Viện nghiên cứu Sông Mây: an institute takes no tips; a grateful farmer leaves a little for the lab's tea now and then
+    'research': dict(rate=.03, cash=0, lo=0, hi=0, bill=10),
+    # 📻 Đài phát thanh Sóng Mây: a listener drops a little thank-you at the gate now and then
+    'radio': dict(rate=.06, cash=.40, lo=1, hi=3, bill=10),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
     'zpop': dict(rate=.10, cash=.60, lo=1, hi=4, bill=30),
 }
@@ -257,7 +265,11 @@ CAREER_LINES = {
     'rescue': ('Cô tổng đài giữ máy với tôi tới lúc xe tới.', 'Hỏi địa chỉ trước, xe tới đúng cửa.', 'Dặn từng bước, tôi làm theo được liền.'),
     'lifeguard': ('Cứu hộ mắt không rời hồ, gửi con yên tâm.', 'Thổi còi đúng lúc mà nói dễ nghe.', 'Có sấm là cho lên bờ liền, chuyên nghiệp.'),
     'hotel': ('Phòng sạch thơm, khăn gấp gọn gàng.', 'Nhận phòng nhanh, nhớ đúng tên đặt phòng.', 'Điều hòa vừa báo là có người lên sửa liền.'),
+    'reception': ('Nói một lần là lễ tân nhớ hết mình cần gì.', 'Hành lý lên tận phòng, bình gốm không mẻ chút nào.', 'Mất gấu bông mà lễ tân tìm kịp giờ xe chạy.'),
+    'teller': ('Đếm tiền trước mặt tôi, đọc to từng con số.', 'Đọc lại tên người nhận, khỏi lo chuyển nhầm.', 'Giải thích chậm rãi, tôi hiểu hết.'),
+    'radio': ('Đài đọc đúng tên bà cụ nhà tôi, cả nhà vui.', 'Mất điện mà đài xin lỗi đàng hoàng, nghe dễ chịu.', 'Mở đúng bài tôi xin, hay ghê.'),
     'banquet': ('Món ra nóng hổi, bày đẹp như hình.', 'Sảnh trang trí đúng màu nhà mình chọn.', 'Bé dị ứng mà bếp nhớ đổi món, yên tâm ghê.'),
+    'research': ('Có khay đối chứng hẳn hoi, nhìn là tin.', 'Nói thật kết quả, không hứa hão.', 'Sổ thí nghiệm ghi kỹ từng lần, phục ghê.'),
     'customs': ('Phân luồng rõ ràng, hướng dẫn bổ sung đúng một giấy.', 'Tính thuế minh bạch, có biên lai từng khoản.', 'Kiểm hóa nhanh mà kỹ, hàng về kho kịp.'),
     'police': ('Làm giấy tờ nhanh mà không mất đồng nào.', 'Nghe hai nhà nói hết rồi mới phân xử, phục ghê.', 'Tìm được bé kịp lúc, cảm ơn cán bộ.'),
     'zpop': ('Lấy đúng Digipack bias, không phải nhắc.', 'Poster cuộn ống, không một nếp gấp.', 'Nói thật tỉ lệ fansign, mua yên tâm.'),
@@ -315,7 +327,11 @@ GIFTS = {
     'rescue': (('💌', 'lá thư cảm ơn gửi hộp thư trung tâm'), ('🎨', 'bức tranh “cô tổng đài” bé Na vẽ'), ('🍊', 'túi quýt người được cứu gửi cả ca')),
     'lifeguard': (('🍧', 'ly chè đậu xanh phụ huynh mang tới'), ('🎨', 'bức tranh cá heo bé Bon vẽ'), ('💌', 'tấm thiệp cảm ơn dán ở ghế trực')),
     'hotel': (('🍫', 'thanh sô-cô-la khách để lại kèm lời cảm ơn'), ('💌', 'tấm thiệp cảm ơn kẹp dưới gối'), ('🍊', 'túi quýt khách quê gửi cả ca')),
+    'reception': (('🖍️', 'bức tranh bé Su vẽ cả quầy lễ tân'), ('💌', 'tấm thiệp cảm ơn kẹp dưới bảng móc chìa'), ('🍊', 'túi quýt ông Tư Bến mang từ quê')),
+    'teller': (('🍵', 'ly trà đá bà Lựu mang sang'), ('💌', 'tấm thiệp cảm ơn kẹp ở Quầy số 3'), ('🍱', 'hộp cơm sườn dì Bảy để phần')),
+    'radio': (('🍊', 'túi quýt cô Ba gửi cả đài'), ('💌', 'lá thư thính giả gửi qua hộp thư đài'), ('🎨', 'bức vẽ cái loa phường bé Su tặng')),
     'banquet': (('🍬', 'hộp kẹo cưới cô dâu gửi cả bếp'), ('💌', 'tấm thiệp cảm ơn của nhà mừng thọ'), ('🎂', 'miếng bánh kem sinh nhật bé Bin để phần')),
+    'research': (('🌽', 'bao bắp đầu mùa bác Tư gửi cả phòng'), ('💌', 'lá thư cảm ơn của bếp ăn trường Sông Mây'), ('🎨', 'bức vẽ “cô nhà khoa học” của bé Na')),
     'customs': (('💌', 'lá thư cảm ơn gửi chi cục'), ('📝', 'vài dòng khen trong hòm thư góp ý cửa khẩu'), ('🎨', 'tấm thiệp con của chủ hàng vẽ tặng')),
     'police': (('💌', 'lá thư cảm ơn gửi phường'), ('🎨', 'bức vẽ chú công an của bé Bin'), ('📝', 'vài dòng khen trong sổ góp ý bàn tiếp dân')),
     'zpop': (('🃏', 'tấm card thừa Na tặng lại'), ('🎀', 'cái slogan fanmade thêu tay'), ('🍬', 'bịch kẹo dẻo hội BLINKY chia')),

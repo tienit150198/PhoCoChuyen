@@ -38,6 +38,7 @@ applied to each save; confirmation takes both deposits in one transaction.
 """
 from __future__ import annotations
 
+import contextvars
 import datetime
 import json
 import random
@@ -892,6 +893,13 @@ def news(store, since, token: str | None = None) -> dict:
             pass
     from . import event2010   # 💐 Thiệp 20/10 while writing is open: once a day on a device (an older page ignores it)
     out['event'] = event2010.news_line(t)
+    try:   # 📻 players' ads and songs on air now (game/radio_station.py: at most LIVE_MAX, cached; an older page ignores it)
+        from . import radio_station
+        out['radio'] = radio_station.ticker(store)
+    except Exception:  # noqa: BLE001 - the ticker never fails for this
+        out['radio'] = []
+    from . import town_fair   # 🎪 Hội chợ việc làm on or soon: its status (menu, 2.5D signpost) and a line once per fair (an older page ignores it)
+    out['tfair'] = town_fair.news_line(store, t)
     return out
 
 
@@ -910,6 +918,8 @@ def alerts(store, sid: str) -> dict | None:
         xfer = waiting(db, sid)
         n += cp.alerts(db, sid, r['couple'])
         n += int(db.execute("SELECT COUNT(*) FROM family_requests WHERE to_sid=? AND status='pending'",(sid,)).fetchone()[0])
+        from . import birth
+        n += birth.alerts(db, sid)   # 🏥 a birth room or an adoption waiting for this spouse's answer
         target = None
         if r['couple']:
             c = _row(db, 'SELECT * FROM couples WHERE id=?', (r['couple'],))
@@ -922,7 +932,27 @@ def alerts(store, sid: str) -> dict | None:
                     target = w['target_' + side]
                 if w['status'] == 'done' and not w['seen_' + side]:
                     n += 1
-    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer)
+    svc = wsv = 0
+    try:   # one pooled connection for the three badges (autocommit: a failing one leaves the others' statements alone)
+        with store.connect() as db:
+            try:   # 🛎️ Phố dịch vụ: what waits for my answer (game/service_market.py); 0 on a database without its tables
+                from .service_market import alert_count
+                svc = alert_count(db, sid)
+            except Exception:  # noqa: BLE001
+                svc = 0
+            try:   # 🏨 a guest at the desk, a situation, a check-out (game/hotel_stay.py); 0 on a database without its table
+                from .hotel_stay import alerts as hotel_alerts
+                svc += hotel_alerts(db, sid)
+            except Exception:  # noqa: BLE001
+                pass
+            try:   # 💒 Dịch vụ cưới từ người chơi: wedding orders waiting for this provider's work (game/wed_services.py)
+                from .wed_services import alerts as wed_alerts
+                wsv = wed_alerts(db, sid)
+            except Exception:  # noqa: BLE001
+                wsv = 0
+    except Exception:  # noqa: BLE001  (no connection free: the badges wait for the next poll)
+        pass
+    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer, svc=svc, wedsvc=wsv)
 
 
 # ---------------------------------------------------------------- loading a save: due weddings and the inbox
@@ -998,7 +1028,16 @@ def resolve(store, couple_id: int, wedding_id: int) -> bool:
         days[side] = _life_day(got[0]) if got else None
     plan = json.loads(w['plan'])
     q = json.loads(w['quote'])
-    res = roll(f'wedding|{w["id"]}|{c["id"]}|{int(c["since"])}', plan, _merge_pools(pools['a'], pools['b']), (name_a, name_b))
+    played, services = plan, []
+    try:   # 💒 players who served this wedding (game/wed_services.py): a good one counts as its NPC extra for the mood
+        from . import wed_services
+        with store.connect() as db:
+            played, services = wed_services.roll_plan(db, c, plan)
+    except Exception:  # noqa: BLE001 - no player service (or no table yet): the NPC wedding exactly as planned
+        played, services = plan, []
+    res = roll(f'wedding|{w["id"]}|{c["id"]}|{int(c["since"])}', played, _merge_pools(pools['a'], pools['b']), (name_a, name_b))
+    if services:
+        res['services'] = services
     total, balance, pct = int(q['total']), int(q['balance']), int(w['split_a'])
     g = _split(res['gifts'], pct)
     bal = _split(balance, pct)
@@ -1158,6 +1197,11 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
         state = got[0]
         out.update(state=public_state(state), revision=got[1])
     _expire(store, sid)
+    from . import birth
+    try:
+        birth.settle_due(store, sid)   # 🏥 a birth room's hours are over: the baby is born now, once (game/birth.py)
+    except Exception:  # noqa: BLE001  (busy rows: the next poll or the "Đón bé" button finishes it)
+        pass
     day = _life_day(state) if state else 1
     pool = json.dumps(pool_of(state), ensure_ascii=False) if state else None
     t = now()
@@ -1202,6 +1246,11 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
             from . import wedding_live as wl
             couple['wed_label'] = wl.label_of(db, c)   # 💍 "Cưới ngày 04/10/2026 · 20:30" (booked, or the legacy date)
             couple['party'] = wl.party_view(db, c, t)   # 🎉 the 10-minute live party: choose its time, invite, watch it go
+            try:   # 💒 Dịch vụ cưới từ người chơi (game/wed_services.py): who serves this wedding
+                from . import wed_services
+                couple['wedsvc'] = wed_services.card(db, c)
+            except Exception:  # noqa: BLE001 - a database without its table: no card
+                couple['wedsvc'] = None
             w = _row(db, "SELECT * FROM weddings WHERE couple=? AND status IN ('proposed','rejected','confirmed','done') ORDER BY id DESC LIMIT 1", (c['id'],))
             if w:
                 wedding = _wedding_view(db, c, w, sid, day)
@@ -1242,8 +1291,25 @@ def _rid(d: dict) -> str:
     return secrets.token_hex(8)
 
 
-def act(store, token: str, op: str, d: dict) -> dict:
-    """POST /api/marriage/<op>. Returns {message, changed}."""
+_REQUEST_IP = contextvars.ContextVar('marriage_request_ip', default='')
+
+
+def request_ip() -> str:
+    """The address of the POST /api/marriage/<op> being handled ('' elsewhere): 🏥 a player birth room's anti-laundering
+    (game/birth.py → service_market.guard) reads it. Set by act() for the call, never stored."""
+    return _REQUEST_IP.get()
+
+
+def act(store, token: str, op: str, d: dict, ip: str = '') -> dict:
+    """POST /api/marriage/<op>. Returns {message, changed}. `ip`: the request's address (request_ip())."""
+    mark = _REQUEST_IP.set(str(ip or ''))
+    try:
+        return _act(store, token, op, d)
+    finally:
+        _REQUEST_IP.reset(mark)
+
+
+def _act(store, token: str, op: str, d: dict) -> dict:
     need(isinstance(d, dict), 'Dữ liệu không hợp lệ.')
     if op == 'quote':
         sid, _ = whoami(store, token)

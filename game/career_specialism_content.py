@@ -70,6 +70,11 @@ CAREER_IDS = (
     "customs",
     "hotel",
     "banquet",
+    "reception",
+    "teller",
+    "restore",
+    "research",
+    "radio",
 )
 _FILES = (
     "career_specialisms.json",
@@ -78,6 +83,11 @@ _FILES = (
     "career_specialisms_55.json",
     "career_specialisms_56.json",
     "career_specialisms_57.json",
+    "career_specialisms_58.json",
+    "career_specialisms_teller.json",
+    "career_specialisms_restore.json",
+    "career_specialisms_research.json",
+    "career_specialisms_radio.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -142,6 +152,11 @@ _TITLE_DIGESTS = {
     "post_office": "2e15eb95dcac32a33c4edc12ac71ed905086b6b2021ddea28b0c7be4c9f92c67",
     "hotel": "372bd9593dbb412193fe6a5c9e7aa88c81328689c5c02d017269eeecabe7ee97",
     "banquet": "4c87d50c65d7875e9232a413317936b185728a25bd6af89b38bb866c2a5eb6cc",
+    "reception": "63c3a2f7c74e0cba2cf46e0265d8bd2e94bb4f024fea0ccf19ac1dc4c786a4f7",
+    "teller": "1b880079fae12d1910eb5f2241e79f60649882da46786b5bc9b3bbc3fdda1972",
+    "restore": "b623ffe118153120542d6545d796723d10472abc6319590f4fa55787bc19a669",
+    "research": "f6d9c2de043adb3b8ea70065064d7887218d92bdac020f02390f8f0621c59484",
+    "radio": "b82b3980ff10a04779e0e9b212732d34035a0a167814c269a1cd977c32cf1aea",
 }
 
 

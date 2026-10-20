@@ -88,7 +88,9 @@ class Catalogue(unittest.TestCase):
         self.assertEqual(len(DC.KNOWN_1911), 171 + len(EC.ITEMS))           # 🏰 the villa pieces (game/estates_content.py)
         uq = [k for k, v in DC.ITEMS.items() if v.get('uq')]                 # 🔨 the paintings won at auction, after them
         self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq))
-        self.assertTrue(uq and all(k.startswith('uq_tr_') and DC.ITEMS[k]['price'] == 0 for k in uq))
+        self.assertEqual(uq[-1], 'anh_chup')                                  # 📸 a framed player photo (game/photo_studio.py), last
+        self.assertTrue(uq and all(k.startswith('uq_tr_') and DC.ITEMS[k]['price'] == 0 for k in uq[:-1]))
+        self.assertEqual(DC.ITEMS['anh_chup']['price'], 0)
         self.assertEqual(DC.KNOWN_1715[-1], 'mam_ngu_qua')                  # the last piece 1.7.15 knows
         self.assertEqual(DC.KNOWN_132, tuple(DC.ITEMS)[:65])                # what a 1.3.2 build knows: its mirror holds only these
         self.assertNotIn('ke_go_treo', DC.KNOWN_132)

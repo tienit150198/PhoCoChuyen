@@ -27,6 +27,7 @@ import {quickOpen,firstDay,EASY_DAYS} from './v4/onboard.js';  // a brand-new pl
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf,townOn} from './v4/journey.js';
 import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/10: while writing is open
+import {seedFair,fairNow} from './v4/town-fair-data.js';   // 🎪 Hội chợ việc làm: on or soon (ui.tfair, then the ticker's poll)
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {tvButton} from './v4/bonus-button.js';   // 📺 📦 hàng về ngay at the stock desk (game/ads.py)
 import {setLanguage,t as i18nT} from './v4/i18n.js';
@@ -390,6 +391,10 @@ function navItems(c){
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story)items.push(['townProjects','building','Công trình của phố']);  // 🏗️ cả phố góp tiền xây (v4/town-projects.js, own dialog)
   if(api.state?.journey?.story&&!api.content?.off?.bang){const n=bangWarNote();if(n)RAIL_NOTE.bang=n;else delete RAIL_NOTE.bang;items.push(['bang','shield','Bang',api.bangAlerts||0]);}  // ⚔️ Bang: lập bang, vào bang, quỹ, công trình, giờ vàng (v4/bang.js, own dialog); 🛑 MNL_BANG_OFF hides it
+  if(api.state?.journey?.story&&['banquet','florist','clothing','salon'].includes(career()))items.push(['wedWork','heart','Đơn cưới',api.wedsvcAlerts||0]);  // 💒 wedding orders of other players for this career (v4/wed-services.js; badge from v4/ticker.js me.wedsvc)
+  if(api.state?.journey?.story)items.push(['svcMarket','bell','Phố dịch vụ',api.svcAlerts||0]);  // 🛎️ người chơi phục vụ người chơi (v4/service-market.js, own dialog; badge from v4/ticker.js me.svc)
+  if(api.state?.journey?.story){seedFair(api.uiConfig?.tfair);const tf=fairNow();if(tf&&(tf.state==='open'||tf.state==='soon'))items.push(['townFair','flag',tf.state==='open'?'Hội chợ việc làm':'Hội chợ việc làm (sắp mở)',tf.state==='open'?'dot':0]);}  // 🎪 every career's booth, Saturday 14:00–17:00 (v4/town-fair.js, own dialog)
+  if(api.state?.journey?.story&&(api.state?.careers?.homestay?.started||api.state?.careers?.hotel?.started))items.push(['hotelBook','bed','Sổ phòng']);  // 🏨 cho người chơi thuê phòng (v4/hotel-stay.js, own dialog; guests open it from 🛎️ Phố dịch vụ)
   if(api.state?.journey?.story&&api.content?.journey?.certs)items.push(['jrCerts','clipboard','Thi chứng chỉ',certBadge(api)]);  // 🎓 F#267: in sight on the rail / top of "Thêm", not in a hub (v4/certificates.js)
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.uiConfig?.sticker)items.push(['stickerEvent','sparkle','Thi làm sticker']);  // 🎨 /sticker while submissions are open (game/sticker_event.py hint)
@@ -418,7 +423,7 @@ function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)retur
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
@@ -426,10 +431,10 @@ const RAIL_MAIN=['liveChat','home','fair','prepare','operations','jrInvest','pri
 /** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
 const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
 // 🏮 The fair while it is on or about to open (owner 08/10: "để luôn ở ngoài"): in sight, not in the Khu phố hub.
-const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over);
+const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over)||(x[0]==='townFair'&&fairNow()?.state==='open');
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang']],
+  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1403,7 +1408,7 @@ document.addEventListener('submit',async e=>{
   const f=e.target;if(!(f instanceof HTMLFormElement)||!f.dataset.csCall)return;e.preventDefault();
   const input=f.querySelector('textarea'),text=input?.value.trim();if(!text)return;input.value='';await csCallSend(f.dataset.csCall,{text});
 });
-function albumView(){const c=room();return header('Kỷ niệm','Giữ 6 ảnh gần nhất.','ALBUM')+`<div class="sheet-body"><div class="row spread"><span></span>${button(icon('camera',16)+' Chụp góc hiện tại','photo',{},'primary')}</div><div class="album-grid space-top">${c.album.map(p=>`<article class="polaroid"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy"><p>${esc(p.title)}</p><div class="row spread"><small>Ngày ${p.day} · ${esc(meta().place)}</small>${button(icon('download',13),'downloadPhoto',{id:p.id},'ghost small')}</div></article>`).join('')||empty('Một album chưa có ảnh','','camera')}</div>${c.quests_claimed.length?`<h3 class="space-top">Kỷ vật câu chuyện</h3>${c.quests_claimed.map(id=>`<div class="memory">${icon('award',17)} ${esc(api.content.quests.find(q=>q.id===id).keepsake)}</div>`).join('')}`:''}${api.state.marriage?.spouse?'<div data-wed-album></div>':''}</div>`;
+function albumView(){const c=room();return header('Kỷ niệm','Giữ 6 ảnh gần nhất.','ALBUM')+`<div class="sheet-body"><div class="row spread">${api.state?.journey?.story?button('🖼️ Album ảnh chụp','photoStudio',{tab:'album'},'ghost'):'<span></span>'}${button(icon('camera',16)+' Chụp góc hiện tại','photo',{},'primary')}</div><div class="album-grid space-top">${c.album.map(p=>`<article class="polaroid"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy"><p>${esc(p.title)}</p><div class="row spread"><small>Ngày ${p.day} · ${esc(meta().place)}</small>${button(icon('download',13),'downloadPhoto',{id:p.id},'ghost small')}</div></article>`).join('')||empty('Một album chưa có ảnh','','camera')}</div>${c.quests_claimed.length?`<h3 class="space-top">Kỷ vật câu chuyện</h3>${c.quests_claimed.map(id=>`<div class="memory">${icon('award',17)} ${esc(api.content.quests.find(q=>q.id===id).keepsake)}</div>`).join('')}`:''}${api.state.marriage?.spouse?'<div data-wed-album></div>':''}</div>`;
 }
 const CLOSE_LABELS={markdown_sold:'Bánh giảm giá đã bán',markdown_income:'Thu từ bánh giảm giá (xu)',discarded:'Món phải bỏ',wilted:'Cành hoa héo',wilted_value:'Giá trị hoa héo (xu)',sales:'Doanh thu quầy (xu)',ledger_total:'Tổng sổ ghi nợ (xu)',repaired:'Máy đã sửa xong',returned:'Máy trả lại khách',hazards:'Lỗi an toàn',expired_units:'Nông sản quá hạn',eggs_tomorrow:'Trứng còn trong ổ',hungry_hens:'Gà chưa được cho ăn',ripe_tomorrow:'Luống chín ngày mai',delivered:'Đơn đã giao',failed:'Giao thất bại',refused:'Đơn đã từ chối nhận',km:'Quãng đường (ô phố)',fees:'Phí giao (xu)',fuel:'Xăng còn (%)',settled_at_close:'COD tự nộp cuối ca (xu)',food_cancelled:'Đơn đồ ăn bị hủy',arrived:'Khách nhận phòng',walked:'Khách phải chuyển chỗ',moved:'Khách đổi phòng',dirty:'Phòng cần dọn',staying:'Bé đang ở lại',free:'Chuồng trống',posted:'Bút toán đã ghi',dossiers:'Hồ sơ hoàn tất',milestones:'Mốc kỳ kế toán',balanced:'Sổ cân đối'};
 /** Career-specific part of the day summary: module.summary(data,x) or a generic list. */
@@ -1744,6 +1749,9 @@ async function handleAction(action,data,el){
           await m.watch(env(),data.place,{extra,restore:()=>{if(view)openSheet(view);}});if($('#sheet').open)renderSheet(false);}
         else await m.openBonus(env());break;}  // 🧩 Ghép ba Phố Mây: its own dialog
       if(action==='lixi'){await (await import('./v4/lixi.js')).openLixi(env(),data.tab||'list');break;}  // 🧧 Lì xì: its own dialog
+      if(action==='restoreDesk'){await (await import('./v4/restore.js')).openRestore(env(),data);break;}  // 🧰 Phục chế đồ: mang đồ đi, 🧰 Bàn thợ, đã phục chế (its own dialog)
+      if(action==='radioDesk'){await (await import('./v4/radio.js')).radioAction(env(),data);break;}  // 📻 Đơn lên sóng: players' ads and songs on the town ticker (its own dialog)
+      if(action==='photoStudio'){await (await import('./v4/portrait.js')).photoAction(env(),data);break;}  // 📸 Chụp ảnh cho người chơi: thợ ảnh, đặt chụp, 🖼️ Album ảnh (its own dialog)
       if(action==='wedInvite'){await (await import('./v4/wedinvite.js')).openWedInvite(env());break;}  // 💌 Gửi thiệp mời cưới cả phố: its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
@@ -1759,6 +1767,10 @@ async function handleAction(action,data,el){
       if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='townProjects'){await (await import('./v4/town-projects.js')).openTownProjects(env(),data);break;}  // 🏗️ Công trình của phố: lazy
       if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}  // ⚔️ Bang: lazy
+      if(action==='svcMarket'){await (await import('./v4/service-market.js')).openServiceMarket(env(),data);break;}  // 🛎️ Phố dịch vụ: lazy
+      if(action==='townFair'){await (await import('./v4/town-fair.js')).openTownFair(env(),data);break;}  // 🎪 Hội chợ việc làm: lazy
+      if(action==='hotelBook'){await (await import('./v4/hotel-stay.js')).openHotel(env(),data);break;}  // 🏨 Sổ phòng: lazy
+      if(action==='wedServices'||action==='wedWork'){await (await import('./v4/wed-services.js')).openWedServices(env(),action==='wedWork'?{...data,tab:'work'}:data);break;}  // 💒 Dịch vụ cưới từ người chơi: lazy (wedWork: the provider's Đơn cưới)
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}

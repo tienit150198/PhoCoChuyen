@@ -717,6 +717,9 @@ class Store:
                     from . import chua_wish
                     chua_wish.command_commit(db,sid,action,current,result)  # 🌳 the wish's row (today's limit refuses the command)
                 work_visits.command_commit(db,sid,before,current,career,action,result or {},projected=projected if after is not None else None)
+                if isinstance(result,dict) and result.get('svc_done'):
+                    from . import service_market
+                    service_market.command_commit(db,sid,result)  # 🛎️ a career command that fulfils Phố dịch vụ orders (paid at the next poll)
             if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
@@ -834,6 +837,9 @@ class Store:
                 from . import chua_wish
                 chua_wish.command_commit(db,sid,action,raw,result)  # 🌳 the wish's row (today's limit refuses the command)
             work_visits.command_commit(db,sid,before,raw,career,action,result)
+            if isinstance(result,dict) and result.get('svc_done'):
+                from . import service_market
+                service_market.command_commit(db,sid,result)  # 🛎️ a career command that fulfils Phố dịch vụ orders (paid at the next poll)
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             from . import couple
             couple.commit_holds(db,sid,before,raw)  # 💳 a joint-card hold this command made is settled with the save
@@ -912,6 +918,10 @@ class Store:
             rentals.forget(db,sid)
             from .work_visits import forget
             forget(db,sid)
+            from . import service_market
+            service_market.forget(db,sid)  # 🛎️ their talks end, buyers of their paid orders are refunded, their offers go
+            from . import hotel_stay
+            hotel_stay.forget(db,sid)  # 🏨 their host record and rest days go (the stays settle through the market)
             from . import home_guests
             home_guests.forget(db,sid)
             from . import spend

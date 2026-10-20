@@ -154,7 +154,7 @@ def stamped(state:dict) -> bool:
 # stamp) and put back on every read (wake: Store.parse_state, migrate_state). A save that never used it so still
 # reads on the build before it (2.4.24 requires exactly its own career list). Once the career is used, its record
 # is stored and that older build refuses the save: never roll back below the build that added it.
-DORMANT=("customs","hotel","banquet")
+DORMANT=("customs","hotel","banquet","reception","teller","restore","research","radio")
 _IDLE={}
 
 
@@ -421,6 +421,9 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
         if status=='completed':
             from .income_gear import completion_bonus
             completion_bonus(s,c,reward if bonus_base is None else max(0,min(reward,bonus_base)),t['title'],t['id'])
+            if type(s.get('journey')) is dict and type(s['journey'].get('lab')) is dict:  # 🍳 a recipe from a Viện nghiên cứu player (game/research_lab.py)
+                from . import research_lab
+                research_lab.recipe_bonus(s,c,t,reward)
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
     if not pm.managing(s,c,t["career"]):
@@ -1351,6 +1354,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["careers"]={cid:({k:(None if k in _FOCUS_OWN else x) for k,x in c.items()} if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)
+    if PLUGINS.get("teller") and PLUGINS["teller"].tea_cart(s):v["journey"]["tea_cart"]=True  # 🍵 Bà Lựu's new cart parks in the 2.5D street
     v["invest"]=iv.public(s)
     v["board"]=bd.summary(s)
     v["life"]=doi.public(s)

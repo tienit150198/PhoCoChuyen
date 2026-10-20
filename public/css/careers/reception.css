@@ -1,0 +1,125 @@
+/* Lễ tân Khách sạn Hoa Sứ: a rose-wood front desk. The hotel is drawn as it stands: two floors of three rooms over the
+ * desk, so the whole board fits a portrait phone; the hook board and the luggage cart sit under it. */
+.career-job.reception{--sk-accent:#b0546f;--sk-accent-2:#e2b86b;--rc-wood:#8a5a3b;--rc-clean:#4f8a63;--rc-dirty:#b07a3a;--rc-busy:#9a4f6a;min-width:0;overflow-wrap:anywhere}
+.reception .rc-trial{padding:10px 12px;border-radius:10px;background:var(--sk-surface-2,#f6efe2);border-left:4px solid var(--sk-accent-2);font-size:13px;line-height:1.5;margin:8px 0}
+.reception .rc-trialcard{border:1px dashed var(--sk-accent);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--sk-surface,#fffaf0)}
+.reception .rc-trialcard h4{margin:0 0 6px}
+.reception .rc-trialcard ul{list-style:none;padding:0;margin:0;display:grid;gap:4px;font-size:14px}
+.reception .rc-trialcard li{display:flex;gap:6px;align-items:center}
+.reception .rc-trialcard li.ok{color:var(--rc-clean)}
+.reception .rc-practise{margin:8px 0 0;font-size:13px;line-height:1.5}
+.reception .rc-post{border:1px solid var(--sk-line,#d9c7ad);border-left:5px solid var(--sk-accent);border-radius:12px;padding:11px 14px;background:var(--sk-surface,#fffaf0);margin:10px 0}
+.reception .rc-post small{display:block;letter-spacing:.03em;color:var(--sk-muted,#6e5f74)}
+.reception .rc-post h3{margin:4px 0 0;font-size:17px}
+.reception .rc-heard{margin:6px 0;font-size:13px}
+.reception .rc-heard ul{margin:4px 0 0;padding-left:18px}
+.reception .rc-step{padding:14px}
+.reception .rc-step-count{font-size:13px;color:var(--sk-muted,#6e5f74);margin:0 0 6px}
+.reception progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:10px}
+.reception .rc-step h3{margin:0 0 8px}
+.reception .rc-evidence{padding:10px 12px;border-left:3px solid var(--sk-accent-2);background:var(--sk-surface-2,#f6efe2);line-height:1.5;margin:0 0 4px}
+.reception .rc-said{list-style:none;padding:0;margin:0 0 8px;display:grid;gap:6px}
+.reception .rc-said q{display:block;margin-top:3px;quotes:'“' '”'}
+.reception .rc-said small{color:var(--sk-muted,#6e5f74)}
+.reception .rc-said li{padding:9px 11px;border-radius:12px 12px 12px 3px;background:var(--sk-surface,#fffaf0);border:1px solid var(--sk-line,#d9c7ad);line-height:1.5;font-size:14px}
+.reception .rc-options,.reception .rc-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.reception .rc-options button,.reception .rc-chips button{min-height:46px;white-space:normal;text-align:left;padding:10px 11px;line-height:1.35}
+.reception .rc-chip{display:flex;gap:6px;align-items:flex-start}
+.reception .rc-chip.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.reception .rc-tagicon{flex:0 0 auto}
+.reception .rc-num{flex:0 0 auto;min-width:22px;height:22px;border-radius:11px;background:var(--sk-accent);color:#fff;font-style:normal;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.reception .rc-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:10px}
+.reception .rc-row .btn{min-height:46px}
+.reception .rc-row .primary{flex:1 1 auto}
+/* the hook board: keys hang from coloured hooks */
+.reception .rc-hooks{grid-template-columns:repeat(3,minmax(0,1fr));padding:10px 8px 8px;border-radius:10px;background:linear-gradient(#a8744f,#8a5a3b);gap:7px}
+.reception .rc-hooks button{background:#fffaf0;font-size:13px;min-height:52px;border-top:4px solid #4f8a63;text-align:center;justify-content:center;flex-direction:column;align-items:center}
+.reception .rc-hooks .hook-red{border-top-color:#b8433f}
+.reception .rc-hooks .hook-grey{border-top-color:#8b8f94}
+.reception .rc-hooks .hook-gold{border-top-color:#d4a72c}
+.reception .rc-hooks .hook-dark{border-top-color:#3c3c48}
+/* the hotel: two floors over the desk */
+.reception .rc-board{display:grid;gap:6px;max-width:760px;padding:8px;border-radius:12px;background:linear-gradient(#f4e7d6,#ead6bd);border:1px solid var(--sk-line,#d9c7ad);margin-top:10px}
+.reception .rc-floor{display:grid;gap:3px}
+.reception .rc-floor-name,.reception .rc-desk-name{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--rc-wood);text-transform:uppercase}
+.reception .rc-floor-rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.reception .rc-room{display:grid;gap:1px;align-content:start;justify-items:start;justify-content:stretch;text-align:left;min-height:96px;padding:6px 7px;border-radius:8px;border:2px solid var(--sk-line,#d9c7ad);background:#fffaf0;font-size:11px;line-height:1.3;white-space:normal}
+.reception .rc-room small{font-size:11px;color:var(--sk-muted,#6e5f74)}
+.reception .rc-room-no{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.reception .rc-room em{font-style:normal;font-weight:700;font-size:11px}
+.reception .rc-room.st-clean{border-color:var(--rc-clean);background:#eef6ee}
+.reception .rc-room.st-clean em{color:#2f6b45}
+.reception .rc-room.st-dirty{border-style:dashed;border-color:var(--rc-dirty)}
+.reception .rc-room.st-dirty em{color:#8a5a2e}
+.reception .rc-room.st-busy{background:#f3e6ea;border-color:var(--rc-busy)}
+.reception .rc-room.st-busy em{color:#7d3552}
+.reception .rc-room.filled{box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.reception .rc-here{display:block;margin-top:2px;padding:1px 5px;border-radius:6px;background:var(--sk-accent);color:#fff;font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reception .rc-desk{display:grid;gap:4px;padding:7px;border-radius:9px;background:linear-gradient(#a8744f,#8a5a3b);color:#fff}
+.reception .rc-desk-name{color:#fff4e0}
+.reception .rc-guests{display:flex;flex-wrap:wrap;gap:6px}
+.reception .rc-guest{display:grid;gap:1px;justify-items:start;text-align:left;min-height:46px;padding:6px 9px;border-radius:9px;background:#fffaf0;color:var(--sk-ink,#3b2a20);border:2px solid transparent;touch-action:none;max-width:100%;white-space:normal}
+.reception .rc-guest small{font-size:11px;color:var(--sk-muted,#6e5f74)}
+.reception .rc-guest.on{border-color:var(--sk-accent-2);box-shadow:0 0 0 3px rgba(226,184,107,.55)}
+.reception .rc-guest.placed{opacity:.75}
+.reception .rc-cardtags{font-size:12px;display:flex;gap:3px}
+.reception .rc-legend{margin:6px 0 0}
+.reception .rc-hint{margin:6px 0 0}
+/* the luggage cart */
+.reception .rc-items{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.reception .rc-item{min-height:44px;padding:8px 10px;border-radius:9px;touch-action:none;white-space:normal;text-align:left}
+.reception .rc-item.on{border-color:var(--sk-accent-2);box-shadow:0 0 0 3px rgba(226,184,107,.55)}
+.reception .rc-item.placed{opacity:.55}
+.reception .rc-cart{display:grid;gap:5px;max-width:560px;margin-top:10px;padding:8px 8px 4px;border-radius:12px;border:3px solid #9aa3ad;background:#f4f6f8;position:relative}
+.reception .rc-shelf{display:grid;gap:3px;justify-items:start;text-align:left;min-height:58px;padding:7px 9px;border-radius:7px;border:2px solid #c3cbd3;background:#fff;white-space:normal}
+.reception .rc-shelf.sh-frame{border-style:dashed}
+.reception .rc-shelf.over{border-color:#b8433f}
+.reception .rc-shelf-name{font-size:12px;font-weight:700;color:#4b5866}
+.reception .rc-shelf-items{display:flex;flex-wrap:wrap;gap:4px}
+.reception .rc-bag{padding:2px 7px;border-radius:6px;background:var(--sk-accent);color:#fff;font-size:12px}
+.reception .rc-wheels{display:block;text-align:center;letter-spacing:1.5em;color:#4b5866;font-size:12px}
+/* tomorrow's timeline */
+.reception .rc-times{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:7px}
+.reception .rc-time{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border:1px solid var(--sk-line,#d9c7ad);border-radius:9px;font-size:14px}
+.reception .rc-time label{flex:1 1 0;min-width:0;line-height:1.35}
+.reception .rc-time select{flex:0 0 auto;width:auto;max-width:46%;min-height:44px;min-width:92px;font-size:17px;font-variant-numeric:tabular-nums;padding:4px 8px;border-radius:9px;border:1px solid var(--sk-line,#d9c7ad);background:var(--sk-surface,#fffaf0);color:inherit}
+.reception .rc-last,.reception .rc-finished{padding:11px;background:var(--sk-surface-2,#f6efe2);border-radius:10px;font-size:13px;line-height:1.5}
+.reception .rc-progress,.reception .rc-notebook,.reception .rc-book{border-top:1px solid var(--sk-line,#d9c7ad);padding:10px 0;margin-top:8px}
+.reception summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.reception .rc-progress ul{list-style:none;padding:0;display:grid;gap:8px}
+.reception .rc-progress li{display:grid;gap:4px}
+.reception .rc-progress li span{font-size:13px;color:var(--sk-muted,#6e5f74)}
+.reception .rc-rules{padding-left:20px}
+.reception .rc-rules li{margin:5px 0;line-height:1.5}
+/* the Sổ nghề */
+.reception .rc-cast{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:7px}
+.reception .rc-cast li{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:center;gap:8px;font-size:13px}
+.reception .rc-cast-name{display:grid}
+.reception .rc-cast-name small{color:var(--sk-muted,#6e5f74)}
+.reception .rc-meter{display:block;height:8px;border-radius:4px;background:var(--sk-surface-2,#eadfcd);overflow:hidden}
+.reception .rc-meter i{display:block;height:100%;background:var(--sk-accent)}
+.reception .rc-cast em{font-style:normal;font-size:12px}
+.reception .rc-keeps{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.reception .rc-keeps li{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.45}
+.reception .rc-keeps li>span{font-size:22px}
+.reception .rc-keeps small{display:block;color:var(--sk-muted,#6e5f74)}
+.reception .rc-branches{display:grid;gap:7px}
+.reception .rc-branch{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 8px;text-align:left;min-height:52px;padding:9px 11px;white-space:normal}
+.reception .rc-branch small{grid-column:2;color:var(--sk-muted,#6e5f74)}
+.reception .rc-branch.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.reception h4{margin:12px 0 6px}
+.reception button:focus-visible,.reception summary:focus-visible,.reception input:focus-visible{outline:3px solid var(--sk-accent);outline-offset:3px}
+.reception .sk-amt-in{min-width:0}
+.reception .sk-amt input{max-width:100%;font-size:18px}
+.rc-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;opacity:.9;max-width:180px;box-shadow:0 8px 20px rgba(0,0,0,.25);border-radius:9px;background:#fffaf0;padding:6px 9px;font-size:12px}
+.reception .dragging{opacity:.4}
+html[data-theme="dem"] .career-job.reception{--sk-accent:#e08aa4;--sk-accent-2:#b8914b}
+html[data-theme="dem"] .reception .rc-board{background:linear-gradient(#3a2e26,#2f251f)}
+html[data-theme="dem"] .reception .rc-room,html[data-theme="dem"] .reception .rc-guest,html[data-theme="dem"] .reception .rc-hooks button,html[data-theme="dem"] .reception .rc-shelf{background:#2a2622;color:#f2e6d6}
+html[data-theme="dem"] .reception .rc-room.st-clean{background:#1f3326}
+html[data-theme="dem"] .reception .rc-room.st-clean em{color:#9fd3ad}
+html[data-theme="dem"] .reception .rc-room.st-busy{background:#3a2430}
+html[data-theme="dem"] .reception .rc-cart{background:#22262a}
+@media(max-width:400px){.reception .rc-options{grid-template-columns:minmax(0,1fr)}.reception .rc-step,.reception .rc-post{padding:11px}.reception .rc-room{padding:5px;min-height:92px}.reception .rc-room-no{font-size:15px}}
+/* landscape phone (844×390): the board's floors side by side, the desk under them */
+@media(orientation:landscape) and (max-height:500px){.reception .rc-board{grid-template-columns:1fr 1fr}.reception .rc-desk{grid-column:1/-1}.reception .rc-room{min-height:78px}}

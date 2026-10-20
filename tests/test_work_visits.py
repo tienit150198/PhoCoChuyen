@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from tests.test_quay_hire import Base
 from game import marriage as mr, social
+from game.service_market import fee_of
 
 
 class WorkVisits(Base):
@@ -110,7 +111,8 @@ class WorkVisits(Base):
         self.store.transaction(lambda db:self.w.command_commit(db,self.sid(owner),state,state,'milk_tea','task_action',{'service_events':[{'id':order['id'],'status':'completed'}]}))
         self.api_post(owner,'receive')
         self.api_post(owner,'receive')
-        self.assertEqual(self.state(owner)['careers']['milk_tea']['money'],before+order['price'])
+        self.assertEqual(self.state(owner)['careers']['milk_tea']['money'],before+order['price']-fee_of(order['price']))
+        self.assertEqual(order['price'],25*3,'a player buyer pays the NPC price × 3 by default')
         self.api_post(buyer,'review',order=order['id'],stars=5,tags=['friendly'],comment='Tốt')
         self.api_post(owner,'reply',order=order['id'],text='Cảm ơn bạn')
         rows=self.api_get(buyer,'place',place=place['id'])['reviews']
@@ -153,16 +155,17 @@ class WorkVisits(Base):
     def test_simultaneous_same_request_only_debits_once(self):
         import concurrent.futures
         owner=self.user('race_owner');buyer=self.user('race_buyer',wallet=25)
+        place=self.make_public(owner);price=place['offers'][0]['price']
         # Starting day 12 can trigger a seeded life incident. Fund the race after
         # that setup so both concurrent requests really compete for one purchase.
-        mr._mutate(self.store,{self.sid(buyer):lambda s:s['journey'].update(wallet=25)})
-        place=self.make_public(owner);cash=self.wallet(buyer)
-        self.assertEqual(cash,25)
+        mr._mutate(self.store,{self.sid(buyer):lambda s:(s['journey'].update(wallet=price),s['journey'].pop('bank',None))})
+        cash=self.wallet(buyer)
+        self.assertEqual(cash,75)
         body=dict(place=place['id'],offer_id=place['offers'][0]['offer_id'],rid='same-race-0001')
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
             rows=list(pool.map(lambda _:self.api_post(buyer,'order',**body),range(2)))
         self.assertEqual(rows[0]['order']['id'],rows[1]['order']['id'])
-        self.assertEqual(self.wallet(buyer),cash-25)
+        self.assertEqual(self.wallet(buyer),cash-75)
 
     def test_real_staff_order_autotakes_offline_completes_and_pays_once(self):
         from game import player_service_tasks as pst,operations,workplace_business as wb
@@ -181,14 +184,16 @@ class WorkVisits(Base):
             self.assertEqual(order['status'],'accepted')
             state=self.state(owner);c=state['careers']['milk_tea'];job=c['player_service_jobs'][0]
             self.assertLess(c['money'],cash)
-            beforepay=c['money'];bonus=max(0,offer['price']-job['wage']-job['materials']-job['goods'])*40//100
+            # 🛎️ the 40 % bonus counts only the real margin, at most at the NPC price (offer['base'])
+            paid=offer['price']-fee_of(offer['price'])
+            beforepay=c['money'];bonus=max(0,min(paid,offer['base'])-job['wage']-job['materials']-job['goods'])*40//100
             self.assertEqual(self.wallet(buyer),buyer_cash-offer['price'])
         with patch.object(self.w,'_bridge',return_value=pst),patch('time.time',return_value=job['due_at']):
             rows=self.api_get(buyer,'orders')['outgoing']
             self.assertEqual(rows[0]['status'],'completed')
-            self.assertEqual(self.state(owner)['careers']['milk_tea']['money'],beforepay+offer['price']+bonus)
+            self.assertEqual(self.state(owner)['careers']['milk_tea']['money'],beforepay+paid+bonus)
             self.api_post(buyer,'receive')
-            self.assertEqual(self.state(owner)['careers']['milk_tea']['money'],beforepay+offer['price']+bonus)
+            self.assertEqual(self.state(owner)['careers']['milk_tea']['money'],beforepay+paid+bonus)
 
     def test_actual_minigame_store_commit_is_only_payment_proof(self):
         from game import player_service_tasks as pst
@@ -215,7 +220,8 @@ class WorkVisits(Base):
             self.assertLessEqual(afterwork,before)
             rows=self.api_get(buyer,'orders')['outgoing']
             self.assertEqual(rows[0]['status'],'completed')
-            self.assertEqual(self.state(owner)['careers']['mother_baby']['money'],afterwork+order['price'])
+            # 🛎️ Phố dịch vụ: the provider keeps 95 %, 5 % (rounded up) is burned
+            self.assertEqual(self.state(owner)['careers']['mother_baby']['money'],afterwork+order['price']-fee_of(order['price']))
     def test_actual_minigame_commit_under_locked_fallback(self):
         with patch('game.storage.OPTIMISTIC_TRIES',0):
             self.test_actual_minigame_store_commit_is_only_payment_proof()
@@ -301,6 +307,37 @@ class WorkVisits(Base):
         with patch.object(self.w,'_bridge',return_value=pst),patch('time.time',return_value=job['due_at']):
             self.api_post(owner,'receive')
             c=self.state(owner)['careers']['milk_tea']
-            bonus=max(0,order['price']-job['wage']-job['materials']-job['goods'])*40//100
-            self.assertEqual(c['money'],cash+order['price']+bonus)
+            paid=order['price']-fee_of(order['price'])
+            bonus=max(0,min(paid,order['base'])-job['wage']-job['materials']-job['goods'])*40//100
+            self.assertEqual(c['money'],cash+paid+bonus)
             self.assertTrue(c['player_service_jobs'][0]['settled'])
+
+    def test_pet_grooming_lands_at_completion_and_refunds_reach_the_bank(self):
+        """Review 22/10: grooming ran when the money was held, so a cancel gave a free grooming; and a refund went to the
+        wallet only, so a wallet near its maximum wedged it (the escrow came from the wallet, then the bank account)."""
+        from game import bank, journey as jr, pets
+        from game.engine import apply_action
+        self.bridge.offers=lambda s,c:[dict(offer_id='offer-pet',digest='digest-pet',price=25,label='Tắm cho thú cưng',career='pet_care')]
+        owner=self.user('groomer');buyer=self.user('pet_owner')
+        place=self.make_public(owner)
+        groomed=[]
+        with patch.object(pets,'groom_by_player',side_effect=lambda s:groomed.append(s.get('name')) or True):
+            first=self.api_post(buyer,'order',place=place['id'],offer_id='offer-pet',rid='visit-pet-0001')['order']
+            self.assertEqual(groomed,[],'nothing groomed while the money is only held')
+            def full(s):
+                s2,_=apply_action(s,None,'jr_bk_open',{});s.clear();s.update(s2)
+                bank.get(s)['balance']=1000
+                s['journey']['wallet']=jr.WALLET_MAX-10
+            mr._mutate(self.store,{self.sid(buyer):full})
+            self.api_post(buyer,'cancel',order=first['id'])
+            s=self.state(buyer)
+            self.assertEqual((s['journey']['wallet'],bank.get(s)['balance']),(jr.WALLET_MAX,1000+first['price']-10),'wallet to its maximum, the rest to the bank')
+            self.assertEqual(groomed,[],'a cancelled order grooms nothing')
+            mr._mutate(self.store,{self.sid(buyer):lambda s:s['journey'].update(wallet=5000)})
+            second=self.api_post(buyer,'order',place=place['id'],offer_id='offer-pet',rid='visit-pet-0002')['order']
+            self.api_post(owner,'accept',order=second['id'])
+            state=self.state(owner)
+            self.store.transaction(lambda db:self.w.command_commit(db,self.sid(owner),state,state,'milk_tea','task_action',{'service_events':[{'id':second['id'],'status':'completed'}]}))
+            self.api_post(owner,'receive')
+            self.api_post(owner,'receive')
+        self.assertEqual(len(groomed),1,'groomed once, when the service was done')

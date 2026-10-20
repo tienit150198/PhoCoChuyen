@@ -62,7 +62,12 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   laundry:identity('Đọc nhãn vải · giặt và trả đúng khách','Bàn xử lý & gấp đồ','Giặt & xử lý vết bẩn','Gấp & kiểm phiếu'),
   post_office:identity('Kiểm bưu gửi · tính cước và chia tuyến','Bàn soạn bưu gửi','Bao gói & chia tuyến','Cân cước & bàn giao'),
   hotel:identity('Nhận phòng · dọn phòng và lo cả ca','Quầy lễ tân','Buồng phòng & giặt là','Bảng phòng & chìa khóa'),
+  restore:identity('Khám dấu hiệu · chốt yêu cầu khách rồi mới phục hồi','Bàn khám & phục hồi','Tủ linh kiện & sáp ong','Quầy nhận và trả đồ'),
+  radio:identity('Kiểm phòng thu · đọc tin, quảng cáo duyệt và lời chúc đúng tên','Phòng thu','Bàn trộn âm & micro','Phòng máy & lịch phát sóng'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
+  reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
+  teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
+  research:identity('Có đối chứng · ghi đủ sổ · giữ số liệu thật','Bàn thí nghiệm','Ruộng thử & bếp thử','Bàn sáng chế & tủ mẫu'),
   customs:identity('Phân luồng tờ khai · kiểm hóa và tính thuế','Bàn kiểm tra hồ sơ','Máy soi & hàng tạm giữ','Quầy thủ tục'),
 };
 
@@ -99,6 +104,12 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('workbench','counter',r(3.1,3.4,5.6,4.25),4.4,4.85,57,mint);
     f('washer',r(2.9,.65,4.1,1.85),83,cream);f('washer',r(4.65,.65,5.75,1.85),83,mint);f('sink',r(6.05,.65,6.55,1.85),62,blue);
     z(r(2.65,.35,6.8,2.1),'tile',0xcbdedd);z(r(2.8,3.1,5.9,4.55),'checker',0xe8dfcb);
+  }else if(career==='restore'){
+    // The parts wall on the left, the long restoring bench in front, old pieces waiting on racks and crates behind.
+    clear(false,'plank');s('shelf','tools',r(.55,1.7,1.5,4),2,2.9,118,0xa4865f);
+    s('workbench','desk',r(3.05,3.25,5.75,4.2),4.4,4.8,58,0xc9a77b);
+    f('rack',r(2.9,.6,4.25,1.45),112,0xb48d63);f('crate',r(4.7,.7,5.5,1.5),52,0xc2a171);f('tools',r(5.85,.6,6.5,1.6),96,0x8f7a5c);
+    z(r(2.7,.35,6.7,1.95),'plank',0xd8c3a3);z(r(2.85,3,6.4,4.5),'mat',0xe4cfae);
   }else if(career==='post_office'){
     clear();s('workbench','counter',r(3.05,3.05,5.3,4.05),4.2,4.65,62,0xc7a576);
     refurnish('shelf','shelf',117);refurnish('evidence','routeboard',112,blue);
@@ -111,6 +122,13 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,110,cream);
     f('rack',r(2.9,.6,4.2,1.5),104,0xb9a3cf);f('sofa',r(4.7,.7,6.3,1.5),42,mint);f('planter',r(6,3.35,6.5,4.15),70,0x9fb98f);
     z(r(2.6,.3,6.6,1.9),'carpet',0xcdbfd8);z(r(2.85,2.95,6.75,4.45),'checker',0xe6dccb);
+  }else if(career==='radio'){
+    // The soundproofed booth: the mixing desk and mic in front, record shelves on the left wall, the on-air board and the transmitter rack behind.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.95,1.45,3.95),1.95,2.95,118,cream);
+    s('workbench','desk',r(3.15,3.2,5.65,4.15),4.4,4.75,58,0x8fa8c8);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('console',r(2.85,.55,4.25,1.45),78,0x3f6fb0);f('rack',r(4.65,.6,5.95,1.5),110,0x9aa7b8);f('sofa',r(6.15,.7,6.6,1.5),40,mint);f('planter',r(6,3.35,6.5,4.15),70,0x9fb98f);
+    z(r(2.6,.3,6.6,1.85),'carpet',0xc5d2e2);z(r(2.85,2.95,6.75,4.45),'checker',0xe2e8ef);
   }else if(career==='banquet'){
     // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
     clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);
@@ -118,6 +136,28 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
     f('stove',r(2.85,.55,4.2,1.45),64,0xb5473a);f('sink',r(4.6,.6,5.2,1.45),62,blue);f('coldcabinet',r(5.5,.55,6.4,1.5),112,mint);f('desk',r(5.95,3.3,6.5,4.1),46,0xf3dcb4);
     z(r(2.6,.3,6.6,1.85),'tile',0xe6d2c8);z(r(2.85,2.95,6.75,4.45),'checker',0xf0e2cf);
+  }else if(career==='reception'){
+    // Khách sạn Hoa Sứ: the front desk counter in front, the key hook board in the left alcove, the room board behind,
+    // the brass luggage cart, the lobby sofa under a frangipani and Bơ the hotel cat's basket beside the desk.
+    clear(false,'tile');s('shelf','shelf',r(.55,1.95,1.45,3.95),1.95,2.95,112,0xd8a3b1);
+    s('workbench','counter',r(3.15,3.3,5.75,4.2),4.45,4.8,62,0xc9798e);
+    s('evidence','board',r(6.95,.55,8.25,1.3),7.6,1.95,106,cream);
+    f('rack',r(2.85,.6,3.95,1.45),96,0xd8b25e);f('sofa',r(4.4,.65,6.05,1.45),42,0xe7b8c4);f('crate',r(5.95,3.5,6.5,4.05),24,0xd2a86e);f('planter',r(6.3,.6,6.75,1.3),74,0x9fb98f);
+    z(r(2.6,.3,6.8,1.85),'carpet',0xe8c3cd);z(r(2.85,2.95,6.75,4.45),'checker',0xf3e4e7);
+  }else if(career==='teller'){
+    // The glass-fronted counter in front, files and the safe on the left, the queue display, an ATM and the waiting chairs behind.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);
+    s('workbench','counter',r(3.1,3.2,5.6,4.15),4.35,4.75,60,mint);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
+    f('console',r(2.85,.55,4.1,1.5),82,blue);f('desk',r(4.6,.6,5.6,1.45),52,cream);f('sofa',r(5.9,3.35,6.5,4.15),42,mint);
+    z(r(2.6,.3,6.6,1.85),'tile',0xd6e4de);z(r(2.85,2.95,6.75,4.45),'checker',0xe9eee6);
+  }else if(career==='research'){
+    // Sample shelves on the left wall, the lab bench in front, the fume hood and the seed-tray rack behind, a test kitchen corner.
+    clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);
+    s('workbench','counter',r(3.1,3.2,5.6,4.15),4.35,4.75,60,0xd3e2dc);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
+    f('coldcabinet',r(2.85,.55,3.85,1.5),112,mint);f('planter',r(4.2,.6,4.8,1.45),70,0x9fb98f);f('console',r(5.2,.55,6.4,1.45),80,0x2f6f73);f('desk',r(5.95,3.3,6.5,4.1),46,0xd9eee9);
+    z(r(2.6,.3,6.6,1.85),'tile',0xd6e6e1);z(r(2.85,2.95,6.75,4.45),'checker',0xe6efe9);
   }else if(career==='customs'){
     // Declaration files on the left wall, the paper check desk in front, the scanner and the held goods behind.
     clear(false,'tile');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116);

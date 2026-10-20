@@ -318,3 +318,55 @@ html[data-layout="phone"] .mr-ticker{top:calc(var(--safe-t) + 4px);width:calc(10
 .mr-family .mr-actions>.btn{flex:1 1 150px}
 .mr-family input,.mr-family select{min-width:0;width:100%}
 .mr-family-child,.mr-family-invite{overflow-wrap:anywhere}
+/* 🏥 Phòng sinh & nhận nuôi (public/js/v4/birth.js, game/birth.py) */
+.mr-seg{display:flex;gap:8px;margin:12px 0}
+.mr-seg .btn{flex:1 1 0;min-height:48px;font-weight:700}
+.mr-birth-opts{display:grid;gap:8px;margin:12px 0 4px;padding:0;border:0;min-width:0}
+.mr-birth-opts legend{padding:0;margin-bottom:6px;font-weight:700;color:var(--ink-2)}
+.mr-opt{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;line-height:1.35;min-width:0}
+.mr-opt.is-static{cursor:default;border-color:var(--accent);background:var(--accent-soft)}
+.mr-opt input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.mr-opt .grow{display:grid;gap:2px;min-width:0;overflow-wrap:anywhere}
+.mr-opt small{color:var(--muted,var(--ink-2));font-size:.82rem}
+.mr-opt strong{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mr-opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent) inset}
+.mr-opt:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.mr-birth .mr-check{margin-top:8px}
+.mr-hint.mr-bad{color:var(--bad);font-weight:700}
+.mr-birth .input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-soft)}
+.mr-family .mr-check input,.mr-family .mr-opt input{flex:none;width:20px;min-width:20px;height:20px}
+.mr-birth-clock{margin:12px 0;padding:12px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--line)}
+.mr-birth-clock p{margin:8px 0 0;font-size:1.02rem}
+.mr-birth-clock b{font-variant-numeric:tabular-nums}
+.mr-birth-bar{display:block;height:12px;border-radius:999px;background:var(--surface);overflow:hidden;border:1px solid var(--line)}
+.mr-birth-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#f5b2c4,var(--accent));transition:width 1s linear}
+.mr-birth-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.mr-birth-list li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--surface-2);overflow-wrap:anywhere}
+.mr-birth-list .grow{flex:1 1 180px;min-width:0}
+.mr-stars .btn{flex:1 1 56px;min-width:0;padding-inline:4px;font-size:.85rem}
+.mr-birth-line{margin-top:-4px}
+.mr-born{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,#2a1a12 55%,transparent);animation:mr-born-in .35s ease-out}
+.mr-born-card{width:min(360px,100%);padding:20px 18px;border-radius:20px;background:var(--surface);text-align:center;box-shadow:0 18px 48px rgba(0,0,0,.25);animation:mr-born-pop .5s cubic-bezier(.2,1.4,.4,1)}
+.mr-born-card h3{margin:6px 0 6px;font-size:1.3rem}
+.mr-born-card .btn{min-height:48px;width:100%;margin-top:8px}
+.mr-born-art{position:relative;height:120px;display:grid;place-items:center}
+.mr-born-door{position:absolute;font-size:3.6rem;animation:mr-born-door 1.6s ease-in forwards}
+.mr-born-baby{position:relative;font-size:4.2rem;opacity:0;transform:scale(.3);animation:mr-born-baby 1.1s .9s cubic-bezier(.2,1.5,.4,1) forwards}
+.mr-born-art i{position:absolute;bottom:20px;font-style:normal;font-size:1.3rem;opacity:0;animation:mr-born-float 2.4s 1.2s ease-out infinite}
+.mr-born-art i:nth-of-type(1){left:22%}.mr-born-art i:nth-of-type(2){left:36%;animation-delay:1.6s}.mr-born-art i:nth-of-type(3){left:62%;animation-delay:1.4s}
+.mr-born-art i:nth-of-type(4){left:76%;animation-delay:2s}.mr-born-art i:nth-of-type(5){left:50%;animation-delay:2.3s}
+@keyframes mr-born-in{from{opacity:0}to{opacity:1}}
+@keyframes mr-born-pop{from{transform:translateY(24px) scale(.92);opacity:0}to{transform:none;opacity:1}}
+@keyframes mr-born-door{0%{transform:scale(1);opacity:1}60%{transform:scale(1.15);opacity:1}100%{transform:scale(.4) translateY(-40px);opacity:0}}
+@keyframes mr-born-baby{to{opacity:1;transform:none}}
+@keyframes mr-born-float{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:1}100%{transform:translateY(-90px) scale(1.1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.mr-born,.mr-born-card,.mr-born-door,.mr-born-baby,.mr-born-art i{animation:none!important}.mr-born-door,.mr-born-art i{display:none}.mr-born-baby{opacity:1;transform:none}.mr-birth-bar i{transition:none}}
+/* 💒 Dịch vụ cưới từ người chơi (v4/marriage.js wedsvcCard, the result card's team) */
+.mr-team{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:6px}
+.mr-team li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface-2);min-width:0}
+.mr-team li>span{font-size:1.4rem;flex:none}
+.mr-team li .grow{min-width:0;display:flex;flex-direction:column}
+.mr-team li b{overflow-wrap:anywhere}
+.mr-team li small{color:var(--muted)}
+.mr-team li>small{flex:none;color:var(--warn);letter-spacing:-1px}
+.mr-team li.prep{background:transparent;border:1px dashed var(--line)}

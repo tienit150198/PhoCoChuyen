@@ -100,7 +100,7 @@ function pickOf(tab){
   return null;
 }
 /** 🛍️ A title earned in Mua sắm (game/lux.py, `earn`) shows once it is yours (for good): the weekly shop stays short. */
-const styleList=()=>{const c=CAT();return S.kind==='color'?c.colors:S.kind==='frame'?c.frames:c.titles.filter(x=>!x.earn||V()?.own?.[x.id]);};
+const styleList=()=>{const c=CAT();return S.kind==='color'?c.colors:S.kind==='frame'?c.frames.filter(x=>!x.earn||V()?.own?.[x.id]):c.titles.filter(x=>!x.earn||V()?.own?.[x.id]);};   // 🎪 an earned frame (Hội chợ việc làm) too
 const daysLeft=until=>Math.max(0,Math.ceil((until-Date.now()/1000)/86400));
 const guest=()=>!S.env?.api?.account?.username;   // a guest's gift is always Ẩn danh on the board (game/spend.py _name)
 const anonNow=()=>guest()||(S.anon??(S.amount<(CAT()?.give?.anon_under||50)));

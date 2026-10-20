@@ -133,6 +133,9 @@ export class PhaserWorld {
     const seen=new Set<string>(),shops=Array.isArray(value)?value.filter(s=>s&&typeof s.id==='string'&&s.id.length<=160&&!seen.has(s.id)&&(seen.add(s.id),true)).slice(0,8).map(s=>({id:s.id,name:String(s.name||'Quán hàng xóm').slice(0,80),kind:s.kind,target:s.target,ownerName:String(s.ownerName||'').slice(0,24),career:s.career})):[];
     if(JSON.stringify(shops)===JSON.stringify(this.residentShops))return;this.residentShops=shops;if(this.mode==='town'){this.stage?.refreshResidentShops();this.wake();}
   }
+  /** 🍵 Bà Lựu's new tea cart (the bank career's savings arc, game/careers/teller.py): parked by the trà đá stall. */
+  teaCart=false;
+  setTeaCart(value:unknown){const on=value===true;if(on===this.teaCart)return;this.teaCart=on;if(this.mode==='town'){this.stage?.refreshTeaCart();this.wake();}}
   /** 🏗️ Công trình của phố: each lot's stage (v4/town-projects-data.js). Repaints only the six lots. */
   townProjects:TownProjectLot[]=[];
   setTownProjects(value:unknown){
@@ -507,7 +510,7 @@ class DioramaScene extends Phaser.Scene {
       const key='civic-'+prop.kind;this.textureObject(key,256,256,ctx=>drawCivicProp(ctx,prop.kind));const at=px(prop.at),width=prop.kind==='playground'?240:prop.kind==='pergola'?210:130;
       const image=this.add.image(at.x,at.y,key).setOrigin(.5,.94).setDisplaySize(width,width).setDepth(at.y+.2);this.staticObjects.push(image);
     }
-    this.refreshResidentShops();this.amenities();this.refreshTownProjects();this.landmarks();
+    this.refreshResidentShops();this.amenities();this.refreshTownProjects();this.refreshTeaCart();this.landmarks();
     // The lawn's tufts, flowers and pebbles: baked per terrain chunk, so a ground-cache rebuild only replays nearby ones.
     const lawn=islandCoastline(-1.9),feet=[...this.buildings.map(b=>b.footprint),...townShopLots().map(l=>({x0:l.at.x-1.6,y0:l.at.y-1.6,x1:l.at.x+1.2,y1:l.at.y+1.2}))];
     const onLawn=(p:Point)=>{let yes=false;for(let i=0,j=lawn.length-1;i<lawn.length;j=i++){const a=lawn[i],b=lawn[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)yes=!yes;}return yes;};
@@ -534,6 +537,22 @@ class DioramaScene extends Phaser.Scene {
       const h:Hotspot={id:'resident:'+shop.id,label:shop.name,...lot.at,approach:lot.door,point:px(lot.door),z:0,range:45};this.owner.hotspots.push(h);this.hits.push({hotspot:h,object:image},{hotspot:h,object:sign});
     });
     this.residentObjects=this.staticObjects.slice(before);this.reindexStatics();this.requestRender();
+  }
+  private teaCartObject:Phaser.GameObjects.Container|null=null;
+  /** 🍵 A small steel tea cart with a red canopy beside the trà đá stall's door, once the player helped Bà Lựu save for it. */
+  refreshTeaCart(){
+    const old=this.teaCartObject;
+    if(old){this.staticObjects=this.staticObjects.filter(o=>o!==old);if(old.scene)old.destroy();this.teaCartObject=null;}
+    if(this.owner.mode!=='town'||!this.owner.teaCart)return;
+    const stall=this.buildings.find(b=>b.id==='tra_da');if(!stall)return;
+    const at=px({x:stall.door.x+1.1,y:stall.door.y+.2}),g=this.add.graphics();
+    g.fillStyle(0x4b3225,.2).fillEllipse(0,4,60,16);
+    g.fillStyle(0xd9dde0).lineStyle(2,0x6f7a80).fillRoundedRect(-24,-26,48,24,4).strokeRoundedRect(-24,-26,48,24,4);
+    g.lineStyle(2,0x8a5a3a).lineBetween(-22,-38,-22,-26).lineBetween(22,-38,22,-26);g.fillStyle(0xc0553f).fillRect(-28,-45,56,8);
+    g.fillStyle(0x3f3a36).fillCircle(-14,0,6).fillCircle(14,0,6);g.fillStyle(0xf3e6c8).fillRoundedRect(-8,-34,16,8,3);
+    const label=this.add.text(0,-50,'🍵 Xe trà mới',{fontFamily:FONT,fontSize:'12px',color:'#67412a',backgroundColor:'#fff3da',padding:{x:4,y:2}}).setOrigin(.5,1);
+    const box=this.add.container(at.x,at.y,[g,label]).setDepth(at.y+.1).setSize(60,50).setScale(1.7);
+    this.teaCartObject=box;this.staticObjects.push(box);this.reindexStatics();this.requestRender();
   }
   private projectObjects:Phaser.GameObjects.GameObject[]=[];
   refreshTownProjects(){

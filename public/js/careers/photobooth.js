@@ -292,6 +292,18 @@ function tabsRow(t,x,tab,steps){
     return act(x,`${x.esc(word)}${left?`<small>${left}</small>`:'<small>✓</small>'}`,'tab',{tab:k,task:t.id},`pb-tab ${k===tab?'on':''}`,` role="tab" aria-selected="${k===tab}" aria-label="${x.esc(l)}"`);}).join('')}</div>`;
 }
 
+/* ------------------------------------------------------------ 📸 players' portrait orders (v4/portrait.js, game/photo_studio.py)
+ * The same entry in both layouts (gọn and đầy đủ): the queue of other players who ordered a portrait. The count is
+ * filled in after the render (meters), from GET /api/photo/studio (cached half a minute). */
+const studioEntry=x=>`<section class="card pb-studio"><button type="button" class="btn ghost pb-studio-go" data-action="photoStudio" data-tab="studio" aria-label="${x.esc('Khách đặt chụp chân dung')}">📸 Khách đặt chụp chân dung <b class="pb-studio-n" data-pt-count></b></button></section>`;
+let QN=null;
+function studioCount(root,x){
+  const b=root.querySelector('[data-pt-count]');if(!b)return;
+  if(QN!==null){const t=QN?String(QN):'';if(b.textContent!==t)b.textContent=t;}
+  if(b._asked)return;b._asked=true;
+  import('../v4/portrait.js').then(m=>m.queueCount({api:x.api})).then(n=>{QN=n;const t=n?String(n):'';if(b.isConnected&&b.textContent!==t)b.textContent=t;}).catch(()=>{});
+}
+
 /* ------------------------------------------------------------ idle: the shop between customers */
 function shopView(x){
   const d=data(x),b=d.booth||{};
@@ -313,6 +325,7 @@ export default {
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
     const top=`${introCard(x,'pb_intro','📸')}${deskCard(x,'pb_desk','Chuyện ở tiệm')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk pb">${hint}${top}${bottom(x,g)}</div>`;
+    const entry=t.kind==='setup'||!t.known?studioEntry(x):'';   // between customers' steps only: the shutter stays in view
     let main='',side='',tabs='';
     if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở tiệm',{chip:true});}
     else if(!t.known)main='';
@@ -327,18 +340,19 @@ export default {
     const bench=`${tabs}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>`;
     // Reading the order comes first; past it the hands-on part leads (the camera must be in view while counting down).
     const body=t.kind==='setup'||at==='set'?`${head}${bench}`:`${bench}${head}`;
-    return `<div class="career-job sk pb">${hint}${top}${body}${bottom(x,g)}</div>`;
+    return `<div class="career-job sk pb">${hint}${top}${body}${entry}${bottom(x,g)}</div>`;
   },
   idle(x){
     PAINT.clear();LIVE=null;
     const d=data(x),top=`${introCard(x,'pb_intro','📸')}${deskCard(x,'pb_desk','Chuyện ở tiệm')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro){const g=d.desk?.ev?{steps:[{ok:null,label:'Quyết chuyện ở tiệm',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null}:{steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pb_intro',payload:{},label:'📸 Vào việc thôi!'}}],final:null};
       return `<div class="career-job sk pb">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
-    return `<div class="career-job sk pb">${top}${dayBar(x)}${shopView(x)}</div>`;
+    return `<div class="career-job sk pb">${top}${dayBar(x)}${studioEntry(x)}${shopView(x)}</div>`;
   },
   // Pictures are drawn here, right after a render (and the camera five times a second): the bar glides on the
   // compositor (ctx.slide), the words and the camera's screen change with the countdown.
   meters(root,x){
+    studioCount(root,x);
     for(const cv of root.querySelectorAll('canvas[data-pb-k]')){const k=cv.dataset.pbK;if(cv._k===k)continue;const f=PAINT.get(k);if(!f)continue;try{f(cv);cv._k=k;}catch(error){console.error(error);}}
     const live=root.querySelector('canvas[data-pb-live]'),box=root.querySelector('[data-pb-cam]');
     if(!box){if(live)paintLive(live,'idle');return;}

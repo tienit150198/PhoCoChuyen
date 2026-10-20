@@ -102,7 +102,7 @@ CH_UNLOCKS = {
 # 🛎️ A workplace added after a release opens from a chapter without entering `unlocked` until it is worked: a
 # chapter list would put it in every story save (upgrade() re-runs the chapters), and an older build, whose CAREERS
 # lacks it, refuses such a save. Untouched it stays dormant (engine.DORMANT), so a rollback keeps loading the save.
-LATE_UNLOCKS = {'hotel': 3, 'banquet': 3}
+LATE_UNLOCKS = {'hotel': 3, 'banquet': 3, 'reception': 3, 'teller': 3, 'restore': 2, 'research': 3, 'radio': 3}
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 CAST = {
@@ -289,6 +289,11 @@ TITLES = [
     _t('c_police', 'career', '👮', 'Người giữ bình yên hẻm', 'Đạt cấp 3 ở Công an phường Mây.', lambda x: x['lv'].get('police', 1) >= 3),
     _t('c_hotel', 'career', '🛎️', 'Người giữ chìa khóa Sông Mây', 'Đạt cấp 3 ở Khách sạn Sông Mây.', lambda x: x['lv'].get('hotel', 1) >= 3),
     _t('c_banquet', 'career', '👨‍🍳', 'Chiếc mũ trắng Hồng Mây', 'Đạt cấp 3 ở Nhà hàng tiệc Hồng Mây.', lambda x: x['lv'].get('banquet', 1) >= 3),
+    _t('c_reception', 'career', '🔑', 'Người giữ bảng móc chìa', 'Đạt cấp 3 ở quầy lễ tân Khách sạn Hoa Sứ.', lambda x: x['lv'].get('reception', 1) >= 3),
+    _t('c_teller', 'career', '🏦', 'Người đếm tiền hai lần', 'Đạt cấp 3 ở Quầy số 3, phòng giao dịch Bến Chợ.', lambda x: x['lv'].get('teller', 1) >= 3),
+    _t('c_restore', 'career', '🧰', 'Người giữ hồn đồ xưa', 'Đạt cấp 3 ở Xưởng phục chế Hồn Xưa.', lambda x: x['lv'].get('restore', 1) >= 3),
+    _t('c_research', 'career', '🔬', 'Cuốn sổ thí nghiệm bìa xanh', 'Đạt cấp 3 ở Viện nghiên cứu Sông Mây.', lambda x: x['lv'].get('research', 1) >= 3),
+    _t('c_radio', 'career', '📻', 'Giọng nói của Sóng Mây', 'Đạt cấp 3 ở Đài phát thanh Sóng Mây.', lambda x: x['lv'].get('radio', 1) >= 3),
     _t('c_customs', 'career', '🛃', 'Người gác cửa khẩu', 'Đạt cấp 3 ở Chi cục Hải quan cửa khẩu Bến Mây.', lambda x: x['lv'].get('customs', 1) >= 3),
     _t('c_zpop', 'career', '💿', 'Người giữ seal nguyên vẹn', 'Đạt cấp 3 ở tiệm album Mây Pop.', lambda x: x['lv'].get('zpop', 1) >= 3),
     # Skills at level 3.
@@ -572,6 +577,9 @@ def upgrade(j: dict) -> None:
     dc.upgrade(j)   # 🪴
     gr.upgrade(j)   # 🚗
     gd.upgrade(j)   # 📱
+    if 'lab' in j:
+        from . import research_lab as rl
+        rl.upgrade(j)   # 🔬 journey['lab'] (optional: game/research_lab.py)
     sp.upgrade(j)   # ☕
     pt.upgrade(j)   # 🐾
     pt.px.upgrade(j)   # 🏅 journey['petx'] (ranks, kennel, gear)
@@ -1133,6 +1141,11 @@ def suggested(s: dict, ctx: dict | None = None) -> str | None:
     return (started or open_ids or [None])[0]
 
 
+def _restored_public(s: dict):
+    from . import restore_service
+    return restore_service.public(s)
+
+
 def public(s: dict) -> dict:
     j = s['journey']
     ctx = _context(s)
@@ -1163,11 +1176,12 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
+        garage=gr.public(s), gadgets=gd.public(s), **({'lab': _lab_public(s)} if 'lab' in j else {}), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'islb': ibp} if (ibp := _islb_public(s)) else {}),   # 🏗️ only once something was built (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
+        **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
 
@@ -1180,6 +1194,12 @@ def _islb_public(s: dict) -> dict | None:
 def _tile_public(s: dict) -> dict:
     from . import tile_match
     return tile_match.public(s)
+
+
+def _lab_public(s: dict):
+    """🔬 The research effects and gadgets this save holds (game/research_lab.py), only once a save has the block."""
+    from . import research_lab as rl
+    return rl.public(s)
 
 
 def _cradle_public(s: dict):
@@ -1314,6 +1334,9 @@ def validate(s: dict) -> None:
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
+    if isinstance(s.get('journey'), dict) and 'lab' in s['journey']:
+        from . import research_lab as rl
+        rl.validate(s)   # 🔬 journey['lab'] (optional: game/research_lab.py)
     sp.validate(s)   # ☕ journey['spend'] (optional)
     pt.validate(s)   # 🐾 journey['pets'] (optional)
     pt.px.validate(s)   # 🏅 journey['petx'] (optional)
@@ -1328,6 +1351,10 @@ def validate(s: dict) -> None:
     town_projects.validate(s)   # 🏗️ journey['town'] (optional)
     from . import bang
     bang.validate(s)   # ⚔️ journey['bang'] (optional)
+    from . import photo_studio
+    photo_studio.validate(s)   # 📸 journey['photo_wall'] (optional): the framed photos hung at home
+    from . import restore_service
+    restore_service.validate(s)   # 🧰 journey['restored'] (optional): the marks of things a player restorer restored
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)

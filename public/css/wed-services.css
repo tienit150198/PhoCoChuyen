@@ -1,0 +1,91 @@
+/* ==========================================================================
+   💒 Dịch vụ cưới từ người chơi (public/js/v4/wed-services.js), over /css/spend.css (sd-*) and /css/service-market.css
+   (svc-*). Theme tokens only. Phone first (360–390 px): one column, 44 px targets, the main button in the sticky bottom
+   bar; landscape phones (844×390): two columns for the cards, a slim bar.
+   ========================================================================== */
+.ws-sheet .sd-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:800}
+.ws-sheet .sd-tabs button span{font-size:.9rem}
+.ws-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-content:start}
+.ws-body>*{min-width:0;margin:0}
+.ws-body h3{margin:0 0 4px;font-size:1.02rem;line-height:1.3}
+.ws-head p{margin:2px 0}
+.ws-why{text-align:center}
+.ws-svc-head{display:flex;gap:10px;align-items:flex-start}
+.ws-svc-head .grow{min-width:0;display:flex;flex-direction:column;gap:2px}
+.ws-svc-head small{color:var(--muted);font-size:.84rem;line-height:1.4}
+.ws-big{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--accent-soft);font-size:1.5rem}
+.ws-npc{color:var(--ink-2)!important;font-weight:700}
+.ws-none{margin:8px 0 0;padding:10px;border:1px dashed var(--line);border-radius:12px}
+.ws-providers{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.ws-providers .svc-card{min-height:52px}
+.ws-providers .svc-card[disabled]{opacity:.55;cursor:not-allowed}
+.ws-credits,.ws-orders,.ws-brief{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.ws-credits li,.ws-orders li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--surface-2);min-width:0}
+.ws-credits li.prep{background:transparent;border:1px dashed var(--line)}
+.ws-credits .grow,.ws-orders .grow{min-width:0;display:flex;flex-direction:column;gap:1px}
+.ws-credits small,.ws-orders small{color:var(--muted);font-size:.82rem;overflow-wrap:anywhere}
+.ws-ico{flex:none;font-size:1.35rem;width:28px;text-align:center}
+.ws-state{flex:none;font-size:.8rem;color:var(--muted);text-align:right}
+.ws-stars{flex:none;color:var(--warn);letter-spacing:-1px;font-size:.95rem;white-space:nowrap}
+.ws-orders .btn.small{flex:none;min-height:36px}
+.ws-link{display:inline;background:none;border:0;padding:0;margin:0;color:var(--accent-text);text-decoration:underline;text-underline-offset:2px;font:inherit;font-weight:800;cursor:pointer}
+.ws-switch{flex:none;position:relative;width:52px;height:30px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface-2);cursor:pointer;padding:0;margin:7px 0}
+.ws-switch i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s}
+.ws-switch.on{background:var(--good);border-color:var(--good)}
+.ws-switch.on i{transform:translateX(22px)}
+.ws-switch[disabled]{opacity:.5;cursor:not-allowed}
+.ws-field{border:0;margin:12px 0 0;padding:0;min-width:0}
+.ws-field legend,.ws-field.field{font-weight:800;font-size:.92rem;margin-bottom:6px;display:block}
+.ws-field .sd-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ws-field .sd-chip{min-height:40px}
+.ws-field small{font-weight:600;color:var(--muted)}
+.ws-field .input{width:100%;margin-top:4px}
+.ws-qty{display:flex;align-items:center;gap:6px}
+.ws-qty .btn{min-width:44px;min-height:44px;padding:0}
+.ws-qty .input{width:84px;margin:0;text-align:center}
+.ws-sum{margin:12px 0 4px;font-size:1rem}
+.ws-short{flex-basis:100%;color:var(--muted);font-size:.8rem}
+/* the provider's job */
+.ws-order h3{font-size:1rem}
+.ws-note{color:var(--ink-2)!important}
+.ws-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ws-acts .btn{flex:1 1 auto;min-height:44px}
+.ws-job{margin-top:10px;display:grid;gap:8px}
+.ws-brief{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+.ws-brief li{display:flex;flex-direction:column;padding:6px 10px;border-radius:10px;background:var(--surface-2)}
+.ws-brief small{color:var(--muted);font-size:.76rem}
+.ws-progress{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.ws-progress i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .3s}
+.ws-count{color:var(--muted);font-size:.8rem;margin-top:-4px}
+.ws-last{margin:0;padding:8px 10px;border-radius:10px;font-size:.88rem;line-height:1.4}
+.ws-last.p2{background:color-mix(in srgb,var(--good) 14%,transparent)}
+.ws-last.p1{background:color-mix(in srgb,var(--warn) 16%,transparent)}
+.ws-last.p0{background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ws-step{padding:10px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.ws-step.odd{border-color:color-mix(in srgb,var(--warn) 55%,var(--line));background:color-mix(in srgb,var(--warn) 7%,var(--surface))}
+.ws-kind{display:block;font-weight:800;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ws-q{margin:4px 0 8px;font-weight:700;line-height:1.4}
+.ws-opts{display:grid;gap:6px}
+.btn.ws-opt{justify-content:flex-start;text-align:left;white-space:normal;min-height:46px;line-height:1.35;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.btn.ws-opt:hover,.btn.ws-opt:focus-visible{border-color:var(--accent)}
+.ws-finish{display:grid;gap:8px;padding:10px;border-radius:14px;background:var(--accent-soft)}
+.ws-finish p{margin:0}
+.ws-finish .btn{min-height:46px}
+.ws-done summary{cursor:pointer;font-weight:700;color:var(--ink-2);min-height:32px;display:flex;align-items:center}
+.ws-done ol{margin:6px 0 0;padding-left:20px;display:grid;gap:6px}
+.ws-done li p{margin:1px 0;font-size:.86rem;line-height:1.4}
+.ws-done li small b{color:var(--ink)}
+.ws-done li.p0 small b{color:var(--bad)}
+.ws-done li.p2 small b{color:var(--good)}
+.ws-reply{color:var(--muted)}
+.ws-result{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.ws-result small{flex-basis:100%;color:var(--muted)}
+@media (orientation:landscape) and (max-height:500px){
+  .ws-body{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ws-body>.ws-head,.ws-body>.ws-team,.ws-body>.ws-hire,.ws-body>.ws-mine{grid-column:1/-1}
+  .ws-sheet .sd-bar{padding-block:6px}
+}
+@media (prefers-reduced-motion:reduce){.ws-progress i,.ws-switch i{transition:none}}
+/* 🧰 the careers that take wedding orders, by their directory names (Nhà hàng tiệc, Tiệm hoa…) */
+.ws-careers{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.ws-careers li{padding:4px 10px;border-radius:999px;background:var(--surface-2);font-size:.86rem;font-weight:700;color:var(--ink-2)}

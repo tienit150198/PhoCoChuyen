@@ -856,3 +856,78 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Lên phương án trang trí sảnh theo chủ đề
 9. Kiểm điện và âm thanh trước giờ đón khách
 10. Điều phối bếp và sảnh ngày lễ cao điểm
+
+## 58. Lễ tân (`reception`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng phòng sáu phòng có đủ đặc điểm
+2. Soạn mẫu nghe yêu cầu khách ở quầy
+3. Dán nhãn màu cho bảng móc chìa
+4. Quy tắc xếp xe đẩy hành lý
+5. Mẫu sổ giao ca chỉ ghi việc còn dở
+6. Lịch dọn phòng theo giờ khách tới
+7. Lịch dịch vụ sáng mai
+8. Quy trình xử lý phàn nàn có kiểm chứng
+9. Sổ đồ thất lạc theo lộ trình khách
+10. Điều phối đoàn và sự kiện cuối tuần
+
+## 59. Ngân hàng — giao dịch viên (`teller`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập quy trình đếm tiền hai lần ở quầy
+2. Chia cọc tiền lẻ theo yêu cầu chủ quán
+3. Đối chiếu người nhận khi có hai người trùng tên
+4. Xử lý phiếu có số và chữ lệch nhau
+5. Kế hoạch gửi góp theo mục tiêu của khách
+6. Tiếp quỹ ATM có kiểm soát kép
+7. Nhận diện tiền nghi giả và lập biên bản
+8. Bàn giao quỹ và giao dịch treo cuối ca
+9. Điều phối quầy ngày nhận lương hưu
+10. Xếp lịch nhân sự cả phòng giao dịch
+
+## 60. Phục chế (`restore`)
+
+Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập phiếu khám dấu hiệu hư hỏng
+2. Chốt yêu cầu khách bằng phiếu ký
+3. Ghi tuổi thật của món đồ
+4. Sổ linh kiện chế lại
+5. Bảng làm sạch theo chất liệu
+6. Quy trình trị mọt đồ gỗ
+7. Làm lại mộng gỗ không đinh
+8. Hoàn thiện giữ dấu thời gian
+9. Biên bản phục chế cho bảo tàng phường
+10. Từ chối làm giả đồ cổ
+
+## 61. Viện nghiên cứu (`research`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập sổ thí nghiệm đánh số trang
+2. Bố trí khay đối chứng cho mẫu ươm
+3. Tính số hạt gieo theo tỷ lệ nảy mầm
+4. Loại ô hỏng khỏi kết quả khảo nghiệm
+5. Sấy và cất hạt vào kho lạnh
+6. Chuẩn hóa định lượng món cho bếp ăn
+7. Tổ chức buổi nếm mù có mã hóa
+8. Làm nhãn món có đủ chất gây dị ứng
+9. Chạy thử an toàn mẫu thiết bị nhỏ
+10. Nộp hồ sơ sáng chế đúng tác giả
+
+## 62. Đài phát thanh (`radio`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng kiểm phòng thu đầu ca
+2. Xếp thứ tự tin cho bản tin phường
+3. Tính thời lượng bản tin đúng khung giờ
+4. Duyệt kịch bản quảng cáo của nhà tài trợ
+5. Đọc lời chúc đúng tên đúng giờ
+6. Tìm bài theo lời kể của thính giả
+7. Trực đường dây thính giả gọi vào sóng
+8. Dựng chương trình ca nhạc đủ giờ
+9. Diễn tập xử lý mất điện giữa sóng
+10. Điều phối đài trong ngày bão

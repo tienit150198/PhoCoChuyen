@@ -508,6 +508,17 @@ for(const [k,b] of Object.entries(BACKS))ART[k].back=b;
  * with a small brass plaque underneath. */
 for(const id of Object.keys(PAINTINGS))ART['uq_'+id]={h:68,wall:1,d:(W,H)=>
   paintingSVG(id,W,H-10)+R(W/2-12,H-9,24,7,'#d9b866',1.5,1)+L(`M${n(W/2-7)} ${H-5.5}h14`,'#8a6a2a',1)};
+/** 📸 A photo a player photographer made for this player (game/photo_studio.py hang; `anh_chup`, 2 × 2 wall cells): a
+ * wooden frame with a cream mat; the photo itself (a small JPEG drawn by ./portrait-art.js from the album's render data)
+ * comes from PHOTO_ART by the piece's uid (v4/portrait.js loadWall fills it; reno.js passes the uid). Until it is in, a
+ * soft silhouette. */
+export const PHOTO_ART=new Map();
+ART.anh_chup={h:68,wall:1,d:(W,H,uid)=>{
+  const fw=Math.min(W-8,(H-6)*.82),fh=H-6,x=(W-fw)/2,y=2,url=uid?PHOTO_ART.get(uid):'';
+  const inner=url?`<image href="${url}" x="${n(x+6)}" y="${n(y+6)}" width="${n(fw-12)}" height="${n(fh-12)}" preserveAspectRatio="xMidYMid slice"/>`
+    :Rn(x+6,y+6,fw-12,fh-12,'#f3e6d2',1)+C(W/2,y+fh*.42,fw*.16,'#d9bfa2',0)+Rn(W/2-fw*.22,y+fh*.6,fw*.44,fh*.3,'#d9bfa2',fw*.12);
+  return Rn(x+1,y+2,fw,fh,'#000',3,.13)+R(x,y,fw,fh,'#8a5a36',3)+R(x+3,y+3,fw-6,fh-6,'#fbf3e6',2,0)+inner;
+}};
 
 /* ---------------------------------------------------------------- the room */
 /** Free placement: units to a grid cell (game/deco_content.py U) and what one unit is in drawing pixels. */
@@ -856,9 +867,9 @@ export function anchor(it,q,G,host=null){
   return [PX+q.x*SX,G.FY+(q.y+it.h*U)*SF-3];
 }
 /** One piece's drawing with its origin at (ax, ay) (f: mirrored; tint: its colour from the palette, if any). */
-export function pieceAt(it,ax,ay,f,tint=null,face='front'){
+export function pieceAt(it,ax,ay,f,tint=null,face='front',uid=''){
   const a=ART[it.id];if(!a)return '';
-  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,draw=face==='back'&&a.back?a.back:a.d,body=tinted(it.id,draw(W,D),tint);
+  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,draw=face==='back'&&a.back?a.back:a.d,body=tinted(it.id,draw(W,D,uid),tint);   // uid: 📸 a framed photo's own picture
   return `<g transform="translate(${n(ax)} ${n(ay)})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${body}</g>`:body}</g>`;
 }
 /** A small soft shadow under a thing standing on a surface (the floor pieces draw their own). */

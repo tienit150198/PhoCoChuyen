@@ -91,10 +91,15 @@ ORDERS = {
     'art_studio': ('Đơn riêng: vẽ một thiệp theo mẫu đã duyệt', 20, 4, {}),
     'lawyer': ('Hồ sơ riêng: sắp xếp chứng cứ theo danh mục', 18, 3, {}),
     'laundry': ('Đơn riêng: giặt và gấp một túi đồ thường', 18, 4, {}),
+    'restore': ('Đơn riêng: lau sáp, gia cố một món đồ gỗ cũ', 18, 4, {}),
     'post_office': ('Việc riêng: đóng gói và phân tuyến một lô thư', 16, 3, {}),
     'customs': ('Việc riêng: hướng dẫn một hộ kinh doanh khai tờ khai', 16, 3, {}),
     'hotel': ('Việc riêng: dọn và bày lại một phòng cho khách quen', 16, 3, {}),
     'banquet': ('Việc riêng: nấu một mâm cỗ nhỏ cho nhà khách quen', 18, 4, {}),
+    'reception': ('Việc riêng: lo đặt phòng và đón một đoàn khách quen của phố', 16, 3, {}),
+    'teller': ('Việc riêng: hướng dẫn một tiệm trong phố lập sổ thu chi', 16, 3, {}),
+    'research': ('Việc riêng: thử nảy mầm một túi hạt cho nhà khách quen', 16, 3, {}),
+    'radio': ('Việc riêng: thu một đoạn lời chúc cho nhà khách quen', 14, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

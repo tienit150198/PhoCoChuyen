@@ -66,6 +66,11 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   customs:style('seal','civic','luggage','#4f7f66','#eadcae'),
   hotel:style('bell','banner','luggage','#7a5a9e','#efe0c8'),
   banquet:style('cloche','awning','stools','#b5473a','#f3dcb4'),
+  reception:style('key','scallop','luggage','#b0546f','#fbecef'),
+  teller:style('vault','civic','planter','#1f6f6b','#e3efe6'),
+  restore:style('clock','workshop','toolbox','#8a5a2b','#f1dcb8'),
+  research:style('flask','civic','planter','#2f6f73','#d9eee9'),
+  radio:style('antenna','banner','books','#3f6fb0','#e4eefb'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -308,9 +313,31 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'seal':  // a round customs stamp over a sealed crate: no emblem copied from any real agency
       round(-34,6,68,34,4,body);line([[-34,23],[34,23]],cream,3);line([[-12,6],[-12,40]],cream,3);line([[12,6],[12,40]],cream,3);
       ellipse(0,-14,27,27,cream);ellipse(0,-14,21,21,s.main);star(0,-14,13,'#f1dca1');arc(0,-14,24,.3,2.8,ink,2);break;
+    case 'antenna':  // a lattice radio mast sending three arcs of waves, the red ON AIR lamp on its foot
+      line([[0,34],[-14,-30]],ink,4);line([[0,34],[14,-30]],ink,4);line([[-14,-30],[14,-30]],ink,3);
+      for(const y of [-14,2,18])line([[-11+(y+30)*.05,y],[11-(y+30)*.05,y]],s.main,3);
+      ellipse(0,-36,6,6,'#d9534f');for(const r of [14,24,34])arc(0,-36,r,-.75,.75,s.main,3);for(const r of [14,24,34])arc(0,-36,r,Math.PI-.75,Math.PI+.75,s.main,3);
+      round(-22,32,44,12,4,body);ellipse(-12,38,3,3,'#d9534f');line([[-4,38],[16,38]],cream,3);break;
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;
+    case 'key':  // a front-desk key board: three room keys on hooks under a frangipani, a big brass key in front
+      round(-42,-38,62,58,6,body);line([[-37,-14],[15,-14]],cream,3);
+      for(const [i,x] of [-30,-11,8].entries()){ellipse(x,-14,2.5,2.5,ink);line([[x,-12],[x,-4]],ink,2);ellipse(x,-1,4,4,'#e3b65a');round(x-6,4,12,13,3,i===1?s.main:cream);}
+      for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;ellipse(-30+Math.cos(a)*6,-29+Math.sin(a)*6,4.5,4.5,cream,undefined);}ellipse(-30,-29,3,3,'#e8c25c',undefined);
+      ellipse(30,-14,14,14,'#e3b65a');ellipse(30,-14,6,6,s.main);round(26,-1,8,40,2,'#e3b65a');round(33,24,9,5,1,'#e3b65a');round(33,32,6,5,1,'#e3b65a');break;
+    case 'vault':  // a round vault door with its spoke wheel and a short stack of coins: no real bank's mark
+      round(-40,-38,62,76,6,s.main);ellipse(-9,0,26,26,body);ellipse(-9,0,20,20,s.light);
+      for(const a of [0,Math.PI/3,2*Math.PI/3])line([[-9+Math.cos(a)*15,Math.sin(a)*15],[-9-Math.cos(a)*15,-Math.sin(a)*15]],ink,3);
+      ellipse(-9,0,5,5,cream);for(const y of [30,22,14])ellipse(32,y,13,5,'#e3c26b');line([[19,14],[19,30]],ink,1);line([[45,14],[45,30]],ink,1);break;
+    case 'clock':  // a restored pendulum clock on a wax tin, a little brush beside it: the restoration workshop
+      round(-24,-40,48,74,8,body);ellipse(0,-20,17,17,cream);ellipse(0,-20,13,13,s.light);line([[0,-20],[0,-30]],ink,3);line([[0,-20],[8,-16]],ink,3);
+      round(-14,4,28,24,4,cream);line([[0,4],[0,20]],ink,2);ellipse(0,22,6,6,s.main);round(-38,30,76,10,4,s.main);
+      line([[30,-26],[42,-6]],'#876c50',5);round(38,-8,9,10,3,s.light);break;
+    case 'flask':  // an Erlenmeyer flask of green liquid with a seedling beside it: seeds, recipes and inventions under one sign
+      poly([[-9,-42],[9,-42],[9,-14],[34,34],[-34,34],[-9,-14]],body);poly([[-21,10],[21,10],[34,34],[-34,34]],s.light);
+      line([[-13,-42],[13,-42]],cream,4);ellipse(-8,20,4,4,cream);ellipse(9,26,3,3,cream);
+      line([[33,-4],[33,-28]],'#7b9977',3);ellipse(27,-29,8,5,'#9cae71');ellipse(39,-35,8,5,'#9cae71');break;
     case 'bell':  // a front-desk service bell on its plate, a room key tag hanging beside it
       round(-42,24,84,11,4,s.main);c.beginPath();c.arc(0,22,31,Math.PI,Math.PI*2);finish(body);line([[-29,19],[29,19]],cream,3);
       round(-4,-20,8,11,3,ink);ellipse(0,-22,8,4,cream);ellipse(-13,3,5,9,s.light);line([[31,-36],[31,-14]],ink,2);round(25,-14,13,20,3,s.light);break;

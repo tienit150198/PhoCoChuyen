@@ -255,6 +255,14 @@ _ROWS['hotel'] = dict(place='khách sạn', self='khách sạn', people='khách 
                      invite='Mời {who} ghé lại quầy lễ tân, Sông Mây sẽ kiểm lại phòng và phiếu cùng mình ạ.',
                      process='Khách sạn làm theo phiếu: dọn, bổ sung, kiểm minibar rồi mới báo lễ tân. Hôm đó {fact} ạ.')
 
+_ROWS['radio'] = dict(place='đài phát thanh', self='đài', people='thính giả', who='bạn', owner='phát thanh viên',
+                     served='lượt phát sóng', record='phiếu việc của đài', review='góp ý của thính giả', reply='phản hồi',
+                     books='Sổ ca của đài', rail_in='Ở đài phát thanh', confirm='Xác nhận việc trong ca', team='Ca trực Sóng Mây',
+                     daily='Lịch phát sóng hôm nay đã treo. Kiểm phòng thu rồi lên sóng ở Sóng Mây nhé!',
+                     invite_label='Mời nghe lại chương trình', offers=dict(drink=None, gift=None, refund=None),
+                     invite='Mời {who} nghe lại chương trình tối nay, Sóng Mây sẽ đọc đính chính nếu đài sai ạ.',
+                     process='Đài làm theo phiếu: kiểm phòng thu đầu ca, chỉ đọc bản đã duyệt, sai thì đính chính trên sóng. Hôm đó {fact} ạ.')
+
 _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='khách đặt tiệc', who='anh chị', owner='nhân viên nhà hàng',
                        served='bữa tiệc đã lo', record='phiếu tiệc', review='góp ý của khách', reply='phản hồi',
                        books='Sổ ca nhà hàng', rail_in='Ở nhà hàng tiệc', confirm='Xác nhận việc trong ca', team='Ca bếp và sảnh Hồng Mây',
@@ -263,6 +271,31 @@ _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='kh
                        offers=dict(drink='Món tráng miệng · 6 xu', gift='Phiếu ưu đãi tiệc · 10 xu', refund='Giảm 20 xu hóa đơn'),
                        invite='Mời {who} ghé lại quầy quản lý, Hồng Mây sẽ xem lại phiếu tiệc cùng mình ạ.',
                        process='Nhà hàng làm theo phiếu: bếp sát khuẩn đầu ca, nấu đúng công thức; sảnh bày theo đúng yêu cầu đã chốt. Hôm đó {fact} ạ.')
+
+_ROWS['reception'] = dict(place='khách sạn', self='khách sạn', people='khách', who='anh chị', owner='lễ tân',
+                         served='lượt khách đã đón', record='sổ giao ca', review='góp ý của khách', reply='phản hồi',
+                         books='Sổ giao ca Hoa Sứ', rail_in='Ở quầy lễ tân', confirm='Xác nhận việc trong ca', team='Quầy lễ tân Hoa Sứ',
+                         daily='Sổ giao ca hôm nay đã mở. Vào quầy Hoa Sứ đón khách nhé!',
+                         invite_label='Mời ghé lại quầy',
+                         offers=dict(drink='Ly trà gừng ở sảnh · 6 xu', gift='Bữa sáng miễn phí · 10 xu', refund='Giảm 20 xu tiền phòng'),
+                         invite='Mời {who} ghé lại quầy lễ tân, Hoa Sứ sẽ xem lại sổ giao ca cùng mình ạ.',
+                         process='Quầy làm theo sổ: nghe đủ yêu cầu, xếp phòng sạch đủ chỗ, ghi rõ việc còn dở cho ca sau. Hôm đó {fact} ạ.')
+
+_ROWS['teller'] = dict(place='phòng giao dịch', self='phòng giao dịch', people='khách giao dịch', who='anh chị', owner='giao dịch viên',
+                      served='giao dịch đã làm', record='biên nhận', review='góp ý của khách', reply='phản hồi',
+                      books='Sổ quầy giao dịch', rail_in='Ở Quầy số 3', confirm='Xác nhận giao dịch', team='Quầy giao dịch Bến Chợ',
+                      daily='Máy gọi số đã bật. Quầy số 3 xin chào!',
+                      invite_label='Mời ghé lại quầy', offers=dict(drink=None, gift=None, refund=None),
+                      invite='Mời {who} ghé lại Quầy số 3, phòng giao dịch sẽ đối chiếu biên nhận cùng mình ạ.',
+                      process='Quầy làm theo năm bước: nhận yêu cầu, kiểm tra thông tin, xử lý tiền, xác nhận, giao biên nhận. Hôm đó {fact} ạ.')
+
+_ROWS['research'] = dict(place='viện nghiên cứu', self='viện', people='đơn vị đặt đề tài', who='anh chị', owner='nghiên cứu viên',
+                        served='đề tài đã làm', record='sổ thí nghiệm', review='góp ý của hội đồng', reply='phản hồi',
+                        books='Sổ ca của viện', rail_in='Ở Viện nghiên cứu', confirm='Xác nhận việc trong ca', team='Phòng thí nghiệm Sông Mây',
+                        daily='Bảng phân việc hôm nay đã treo. Giống cây, công thức hay sáng chế, chọn hướng ở Viện Sông Mây nhé!',
+                        invite_label='Mời ghé lại viện', offers=dict(drink=None, gift=None, refund=None),
+                        invite='Mời {who} ghé lại phòng tiếp khách, viện sẽ mở sổ thí nghiệm xem lại cùng mình ạ.',
+                        process='Viện làm theo sổ: có đối chứng, ghi đủ mọi lần thử, kết luận đúng mức số liệu. Hôm đó {fact} ạ.')
 
 # Full reply packs (§9 of the voice audit), on top of the shared non-shop rows.
 _PACKS = {
@@ -363,7 +396,7 @@ _SALARIED = frozenset((
     'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
     'pilot', 'flight_attendant', 'oil',
     'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
-    'lawyer', 'post_office', 'customs', 'hotel', 'banquet',
+    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio',
 ))
 
 

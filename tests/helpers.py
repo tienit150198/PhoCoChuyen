@@ -140,3 +140,20 @@ def solve_activity(j,spec,practice=False):
     else:
         for card in a['cards']:j.act('life_activity_assign',card=card['id'],target=card['bin'] if a['kind']=='sort' else card['id'])
     return j.c['life']['activity']
+
+NEWER_THAN_LIVE=('reception','teller','restore','research','radio')   # careers live 2.4.71 (fe504023; 2.4.67 5ba2e147, 2.4.66 a808cb79 neither) does not know: add each new career here
+
+
+def unknown_out(s,careers=NEWER_THAN_LIVE):
+    """A save as the stored text holds it for a release older than `careers` (engine.DORMANT): each of them left out
+    while untouched; every other career, dormant on this build or not, stays (the older release knows it)."""
+    from game.engine import initial_career
+    return dict(s,careers={k:v for k,v in s['careers'].items() if k not in careers or v!=initial_career(k)})
+
+def as_stored(s):
+    """unknown_out for a save the test never played in a career newer than live: asserts each of NEWER_THAN_LIVE is
+    still untouched (a played one goes back through scripts/strip_new_careers.py first), then leaves them out."""
+    from game.engine import initial_career
+    for cid in NEWER_THAN_LIVE:
+        assert s['careers'].get(cid,initial_career(cid))==initial_career(cid),cid+' was played: strip it (scripts/strip_new_careers.py)'
+    return unknown_out(s)

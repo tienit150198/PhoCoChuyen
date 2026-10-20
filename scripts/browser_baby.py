@@ -70,7 +70,9 @@ def seed_home(db: str, token: str, child: str, age: int, spouse: str, cid: int, 
         hs.apply(s, 'jr_home_buy', {'kind': 'tap_the', 'down': 1800, 'confirm': True})
         for k, room, x, y in (('sofa', 'living', 0, 30), ('giuong', 'bed', 0, 20)):
             dc.apply(s, 'jr_deco_buy', dict(item=k, confirm=True, put=dict(r=room, x=x, y=y)))
-        hh.action(s, 'jr_hh_adopt', dict(kind='child', name=child, confirm=True))
+        from game.birth import ADOPT_FEE   # 🏥 21/10: the personal child's paperwork fee
+        j['wallet'] += ADOPT_FEE
+        hh.action(s, 'jr_hh_adopt', dict(kind='child', name=child, confirm=True, fee=ADOPT_FEE))
         j['household']['child']['since'] = j['life_day'] - age
         j['household']['child']['day'] = j['life_day'] - age
         j['wallet'] = 600

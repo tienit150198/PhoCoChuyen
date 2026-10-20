@@ -96,9 +96,9 @@ def accept(state,cid,order):
     e.need(available,'Nơi làm việc chưa thể nhận thêm đơn.','service_unavailable')
     offer=next((o for o in available if o['offer_id']==order.get('offer_id')),available[0]) if isinstance(order,dict) else available[0]
     e.need(isinstance(order,dict) and order.get('offer_id')==offer['offer_id'] and
-           type(order.get('price')) is int and order['price']==offer['price'],'Phiếu dịch vụ đã thay đổi. Xem lại trước khi đặt.','stale_offer')
+           type(order.get('price')) is int and order.get('base',order['price'])==offer['price'],'Phiếu dịch vụ đã thay đổi. Xem lại trước khi đặt.','stale_offer')
     if order.get('digest') is not None:e.need(order['digest']==offer['digest'],'Phiếu dịch vụ đã thay đổi.','stale_offer')
-    meta=dict(v=1,id=order.get('id'),buyer=copy.deepcopy(order.get('buyer')),note=order.get('note',''),price=offer['price'])
+    meta=dict(v=1,id=order.get('id'),buyer=copy.deepcopy(order.get('buyer')),note=order.get('note',''),price=order['price'])
     validate({'player_order':meta})
     if offer.get('staffed'):return _accept_staff(state,cid,meta,offer)
     e.need(not any(t.get('player_order',{}).get('id')==meta['id'] for c in state['careers'].values() for t in c['tasks']),
@@ -260,15 +260,20 @@ def settle_staff(c,cid,now):
 
 
 
-def credit_staff_bonus(state,cid,order_id,price):
-    """Only the escrow payment transaction may reward a fulfilled staff order."""
+def credit_staff_bonus(state,cid,order_id,price,paid=None,base=None):
+    """Only the escrow payment transaction may reward a fulfilled staff order.
+
+    🛎️ Phố dịch vụ (21/10): a player buyer pays the NPC price × the provider's multiplier and the provider keeps 95 %
+    (`paid`). The 40 % profit bonus counts only the real margin: on at most the NPC price (`base`), never on what a
+    friend chose to overpay (that only moves their own money)."""
     from . import workplace_business as wb
     c=state['careers'][cid]
     row=next((r for r in c.get('player_service_jobs',[]) if r['id']==order_id),None)
     if row is None or row['settled']:return 0
     _engine().need(row['status']=='completed' and row['price']==price,'Biên nhận giao hàng chưa khớp.','invalid_order')
     wb.prepare(c,wb._now())
-    return wb.credit_profit_bonus(c,price-row['wage']-row['materials']-row['goods'],order_id,row['label'],visitor=True)
+    basis=min(price if paid is None else paid,price if base is None else base)
+    return wb.credit_profit_bonus(c,basis-row['wage']-row['materials']-row['goods'],order_id,row['label'],visitor=True)
 
 
 def validate_staff(c,cid):
@@ -292,8 +297,11 @@ def validate_staff(c,cid):
         e.need((r['status']=='queued')==(r['completed_at'] is None),'Biên nhận đơn nhân viên không hợp lệ.')
 
 
-def credit_visit(state,stall_id,order_id,price):
-    """Book the real escrow transfer once, after the database claims this order."""
+def credit_visit(state,stall_id,order_id,price,paid=None):
+    """Book the real escrow transfer once, after the database claims this order.
+
+    🛎️ `paid`: what the counter receives (95 % of `price` for an order made through Phố dịch vụ, the 5 % burned);
+    the visitor bonus stays capped at VISIT_BONUS_RATIO × the dish's base price."""
     from . import quay as qy,quay_business as qb
     e=_engine();e.integer(price,1,1000000);qb.settle(state)
     st=qy.stall(state,stall_id);b=st['business']
@@ -301,22 +309,24 @@ def credit_visit(state,stall_id,order_id,price):
     e.need(row is None or row['status']=='completed' and row['price']==price and not row['settled'],'Biên nhận giao món chưa khớp.','invalid_order')
     # The durable order status is the exactly-once guard. This function is only
     # called by the transaction committing that status and the actual escrow.
-    e.need(st['till']+price<=qy.MONEY_MAX,'Két đã đầy. Thu tiền rồi nhận thanh toán nhé.','till_full')
-    st['till']+=price;b['revenue']+=price;b['sold']+=1
+    got=price if paid is None else paid
+    e.integer(got,0,price)
+    e.need(st['till']+got<=qy.MONEY_MAX,'Két đã đầy. Thu tiền rồi nhận thanh toán nhé.','till_full')
+    st['till']+=got;b['revenue']+=got;b['sold']+=1
     qb.collect_fines(st)
     costs=qb.unit_cost(st,row['dish']) if row is not None else 0
-    with qb.chain_scope(state):paid_tax=qb.charge_income_tax(st,price,costs)
-    qy._log(st,state['journey']['life_day'],'Khách người chơi thanh toán đơn '+order_id,price)
+    with qb.chain_scope(state):paid_tax=qb.charge_income_tax(st,got,costs) if got else 0
+    qy._log(st,state['journey']['life_day'],'Khách người chơi thanh toán đơn '+order_id,got)
     if row is not None:
         # 2.4.17: the profit bonus (124% since owner 15/10 "tăng 60% lãi") counts at most VISIT_BONUS_RATIO × the dish's
         # usual price: a friend paying the owner's 1,000,000 xu price for a bowl only moves their own money, it must not
         # make the system pay a bonus on it. The till still gets the whole price.
         from . import quay_self as qs
         cap=qs.DISH[st['trade']][row['dish']]['base']*VISIT_BONUS_RATIO if row['dish'] in qs.DISH.get(st['trade'],{}) else price
-        basis=min(price,cap)
-        qb.reward_margin(st,basis,costs+paid_tax*basis//price)
+        basis=min(got,cap)
+        if basis:qb.reward_margin(st,basis,costs+paid_tax*basis//got)
         row['settled']=True
-    return price-paid_tax
+    return got-paid_tax
 
 
 def acknowledge(state,order_id,outcome=None):
@@ -409,7 +419,7 @@ def accept_visit(state,stall_id,order,now=None):
     e.need(isinstance(order,dict),'Đơn quầy không hợp lệ.')
     dish=order.get('offer_id')
     e.need(isinstance(dish,str) and dish in qs.menu(st)['on'] and order.get('items')==[dish], 'Chọn một món đang bán.')
-    e.need(type(order.get('price')) is int and order['price']==qs.price(st,dish),'Giá món đã thay đổi.','stale_offer')
+    e.need(type(order.get('price')) is int and order.get('base',order['price'])==qs.price(st,dish),'Giá món đã thay đổi.','stale_offer')
     meta=dict(v=1,id=order.get('id'),buyer=copy.deepcopy(order.get('buyer')),note=order.get('note',''),price=order['price'])
     validate({'player_order':meta})
     rows=b.setdefault('visitor_orders',[])

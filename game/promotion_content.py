@@ -36,12 +36,17 @@ EMP_TITLES = {
     'customs': ('Kiểm tra viên chính thức', 'Tổ phó Tổ kiểm hóa', 'Tổ trưởng Tổ kiểm hóa', 'Phó Đội trưởng Đội Thủ tục'),
     'hotel': ('Nhân viên vận hành chính', 'Trưởng ca Sông Mây', 'Trợ lý quản lý vận hành', 'Quản lý vận hành Sông Mây'),
     'banquet': ('Nhân viên nhà hàng chính thức', 'Tổ trưởng bếp và sảnh', 'Bếp phó Hồng Mây', 'Bếp trưởng Hồng Mây'),
+    'reception': ('Lễ tân đón đoàn', 'Lễ tân trực ca tối', 'Điều phối sự kiện Hoa Sứ', 'Trưởng ca lễ tân Hoa Sứ'),
+    'teller': ('Giao dịch viên chính thức', 'Giao dịch viên cao cấp', 'Trưởng quầy giao dịch', 'Phó giám đốc phòng giao dịch'),
+    'research': ('Nghiên cứu viên chính thức', 'Nghiên cứu viên chính', 'Trưởng phòng thí nghiệm', 'Phó viện trưởng Sông Mây'),
+    'radio': ('Phát thanh viên chính thức', 'Biên tập viên chương trình', 'Phó trưởng đài Sóng Mây', 'Trưởng ban thời sự Sóng Mây'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
 OWN_TITLES = {
     'art_studio': ('Họa sĩ vững tay', 'Họa sĩ có tiếng', 'Chủ xưởng Màu Nắng', 'Nghệ nhân được tín nhiệm'),
     'laundry': ('Thợ giặt vững tay', 'Thợ chăm vải có tiếng', 'Chủ tiệm Nếp Thơm', 'Nghệ nhân chăm vải'),
+    'restore': ('Thợ phục chế vững tay', 'Thợ phục chế có tiếng', 'Chủ xưởng Hồn Xưa', 'Nghệ nhân Hồn Xưa'),
     'shop': ('Chủ quầy vững tay', 'Chủ tiệm có tiếng', '{chu} được nể', '{ong} chuỗi tiệm'),
     'accounting': ('Sổ sách vững tay', 'Kế toán có tiếng', 'Trưởng nhóm sổ', 'Chủ văn phòng sổ sách'),
     'homemaker': ('Nội trợ khéo tay', 'Nội trợ có tiếng', 'Quản gia', 'Quản gia trưởng'),
@@ -85,6 +90,10 @@ _EMP_HIGH = {
     'customs': ('Đội trưởng Đội Thủ tục', 'Phụ trách nghiệp vụ cửa khẩu', 'Cố vấn nghiệp vụ hải quan'),
     'hotel': ('Phó giám đốc Sông Mây', 'Giám đốc khách sạn Sông Mây', 'Cố vấn vận hành khách sạn'),
     'banquet': ('Quản lý nhà hàng tiệc Hồng Mây', 'Giám đốc ẩm thực Hồng Mây', 'Cố vấn bếp tiệc'),
+    'reception': ('Phó quản lý Khách sạn Hoa Sứ', 'Quản lý Khách sạn Hoa Sứ', 'Cố vấn lễ tân của phố'),
+    'teller': ('Giám đốc phòng giao dịch Bến Chợ', 'Giám đốc chi nhánh Ngân hàng Phố', 'Cố vấn ngân hàng bán lẻ'),
+    'research': ('Viện trưởng Viện nghiên cứu Sông Mây', 'Chủ tịch hội đồng khoa học Sông Mây', 'Cố vấn khoa học'),
+    'radio': ('Trưởng đài Sóng Mây', 'Giám đốc đài phát thanh khu vực', 'Cố vấn phát thanh cộng đồng'),
 }
 for _career, _titles in _EMP_HIGH.items():
     EMP_TITLES[_career] += _titles
@@ -93,6 +102,7 @@ _OWN_HIGH = {
     'shop': ('{chu} xây dựng thương hiệu', '{chu} phát triển chuỗi bền vững', '{chu} truyền nghề cho phố'),
     'art_studio': ('Chủ xưởng nghệ thuật có tiếng', 'Nghệ nhân dẫn dắt xưởng vẽ', 'Người truyền nghề Màu Nắng'),
     'laundry': ('Chủ xưởng chăm vải', 'Chuyên gia bảo dưỡng vải', 'Người truyền nghề Nếp Thơm'),
+    'restore': ('Chủ xưởng phục chế có tiếng', 'Chuyên gia phục chế đồ xưa', 'Người truyền nghề Hồn Xưa'),
     'accounting': ('Chủ văn phòng kế toán có tiếng', 'Chuyên gia đối soát độc lập', 'Người truyền nghề sổ sách'),
     'homemaker': ('Quản gia điều phối nhiều nhà', 'Chuyên gia tổ chức gia đình', 'Người truyền nghề chăm nhà'),
     'giupviec': ('Điều phối viên chăm nhà', 'Chuyên gia vệ sinh gia đình', 'Người truyền nghề giúp việc'),
@@ -137,7 +147,7 @@ BASE_OWN = 'Chủ mới'        # an owner before step 1
 # Question banks of the review, by career group. score: 2 best · 1 ok · 0 not now.
 GROUP = {
     'office': ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk',
-               'accounting', 'customer_care', 'lawyer', 'post_office'),
+               'accounting', 'customer_care', 'lawyer', 'post_office', 'teller', 'research'),
     'air': ('pilot', 'flight_attendant'),
     'rig': ('oil',),
     'rail': ('railway',),
@@ -145,8 +155,9 @@ GROUP = {
     'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs', 'hotel', 'banquet'),
+                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs', 'hotel', 'banquet', 'restore', 'radio'),
     'call': ('rescue',),
+    'desk': ('reception',),
 }   # every other career: 'trade'
 
 
@@ -228,6 +239,36 @@ QUESTIONS['pool'] = [
     _q('p5', 'Bạn mới trong nhóm xuống cứu người mà quên phao ống.', ('Cảm ơn bạn đã nhanh, rồi tập lại cùng nhau với phao', 2), ('Mắng trước cả hồ', 0), ('Bỏ qua, cứu được là được', 1)),
     _q('p6', 'Ngày hè đông gấp đôi, nhóm chỉ có hai người trực.', ('Giới hạn vé theo lượt, xin thêm người, đóng bớt khu', 2), ('Cố trông hết', 0), ('Đóng cửa sớm không báo', 1)),
 ]
+# 🛎️ Lễ tân Hoa Sứ: the review of each step is an exam of its own (STEP_BANK): đón đoàn (step 1), trực ca tối (step 2),
+# điều phối sự kiện (step 3); later steps draw from all three.
+QUESTIONS['rc_group'] = [
+    _q('rcg1', 'Đoàn 12 khách tới, danh sách đặt ghi 10.', ('Đếm đủ người, mở thêm phòng, khai báo lưu trú cả đoàn', 2), ('Nhét thêm nệm cho đủ', 0), ('Đợi trưởng đoàn tự lo', 1)),
+    _q('rcg2', 'Trưởng đoàn đòi lấy hết chìa để tự phát.', ('Giao chìa theo danh sách từng phòng, ký nhận', 2), ('Đưa cả chùm cho nhanh', 0), ('Tự đi phát từng phòng, bỏ quầy', 1)),
+    _q('rcg3', 'Đoàn có ba người lớn tuổi, phòng tầng trệt chỉ còn hai.', ('Ưu tiên người đi lại khó nhất, hỏi đoàn đổi giúp', 2), ('Bốc thăm cho công bằng', 1), ('Ai tới trước lấy trước', 0)),
+    _q('rcg4', 'Xe đoàn tới sớm 4 tiếng, phòng chưa dọn.', ('Gửi hành lý, mời nước, dọn trước phòng người già', 2), ('Giao phòng chưa dọn', 0), ('Bảo đoàn đi chơi rồi quay lại', 1)),
+    _q('rcg5', 'Hai vali giống hệt nhau trên xe hành lý.', ('Buộc thẻ số hai nửa cho từng vali trước khi lên xe', 2), ('Nhớ mặt chủ vali là được', 0), ('Để khách tự nhận', 1)),
+    _q('rcg6', 'Đoàn xin hóa đơn chung, một người xin hóa đơn riêng.', ('Hỏi rõ trước khi in, tách đúng phần người đó', 2), ('In chung cho nhanh', 0), ('Hẹn mai tính', 1)),
+]
+QUESTIONS['rc_night'] = [
+    _q('rcn1', '1 giờ sáng, khách say đòi chìa tổng.', ('Tìm đúng phòng trong sổ, nhờ bảo vệ đưa lên, không đưa chìa tổng', 2), ('Đưa chìa tổng', 0), ('Bảo khách ngủ ở sảnh', 1)),
+    _q('rcn2', 'Mất điện lúc 21 giờ.', ('Bật đèn sự cố, đi từng tầng, kiểm cầu thang, gọi điện lực, ghi sổ', 2), ('Ngồi chờ có điện', 0), ('Thắp nến hành lang', 0)),
+    _q('rcn3', 'Người lạ hỏi số phòng của một khách.', ('Không nói số phòng, gọi lên phòng hỏi khách có muốn gặp không', 2), ('Nói luôn cho lịch sự', 0), ('Bảo người đó tự lên tìm', 0)),
+    _q('rcn4', 'Phòng bên hát karaoke lúc 23 giờ.', ('Lên gõ cửa nhắc nhẹ giờ yên tĩnh', 2), ('Gọi công an ngay', 0), ('Mặc kệ', 1)),
+    _q('rcn5', 'Hết ca đêm, còn hai việc chưa làm xong.', ('Ghi đủ vào sổ giao ca, dặn tận tay ca sáng', 2), ('Để ca sáng tự thấy', 0), ('Ở lại làm nốt không ghi', 1)),
+    _q('rcn6', 'Khách gọi báo có mùi khét ở hành lang.', ('Lên kiểm ngay, sẵn bình chữa cháy, báo trưởng ca', 2), ('Bảo khách đóng cửa phòng', 0), ('Ghi sổ, sáng mai xem', 0)),
+]
+QUESTIONS['rc_event'] = [
+    _q('rce1', 'Phường mượn sảnh tổ chức hội diễn, khách đang ở cần yên tĩnh.', ('Chốt giờ diễn kết thúc trước 21 giờ, báo khách trước, xếp phòng yên cho ai cần', 2), ('Diễn tới khuya cho vui', 0), ('Từ chối phường', 1)),
+    _q('rce2', 'Khách nhờ tổ chức cầu hôn, người yêu cứ đứng ở quầy.', ('Giữ người yêu ở quầy một cách tự nhiên, người khác lên trang trí', 2), ('Nói thật là đang có bất ngờ', 0), ('Bỏ quầy đi trang trí', 1)),
+    _q('rce3', 'Sự kiện cần 40 ghế, kho có 32.', ('Mượn thêm từ đối tác, ghi sổ mượn trả', 2), ('Cho đứng cũng được', 0), ('Báo hủy sự kiện', 1)),
+    _q('rce4', 'Đồ trang trí chắn lối thoát hiểm.', ('Dời ngay, lối thoát hiểm luôn trống', 2), ('Để tới tan tiệc', 0), ('Dán băng keo cảnh báo', 1)),
+    _q('rce5', 'Hai sự kiện xin cùng một khung giờ ở sảnh.', ('Xếp lịch công khai theo ai đặt trước, đề xuất giờ khác cho bên sau', 2), ('Nhận cả hai, chen chúc', 0), ('Chọn bên quen hơn', 0)),
+    _q('rce6', 'Sau sự kiện, sảnh bừa bộn mà sáng mai có đoàn tới.', ('Chia việc dọn ngay tối nay, ghi sổ giao ca', 2), ('Để buồng phòng sáng mai lo', 0), ('Tự dọn một mình tới sáng', 1)),
+]
+STEP_BANK = {'reception': ('rc_group', 'rc_night', 'rc_event')}
+EXAM_NAME = {'reception': ('Kỳ thi đón đoàn', 'Kỳ thi trực ca tối', 'Kỳ thi điều phối sự kiện')}
+QUESTIONS['desk'] = QUESTIONS['rc_group'] + QUESTIONS['rc_night'] + QUESTIONS['rc_event']
+
 # Steps above 4 (the executive steps): the board's own questions.
 EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}
 QUESTIONS['exec_air'] = [

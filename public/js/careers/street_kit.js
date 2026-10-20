@@ -93,16 +93,22 @@ export function dayBar(x,tail=''){
   return `<div class="sk-day">${line}${clean()?'<span class="ui-chiprow"></span>':''}${q}</div>`;
 }
 
+/** Who the card shows for a job: its own guest when it carries one (t.guest {name, gender, fc}: a passing hotel guest,
+ * drawn from their face code), else the career's NPC the job is filed under. */
+export function speaker(x,t){
+  const base=x.npc(t.npc),g=t.guest;
+  return g&&typeof g.name==='string'&&g.name?{...base,display_name:g.name,role:'Khách',visit:true,fc:g.fc,av:g.gender==='male'?'🧑':'👩'}:base;
+}
 /** The customer on the card: portrait, name, one line and the patience bar. */
 export function person(x,t,inner='',tag=''){
-  const who=x.npc(t.npc);
+  const who=speaker(x,t);
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
     ${clean()&&(t.kind==='setup'||few(t.title,4,true)===String(t.title||'').trim())?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${inner}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 /** Before the first question: who is here and the one button to ask. */
 export function askCard(x,t,label){
-  const who=x.npc(t.npc);
+  const who=speaker(x,t);
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>${x.esc(t.opening)}</p></div></div>${x.cmd(label,'ask',{task:t.id},'primary full sk-ask')}</article>`;
 }
 

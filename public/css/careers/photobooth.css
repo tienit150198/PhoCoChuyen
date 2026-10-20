@@ -133,3 +133,8 @@ html[data-theme="dem"] .career-job.pb{--sk-accent:#ff8fb1;--sk-accent-2:#c46a8a;
 
 /* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
 html[data-clean] .career-job.sk.pb .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}
+/* 📸 players' portrait orders (public/js/v4/portrait.js): the entry to the queue, in both layouts */
+.pb .pb-studio{padding:8px}
+.pb .pb-studio-go{width:100%;min-height:48px;justify-content:flex-start;gap:8px;font-weight:700}
+.pb .pb-studio-n{margin-left:auto;min-width:24px;padding:2px 8px;border-radius:999px;background:var(--career,var(--accent));color:var(--career-ink,#fff);font-size:.8rem;text-align:center}
+.pb .pb-studio-n:empty{display:none}
