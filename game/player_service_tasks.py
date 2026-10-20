@@ -305,7 +305,8 @@ def credit_visit(state,stall_id,order_id,price):
     st['till']+=price;b['revenue']+=price;b['sold']+=1
     qb.collect_fines(st)
     costs=qb.unit_cost(st,row['dish']) if row is not None else 0
-    with qb.chain_scope(state):paid_tax=qb.charge_income_tax(st,price,costs)
+    with qb.chain_scope(state):base_tax,chain_tax=qb.income_tax_parts(st,price,costs)
+    paid_tax=base_tax+chain_tax
     qy._log(st,state['journey']['life_day'],'Khách người chơi thanh toán đơn '+order_id,price)
     if row is not None:
         # 2.4.17: the profit bonus (124% since owner 15/10 "tăng 60% lãi") counts at most VISIT_BONUS_RATIO × the dish's
@@ -314,7 +315,7 @@ def credit_visit(state,stall_id,order_id,price):
         from . import quay_self as qs
         cap=qs.DISH[st['trade']][row['dish']]['base']*VISIT_BONUS_RATIO if row['dish'] in qs.DISH.get(st['trade'],{}) else price
         basis=min(price,cap)
-        qb.reward_margin(st,basis,costs+paid_tax*basis//price)
+        qb.reward_margin(st,basis,costs+base_tax*basis//price)   # 🌸 the chain's tax points are not taken off the bonus
         row['settled']=True
     return price-paid_tax
 

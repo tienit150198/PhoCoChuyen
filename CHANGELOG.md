@@ -1,3 +1,23 @@
+# Chưa phát hành — quầy chuỗi
+
+🌸 Quầy chuỗi bớt nặng (chủ game 21/10, người chơi báo "quầy hoa bán còn nửa giá"; không có mục Có gì mới, chưa tăng phiên bản). Giá bán từng món không đổi; từ 20/10 phí chuỗi của 2.4.52/2.4.53 (`dea74703`, `d846233f`) làm một chuỗi ki-ốt hoa 64 quầy mất ~40% phần chủ nhận, chuỗi tốc độ thường thì lỗ, vì mỗi xu thuê/điện/thuế tăng thêm còn kéo thưởng lãi nhân viên 236% xuống theo (mất ~3,36 xu).
+- Phần chuỗi (tiền thuê và điện trên mức gốc, các điểm thuế chuỗi trên 7%) vẫn trừ đủ vào két nhưng không còn trừ vào lãi tính thưởng: thưởng lãi tính đúng như trước 20/10 (giá vốn, thuê/điện gốc, thuế 7%). game/quay_business.py: `_charge` ghi phần gốc vào `profit_boost.costs` và `income_tax.loss`, `income_tax_parts` tách thuế gốc / thuế chuỗi, mỗi phần có số lẻ riêng (khóa tùy chọn `business.chain_carry` {rent, power, tax}; bản cũ bỏ qua khóa lạ); đơn của khách là người chơi (player_service_tasks.credit_visit) cũng vậy.
+- Bậc thang mềm hơn: tiền thuê × n/10 dừng ở ×1,5 (RENT_MAX = 15 quầy), điện × n/5 dừng ở ×2 (POWER_MAX = 10 quầy). Thuế chuỗi giữ nguyên (+2…+20 điểm trên 5…50 quầy). Màn quầy hiện "tiền thuê ×…, điện ×…" theo mức đã chặn.
+- Một ki-ốt hoa bán lan 25 xu, 3 nhân viên, một ngày thật (phần chủ nhận sau giá vốn, xu; % so với trước 20/10):
+
+| Số quầy | Tốc độ thường (6.939 lượt/ngày): 2.4.71 | Bản này | Tốc độ nhanh (34.697 lượt/ngày): 2.4.71 | Bản này |
+|---|---|---|---|---|
+| trước 20/10 | 168.780 | 168.780 | 1.122.897 | 1.122.897 |
+| 6 | 163.830 (97%) | 167.268 (99%) | 1.097.429 (98%) | 1.115.278 (99%) |
+| 11 | 149.063 (88%) | 162.912 (97%) | 1.051.880 (94%) | 1.101.762 (98%) |
+| 21 | 100.438 (60%) | 156.179 (93%) | 951.957 (85%) | 1.079.762 (96%) |
+| 31 | 56.652 (34%) | 153.478 (91%) | 856.869 (76%) | 1.061.795 (95%) |
+| 51 | −7.191 | 150.777 (89%) | 731.303 (65%) | 1.043.827 (93%) |
+| 64 | −25.911 | 150.777 (89%) | 685.385 (61%) | 1.043.827 (93%) |
+
+- Mọi nghề quầy, mọi chỗ (xe, sạp, ki-ốt), bảng món mặc định, tốc độ thường, 6…64 quầy: thấp nhất 75% (quần áo ki-ốt/sạp), trái cây 78%, còn lại ≥ 82% (2.4.71: quần áo ki-ốt 25%, trà đá xe lỗ). Chuỗi 64 ki-ốt hoa tốc độ nhanh: phí chuỗi ≈ 5,1 triệu/ngày (2.4.71: ≈ 28 triệu).
+- tests/test_quay_chain_bonus.py (thưởng bằng đúng trước 20/10, chuỗi ≤ 5 quầy không đổi từng xu, thuế tách không làm tròn mất, ≥ 70% mọi nghề ở 64 quầy, kiểm tra khóa chain_carry); tests/test_wealth_fee.py theo mức chặn mới.
+
 # v2.4.72 — 2026-10-21
 
 💐 Chốt sự kiện Thiệp 20/10 (chủ game 20/10 "tối nay 0h thì chốt", "nội dung k ổn thì lấy lại tiền, acc clone chuyển đi tài khoản khác cũng lấy lại", "công bố ngẫu nhiên… có xxx thiệp đã gửi tới", "thiệp giữ tới ngày 25/10 sẽ mất"):
