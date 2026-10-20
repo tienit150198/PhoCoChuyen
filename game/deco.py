@@ -792,7 +792,7 @@ def _fits_type(entry: tuple, room: dict) -> bool:
 def _entry_word(entry: tuple) -> str:
     if entry[0] == 'tag':
         return DC.TAG_WORDS.get(entry[1], entry[1])
-    return ' hoặc '.join(lname(ITEMS[k]['name']) for k in entry)
+    return ' hoặc '.join(lname(ITEMS[k]['name']) for k in entry if not ITEMS[k].get('uq'))   # 🔨 never hint an auction piece
 
 
 def points(L: dict, sets: list | None = None) -> dict:

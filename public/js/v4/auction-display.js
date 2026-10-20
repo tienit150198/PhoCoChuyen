@@ -1,10 +1,16 @@
 /** Pure auction presentation. Strings from players/API are escaped at this boundary. */
 import {escapeHTML as esc} from '../icons.js';
 import {paintingSVG,landmarkSVG} from './auction-art.js';
+import {thumb} from './deco-art.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const TIERS={1:'Phổ thông',2:'Quý hiếm',3:'Huyền thoại'};
 /* 🏎️ the limited editions' own paints (game/garage.py SPECIAL_PAINTS): their card shows the car in it */
-const LTD_PAINT={vang_kim:'#d4a838',do_ruou:'#7b2335',ngoc_bich:'#1f8a7a',bach_kim:'#dfe3e6',xanh_dem:'#1b2a52',kem_co:'#efe0bf'};
+const LTD_PAINT={vang_kim:'#d4a838',do_ruou:'#7b2335',ngoc_bich:'#1f8a7a',bach_kim:'#dfe3e6',xanh_dem:'#1b2a52',kem_co:'#efe0bf',
+  hong_ngoc:'#a8203a',ngoc_trai:'#f4efe6',dong_co:'#9a6a3a',den_nhung:'#1d1a22',cam_hoang_hon:'#e8743b'};
+/* 🐾 a wardrobe piece's rank (game/pet_wardrobe.py RANKS) and its glow (public/js/v4/pet-art.js RANK_COLOR) */
+const RANKS=['D','C','B','A','S','SS','SSS'],RANK_COLOR=['#9aa0a6','#4caf6a','#3d8bfd','#a259ff','#f2b632','#ff6a3d','#ff4fa3'];
+/* 🪑 a one-of-a-kind piece of furniture drawn as it stands at home (public/js/v4/deco-art.js, its base piece's size) */
+const decoThumb=(l,d)=>thumb({id:`uq_${l.item||l.id}`,w:Number(d.w)||1,h:Number(d.h)||1,spot:d.spot||'floor'},120);
 
 export function lotPicker(lots,selected){
   return `<nav class="au-lots" aria-label="Chọn món đấu giá">${lots.map(l=>`<button class="au-pick${l.id===selected?' on':''}" type="button" data-au="lot" data-id="${esc(l.id)}" aria-pressed="${l.id===selected}" aria-label="${esc(l.name)}"><span class="au-mini" aria-hidden="true">${l.kind==='art'?paintingSVG(l.item):esc(l.emoji)}</span><span class="au-lot-name" data-no-translate>${esc(l.name)}</span></button>`).join('')}</nav>`;
@@ -18,6 +24,10 @@ export function itemArt(l){
   if(l.kind==='vehicle')return `<div class="au-art au-ltd au-tier-${tier}" style="--au-paint:${LTD_PAINT[d.paint]||'#d4a838'}" aria-hidden="true"><span>${esc(l.emoji||'🏎️')}</span><small>BẢN GIỚI HẠN${d.serial?` · ${esc(d.serial)}`:''}</small></div>`;
   if(l.kind==='reg')return `<div class="au-art au-plate au-reg au-tier-${tier}" aria-hidden="true"><small>✈️ SỐ ĐĂNG KÝ TÀU BAY</small><span>${esc(l.name)}</span><i>◆ &nbsp; 01 / 01 &nbsp; ◆</i></div>`;
   if(l.kind==='hull')return `<div class="au-art au-plate au-hull au-tier-${tier}" aria-hidden="true"><small>⚓ BIỂN TÊN DU THUYỀN</small><span>${esc(l.name)}</span><i>◆ &nbsp; 01 / 01 &nbsp; ◆</i></div>`;
+  if(l.kind==='decor')return `<div class="au-art au-decor au-tier-${tier}" style="--au-glow:${esc(d.glow||'#f2c14e')}" aria-hidden="true">${decoThumb(l,d)||`<span>${esc(l.emoji||'🪑')}</span>`}<small>ĐỒ TRANG TRÍ · 01/01</small></div>`;
+  if(l.kind==='petgear'){const r=Math.max(0,Math.min(6,Number(d.rank)||0));
+    return `<div class="au-art au-petgear au-tier-${tier}" style="--au-rank:${RANK_COLOR[r]}" aria-hidden="true"><span>${esc(l.emoji||'🐾')}</span><b>${RANKS[r]}</b><small>TỦ ĐỒ THÚ CƯNG · 01/01</small></div>`;}
+  if(l.kind==='tool')return `<div class="au-art au-tool au-tier-${tier}" aria-hidden="true"><span>${esc(l.emoji||'🧰')}</span><small>ĐỒ NGHỀ ĐỘC BẢN · 01/01</small></div>`;
   if(l.kind==='land')return `<figure class="au-art au-landscape">${landmarkSVG(l.item||l.id)}<figcaption>${esc(d.where||'')}</figcaption></figure>`;
   return `<div class="au-art au-emblem au-tier-${tier}" aria-hidden="true"><svg viewBox="0 0 260 160"><path d="M55 128Q12 75 60 29M205 128Q248 75 200 29" fill="none" stroke="currentColor" stroke-width="3"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${36+i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(-35 ${36+i*2} ${49+i*16})"/><ellipse cx="${224-i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(35 ${224-i*2} ${49+i*16})"/>`).join('')}<path d="M80 26L130 10L180 26V80Q180 122 130 142Q80 122 80 80Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M73 129H187L177 149H83Z" fill="currentColor"/></svg><span>${esc(l.emoji||'👑')}</span><small>ĐỘC BẢN · 01/01</small></div>`;
 }
@@ -25,13 +35,14 @@ export function itemArt(l){
 export function collectibleDetails(l){
   const d=l.data||{},points=Number(l.collector_points)||0,rarity=l.rarity??(points?l.tier:null);
   return `<p class="au-rarity au-tier-${Number(rarity)||1}"><span>${esc(TIERS[rarity]||'Độc bản')}</span><b>${points?`${fmt(points)} điểm`:'01/01'}</b></p>`
+    +(d.use?`<p class="au-use">✨ ${esc(d.use)}</p>`:'')
     +`<details class="au-provenance"><summary>Về món đồ</summary>${d.medium?`<b>${esc(d.medium)}</b>`:''}<p>${esc(d.story||'Độc bản của phố, chỉ một chủ nhân.')}</p><small>${points?'Điểm sưu tầm khi nhận món. Giá trả không tăng điểm.':'Số đặt riêng ngoài danh mục chưa tính điểm sưu tầm.'}</small></details>`;
 }
 
 export function collectionGallery(own,catalogue){
   const items=new Map((catalogue?.items||[]).map(it=>[it.id,it]));
   const rows=Object.entries(own||{}).map(([id,x])=>{
-    const it=items.get(id)||{},l={...it,item:id,kind:x.k,name:x.t,data:it};
+    const it=items.get(id)||{},l={...it,item:id,kind:x.k,name:x.t,data:{...it,...(it.data||{})}};
     return `<li class="sd-card au-collection-piece">${itemArt(l)}<h3 data-no-translate>${esc(x.t)}</h3>${collectibleDetails(l)}<small>Giá chốt · ${fmt(x.p)} xu</small></li>`;
   });
   return rows.length?`<ul class="au-gallery">${rows.join('')}</ul>`:'<p class="sd-empty">🎁</p><p class="au-note">Món độc bản bạn thắng sẽ ở đây.</p>';

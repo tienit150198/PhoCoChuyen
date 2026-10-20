@@ -508,6 +508,17 @@ for(const [k,b] of Object.entries(BACKS))ART[k].back=b;
  * with a small brass plaque underneath. */
 for(const id of Object.keys(PAINTINGS))ART['uq_'+id]={h:68,wall:1,d:(W,H)=>
   paintingSVG(id,W,H-10)+R(W/2-12,H-9,24,7,'#d9b866',1.5,1)+L(`M${n(W/2-7)} ${H-5.5}h14`,'#8a6a2a',1)};
+/** 🪑 One-of-a-kind furniture won at the auction (`uq_<id>`, game/auction_content.py kind 'decor', 20/10): its base
+ * piece's drawing with a few sparkles in its own glow and a gold one (tests/test_auction_items.py keeps this list in
+ * step with the server's). [base piece, glow] */
+export const UQ_DECO={dc_sap_kham:['sap_go','#f3e3c0'],dc_bonsai_sanh:['bonsai','#b8e39a'],dc_piano_go:['piano','#f6cfa8'],
+  dc_dong_ho_phap:['dong_ho_qua_lac','#e9c46a'],dc_den_chum:['den_chum','#d6f1ff'],dc_binh_chu_dau:['binh_gom','#9cc6e8'],
+  dc_am_tu_sa:['am_chen','#d9895f'],dc_mai_co_thu:['cay_mai','#ffe07a'],dc_den_keo_quan:['den_keo_quan','#ffb547']};
+const gleam=(W,H,wall,glow)=>wall
+  ?star(5,5,4.5,P.gold,1)+star(W-5,H*.55,3.5,glow,1)+star(W*.3,H-4,2.5,glow,.8)
+  :star(W*.12,-H*.92,4.5,P.gold,1)+star(W*.9,-H*.62,3.5,glow,1)+star(W*.62,-H-4,2.5,glow,.8);
+for(const [id,[base,glow]] of Object.entries(UQ_DECO)){const b=ART[base];if(!b)continue;
+  ART['uq_'+id]={...b,d:(W,H,uid)=>b.d(W,H,uid)+gleam(W,b.wall?H:(b.h||40),b.wall,glow)};}
 /** 📸 A photo a player photographer made for this player (game/photo_studio.py hang; `anh_chup`, 2 × 2 wall cells): a
  * wooden frame with a cream mat; the photo itself (a small JPEG drawn by ./portrait-art.js from the album's render data)
  * comes from PHOTO_ART by the piece's uid (v4/portrait.js loadWall fills it; reno.js passes the uid). Until it is in, a

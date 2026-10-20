@@ -89,6 +89,9 @@ PAINTS = (
 SPECIAL_PAINTS = (
     ('vang_kim', 'Vàng kim', '#d4a838'), ('do_ruou', 'Đỏ rượu vang', '#7b2335'), ('ngoc_bich', 'Xanh ngọc bích', '#1f8a7a'),
     ('bach_kim', 'Bạch kim', '#dfe3e6'), ('xanh_dem', 'Xanh đêm', '#1b2a52'), ('kem_co', 'Kem cổ điển', '#efe0bf'),
+    # 20/10: the new limited editions' (an older build keeps the id on the car by shape and draws the first paint)
+    ('hong_ngoc', 'Hồng ngọc', '#a8203a'), ('ngoc_trai', 'Trắng ngọc trai', '#f4efe6'), ('dong_co', 'Đồng cổ', '#9a6a3a'),
+    ('den_nhung', 'Đen nhung', '#1d1a22'), ('cam_hoang_hon', 'Cam hoàng hôn', '#e8743b'),
 )
 PAINT_INDEX = {p[0]: dict(id=p[0], name=p[1], hex=p[2]) for p in PAINTS}
 PAINT_INDEX.update({p[0]: dict(id=p[0], name=p[1], hex=p[2], limited=True) for p in SPECIAL_PAINTS})

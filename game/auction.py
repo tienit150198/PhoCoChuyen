@@ -46,6 +46,14 @@ first kinds, exact keys), so what came later lives beside it, kept untouched by 
 Absent, the dearest road plate rides on the road vehicle in use (the rule until 16/10, plates_on); the first write seeds
 `on` with it, so nothing moves under the player. An older build that wins a newer kind leaves the 'win' row pending
 (live_effects): the item arrives once a build that knows it loads the save.
+Save `journey.uniq_y` (20/10; absent until needed): the same reason again (every build since 16/10 validates uniq_x.own
+strictly), for the kinds that came on 20/10 (auction_content.Y_KINDS):
+    v      Y_VERSION
+    own    {item id: {k: 'decor' | 'petgear' | 'tool', t, d, p, lot, g}}   g 1: handed to its system (the piece in the bag of
+           furniture, the piece in Tủ đồ thú cưng); 0: still waiting (the wardrobe was full: y_settle retries after each
+           action). A tool needs nothing handed over (g 1): owning it is its use (tool_pct).
+An older build keeps the block untouched (unknown journey key), the 🪑 piece in reno.items by shape (unshown) and the
+🐾 piece in its wardrobe (a piece id every build since 2.4.56 knows); it just pays no 🧰 bonus.
 Tables: auction_lots, auction_bids (game/pg_schema.py, SCHEMA_VERSION 29).
 """
 from __future__ import annotations
@@ -75,6 +83,10 @@ X_KEY = 'uniq_x'
 X_VERSION = 1
 X_KEYS = frozenset({'v', 'own', 'on'})
 X_ON_MAX = 64
+Y_KEY = 'uniq_y'
+Y_VERSION = 1
+Y_KEYS = frozenset({'v', 'own'})
+Y_OWN_KEYS = OWN_KEYS | {'g'}
 VID_RE = re.compile(r'[a-z0-9_]{1,24}')   # game/garage.py ID_RE
 HOLD_MAX = 24
 OWN_MAX = 200
@@ -244,12 +256,86 @@ def x_ensure(s: dict) -> dict:
 
 
 def owned(s: dict) -> dict:
-    """Every item won, both blocks: {item: {k, t, d, p, lot}}."""
-    b, x = get(s), x_get(s)
+    """Every item won, the three blocks: {item: {k, t, d, p, lot}}."""
+    b, x, y = get(s), x_get(s), y_get(s)
     out = dict(b['own']) if b and isinstance(b.get('own'), dict) else {}
     if x and isinstance(x.get('own'), dict):
         out.update(x['own'])
+    if y and isinstance(y.get('own'), dict):
+        out.update({k: {f: o[f] for f in OWN_KEYS if f in o} for k, o in y['own'].items() if isinstance(o, dict)})
     return out
+
+
+# ---------------------------------------------------------------- journey.uniq_y (20/10): 🪑 🐾 🧰
+def y_get(s: dict) -> dict | None:
+    j = s.get('journey') if isinstance(s, dict) else None
+    y = j.get(Y_KEY) if isinstance(j, dict) else None
+    return y if isinstance(y, dict) else None
+
+
+def y_ensure(s: dict) -> dict:
+    j = s['journey']
+    if not isinstance(j.get(Y_KEY), dict):
+        j[Y_KEY] = dict(v=Y_VERSION, own={})
+    return j[Y_KEY]
+
+
+def _y_own_ok(k, o) -> bool:
+    return (isinstance(o, dict) and set(o) == Y_OWN_KEYS and o['g'] in (0, 1) and type(o['g']) is int
+            and _own_ok(k, {f: o[f] for f in OWN_KEYS}, C.Y_KINDS))
+
+
+def y_validate(s: dict) -> None:
+    """``s['journey']['uniq_y']`` (optional)."""
+    j = s.get('journey')
+    y = j.get(Y_KEY) if isinstance(j, dict) else None
+    if y is None:
+        return
+    need = lambda ok: _core().need(ok, 'Dữ liệu đấu giá trong bản lưu không hợp lệ.', 'invalid_save')
+    need(isinstance(y, dict) and set(y) == Y_KEYS and y['v'] == Y_VERSION)
+    need(isinstance(y['own'], dict) and len(y['own']) <= OWN_MAX and all(_y_own_ok(k, o) for k, o in y['own'].items()))
+
+
+def y_upgrade(j: dict) -> None:
+    """A block a newer build wrote with extra fields: keep every record that still makes sense (what waits is handed
+    over by y_settle, after the next action). Absent stays absent."""
+    if not isinstance(j, dict) or Y_KEY not in j:
+        return
+    y = j[Y_KEY]
+    out = dict(v=Y_VERSION, own={})
+    for k, o in list((y.get('own') if isinstance(y, dict) and isinstance(y.get('own'), dict) else {}).items())[:OWN_MAX]:
+        if isinstance(o, dict) and set(o) >= OWN_KEYS:
+            o = dict({f: o[f] for f in OWN_KEYS}, g=o['g'] if o.get('g') in (0, 1) and type(o.get('g')) is int else 0)
+            if _y_own_ok(k, o):
+                out['own'][k] = o
+    if out != y:
+        j[Y_KEY] = out
+
+
+def y_settle(s: dict) -> str:
+    """Hand over what still waits (g 0): a 🐾 piece once the wardrobe has room, a 🪑 piece missing from the bag. Cheap
+    when there is nothing to do (game/journey.py after). The sentence for a message ('' when nothing moved)."""
+    y = y_get(s)
+    if not y or not isinstance(y.get('own'), dict):
+        return ''
+    out = ''
+    for item, o in y['own'].items():
+        if isinstance(o, dict) and o.get('g') == 0 and o.get('k') in C.Y_KINDS:
+            line, ok = _grant_y(s, item, o['k'])
+            if ok:
+                o['g'] = 1
+                out = out or line
+    return out
+
+
+def tool_pct(s: dict, career: str) -> tuple[int, dict | None]:
+    """🧰 (percent, item) of the signature tool this save owns for `career`, or (0, None)."""
+    it = C.TOOLS.get(career)
+    y = y_get(s)
+    o = (y.get('own') or {}).get(it['id']) if it and y and isinstance(y.get('own'), dict) else None
+    if not isinstance(o, dict) or o.get('k') != 'tool':
+        return 0, None
+    return max(0, min(C.PCT_CAP, C.TOOL_PCT.get(it['tier'], 0))), it
 
 
 def x_upgrade(j: dict) -> None:
@@ -285,11 +371,13 @@ def upgrade(j: dict) -> None:
     hold (it is money): a hold of an odd shape keeps its total."""
     if not isinstance(j, dict) or KEY not in j:
         x_upgrade(j)
+        y_upgrade(j)
         return
     b = j[KEY]
     if not isinstance(b, dict):
         j[KEY] = initial()
         x_upgrade(j)
+        y_upgrade(j)
         return
     out = initial()
     for k, h in list((b.get('hold') if isinstance(b.get('hold'), dict) else {}).items())[:HOLD_MAX]:
@@ -304,6 +392,7 @@ def upgrade(j: dict) -> None:
     out['stats'] = {k: st[k] if _int(st.get(k)) else 0 for k in STATS}
     if out != b:
         j[KEY] = out
+    y_upgrade(j)
     # A rolling-release node can receive an unknown painting, recording ownership
     # but not its furniture. Restore that entitlement once this catalogue knows it.
     r = j.get('reno')
@@ -416,16 +505,24 @@ def apply_fx(s: dict, p: dict, amount: int) -> str:
     if h and h['a'] > amount:   # held more than the price (never written today): the difference goes back
         _give_back(s, h['a'] - amount, max(0, h['b'] - amount), f'🔨 Trả lại phần dư · {name}')
     rec = dict(k=kind, t=text, d=j['life_day'], p=amount, lot=lot)
+    extra = None
     if kind in OLD_KINDS:
         if item not in b['own'] and len(b['own']) < OWN_MAX:
             b['own'][item] = rec
+    elif kind in C.Y_KINDS:   # 🪑 🐾 🧰 (20/10): a third block, handed over at once when it can be
+        y = y_ensure(s)
+        extra = ''
+        if item not in y['own'] and len(y['own']) < OWN_MAX:
+            extra, ok = _grant_y(s, item, kind)
+            y['own'][item] = dict(rec, g=1 if ok else 0)
     else:   # 🏎️ ✈️ ⚓ the newer kinds: beside the block an older build validates strictly
         x = x_ensure(s)
         if item not in x['own'] and len(x['own']) < OWN_MAX:
             x['own'][item] = rec
     b['stats']['won'] = b['stats'].get('won', 0) + 1
     b['stats']['xu'] = b['stats'].get('xu', 0) + amount
-    extra = _grant(s, item, kind)
+    if extra is None:
+        extra = _grant(s, item, kind)
     return f'🔨 Bạn thắng “{text}” với {fmt(amount)} xu!{extra}'
 
 
@@ -453,6 +550,89 @@ def _grant(s: dict, item: str, kind: str) -> str:
         return gr.grant_limited(s, item)
     if kind in C.PLATE_KINDS:
         return ' Gắn biển ở Nhà xe nhé.'
+    return ''
+
+
+def _grant_y(s: dict, item: str, kind: str) -> tuple[str, bool]:
+    """🪑 🐾 🧰 (20/10): (the sentence for the win's message, handed over). An item this build does not know (a newer
+    build's catalogue on a rolling release) is kept as won and waits (g 0) for a build that knows it."""
+    it = C.ITEM.get(item)
+    if not it or it['kind'] != kind:
+        return '', False
+    if kind == 'decor':
+        from . import deco_content as DC
+        k = f'uq_{item}'
+        if k not in DC.ITEMS:
+            return '', False
+        from . import reno as rn
+        r = rn.ensure_block(s)
+        if not any(x.get('k') == k for x in r['items']):
+            r['items'].append(dict(id=rn.new_uid(r), k=k, r=None, x=None))
+        return ' Món đồ nằm trong túi đồ trang trí, bày ở nhà nhé.', True
+    if kind == 'petgear':
+        from . import pet_wardrobe as pw
+        from . import pet_wardrobe_content as W
+        if it['piece'] not in W.ITEM:
+            return '', False
+        x = pw._ensure(s)
+        if len(x['it']) >= pw.ITEM_MAX:
+            return f' Tủ đồ thú cưng đã đủ {pw.ITEM_MAX} món: bỏ bớt một món là món này tự vào tủ.', False
+        pw._new(x, it['piece'], max(0, min(pw.TOP, it['rank'])))
+        return ' Món đồ đã vào Tủ đồ thú cưng, cho bé đeo nhé.', True
+    if kind == 'tool':
+        from . import journey as jr
+        return f' Đồ nghề về {jr._place(it["career"])}: mỗi ca ở đó lợi nhuận +{C.TOOL_PCT.get(it["tier"], 0)}%.', True
+    return '', True
+
+
+def view_extra(it: dict) -> dict:
+    """What the client draws and says beyond the lot's row: `use` (use_line), and a 🪑 piece's footprint (w, h, spot)."""
+    out = {}
+    use = use_line(it)
+    if use:
+        out['use'] = use
+    if it.get('kind') == 'decor':
+        from . import deco_content as DC
+        P = DC.ITEMS.get(f'uq_{it["id"]}')
+        if P:
+            out.update(w=P['w'], h=P['h'], spot=P['spot'])
+    return out
+
+
+def use_line(it: dict) -> str:
+    """What the item does once won, in a sentence (the lot card, Của tôi)."""
+    k = it.get('kind')
+    if k == 'vehicle':
+        from .garage import VEHICLES, vname
+        B = VEHICLES.get(it.get('base'))
+        if not B:
+            return ''
+        return f'Về Nhà xe, đi như {vname(B)}. Gắn biển độc bản: thêm +{C.LIMITED_PCT}% mỗi ca (tối đa {C.PCT_CAP}%).'
+    if k in C.PLATE_KINDS:
+        return f'Gắn ở Nhà xe lên xe hợp loại rồi đi xe đó: lợi nhuận mỗi ca +3–{C.PCT_CAP}%.'
+    if k == 'title':
+        return 'Đeo ở Phong cách: hiện cạnh tên, có khung chat độc bản.'
+    if k == 'art':
+        return f'Treo tường ở nhà: Ấm cúng +{C.ART_COZY}.'
+    if k == 'decor':
+        from . import deco_content as DC
+        P, B = DC.ITEMS.get(f'uq_{it["id"]}'), DC.ITEMS.get(it.get('base'))
+        if not P or not B:
+            return ''
+        from .deco import lname
+        return f'Bày ở nhà từ túi đồ: Ấm cúng +{P["cozy"]}, tính như {lname(B["name"])} trong các bộ.'
+    if k == 'petgear':
+        from . import pet_wardrobe as pw
+        from . import pet_wardrobe_content as W
+        P = W.ITEM.get(it.get('piece'))
+        if not P:
+            return ''
+        bp = pw.BONUS_BP[max(0, min(pw.TOP, it['rank']))] + (pw.LUX_BONUS if P.get('lux') else 0)
+        return f'Vào Tủ đồ thú cưng, cho bé đeo: thưởng làm việc +{bp / 100:g}% (trong trần của bé).'
+    if k == 'tool':
+        from . import journey as jr
+        return (f'Tự dùng ở {jr._place(it["career"])}: lợi nhuận mỗi ca +{C.TOOL_PCT.get(it["tier"], 0)}% '
+                f'(cùng biển đẹp tối đa {C.PCT_CAP}%).')
     return ''
 
 
@@ -528,7 +708,8 @@ _PLATES = frozenset(fold_plate(it['name']) for it in C.ITEMS if it['kind'] in C.
 def catalogue() -> dict:
     """Static lists for the client (bootstrap content, cached)."""
     return dict(tiers={str(k): dict(v) for k, v in C.TIERS.items()}, pct=C.PCT, quick=list(C.QUICK), kinds=[list(k) for k in C.KINDS],
-                items=[dict(it, colors=list(it['colors'])) if 'colors' in it else dict(it) for it in C.ITEMS],
+                items=[dict(it, **({'colors': list(it['colors'])} if 'colors' in it else {}),
+                            **({'alt': list(it['alt'])} if 'alt' in it else {}), **view_extra(it)) for it in C.ITEMS],
                 snipe=C.SNIPE_SECS, account_days=C.ACCOUNT_DAYS)
 
 
@@ -567,13 +748,16 @@ def _taken(db) -> set:
 
 def _insert_lot(db, lid: str, it: dict, tier_n: int, t0: float, t1: float, src: str) -> bool:
     T = tier(tier_n)
-    extra = {k: it[k] for k in ('artist', 'year', 'colors', 'motif', 'base', 'where', 'medium', 'story', 'paint', 'serial')
+    extra = {k: it[k] for k in ('artist', 'year', 'colors', 'motif', 'base', 'where', 'medium', 'story', 'paint', 'serial',
+                                'piece', 'rank', 'career', 'glow')
              if k in it}
+    own = tier_n == it.get('tier')   # an item's premium starting price, unless the operator moved it to another tier
+    start, step = (it.get('start') or T['start'], it.get('step') or T['step']) if own else (T['start'], T['step'])
     return db.execute(
         'INSERT INTO auction_lots(id, item, kind, tier, name, emoji, data, start, step, starts_at, ends_at, planned_end, '
         "status, src, created) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'open',?,?) ON CONFLICT DO NOTHING",
         (lid, it['id'], it['kind'], tier_n, it['name'][:TEXT_MAX], it['emoji'], json.dumps(extra, ensure_ascii=False),
-         T['start'], T['step'], t0, t1, t1, src, now())).rowcount == 1
+         start, step, t0, t1, t1, src, now())).rowcount == 1
 
 
 _planned: dict = {}               # date -> monotonic of the last check (bounded: one entry)
@@ -818,6 +1002,8 @@ def _lot_view(r) -> dict:
         data = {}
     it = C.ITEM.get(r['item'], {})
     data = dict(data if isinstance(data, dict) else {}, **{k: it[k] for k in ('medium', 'story') if k in it})
+    if it:
+        data.update(view_extra(it))
     out = dict(id=r['id'], item=r['item'], kind=r['kind'], tier=int(r['tier']), name=r['name'], emoji=r['emoji'],
                collector_points=it.get('collector_points', 0), rarity=it.get('tier'),
                start=int(r['start']), step=int(r['step']), starts_at=float(r['starts_at']), ends_at=float(r['ends_at']),

@@ -23,6 +23,19 @@ Kinds:
 * hull   ⚓ Biển tên du thuyền: the name painted on a yacht's hull.
   The three plate kinds (plate, reg, hull) are attached to one of the owner's vehicles of the right group (PLATE_FIT,
   jr_garage_plate in game/garage.py) and moved between them at will; one plate a vehicle.
+Since 20/10 (owner: "thêm nhiều đồ mới cho đấu giá nhé, thêm nhiều vào và ứng dụng được"), three kinds more, each with
+a use inside the game's existing caps (kept in journey.uniq_y, game/auction.py Y_KEY):
+* decor   🪑 Đồ trang trí độc bản: a one-of-a-kind piece of furniture (`uq_<id>` in game/deco_content.py, never sold
+          by the shop, never sold back) shaped like its `base` piece: placed at home from the bag, it counts its Ấm cúng
+          (the base's + DECO_COZY[tier]) and stands in for its base (and `alt`) in the theme sets. The morning bonus
+          stays the home's steps (reno.COZY_STEPS / deco.RENT_STEPS): one piece never lifts it past them.
+* petgear 🐾 Đồ thú cưng độc bản: an existing wardrobe piece (`piece`, game/pet_wardrobe_content.py) at a rank the shop
+          never sells (`rank`, A…SSS), straight into Tủ đồ thú cưng. Worn, it adds to the pet's work bonus like any
+          piece of that rank (pet_wardrobe.BONUS_BP, LUX_BONUS, the outfit's BONUS_MAX and the pet's own day cap).
+* tool    🧰 Đồ nghề độc bản: a signature tool of one workplace (`career`): each shift closed there adds TOOL_PCT[tier]
+          percent of the shift's base net (the same base as 🔥 x3 and Biển đẹp). With the Biển đẹp of the same shift
+          it never goes past PCT_CAP percent nor BONUS_CAP xu a shift (game/journey.py _end_of_day).
+An item may carry its own `start` / `step` (a premium starting price), else its tier's.
 
 💰 Biển đẹp +x % (owner 16/10, "gắn biển số vào và tăng % lợi nhuận (3-10% tùy mỗi cái)"): this OVERRIDES the earlier
 "cosmetic and status only" rule for plates. The vehicle the player rides (garage `ride`) and that carries an auction
@@ -65,11 +78,18 @@ KINDS = (
     ('vehicle', '🏎️', 'Xe bản giới hạn'),
     ('reg', '✈️', 'Số đăng ký tàu bay'),
     ('hull', '⚓', 'Biển tên du thuyền'),
+    ('decor', '🪑', 'Đồ trang trí độc bản'),
+    ('petgear', '🐾', 'Đồ thú cưng độc bản'),
+    ('tool', '🧰', 'Đồ nghề độc bản'),
 )
 # The kinds journey.uniq.own holds: every build since it opened validates that block strictly (game/auction.py), so
 # the newer kinds live in journey.uniq_x (game/auction.py X_KEY), which an older build keeps without reading.
 OLD_KINDS = ('plate', 'phone', 'art', 'land', 'title')
 NEW_KINDS = ('vehicle', 'reg', 'hull')
+# 20/10: every build since 16/10 validates journey.uniq_x.own strictly too (NEW_KINDS), so these live in journey.uniq_y.
+Y_KINDS = ('decor', 'petgear', 'tool')
+DECO_COZY = {1: 1, 2: 2, 3: 3}   # 🪑 Ấm cúng a one-of-a-kind piece adds over its base piece's
+TOOL_PCT = {1: 2, 2: 3, 3: 4}    # 🧰 percent of a shift's base net, by tier (with Biển đẹp: never above PCT_CAP)
 
 # ---------------------------------------------------------------- 💰 Biển đẹp +x % (see the module's docstring)
 PLATE_KINDS = ('plate', 'reg', 'hull')
@@ -120,6 +140,22 @@ def _reg(iid, tier, text):
 
 def _hull(iid, tier, text):
     return dict(id=iid, kind='hull', tier=tier, name=text, emoji='⚓')
+
+
+def _deco(iid, tier, emoji, name, base, glow, desc, alt=()):
+    """🪑 `iid` ≤ 21 characters (the bag's piece is `uq_<iid>`, game/reno.py _ID); `base` the deco piece whose size, spot,
+    rooms and tags it takes; `alt` other pieces it stands in for in a theme set; `glow` the sparkle's colour."""
+    return dict(id=iid, kind='decor', tier=tier, name=name, emoji=emoji, base=base, alt=tuple(alt), glow=glow, desc=desc)
+
+
+def _pet(iid, tier, emoji, name, piece, rank, desc):
+    """🐾 `piece` a game/pet_wardrobe_content.py id every build since 2.4.56 knows; `rank` 3 A … 6 SSS."""
+    return dict(id=iid, kind='petgear', tier=tier, name=name, emoji=emoji, piece=piece, rank=rank, desc=desc)
+
+
+def _tool(iid, tier, emoji, name, career, desc, **price):
+    """🧰 the workplace `career` it works for (a game/content.py career id)."""
+    return dict(id=iid, kind='tool', tier=tier, name=name, emoji=emoji, career=career, desc=desc, **price)
 
 
 ITEMS = (
@@ -191,6 +227,88 @@ ITEMS = (
     _reg('rg_vna888', 3, 'VN-A888'), _reg('rg_vna168', 2, 'VN-A168'), _reg('rg_vna686', 2, 'VN-A686'),
     _reg('rg_vna123', 1, 'VN-A123'),
     _hull('hn_hoang_hon', 3, 'HOÀNG HÔN VÀNG'), _hull('hn_ngoc_may', 2, 'NGỌC MÂY'), _hull('hn_sao_bien', 1, 'SAO BIỂN 01'),
+    # ---------------------------------------------------------------- 20/10: "thêm nhiều đồ mới … và ứng dụng được"
+    # 🏎️ limited editions: the garage's ride, trips and upkeep of their base model; a plate on one pays +LIMITED_PCT more
+    _veh('lx_cub_50', 1, '🏍️', 'Cub Đồng Cổ số 50', 'xe_so', 'dong_co', '50/50',
+         'Cub đời đầu phủ màu đồng cổ, yên da bò khâu tay. Chiếc thứ 50, chiếc cuối của lô.'),
+    _veh('lx_xe_ga_88', 1, '🛵', 'Tay ga Hồng Ngọc số 88', 'xe_ga', 'hong_ngoc', '88/88',
+         'Sơn hồng ngọc ánh kim, gương tròn mạ crôm. Đỗ trước tiệm là có người xin chụp ảnh.'),
+    _veh('lx_mini_02', 1, '🚗', 'Mini Ngọc Trai số 02', 'o_to_mini', 'ngoc_trai', '02/02',
+         'Ô tô mini sơn trắng ngọc trai, mui kẻ sọc vàng. Len hẻm nhỏ mà vẫn sang.'),
+    _veh('lx_suv_09', 2, '🚙', 'SUV Đêm Nhung số 09', 'o_to_suv', 'den_nhung', '09/09',
+         'SUV bảy chỗ sơn đen nhung, ghế da bò, đèn viền xanh. Chở cả nhà về quê ai cũng ngoái nhìn.'),
+    _veh('lx_buom_03', 2, '⛵', 'Buồm Hoàng Hôn số 03', 'thuyen_buom', 'cam_hoang_hon', '03/03',
+         'Thuyền buồm thân gỗ, cánh buồm nhuộm màu hoàng hôn. Giương buồm lúc chiều là đẹp nhất sông.'),
+    _veh('lx_canh_quat_01', 2, '🛩️', 'Cánh quạt Ngọc Trai số 01', 'may_bay_nho', 'ngoc_trai', '01/01',
+         'Máy bay hai chỗ sơn ngọc trai, cánh quạt gỗ đánh vecni. Cất cánh từ đường băng cỏ.'),
+    _veh('lx_truc_thang_01', 3, '🚁', 'Trực thăng Đồng Cổ số 01', 'truc_thang', 'dong_co', '01/01',
+         'Trực thăng bốn ghế phủ đồng cổ, ghế da nâu. Đáp xuống sân thượng là cả phố nhìn lên.'),
+    dict(_veh('lx_sieu_xe_02', 3, '🚘', 'Tia Chớp Hồng Ngọc số 02', 'sieu_xe', 'hong_ngoc', '02/02',
+              'Song sinh với Tia Chớp Vàng Kim: sơn hồng ngọc, cửa cánh chim, mâm vàng. Chỉ hai chiếc trong phố.'),
+         start=1_000_000, step=50_000),
+    # 🚗 ✈️ ⚓ plates: Biển đẹp +x % on the vehicle they are attached to
+    _p('pl_30l99999', 3, '30L-999.99'), _p('pl_51k88888', 3, '51K-888.88'), _p('pl_29k68686', 2, '29K-686.86'),
+    _p('pl_79a56789', 2, '79A-567.89'), _p('pl_may1975', 1, 'Mây-1975'), _p('pl_65a12345', 1, '65A-123.45'),
+    _p('pl_may2468', 1, 'Mây-2468'),
+    _reg('rg_vna999', 3, 'VN-A999'), _reg('rg_vna386', 2, 'VN-A386'), _reg('rg_vna520', 1, 'VN-A520'),
+    _hull('hn_rong_bien', 3, 'RỒNG BIỂN'), _hull('hn_trang_ram', 2, 'TRĂNG RẰM'), _hull('hn_bien_ngoc', 1, 'BIỂN NGỌC 07'),
+    # 👑 titles: worn from Phong cách, beside the name in chat with the one-of-a-kind frame
+    _title('dh_phuong_hoang', 3, '🔥', 'Phượng Hoàng Phố Mây', 'Phượng Hoàng'),
+    _title('dh_ngan_ha', 3, '🌌', 'Chủ Nhân Dải Ngân Hà', 'Ngân Hà'),
+    _title('dh_hoang_hon', 2, '🌇', 'Người Giữ Hoàng Hôn', 'Giữ Hoàng Hôn'),
+    _title('dh_hai_dang', 2, '🗼', 'Ngọn Hải Đăng Của Phố', 'Hải Đăng'),
+    _title('dh_ca_phe', 1, '☕', 'Tri Kỷ Quán Cà Phê', 'Tri Kỷ Cà Phê'),
+    _title('dh_mua_sao', 1, '🌠', 'Người Nhặt Sao Rơi', 'Nhặt Sao Rơi'),
+    # 🪑 one-of-a-kind furniture (bag → home): Ấm cúng and the theme sets of their base piece
+    _deco('dc_sap_kham', 3, '🪵', 'Sập gụ khảm xà cừ', 'sap_go', '#f3e3c0',
+          'Sập gỗ gụ trăm năm, mặt khảm xà cừ hình tứ linh. Trải chiếu ngồi pha trà là cả nhà quây quần.'),
+    _deco('dc_bonsai_sanh', 3, '🌳', 'Bonsai sanh trăm tuổi', 'bonsai', '#b8e39a',
+          'Cây sanh dáng trực, rễ ôm đá, ba đời nghệ nhân uốn tỉa. Đặt ở hiên là khách nào cũng dừng chân.'),
+    _deco('dc_piano_go', 3, '🎹', 'Piano gỗ hồng đời 1930', 'piano', '#f6cfa8',
+          'Đàn piano đứng gỗ hồng, phím ngà đã ngả màu, chân nến đồng hai bên. Tiếng đàn ấm cả căn phòng.', alt=('dan',)),
+    _deco('dc_dong_ho_phap', 2, '🕰️', 'Đồng hồ quả lắc Pháp 1920', 'dong_ho_qua_lac', '#e9c46a',
+          'Vỏ gỗ sồi chạm lá nho, quả lắc đồng vàng. Mỗi giờ điểm chuông vang khắp nhà.'),
+    _deco('dc_den_chum', 2, '💎', 'Đèn chùm pha lê cung điện', 'den_chum', '#d6f1ff',
+          'Ba tầng pha lê, trăm hạt chuông nhỏ bắt ánh đèn. Bật lên là trần nhà như có sao.'),
+    _deco('dc_binh_chu_dau', 2, '🏺', 'Bình gốm Chu Đậu cổ', 'binh_gom', '#9cc6e8',
+          'Men lam vẽ chim công giữa hoa sen, đáy còn dấu lò cũ. Trưng ở góc phòng khách là đủ chuyện kể.'),
+    _deco('dc_am_tu_sa', 1, '🍵', 'Bộ ấm tử sa ngàn năm', 'am_chen', '#d9895f',
+          'Ấm đất tím mỏng như giấy, nắp khít không lọt hơi, bốn chén quân. Trà pha ra thơm lâu.'),
+    _deco('dc_mai_co_thu', 1, '🌼', 'Mai vàng cổ thụ', 'cay_mai', '#ffe07a',
+          'Gốc mai già xù xì, nở năm cánh vàng rực cả năm trong chậu men rạn. Nhà có mai là Tết quanh năm.'),
+    _deco('dc_den_keo_quan', 1, '🏮', 'Đèn kéo quân phố Hội', 'den_keo_quan', '#ffb547',
+          'Đèn lụa đỏ, bóng ngựa và người kéo quân xoay đều quanh ngọn nến. Đêm nào cũng như Trung thu.'),
+    # 🐾 wardrobe pieces at a rank the shop never sells: straight into Tủ đồ thú cưng
+    dict(_pet('pw_vong_kc_sss', 3, '💎', 'Vòng kim cương hạng SSS', 'vong_kim_cuong', 6,
+              'Vòng kim cương dòng sang ở hạng cao nhất. Cả phố chưa ai ghép ra được.'), start=800_000, step=40_000),
+    _pet('pw_vm_kc_ss', 3, '👑', 'Vương miện kim cương hạng SS', 'vuong_mien_kim_cuong', 5,
+         'Bảy viên kim cương xếp hình ngôi sao, hạng SS. Bé đội vào là cả xóm cúi chào.'),
+    _pet('pw_canh_phuong_ss', 3, '🔥', 'Cánh phượng hoàng hạng SS', 'canh_phuong_hoang', 5,
+         'Đôi cánh lửa dòng sang, hạng SS. Bé đi đâu là ánh vàng theo đó.'),
+    _pet('pw_kinh_kc_s', 2, '💠', 'Kính kim cương hạng S', 'kinh_kim_cuong', 4,
+         'Gọng bạch kim viền kim cương, hạng S. Nắng chiếu vào là lóa cả góc phố.'),
+    _pet('pw_ao_hoang_gia_s', 2, '🦸', 'Áo choàng hoàng gia hạng S', 'ao_choang_hoang_gia', 4,
+         'Áo choàng nhung đỏ viền lông trắng, hạng S. Mặc vào là thành vua của khu phố.'),
+    _pet('pw_canh_rong_a', 1, '🐉', 'Cánh rồng vàng hạng A', 'canh_rong_vang', 3,
+         'Đôi cánh rồng vảy vàng, hạng A, mạnh hơn hẳn đồ ở tiệm.'),
+    # 🧰 a workplace's signature tool: +TOOL_PCT[tier] % of each shift there (with Biển đẹp never above PCT_CAP)
+    _tool('tl_espresso', 3, '☕', 'Máy espresso Ý đời 1961', 'cafe_bakery',
+          'Cỗ máy đòn bẩy mạ crôm, ba vòi, đồng hồ áp suất kim vàng. Tách nào cũng lớp crema dày như kem.',
+          start=800_000, step=40_000),
+    _tool('tl_may_anh', 3, '📷', 'Máy ảnh phim ống kính vàng', 'photobooth',
+          'Thân đồng đen, ống kính viền vàng, màn trập kêu tách giòn tan. Ảnh chụp ra khách nào cũng đòi in thêm.'),
+    _tool('tl_quay_go', 2, '🧮', 'Quầy gỗ lim và bàn tính cổ', 'grocery',
+          'Quầy gỗ lim lên nước bóng, bàn tính hạt ngà của bà chủ đời đầu. Khách đứng trước quầy là muốn mua thêm.'),
+    _tool('tl_noi_pho', 2, '🍲', 'Nồi nước dùng đồng trăm lít', 'pho',
+          'Nồi đồng gò tay, ninh xương suốt đêm không cạn. Nước phở trong mà ngọt sâu.'),
+    _tool('tl_may_may', 2, '🧵', 'Máy may đạp chân đời 1930', 'clothing',
+          'Thân gang sơn đen chữ vàng, bàn đạp hoa văn, chạy êm không một tiếng kẹt. Đường may thẳng tắp.'),
+    _tool('tl_keo_hoa', 1, '✂️', 'Kéo cắt hoa thép rèn tay', 'florist',
+          'Thép rèn trăm lớp, cán gỗ mun, cắt cành một nhát là ngọt. Hoa cắm lâu tàn hơn.'),
+    _tool('tl_do_nghe', 1, '🔧', 'Hộp đồ nghề mạ vàng chú Tư', 'repair',
+          'Hộp gỗ ba tầng, cờ lê mỏ lết mạ vàng, tua vít đủ cỡ. Món gì hỏng cũng có đồ vừa tay.'),
+    _tool('tl_binh_lac', 1, '🧋', 'Bình lắc trà sữa bạc chạm hoa', 'milk_tea',
+          'Bình bạc chạm hoa sen, nắp khít, lắc ra lớp bọt mịn như mây. Ly nào cũng đều tay.'),
 )
 # Fixed collection points, never a resale quote or a multiplier for money earned.
 COLLECTOR_POINTS = {1: 10, 2: 40, 3: 120}
@@ -238,7 +356,7 @@ for _it in ITEMS:
     _it['collector_points'] = COLLECTOR_POINTS[_it['tier']]
     if _it['kind'] == 'art':
         _it['medium'], _it['story'] = ART_NOTES[_it['motif']]
-    elif _it['kind'] == 'vehicle':
+    elif _it['kind'] in ('vehicle',) + Y_KINDS:
         _it['story'] = _it['desc']
     else:
         _it['story'] = KIND_STORY[_it['kind']]
@@ -253,6 +371,10 @@ STYLE_TITLES = tuple(dict(id=it['id'], emoji=it['emoji'], name=it['name'], price
 # 🖼️ the paintings, as game/deco_content.py wall pieces: (cat, spot, w, h, price, cozy, rooms, name, emoji)
 ART_PIECE = {f'uq_{it["id"]}': it for it in ITEMS if it['kind'] == 'art'}
 ART_COZY = 3
+# 🪑 the one-of-a-kind furniture, as game/deco_content.py pieces (registered there from their base piece)
+DECO_PIECE = {f'uq_{it["id"]}': it for it in ITEMS if it['kind'] == 'decor'}
+# 🧰 the signature tools by workplace (one each)
+TOOLS = {it['career']: it for it in ITEMS if it['kind'] == 'tool'}
 
 # Words on the lot card (≤ 30 words a screen, docs/UI_KIT.md)
 ANON = 'Ẩn danh'
