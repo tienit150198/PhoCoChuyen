@@ -4,8 +4,6 @@ Không có mục Có gì mới.
 
 ## war-lineup
 
-## war-lineup
-
 - 👑 Bang chủ chọn đội hình Bang chiến pet tuần (chủ game: "bang chủ được quyền chọn danh sách thú để xuất chiến nhé, hiện tại bang chủ không chọn thú xuất chiến được"). Bang chủ và Phó bang (không phải Trưởng lão) lên (như người xếp đội hình ⚔️ Thách đấu) mở 🛡️ Bang chiến › 🗓️ Bang chiến tuần › 👑 Chọn đội hình bang: danh sách thành viên với các bé của từng người (hạng, 💪), gợi ý sẵn bé mạnh nhất của mỗi người; chọn tối đa 5 người, mỗi người 1 bé, lưu trước giờ chốt (19:50). Đội hình của bang chủ thay mọi lượt tự chọn của bang tuần đó; thành viên thấy "👑 Bang chủ đã chọn đội hình" và không tự đổi hay rút được; người chọn đổi được tới lúc chốt, hoặc ↩️ Để mọi người tự chọn (giữ đội hình đang có). Chuyện trong bang và nhóm chat bang có dòng nêu tên người được chọn.
 - Máy chủ kiểm: chức vụ, giờ chốt, tối đa 5, mỗi người 1 bé, bé phải là của chính người đó (ở nhà hoặc trại nuôi), đủ điều kiện như tự chọn (đang trong bang, bang có 🏝️ Đảo bang). Ảnh chụp chỉ số bé như khi tự chọn (đọc save chỉ để xem, không ghi), vẫn theo bé tới giờ chốt.
 - game/pet_war.py: lệnh mới `war_team` (danh sách cho người chọn), `war_lineup {picks: [{pid, pet}]}`, `war_lineup_off`; `war` trả thêm `lead`, `can_lead`; `war_pick` / `war_unpick` trả lỗi `lead_set` khi bang chủ đã chọn. Đánh dấu bằng một dòng trong pet_war_picks (sid `~lead|bang|<id>`, không phải người chơi: mọi chỗ đọc đều bỏ qua, bản 2.4.70 cũng vậy vì không bang nào có sid đó). Không thêm bảng hay cột, SCHEMA_VERSION giữ 73, không khóa save mới. game/bang_pets.py: can_lead, role_of, roster, lock_team (khóa hàng bang trước), announce.
