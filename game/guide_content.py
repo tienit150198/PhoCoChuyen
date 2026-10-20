@@ -6184,6 +6184,12 @@ GROUPS = [{'id': 'start',
                          'nhạt dần, cứ 7 ngày −1, không tụt dưới 40 (hàng xóm) hay 20 (khách).',
                          '💛 Càng thân, cơ hội được bo càng cao, tới gấp 1,6 lần. Từ Thân thiết: dễ bỏ qua lỗi nhỏ, báo '
                          'trước khi có kiểm tra. Như người nhà đôi khi lì xì 10–30 xu.',
+                         '💼 Khách từ Người quen trở lên trả thêm khi bạn phục vụ xong: 2%, Thân thiết 4%, Như người nhà '
+                         '6%; hỏi thăm hoặc tặng quà trong tuần thêm 2% (tối đa 10% một việc).',
+                         '🏘️ Hàng xóm thân giúp tận tình: bà Tám bớt tiền phòng, cô Ba bán quà rẻ hơn, mỗi tuần mỗi người '
+                         'giúp bạn một việc ở trang của họ. Dòng 🔒 ??? là điều chỉ người thân mới biết.',
+                         '📝 Mỗi ngày có một người nhờ mua giúp món gì đó: tặng họ món đúng loại là xong việc, +3. 🎂 Tặng '
+                         'quà đúng ngày sinh nhật (thân tới Người quen là biết ngày): điểm nhân đôi.',
                          '🎒 Từ Người quen, thỉnh thoảng họ tặng đồ vào túi quà: tặng lại, bấm [[Dùng]], hoặc tặng '
                          'vợ/chồng ở tab Tương tác của mục Hôn nhân.',
                          '💍 Độ thân quyết định đám cưới: Như người nhà tới dự khoảng 95% và mừng 20–100 xu, Thân thiết '
