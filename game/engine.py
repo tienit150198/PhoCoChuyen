@@ -29,6 +29,7 @@ from . import feedback as fbk
 from . import situations as sit
 from . import inventory as inv
 from . import auto_stock  # 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5): crates at the door counted and shelved
+from . import career_gadgets as cgad  # 🧰 Phụ kiện nghề (paid accessories: 🧊 Tủ trữ sữa riêng, 📏 Máy kiểm tra độ tuổi)
 from . import auto_order as ao  # 🔁 Tự đặt hàng (paid unlock): the stock room orders again when an item runs low
 from . import employment as emp
 from .careers import PLUGINS
@@ -739,7 +740,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(not (desk_task and desk_task.get("desk")),"Hồ sơ này xử lý ở bàn giấy tờ: đánh dấu dòng sai rồi đóng dấu nhé.")
     if plugin_action and action not in mod.SPEC.get('free_actions',()):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
-    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION,ao.ACTION}
+    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle","inv_cancel",auto_stock.ACTION,ao.ACTION,cgad.ACTION}
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|={"mastery_start","mastery_answer","mastery_finish","competition_start","competition_answer"}
     no_tick|=CARE_FREE
@@ -761,6 +762,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(auto_stock.toggle(c,career,p))
     elif action==ao.ACTION:  # 🔁 Tự đặt hàng: buy, the switch, an item's "còn dưới X thì đặt Y" (Kho)
         result.update(ao.action(s,c,career,p))
+    elif action==cgad.ACTION:  # 🧰 Phụ kiện nghề: buy one (Thiết bị)
+        result.update(cgad.buy(s,c,career,p))
     elif action.startswith("sit_"):
         result.update(sit.action(s,c,career,action,p))
     elif action.startswith("inc_"):
@@ -1375,6 +1378,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["inventory"]=inv.public(raw,cid)
         c["warehouse"]=warehouse.public(raw,cid)
         if c["warehouse"] is not None:c["warehouse"]["reorder"]=ao.public(s,raw,cid)  # 🔁 Tự đặt hàng (None: no stock room)
+        c["gadgets"]=cgad.public(raw,cid)  # 🧰 Phụ kiện nghề (None: none sold here)
+        if cid=="mother_baby" and cgad.owned(raw,"age_checker"):c["age_check"]=gifts.age_checks(raw)  # 📏 per open order
         c["job"]=emp.public(raw,cid,s)
         c["mastery"]=cm.public(raw,cid)
         c["competition"]=competition.public(s,raw,cid)
@@ -1555,7 +1560,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     life.validate(c,cid)
     ext=c.get("ext");need(isinstance(ext,dict) and ext_keys<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
     integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
-    sit.validate(c,cid);inv.validate(c,cid);ao.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
+    sit.validate(c,cid);inv.validate(c,cid);ao.validate(c,cid);cgad.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
     cq.validate(c)  # complaints book (optional in older saves)
     fbk._ra.validate_recent(c)  # recent review aspects (optional in older saves)
     if cid in PLUGINS and hasattr(PLUGINS[cid],"validate_data"):PLUGINS[cid].validate_data(c)

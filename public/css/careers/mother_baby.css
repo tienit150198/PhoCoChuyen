@@ -245,3 +245,13 @@ html.reduce-motion .mb-event{animation:none}
 .mb-pack-c #mb-card{width:100%;min-height:44px}
 .mb-kit-rule{margin:0}
 .mb-tools-c .btn{min-width:44px;font-size:var(--fs-3)}
+/* 📏 Máy kiểm tra độ tuổi (mother_baby.js ageCheck, game/career_gadgets.py) */
+.mb-agecheck{display:grid;gap:6px;margin:0;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px dashed var(--line-strong);font-size:.87rem;line-height:1.45}
+.mb-agecheck.good{background:var(--good-soft);border-style:solid}
+.mb-agecheck p{margin:0}
+.mb-agecheck-alts{display:flex;flex-wrap:wrap;gap:6px}
+.mb-agecheck-alts .btn{display:grid;justify-items:start;gap:1px;text-align:left;min-width:0}
+.mb-agecheck-alts .btn small{font-weight:600;opacity:.8}
+.mb-fit{align-self:flex-start;padding:1px 7px;border-radius:8px;font-size:.72rem;font-weight:800;line-height:1.35}
+.mb-fit.ok{background:var(--good-soft);color:var(--good,#2f7a4a)}
+.mb-fit.no{background:var(--bad-soft,#fde3df);color:var(--bad,#b3402f)}
