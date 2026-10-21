@@ -1767,6 +1767,7 @@ async function handleAction(action,data,el){
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
+      if(action==='raceTrack'){await (await import('./v4/race-track.js')).raceAction(action,data,el,env());break;}  // 🏁 Độ xe & đua xe (game/racing.py): lazy
       if(action==='island'||action==='islandInvites'||action==='islandBuild'||action==='islandOpen'){await (await import('./v4/island.js')).islandAction(action,data,el,env());break;}  // 🏝️ Đảo riêng: lazy
       if(action==='bangIsland'){await (await import('./v4/bang-island.js')).bangIslandAction(action,data,el,env());break;}  // ⚔️ Đảo bang: lazy
       if(action==='pets'){await (await import('./v4/pets.js')).petsAction(action,data,el,env());break;}  // 🐾 Nuôi thú cưng: lazy

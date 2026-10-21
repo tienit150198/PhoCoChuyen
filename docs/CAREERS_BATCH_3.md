@@ -66,6 +66,14 @@ Mức kinh tế tham chiếu (mỗi ca, nghề cũ): nghề lương 50–72 xu/c
 - **Kinh tế:** tiệm, 10–14 xu / cặp.
 - **Mở:** chương 2.
 
+### 9. 🔧 Xưởng độ xe Tư Pít-tông (tuning): **đã làm** (2.5.2, người chơi #470 "Thêm độ xe để đua xe")
+- **Vòng chơi:** mỗi phiếu là một chiếc xe với mục tiêu (drag / đèo / đi phố / chạy dịch vụ) và ngân sách. Chọn món vừa tiền theo thứ tự ưu tiên của xưởng → lắp đúng quy trình → chạy dyno → đo ồn, khí thải → thẻ thông số → giao đúng xe đúng biển.
+- **Đúng luật:** pô thẳng, tháo bầu xúc tác, đèn chớp, biển gập luôn nằm trong phiếu; chọn là phải làm lại, phạt 5 xu, mỗi 3 lần cảnh cáo thì đoàn kiểm tra ghé.
+- **Người chơi ↔ người chơi:** ⚙️ độ map động cơ (+3 % mã lực 10 lượt đua), 🔩 chỉnh khung gầm (+4 bám 10 lượt), 🧰 bảo dưỡng xe độ (game/tuning_service.py, docs/SERVICE_MARKET.md).
+- **Đường đua Bến Mây** (game/racing.py): độ chính xe của mình 4 dòng × 3 cấp, chạy tính giờ (drag 400 m, đèo Mây Bay) có bảng tuần và danh hiệu, đua tay đôi phí cố định 10 / 20 / 50 xu (người nhanh hơn lấy hũ trừ 20 % đốt). Số liệu đầy đủ trong CHANGELOG v2.5.2.
+- **Kinh tế:** tiền công ròng 20–32 xu / xe (trung bình ~27); dịch vụ người chơi 120 / 120 / 80 xu NPC → 360 / 360 / 240 xu.
+- **Mở:** chương 2.
+
 ## Thứ tự đề xuất
 1. **🏍️ Sửa xe máy** và 2. **🩺 Thú y**: làm trước (xong trong đợt này). Cả hai nối vào hệ thống đã có người chơi dùng hằng ngày (🛵 xe trong gara + 🎲 rủi ro "xe sắp hỏng"; 🐾 thú cưng + khám / tiêm), nên dịch vụ người chơi có giá trị ngay mà không cần bảng mới.
 3. **🧵 May đo**: đi cùng tính năng thay trang phục đã hứa (0.9.5), người chơi có cái để khoe.

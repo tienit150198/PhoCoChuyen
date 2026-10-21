@@ -50,6 +50,7 @@ ORDER = (
     'kol',                         # nhà sáng tạo nội dung: Studio Hẻm Xanh, step-graded brand deals (brief, quay, nhạc miễn phí bản quyền, bình luận, báo cáo số thật)
     'singer',                      # ca sĩ phòng trà: Phòng trà Mây Chiều, salaried, step-graded sets (chọn bài, khởi động, thử âm, sự cố, lời chúc)
     'actor',                       # diễn viên: Hãng phim Bến Mây, salaried, step-graded scenes (thoại, vị trí, nối cảnh, đạo diễn, hành động an toàn, họp báo)
+    'tuning',                      # độ xe: Xưởng độ xe Tư Pít-tông, step-graded build tickets (bảng độ trong ngân sách, đồ đúng luật, dyno, đo tiếng ồn, thẻ thông số); players' vehicles tuned via Phố dịch vụ
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

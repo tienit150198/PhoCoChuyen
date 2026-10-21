@@ -80,6 +80,7 @@ CAREER_IDS = (
     "kol",
     "singer",
     "actor",
+    "tuning",
 )
 _FILES = (
     "career_specialisms.json",
@@ -98,6 +99,7 @@ _FILES = (
     "career_specialisms_kol.json",
     "career_specialisms_singer.json",
     "career_specialisms_actor.json",
+    "career_specialisms_tuning.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -172,6 +174,7 @@ _TITLE_DIGESTS = {
     "kol": "b985eba5055f1a88c92072c00f83f43e52944bd929d3b7930db44998358f995e",
     "singer": "6a9bccf61b779789fc4f41efde87eeb5ba16bce47336e7f2c920c97d94edc08d",
     "actor": "26eb877a7de8e4c371ab4ca25240df8230bd50ae2b04b30036708f90d5ec5fd6",
+    "tuning": "7aa5bb240a032acbab94a498a73d1e6d479d82cfc267070bd1509e15c96119df",
 }
 
 

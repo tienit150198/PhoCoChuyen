@@ -43,6 +43,9 @@ ENTRIES = (
         dict(emoji='📱', text="Nghề mới Studio Hẻm Xanh: nhận hợp đồng quảng cáo, quay, dựng, trả lời bình luận và báo cáo số thật."),
         dict(emoji='🎤', text="Nghề mới Phòng trà Mây Chiều: chọn bài hợp khán phòng, khởi động giọng, thử âm, hát thật cho cả phòng nghe."),
         dict(emoji='🎬', text="Nghề mới Hãng phim Bến Mây: đọc kịch bản, đứng đúng dấu, nghe đạo diễn, tập cảnh hành động an toàn."),
+        dict(emoji='🔧', text="Nghề mới Xưởng độ xe Tư Pít-tông: lên bảng độ vừa ngân sách, lắp đồ đúng luật, chạy dyno, nhận độ xe của người chơi."),
+        dict(emoji='🏁', text="Đường đua Bến Mây: độ xe máy, ô tô của bạn rồi chạy tính giờ drag 400 m và đèo Mây Bay, top 3 mỗi tuần có danh hiệu.", go=dict(action='raceTrack', data={'tab': 'trial'})),
+        dict(emoji='⚔️', text="Đua tay đôi: thách đấu người cùng hạng xe, phí cố định 10, 20 hoặc 50 xu, ai nhanh hơn lấy cả hũ trừ 20% phí sân."),
     )),
     dict(version="2.5.1", date="2026-10-22", items=(
         dict(emoji='🏍️', text="Nghề mới Tiệm sửa xe Út Lanh: nghe bệnh xe, sửa đúng sổ tay, nhận đơn bảo dưỡng xe máy của người chơi."),

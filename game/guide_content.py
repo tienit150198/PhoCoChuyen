@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor', 'tuning')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -7117,6 +7117,23 @@ CAREERS.update({
                   dict(bad='Lộ kịch bản, tung tin đồn cho phim nổi.', result='Có thể bị hãng trừ tiền và bị khán giả chê ở những ngày sau.')],
         prep=['Ứng tuyển ở Hãng phim Bến Mây trước khi làm (mở từ chương 3). Bạn nhận lương hợp đồng; thưởng chất lượng nhỏ theo từng cảnh.'],
         surprises=['Trường quay hay có chuyện oái oăm: bạn diễn tới trễ, kịch bản bị chụp lén, diễn viên nhí ngủ gục, người hâm mộ tràn vào… chọn cách xử lý cho khéo.'], buttons=[]),
+    'tuning': dict(emoji='🔧', name='Độ xe', place='Xưởng độ xe Tư Pít-tông',
+        intro='Bạn đứng xưởng độ xe máy và ô tô với anh Tư Pít-tông: nghe khách muốn chạy ở đâu, lên bảng độ trong ngân sách bằng đồ đúng luật, chạy dyno rồi mới giao.',
+        jobs=[dict(emoji='🎯', name='Chốt mục tiêu', how='Đi phố êm, triển lãm, đua drag ở trường đua (từ ngày 2), đua đèo ngày đóng đường (từ ngày 3): mỗi mục tiêu một thứ tự món độ.'),
+              dict(emoji='📋', name='Bảng độ trong ngân sách', how='Theo thứ tự ưu tiên của mục tiêu: món nào còn vừa tiền thì lấy, không vừa thì bỏ qua xét món sau. Cộng đúng tổng tiền phụ tùng.'),
+              dict(emoji='⚖️', name='Đúng luật', how='Không lắp pô thẳng, không tháo bộ xúc tác, không đèn chớp xanh đỏ, không khung biển số gập. Tiếng ồn tối đa 95 dB xe máy, 96 dB ô tô; CO tối đa 4,5%.'),
+              dict(emoji='📈', name='Dyno', how='Công suất tăng = đỉnh sau độ trừ đỉnh trước độ. AFR nghèo hơn 13,5 ở tải lớn là nạp lại map.'),
+              dict(emoji='🛎️', name='Xe của người chơi', how='Ở Phố dịch vụ, người chơi đặt ⚙️ Độ động cơ, 🔩 Độ khung gầm hoặc 🧰 Bảo dưỡng xe độ. Nhận đơn, làm ba bước ở thẻ Xe của người chơi rồi bấm Giao.')],
+        steps=['Nghe khách nói, chốt mục tiêu rồi kiểm xe.',
+               'Lên bảng độ theo ưu tiên, trong ngân sách, bỏ đồ trái luật; cộng tiền phụ tùng.',
+               'Khách dặn điều oái oăm: nói thật, đúng luật.',
+               'Lắp từng món theo sổ tay, đọc biểu đồ dyno, đo tiếng ồn hoặc khí thải.',
+               'Chạy thử ở đường thử rồi dán thẻ thông số đúng số dyno.'],
+        stars=['Không sai bước nào: chất lượng 100%, tiền công đủ.', 'Mỗi bước phải làm lại bớt chất lượng; tiền công giảm theo chất lượng.'],
+        mistakes=[dict(bad='Chọn đồ trái luật hoặc cho qua số đo vượt giới hạn.', result='Phải làm lại bước đó; xưởng bị phường nhắc nhở, nộp 5 xu. Ba lần nhắc nhở thì đoàn kiểm tra ghé xưởng.'),
+                  dict(bad='Ghi thẻ thông số tròn lên cho đẹp.', result='Phải làm lại; chất lượng và tiền công giảm.')],
+        prep=['Mở từ chương 2. Phụ tùng xưởng ứng theo phiếu, trừ một lần khi giao xe.'],
+        surprises=['Xưởng hay có chuyện oái oăm: khách rủ đua ngoài đường, turbo giá rẻ không hóa đơn, xăng rò trên băng dyno, đoàn kiểm tra ghé… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

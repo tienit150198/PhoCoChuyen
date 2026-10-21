@@ -1006,3 +1006,18 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Kiểm an toàn cảnh mưa
 9. Chuẩn bị buổi ra mắt phim
 10. Kèm diễn viên mới ngày đầu trường quay
+
+## 65. Xưởng độ xe (`tuning`)
+
+Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng ưu tiên độ theo mục tiêu
+2. Soạn phiếu nhận xe độ
+3. Lập bảng giá đồ độ trong ngân sách
+4. Lập sổ đối chiếu luật độ xe
+5. Chuẩn hóa quy trình nạp map ECU
+6. Lập bảng áp lốp theo mục tiêu
+7. Soạn sổ đo tiếng ồn và khí thải
+8. Lập sổ đọc biểu đồ dyno
+9. Diễn tập kiểm an toàn trước khi giao
+10. Chuẩn hóa thẻ thông số giao xe

@@ -1,6 +1,6 @@
 """🧭 Coach steps of the service trades (see game/coach/__init__.py): the airline crew (pilot, flight attendant), the
 offshore rig, the album shop, the laundry, the painting studio, the restoration workshop, the radio station, the motorbike
-repair shop, the vet clinic, the content studio, the tea room and the film studio. Each opens on its intro card where it has one,
+repair shop, the vet clinic, the content studio, the tea room, the film studio and the tuning shop. Each opens on its intro card where it has one,
 then walks the first day's own loop; the album shop ends with its stock round."""
 from . import S, V, stock  # noqa: F401
 
@@ -262,6 +262,22 @@ STEPS: dict[str, list[dict]] = {
         S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
         S('🔔', 'Có chuyện ở trường quay: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
     ],
+    # 🔧 Xưởng độ xe Tư Pít-tông: the same slips, a build ticket per vehicle; the car gains its parts beside the ticket.
+    'tuning': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="dx_intro"]'], o=True),
+        S('🚗', 'Bấm Nghe khách muốn độ gì để nhận xe.', ['Nghe khách muốn độ gì'], ['.sk-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có khách dắt xe vào.'),
+        S('🎯', 'Nghe khách nói rồi chọn đúng mục tiêu.', (), ['.sl-step .sl-options'], g=0),
+        S('📋', 'Lên bảng độ theo thứ tự ưu tiên, trong ngân sách, bỏ đồ trái luật.', (), ['.sl-step .sl-picks[data-pick="multi"]'], o=True, g=1),
+        S('🌀', 'Khách dặn điều oái oăm: chọn cách trả lời thật thà, đúng luật.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('🔢', 'Việc có thứ tự: bấm lần lượt từng việc.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=2),
+        S('📈', 'Đọc biểu đồ dyno, tính rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.dx-dyno', '.sl-step .sk-amt-go'], o=True, g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('⚖️', 'Chọn đồ trái luật thì xưởng bị nhắc nhở và phải làm lại.', x=True, g=2),
+        S('🔔', 'Có chuyện ở xưởng: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+        S('🛎️', 'Xe của người chơi: nhận đơn, làm từng bước rồi bấm Giao.', (), ['[data-coach="tuning-orders"]'], o=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -428,4 +444,12 @@ EN: dict[str, str] = {
     'Thoại có thứ tự: bấm lần lượt từng câu.': 'Lines in order: tap each line in turn.',
     'Đếm lượt còn phải quay rồi bấm Ghi vào phiếu.': 'Count the takes left, then tap Write on the ticket.',
     'Có chuyện ở trường quay: chọn cách xử lý rồi làm tiếp.': 'Something came up on set: choose what to do, then carry on.',
+    # tuning shop
+    'Bấm Nghe khách muốn độ gì để nhận xe.': 'Tap Hear what they want tuned to take the vehicle in.',
+    'Nghe khách nói rồi chọn đúng mục tiêu.': 'Hear the customer out, then pick the right goal.',
+    'Lên bảng độ theo thứ tự ưu tiên, trong ngân sách, bỏ đồ trái luật.': 'Build the sheet in priority order, within budget, leaving out illegal parts.',
+    'Khách dặn điều oái oăm: chọn cách trả lời thật thà, đúng luật.': 'The customer asks for something awkward: pick the honest, legal answer.',
+    'Đọc biểu đồ dyno, tính rồi bấm Ghi vào phiếu.': 'Read the dyno chart, work it out, then tap Write on the ticket.',
+    'Chọn đồ trái luật thì xưởng bị nhắc nhở và phải làm lại.': 'Pick an illegal part and the shop is warned, and the step must be redone.',
+    'Có chuyện ở xưởng: chọn cách xử lý rồi làm tiếp.': 'Something came up at the shop: choose what to do, then carry on.',
 }

@@ -20,6 +20,11 @@ const BOARDS={
   arena:['Đấu trường',[['🏆','Vua đấu trường tuần'],['⚔️','Cao thủ đấu trường'],['🛡️','Chiến binh đấu trường']]],
   pet_cup:['Giải pet',[['👑','Vô địch giải pet tuần'],['🥈','Top 3 giải pet tuần'],['🎗️','Top 10 giải pet tuần']]],
   pet_war:['Bang chiến',[['🏆','Bang vô địch đấu pet'],['🥈','Á quân bang chiến pet']]],
+  // 🏁 game/racing.py (22/10): the week's best times of Đường đua Bến Mây, top 1 and top 2–3
+  race_drag_bike:['Drag xe máy',[['🏁','Vua drag xe máy tuần'],['🏍️','Top drag xe máy']]],
+  race_drag_car:['Drag ô tô',[['🏁','Vua drag ô tô tuần'],['🚗','Top drag ô tô']]],
+  race_deo_bike:['Đèo xe máy',[['⛰️','Vua đèo xe máy tuần'],['🏍️','Top đèo xe máy']]],
+  race_deo_car:['Đèo ô tô',[['⛰️','Vua đèo ô tô tuần'],['🚗','Top đèo ô tô']]],
 };
 // game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, then the runner-up's five
 const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;
@@ -34,7 +39,7 @@ const NOUN={milk_tea:'trà sữa',grocery:'tạp hóa',delivery:'giao hàng',caf
   pilot:'buồng lái',flight_attendant:'khoang khách',oil:'giàn khoan',corp_accounting:'kế toán doanh nghiệp',
   tax_payroll:'thuế & lương',group_accounting:'kế toán tập đoàn',hr_admin:'nhân sự',secretary:'thư ký',it_helpdesk:'IT văn phòng',
   railway:'gác chắn',nurse:'khoa Nội',lighthouse:'hải đăng',rescue:'tổng đài cứu hộ',lifeguard:'hồ bơi',police:'công an phường',zpop:'tiệm album',
-  customs:'hải quan',hotel:'khách sạn',banquet:'nhà hàng tiệc',reception:'quầy lễ tân',teller:'quầy giao dịch',research:'viện nghiên cứu',radio:'đài phát thanh',moto:'tiệm sửa xe',vet:'phòng khám thú y',kol:'studio nội dung',singer:'phòng trà',actor:'hãng phim',
+  customs:'hải quan',hotel:'khách sạn',banquet:'nhà hàng tiệc',reception:'quầy lễ tân',teller:'quầy giao dịch',research:'viện nghiên cứu',radio:'đài phát thanh',moto:'tiệm sửa xe',vet:'phòng khám thú y',kol:'studio nội dung',singer:'phòng trà',actor:'hãng phim',tuning:'xưởng độ xe',
   lawyer:'văn phòng luật',art_studio:'xưởng vẽ',post_office:'bưu điện',laundry:'giặt ủi',restore:'phục chế'};
 const CAREER_TITLE={pagoda:['🪷','Siêng việc chùa nhất tuần','Siêng việc chùa']};
 // game/fair.py TITLE_ROWS (full names) with a short one for the chip; game/wedding_live.py TITLE_NAMES (the race)

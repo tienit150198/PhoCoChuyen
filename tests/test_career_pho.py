@@ -721,7 +721,7 @@ OLD_LOAD = ('import json,sys;from game.engine import validate_state,migrate_stat
 
 
 # Careers this release adds next to the shop (the base tree knows none of them): a rollback strips them all.
-ADDED = ('pho', 'com', 'photobooth', 'giupviec', 'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'zpop', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor')
+ADDED = ('pho', 'com', 'photobooth', 'giupviec', 'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'zpop', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor', 'tuning')
 
 
 def rollback_strip(s):

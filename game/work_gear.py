@@ -44,6 +44,7 @@ NAMES = {
  'kol':'Đèn tròn, chân máy điện thoại và micro cài áo',
  'singer':'Micro riêng, bình nước ấm và sổ hợp âm',
  'actor':'Tập kịch bản, bút dạ quang và bộ bảo hộ đóng cảnh',
+ 'tuning':'Máy đọc ECU, đồng hồ đo ồn và băng thử dyno',
  'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)

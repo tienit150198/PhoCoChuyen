@@ -102,7 +102,7 @@ CH_UNLOCKS = {
 # 🛎️ A workplace added after a release opens from a chapter without entering `unlocked` until it is worked: a
 # chapter list would put it in every story save (upgrade() re-runs the chapters), and an older build, whose CAREERS
 # lacks it, refuses such a save. Untouched it stays dormant (engine.DORMANT), so a rollback keeps loading the save.
-LATE_UNLOCKS = {'hotel': 3, 'banquet': 3, 'reception': 3, 'teller': 3, 'restore': 2, 'research': 3, 'radio': 3, 'moto': 2, 'vet': 3, 'kol': 2, 'singer': 2, 'actor': 3}
+LATE_UNLOCKS = {'hotel': 3, 'banquet': 3, 'reception': 3, 'teller': 3, 'restore': 2, 'research': 3, 'radio': 3, 'moto': 2, 'vet': 3, 'kol': 2, 'singer': 2, 'actor': 3, 'tuning': 2}
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 CAST = {
@@ -299,6 +299,7 @@ TITLES = [
     _t('c_kol', 'career', '📱', 'Người kể chuyện thật', 'Đạt cấp 3 ở Studio Hẻm Xanh.', lambda x: x['lv'].get('kol', 1) >= 3),
     _t('c_singer', 'career', '🎤', 'Giọng ca Mây Chiều', 'Đạt cấp 3 ở Phòng trà Mây Chiều.', lambda x: x['lv'].get('singer', 1) >= 3),
     _t('c_actor', 'career', '🎬', 'Gương mặt Bến Mây', 'Đạt cấp 3 ở Hãng phim Bến Mây.', lambda x: x['lv'].get('actor', 1) >= 3),
+    _t('c_tuning', 'career', '🔧', 'Bàn tay chỉnh dyno', 'Đạt cấp 3 ở Xưởng độ xe Tư Pít-tông.', lambda x: x['lv'].get('tuning', 1) >= 3),
     _t('c_customs', 'career', '🛃', 'Người gác cửa khẩu', 'Đạt cấp 3 ở Chi cục Hải quan cửa khẩu Bến Mây.', lambda x: x['lv'].get('customs', 1) >= 3),
     _t('c_zpop', 'career', '💿', 'Người giữ seal nguyên vẹn', 'Đạt cấp 3 ở tiệm album Mây Pop.', lambda x: x['lv'].get('zpop', 1) >= 3),
     # Skills at level 3.
@@ -1053,6 +1054,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(dc.action(s, name, p))
     elif name.startswith('jr_garage_'):
         result.update(gr.action(s, name, p))
+    elif name in ('jr_tune_buy', 'jr_tune_fix'):   # 🔧 độ xe của mình (game/racing.py)
+        from . import racing
+        result.update(racing.action(s, name, p))
     elif name.startswith('jr_gadget_'):
         result.update(gd.action(s, name, p))
     elif name.startswith('jr_lux_'):
@@ -1363,6 +1367,9 @@ def validate(s: dict) -> None:
     rn.validate(s)
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
+    if isinstance(s.get('journey'), dict) and 'tune' in s['journey']:
+        from . import racing
+        racing.validate(s)   # 🔧 journey['tune'] (optional: game/racing.py)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
     from . import pay_boost
     pay_boost.validate(s)   # 🧰 journey['paykit'] (optional: game/pay_boost.py)

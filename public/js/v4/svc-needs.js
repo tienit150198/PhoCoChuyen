@@ -9,6 +9,8 @@ const RESTORE={action:'restoreDesk',label:'🧰 Mở Phục chế đồ'};
 const GARDEN={action:'svcGarden',label:'🌱 Mở Vườn mới'};
 const BIKES={action:'garage',data:{tab:'bike'},label:'🏍️ Mở Nhà xe'};
 const ADOPT={action:'pets',data:{tab:'adopt'},label:'🐾 Nhận nuôi bé'};
+const RACERS=['xe_so','xe_ga','o_to_mini','o_to_suv','mui_tran','sieu_xe'];   // 🔧 game/racing.py BASE: what can be tuned and raced
+const GARAGE={action:'garage',data:{},label:'🚗 Mở Nhà xe'};
 const key=(c,s)=>`${c}.${s}`;
 let cache={at:0,restore:null};
 
@@ -49,9 +51,16 @@ function researchNeed(state,service){
 }
 
 /** 🏍️ game/moto_service.py: a motorbike to bring (the server also leaves out the bicycles). 🩺 game/vet_service.py: a pet
- * to bring (whether one needs a check-up or a jab is the server's to say). Only what the save shows for sure. */
+ * to bring (whether one needs a check-up or a jab is the server's to say). 🔧 game/tuning_service.py: a motorbike or a car
+ * that can race (whether its parts are worn is the server's to say). Only what the save shows for sure. */
 function ownNeed(api,career){
   const j=api?.state?.journey;if(!j)return null;
+  if(career==='tuning'){
+    const g=j.garage;if(!g||!Array.isArray(g.cars))return null;
+    const base=Object.fromEntries((api.content?.journey?.garage?.vehicles||[]).map(v=>[v.id,v.base||v.id]));
+    if(g.cars.some(c=>RACERS.includes(base[c.id]??c.id)))return null;
+    return {why:'Bạn chưa có xe máy hay ô tô nào để mang đi độ.',hard:true,go:GARAGE};
+  }
   if(career==='moto'){
     const g=j.garage;if(!g||!Array.isArray(g.cars))return null;
     const group=Object.fromEntries((api.content?.journey?.garage?.vehicles||[]).map(v=>[v.id,v.group]));
@@ -64,7 +73,7 @@ function ownNeed(api,career){
 
 /** The needs of the restore / research services among `items` ({career, service}); {} for every other service. */
 export async function needsFor(api,items){
-  const out={},list=(items||[]).filter(i=>i&&!i.mine&&['restore','research','moto','vet'].includes(i.career));
+  const out={},list=(items||[]).filter(i=>i&&!i.mine&&['restore','research','moto','vet','tuning'].includes(i.career));
   if(!list.length)return out;
   const v=list.some(i=>i.career==='restore')?await restoreMine(api):null;
   for(const i of list){

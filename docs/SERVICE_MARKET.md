@@ -153,6 +153,24 @@ market's own.
 * 🛑 `MNL_MOTO_SVC_OFF=1` / `MNL_VET_SVC_OFF=1`: `done` refused (`moto_off` / `vet_off`); orders keep settling and
   refunding as usual. No table, no column; `journey.xe_care` is optional and 2.4.71 keeps it untouched.
 
+## 🔧 Độ xe cho người chơi (tuning: worked at the bench, 2.5.2)
+
+`game/tuning_service.py` registers `('tuning', 'do_dong_co')` ⚙️ độ map động cơ (base 120 xu), `('tuning', 'do_khung_gam')`
+🔩 chỉnh khung gầm (base 120 xu) and `('tuning', 'bao_duong_do')` 🧰 bảo dưỡng xe độ (base 80 xu); one vehicle per order
+(qty_max 1). `check` needs a motorbike or car that can race (game/racing.py `owned`); 🧰 also needs a fitted part that is worn.
+
+* What a player sells is what the NPC garage (🔧 Xưởng Tư Pít-tông, `jr_tune_buy`) does not: a hand-tuned map
+  (+`racing.FX_POWER` 3 % power) or a chassis set-up (+`racing.FX_GRIP` 4 grip) for the next `racing.FX_RACES` 10 races of
+  that vehicle, or a full service (every fitted part back to 100 %). Stages are only sold by the garage, so nobody buys a
+  stage cheaper from a player.
+* The tuner works the order in 🔧 Xưởng độ xe → Xe của người chơi (`dx_svc {order, service, step, value}`, three
+  server-graded steps, the illegal fits refused at the bench); the finished job lands in `careers.tuning.ext.data.svc_ok`
+  and `deliver` reads the tuner's **committed** save and refuses (`tuning_bench`) until that order is there.
+* Buyer's save, once: `racing.service_apply` on the vehicle being ridden when it can race, else the one with the most
+  parts (`journey.tune.cars[vid].fx` or the wear reset).
+* 🛑 `MNL_TUNING_SVC_OFF=1`: `done` refused (`tuning_off`); orders keep settling and refunding as usual. No table, no
+  column; `journey.tune` is optional and 2.5.1 keeps it untouched.
+
 ## HTTP
 
 GET `/api/svc/dir?career=&service=&sort=rating|price|online|deals&offset=` · `/api/svc/provider?pid=` · `/api/svc/inbox`

@@ -32,7 +32,7 @@ FAMILY = {
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
     'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
     'art_studio': 'service', 'laundry': 'service', 'lawyer': 'office', 'post_office': 'office', 'customs': 'office',
-    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office', 'restore': 'service', 'research': 'office', 'radio': 'service', 'moto': 'service', 'vet': 'service', 'kol': 'service', 'singer': 'service', 'actor': 'service',
+    'hotel': 'service', 'banquet': 'service', 'reception': 'service', 'teller': 'office', 'restore': 'service', 'research': 'office', 'radio': 'service', 'moto': 'service', 'vet': 'service', 'kol': 'service', 'singer': 'service', 'actor': 'service', 'tuning': 'service',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 
@@ -115,6 +115,14 @@ ASPECTS = dict((
       word=('Phải dừng lại.', 'An toàn.'), sig_neg=('crit:safe:lo',), sig_pos=('crit:safe:hi',)),
     A('actor_feel', ('service',), 'Cảm xúc vai diễn', 'cảm xúc chưa hợp ý', topic='ambience', only=('actor',), subjective=True,
       neg=['mình muốn vai diễn sâu hơn chút'], pos=['xem mà rưng rưng theo nhân vật'], word=('Muốn sâu hơn.', 'Rưng rưng.')),
+    A('tuning_steps', ('service',), 'Lắp đúng quy trình', 'có bước lắp phải làm lại', topic='clean', only=('tuning',),
+      neg=['có bước lắp đồ độ phải làm lại mới đúng'], pos=['xưởng lắp từng món đúng quy trình, chạy dyno rõ ràng'],
+      word=('Phải làm lại.', 'Đúng quy trình.'), sig_neg=('crit:steps:lo',), sig_pos=('crit:steps:hi',)),
+    A('tuning_legal', ('service',), 'Độ đúng luật', 'có món độ phải tháo ra', topic='method', only=('tuning',),
+      neg=['thợ suýt lắp món không qua được đăng kiểm'], pos=['xưởng nói rõ món nào đúng luật, món nào không'],
+      word=('Suýt sai luật.', 'Đúng luật.'), sig_neg=('crit:legal:lo',), sig_pos=('crit:legal:hi',)),
+    A('tuning_look', ('service',), 'Xe độ xong nhìn đã', 'màu dán chưa hợp ý', topic='ambience', only=('tuning',), subjective=True,
+      neg=['mình muốn màu dán đậm hơn chút'], pos=['xe độ xong nhìn đã mắt, chạy lại êm'], word=('Muốn đậm hơn.', 'Đã mắt.')),
     A('hotel_room', ('service',), 'Phòng đúng yêu cầu', 'có bước làm phòng phải làm lại', topic='clean', only=('hotel',),
       neg=['có bước dọn hoặc giao phòng phải làm lại cho đúng phiếu'],
       pos=['phòng sạch, đúng loại giường và đúng hướng mình đặt'],
@@ -870,6 +878,8 @@ NV_CAREER = {'art_studio': {'polite': {'male': 'anh họa sĩ', 'female': 'chị
                         'harsh': {'male': 'anh ca sĩ', 'female': 'chị ca sĩ', None: 'ca sĩ'}},
              'actor': {'polite': {'male': 'anh diễn viên', 'female': 'chị diễn viên', None: 'diễn viên'},
                        'harsh': {'male': 'anh diễn viên', 'female': 'chị diễn viên', None: 'diễn viên'}},
+             'tuning': {'polite': {'male': 'anh thợ độ xe', 'female': 'chị thợ độ xe', None: 'thợ độ xe'},
+                        'harsh': {'male': 'anh thợ độ xe', 'female': 'chị thợ độ xe', None: 'thợ độ xe'}},
              'restore': {'polite': {'male': 'anh thợ phục chế', 'female': 'chị thợ phục chế', None: 'thợ phục chế'},
                          'harsh': {'male': 'anh thợ phục chế', 'female': 'chị thợ phục chế', None: 'thợ phục chế'}},
              'lawyer': {'polite': {'male': 'anh chuyên viên hồ sơ', 'female': 'chị chuyên viên hồ sơ', None: 'chuyên viên hồ sơ'},

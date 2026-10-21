@@ -105,6 +105,7 @@ ORDERS = {
     'kol': ('Đơn riêng: quay video giới thiệu cho tiệm nhà khách quen', 16, 4, {}),
     'singer': ('Việc riêng: hát mừng đám cưới nhà khách quen', 16, 3, {}),
     'actor': ('Việc riêng: đóng vai trong video ngắn cho trường của phố', 16, 3, {}),
+    'tuning': ('Đơn riêng: thay lốp, chỉnh phuộc cho chiếc xe của nhà khách quen', 18, 4, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',
