@@ -146,7 +146,7 @@ class Chapters(unittest.TestCase):
         self.assertEqual(s['journey']['chapter'], jr.LAST + 1)
         self.assertEqual(s['journey']['done'], list(range(1, jr.LAST + 1)))
         # 🛃 customs opens once 3 chapters are done (gov_rules.opens), never through the unlocked list (2.4.24 checks it)
-        self.assertEqual(set(s['journey']['unlocked']), set(CAREERS) - {'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet'})
+        self.assertEqual(set(s['journey']['unlocked']), set(CAREERS) - {'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor'})
         self.assertTrue(jr.is_unlocked(s, 'customs'))
         # 🛎️ hotel opens from chapter 3 (journey.LATE_UNLOCKS), also outside the unlocked list until it is worked
         self.assertTrue(jr.is_unlocked(s, 'hotel'))
@@ -156,6 +156,8 @@ class Chapters(unittest.TestCase):
         self.assertTrue(jr.is_unlocked(s, 'radio'))
         self.assertTrue(jr.is_unlocked(s, 'moto'))   # 🏍️ from chapter 2, 🩺 from chapter 3: dormant until worked
         self.assertTrue(jr.is_unlocked(s, 'vet'))
+        for cid in ('kol', 'singer', 'actor'):   # 📱 🎤 from chapter 2, 🎬 from chapter 3: dormant until worked
+            self.assertTrue(jr.is_unlocked(s, cid))
         self.assertTrue(public_state(s)['journey']['finale'])
         validate_state(s)
 

@@ -66,7 +66,7 @@ class Dictionary(unittest.TestCase):
         sal = CV.salaried_set()
         if hasattr(operations, 'SALARIED'):
             self.assertEqual(set(operations.SALARIED), set(CV._SALARIED))
-        self.assertEqual(len(sal), 28)   # + research (Viện nghiên cứu), + 📻 radio, + 🩺 vet
+        self.assertEqual(len(sal), 30)   # + research (Viện nghiên cứu), + 📻 radio, + 🩺 vet, + 🎤 singer, + 🎬 actor
         for cid in sal:
             if cid not in CAREERS:
                 continue

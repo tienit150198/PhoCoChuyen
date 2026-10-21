@@ -118,7 +118,7 @@ class Registration(unittest.TestCase):
     def test_registered_last_dormant_and_salaried(self):
         from game import operations
         from game.career_voice import salaried_set
-        self.assertEqual(ORDER[ORDER.index('hotel') + 1], 'banquet')   # appended after hotel (reception, teller, restore, research, 📻 radio, 🏍️ moto and 🩺 vet came next)
+        self.assertEqual(ORDER[ORDER.index('hotel') + 1], 'banquet')   # appended after hotel (reception, teller, restore, research, 📻 radio, 🏍️ moto, 🩺 vet, 📱 kol, 🎤 singer and 🎬 actor came next)
         self.assertIn('banquet', DORMANT)
         self.assertIn('banquet', salaried_set())
         self.assertIn('banquet', operations.SALARIED)
