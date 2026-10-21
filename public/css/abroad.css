@@ -27,3 +27,9 @@
 .ab-job{min-height:40px;padding:6px 12px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;cursor:pointer}
 .ab-job.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
 .ab-sub{margin:6px 0 0;font-size:1rem}
+/* 📲 Đóng ca từ xa (public/js/v4/remote-close.js): the open shifts, one row each. */
+.rc-list{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none;align-self:stretch}
+.rc-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.rc-row .grow{flex:1;min-width:0}
+.rc-row small{display:block;margin-top:2px;font-size:.82rem;color:var(--muted)}
+.rc-row .btn{min-height:40px}

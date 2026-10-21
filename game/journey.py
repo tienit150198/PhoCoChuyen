@@ -1202,9 +1202,15 @@ def public(s: dict) -> dict:
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'islb': ibp} if (ibp := _islb_public(s)) else {}),   # 🏗️ only once something was built (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
+        **({'remote': rm} if (rm := _remote_public(s)) else {}),   # 📲 khép ca từ xa: open shifts, the device (game/remote_close.py)
         **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+
+
+def _remote_public(s: dict) -> dict | None:
+    from . import remote_close
+    return remote_close.public(s)
 
 
 def _islb_public(s: dict) -> dict | None:

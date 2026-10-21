@@ -1,3 +1,13 @@
+# Chưa phát hành — feat/remote-close
+
+📲 F#456 "khi làm ở nước ngoài thì có nút để đóng các cửa tiệm luôn": chủ đồng ý, nhưng phải mua mới có. Không đổi schema, không thêm khóa save mới (món đồ nằm trong journey.gadgets.own như mọi món ở Mây Mobile).
+- game/gadgets.py: tab mới 📲 Tiện ích, món 📲 Máy quản lý từ xa (quan_ly_xa) 5.500 xu (giá gốc 5.000 + chỉ số 10 %), mua một lần, bán lại 65 % như đồ công nghệ khác; không hiện trên thẻ khoe (show_view chỉ lấy tab đồ công nghệ).
+- game/remote_close.py + game/engine.py: end_day {remote: true} trên nghề cần khép = đúng nhánh end_day ở tiệm (lương, điện nước, kho, sự cố, ngày sống, x3, thăng tiến, điểm bang ở storage). Khác duy nhất: giữ s['current'] (không nhảy cảnh) và không kiểm "bỏ dở việc" nơi đang đứng. Chuyện đang dở mang sang mai như nút Khép ca (carry_event). Chưa có máy: từ chối 'need_device', không đổi gì; ca đã khép: trả lời êm (duplicate), không đổi gì.
+- game/journey.py: public journey.remote {own, item, shops[{career, day, done, left, event, here}]}, chỉ có khi đang mở ca hoặc đã có máy.
+- public/js/v4/remote-close.js (mới): bảng 📲 Đóng ca từ xa; app.js: mục menu (chỉ khi có ca mở ở nơi khác), journey.js: dòng trên trang Hành trình, abroad.js: nút đóng ca từ xa trong "Còn N ca đang mở" và thẻ du học; chưa có máy thì ghi rõ mua gì, ở đâu. gadgets.js: tab Tiện ích.
+- Có gì mới 2.5.2, Hướng dẫn → Mở ca và khép ca +1 dòng, i18n/overrides.json: 23 câu + 12 mẫu.
+- Rollback 2.5.1 an toàn: validator cũ giữ id lạ trong gadgets.own (ẩn đi), bỏ qua cờ remote.
+
 # Chưa phát hành — fix/fb-money-2110
 
 🏦 F#462 "giao dịch lớn hơn 10tr đều không được" + 🥛 F#463/#454 sữa tươi hỏng giữa ca. Không đổi schema, không thêm khóa save.

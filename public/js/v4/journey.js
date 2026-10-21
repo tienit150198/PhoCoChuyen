@@ -367,8 +367,15 @@ function homeMain(env){
   // A new neighbour's first day (firstDay; feedback 16/10 "nhiều chữ"): the goal, you and the places. Certificates, the
   // house, the fair, the board, abroad and the stories join from day 2.
   const fresh=firstDay(api.state);
-  const more=fresh?'':`${stickerCard(env)}${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
+  const more=fresh?'':`${stickerCard(env)}${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${remoteEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
   return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${fresh?'':ev2010Card(env)}${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+}
+
+/* 📲 Đóng ca từ xa (v4/remote-close.js, game/remote_close.py): one line while a shift is open somewhere else. */
+function remoteEntry(env){
+  const {api}=env,J=api.state.journey,R=J?.story&&J.remote,n=(R?.shops||[]).filter(x=>!x.here).length;if(!n)return '';
+  const line=R.own?`${n} ca đang mở ở nơi khác · khép ngay tại đây`:`${n} ca đang mở ở nơi khác · cần Máy quản lý từ xa`;
+  return `<button type="button" class="jr-card ct-entry" data-action="remoteClose"><span class="ct-entry-icon" aria-hidden="true">📲</span><span class="grow"><b>Đóng ca từ xa</b><small>${esc(line)}</small></span>${icon('arrow',16)}</button>`;
 }
 
 /* ✈️ Du học, 🌏 Làm việc ở nước ngoài (v4/abroad.js, game/abroad.py): one line, under 🎓 Thi chứng chỉ (its styles). */

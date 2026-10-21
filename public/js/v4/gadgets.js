@@ -69,7 +69,7 @@ export async function openGadgets(env,tab){
   await ensureCss();
   const d=dialog();
   S.view=tab==='selfie'?'selfie':'list';S.pick=null;
-  S.tab=['mine','phone','gear'].includes(tab)?tab:'mine';   // 🎒 first: the phone in use, or the old one and its upgrade
+  S.tab=['mine',...CAT().groups.map(g=>g.id)].includes(tab)?tab:'mine';   // 🎒 first: the phone in use, or the old one and its upgrade; 📲 tool: from Đóng ca từ xa
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
 }
@@ -192,7 +192,7 @@ function groupView(v,gid){
       <p>${esc(it.desc)}</p>${perkList(it,true)}
       <div class="hs-go">${status}${owned?'':btn(isPhone(it)?'Xem máy':'Xem món này','look',{id:it.id},w?'ghost':'primary')}</div></li>`;
   }).join('');
-  const intro=gid==='phone'?'Máy càng xịn càng mở thêm vài món vui: khung selfie, vỏ máy khoe trên hồ sơ. Không máy nào làm ra tiền, không phí tháng.':'Đồ chơi công nghệ để khoe và làm nhãn dán trong ảnh selfie.';
+  const intro=gid==='phone'?'Máy càng xịn càng mở thêm vài món vui: khung selfie, vỏ máy khoe trên hồ sơ. Không máy nào làm ra tiền, không phí tháng.':gid==='tool'?'Đồ dùng được việc, mua một lần, không phí tháng.':'Đồ chơi công nghệ để khoe và làm nhãn dán trong ảnh selfie.';
   return `<section class="bk-card"><p class="bk-hint">${intro} Ví ${xu(v.have.wallet)}${v.have.bank?` · tài khoản ${xu(v.have.balance)}`:''}.</p><ul class="hs-market">${rows}</ul></section>`;
 }
 

@@ -6,6 +6,8 @@ game/life_content.py GIFTS['phone'], and the snatched phone of game/rui.py); thi
 * One catalogue (ITEMS), two tabs: 📱 Điện thoại (five tiers, a cheap smartphone to a gold edition) and 🎧 Đồ công
   nghệ (earbuds, a smartwatch, a tablet, a games console, a camera). Fictional brands only. Priced like the garage
   (game/garage.py): the cheapest within two days of pay, the gold phone a rich player's toy.
+  A third tab, 📲 Tiện ích (#456, 21/10), holds the one useful item: 📲 Máy quản lý từ xa (game/remote_close.py: khép
+  ca từ xa). Not shown off on the card (show_view: gear only). An older build keeps its id by shape and hides it.
 * Paid in full like a vehicle: the cash in the wallet first, then the bank account (garage._take, wallet rows of the
   existing kind 'life', bank lines 'acc'); never a loan, never below 0, a wallet in debt buys nothing. One of each.
 * 🔁 Thu cũ đổi mới (the story hook): the first phone takes the old phone in (unless `trade: false`), TRADE_IN xu
@@ -48,7 +50,7 @@ COMMANDS = ('jr_gadget_buy', 'jr_gadget_use', 'jr_gadget_sell')
 SHOP = 'Mây Mobile'
 WHERE = 'Phố dịch vụ'
 
-GROUPS = (('phone', '📱', 'Điện thoại'), ('gear', '🎧', 'Đồ công nghệ'))
+GROUPS = (('phone', '📱', 'Điện thoại'), ('gear', '🎧', 'Đồ công nghệ'), ('tool', '📲', 'Tiện ích'))
 GROUP_IDS = tuple(g[0] for g in GROUPS)
 
 # The light perks a phone in hand gives (its tier's and every tier's under it). The client draws them; the server only
@@ -94,6 +96,10 @@ ITEMS = dict((
        color='#d9534f', brand='Rồng Con'),
     _i('may_anh', 'gear', '📷', 'Máy ảnh Cò Trắng X', 3200, 'Máy ảnh không gương lật, ống kính chân dung xóa phông mịn như mơ.',
        color='#f3f0e8', brand='Cò Trắng'),
+    # 📲 Tiện ích (#456, owner 21/10): the one item that does something, game/remote_close.py. Priced as a mid-game
+    # convenience: above ⏩ Làm nhanh (2.750) and the top Bộ đồ nghề, under 📦 Gộp thùng tự đặt (10.000).
+    _i('quan_ly_xa', 'tool', '📲', 'Máy quản lý từ xa', 5000, 'Xem ca đang mở ở mọi nơi bạn làm và khép ca từ xa, kể cả lúc ở nước ngoài. Tiền ca tính y như khép ở tiệm.',
+       color='#4f8f7a', brand='Mây'),
 ))
 ORDER = tuple(ITEMS)
 PHONES = tuple(i for i in ORDER if ITEMS[i]['group'] == 'phone')
