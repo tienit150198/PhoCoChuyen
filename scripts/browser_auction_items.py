@@ -3,7 +3,7 @@
 scripts/browser_housing.py, PostgreSQL through TEST_DATABASE_URL).
 
 Lan owns the tập thể flat, has an account older than 3 days and 3.000.000 xu. An operator adds four lots (🪑 Sập gụ khảm
-xà cừ, 🐾 Vòng kim cương SSS, 🧰 Máy espresso, 🏎️ Tia Chớp Hồng Ngọc). In the browser:
+xà cừ, 🐾 Vòng kim cương SS, 🧰 Máy espresso, 🏎️ Tia Chớp Hồng Ngọc). In the browser:
   1. the auction's lot list: each new card with its picture and what it does (✨ the use line);
   2. Lan bids on the sập; the lot ends and is settled; "Của tôi" shows it with its use;
   3. she opens Bày trí at home, drags the sập out of the bag into the living room: it stands there and Ấm cúng goes up.
@@ -32,7 +32,7 @@ API = """async ([path, body]) => {
   const r = await fetch(path, body === null ? {} : {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Game-CSRF': boot.csrf}, body: JSON.stringify(body)});
   return {status: r.status, data: await r.json().catch(() => ({}))};
 }"""
-LOTS = ('dc_sap_kham', 'pw_vong_kc_sss', 'tl_espresso', 'lx_sieu_xe_02')
+LOTS = ('dc_sap_kham', 'pw_vong_kc_ss', 'tl_espresso', 'lx_sieu_xe_02')
 
 
 def store(db):
@@ -170,7 +170,7 @@ async def main() -> int:
             await act('auction')
             await page.wait_for_selector('dialog.au-sheet[open] .au-lot', timeout=15000)
             await page.wait_for_timeout(900)
-            names = {'dc_sap_kham': ('au-decor', 'Ấm cúng'), 'pw_vong_kc_sss': ('au-petgear', 'Tủ đồ thú cưng'),
+            names = {'dc_sap_kham': ('au-decor', 'Ấm cúng'), 'pw_vong_kc_ss': ('au-petgear', 'Tủ đồ thú cưng'),
                      'tl_espresso': ('au-tool', 'Sớm Mai'), 'lx_sieu_xe_02': ('au-ltd', 'Nhà xe')}
             for n, item in enumerate(LOTS, 1):
                 await tap(f'dialog.au-sheet[open] [data-au=lot][data-id="{lots[item]}"]', 400)

@@ -49,7 +49,7 @@ NEW = ('lx_cub_50', 'lx_xe_ga_88', 'lx_mini_02', 'lx_suv_09', 'lx_buom_03', 'lx_
        'dh_phuong_hoang', 'dh_ngan_ha', 'dh_hoang_hon', 'dh_hai_dang', 'dh_ca_phe', 'dh_mua_sao',
        'dc_sap_kham', 'dc_bonsai_sanh', 'dc_piano_go', 'dc_dong_ho_phap', 'dc_den_chum', 'dc_binh_chu_dau', 'dc_am_tu_sa',
        'dc_mai_co_thu', 'dc_den_keo_quan',
-       'pw_vong_kc_sss', 'pw_vm_kc_ss', 'pw_canh_phuong_ss', 'pw_kinh_kc_s', 'pw_ao_hoang_gia_s', 'pw_canh_rong_a',
+       'pw_vong_kc_ss', 'pw_vm_kc_ss', 'pw_canh_phuong_ss', 'pw_kinh_kc_s', 'pw_ao_hoang_gia_s', 'pw_canh_rong_a',
        'tl_espresso', 'tl_may_anh', 'tl_quay_go', 'tl_noi_pho', 'tl_may_may', 'tl_keo_hoa', 'tl_do_nghe', 'tl_binh_lac')
 _LOT = [0]
 
@@ -136,12 +136,18 @@ class Catalogue(unittest.TestCase):
         shop = dc.catalogue()['items']
         self.assertTrue(all(x.get('uq') for x in shop if x['id'].startswith('uq_')))
 
+    def test_no_sss_pet_gear(self):   # owner 21/10: "đồ thú cưng 3S sao đấu giá được, 2S thôi"
+        pets = [it for it in AC.ITEMS if it['kind'] == 'petgear']
+        self.assertTrue(pets)
+        self.assertTrue(all(it['rank'] <= AC.PET_RANK_MAX == 5 for it in pets))
+        self.assertFalse([it['id'] for it in pets if 'SSS' in it['name']])
+
     def test_pet_pieces_and_tools(self):
         for i in NEW:
             it = AC.ITEM[i]
             if it['kind'] == 'petgear':
                 self.assertIn(it['piece'], W.ITEM)
-                self.assertIn(it['rank'], (3, 4, 5, 6))                        # A…SSS: never what the shop sells (D, C)
+                self.assertIn(it['rank'], (3, 4, 5))                           # A…SS: never what the shop sells (D, C), never SSS (owner 21/10)
                 self.assertNotEqual(W.ITEM[it['piece']]['slot'], 'bed')        # a bed adds nothing: not worth an auction
             if it['kind'] == 'tool':
                 self.assertIn(it['career'], content.CAREERS)
@@ -152,7 +158,7 @@ class Catalogue(unittest.TestCase):
         cat = {x['id']: x for x in au.catalogue()['items']}
         self.assertIn('Ấm cúng +6', cat['dc_sap_kham']['use'])
         self.assertEqual((cat['dc_sap_kham']['w'], cat['dc_sap_kham']['spot']), (3, 'floor'))
-        self.assertIn('+6%', cat['pw_vong_kc_sss']['use'])
+        self.assertIn('+4%', cat['pw_vong_kc_ss']['use'])
         self.assertIn('+4%', cat['tl_espresso']['use'])
         json.dumps(cat, ensure_ascii=False)
 
@@ -196,14 +202,14 @@ class PetPieces(unittest.TestCase):
         s = story()
         s['journey']['wallet'] = 50_000_000
         s, pid = get(s, 'Mun')
-        msg = win(s, 'pw_vong_kc_sss')
+        msg = win(s, 'pw_vong_kc_ss')
         self.assertIn('Tủ đồ thú cưng', msg)
         i = next(x for x in s['journey']['petw']['it'] if x['k'] == 'vong_kim_cuong')
-        self.assertEqual(i['r'], 6)
+        self.assertEqual(i['r'], 5)
         s = roundtrip(s)
         s, _ = act(s, 'jr_pet_wwear', pet=pid, slot='neck', item=i['id'])
         pet = pt.get(s)['list'][0]
-        self.assertEqual(pw.bonus_bp(s, pet), pw.BONUS_BP[6] + pw.LUX_BONUS)   # 6 %, like any SSS luxury piece
+        self.assertEqual(pw.bonus_bp(s, pet), pw.BONUS_BP[5] + pw.LUX_BONUS)   # like any SS luxury piece
         for item, slot in (('pw_vm_kc_ss', 'head'), ('pw_kinh_kc_s', 'eye'), ('pw_ao_hoang_gia_s', 'body'),
                            ('pw_canh_phuong_ss', 'back')):
             win(s, item)
@@ -310,7 +316,7 @@ class Saves(unittest.TestCase):
     def test_wealth_counts_what_can_be_sold_back(self):
         s = story(3_000_000)
         before = wealth_pricing.total(s)
-        for i in ('dc_sap_kham', 'pw_vong_kc_sss', 'tl_espresso', 'dh_ngan_ha'):   # the xu were burned: nothing to sell
+        for i in ('dc_sap_kham', 'pw_vong_kc_ss', 'tl_espresso', 'dh_ngan_ha'):   # the xu were burned: nothing to sell
             win(s, i)
         self.assertEqual(wealth_pricing.total(s), before)
         win(s, 'lx_suv_09')                                                    # a limited edition: its base model's buy-back
@@ -419,7 +425,7 @@ class OldServer(unittest.TestCase):
         s = owner()
         s['journey']['wallet'] = 50_000_000
         s, pid = get(s, 'Mun')
-        for i in ('dc_sap_kham', 'pw_vong_kc_sss', 'tl_quay_go', 'lx_suv_09', 'pl_79a56789', 'dh_ngan_ha'):
+        for i in ('dc_sap_kham', 'pw_vong_kc_ss', 'tl_quay_go', 'lx_suv_09', 'pl_79a56789', 'dh_ngan_ha'):
             win(s, i)
         uid = next(x['id'] for x in s['journey']['reno']['items'] if x['k'] == 'uq_dc_sap_kham')
         from tests.test_deco import free
@@ -461,7 +467,7 @@ class OldServer(unittest.TestCase):
         self.assertEqual(au.tool_pct(back, 'grocery')[0], 3)
         self.assertEqual(gr.bonus_now(back)['pct'], 6)                         # 79A-567.89 (tier 2 car 5 %) + limited 1
         pet = pt.get(back)['list'][0]
-        self.assertEqual(pw.bonus_bp(back, pet), pw.BONUS_BP[6] + pw.LUX_BONUS)
+        self.assertEqual(pw.bonus_bp(back, pet), pw.BONUS_BP[5] + pw.LUX_BONUS)
         E.public_state(back)
 
 

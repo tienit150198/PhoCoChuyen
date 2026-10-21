@@ -30,7 +30,7 @@ a use inside the game's existing caps (kept in journey.uniq_y, game/auction.py Y
           (the base's + DECO_COZY[tier]) and stands in for its base (and `alt`) in the theme sets. The morning bonus
           stays the home's steps (reno.COZY_STEPS / deco.RENT_STEPS): one piece never lifts it past them.
 * petgear 🐾 Đồ thú cưng độc bản: an existing wardrobe piece (`piece`, game/pet_wardrobe_content.py) at a rank the shop
-          never sells (`rank`, A…SSS), straight into Tủ đồ thú cưng. Worn, it adds to the pet's work bonus like any
+          never sells (`rank`, A…SS; owner 21/10: auction pet gear stops at SS, SSS only by fusing), straight into Tủ đồ thú cưng. Worn, it adds to the pet's work bonus like any
           piece of that rank (pet_wardrobe.BONUS_BP, LUX_BONUS, the outfit's BONUS_MAX and the pet's own day cap).
 * tool    🧰 Đồ nghề độc bản: a signature tool of one workplace (`career`): each shift closed there adds TOOL_PCT[tier]
           percent of the shift's base net (the same base as 🔥 x3 and Biển đẹp). With the Biển đẹp of the same shift
@@ -148,8 +148,11 @@ def _deco(iid, tier, emoji, name, base, glow, desc, alt=()):
     return dict(id=iid, kind='decor', tier=tier, name=name, emoji=emoji, base=base, alt=tuple(alt), glow=glow, desc=desc)
 
 
+PET_RANK_MAX = 5   # 🐾 SS: SSS pet gear is never sold at auction (owner 21/10 "đồ thú cưng 3S sao đấu giá được, 2S thôi")
+
+
 def _pet(iid, tier, emoji, name, piece, rank, desc):
-    """🐾 `piece` a game/pet_wardrobe_content.py id every build since 2.4.56 knows; `rank` 3 A … 6 SSS."""
+    """🐾 `piece` a game/pet_wardrobe_content.py id every build since 2.4.56 knows; `rank` 3 A … 5 SS (RANK_MAX: never SSS at auction, owner 21/10)."""
     return dict(id=iid, kind='petgear', tier=tier, name=name, emoji=emoji, piece=piece, rank=rank, desc=desc)
 
 
@@ -279,8 +282,8 @@ ITEMS = (
     _deco('dc_den_keo_quan', 1, '🏮', 'Đèn kéo quân phố Hội', 'den_keo_quan', '#ffb547',
           'Đèn lụa đỏ, bóng ngựa và người kéo quân xoay đều quanh ngọn nến. Đêm nào cũng như Trung thu.'),
     # 🐾 wardrobe pieces at a rank the shop never sells: straight into Tủ đồ thú cưng
-    dict(_pet('pw_vong_kc_sss', 3, '💎', 'Vòng kim cương hạng SSS', 'vong_kim_cuong', 6,
-              'Vòng kim cương dòng sang ở hạng cao nhất. Cả phố chưa ai ghép ra được.'), start=800_000, step=40_000),
+    _pet('pw_vong_kc_ss', 3, '💎', 'Vòng kim cương hạng SS', 'vong_kim_cuong', 5,
+         'Vòng kim cương dòng sang, hạng SS. Muốn lên SSS thì phải tự ghép.'),
     _pet('pw_vm_kc_ss', 3, '👑', 'Vương miện kim cương hạng SS', 'vuong_mien_kim_cuong', 5,
          'Bảy viên kim cương xếp hình ngôi sao, hạng SS. Bé đội vào là cả xóm cúi chào.'),
     _pet('pw_canh_phuong_ss', 3, '🔥', 'Cánh phượng hoàng hạng SS', 'canh_phuong_hoang', 5,

@@ -16,7 +16,7 @@ export default [
   {"emoji":"💛","text":"Thân thiết với người quen: khách ruột trả thêm, hàng xóm bớt giá, giúp mỗi tuần, và những điều bí mật 🔒 chờ bạn khám phá."},
   {"emoji":"🧋","text":"Màn làm việc dễ nhìn hơn: phiếu khách rõ ràng, bày hết lựa chọn để chọn, ly trà sữa, tô mì, bó hoa hiện dần khi làm."},
   {"emoji":"🌸","text":"Quầy chuỗi: tiền thuê và điện có mức trần, phí chuỗi không còn làm giảm thưởng lãi nhân viên."},
-  {"emoji":"🔨","text":"Đấu giá thêm 50 món dùng được: xe bản giới hạn, biển số, danh hiệu, nội thất độc bản, đồ thú cưng SSS, đồ nghề."},
+  {"emoji":"🔨","text":"Đấu giá thêm 50 món dùng được: xe bản giới hạn, biển số, danh hiệu, nội thất độc bản, đồ thú cưng hạng SS, đồ nghề."},
   {"emoji":"🛋️","text":"55 món trang trí mới và 8 bộ góc mới, cửa hàng có tìm kiếm, lọc và đặt nhanh."},
   {"emoji":"🏡","text":"Đảo riêng có 15 kiểu nhà mới, 3 màu, sơn lại được. Bang: kiểu đại sảnh, trang trí đảo bang, nhiệm vụ tuần."},
   {"emoji":"🎃","text":"Lễ hội Ma Phố 26–31/10: săn bí ngô, gõ cửa xin kẹo, đổi danh hiệu, khung và màu tên Halloween độc quyền!"}
