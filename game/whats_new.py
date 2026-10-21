@@ -40,6 +40,8 @@ ENTRIES = (
         dict(emoji='🔨', text="Đấu giá: mỗi tối 22:00 lên sàn một món đồ thú cưng, từ hạng A tới SS. Phiên nào mở là cả phố được báo trên bảng tin."),
         dict(emoji='🎃', text="Halloween 26–31/10: quầy đổi kẹo có túi 100.000, 200.000 và 500.000 xu, mỗi túi đổi được 1 lần."),
         dict(emoji='🤖', text="Quầy của bạn có nút Tự nhập hàng: quầy còn dưới 20% kho tự nhập như lần trước, mỗi ngày tối đa 30% két + vốn quầy.", go=dict(action='quay', data={})),
+        dict(emoji='🏦', text="Ngân hàng: nộp, rút và gửi tiết kiệm không kỳ hạn tới 1 tỷ xu mỗi lần, không phải chia nhỏ nữa."),
+        dict(emoji='🥛', text="Cà phê & bánh: sữa tươi ít hỏng hơn hẳn, nếu hỏng thì biết ngay lúc mở ca chứ không giữa chừng."),
     )),
     dict(version="2.5.0", date="2026-10-21", items=(
         dict(emoji='🧑‍💼', text="5 nghề mới: Lễ tân khách sạn, Giao dịch viên ngân hàng, Thợ phục chế đồ xưa, Viện nghiên cứu, Đài phát thanh Sóng Mây."),
