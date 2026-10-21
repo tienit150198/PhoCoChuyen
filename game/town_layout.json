@@ -681,7 +681,10 @@
     "research",
     "radio",
     "moto",
-    "vet"
+    "vet",
+    "kol",
+    "singer",
+    "actor"
   ],
   "lots": [
     {
@@ -1834,6 +1837,60 @@
         "y0": 25.0,
         "x1": 62.7,
         "y1": 29.2
+      }
+    },
+    {
+      "career": "kol",
+      "district": "fairgrounds",
+      "at": {
+        "x": -6,
+        "y": 8
+      },
+      "door": {
+        "x": -5.6,
+        "y": 9.95
+      },
+      "footprint": {
+        "x0": -7.8,
+        "y0": 4.8,
+        "x1": -3.6,
+        "y1": 9
+      }
+    },
+    {
+      "career": "singer",
+      "district": "fairgrounds",
+      "at": {
+        "x": -12.5,
+        "y": 4.5
+      },
+      "door": {
+        "x": -12.1,
+        "y": 6.45
+      },
+      "footprint": {
+        "x0": -14.3,
+        "y0": 1.3,
+        "x1": -10.1,
+        "y1": 5.5
+      }
+    },
+    {
+      "career": "actor",
+      "district": "fairgrounds",
+      "at": {
+        "x": -38,
+        "y": 22.5
+      },
+      "door": {
+        "x": -37.6,
+        "y": 24.45
+      },
+      "footprint": {
+        "x0": -39.8,
+        "y0": 19.3,
+        "x1": -35.6,
+        "y1": 23.5
       }
     }
   ],
