@@ -20,6 +20,11 @@ const BOARDS={
   arena:['Đấu trường',[['🏆','Vua đấu trường tuần'],['⚔️','Cao thủ đấu trường'],['🛡️','Chiến binh đấu trường']]],
   pet_cup:['Giải pet',[['👑','Vô địch giải pet tuần'],['🥈','Top 3 giải pet tuần'],['🎗️','Top 10 giải pet tuần']]],
   pet_war:['Bang chiến',[['🏆','Bang vô địch đấu pet'],['🥈','Á quân bang chiến pet']]],
+  // 🏁 game/racing.py (22/10): the week's best times of Đường đua Bến Mây, top 1 and top 2–3
+  race_drag_bike:['Drag xe máy',[['🏁','Vua drag xe máy tuần'],['🏍️','Top drag xe máy']]],
+  race_drag_car:['Drag ô tô',[['🏁','Vua drag ô tô tuần'],['🚗','Top drag ô tô']]],
+  race_deo_bike:['Đèo xe máy',[['⛰️','Vua đèo xe máy tuần'],['🏍️','Top đèo xe máy']]],
+  race_deo_car:['Đèo ô tô',[['⛰️','Vua đèo ô tô tuần'],['🚗','Top đèo ô tô']]],
 };
 // game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, then the runner-up's five
 const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;

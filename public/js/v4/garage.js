@@ -113,6 +113,7 @@ async function onClick(op,data){
     case'sell':{const c=(v.cars||[]).find(x=>x.id===data.id),it=item(data.id);if(!c||!it)return;
       if(await ask(`Bán ${lname(it.name)}?`,`Mua ${xu(c.paid)}, bán lại được ${xu(c.sell)} (${CAT().sell_pct}% giá đã trả). Tiền vào ví. Bán rồi là không lấy lại được.`,`Bán · nhận ${xu(c.sell)}`))send('jr_garage_sell',{id:c.id,confirm:true});return;}
     case'house':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
+    case'race':S.dlg.close();(await import('./race-track.js')).openRace(S.env,data.tab);return;   // 🏁 Độ xe & đua xe (v4/race-track.js)
     case'plates':S.view='plates';S.pick=data.id?{id:data.id}:null;S.flash=null;render();S.dlg.querySelector('.gr-body')?.scrollTo?.(0,0);return;
     case'attach':{const r=await send('jr_garage_plate',{item:data.item,id:data.id||null});if(r&&S.view==='plates'&&S.pick?.id){S.view='list';S.pick=null;render();}return;}
   }
@@ -173,9 +174,16 @@ function mineView(v){
   const off=v.ride?`<div class="bk-actions">${btn('Không khoe xe trên hồ sơ','ride',{},'ghost small')}</div>`:'';
   const U=v.upkeep,day=J().life_day||0;
   const bill=U?.month?`<p class="bk-hint gr-bill">🧾 Phí giữ xe & bảo dưỡng khoảng ${xu(U.month)}/tháng, trừ cùng hóa đơn Ngày ${fmt(U.next)}${U.next===day?' (hôm nay)':` (còn ${fmt(U.next-day)} ngày)`}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
-  return `${today}${bonusCard(v)}<section class="bk-card"><h3>Xe của bạn</h3><p class="bk-hint">Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.</p>${bill}<ul class="hs-market">${cards}</ul>${off}</section>${platesCard(v)}`;
+  return `${today}${bonusCard(v)}${raceCard(v)}<section class="bk-card"><h3>Xe của bạn</h3><p class="bk-hint">Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.</p>${bill}<ul class="hs-market">${cards}</ul>${off}</section>${platesCard(v)}`;
 }
 
+/* 🏁 Độ xe & đua xe (game/racing.py, v4/race-track.js): a motorbike or a car (never a bicycle, a boat or a plane). */
+const RACERS=['xe_so','xe_ga','o_to_mini','o_to_suv','mui_tran','sieu_xe'];
+function raceCard(v){
+  if(!(v.cars||[]).some(c=>{const it=item(c.id);return RACERS.includes(it?.base||c.id);}))return '';
+  return `<section class="bk-card gr-race"><h3>🏁 Độ xe &amp; đua xe</h3><p class="bk-hint">Độ xe của bạn ở Xưởng Tư Pít-tông, chạy tính giờ ở Bến Mây, thách đấu tay đôi và giành danh hiệu tuần.</p>
+    <div class="bk-actions">${btn('🔧 Độ xe','race',{tab:'tune'},'primary')}${btn('🏁 Ra đường đua','race',{tab:'trial'},'ghost')}</div></section>`;
+}
 /* 🔨 Biển đẹp: the bonus of the vehicle ridden now, the plates won and where each one is. */
 function bonusCard(v){
   const b=v.bonus,it=b&&item(b.id);if(!b||!it)return '';
