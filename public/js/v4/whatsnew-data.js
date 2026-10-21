@@ -2,7 +2,8 @@
  * Release notes for the "Có gì mới" card (whatsnew.js), newest first. Loaded only after the game is up. */
 export default [
  {"version":"2.5.2","date":"2026-10-22","items":[
-  {"emoji":"📲","text":"Máy quản lý từ xa ở Mây Mobile: khép ca các tiệm từ xa, kể cả lúc làm ở nước ngoài. Tiền ca tính y như khép ở tiệm.","go":{"action":"gadgets","data":{"tab":"tool"}}}
+  {"emoji":"📲","text":"Máy quản lý từ xa ở Mây Mobile: khép ca các tiệm từ xa, kể cả lúc làm ở nước ngoài. Tiền ca tính y như khép ở tiệm.","go":{"action":"gadgets","data":{"tab":"tool"}}},
+  {"emoji":"♿","text":"Bày trí phòng không cần kéo thả: chạm chọn món đồ rồi chạm chỗ muốn đặt, có nút dời từng ô, đọc được bằng trình đọc màn hình."}
  ]},
  {"version":"2.5.1","date":"2026-10-22","items":[
   {"emoji":"🏍️","text":"Nghề mới Tiệm sửa xe Út Lanh: nghe bệnh xe, sửa đúng sổ tay, nhận đơn bảo dưỡng xe máy của người chơi."},
