@@ -2273,6 +2273,211 @@ ARCS = {
                 ('me', 'Em sẽ giữ sổ như anh: ai cũng như ai, không nhận của ai cái gì, gặp chuyện thì có mặt.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🧺 Tiệm giặt ủi Nếp Thơm (chương 2)
+    'laundry': dict(
+        title='Cây kim gài phiếu', emoji='🧺',
+        keepsake=dict(emoji='🪡', name='Cây kim gài phiếu của chị Thơm', desc='Cây kim đồng mười năm gài số phiếu lên từng túi đồ. Chị Thơm dặn: đồ của ai trả về tay người đó, một cái khuy cũng không thiếu.'),
+        cast={'thom': _p('Chị Thơm', '🧺', 'Chủ tiệm', 'laundry_npc_01'),
+              'phuc': _p('Anh Phúc', '👔', 'Nhân viên văn phòng', 'laundry_npc_02'),
+              'hoa': _p('Cô Hòa', '🧵', 'Thợ may', 'laundry_npc_03'),
+              'binh': _p('Bác Bình', '👴', 'Hàng xóm', 'laundry_npc_04'),
+              'minh': _p('Minh', '⚽', 'Sinh viên', 'laundry_npc_06')},
+        beats=[
+            _b('Đọc nhãn trước', '🏷️', 'Ngày đầu ở tiệm, chị Thơm lật cổ áo cho bạn xem cái nhãn nhỏ.', [
+                ('thom', 'Cái nhãn này là lời dặn của người may. Hình cái chậu ghi số 30 là giặt nước không quá ba mươi độ.'),
+                ('me', 'Dạ, còn hình bàn ủi một chấm là ủi nhiệt thấp.'),
+                ('thom', 'Đúng rồi. Đọc nhãn trước, hỏi khách sau, rồi mới bỏ vào máy.')]),
+            _b('Áo sơ mi buổi thuyết trình', '👔', 'Anh Phúc gửi chiếc sơ mi trắng, cổ áo dính vết cà phê.', [
+                ('phuc', 'Mai anh thuyết trình trước cả phòng. Em làm sao cho cổ áo trắng lại giùm anh.'),
+                ('me', 'Vết cà phê để qua đêm rồi, em xử lý riêng chỗ đó trước rồi mới giặt cả áo.'),
+                ('thom', 'Đừng hứa trắng tinh nếu chưa chắc. Hứa đúng cái mình làm được.')],
+                _c('Anh Phúc hỏi: “Có chắc sạch hẳn không em?”',
+                   _o('a', 'Nói thật có thể còn vệt mờ, sáng mai cho anh xem trước khi lấy', [('phuc', 'Em nói thật vậy anh yên tâm. Mờ chút thì anh đeo cà vạt che.')], rel='phuc'),
+                   _o('b', 'Hỏi chị Thơm cách xử lý vết cà phê để qua đêm', [('thom', 'Nước lạnh trước, đừng chà mạnh. Cách này dùng được cả đời đó em.')], rel='thom'))),
+            _b('Khăn lụa của cô Hòa', '🧣', 'Cô Hòa mang tới chiếc khăn lụa thêu tay, dặn kỹ từng góc.', [
+                ('hoa', 'Khăn này mẹ cô thêu năm cô lấy chồng. Lụa mỏng lắm, giặt máy là co rút hết.'),
+                ('me', 'Dạ, con giặt tay nước mát, không vắt, cuộn khăn bông cho ráo rồi phơi chỗ bóng râm.'),
+                ('hoa', 'Đúng nghề rồi đó. Cô làm thợ may mà còn không dám tự giặt cái này.')],
+                days=4, served=10, gap=1),
+            _b('Túi đồ không phiếu', '🎒', 'Minh tới nhận đồ câu lạc bộ, nhưng làm mất phiếu.', [
+                ('minh', 'Em làm rớt phiếu đâu mất rồi. Túi màu xanh đó, đưa em đi, mai đá giải rồi.'),
+                ('me', 'Túi xanh trong tiệm có ba cái lận. Em kể giúp trong túi có những gì?'),
+                ('thom', 'Đồ không phiếu thì hỏi cho chắc. Trả nhầm một túi là mất lòng hai người khách.')],
+                _c('Minh nhớ được số áo đấu và tên câu lạc bộ. Bạn làm gì?',
+                   _o('a', 'Đối số áo với sổ nhận đồ, cho Minh ký vào sổ rồi mới trả', [('minh', 'Số 7, đúng áo em luôn! Lần sau em chụp phiếu lại cho chắc.')], rel='minh'),
+                   _o('b', 'Gọi chị Thơm cùng dò sổ trước khi trả túi', [('thom', 'Hai người cùng dò thì yên tâm. Ghi thêm một dòng “trả không phiếu” nha em.')], rel='thom')),
+                days=6, served=14, gap=1),
+            _b('Cây kim gài phiếu', '🪡', 'Chị Thơm mở thêm tiệm thứ hai, giao tiệm này lại cho bạn.', [
+                ('thom', 'Cây kim này chị gài phiếu mười năm. Đồ của ai trả về tay người đó, một cái khuy cũng không thiếu.'),
+                ('phuc', 'Buổi thuyết trình trót lọt. Cổ áo thẳng băng, sếp còn khen.'),
+                ('binh', 'Rèm cửa nhà bác từ giờ cũng giao cho tiệm này luôn nghe.'),
+                ('me', 'Em sẽ giữ tiệm như chị: đọc nhãn trước, hứa đúng việc, trả đúng phiếu.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🧰 Xưởng phục chế Hồn Xưa (từ chương 2)
+    'restore': dict(
+        title='Vết khắc trên tủ gương', emoji='🧰',
+        keepsake=dict(emoji='🪵', name='Hộp sáp ong của chú Khải', desc='Hộp sáp ong nắp thiếc móp méo, ba chục năm đánh bóng ghế mây, tủ gỗ cả hẻm. Chú Khải dặn: sửa cái hỏng, giữ cái hồn.'),
+        cast={'khai': _p('Chú Khải', '🧰', 'Chủ xưởng phục chế', 'restore_npc_01'),
+              'sau': _p('Bà Sáu', '👵', 'Hàng xóm đầu hẻm', 'restore_npc_02'),
+              'toan': _p('Anh Toàn', '🏺', 'Dân sưu tầm đồ cổ', 'restore_npc_03'),
+              'hanh': _p('Chị Hạnh', '👰', 'Cô dâu sắp cưới', 'restore_npc_04'),
+              'tu': _p('Ông Tư', '👴', 'Thầy giáo về hưu', 'restore_npc_06')},
+        beats=[
+            _b('Giữ hồn trước đã', '🪑', 'Ngày đầu ở xưởng, chú Khải đặt trước mặt bạn một chiếc ghế mây sứt tay vịn.', [
+                ('khai', 'Thấy vết mòn trên tay vịn không? Ba chục năm người ta ngồi mới có. Chà mất nó là ghế mới, không còn là ghế xưa.'),
+                ('me', 'Dạ, con sửa chỗ gãy, còn vết mòn con giữ lại.'),
+                ('khai', 'Đúng. Sửa cái hỏng, giữ cái hồn. Hai việc đó khác nhau đó con.')]),
+            _b('Vết khắc trên tủ gương', '🪞', 'Bà Sáu mang tới cái tủ gương nhỏ, mặt gỗ có một vết khắc nguệch ngoạc.', [
+                ('sau', 'Hồi nhỏ thằng Út nhà bà lấy đinh khắc tên lên đây. Bà ngoại nó la quá trời, mà không cho ai chà đi.'),
+                ('me', 'Bản lề lỏng với gương mờ thì con làm. Còn vết khắc, bà muốn giữ không ạ?'),
+                ('sau', 'Giữ chứ con. Mất vết đó là mất cái tủ của bà ngoại.')],
+                _c('Vết khắc nằm sát chỗ gỗ nứt cần dán. Bạn làm sao?',
+                   _o('a', 'Dán vết nứt từ mặt trong tủ, chừa nguyên vết khắc bên ngoài', [('sau', 'Còn nguyên tên nó nè! Bà chụp hình gửi thằng Út liền.')], rel='sau'),
+                   _o('b', 'Hỏi chú Khải cách dán mà không lem vào vết khắc', [('khai', 'Dán từ trong ra, kẹp nhẹ tay. Món đồ có chuyện thì mình chiều theo chuyện của nó.')], rel='khai'))),
+            _b('Bình đồng “trăm năm”', '🏺', 'Anh Toàn khoe cái bình đồng, nói chắc nịch là đồ trăm năm.', [
+                ('toan', 'Bình trăm năm đó em. Đánh cho bóng loáng, ghi giấy giùm anh là đồ cổ, anh bán được giá.'),
+                ('me', 'Đáy bình có dấu máy dập, chừng ba chục năm thôi anh. Em không ghi trăm năm được.'),
+                ('khai', 'Xưởng mình ghi đúng cái mình thấy. Ghi sai một tờ là mất ba chục năm uy tín.')],
+                days=4, served=10, gap=1),
+            _b('Áo dài hồi môn', '👘', 'Chị Hạnh mang tới chiếc áo dài cưới của mẹ, còn mười ngày nữa là cưới.', [
+                ('hanh', 'Áo mẹ em mặc ngày cưới. Chỗ nách sờn rách, hàng cúc thiếu một hột. Kịp không {anh}?'),
+                ('me', 'Kịp chị. Cúc thiếu thì em tìm cúc cũ cùng thời, không thay cả hàng cúc mới.'),
+                ('khai', 'Chỗ sờn mạng lại bằng chỉ cùng màu. Làm áo mới tinh là mẹ cô ấy nhận không ra đâu.')],
+                _c('Chợ đồ cũ chỉ còn hột cúc hơi khác màu. Bạn làm gì?',
+                   _o('a', 'Nói thật với chị Hạnh, để chị chọn: cúc khác màu hay đợi thêm vài ngày', [('hanh', 'Em đợi. Thêm ba ngày thôi mà áo vẫn đúng là áo của mẹ.')], rel='hanh'),
+                   _o('b', 'Hỏi ông Tư, người giữ đồ cũ từ thời đi học, còn hột cúc nào không', [('tu', 'Hộp cúc của bà nhà tôi đây. Hột nào hợp thì lấy, để đó cũng phí.')], rel='tu')),
+                days=6, served=14, gap=1),
+            _b('Hộp sáp ong', '🪵', 'Chú Khải về quê dưỡng già, gọi bạn ra bàn khám đồ.', [
+                ('khai', 'Hộp sáp này chú dùng ba chục năm. Đánh bóng vừa tay thôi, bóng quá là mất màu thời gian.'),
+                ('hanh', 'Đám cưới ai cũng hỏi áo đẹp vậy may ở đâu. Em nói áo của mẹ, sửa ở Hồn Xưa.'),
+                ('sau', 'Cái tủ vẫn còn vết khắc tên thằng Út. Nó về nhìn mà rưng rưng.'),
+                ('me', 'Con sẽ giữ xưởng như chú dạy: sửa cái hỏng, giữ cái hồn, nói thật với khách.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 📮 Bưu điện Cánh Thư (chương 3)
+    'post_office': dict(
+        title='Con dấu ngày của cô Thư', emoji='📮',
+        keepsake=dict(emoji='📮', name='Con dấu ngày của cô Thư', desc='Con dấu ngày bằng đồng, cán gỗ bóng tay, hai mươi năm đóng lên từng phiếu gửi. Mỗi lần đóng là một lời hẹn với người gửi.'),
+        cast={'thu': _p('Cô Thư', '📮', 'Trưởng quầy', 'post_office_npc_01'),
+              'mai': _p('Mai', '🎓', 'Sinh viên', 'post_office_npc_03'),
+              'binh': _p('Chú Bình', '🏺', 'Thợ gốm', 'post_office_npc_04'),
+              'hanh': _p('Cô Hạnh', '🧾', 'Khách nhận hàng', 'post_office_npc_05'),
+              'vu': _p('Anh Vũ', '🚚', 'Nhân viên tuyến', 'post_office_npc_06')},
+        beats=[
+            _b('Kiểm từng mã', '🏷️', 'Ngày đầu ở quầy, cô Thư đưa bạn cây bút và tờ bảng kê.', [
+                ('thu', 'Kiện nào vào túi thư cũng phải có tên trên bảng kê. Thiếu một mã là anh Vũ trả cả túi về.'),
+                ('vu', 'Không phải anh khó đâu. Túi thiếu mã mà thất lạc thì không ai tìm lại được.'),
+                ('me', 'Dạ, em đọc mã, cô dò bảng kê. Đủ hết rồi mới buộc túi.')]),
+            _b('Hồ sơ học bổng', '🎓', 'Mai chạy vào quầy lúc gần đóng cửa, ôm một phong bì dày.', [
+                ('mai', '{Anh} ơi, hồ sơ học bổng của em hạn chót là thứ Sáu. Gửi kịp không ạ?'),
+                ('me', 'Kịp em. Gửi bảo đảm có chữ ký người nhận, em giữ mã để tra nha.'),
+                ('mai', 'Em sợ thất lạc lắm, cả năm học dồn vào xấp giấy này.')],
+                _c('Mai vẫn lo. Bạn làm gì thêm?',
+                   _o('a', 'Chỉ Mai cách tra mã theo dõi, hẹn em mai ghé xem cùng', [('mai', 'Em lưu mã vào điện thoại rồi. Có số để tra, tối nay em ngủ được rồi.')], rel='mai'),
+                   _o('b', 'Lót thêm bìa cứng cho phẳng, ghi rõ hạn lên phiếu gửi', [('thu', 'Làm vậy là đúng. Xấp hồ sơ tới tay người ta vẫn phẳng phiu.')], rel='thu'))),
+            _b('Chiếc cốc đầu tay', '🏺', 'Chú Bình ôm hộp gốm tới quầy, dặn đi dặn lại.', [
+                ('binh', 'Cái cốc này chú nặn tặng con gái ở xa. Quai mỏng lắm, vỡ rồi chú không nặn lại y vậy được.'),
+                ('me', 'Con chèn giấy quanh quai, lót đáy, lắc thử thấy không xê dịch mới dán nhãn dễ vỡ.'),
+                ('binh', 'Lắc thử luôn hả? Ừ, vậy chú yên tâm rồi.')],
+                days=4, served=10, gap=1),
+            _b('Phiếu hẹn của cô Hạnh', '🧾', 'Mưa lớn, xe tuyến về trễ. Cô Hạnh cầm phiếu hẹn đứng chờ ở quầy.', [
+                ('hanh', 'Phiếu hẹn ghi hôm nay mà con. Hộp khăn đó cô mua tặng mẹ, mai là sinh nhật bà rồi.'),
+                ('vu', 'Xe kẹt ở cầu vì ngập. Anh hứa tối nay túi thư về tới bưu cục.'),
+                ('me', 'Con không hứa bừa với cô. Hàng về là con gọi cô liền, đọc mã kiện cho cô dò.')],
+                _c('Tối đó túi thư về muộn. Bạn làm gì?',
+                   _o('a', 'Ở lại quầy chờ túi, gọi cô Hạnh tới nhận trước giờ đóng cửa', [('hanh', 'Kịp rồi! Mai cô mang bánh sinh nhật qua chia cả quầy.')], rel='hanh'),
+                   _o('b', 'Nhờ anh Vũ báo giờ xe về, nhắn cô Hạnh sáng mai nhận sớm', [('vu', 'Sáu giờ sáng túi có ở quầy. Anh ghi chắc vào sổ tuyến rồi.')], rel='vu')),
+                days=6, served=14, gap=1),
+            _b('Con dấu ngày', '📮', 'Cô Thư sắp về nghỉ, gọi bạn ra sau quầy.', [
+                ('thu', 'Con dấu này cô đóng hai mươi năm. Mỗi lần đóng là một lời hẹn với người gửi.'),
+                ('thu', 'Kiện hàng thì thay được. Lời hẹn đã lỡ thì khó lấy lại lắm con.'),
+                ('mai', 'Em đậu học bổng rồi {anh} ơi! Phong bì tới đúng ngày luôn!'),
+                ('me', 'Con sẽ giữ quầy như cô: kiểm từng mã, trao đúng người, hẹn gì làm nấy.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🎨 Xưởng vẽ Màu Nắng (chương 3)
+    'art_studio': dict(
+        title='Ngôi nhà trong ảnh cũ', emoji='🎨',
+        keepsake=dict(emoji='🖌️', name='Cây cọ dẹt của chị Miên', desc='Cây cọ dẹt lông mòn một bên, mười năm quét lớp nền đầu tiên cho mọi bức tranh ở Màu Nắng. Chị Miên dặn: chừa chỗ cho tranh thở.'),
+        cast={'mien': _p('Chị Miên', '🎨', 'Người hướng dẫn xưởng', 'art_studio_npc_01'),
+              'tung': _p('Bác Tùng', '🍵', 'Chủ quán trà', 'art_studio_npc_02'),
+              'mai': _p('Bé Mai', '🌻', 'Học sinh', 'art_studio_npc_06'),
+              'lien': _p('Bà Liên', '👵', 'Người giữ ảnh cũ', 'art_studio_npc_07'),
+              'phuc': _p('Anh Phúc', '💡', 'Phụ trách triển lãm', 'art_studio_npc_08')},
+        beats=[
+            _b('Chỗ cho tranh thở', '🌬️', 'Ngày đầu ở xưởng, chị Miên đứng sau lưng bạn, nhìn tờ giấy trắng.', [
+                ('mien', 'Em định tô kín cả tờ hả? Tranh cũng cần chỗ trống để thở.'),
+                ('me', 'Dạ, em sợ chỗ trống nhìn như vẽ chưa xong.'),
+                ('mien', 'Đọc phiếu trước đã. Khách muốn một buổi sáng thong thả, mà thong thả thì phải có khoảng trống.')]),
+            _b('Khu vườn của bé Mai', '🌻', 'Bé Mai ôm quyển sổ vẽ, đánh dấu từng cây trong vườn trường.', [
+                ('mai', 'Cây phượng phải ở góc trái nha {anh}. Còn đây là bồn hoa lớp em trồng!'),
+                ('me', 'Ừ, mình vẽ đúng chỗ em đánh dấu. Bồn hoa lớp em để sáng nhất.'),
+                ('mien', 'Tranh trẻ con đặt cũng là tranh đặt. Hứa gì với bé thì giữ đúng như vậy.')],
+                _c('Mai muốn thêm một con kỳ lân giữa vườn. Bạn làm gì?',
+                   _o('a', 'Vẽ chú kỳ lân nhỏ nấp sau bụi hoa', [('mai', 'Kỳ lân trốn sau bụi hoa! Bạn nào tìm ra là giỏi nhất lớp!')], rel='mai'),
+                   _o('b', 'Giữ vườn như thật, tặng Mai riêng một tấm kỳ lân nhỏ', [('mien', 'Tranh vườn trường thì vẽ vườn trường. Tấm nhỏ kia là quà, khéo lắm.')], rel='mien'))),
+            _b('Ngôi nhà trong ảnh cũ', '🏚️', 'Bà Liên mang tới tấm ảnh đen trắng đã ố vàng một góc.', [
+                ('lien', 'Nhà xưa của bà đó, giờ thành tiệm điện thoại rồi. Con vẽ lại cho cháu bà biết nhà mình từng ra sao.'),
+                ('me', 'Góc ảnh bị ố mất mái hiên. Bà còn nhớ mái hiên màu gì không ạ?'),
+                ('lien', 'Mái ngói đỏ, có giàn hoa giấy tím. Ông nhà bà trồng đó.')],
+                days=4, served=10, gap=1),
+            _b('Đèn phòng triển lãm', '💡', 'Anh Phúc dò từng bức trước ngày khai mạc.', [
+                ('phuc', 'Bức của bà Liên treo dưới đèn này sẽ lóa cả mảng mái ngói. Phải đổi chỗ.'),
+                ('tung', 'Đổi sang vách gần góc trà đi. Ánh sáng ở đó dịu, khách ngồi xem được lâu.'),
+                ('me', 'Để em đo lại khoảng cách đèn, ghi tên tranh và kích thước cho từng bức.')],
+                _c('Còn một vị trí đẹp nhất phòng. Treo bức nào?',
+                   _o('a', 'Treo bức nhà xưa của bà Liên, kèm dòng chú thích bà kể', [('lien', 'Cháu bà đứng nhìn lâu lắm. Nó hỏi giàn hoa giấy giờ còn không.')], rel='lien'),
+                   _o('b', 'Nhờ anh Phúc chọn theo ánh sáng và lối đi của khách', [('phuc', 'Chọn theo lối đi là đúng. Bức nào cũng được nhìn trọn, không bức nào bị khuất.')], rel='phuc')),
+                days=6, served=14, gap=1),
+            _b('Cây cọ dẹt', '🖌️', 'Đêm khai mạc, chị Miên gọi bạn ra góc xưởng.', [
+                ('mien', 'Cây cọ này chị quét lớp nền cho mọi bức tranh mười năm nay. Giờ em giữ nó.'),
+                ('tung', 'Bức góc trà buổi sớm treo ở quán bác, khách hỏi mua hoài mà bác không bán.'),
+                ('mai', 'Cả lớp em tới xem triển lãm! Bạn nào cũng tìm ra bồn hoa của lớp em!'),
+                ('me', 'Em sẽ vẽ như chị dạy: đọc phiếu trước, giữ chuyện của khách, chừa chỗ cho tranh thở.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ ⚖️ Văn phòng luật Bình An (chương 4)
+    'lawyer': dict(
+        title='Cây bút chì đỏ', emoji='⚖️',
+        keepsake=dict(emoji='✏️', name='Cây bút chì đỏ của chị An', desc='Cây bút chì đỏ ngắn cũn, chị An dùng gạch chân từng dòng chứng cứ bất lợi. Chị dặn: đọc cái làm mình khó chịu trước.'),
+        cast={'an': _p('Chị An', '⚖️', 'Luật sư hướng dẫn', 'lawyer_npc_01'),
+              'lien': _p('Cô Liên', '🗂️', 'Khách hàng', 'lawyer_npc_02'),
+              'hoa': _p('Anh Hòa', '🧾', 'Khách hàng', 'lawyer_npc_03'),
+              'thu': _p('Chị Thu', '🔒', 'Thư ký hồ sơ', 'lawyer_npc_04')},
+        beats=[
+            _b('Đọc cả trang bất lợi', '📑', 'Buổi sáng đầu tiên, chị An đặt trước mặt bạn một xấp hồ sơ.', [
+                ('an', 'Em đọc trang nào trước? Trang có lợi cho khách thì ai cũng thích đọc.'),
+                ('me', 'Dạ… em định đọc biên bản ký nhận trước.'),
+                ('an', 'Đọc cả trang bất lợi. Bên kia sẽ đưa nó ra, mình phải biết trước họ.')]),
+            _b('Xấp giấy của cô Liên', '🗂️', 'Cô Liên mang tới cả túi giấy tờ, xếp ngay ngắn từng xấp.', [
+                ('lien', 'Cô giữ hết đây: hợp đồng, biên lai, cả tin nhắn in ra. Mà khoản này tính sao cô không hiểu.'),
+                ('thu', 'Em đánh số từng tờ nha cô. Bản gốc cô giữ, văn phòng chỉ giữ bản sao.'),
+                ('me', 'Con đọc từng khoản với cô. Chỗ nào chưa rõ, mình ghi lại hỏi chị An.')],
+                _c('Cô Liên hỏi: “Vậy cô có chắc thắng không con?”',
+                   _o('a', 'Nói thật: chưa ai hứa chắc được, chỉ hứa làm hồ sơ thật kỹ', [('lien', 'Con nói thật vậy cô lại tin hơn. Cô cứ làm theo từng bước.')], rel='lien'),
+                   _o('b', 'Hẹn cô buổi sau để chị An giải thích từng khả năng', [('an', 'Được. Khách hiểu rủi ro rồi mới quyết, vậy mới công bằng với cô ấy.')], rel='an'))),
+            _b('Bài đăng của anh Hòa', '📱', 'Anh Hòa định đăng hết giấy tờ lên mạng cho bên kia “biết mặt”.', [
+                ('hoa', 'Tôi chụp hết hợp đồng đăng lên nhóm khu phố. Để ai cũng biết họ làm ăn kiểu gì.'),
+                ('me', 'Trong đó có số điện thoại, địa chỉ của cả người không liên quan anh ạ. Đăng rồi khó rút lại.'),
+                ('thu', 'Thông tin riêng của ai thì người đó giữ. Mình giải quyết bằng hồ sơ, không bằng bài đăng.'),
+                ('hoa', 'Ừ… tôi nóng quá. Vậy mình gửi thư yêu cầu trước.')],
+                days=4, served=10, gap=1),
+            _b('Bảng phí ra sau', '🧾', 'Sắp tới buổi hòa giải, bên kia nộp thêm một tờ giấy mới.', [
+                ('an', 'Bên kia nộp thêm bảng phí ban hành sau ngày ký. Em thấy sao?'),
+                ('me', 'Bảng phí đó ra sau lúc hai bên thỏa thuận, không áp vào hợp đồng của anh Hòa được.'),
+                ('hoa', 'Vậy là tôi chỉ đòi đúng khoản họ thu thêm thôi phải không?')],
+                _c('Anh Hòa muốn đòi thêm “cho bõ tức”. Bạn khuyên sao?',
+                   _o('a', 'Chỉ yêu cầu đúng khoản có chứng cứ, phần còn lại không đưa vào', [('hoa', 'Đòi đúng thì nói chắc. Tôi nghe em.')], rel='hoa'),
+                   _o('b', 'Mời anh Hòa ngồi với chị An, xem lại từng chứng cứ một lần nữa', [('an', 'Đọc lại cùng khách là đúng. Kết luận nào cũng phải nằm trong chứng cứ.')], rel='an')),
+                days=6, served=14, gap=1),
+            _b('Cây bút chì đỏ', '✏️', 'Hòa giải xong, chị An gọi bạn vào phòng, mở ngăn kéo.', [
+                ('hoa', 'Họ hoàn đúng khoản thu thêm rồi. Gọn, rõ, không ai phải to tiếng.'),
+                ('an', 'Cây bút chì này chị dùng gạch chân những dòng làm mình khó chịu. Đọc nó trước, mình mới không bị bất ngờ.'),
+                ('lien', 'Cô cất bộ hồ sơ đánh số làm mẫu luôn. Lần sau giấy gì cô cũng xếp vậy.'),
+                ('me', 'Em sẽ làm như chị: đọc cả trang bất lợi, giữ kín chuyện của khách, kết luận đúng chứng cứ.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ 💿 Tiệm album Mây Pop (all groups fictional)
     'zpop': dict(
         title='Tấm card đầu tiên của chị Thơ', emoji='💿',

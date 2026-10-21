@@ -7,7 +7,7 @@ from game import inventory
 from game.loss_limits import bounded_loss
 from game.engine import GameError, public_state, validate_state
 from game.careers import grocery as G
-from tests.helpers import Journey
+from tests.helpers import Journey, regular_extra
 
 
 _MADE = {}
@@ -65,8 +65,9 @@ def ledger_mark(j):
 
 
 def paid(j, since, tid):
-    """Money this task moved (tips and unrelated street events left out)."""
-    return sum(e['amount'] for e in j.c['ops']['finance']['ledger'][since:] if e['ref'] == tid and e['category'] != 'tip')
+    """Money this task moved (tips, a regular's 💛 extra and unrelated street events left out)."""
+    rows = j.c['ops']['finance']['ledger'][since:]
+    return sum(e['amount'] for e in rows if e['ref'] == tid and e['category'] != 'tip') - regular_extra(j.c, tid, since)
 
 
 def give_change(j, amount):
