@@ -1,0 +1,244 @@
+{
+  "actor": [
+    {
+      "tier": 1,
+      "title": "Lập mẫu đọc trang kịch bản",
+      "output_unit": "mẫu đọc kịch bản",
+      "inputs": [
+        {
+          "name": "Bút dạ quang ba màu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Tô ba màu: thoại của mình, thoại bạn diễn, chỉ dẫn hành động.",
+        "Ghi cảm xúc từng đoạn ở lề trang.",
+        "Đánh dấu câu thoại phải hỏi đạo diễn."
+      ],
+      "check": {
+        "prompt": "Mẫu nào được duyệt?",
+        "good": "Đủ ba màu, có cảm xúc ở lề và câu cần hỏi.",
+        "bad": "Chỉ đọc lướt thoại của mình.",
+        "why": "Hiểu cả cảnh thì mới diễn đúng nhịp với bạn diễn."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Học thoại theo thứ tự cảnh",
+      "output_unit": "bộ thẻ thoại",
+      "inputs": [
+        {
+          "name": "Xấp thẻ học thoại",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Chép mỗi câu thoại lên một thẻ, mặt sau là câu trước của bạn diễn.",
+        "Xếp thẻ đúng thứ tự cảnh, tập nói theo câu gợi.",
+        "Đọc với chị thư ký trường quay một lượt."
+      ],
+      "check": {
+        "prompt": "Bộ thẻ nào đạt?",
+        "good": "Thẻ đúng thứ tự, có câu gợi, đã đọc với thư ký trường quay.",
+        "bad": "Học thoại một mình, bỏ câu của bạn diễn.",
+        "why": "Thoại nhớ theo câu gợi thì không lệch nhịp."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Tập đứng đúng dấu",
+      "output_unit": "buổi tập vị trí",
+      "inputs": [
+        {
+          "name": "Cuộn băng keo màu",
+          "unit": "cuộn",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Dán dấu theo sơ đồ của đạo diễn.",
+        "Tập đi tới dấu bằng số bước, không nhìn xuống sàn.",
+        "Kiểm tra mặt trong ánh đèn chính ở từng dấu."
+      ],
+      "check": {
+        "prompt": "Buổi tập nào được nghiệm thu?",
+        "good": "Tới đúng dấu bằng số bước, mặt trong ánh đèn.",
+        "bad": "Đứng đâu thấy hợp thì đứng.",
+        "why": "Đèn và máy đã canh theo dấu."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập ảnh nối cảnh từng ngày",
+      "output_unit": "sổ nối cảnh",
+      "inputs": [
+        {
+          "name": "Sổ ảnh nối cảnh",
+          "unit": "cuốn",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Chụp trang phục, tóc, đồ cầm tay sau mỗi cảnh.",
+        "Ghi tay cầm, mức nước trong ly, nút áo, đồ đeo.",
+        "Đối chiếu sổ trước khi quay cảnh tiếp theo."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Đủ ảnh và ghi chú chi tiết, có bước đối chiếu.",
+        "bad": "Nhớ trong đầu là đủ.",
+        "why": "Cảnh không khớp thì khán giả thấy ngay."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Tính lượt quay theo góc máy",
+      "output_unit": "bảng lượt quay",
+      "inputs": [
+        {
+          "name": "Bảng đếm lượt quay",
+          "unit": "tờ",
+          "quantity": 4,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Ghi số góc máy và số lượt đạt cần cho mỗi góc.",
+        "Đánh dấu lượt đạt sau mỗi lần đạo diễn hô.",
+        "Tính số lượt còn lại để giữ sức."
+      ],
+      "check": {
+        "prompt": "Bảng nào được duyệt?",
+        "good": "Phép tính đúng, đánh dấu từng lượt đạt.",
+        "bad": "Quay tới khi mệt thì nghỉ.",
+        "why": "Biết còn bao nhiêu lượt thì chia sức đều."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soạn quy trình tập cảnh hành động",
+      "output_unit": "quy trình cảnh hành động",
+      "inputs": [
+        {
+          "name": "Đệm tập hành động",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 25000
+        }
+      ],
+      "procedure": [
+        "Ghi sáu bước: đệm, tập chậm, bảo hộ, tín hiệu dừng, tập đủ tốc độ, quay khi điều phối hô.",
+        "Ghi ai được hô dừng và tín hiệu dừng.",
+        "Thêm dòng cấm tát thật, cấm nhảy khi chưa có đệm."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Đủ sáu bước, có tín hiệu dừng và dòng cấm.",
+        "bad": "Tự nhảy cho nhanh, chờ đệm lâu quá.",
+        "why": "Cảnh hành động đẹp nhất là cảnh không ai bị thương."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập nội quy làm việc với diễn viên nhí",
+      "output_unit": "nội quy diễn viên nhí",
+      "inputs": [
+        {
+          "name": "Bảng nội quy treo tường",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Ghi giờ quay tối đa và giờ nghỉ cho bé.",
+        "Ghi người nhà luôn đi cùng, không hút thuốc gần bé.",
+        "Thêm góc nghỉ có nước và đồ ăn nhẹ."
+      ],
+      "check": {
+        "prompt": "Nội quy nào được duyệt?",
+        "good": "Có giờ tối đa, người nhà đi cùng, không khói thuốc, góc nghỉ.",
+        "bad": "Bé còn tỉnh thì quay tiếp.",
+        "why": "Bé là trẻ con trước khi là diễn viên."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Kiểm an toàn cảnh mưa",
+      "output_unit": "phiếu an toàn cảnh mưa",
+      "inputs": [
+        {
+          "name": "Khăn và áo khô dự phòng",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Kiểm dây điện đèn đã bọc kín, xa vòi phun.",
+        "Ghi người được hô dừng khi chập điện.",
+        "Chuẩn bị khăn, áo khô và nước ấm sau mỗi lượt."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Dây bọc kín, có người hô dừng, có đồ khô sau lượt.",
+        "bad": "Quay nhanh cho xong, dây ướt chút không sao.",
+        "why": "Nước và điện gần nhau là nguy hiểm tính mạng."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Chuẩn bị buổi ra mắt phim",
+      "output_unit": "kế hoạch ra mắt",
+      "inputs": [
+        {
+          "name": "Thẻ ghi câu phát biểu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Viết bài phát biểu: chào, cảm ơn đoàn phim, nói về vai, mời xem phim.",
+        "Ghi câu trả lời cho câu hỏi khó: tin đồn, cái kết, cát-xê.",
+        "Chọn ảnh hậu trường đã được hãng duyệt để đăng."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào được duyệt?",
+        "good": "Phát biểu đủ ý, câu trả lời thật thà, ảnh đã duyệt.",
+        "bad": "Úp mở chuyện hẹn hò cho phim nổi.",
+        "why": "Phim nổi nhờ phim hay, không nhờ tin đồn."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Kèm diễn viên mới ngày đầu trường quay",
+      "output_unit": "buổi kèm diễn viên mới",
+      "inputs": [
+        {
+          "name": "Phiếu chấm cảnh quay mẫu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Dẫn bạn mới đi một vòng: dấu, đèn, máy, phòng phục trang.",
+        "Tập cùng một cảnh ngắn, nhắc nhìn bạn diễn không nhìn máy.",
+        "Sau cảnh, chấm theo phiếu và góp ý một điều."
+      ],
+      "check": {
+        "prompt": "Buổi kèm nào đạt?",
+        "good": "Bạn mới đứng đúng dấu, nói đúng thoại và nhận một góp ý rõ.",
+        "bad": "Để bạn mới tự xoay xở.",
+        "why": "Trường quay đông người, ngày đầu có người dẫn thì không sợ."
+      }
+    }
+  ]
+}

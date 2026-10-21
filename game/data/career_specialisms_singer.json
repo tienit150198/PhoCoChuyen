@@ -1,0 +1,244 @@
+{
+  "singer": [
+    {
+      "tier": 1,
+      "title": "Lập bài khởi động giọng mười phút",
+      "output_unit": "bài khởi động",
+      "inputs": [
+        {
+          "name": "Bình giữ nhiệt nước ấm",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Ghi sáu bước theo thứ tự: nước ấm, cổ vai, thở bụng, ngân khẽ, luyến, câu cao.",
+        "Ghi số phút cho từng bước, tổng mười phút.",
+        "Dán lên gương hậu trường và cho cô chủ phòng trà duyệt."
+      ],
+      "check": {
+        "prompt": "Bài khởi động nào được duyệt?",
+        "good": "Đủ sáu bước đúng thứ tự, có số phút từng bước.",
+        "bad": "Hát luôn câu cao nhất cho nóng giọng.",
+        "why": "Hát cao khi giọng chưa ấm dễ khàn cả tuần."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn sổ hợp âm đã xin phép",
+      "output_unit": "sổ hợp âm",
+      "inputs": [
+        {
+          "name": "Bìa kẹp hồ sơ",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chỉ chép bài đã có giấy phép biểu diễn của phòng trà.",
+        "Chia sổ theo không khí: bolero, nhạc xưa, tình ca, quê hương, vui tươi.",
+        "Ghi tông gốc và tông hạ cho giọng khàn."
+      ],
+      "check": {
+        "prompt": "Sổ nào đạt?",
+        "good": "Bài nào cũng có giấy phép, chia theo không khí, có tông hạ.",
+        "bad": "Chép thêm vài bài hit chưa xin phép cho khách thích.",
+        "why": "Hát bài chưa xin phép là vi phạm quyền tác giả."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập bảng thử âm với kỹ thuật",
+      "output_unit": "bảng thử âm",
+      "inputs": [
+        {
+          "name": "Pin micro dự phòng",
+          "unit": "cặp",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Ghi ba lỗi hay gặp: micro hú, đàn át giọng, câu cao rè.",
+        "Viết cách xử lý và tín hiệu tay cho từng lỗi.",
+        "Thêm dòng kiểm pin và micro dây dự phòng trước giờ hát."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Đủ ba lỗi, có cách xử lý, tín hiệu tay và dòng kiểm pin.",
+        "bad": "Có lỗi thì hát to lên cho át.",
+        "why": "Thử âm kỹ thì khán giả không phải nghe tiếng hú."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Xếp danh sách bài theo khán phòng",
+      "output_unit": "danh sách bài",
+      "inputs": [
+        {
+          "name": "Xấp thẻ tên bài",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Ghi ba kiểu khán phòng: khách lớn tuổi, sinh viên, tiệc tất niên.",
+        "Chọn bốn bài trong sổ hợp âm cho mỗi kiểu.",
+        "Xếp bài chậm trước, vui sau, kết bằng bài ai cũng thuộc."
+      ],
+      "check": {
+        "prompt": "Danh sách nào đạt?",
+        "good": "Mỗi kiểu khán phòng có bốn bài hợp, xếp chậm trước vui sau.",
+        "bad": "Một danh sách cho mọi tối.",
+        "why": "Hát đúng khán phòng thì cả phòng lặng nghe."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Tính giờ lượt hát",
+      "output_unit": "bảng giờ lượt hát",
+      "inputs": [
+        {
+          "name": "Đồng hồ bấm giờ",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Ghi số phút mỗi lượt và số phút từng bài.",
+        "Trừ thời gian chào, giới thiệu để biết còn bao nhiêu phút.",
+        "Ghi cách xử lý khi khán giả xin thêm mà ca sĩ sau đang chờ."
+      ],
+      "check": {
+        "prompt": "Bảng giờ nào được duyệt?",
+        "good": "Có phép trừ đúng và cách chừa giờ cho ca sĩ sau.",
+        "bad": "Hát tới khi khán giả thôi vỗ tay.",
+        "why": "Giữ giờ là tôn trọng người hát sau mình."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soạn quy trình giấy xin bài",
+      "output_unit": "quy trình giấy xin bài",
+      "inputs": [
+        {
+          "name": "Giá kẹp giấy trên micro",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Xếp giấy theo thứ tự tới trước.",
+        "Đọc lại bàn và tên người được tặng trước khi lên tiếng.",
+        "Ghi cách từ chối khéo bài dùng để làm khó khách khác."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Theo thứ tự tới trước, đọc đúng bàn và tên, có câu từ chối khéo.",
+        "bad": "Ưu tiên bàn boa nhiều.",
+        "why": "Cả phòng thấy công bằng thì mới quay lại."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập phiếu xử lý sự cố sân khấu",
+      "output_unit": "phiếu sự cố",
+      "inputs": [
+        {
+          "name": "Micro dây dự phòng",
+          "unit": "chiếc",
+          "quantity": 1,
+          "unit_cost": 20000
+        }
+      ],
+      "procedure": [
+        "Ghi các sự cố: micro tắt, quên lời, cúp điện, đứt dây đàn, khách giành micro.",
+        "Viết việc làm ngay cho từng sự cố, không dừng bài.",
+        "Tập với ban nhạc mỗi tuần một sự cố."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được duyệt?",
+        "good": "Đủ năm sự cố, có việc làm ngay, có lịch tập với ban nhạc.",
+        "bad": "Có sự cố thì dừng hát chờ sửa.",
+        "why": "Bài hát không dừng thì khán giả không mất cảm xúc."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Chăm giọng trong tuần diễn dày",
+      "output_unit": "lịch chăm giọng",
+      "inputs": [
+        {
+          "name": "Gói trà gừng mật ong",
+          "unit": "gói",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi giờ ngủ, giờ nói ít và nước ấm mỗi ngày.",
+        "Ghi dấu hiệu khàn: báo chủ phòng trà đổi bài nhẹ.",
+        "Ghi cấm uống rượu, cấm gào khi giọng mệt."
+      ],
+      "check": {
+        "prompt": "Lịch nào đạt?",
+        "good": "Có giờ nghỉ, dấu hiệu khàn và việc báo đổi bài.",
+        "bad": "Uống thuốc giảm đau rồi hát tiếp.",
+        "why": "Giọng là đồ nghề, mất giọng là mất nghề."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Dàn dựng đêm nhạc chủ đề",
+      "output_unit": "đêm nhạc chủ đề",
+      "inputs": [
+        {
+          "name": "Bộ đèn nến điện",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 15000
+        }
+      ],
+      "procedure": [
+        "Chọn chủ đề trong sổ hợp âm và xếp mười bài.",
+        "Phân lượt cho ba ca sĩ, ghi giờ từng lượt.",
+        "Thêm phương án hát mộc khi cúp điện."
+      ],
+      "check": {
+        "prompt": "Đêm nhạc nào được duyệt?",
+        "good": "Mười bài đã xin phép, lượt rõ giờ, có phương án hát mộc.",
+        "bad": "Mời ca sĩ khách hát nhép cho chắc.",
+        "why": "Đêm chủ đề thành công khi ai cũng hát thật và đúng giờ."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Kèm ca sĩ trẻ lần đầu lên sân khấu",
+      "output_unit": "buổi kèm ca sĩ trẻ",
+      "inputs": [
+        {
+          "name": "Phiếu chấm lượt hát mẫu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Cùng bạn trẻ khởi động và thử âm trước giờ.",
+        "Đứng cạnh hát bè đoạn đầu, nhắc thở bụng.",
+        "Sau lượt, chấm theo phiếu và góp ý một điều."
+      ],
+      "check": {
+        "prompt": "Buổi kèm nào đạt?",
+        "good": "Bạn trẻ tự khởi động, hát vững và nhận một góp ý rõ.",
+        "bad": "Để bạn tự lên, ai cũng phải qua lần đầu.",
+        "why": "Có người kèm thì lần đầu không thành nỗi sợ."
+      }
+    }
+  ]
+}

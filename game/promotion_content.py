@@ -41,6 +41,8 @@ EMP_TITLES = {
     'research': ('Nghiên cứu viên chính thức', 'Nghiên cứu viên chính', 'Trưởng phòng thí nghiệm', 'Phó viện trưởng Sông Mây'),
     'vet': ('Bác sĩ thú y chính thức', 'Bác sĩ thú y điều trị', 'Phó phòng khám Cỏ May', 'Bác sĩ chính Cỏ May'),
     'radio': ('Phát thanh viên chính thức', 'Biên tập viên chương trình', 'Phó trưởng đài Sóng Mây', 'Trưởng ban thời sự Sóng Mây'),
+    'singer': ('Ca sĩ chính thức', 'Ca sĩ giờ vàng', 'Ca sĩ chính Mây Chiều', 'Giọng ca trụ cột Mây Chiều'),
+    'actor': ('Diễn viên chính thức', 'Diễn viên vai phụ', 'Diễn viên vai chính', 'Gương mặt chủ lực Bến Mây'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -48,6 +50,7 @@ OWN_TITLES = {
     'art_studio': ('Họa sĩ vững tay', 'Họa sĩ có tiếng', 'Chủ xưởng Màu Nắng', 'Nghệ nhân được tín nhiệm'),
     'laundry': ('Thợ giặt vững tay', 'Thợ chăm vải có tiếng', 'Chủ tiệm Nếp Thơm', 'Nghệ nhân chăm vải'),
     'moto': ('Thợ sửa xe vững tay', 'Thợ sửa xe có tiếng', 'Chủ tiệm Út Lanh', 'Thợ cả đầu hẻm'),
+    'kol': ('Nhà sáng tạo vững tay', 'Nhà sáng tạo có tiếng', 'Chủ Studio Hẻm Xanh', 'Gương mặt được tin của phố'),
     'restore': ('Thợ phục chế vững tay', 'Thợ phục chế có tiếng', 'Chủ xưởng Hồn Xưa', 'Nghệ nhân Hồn Xưa'),
     'shop': ('Chủ quầy vững tay', 'Chủ tiệm có tiếng', '{chu} được nể', '{ong} chuỗi tiệm'),
     'accounting': ('Sổ sách vững tay', 'Kế toán có tiếng', 'Trưởng nhóm sổ', 'Chủ văn phòng sổ sách'),
@@ -97,6 +100,8 @@ _EMP_HIGH = {
     'research': ('Viện trưởng Viện nghiên cứu Sông Mây', 'Chủ tịch hội đồng khoa học Sông Mây', 'Cố vấn khoa học'),
     'vet': ('Trưởng phòng khám Cỏ May', 'Giám đốc bệnh viện thú y khu vực', 'Cố vấn thú y của phố'),
     'radio': ('Trưởng đài Sóng Mây', 'Giám đốc đài phát thanh khu vực', 'Cố vấn phát thanh cộng đồng'),
+    'singer': ('Quản lý nghệ thuật Mây Chiều', 'Giám đốc âm nhạc phòng trà', 'Cố vấn thanh nhạc của phố'),
+    'actor': ('Diễn viên gạo cội Bến Mây', 'Đạo diễn diễn xuất của hãng', 'Người truyền nghề diễn xuất'),
 }
 for _career, _titles in _EMP_HIGH.items():
     EMP_TITLES[_career] += _titles
@@ -106,6 +111,7 @@ _OWN_HIGH = {
     'art_studio': ('Chủ xưởng nghệ thuật có tiếng', 'Nghệ nhân dẫn dắt xưởng vẽ', 'Người truyền nghề Màu Nắng'),
     'laundry': ('Chủ xưởng chăm vải', 'Chuyên gia bảo dưỡng vải', 'Người truyền nghề Nếp Thơm'),
     'moto': ('Chủ tiệm sửa xe có tiếng', 'Chuyên gia máy xe số và tay ga', 'Người truyền nghề sửa xe'),
+    'kol': ('Chủ studio nội dung có tiếng', 'Chuyên gia nội dung trung thực', 'Người truyền nghề sáng tạo'),
     'restore': ('Chủ xưởng phục chế có tiếng', 'Chuyên gia phục chế đồ xưa', 'Người truyền nghề Hồn Xưa'),
     'accounting': ('Chủ văn phòng kế toán có tiếng', 'Chuyên gia đối soát độc lập', 'Người truyền nghề sổ sách'),
     'homemaker': ('Quản gia điều phối nhiều nhà', 'Chuyên gia tổ chức gia đình', 'Người truyền nghề chăm nhà'),
@@ -159,7 +165,7 @@ GROUP = {
     'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs', 'hotel', 'banquet', 'restore', 'radio', 'moto', 'vet'),
+                'mother_baby', 'nurse', 'police', 'art_studio', 'laundry', 'customs', 'hotel', 'banquet', 'restore', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor'),
     'call': ('rescue',),
     'desk': ('reception',),
 }   # every other career: 'trade'

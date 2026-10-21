@@ -539,6 +539,39 @@ _profile('vet', 'Hồng Nhung | Đức Anh | Phương Vy',
     'đã cách ly đúng lúc, tính liều theo cân thật và loại vắc xin mất lạnh // isolated in time, dosed by real weights, and discarded the warmed vaccines',
     'phiếu khám ghi số cân và sổ nhiệt độ tủ vắc xin // the case slip with the weight and the vaccine fridge temperature log')
 
+_profile('kol', 'Bảo Ngọc | Gia Huy | Thanh Trúc',
+    'Chị Ngân · chủ Studio Hẻm Xanh // Ngân · owner of the Hẻm Xanh studio',
+    'ghi rõ quảng cáo, quay đúng brief và báo cáo số thật // clear ad labels, footage true to the brief, and honest numbers',
+    'quay và ánh sáng | dựng và nhạc miễn phí bản quyền | trả lời bình luận // filming and light | editing with royalty-free music | answering comments',
+    'Ba nhãn hàng cùng hẹn đăng tối nay, một nhãn đòi bỏ chữ quảng cáo, một video dùng nhạc hit chưa xin phép và một trang giả mạo kênh đang nhắn người xem chuyển tiền. // Three brands want their posts out tonight; one wants the ad label dropped, one video uses an unlicensed hit, and a fake page is messaging viewers for money.',
+    'Giao {a} quay lại cảnh thiếu sáng, {b} thay nhạc bằng bản trong thư viện miễn phí bản quyền, {c} ghim cảnh báo trang giả và trả lời người xem. // Have {a} reshoot the dim scene, {b} swap the music for a track from the royalty-free library, and {c} pin a warning about the fake page and answer viewers.',
+    'Báo cáo gửi nhãn hàng ghi lượt xem đã cộng thêm lượt mua, không ghi rõ nguồn số liệu. // The report to the brand counts bought views in its total and does not say where the numbers came from.',
+    'Bỏ lượt mua khỏi báo cáo, ghi số thật từ trang thống kê, đính kèm đường dẫn video và báo nhãn hàng. // Remove the bought views, write the real figures from the analytics page, attach the video link, and tell the brand.',
+    'đã ghi rõ quảng cáo, thay nhạc không phép và báo cáo đúng số thật // labelled every ad, replaced the unlicensed music, and reported the real numbers',
+    'báo cáo số liệu có đường dẫn video và mã hợp đồng // the numbers report with the video link and the contract code')
+
+_profile('singer', 'Thu Hà | Quang Vinh | Mỹ Linh',
+    'Cô Diệu Hiền · chủ Phòng trà Mây Chiều // Diệu Hiền · owner of the Mây Chiều tea room',
+    'hát thật, chỉ hát bài đã xin phép và giữ đúng giờ lượt hát // live singing, only licensed songs, and every turn on time',
+    'thanh nhạc | âm thanh sân khấu | giao lưu khán giả // voice | stage sound | talking with the audience',
+    'Tối thứ bảy kín bàn, ca sĩ khách mời khàn tiếng xin hát nhép, micro không dây sắp hết pin và một bàn đòi hát năm bài liền. // A full Saturday night: the guest singer has lost her voice and wants to mime, the wireless mic is nearly flat, and one table demands five songs in a row.',
+    'Giao {a} hát mộc bài nhẹ thay ca sĩ khách, {b} thay pin và để sẵn micro dây, {c} giữ thứ tự giấy xin bài cho cả phòng. // Have {a} sing a soft song unplugged in the guest\'s place, {b} change the batteries and set out a wired mic, and {c} keep the request slips in order for the whole room.',
+    'Một lượt hát kéo dài quá giờ mười phút, ca sĩ sau phải cắt bớt bài. // One turn ran ten minutes over, and the next singer had to drop a song.',
+    'Ghi lại giờ từng bài, hát điệp khúc ngắn khi khán giả xin thêm và báo chủ phòng trà trước khi kéo dài. // Time every song, sing a short chorus when the room asks for more, and ask the owner before running over.',
+    'đã không hát nhép, giữ đúng giờ và chỉ hát bài trong sổ hợp âm // no miming, every turn on time, and only songs from the licensed songbook',
+    'sổ lượt hát ghi giờ từng bài và giấy xin bài đã đọc // the turn log with each song\'s time and the request slips read out')
+
+_profile('actor', 'Hoài An | Trọng Nhân | Kim Ngân',
+    'Đạo diễn Minh Triết · Hãng phim Bến Mây // Director Minh Triết · Bến Mây studio',
+    'thuộc thoại, đứng đúng dấu và an toàn trước khi đẹp // lines learned, marks hit, and safety before beauty',
+    'diễn xuất | hành động an toàn | nối cảnh // acting | safe stunts | continuity',
+    'Ngày quay dày: cảnh giằng co chưa tập với điều phối hành động, diễn viên nhí đã quay quá giờ và trang kịch bản tập cuối vừa bị chụp lén. // A heavy shooting day: the struggle scene has not been rehearsed with the stunt coordinator, the child actor is past her hours, and a page of the final script has been photographed.',
+    'Giao {a} tập chậm cảnh giằng co với điều phối, {b} cho bé nghỉ và dời cảnh của bé sang mai, {c} báo thư ký trường quay cất kịch bản và xóa ảnh. // Have {a} rehearse the struggle slowly with the coordinator, {b} send the child home and move her scene to tomorrow, and {c} get the script supervisor to lock up the script and have the photo deleted.',
+    'Ảnh nối cảnh cho thấy ly trà ở tay phải, nhưng lượt vừa quay diễn viên cầm tay trái. // The continuity photo shows the cup in the right hand, but in the last take the actor held it in the left.',
+    'Đối chiếu sổ ảnh nối cảnh, quay lại lượt đó với ly ở tay phải và ghi chú cho bên dựng. // Check the continuity book, reshoot that take with the cup in the right hand, and leave a note for the editors.',
+    'đã tập an toàn trước khi quay, giữ giờ cho diễn viên nhí và giữ kín kịch bản // rehearsed safely before rolling, kept the child actor\'s hours, and kept the script secret',
+    'sổ ảnh nối cảnh và bảng lượt quay đạt // the continuity book and the good-takes sheet')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',
