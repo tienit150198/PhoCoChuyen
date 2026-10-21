@@ -40,7 +40,7 @@ class Rollback(HWBase):
         self.post(b, 'checkin')
         self.post(a, 'knock', to=self.view(a)['knock']['doors'][0]['pid'])
         self.give(a, 500)
-        for item in ('t_hw_san_bi_ngo', 'c_hw_bi_ngo', 'pet_vong_keo', 'xu'):
+        for item in ('t_hw_san_bi_ngo', 'c_hw_bi_ngo', 'pet_vong_keo', 'xu_100k'):
             self.post(a, 'buy', item=item)
         self.load(a)
         self.cmd(a, 'jr_spend_wear', kind='title', id='t_hw_san_bi_ngo')

@@ -18,8 +18,8 @@ Candy (a registered account; the table hw_players, never the save)
   for each of their first HOSTED_DAY knocks a day. Anti-clone: the visitor's account is KNOCK_AGE_DAYS old, KNOCK_IPS
   visitor accounts a network a day, blocked players never meet.
 * 🎭 Bí ngô khổng lồ: GIANT once, on the night.
-🎁 Đổi kẹo: 🎨 Phong cách cosmetics and a pet piece once each, and a bag of SWAP_COINS xu at most SWAP_MAX times (an account
-SWAP_AGE_DAYS old, a character of life day SWAP_LIFE_DAY, SWAP_IPS accounts a network). The candy leaves hw_players and a
+🎁 Đổi kẹo: 🎨 Phong cách cosmetics, a pet piece and three bags of xu (100k, 200k, 500k), each once an account; a bag
+needs an account SWAP_AGE_DAYS old and a character of life day SWAP_LIFE_DAY (no network cap: owner 21/10). The candy leaves hw_players and a
 live_effects row of kind FX is written in the same transaction; game/live_effects.py pays it into the save at once (an
 older build leaves it pending). 🏆 Bảng kẹo: candy earned (never spent); at END the housekeeping grants the top TOP once.
 
@@ -54,11 +54,8 @@ KNOCK_AGE_DAYS = 1
 KNOCK_IPS = 3
 GIANT = 30
 NIGHT_MULT = 2
-SWAP_COINS = 20_000
-SWAP_MAX = 3
 SWAP_AGE_DAYS = 3
 SWAP_LIFE_DAY = 3
-SWAP_IPS = 3
 TOP = 10
 DOORS = 12
 LIST_MAX = 20
@@ -291,6 +288,16 @@ def _style_name(item_id: str) -> str:
     return f'{it["emoji"]} {it["name"]}' if it else item_id
 
 
+def _key(sid: str, it: dict) -> str:
+    """The hw_log id of an exchange, once an account and item ('swap:' a xu bag, 'buy:' the rest)."""
+    return f'{"swap" if it["kind"] == "xu" else "buy"}:{sid}:{it["id"]}'
+
+
+def _bag_coins(log_id: str) -> int:
+    it = C.SHOP_ITEM.get(log_id.rsplit(':', 1)[-1])
+    return it['coins'] if it and it['kind'] == 'xu' else 0
+
+
 def view(store, token: str, t: float | None = None) -> dict:
     """GET /api/halloween: everything the sheet shows for this player (a guest gets the season and a sign-in prompt)."""
     t = now() if t is None else t
@@ -298,7 +305,7 @@ def view(store, token: str, t: float | None = None) -> dict:
     base = dict(state=p, now=int(t), starts=START, ends=END, until=SHOP_UNTIL, night=NIGHT, night_on=night(t),
                 day=day_of(t) if p == 'open' else None, grace_line=C.GRACE_LINE,
                 rules=dict(checkin=CHECKIN, pump=PUMP, treat=TREAT, trick=TRICK, host=HOST, knocks=KNOCKS_DAY, hosted=HOSTED_DAY,
-                           giant=GIANT, mult=NIGHT_MULT, swap_coins=SWAP_COINS, swap_max=SWAP_MAX, swap_age=SWAP_AGE_DAYS,
+                           giant=GIANT, mult=NIGHT_MULT, swap_bags=list(C.XU_BAGS), swap_age=SWAP_AGE_DAYS,
                            swap_life=SWAP_LIFE_DAY, knock_age=KNOCK_AGE_DAYS, trick_pct=C.TRICK_PCT, top=TOP, pumpkins=C.PUMPKINS))
     if p not in ('open', 'grace'):
         return base
@@ -334,13 +341,10 @@ def view(store, token: str, t: float | None = None) -> dict:
             for r in sorted((r for r in rows if r['kind'] == 'knock'), key=lambda r: -r['at'])]
     knocked = {r['other'] for r in rows if r['kind'] == 'knock'}
     hosted = [r for r in rows if r['kind'] == 'host']
-    swaps = sum(1 for b in bought if b.startswith('swap:'))
     shop = []
     for it in C.SHOP:
-        if it['kind'] == 'xu':
-            owned, left = swaps >= SWAP_MAX, SWAP_MAX - swaps
-        else:
-            owned, left = f'buy:{sid}:{it["id"]}' in bought, 1 - int(f'buy:{sid}:{it["id"]}' in bought)
+        owned = _key(sid, it) in bought
+        left = 1 - int(owned)
         shop.append(dict({k: v for k, v in it.items() if k in ('id', 'cost', 'kind', 'emoji', 'name', 'line', 'coins')}, owned=owned, left=left,
                          short=max(0, it['cost'] - me['candy'])))
     checkin = next((r for r in rows if r['kind'] == 'checkin'), None)
@@ -537,25 +541,20 @@ def _buy(store, token, data, ip, t):
 
     def run(db):
         sid, acct = _actor(db, store, token)
-        _lock(db, sid, *(['ip:' + tag] if it['kind'] == 'xu' else []))
+        _lock(db, sid)
         me = _me(db, sid)
         payload = dict(why='buy', item=it['id'])
+        key = _key(sid, it)
+        need(not db.execute('SELECT 1 FROM hw_log WHERE id=?', (key,)).fetchone(), 'Bạn đã đổi món này rồi.', 'owned', 409)
         if it['kind'] == 'xu':
-            done = int(db.execute("SELECT COUNT(*) AS n FROM hw_log WHERE sid=? AND kind='swap'", (sid,)).fetchone()['n'])
-            need(done < SWAP_MAX, f'Bạn đã đổi xu đủ {SWAP_MAX} lần của mùa này rồi.', 'swap_limit', 409)
             need(_old_enough(acct['created_at'], SWAP_AGE_DAYS, t), f'Đổi xu cần tài khoản từ {SWAP_AGE_DAYS} ngày tuổi. Đổi quà khác trước nhé!',
                  'too_new', 403)
             need((life or 0) >= SWAP_LIFE_DAY, f'Đổi xu cần nhân vật từ ngày sống thứ {SWAP_LIFE_DAY}.', 'too_new', 403)
-            if not done:
-                others = int(db.execute("SELECT COUNT(DISTINCT sid) AS n FROM hw_log WHERE ip=? AND kind='swap' AND sid<>?",
-                                        (tag, sid)).fetchone()['n'])
-                need(others < SWAP_IPS, 'Mạng này đã có nhiều tài khoản đổi xu rồi.', 'swap_ip', 429)
-            key, kind = f'swap:{sid}:{done + 1}', 'swap'
+            kind = 'swap'
             payload['coins'] = it['coins']
             amount = it['coins']
         else:
-            key, kind = f'buy:{sid}:{it["id"]}', 'buy'
-            need(not db.execute('SELECT 1 FROM hw_log WHERE id=?', (key,)).fetchone(), 'Bạn đã đổi món này rồi.', 'owned', 409)
+            kind = 'buy'
             if it['kind'] == 'style':
                 payload['items'] = [it['id']]
             else:
@@ -600,7 +599,7 @@ def apply_fx(s: dict, p: dict, amount: int) -> str:
     data = p.get('data') if isinstance(p.get('data'), dict) else {}
     items, pet, coins = data.get('items') or [], data.get('pet'), data.get('coins') or 0
     e.need(isinstance(items, list) and len(items) <= 4 and all(isinstance(x, str) and x in C.STYLE_IDS and x in SC.STYLE_ITEMS for x in items)
-           and (pet is None or pet in C.PET_PIECES) and type(coins) is int and 0 <= coins <= SWAP_COINS and (not coins or coins == amount)
+           and (pet is None or pet in C.PET_PIECES) and type(coins) is int and 0 <= coins <= max(C.XU_BAGS) and (not coins or coins == amount)
            and (items or pet or coins), 'Dữ liệu lễ hội không hợp lệ.')
     new = []
     for item in items:
@@ -681,12 +680,13 @@ def admin_view(store) -> dict:
             'SELECT kind, COUNT(*) AS n, COALESCE(SUM(n),0) AS candy FROM hw_log GROUP BY kind').fetchall()}
         top = db.execute('SELECT h.sid, h.earned, h.candy, a.username, a.created_at FROM hw_players h LEFT JOIN accounts a ON a.sid=h.sid '
                          'WHERE h.earned>0 ORDER BY h.earned DESC, h.last_at LIMIT 30').fetchall()
+        xu = sum(_bag_coins(r['id']) for r in db.execute("SELECT id FROM hw_log WHERE kind='swap'").fetchall())
         swaps = db.execute("SELECT l.sid, l.ip, l.at, a.username, a.created_at, (SELECT COUNT(DISTINCT x.sid) FROM hw_log x WHERE x.kind='swap' "
                            "AND x.ip=l.ip) AS same_ip FROM hw_log l LEFT JOIN accounts a ON a.sid=l.sid WHERE l.kind='swap' "
                            'ORDER BY l.at DESC LIMIT 200').fetchall()
     return dict(state=phase(t), off=off(), starts=START, ends=END, until=SHOP_UNTIL, night=NIGHT,
                 totals=dict(players=int(tot['players']), earned=int(tot['earned']), candy=int(tot['candy']),
-                            swaps=kinds.get('swap', {}).get('n', 0), xu=kinds.get('swap', {}).get('n', 0) * SWAP_COINS),
+                            swaps=kinds.get('swap', {}).get('n', 0), xu=xu),
                 kinds=kinds,
                 top=[dict(rank=i, username=r['username'] or '', earned=int(r['earned']), candy=int(r['candy']), created=r['created_at'] or '')
                      for i, r in enumerate(top, 1)],

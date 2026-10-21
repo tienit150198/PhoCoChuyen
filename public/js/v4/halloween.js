@@ -1,7 +1,7 @@
 /** 🎃 Lễ hội Ma Phố (game/halloween.py holds every rule and number; the plan: docs/HALLOWEEN_2026.md).
  * - openHalloween(env,data): the sheet, four tabs: 🎃 Hôm nay (the day's theme, ✅ điểm danh, the pumpkin riddles, 🎭 the
  *   giant pumpkin of the night), 🚪 Gõ cửa (Cho kẹo hay bị ghẹo: doors of friends and of players of the season, a username,
- *   who knocked on my door and "Gõ lại"), 🎁 Đổi kẹo (cosmetics, a pet piece, a capped bag of xu) and 🏆 Bảng kẹo.
+ *   who knocked on my door and "Gõ lại"), 🎁 Đổi kẹo (cosmetics, a pet piece, three bags of xu) and 🏆 Bảng kẹo.
  *   GET /api/halloween · POST /api/halloween/checkin|guess|giant|knock|buy (an exchange answers with the save: api.accept).
  * - halloweenBoot(env): the centred start card, once a Vietnam day on a device while candy is earned (and once more when the
  *   night begins), at a calm moment (v4/break-gate.js, after a gift, Có gì mới and the 20/10 card), never on a new
@@ -146,7 +146,7 @@ function rules(v){
     <li>🎃 Mỗi ngày ${r.pumpkins} quả bí ngô nấp quanh phố: đọc câu đố, chọn đúng nơi được ${r.pump} kẹo. Mỗi quả chỉ đoán một lần. Ở phố 2.5D, đi tới đúng nơi là nhặt luôn.</li>
     <li>🚪 Gõ cửa nhà người chơi khác (mỗi nhà một lần một ngày, tối đa ${r.knocks} nhà): thường được ${r.treat} kẹo, đôi khi bị ghẹo chỉ được ${r.trick}. Chủ nhà được ${r.host} kẹo cho mỗi khách (tối đa ${r.hosted} khách một ngày). Tài khoản cần đủ ${r.knock_age} ngày tuổi.</li>
     <li>🎭 31/10 từ 19:00 đến nửa đêm: mọi viên kẹo nhân ${r.mult}, bí ngô khổng lồ cho thêm ${r.giant} kẹo.</li>
-    <li>🎁 Kẹo đổi quà đến hết 01/11. Túi ${fmt(r.swap_coins)} xu đổi tối đa ${r.swap_max} lần (tài khoản từ ${r.swap_age} ngày tuổi, nhân vật từ ngày sống thứ ${r.swap_life}).</li>
+    <li>🎁 Kẹo đổi quà đến hết 01/11. Túi ${(r.swap_bags||[]).map(fmt).join(' / ')} xu, mỗi túi đổi 1 lần (tài khoản từ ${r.swap_age} ngày tuổi, nhân vật từ ngày sống thứ ${r.swap_life}).</li>
     <li>🏆 Bảng kẹo tính kẹo kiếm được, đổi quà không làm tụt hạng. Top ${r.top} nhận danh hiệu lúc 0:00 ngày 01/11.</li></ul></details>`;
 }
 
@@ -197,8 +197,8 @@ function shop(v){
   const parts=[`<div class="hw-strip"><span>🍬 Bạn có <b>${fmt(v.me.candy)}</b> kẹo</span><span>Đã kiếm cả mùa: <b>${fmt(v.me.earned)}</b></span></div>`,
     '<p class="hw-note">Đồ đổi bằng kẹo là đồ giữ mãi, không mua được bằng xu. Đeo ở 🎨 Phong cách.</p><div class="hw-shop">'];
   for(const it of v.shop||[]){
-    const act=it.owned?`<i class="hw-ok">${it.kind==='xu'?'Đã đổi đủ':'Đã có ✓'}</i>`:it.short?`<small class="hw-short">Thiếu ${fmt(it.short)} kẹo</small>`:'';
-    parts.push(`<div class="card hw-item${it.owned?' owned':''}"><span class="hw-item-e" aria-hidden="true">${esc(it.emoji)}</span><div class="grow"><b>${esc(it.name)}</b><small class="hw-muted">${esc(it.line)}${it.kind==='xu'&&!it.owned?` · còn ${it.left} lần`:''}</small></div>
+    const act=it.owned?`<i class="hw-ok">${it.kind==='xu'?'Đã đổi ✓':'Đã có ✓'}</i>`:it.short?`<small class="hw-short">Thiếu ${fmt(it.short)} kẹo</small>`:'';
+    parts.push(`<div class="card hw-item${it.owned?' owned':''}"><span class="hw-item-e" aria-hidden="true">${esc(it.emoji)}</span><div class="grow"><b>${esc(it.name)}</b><small class="hw-muted">${esc(it.line)}</small></div>
       <div class="hw-item-buy"><span class="hw-cost">🍬 ${fmt(it.cost)}</span>${act||btn('Đổi','buy',{item:it.id},'primary')}</div></div>`);
   }
   parts.push(`</div><div class="hw-acts">${btn('🎨 Mở Phong cách','style')}${btn('🐾 Tủ đồ thú cưng','pets')}</div>`);

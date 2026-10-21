@@ -3,7 +3,7 @@
 Places: the town's own amenities (game/town_layout.json ids, the 2.5D signposts are 'place:<id>'), each with two riddles; a
 day hides PUMPKINS of them (a hash of the day), the riddle of that day's pick shown in the sheet with CHOICES places.
 Shop: 🎨 Phong cách cosmetics (game/spend_content.py HALLOWEEN_TITLES / HALLOWEEN_FRAMES / HALLOWEEN_COLORS, kept for good
-through a live_effects row of kind 'hween'), one pet piece of the wardrobe's Halloween set, and a capped bag of xu.
+through a live_effects row of kind 'hween'), one pet piece of the wardrobe's Halloween set, and three bags of xu (once each).
 """
 from __future__ import annotations
 
@@ -84,7 +84,9 @@ TRICKS = (
 )
 TRICK_PCT = 30          # % of knocks that are a trick
 
-# 🎁 Đổi kẹo: id, candy, kind (style | pet | xu), what (a style id, a wardrobe piece id, or xu), emoji, name, line
+# 🎁 Đổi kẹo: id, candy, kind (style | pet | xu), what (a style id, a wardrobe piece id, or xu), emoji, name, line.
+# Every item once an account, the three xu bags too (owner 21/10: 100k, 200k, 500k, open to everyone, no network cap)
+XU_LINE = 'Mỗi túi đổi 1 lần cả mùa. Tài khoản từ 3 ngày tuổi, nhân vật từ ngày sống thứ 3.'
 SHOP = (
     dict(id='t_hw_san_bi_ngo', cost=40, kind='style', emoji='🎃', name='Thợ săn bí ngô', line='Danh hiệu trọn đời'),
     dict(id='pet_vong_keo', cost=60, kind='pet', piece='vong_keo', emoji='🍬', name='Vòng kẹo Halloween cho thú cưng',
@@ -94,10 +96,12 @@ SHOP = (
     dict(id='c_hw_bi_ngo', cost=220, kind='style', emoji='🟠', name='Màu tên Bí ngô ma mị', line='Màu tên trọn đời, cam sang tím'),
     dict(id='f_hw_nhen', cost=300, kind='style', emoji='🕸️', name='Khung mạng nhện', line='Khung hồ sơ trọn đời'),
     dict(id='t_hw_ba_tuoc', cost=450, kind='style', emoji='🧛', name='Bá tước Phố Mây', line='Danh hiệu trọn đời, khó nhất mùa'),
-    dict(id='xu', cost=50, kind='xu', coins=20_000, emoji='💰', name='Túi kẹo đổi 20.000 xu',
-         line='Tối đa 3 lần cả mùa. Tài khoản từ 3 ngày tuổi, nhân vật từ ngày sống thứ 3.'),
+    dict(id='xu_100k', cost=80, kind='xu', coins=100_000, emoji='💰', name='Túi kẹo đổi 100.000 xu', line=XU_LINE),
+    dict(id='xu_200k', cost=150, kind='xu', coins=200_000, emoji='💰', name='Túi kẹo đổi 200.000 xu', line=XU_LINE),
+    dict(id='xu_500k', cost=300, kind='xu', coins=500_000, emoji='💰', name='Túi kẹo đổi 500.000 xu', line=XU_LINE),
 )
 SHOP_ITEM = {x['id']: x for x in SHOP}
+XU_BAGS = tuple(x['coins'] for x in SHOP if x['kind'] == 'xu')
 
 # 🏆 Bảng kẹo (candy earned over the season, never what was spent): granted when the season closes
 TOP_ITEMS = ((1, 3, ('t_hw_vua_keo', 'f_hw_bi_ngo_vang')), (4, 10, ('t_hw_top_keo',)))

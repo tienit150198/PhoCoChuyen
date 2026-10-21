@@ -2,7 +2,7 @@
 (TEST_DATABASE_URL): the calendar (nothing before 26/10 00:00 VN, the grace day, the kill switch), the daily check-in, the
 pumpkin riddles and the 2.5D walk, the night ×2 and the giant pumpkin, Cho kẹo hay bị ghẹo between players (once a host a
 day, the daily caps, the host's tip and its cap, new accounts, one network's clones, blocked players), the candy shop (the
-balance, once each, the 🎨 Phong cách items, the pet piece and the capped xu swaps paid into the save exactly once, under
+balance, once each, the 🎨 Phong cách items, the pet piece and the three xu bags paid into the save exactly once, under
 concurrency too), the board and its top 10 granted exactly once after the season, the ticker line, the view, the admin and
 an account's deletion."""
 import concurrent.futures
@@ -347,31 +347,34 @@ class Shop(HWBase):
         from game.engine import validate_state
         validate_state(self.state(tok))
 
-    def test_xu_swaps_capped_and_guarded(self):
+    def test_xu_bags_once_each_and_guarded(self):
         tok = self.user('sw_a', wallet=1000)
-        self.give(tok, 500)
-        for k in range(hw.SWAP_MAX):
-            self.post(tok, 'buy', item='xu')
+        self.give(tok, 600)
+        bags = [it for it in hw.C.SHOP if it['kind'] == 'xu']
+        self.assertEqual([it['coins'] for it in bags], [100_000, 200_000, 500_000])
+        for it in bags:
+            self.post(tok, 'buy', item=it['id'])
             self.load(tok)
-        self.assertEqual(self.wallet(tok), 1000 + hw.SWAP_MAX * hw.SWAP_COINS)
-        self.refused('swap_limit', self.post, tok, 'buy', item='xu')
-        self.assertEqual(self.candy(tok), 500 - hw.SWAP_MAX * 50)
+        self.assertEqual(self.wallet(tok), 1000 + 800_000)
+        for it in bags:
+            self.refused('owned', self.post, tok, 'buy', item=it['id'])
+        self.assertEqual(self.candy(tok), 600 - sum(it['cost'] for it in bags))
+        self.assertTrue(all(x['owned'] for x in self.view(tok)['shop'] if x['kind'] == 'xu'))
         young = self.user('sw_young', life=2)
         self.give(young, 100)
-        self.refused('too_new', self.post, young, 'buy', item='xu')
+        self.refused('too_new', self.post, young, 'buy', item='xu_100k')
         new = self.fresh('sw_new')
         self.give(new, 100)
-        self.refused('too_new', self.post, new, 'buy', item='xu')
+        self.refused('too_new', self.post, new, 'buy', item='xu_100k')
         self.assertEqual(self.candy(new), 100, 'nothing taken on a refusal')
 
-    def test_xu_swaps_few_accounts_a_network(self):
-        toks = [self.user(f'sw_ip{i}') for i in range(hw.SWAP_IPS + 1)]
+    def test_xu_bags_no_network_cap(self):
+        toks = [self.user(f'sw_ip{i}') for i in range(5)]
         for t in toks:
             self.give(t, 100)
-        for t in toks[:hw.SWAP_IPS]:
-            self.post(t, 'buy', item='xu', ip='7.7.7.7')
-        self.refused('swap_ip', self.post, toks[-1], 'buy', item='xu', ip='7.7.7.7')
-        self.post(toks[0], 'buy', item='xu', ip='7.7.7.7')   # an account that swapped already keeps its own cap
+            self.post(t, 'buy', item='xu_100k', ip='7.7.7.7')
+            self.load(t)
+            self.assertEqual(self.candy(t), 20)
 
     def test_concurrent_buys_spend_once(self):
         tok = self.user('sh_c')
@@ -443,11 +446,11 @@ class AdminAndPrivacy(HWBase):
     def test_admin_view_and_forget(self):
         a, b = self.user('ad_a'), self.user('ad_b')
         self.give(a, 80)
-        self.post(a, 'buy', item='xu', ip='5.5.5.5')
+        self.post(a, 'buy', item='xu_100k', ip='5.5.5.5')
         self.post(b, 'knock', to='ad_a_test')
         out = hw.admin_view(self.store)
         self.assertEqual(out['totals']['swaps'], 1)
-        self.assertEqual(out['totals']['xu'], hw.SWAP_COINS)
+        self.assertEqual(out['totals']['xu'], 100_000)
         self.assertEqual(out['swaps'][0]['username'], 'ad_a_test')
         self.assertNotIn('5.5.5.5', str(out))
         self.assertEqual(out['top'][0]['username'], 'ad_a_test')
