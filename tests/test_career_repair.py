@@ -5,7 +5,7 @@ import unittest
 import game.careers.kit as kit
 from game.engine import GameError, public_state, validate_state
 from game.careers import repair as R
-from tests.helpers import Journey
+from tests.helpers import Journey, regular_extra
 
 
 def find_slot(pred, days=range(1, 16), special=False, slots=4):
@@ -85,8 +85,8 @@ class RepairTests(unittest.TestCase):
                 paid = done['bench']['paid']
                 self.assertGreater(paid, 0)
                 self.assertLessEqual(paid, t['needs']['budget'])
-                # (money may also move from shared random events, so compare earnings)
-                self.assertEqual(j.c['earnings'], earned + paid)
+                # (money may also move from shared random events, so compare earnings; a regular's 💛 extra on top)
+                self.assertEqual(j.c['earnings'], earned + paid + regular_extra(j.c, t['id']))
                 post = next(p for p in j.c['feed'] if p['kind'] == 'review')
                 self.assertEqual(post['feedback']['fair'], 5, (key, post['feedback']['criteria']))
                 validate_state(json.loads(json.dumps(j.state)))

@@ -202,7 +202,9 @@ class Content(unittest.TestCase):
         from game import certificates as ct
         self.assertEqual(ct.group_of('lifeguard'), 'pool_rescue')
         from game.promotion_content import EMP_TITLES
-        self.assertEqual(len(EMP_TITLES['lifeguard']), 4)
+        # four original steps kept in place (old saves' titles), three more appended up to step 7
+        self.assertEqual(EMP_TITLES['lifeguard'][:4], ('Cứu hộ chính', 'Trưởng ca cứu hộ', 'Đội trưởng cứu hộ', 'Quản lý an toàn hồ bơi'))
+        self.assertEqual(len(EMP_TITLES['lifeguard']), 7)
 
     def test_many_awkward_people(self):
         ids = [x['id'] for x in LC.ODD]

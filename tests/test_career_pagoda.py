@@ -331,7 +331,11 @@ class Tally(Base):
         j = self.at(of('b_hom'))
         tid = j.task['id']
         st, key = self.until(j, tid, 'dem')
-        self.assertNotIn('"total"', json.dumps(public_state(j.state)['careers']['pagoda'], ensure_ascii=False))
+        # the answer (_key's total) stays on the server; the workplace's own "total" (🏗️ scale: jobs done today) is not it
+        self.assertEqual(key['total'], sum(st['bills']))
+        tasks = public_state(j.state)['careers']['pagoda']['tasks']
+        self.assertNotIn('_key', next(x for x in tasks if x['id'] == tid))
+        self.assertNotIn('"total"', json.dumps(tasks, ensure_ascii=False))
         money = j.c['money']
         r = self.act(j, 'chua_tally', task=tid, amount=sum(st['bills']))
         self.assertTrue(r['correct'])

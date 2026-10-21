@@ -157,3 +157,8 @@ def as_stored(s):
     for cid in NEWER_THAN_LIVE:
         assert s['careers'].get(cid,initial_career(cid))==initial_career(cid),cid+' was played: strip it (scripts/strip_new_careers.py)'
     return unknown_out(s)
+
+def regular_extra(c,ref,since=0):
+    """xu the 💛 regular (or 🤝 referred customer) added on top of job `ref` (game/goodwill.pay_bonus, tested in
+    tests/test_goodwill.py): a career test that counts the job's own money leaves it out."""
+    return sum(e['amount'] for e in c['ops']['finance']['ledger'][since:] if e['ref']==ref and e['category']=='revenue' and e['reason'].startswith(('💛 ','🤝 ')))
