@@ -402,7 +402,7 @@ def withdraw_max(c: dict, j: dict | None = None) -> int:
     return most if j is None else min(most, max(0, WALLET_MAX - j['wallet']))
 
 
-CAPITAL_MAX = 100_000_000
+CAPITAL_MAX = 1_000_000_000   # 21/10 (F#462): one Góp vốn up to a full fund (was 100 triệu); Sổ ví rows stay ≤ ROW_MAX
 FUND_MAX = 1_000_000_000
 
 

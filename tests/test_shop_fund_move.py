@@ -101,7 +101,7 @@ class FundMoveTest(unittest.TestCase):
         s['journey']['bank']['balance'] = 90_000_000
         old = s['careers']['milk_tea']
         start = old['money']
-        self.assertEqual(public_state(s)['journey']['invest_max'], 100_000_000)
+        self.assertEqual(public_state(s)['journey']['invest_max'], 115_000_000)   # F#462: no 100 triệu cap per Góp vốn
         s, _ = act(s, 'jr_invest', career='milk_tea', amount=100_000_000)
         c = s['careers']['milk_tea']
         self.assertEqual(c['money'], start + 100_000_000)

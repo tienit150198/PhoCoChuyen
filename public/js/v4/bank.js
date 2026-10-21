@@ -130,6 +130,8 @@ async function marriagePost(op,body){
 bindXfer({env:()=>S.env,render,B,J,dlg:()=>S.dlg,ting:()=>swipeSound(S.env?.api)});
 const val=id=>{const el=S.dlg?.querySelector('#'+id);return el?el.value:'';};
 const amountOf=id=>{const n=Number(val(id));return Number.isInteger(n)&&n>0?n:0;};
+// 21/10 (F#462): one deposit / withdrawal / savings move may be up to rules.tx_max (1 tỷ; an older server: 10 triệu)
+const tooBig=a=>{const m=Number(B().rules?.tx_max)||10000000;if(a<=m)return false;S.flash={text:`Mỗi lần tối đa ${fmt(m)} xu.`,kind:'warn'};render();return true;};
 const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);  // money: {cost,pocket} → "còn thiếu" (v4/money.js)
 
 async function onClick(op,data){
@@ -139,15 +141,15 @@ async function onClick(op,data){
     case'tab':S.tab=data.tab;S.flash=null;render();S.dlg.querySelector('.bk-body')?.scrollTo?.(0,0);return;
     case'filter':S.filter=data.f;render();return;
     case'open':if(await ask('Mở tài khoản Ngân hàng Phố?','Miễn phí mở và duy trì. Bạn nhận số tài khoản, sổ giao dịch và điểm tín dụng khởi đầu 650.','Mở tài khoản'))send('jr_bk_open');return;
-    case'deposit':{const a=amountOf('bk-amt');if(!a){S.flash={text:'Nhập số xu muốn nộp nhé.',kind:'warn'};render();return;}
+    case'deposit':{const a=amountOf('bk-amt');if(!a){S.flash={text:'Nhập số xu muốn nộp nhé.',kind:'warn'};render();return;}if(tooBig(a))return;
       if(await ask(`Nộp ${xu(a)} vào tài khoản?`,`Tiền mặt trong ví còn ${xu(J().wallet-a)} sau khi nộp.`,`Nộp · ${xu(a)}`,{cost:a,pocket:'wallet'}))send('jr_bk_deposit',{amount:a});return;}
-    case'withdraw':{const a=amountOf('bk-amt'),atm=val('bk-atm')||'own',fee=atm==='other'?R.atm_fee:0;if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
+    case'withdraw':{const a=amountOf('bk-amt'),atm=val('bk-atm')||'own',fee=atm==='other'?R.atm_fee:0;if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}if(tooBig(a))return;
       if(await ask(`Rút ${xu(a)} tiền mặt?`,fee?`Cây ATM khác ngân hàng thu phí ${xu(fee)}. Tài khoản bị trừ ${xu(a+fee)}.`:'Rút tại cây ATM Ngân hàng Phố, không mất phí.',`Rút · ${xu(a)}`))send('jr_bk_withdraw',{amount:a,atm});return;}
-    case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc',renew=!!S.dlg.querySelector('#bk-renew')?.checked&&term>0;if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}
+    case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc',renew=!!S.dlg.querySelector('#bk-renew')?.checked&&term>0;if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}if(tooBig(a))return;
       const rate=term?R.term_rate[String(term)]:R.demand_rate,gain=term?termGain(a,rate,term,R):0,name=b.term_names[String(term)].toLowerCase();
       const msg=term?`${b.term_names[String(term)]} (${term} ngày sống), lãi ${pct(rate)}/năm. Đáo hạn ${onDay(J().life_day+term)}, nhận ${xu(a+gain)} (lãi ${gain?xu(gain):'dưới 1 xu'}).${renew?` Tới hạn tự tái tục: gốc gửi tiếp kỳ mới (tối đa ${xu(R.renew_max||10000000)}), lãi về tài khoản.`:''} Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_rate)}/năm.`:`Lãi ${pct(rate)}/năm, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
       if(await ask(`Gửi ${xu(a)} tiết kiệm ${name}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`,{cost:a,pocket:src==='cash'?'wallet':'account'}))send('jr_bk_save',{amount:a,term,src,...(renew?{renew:true}:{})});return;}
-    case'unsaveDemand':{const a=amountOf('bk-demand-out');if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
+    case'unsaveDemand':{const a=amountOf('bk-demand-out');if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}if(tooBig(a))return;
       if(await ask(`Rút ${xu(a)} từ sổ không kỳ hạn?`,'Tiền về tài khoản thanh toán, không mất lãi đã cộng.',`Rút · ${xu(a)}`))send('jr_bk_unsave',{id:'demand',amount:a});return;}
     case'unsaveTerm':{const t=(b.savings?.terms||[]).find(x=>x.id===data.id);if(!t)return;
       if(await ask('Tất toán sổ trước hạn?',`Sổ đáo hạn ${onDay(t.due)}. Rút bây giờ chỉ nhận lãi không kỳ hạn ${xu(t.early)} thay vì ${xu(t.interest)} khi giữ đến hạn.`,`Tất toán · ${xu(t.amount+t.early)}`))send('jr_bk_unsave',{id:t.id,confirm:true});return;}

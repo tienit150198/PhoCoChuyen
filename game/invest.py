@@ -47,7 +47,9 @@ SCAM_ECHO = 4           # a declined/expired project collapses this long after t
 SCAM_COOLDOWN = 10
 SCAM_MIN = 20
 SCAM_PAY_PCT = 4
-AMOUNT_MAX = 10**7
+AMOUNT_MAX = 10**7      # one coin order / project stake (sc['stake'] is validated against it)
+SAVE_TX_MAX = 10**9     # 21/10 (F#462): one savings deposit / withdrawal (the book holds up to 10**9 too)
+ROW_MAX = 10**7         # one Sổ ví row's |amount| (journey.validate, every build): a big move takes several rows
 KIND = 'invest'         # journey history kind (already in journey.HISTORY_KINDS)
 
 SCAMS = {
@@ -226,7 +228,13 @@ def _badge(iv: dict, bid: str) -> bool:
 
 def _wallet(s: dict, amount: int, label: str) -> None:
     jr = _jr()
-    jr._wallet(s['journey'], amount, KIND, label)
+    left = amount
+    while True:
+        part = max(-ROW_MAX, min(ROW_MAX, left))
+        jr._wallet(s['journey'], part, KIND, label)
+        left -= part
+        if not left:
+            return
 
 
 def _price_text(price: int) -> str:
@@ -321,7 +329,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
 
 
 # ---------------------------------------------------------------- commands
-def _amount(p: dict, low: int, most: int, what: str) -> int:
+def _amount(p: dict, low: int, most: int, what: str, cap: int = AMOUNT_MAX) -> int:
     """`{amount:int}` or `{all:true}` (all = `most`)."""
     e = _core()
     e.need(isinstance(p, dict) and set(p) <= {'amount', 'all'} and ('amount' in p) != ('all' in p),
@@ -331,7 +339,8 @@ def _amount(p: dict, low: int, most: int, what: str) -> int:
         e.need(most >= low, f'{what} cần ít nhất {low} xu.')
         return most
     amount = p['amount']
-    e.need(type(amount) is int and low <= amount <= AMOUNT_MAX, f'{what} cần là số xu nguyên, ít nhất {low} xu.')
+    e.need(type(amount) is int and low <= amount, f'{what} cần là số xu nguyên, ít nhất {low} xu.')
+    e.need(amount <= cap, f'Mỗi lần tối đa {cap:,} xu.'.replace(',', '.'))
     return amount
 
 
@@ -356,8 +365,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     coin, sv, sc = iv['coin'], iv['saving'], iv['scam']
     result = dict(message='', effects=[])
     if name == 'iv_save':
-        amount = _amount(p, 1, max(0, wallet), 'Tiền gửi')
+        amount = _amount(p, 1, max(0, wallet), 'Tiền gửi', SAVE_TX_MAX)
         need(amount <= wallet, 'Ví không đủ để gửi số này.')
+        need(sv['balance'] + amount <= SAVE_TX_MAX, f'Sổ chỉ nhận thêm được {max(0, SAVE_TX_MAX - sv["balance"])} xu.')
         if sv['balance'] == 0:
             sv['term_day'], sv['pending'] = day, 0
         _wallet(s, -amount, 'Gửi tiết kiệm ở ngân hàng phố')
@@ -368,8 +378,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
         result['message'] = f'Đã gửi {amount} xu. Lãi {RATE_MILLI // 10},{RATE_MILLI % 10}%/ngày{tier}, cộng vào sổ mỗi {TERM} ngày.'
     elif name == 'iv_withdraw':
         need(sv['balance'] > 0, 'Sổ tiết kiệm đang trống.')
-        amount = _amount(p, 1, sv['balance'], 'Tiền rút')
+        amount = _amount(p, 1, sv['balance'], 'Tiền rút', SAVE_TX_MAX)
         need(amount <= sv['balance'], f'Sổ tiết kiệm chỉ có {sv["balance"]} xu.')
+        need(wallet + amount <= _jr().WALLET_MAX, f'Ví chỉ giữ thêm được {max(0, _jr().WALLET_MAX - wallet)} xu.')
         lost = sv['pending'] // 1000
         sv['forfeited'] += lost
         sv['pending'] = 0
