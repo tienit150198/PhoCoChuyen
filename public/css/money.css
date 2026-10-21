@@ -10,6 +10,9 @@
 .mn-part{display:inline-flex;align-items:baseline;gap:4px;min-width:0}
 .mn-part.neg b{color:var(--bad)}
 .mn-sep{color:var(--muted)}
+/* 🔒 the auction escrow (F#465): a tap says what it is; dotted underline = "tap me", the word kept on phones */
+button.mn-held{appearance:none;border:0;background:none;margin:0;padding:0;min-width:0;min-height:0;font:inherit;line-height:inherit;color:inherit;cursor:pointer;pointer-events:auto;text-decoration:underline dotted;text-underline-offset:3px}
+.mn-held .mn-lbl{font-weight:600}
 .mn-chip.mn-bump{animation:mn-bump .45s ease-out}
 @keyframes mn-bump{40%{transform:scale(1.07)}}
 html[data-layout="phone"] .mn-chip{padding:2px 9px;font-size:.747rem;gap:5px}

@@ -2877,6 +2877,7 @@ html[data-layout="phone"] .upgrade-card .upgrade-icon{grid-column:1;grid-row:1/s
 html[data-layout="phone"] .upgrade-card>.row.spread>.tag{grid-column:3;grid-row:1}
 html[data-layout="phone"] .upgrade-card>h3{grid-column:2;grid-row:1;margin:0;min-width:0}
 html[data-layout="phone"] .upgrade-card>p{grid-column:2/-1;grid-row:2;margin:0;line-height:1.4}
+html[data-layout="phone"] .upgrade-card>p~p{grid-row:auto;margin-top:4px}
 html[data-layout="phone"] .upgrade-card>:is(.btn,select,.tag){grid-column:1/-1;margin-top:6px}
 html[data-layout="phone"] .upgrade-card>.tag{justify-self:start}
 /* 🧰 Phụ kiện nghề (work-equipment.js gadgetSection): the emoji in the icon box, what it does as a short list. */

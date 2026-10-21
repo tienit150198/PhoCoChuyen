@@ -331,6 +331,21 @@ def _stage_label(career: str, t: dict) -> str:
     return labels.get(t.get('stage'), t.get('stage') or '')
 
 
+def _fast_steps(s: dict, career: str) -> list[dict]:
+    """The steps counted towards ⏩, each with its name, in the order of the job."""
+    from .careers import PLUGINS
+    mod = PLUGINS.get(career)
+    pre = mod.SPEC['prefix'] if mod else ''
+    labels = getattr(mod, 'LABELS', {}) if mod else {}
+    order = list(getattr(mod, 'STAGES', ()) or ())
+    row = (((_kit(s) or {}).get('st') or {}).get(career) or {})
+    out = []
+    for a, v in row.items():
+        st = a[len(pre):] if pre and a.startswith(pre) else a
+        out.append((order.index(st) if st in order else len(order), a, dict(action=a, n=min(v, FAST_NEED), label=labels.get(st, st))))
+    return [x[2] for x in sorted(out, key=lambda x: x[:2])]
+
+
 def fast_plan(s: dict, c: dict, career: str, t: dict | None) -> tuple[str, dict] | None:
     """The step `t` is on, filled from its key, when ⏩ Làm nhanh may do it now (bought, the step done right
     FAST_NEED times by hand, the task known and open); else None."""
@@ -448,7 +463,7 @@ def career_public(s: dict, c: dict, career: str) -> dict | None:
                money=c.get('money', 0))
     if career in FAST:
         out['fast'] = dict(owned=has(s, 'fast', career), price=FAST_PRICE, need=FAST_NEED,
-                           steps=[dict(action=a, n=min(v, FAST_NEED)) for a, v in sorted((((_kit(s) or {}).get('st') or {}).get(career) or {}).items())],
+                           steps=_fast_steps(s, career),
                            ready=dict(task=t['id'], label=_stage_label(career, t)) if plan else None)
     return out
 

@@ -126,3 +126,24 @@ def test_quitting_or_suspension_blocks_new_commitments_but_allows_cancel():
     from game import promotion
     s=prepared('police',1);s['journey'][promotion.BAN_KEY]={}
     with pytest.raises(e.GameError):e.apply_action(s,'police','scale_offer')
+
+
+def test_offer_held_by_another_career_is_named_and_cancelled_from_here():
+    """F#469: the one shared allowance holds another career's offer: this card names it (no button that can only
+    answer "Đang giữ…"), the error says what and where, and Hủy here frees it for this career."""
+    s=prepared('grocery',1);s['careers']['clothing']=prepared('clothing',1)['careers']['clothing']
+    s,_=e.apply_action(s,'grocery','scale_offer');held=s['careers']['grocery'][contracts.KEY]['offer']['id']
+    s['current']='clothing';e.validate_state(s)
+    view=e.public_state(s,migrated=True)['careers']['clothing']['scale']
+    assert view['held']['id']==held and view['held']['career']=='grocery' and not view['held']['here']
+    offer=next(a for a in view['actions'] if a['command']=='scale_offer')
+    assert offer['disabled'] and offer['reason']
+    with pytest.raises(e.GameError,match='Đang giữ hợp đồng điều phối ở'):e.apply_action(s,'clothing','scale_offer')
+    with pytest.raises(e.GameError):e.apply_action(s,'clothing','scale_release',dict(id='grocery-9'))
+    s,_=e.apply_action(s,'clothing','scale_release',dict(id=held))
+    assert not s['careers']['grocery'][contracts.KEY]['offer']['reserved']
+    view=e.public_state(s,migrated=True)['careers']['clothing']['scale']
+    assert 'held' not in view and not next(a for a in view['actions'] if a['command']=='scale_offer').get('disabled')
+    s,_=e.apply_action(s,'clothing','scale_offer')
+    assert s['careers']['clothing'][contracts.KEY]['offer']['reserved']
+    e.validate_state(s)

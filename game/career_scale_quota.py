@@ -40,10 +40,25 @@ def public(s, now=None):
                 next_at=(r['day'] + 1) * 86400 - 7 * 3600)
 
 
+def held(s, now=None):
+    """What the one reserved allowance is held for (a management contract or a specialist order, of any career):
+    dict(id, career, name, kind ('scale' | 'special'), what), or None."""
+    ref = _read(s, now)['reserved']
+    if ref is None:
+        return None
+    special = '_special-' in ref
+    career = ref.split('_special-')[0] if special else ref.rsplit('-', 1)[0]
+    from .content import CAREER_META
+    return dict(id=ref, career=career, name=str((CAREER_META.get(career) or {}).get('short') or career),
+                kind='special' if special else 'scale', what='Đơn chuyên môn' if special else 'Hợp đồng điều phối')
+
+
 def reserve(s, ref, now=None):
     _need(type(ref) is str and _REF.fullmatch(ref) is not None)
     r = _read(s, now)
-    _need(r['reserved'] is None, 'Đang giữ một hợp đồng. Tiếp tục hoặc hủy trước khi nhận hợp đồng khác.')
+    h = held(s, now)
+    if h is not None:   # F#469: say what holds it and where, not just "a contract"
+        _need(False, f"Đang giữ {h['what'].lower()} ở {h['name']}. Tiếp tục hoặc hủy trước khi nhận việc khác.")
     _need(r['tokens'] > 0, 'Hết suất quản lý. Mỗi ngày thực nhận thêm 4 suất, tích tối đa 12 suất.')
     r['tokens'] -= 1
     r['reserved'] = ref

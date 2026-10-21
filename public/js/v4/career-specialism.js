@@ -1,7 +1,7 @@
 /** Professional learning and jobs. Prices, instructions and commands come from the server. */
 import {escapeHTML as esc} from '../icons.js';
 import {t} from './i18n.js';
-import {reqWhy} from './career-scale.js';
+import {reqWhy,heldCard} from './career-scale.js';
 
 const text=value=>esc(t(String(value??'')));
 const rows=value=>Array.isArray(value)?value:[];
@@ -60,7 +60,7 @@ function stockCard(stock,job){
 export function specialismCard(s){
   if(!s)return '';
   const n=s.next,community=s.kind==='community';
-  return `<section class="pm-card special-card" aria-label="${text('Chuyên môn nghề')}"><p class="pm-eyebrow">${text('CHUYÊN MÔN NGHỀ')} · ${number(s.tier)}/10</p><h3>${text('Học một nghề, làm một đơn thật')}</h3><p class="small muted">${text('Học theo gói, thực hành đúng rồi nhận đơn chuyên môn. Chứng chỉ và chức vụ hiện có được giữ nguyên.')}</p>${s.quota&&!community?`<p class="special-quota">${text('Còn')} <b>${number(s.quota.available)}</b> ${text('suất dùng chung với quản lý')} · +${number(s.quota.daily)} / ${text('ngày thực')} · ${text('tối đa')} ${number(s.quota.cap)}</p>`:''}${studyCard(s.study)}${jobCard(s.job,s.kind)}${actions(s.actions)}${stockCard(s.stock,s.job)}
+  return `<section class="pm-card special-card" aria-label="${text('Chuyên môn nghề')}"><p class="pm-eyebrow">${text('CHUYÊN MÔN NGHỀ')} · ${number(s.tier)}/10</p><h3>${text('Học một nghề, làm một đơn thật')}</h3><p class="small muted">${text('Học theo gói, thực hành đúng rồi nhận đơn chuyên môn. Chứng chỉ và chức vụ hiện có được giữ nguyên.')}</p>${s.quota&&!community?`<p class="special-quota">${text('Còn')} <b>${number(s.quota.available)}</b> ${text('suất dùng chung với quản lý')} · +${number(s.quota.daily)} / ${text('ngày thực')} · ${text('tối đa')} ${number(s.quota.cap)}</p>`:''}${studyCard(s.study)}${jobCard(s.job,s.kind)}${heldCard(s.held,text)}${actions(s.actions)}${stockCard(s.stock,s.job)}
     ${n?`<article class="special-next"><p class="pm-eyebrow">${text('GÓI TIẾP THEO')}</p><h4>${text(n.title)}</h4><p class="special-fee"><span>${text('Học phí')}</span><strong>${finite(n.fee)===0?text('Miễn phí'):coins(n.fee)}</strong></p><p class="small muted">${text(community?'Học và thực hành công quả miễn phí.':'Học phí cá nhân, trừ quỹ nghề một lần khi đăng ký, kể cả nghề công vụ.')}</p>${n.benefit?`<p>${text(n.benefit)}</p>`:''}${requirements(n.requirements)}${n.action?action({...n.action,disabled:n.action.disabled||n.can_enrol===false,reason:n.action.reason||n.reason}):''}${n.quote?`<details class="special-receipt"><summary>${text('Dự toán khi mở gói')}</summary>${ledger(n.quote)}</details>`:''}</article>`:''}
     ${rows(s.catalog).length?`<details class="special-path"><summary>${text('Lộ trình 10 gói chuyên môn')}</summary><ol>${rows(s.catalog).map(p=>`<li${p.unlocked?' class="is-unlocked"':''}><span>${p.unlocked?'✓ ':''}${text(p.title)}</span><small>${text('Học phí')}: <b>${finite(p.fee)===0?text('Miễn phí'):coins(p.fee)}</b></small></li>`).join('')}</ol></details>`:''}
     ${rows(s.history).length?`<details class="special-history"><summary>${text('Biên nhận chuyên môn gần đây')}</summary>${rows(s.history).slice(-8).reverse().map(r=>`<article><h4>${text(r.title||'Đơn chuyên môn')}</h4>${r.message?`<p>${text(r.message)}</p>`:''}${r.quality!=null?`<p>${text('Tỷ lệ nghiệm thu')}: <b>${number(r.quality)}%</b></p>`:''}${ledger(r)}${instructions(r.evidence)}</article>`).join('')}</details>`:''}

@@ -1769,6 +1769,7 @@ async function handleAction(action,data,el){
       if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
       if(SPEND_OPEN.has(action)){await (await import('./v4/spend.js')).spendAction(action,data,el,env());break;}  // ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách: lazy
       if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
+      if(action==='moneyHeld'){toast(`🔒 ${fmt(Number(data.held)||0)} xu đang giữ cho đấu giá. Có người trả cao hơn thì tiền về lại ngay; thắng phiên thì dùng để trả.`,false,{action:{label:'Xem',run:()=>handleAction('auction',{},null)}});break;}  // 🔒 the money chip's escrow (F#465)
       if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='townProjects'){await (await import('./v4/town-projects.js')).openTownProjects(env(),data);break;}  // 🏗️ Công trình của phố: lazy
       if(action==='bang'){api.bangAlerts=0;await (await import('./v4/bang.js')).openBang(env(),data);break;}  // ⚔️ Bang: lazy

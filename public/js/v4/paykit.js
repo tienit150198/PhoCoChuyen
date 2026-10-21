@@ -28,7 +28,10 @@ function css(){
 .pay-done{margin:10px auto 0;max-width:420px;padding:10px 12px;border-radius:14px;background:#f2fbf3;color:#20502a;font-size:.92rem;text-align:left}
 .pay-done ul{margin:6px 0 0;padding:0;list-style:none}.pay-done li{display:flex;justify-content:space-between;gap:8px}
 .pay-done li.total{border-top:1px dashed #9cc7a4;margin-top:4px;padding-top:4px;font-weight:700}
-.pay-shop .pay-now{font-size:.92rem}.pay-shop .tag.gold{background:#fff1c1;color:#6b4a00}`;
+.pay-shop .pay-now{font-size:.92rem}.pay-shop .tag.gold{background:#fff1c1;color:#6b4a00}
+.pay-fast-steps{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:2px;line-height:1.4}
+.pay-fast-steps li{display:flex;justify-content:space-between;gap:8px}.pay-fast-steps b{font-weight:600;white-space:nowrap}
+html[data-layout="phone"] .upgrade-card>.pay-fast-steps{grid-column:2/-1;margin-top:4px}`;
   document.head.append(st);
 }
 
@@ -64,6 +67,6 @@ export function paySection(c){
   const tool=`<article class="upgrade-card" data-paykit="tool"><div class="row spread"><span class="upgrade-icon" aria-hidden="true">🧰</span><span class="tag gold">${have?`Bậc ${fmt(have.n)} · +${fmt(have.pct)}%`:'Chưa có'}</span></div><h3>🧰 ${esc(next?next.name:have?.name||'Bộ đồ nghề')}</h3><p>${next?`Đồ nghề tốt hơn: mọi việc của nghề này +${fmt(next.pct)}% tiền công (thay bậc trước).`:'Đã đủ bộ đồ nghề tốt nhất. Tay nghề lên tầm nghệ nhân!'}</p>${next?buy('tool',`Lên bậc ${next.n}`,next.price,`Mua 🧰 ${next.name}? Trả bằng quỹ nghề.`):`<button class="btn ghost full" type="button" disabled>✓ Bậc cao nhất</button>`}</article>`;
   const book=`<article class="upgrade-card" data-paykit="book"><div class="row spread"><span class="upgrade-icon" aria-hidden="true">🤝</span><span class="tag">${k.book?'Đã có':'Khách quen'}</span></div><h3>🤝 Mối khách quen</h3><p>Ghi nhớ khách quen: khoảng ${fmt(k.tip_chance)}% việc xong được khách boa thêm ${fmt(k.tip_pct)}% tiền công.</p>${k.book?`<button class="btn ghost full" type="button" disabled>✓ Đã có</button>`:buy('book','Mua',k.book_price,'Mua 🤝 Mối khách quen? Trả bằng quỹ nghề.')}</article>`;
   const f=k.fast;
-  const fast=f?`<article class="upgrade-card" data-paykit="fast"><div class="row spread"><span class="upgrade-icon" aria-hidden="true">⏩</span><span class="tag">${f.owned?'Đã có':'Tay quen'}</span></div><h3>⏩ Làm nhanh</h3><p>Bước nào bạn đã tự làm đúng ${fmt(f.need)} lần thì làm bằng một chạm. Vẫn được chấm như làm tay.</p>${(f.steps||[]).length?`<p class="muted small">${f.steps.map(x=>`${x.n>=f.need?'✅':'⏳'} ${fmt(x.n)}/${fmt(f.need)}`).join(' · ')}</p>`:''}${f.owned?`<button class="btn ghost full" type="button" disabled>✓ Đã có</button>`:buy('fast','Mua',f.price,'Mua ⏩ Làm nhanh? Trả bằng quỹ nghề.')}</article>`:'';
+  const fast=f?`<article class="upgrade-card" data-paykit="fast"><div class="row spread"><span class="upgrade-icon" aria-hidden="true">⏩</span><span class="tag">${f.owned?'Đã có':'Tay quen'}</span></div><h3>⏩ Làm nhanh</h3><p>Bước nào bạn đã tự làm đúng ${fmt(f.need)} lần thì làm bằng một chạm. Vẫn được chấm như làm tay.</p>${(f.steps||[]).length?`<ul class="pay-fast-steps muted small" aria-label="Số lần đã làm đúng">${f.steps.map(x=>`<li><span>${x.n>=f.need?'✅':'⏳'} ${esc(x.label||'')}</span><b>${fmt(x.n)}/${fmt(f.need)}</b></li>`).join('')}</ul>`:''}${f.owned?`<button class="btn ghost full" type="button" disabled>✓ Đã có</button>`:buy('fast','Mua',f.price,'Mua ⏩ Làm nhanh? Trả bằng quỹ nghề.')}</article>`:'';
   return `<section class="space-top pay-shop" data-gear-group="paykit" aria-label="Bộ đồ nghề"><div class="row spread wrap"><h3>🧰 Bộ đồ nghề</h3><span class="tag green">+${fmt(k.total)}%</span></div>${now}<div class="upgrade-grid">${tool}${book}${fast}</div></section>`;
 }
