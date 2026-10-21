@@ -136,11 +136,34 @@ class Catalogue(unittest.TestCase):
         shop = dc.catalogue()['items']
         self.assertTrue(all(x.get('uq') for x in shop if x['id'].startswith('uq_')))
 
+    def test_pet_pieces_go_up_cheapest_first(self):   # owner 21/10: "đưa A trước, SS sau"
+        import datetime
+        pets = {it['id']: it for it in AC.ITEMS if it['kind'] == 'petgear'}
+        A_, S_ = [i for i, x in pets.items() if x['rank'] == 3], [i for i, x in pets.items() if x['rank'] == 4]
+        self.assertFalse(any(au.pet_ready(pets[i], set()) for i in pets if pets[i]['rank'] > 3))
+        self.assertTrue(all(au.pet_ready(pets[i], set(A_)) for i in S_))
+        self.assertFalse(any(au.pet_ready(pets[i], set(A_)) for i in pets if pets[i]['rank'] == 5))
+        self.assertTrue(all(au.pet_ready(pets[i], set(A_ + S_)) for i in pets if pets[i]['rank'] == 5))
+        taken, seen = set(), []
+        d = datetime.date(2026, 10, 22)
+        for n in range(400):   # the real schedule: no SS piece before the S ones, no S before the A one
+            day = d + datetime.timedelta(days=n)
+            for s_ in au.plan(day):
+                it = au.pick(day, s_['slot'], s_['tier'], taken)
+                if it:
+                    taken.add(it['id'])
+                    if it['kind'] == 'petgear':
+                        seen.append(it['rank'])
+        self.assertEqual(seen, sorted(seen))
+        self.assertEqual(len(seen), len(pets))
+
     def test_no_sss_pet_gear(self):   # owner 21/10: "đồ thú cưng 3S sao đấu giá được, 2S thôi"
         pets = [it for it in AC.ITEMS if it['kind'] == 'petgear']
         self.assertTrue(pets)
         self.assertTrue(all(it['rank'] <= AC.PET_RANK_MAX == 5 for it in pets))
         self.assertFalse([it['id'] for it in pets if 'SSS' in it['name']])
+        self.assertEqual({it['rank']: (it['start'], it['step']) for it in pets},   # owner 21/10: SS 1tr, S 100k, A 20k
+                         {5: (1_000_000, 50_000), 4: (100_000, 5_000), 3: (20_000, 1_000)})
 
     def test_pet_pieces_and_tools(self):
         for i in NEW:

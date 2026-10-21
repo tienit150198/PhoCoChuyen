@@ -151,9 +151,14 @@ def _deco(iid, tier, emoji, name, base, glow, desc, alt=()):
 PET_RANK_MAX = 5   # 🐾 SS: SSS pet gear is never sold at auction (owner 21/10 "đồ thú cưng 3S sao đấu giá được, 2S thôi")
 
 
+# 🐾 the pet pieces' own starting price and step by rank (owner 21/10 "giá mở thấp quá": SS 1tr, S 100k, A 20k)
+PET_START = {5: (1_000_000, 50_000), 4: (100_000, 5_000), 3: (20_000, 1_000)}
+
+
 def _pet(iid, tier, emoji, name, piece, rank, desc):
     """🐾 `piece` a game/pet_wardrobe_content.py id every build since 2.4.56 knows; `rank` 3 A … 5 SS (RANK_MAX: never SSS at auction, owner 21/10)."""
-    return dict(id=iid, kind='petgear', tier=tier, name=name, emoji=emoji, piece=piece, rank=rank, desc=desc)
+    start, step = PET_START[rank]
+    return dict(id=iid, kind='petgear', tier=tier, name=name, emoji=emoji, piece=piece, rank=rank, desc=desc, start=start, step=step)
 
 
 def _tool(iid, tier, emoji, name, career, desc, **price):

@@ -733,10 +733,18 @@ def plan(d: datetime.date) -> list[dict]:
     return out
 
 
+def pet_ready(it: dict, taken: set) -> bool:
+    """🐾 Pet pieces go up cheapest first (owner 21/10 "đưa A trước, SS sau"): a piece waits until every pet piece of a
+    lower rank is on the block or sold."""
+    if it['kind'] != 'petgear':
+        return True
+    return all(x['id'] in taken for x in C.ITEMS if x['kind'] == 'petgear' and x['rank'] < it['rank'])
+
+
 def pick(d: datetime.date, slot: int, tier_n: int, taken: set) -> dict | None:
     """The slot's item: deterministic from the date among the free items of its tier (then the lower tiers)."""
     for t in range(tier_n, 0, -1):
-        free = sorted(it['id'] for it in C.ITEMS if it['tier'] == t and it['id'] not in taken)
+        free = sorted(it['id'] for it in C.ITEMS if it['tier'] == t and it['id'] not in taken and pet_ready(it, taken))
         if free:
             return C.ITEM[free[_h('pick', d.isoformat(), slot) % len(free)]]
     return None
