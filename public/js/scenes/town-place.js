@@ -53,7 +53,7 @@ export const LANDMARKS={
 };
 /** The sign over each door: an emoji and a short name (the card says the full place name). */
 export const SIGNS={
-  art_studio:['🎨','Xưởng vẽ'],lawyer:['⚖️','Văn phòng luật'],laundry:['🧺','Giặt ủi'],post_office:['📮','Bưu điện'],customs:['🛃','Hải quan'],hotel:['🛎️','Khách sạn'],banquet:['💒','Nhà hàng tiệc'],reception:['🔑','Lễ tân'],teller:['🏦','Ngân hàng'],restore:['🧰','Phục chế'],research:['🔬','Viện nghiên cứu'],radio:['📻','Đài phát thanh'],moto:['🏍️','Sửa xe máy'],vet:['🩺','Thú y Cỏ May'],
+  art_studio:['🎨','Xưởng vẽ'],lawyer:['⚖️','Văn phòng luật'],laundry:['🧺','Giặt ủi'],post_office:['📮','Bưu điện'],customs:['🛃','Hải quan'],hotel:['🛎️','Khách sạn'],banquet:['💒','Nhà hàng tiệc'],reception:['🔑','Lễ tân'],teller:['🏦','Ngân hàng'],restore:['🧰','Phục chế'],research:['🔬','Viện nghiên cứu'],radio:['📻','Đài phát thanh'],moto:['🏍️','Sửa xe máy'],vet:['🩺','Thú y Cỏ May'],jewelry:['💍','Tiệm vàng'],car_dealer:['🚗','Đại lý xe'],
   milk_tea:['🧋','Trà sữa'],grocery:['🛒','Tạp hóa'],delivery:['🛵','Giao hàng'],cafe_bakery:['🥐','Bánh & cà phê'],florist:['💐','Tiệm hoa'],
   mother_baby:['🎁','Mẹ & bé'],restaurant:['🌶️','Mì cay'],pho:['🍜','Phở'],com:['🍚','Cơm tấm'],clothing:['👕','Quần áo'],pet_shop:['🐠','Shop thú cưng'],
   salon:['💇','Salon tóc'],nail:['💅','Làm móng'],photobooth:['📸','Chụp ảnh'],pet_care:['🐾','Chăm thú cưng'],repair:['🔧','Sửa đồ'],pharmacy:['💊','Nhà thuốc'],
