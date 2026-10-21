@@ -129,6 +129,7 @@ class Slips(unittest.TestCase):
         self.assertNotIn('_key', v)
         for k in ('piece', 'piece_name', 'tuoi', 'sell'):
             self.assertNotIn(k, v['needs'])
+        self.assertNotIn(j.task['needs']['piece_name'].lower(), v['title'].lower(), 'the title never names the piece')
         st = j.task['needs']['steps'][0]
         j.act('vg_step', task=tid, step=st['id'], value=j.task['_key'][st['id']])
         v = public_state(j.state)['careers']['jewelry']['tasks'][0]

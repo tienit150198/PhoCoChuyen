@@ -44094,6 +44094,9 @@
     "Đo vòng đầu khách bằng thước dây: $1 cm. Lấy mũ cỡ nào?": "Tape measure around the customer's head: $1 cm. Which helmet size?",
     "Đá rời trong túi giấy · $1 g": "Loose stone in a paper pouch · $1 g",
     "Đá rời trên cân carat: $1 g. 1 ct = 0,2 g = 100 điểm. Ghi trọng lượng bao nhiêu điểm?": "Loose stone on the carat scale: $1 g. 1 ct = 0.2 g = 100 points. What weight in points?",
-    "Đại lý xe phục vụ $1 lượt khách, $2 lượt đạt từ 90%, lời $3 xu.": "Car dealership served $1 customers, $2 at 90% or better, profit $3 xu."
+    "Đại lý xe phục vụ $1 lượt khách, $2 lượt đạt từ 90%, lời $3 xu.": "Car dealership served $1 customers, $2 at 90% or better, profit $3 xu.",
+    "$1 mua nữ trang": "$1 buys jewellery",
+    "$1 mua phụ kiện": "$1 buys an accessory",
+    "$1 xem xe": "$1 looks at vehicles"
   }
 }

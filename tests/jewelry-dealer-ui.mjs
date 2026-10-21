@@ -251,10 +251,12 @@ test('browser: the morning slip and a customer of each career at 390×844, a car
 
     async function carService(){
       const id='car_dealer',order='sv_'+'ab'.repeat(12),service=Object.keys(dump[id].svc)[0];
-      await page.evaluate(SEND,['dx_svc',{order,service}]);await wait(1200);
-      await bench();
+      const r=await page.evaluate(CMD,['dx_svc',{order,service},id]);assert.equal(r.status,200,JSON.stringify(r));
+      await layout('on');await bench();
       if(await page.locator(`${SHEET} [data-action="nextJob"]`).count()){await page.locator(`${SHEET} [data-action="nextJob"]`).first().click();await wait(900);}
-      await page.waitForSelector(`${SHEET} [data-coach="${id}-orders"] .sl-step`,{timeout:15000});
+      try{await page.waitForSelector(`${SHEET} [data-coach="${id}-orders"] .sl-step`,{timeout:15000});}
+      catch(e){await shot('dx-c-debug');const c=await career(id);
+        throw new Error(`no order step: svc=${JSON.stringify(c.data.svc)} sheet=${await page.evaluate(()=>(document.querySelector('#sheet[open]')?.innerText||'none').slice(0,600))}`);}
       const key=py(`import json\nfrom game.careers import ${id} as m\nprint(json.dumps(m.svc_job('${order}','${service}')[1]))`);
       for(let n=0;n<8;n++){
         const job=((await career(id)).data.svc||[]).find(j=>j.order===order);

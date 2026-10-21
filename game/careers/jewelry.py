@@ -156,7 +156,7 @@ def _ban(day: int, slot: int, r, level: int) -> tuple:
     steps, key = sk.pairs_to_steps(pairs)
     needs = dict(steps=steps, demands=len(demands), piece=k, piece_name=x['name'], emoji=x['emoji'], tuoi=label,
                  cong=x['cong'], stone=x.get('stone', 0), sell=sell)
-    return needs, key, npc, f'{who} mua {x["name"][0].lower() + x["name"][1:]}', f'{who}: “{words}”'
+    return needs, key, npc, f'{who} mua nữ trang', f'{who}: “{words}”'   # the title never names the piece: picking it is a step
 
 
 def _mua(day: int, slot: int, r, level: int) -> tuple:

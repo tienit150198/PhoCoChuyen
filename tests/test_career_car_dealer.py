@@ -118,6 +118,7 @@ class Slips(unittest.TestCase):
         v = public_state(j.state)['careers']['car_dealer']['tasks'][0]
         for k in ('model', 'model_name', 'price', 'loan'):
             self.assertNotIn(k, v['needs'])
+        self.assertNotIn(j.task['needs']['model_name'], v['title'], 'the title never names the vehicle')
         st = j.task['needs']['steps'][0]
         j.act('dx_step', task=tid, step=st['id'], value=j.task['_key'][st['id']])
         v = public_state(j.state)['careers']['car_dealer']['tasks'][0]

@@ -35,7 +35,7 @@ def test_exact_approved_540_titles_and_real_procedure_diversity():
             assert p['title'] not in ' '.join(p['procedure'])
             all_procedures.add(tuple(p['procedure']))
             all_checks.add((p['check']['good'], p['check']['bad']))
-    assert len(all_procedures) == len(all_checks) == 640
+    assert len(all_procedures) == len(all_checks) == 660
 
 
 def test_callers_cannot_mutate_catalogue():

@@ -222,7 +222,7 @@ def _pk(day: int, slot: int, r, level: int) -> tuple:
     pairs.append(sk.picks(r, 'pk', 'giao', 'Giao hàng cho khách', 'Trước khi đưa món cho khách, làm những việc nào?', C.ACC_HAND_GOOD, C.ACC_HAND_BAD))
     steps, key = sk.pairs_to_steps(pairs)
     return (dict(steps=steps, demands=len(demands), item=k, item_name=a['name'], emoji=a['emoji']), key, npc,
-            f'{who} mua {a["name"][0].lower() + a["name"][1:]}', f'{who}: “{words}”')
+            f'{who} mua phụ kiện', f'{who}: “{words}”')   # the title never names it: picking it is a step
 
 
 def slip(day: int, slot: int) -> tuple:
