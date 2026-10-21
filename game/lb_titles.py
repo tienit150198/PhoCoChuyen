@@ -40,6 +40,7 @@ from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calend
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
 ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND = 'all', 'titles', 'certs', 'wealth', 'collection', 'online', 'pets', 'island'
 ARENA, PET_CUP, PET_WAR = 'arena', 'pet_cup', 'pet_war'   # ⚔️ game/pet_arena.py, 🏟️ game/pet_cup.py, 🛡️ game/pet_war.py (19/10)
+RACE = ('race_drag_bike', 'race_drag_car', 'race_deo_bike', 'race_deo_car')   # 🏁 game/racing.py: the week's best times (22/10)
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -62,11 +63,17 @@ BOARD_TITLES = {                # (emoji, name) per tier
     ARENA: (('🏆', 'Vua đấu trường tuần'), ('⚔️', 'Cao thủ đấu trường'), ('🛡️', 'Chiến binh đấu trường')),
     PET_CUP: (('👑', 'Vô địch giải pet tuần'), ('🥈', 'Top 3 giải pet tuần'), ('🎗️', 'Top 10 giải pet tuần')),
     PET_WAR: (('🏆', 'Bang vô địch đấu pet'), ('🥈', 'Á quân bang chiến pet')),
+    # 22/10 (player #470 "thêm độ xe để đua xe"): 🏁 the week's best time-trial times of Đường đua Bến Mây, per track and
+    # class (game/racing.py standings), top 1 and top 2–3 only.
+    'race_drag_bike': (('🏁', 'Vua drag xe máy tuần'), ('🏍️', 'Top drag xe máy')),
+    'race_drag_car': (('🏁', 'Vua drag ô tô tuần'), ('🚗', 'Top drag ô tô')),
+    'race_deo_bike': (('⛰️', 'Vua đèo xe máy tuần'), ('🏍️', 'Top đèo xe máy')),
+    'race_deo_car': (('⛰️', 'Vua đèo ô tô tuần'), ('🚗', 'Top đèo ô tô')),
 }
 # A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five.
-BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10))}
-BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân')}
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, ARENA, PET_CUP, PET_WAR)     # the order of honour (a name tag shows the best one: tier first, then this order)
+BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10)), **{b: ((1, 1), (2, 3)) for b in RACE}}
+BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân'), **{b: ('Top 1', 'Top 2–3') for b in RACE}}
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, ARENA, PET_CUP, PET_WAR, *RACE)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -162,6 +169,9 @@ def standings(db, t: float | None = None) -> list:
         if board in (ARENA, PET_CUP, PET_WAR):   # ⚔️ 🏟️ 🛡️ not on the `leaderboard` table
             out.extend(_pet_standings(db, board, now() if t is None else t, n))
             continue
+        if board in RACE:   # 🏁 the week of `t` (race_runs)
+            out.extend(_race_standings(db, board, now() if t is None else t))
+            continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))
     return out
@@ -177,6 +187,15 @@ def _pet_standings(db, board: str, t: float, n: int) -> list:
             return pet_cup.standings(db, n)
         from . import pet_war
         return pet_war.standings(db, t)
+    except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
+        return []
+
+
+def _race_standings(db, board: str, t: float) -> list:
+    """🏁 [(board, rank, sid, ms)] of the week of `t`: its top 3 only (the race boards' titles)."""
+    try:
+        from . import racing
+        return racing.standings(db, board, t, BOARD_TIERS[board][-1][1])
     except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
         return []
 
@@ -245,8 +264,10 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
                     db.execute('DELETE FROM lb_weekly WHERE final=0 AND week=?', (last_week,))
                     # 🦉 Online starts again from zero each week: the ended week's own totals
                     # ⚔️ the arena's ladder too: the ended week's own season
-                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA)] + [r for r in standings_online(db, week_start(t) - 3600)]
-                             + _pet_standings(db, ARENA, week_start(t) - 3600, TOP))
+                    # 🏁 the race boards too: the ended week's own best times
+                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA, *RACE)] + [r for r in standings_online(db, week_start(t) - 3600)]
+                             + _pet_standings(db, ARENA, week_start(t) - 3600, TOP)
+                             + [r for b in RACE for r in _race_standings(db, b, week_start(t) - 3600)])
                     _insert(db, last_week, ended, 1, day, t)
                 else:                   # a week long gone (the server was off): its last daily holders stand
                     db.execute('UPDATE lb_weekly SET final=1 WHERE final=0 AND week=?', (last_week,))
@@ -274,7 +295,8 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
 # What cannot be fixed from here: 🏝️ island's final row of an ended week frozen by 2.4.60 (the board is the islands'
 # beauty *now*: the builds at the week's end are not kept), and the hours between 2.4.60's refresh and this heal, when
 # those boards show no holder.
-NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR)
+NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them)
+ENDED_BOARDS = (ARENA, PET_CUP, PET_WAR, *RACE)
 HEAL_LOCK = 17863
 
 
@@ -285,6 +307,8 @@ def _new_standings(db, board: str, t: float) -> list:
             return island_lb.standings(db, TOP, t)
         except Exception:  # noqa: BLE001
             return []
+    if board in RACE:
+        return _race_standings(db, board, t)
     return _pet_standings(db, board, t, TOP)
 
 
@@ -292,6 +316,8 @@ def _ended_standings(db, board: str, t: float, prev: str) -> list:
     try:
         if board == ARENA:
             return _pet_standings(db, ARENA, week_start(t) - 3600, TOP)
+        if board in RACE:
+            return _race_standings(db, board, week_start(t) - 3600)
         if board == PET_CUP:
             from . import pet_cup
             return pet_cup.standings(db, TOP, prev)
@@ -317,8 +343,8 @@ def heal(store, t: float | None = None) -> bool:
         ended = []
         if t < week_start(t) + 86400 and db.execute('SELECT 1 FROM lb_weekly WHERE final=1 AND week=? LIMIT 1', (prev,)).fetchone():
             had = {r['board'] for r in db.execute('SELECT DISTINCT board FROM lb_weekly WHERE final=1 AND week=? AND board = ANY(?)',
-                                                  (prev, [ARENA, PET_CUP, PET_WAR])).fetchall()}
-            ended = [r for b in (ARENA, PET_CUP, PET_WAR) if b not in had for r in _ended_standings(db, b, t, prev)]
+                                                  (prev, list(ENDED_BOARDS))).fetchall()}
+            ended = [r for b in ENDED_BOARDS if b not in had for r in _ended_standings(db, b, t, prev)]
             if ended:
                 _insert(db, prev, ended, 1, day, t)
         if rows or ended:

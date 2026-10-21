@@ -1051,6 +1051,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(dc.action(s, name, p))
     elif name.startswith('jr_garage_'):
         result.update(gr.action(s, name, p))
+    elif name in ('jr_tune_buy', 'jr_tune_fix'):   # 🔧 độ xe của mình (game/racing.py)
+        from . import racing
+        result.update(racing.action(s, name, p))
     elif name.startswith('jr_gadget_'):
         result.update(gd.action(s, name, p))
     elif name.startswith('jr_lux_'):
@@ -1355,6 +1358,9 @@ def validate(s: dict) -> None:
     rn.validate(s)
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
+    if isinstance(s.get('journey'), dict) and 'tune' in s['journey']:
+        from . import racing
+        racing.validate(s)   # 🔧 journey['tune'] (optional: game/racing.py)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
     from . import pay_boost
     pay_boost.validate(s)   # 🧰 journey['paykit'] (optional: game/pay_boost.py)

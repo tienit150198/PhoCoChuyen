@@ -98,6 +98,7 @@ from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only i
 from game import hotel_stay  # 🏨 Phòng cho người chơi (game/hotel_stay.py: its stays registered in Phố dịch vụ at import, /api/hotel/…)
 from game import town_fair  # 🎪 Hội chợ việc làm (game/town_fair.py: /api/townfair/…, its booths' discount asked by game/service_market.py)
 from game import halloween  # 🎃 Lễ hội Ma Phố, 26–31/10/2026 (game/halloween.py: /api/halloween…, MNL_HALLOWEEN_OFF)
+from game import racing  # 🏁 Đường đua Bến Mây (game/racing.py: /api/race/…, its own reads and writes)
 from game import photo_studio  # 📸 Chụp ảnh cho người chơi (game/photo_studio.py: /api/photo/…, its own reads and writes)
 from game import wed_services  # 💒 Dịch vụ cưới từ người chơi: its services into game/service_market.py at import (/api/wedsvc/…)
 from game import service_market as _svc_market  # 🛎️ Phố dịch vụ
@@ -1142,7 +1143,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair" or route.startswith("/api/halloween/") and route!="/api/halloween/buy")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/race/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair" or route.startswith("/api/halloween/") and route!="/api/halloween/buy")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1409,6 +1410,13 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/photo/"):  # 📸 order / cancel / accept / decline / shot / deliver / studio / pfp / hang / folio (game/photo_studio.py: reads and writes the saves itself)
                 if not self.server.rate_limit("photo:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=photo_studio.post(self.server.store,token,state,route[len("/api/photo/"):],data,self.client_ip())
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
+            if route.startswith("/api/race/"):  # 🏁 home / trial / challenge / accept / cancel / replay (game/racing.py: reads and writes the saves itself)
+                op=route[len("/api/race/"):]
+                if not self.server.rate_limit("race:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                if op in ("trial","challenge","accept") and not self.server.rate_limit("race-run:"+token,10):self.error(429,"Xe cần nghỉ một chút, chạy lại sau nhé.","rate_limited");return
+                out=racing.post(self.server.store,token,op,data,self.client_ip())
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/arena/"):  # 🐾 Đấu trường pet (game/pet_arena.py act): the battle resolves here, in one request; never a save write
@@ -1959,6 +1967,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("hotel",lambda:hotel_stay.run_housekeeping(store))  # 🏨 no-shows refunded, the night's situations, overdue check-outs paid (row locks: exactly once)
         step("svc",lambda:service_market.run_housekeeping(store))  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
         dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
+        step("race",lambda:racing.run_housekeeping(store))  # 🏁 open duels past 24 h back to their challengers in full (status-guarded: exactly once)
         step("hween",lambda:halloween.run_housekeeping(store))  # 🎃 Lễ hội Ma Phố: after 01/11 00:00 the board's top 10 get their titles and the ticker its line (exactly once)
         step("townfair",lambda:town_fair.run_housekeeping(store))  # 🎪 Hội chợ việc làm: its ticker line once, then settle, archive and grant a fair's titles (status-guarded: exactly once)
         step("photo",lambda:photo_studio.run_housekeeping(store))  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
