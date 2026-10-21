@@ -877,7 +877,7 @@ SPEC = dict(
               caption='Mười sáu phòng, một ca làm thuê theo quy trình', map_label='KHÁCH SẠN SÔNG MÂY'),
     staff=[('Chị Hằng', 'desk', 'Trưởng ca lễ tân, nhớ mặt khách quen.', 84, 90), ('Cô Tư', 'rooms', 'Trưởng buồng phòng, gấp ga vuông như thước.', 80, 92)],
     roles={'desk': 'Lễ tân', 'rooms': 'Buồng phòng'}, tip=0, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK,
-    activity=('🛎️', 'Một ca ở Sông Mây', [('Lễ tân', 'Chuyển đúng người, phòng đã kiểm'), ('Buồng phòng', 'Chia việc cho tổ'), ('Giặt là', 'Đếm thực tế'),
+    activity=('🛎️', 'Một ca ở Sông Mây', [('Lễ tân', 'Phiếu đúng, phòng sạch'), ('Buồng phòng', 'Đúng thứ tự'), ('Giặt là', 'Đếm thực tế'),
                                           ('Bảo trì', 'An toàn trước')],
               ['Đọc phiếu việc', 'Làm từng bước', 'Sửa bước sai tại chỗ', 'Báo lại cho ca sau']),
     stories=[('Chiếc chuông quầy lễ tân', ('Chiếc chuông đồng trên quầy đã mòn nút bấm.', 'Bạn lau chuông, ghi giờ ca vào sổ bàn giao.',
