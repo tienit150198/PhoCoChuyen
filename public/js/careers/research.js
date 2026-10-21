@@ -3,7 +3,8 @@
  * open to fix and lowers the job's quality. 📬 Đơn nghiên cứu: other players' orders from 🛎️ Phố dịch vụ, three graded
  * research steps each (GET/POST /api/lab/…, game/research_lab.py); the last step delivers the result. */
 import {data,cc,person,askCard,introCard,deskCard,kitActions,amountBox,kitInput,notesPage,act} from './street_kit.js';
-import {clean,tip} from '../ui-kit.js';
+import {clean,tip,withArt} from '../ui-kit.js';
+import {stepsArt} from './slip_kit.js';
 
 const wrap=body=>`<div class="career-job sk research">${body}</div>`;
 const stepsOf=t=>t.needs?.steps||[];
@@ -77,9 +78,14 @@ function shiftCard(x,t){
   return `<section class="card rs-shift" aria-label="Việc đầu ca và cuối ca ở phòng thí nghiệm">${body}</section>`;
 }
 
+/** The sample tray filling up (owner 21/10, like the milk-tea cup): one piece per step of the slip, solid once done. */
+const BENCH={parents:'🌱',seeds:'🌱',control:'🧪',tag:'🏷️',exclude:'🚫',mean:'🧮',rats:'🐀',verdict:'📜',grams:'⚖️',log:'📒',
+  variable:'🧪',best:'🏆',code:'🔐',total:'🧮',allergen:'⚠️',claim:'📢',price:'💰',unit:'🧮',battery:'🔋',ohm:'🔌',parts:'🔩',
+  test:'✅',book:'📒',credit:'🤝',fee:'💰',novel:'💡',decide:'⚖️',fail:'❌',rate:'📊',germ:'🌰',hours:'🕒',store:'🧊',council:'🧐'};
 function briefCard(t,x){
   const j=t.job||{},r=t.track_info||{};
-  return `<article class="rs-post"><small>${x.esc(r.emoji||'🔬')} ${x.esc(r.label||'')} · ${x.esc(j.emoji||'')} ${x.esc(j.label||'')}</small><h3>${x.esc(t.title)}</h3></article>`;
+  return `<article class="rs-post">${withArt(`<small>${x.esc(r.emoji||'🔬')} ${x.esc(r.label||'')} · ${x.esc(j.emoji||'')} ${x.esc(j.label||'')}</small><h3>${x.esc(t.title)}</h3>`,
+    stepsArt(t,{kind:'tray',icons:BENCH,head:r.emoji||TRACK_EMOJI[r.id]||'🔬',label:'Khay mẫu'}))}</article>`;
 }
 
 function stepCard(t,x){

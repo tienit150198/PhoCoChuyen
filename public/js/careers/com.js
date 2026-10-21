@@ -7,7 +7,7 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean,few} from './street_kit.js';
+import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean,few,buildUp} from './street_kit.js';
 
 const DISH=(x,k)=>(cc(x).dishes||{})[k]||{name:k,short:k,emoji:'🍽️',src:'tray'};
 const RICE=(x,k)=>(cc(x).rice||{})[k]||{name:k,short:k,emoji:'🍚'};
@@ -95,12 +95,27 @@ function caseTiles(x,t,pi){
 }
 
 /* ------------------------------------------------------------ the order and the counter */
+/** The plate (or box) in hand as it fills (owner 21/10, like the milk-tea cup): rice, each dish from the case, the egg,
+ * mỡ hành, nước mắm and canh drop on; what the line still wants stays as a grey ghost, a dish nobody ordered is ringed red. */
+function plateArt(t,x){
+  const lines=t.needs?.lines||[],plates=t.plates||[],{pairs,active,last}=plan(t),p=plates[last];
+  const ln=p?(active>=0?lines[active]:null):lines.find((l,i)=>!pairs.has(i));if(!p&&!ln)return '';
+  const items=[],need=[...(ln?.it||[])];
+  if(p?.r)items.push({e:RICE(x,p.r==='mix'?'tam':p.r).emoji,t:`${RICE(x,p.r==='mix'?'tam':p.r).name} ${p.va} vá`,cls:ln&&p.r!==ln.r?'bad':''});
+  else if(ln)items.push({e:RICE(x,ln.r).emoji,t:RICE(x,ln.r).name,cls:'todo'});
+  for(const k of p?.it||[]){const i=need.indexOf(k);if(i>=0)need.splice(i,1);items.push({e:DISH(x,k).emoji,t:DISH(x,k).name,cls:ln&&i<0?'bad':''});}
+  need.forEach(k=>items.push({e:DISH(x,k).emoji,t:DISH(x,k).name,cls:'todo'}));
+  const extra=(on,want,e,t)=>{if(on)items.push({e,t,cls:ln&&!want?'bad':''});else if(want)items.push({e,t,cls:'todo'});};
+  extra(p?.mo,ln?.mo,'🌿','mỡ hành');extra(p?.mam,ln&&ln.mam!=='none'&&ln.mam,'🫙',MAM_WORD[p?.mam||ln?.mam]||'nước mắm');extra(p?.canh,ln?.canh,'🥣','canh');
+  const v=p?.v||wantVessel(t);
+  return buildUp({kind:v==='hop'?'box':'plate',items,caption:`${VS(x,v).emoji} ${pairs.size}/${lines.length}`,label:VS(x,v).name});
+}
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Hỏi khách gọi gì');
   const n=t.needs||{},{pairs}=plan(t);
   const chips=(n.lines||[]).map((ln,li)=>`<span class="ct-chip ${pairs.has(li)?'ok':''}">${x.esc(VS(x,wantVessel(t)).emoji)} ${x.esc(lineText(x,ln))}</span>`).join('');
   const tags=[n.togo?'<span class="tag">🥡 Mang về</span>':'',n.chay?'<span class="tag green">📿 Ăn chay</span>':'',n.check?'<span class="tag amber">👀 Liếc dĩa kỹ</span>':''].join('');
-  return person(x,t,`<p class="ct-chips">${chips}</p>${n.note?`<p class="muted small">${x.esc(n.note)}</p>`:''}`,tags?`<span class="ct-tags">${tags}</span>`:'');
+  return person(x,t,`<p class="ct-chips">${chips}</p>${n.note?`<p class="muted small">${x.esc(n.note)}</p>`:''}`,tags?`<span class="ct-tags">${tags}</span>`:'',t.stage==='pay'?'':plateArt(t,x));
 }
 function plateCard(x,t,p,i,now){
   const items=p.it.map(k=>`<span class="ct-it">${x.esc(DISH(x,k).emoji)} ${x.esc(DISH(x,k).short)}</span>`).join('');

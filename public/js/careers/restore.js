@@ -2,10 +2,14 @@
  * Both layouts (gọn / đầy đủ, owner 19/10): the how-to lines go to the folded notes and "?" tips; every label and choice
  * stays. Other players' orders (their broken vehicles, worn home parts, furniture made cổ điển) are worked at 🧰 Bàn thợ
  * (v4/restore.js), reached from the card at the bottom in both layouts. */
-import {tip} from '../ui-kit.js';
+import {tip,buildUp,withArt} from '../ui-kit.js';
 const STAGES=['inspect','talk','parts','clean','fix','finish','check','deliver'];
 const NAMES={inspect:'Đọc dấu hiệu',talk:'Chốt yêu cầu',parts:'Linh kiện',clean:'Làm sạch',fix:'Phục hồi',finish:'Hoàn thiện',check:'Kiểm đồ',deliver:'Trả khách'};
 const CHECKS={stable:'Món đồ chắc, không lung lay',photo:'Chụp ảnh trước và sau phục chế',note:'Ghi đúng tuổi đồ và hạng mục lên phiếu',care:'Dặn khách cách giữ gìn'};
+// The piece on the bench taking shape (owner 21/10, like the milk-tea cup): one mark per stage, solid once done.
+const MARK={inspect:'🔍',talk:'💬',parts:'🔩',clean:'🧽',fix:'🛠️',finish:'✨',check:'🔎',deliver:'🎫'};
+const benchArt=(t,at)=>{const done=t.stage==='done'?STAGES.length:Math.max(0,at);
+  return buildUp({kind:'bench',items:STAGES.map((s,i)=>({e:MARK[s],t:NAMES[s],cls:i<done?'':i===done?'todo now':'todo'})),caption:`🧰 ${done}/${STAGES.length}`,label:'Đồ trên bàn thợ'});};
 const draft=(x,id,stage)=>(x.ui.restore??={})[`${id}:${stage}`]??={};
 const rules=x=>`<ul class="rs-rules">${(x.cc.rules||[]).map(s=>`<li>${x.esc(s)}</li>`).join('')}</ul>`;
 const book=x=>`<details class="rs-book"><summary>Sổ nghề phục chế và tiến trình nghề</summary>${rules(x)}</details>`;
@@ -49,7 +53,7 @@ export default {
     if(!t.known)return `<div class="career-job rs"><article class="card rs-intro"><h3>🧰 Xưởng phục chế Hồn Xưa</h3><p>${x.esc(t.opening||'')}</p>${tip('Nghe khách kể, nhận phiếu rồi đọc từng dấu hiệu hư hỏng.','','p')}${x.cmd('Hỏi khách và nhận phiếu','ask',{task:t.id},'primary')}</article>${book(x)}${desk(x)}</div>`;
     const n=t.needs,at=STAGES.indexOf(t.stage);
     const progress=`<ol class="rs-progress" aria-label="Các bước phục chế">${STAGES.map((s,i)=>`<li class="${i===at?'now':i<at?'done':''}"${i===at?' aria-current="step"':''}>${i<at?'✓':i+1} ${x.esc(NAMES[s])}</li>`).join('')}</ol>`;
-    const head=`<header class="rs-ticket"><span>PHIẾU PHỤC CHẾ · ${x.esc(n.tag)}</span><h3>${x.esc(n.item)}</h3><p class="rs-chips"><span class="tag">${x.esc(n.material_name)}</span>${n.surface?`<span class="tag">${x.esc(n.surface)}</span>`:''}<span class="tag">${n.damages} chỗ hư</span><span class="tag">${n.demands.length} yêu cầu khách</span><span class="tag">Chất lượng ${t.quality}%</span><span class="tag">Công ${n.net} xu sau ${n.cost} xu vật tư</span></p></header>`;
+    const head=`<header class="rs-ticket">${withArt(`<span>PHIẾU PHỤC CHẾ · ${x.esc(n.tag)}</span><h3>${x.esc(n.item)}</h3>`,benchArt(t,at))}<p class="rs-chips"><span class="tag">${x.esc(n.material_name)}</span>${n.surface?`<span class="tag">${x.esc(n.surface)}</span>`:''}<span class="tag">${n.damages} chỗ hư</span><span class="tag">${n.demands.length} yêu cầu khách</span><span class="tag">Chất lượng ${t.quality}%</span><span class="tag">Công ${n.net} xu sau ${n.cost} xu vật tư</span></p></header>`;
     const issue=t.last_issue?`<p class="rs-repair" role="status">${x.esc(t.last_issue)}</p>`:'';
     const stage=t.stage==='done'?'':`<section class="rs-stage" data-stage="${x.esc(t.stage)}"><h3>${x.esc(x.cc.stages?.[t.stage]||NAMES[t.stage])}</h3>${tip(t.instruction||'','','p')}${issue}${stageBody(x,t)}${button(x,t)}</section>`;
     return `<div class="career-job rs">${head}${progress}${stage}${book(x)}${stats(x)}${desk(x)}</div>`;

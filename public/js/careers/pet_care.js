@@ -1,7 +1,7 @@
 /** Pet Care Mèo Mập — intake form, grooming table (body language, escapes, live rinse/dry bars), kennel, feeding
  *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
-import {reqList,fold,clean,tip,helpBtn,withWhy,steps as ckSteps} from '../ui-kit.js';
+import {reqList,fold,clean,tip,helpBtn,withWhy,steps as ckSteps,buildUp,withArt} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
 import {stepRows,nextHint,stepCta,stepBar,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
@@ -779,6 +779,27 @@ function barOf(x,gd){
 
 const JOBS={groom:[(t,x,now)=>intake(t,x,now)+groomJob(t,x,now),groomSide],board:[boardJob,boardSide],feed:[feedJob,feedSide],adopt:[adoptJob,adoptSide]};
 
+/** Beside the ticket (owner 21/10: like the milk-tea cup): the pet on the grooming table, each service it gets landing
+ * next to it (what is still to do stays grey), the table wet after the bath and drying as the dryer runs; for a meal,
+ * the bowl filling with the grams set on the scale (a fixed scale per species, so it never gives the portion away). */
+function careArt(t,x){
+  const n=t.needs||{},pet=SPECIES_EMOJI[n.species]||'🐾';
+  if(t.job==='groom'&&t.g){
+    const g=t.g,sv=n.services||[];
+    const state={brush:g.brush,bath:g.shampoo!=null,rinse:g.rinse_s>=x.cc.rinse_min,dry:g.dry_pct>=100,nails:g.nails!=null,ears:g.ears!=null};
+    const need={brush:sv.includes('brush'),bath:sv.includes('bath'),rinse:sv.includes('bath'),dry:sv.includes('bath'),nails:sv.includes('nails'),ears:sv.includes('ears')};
+    const steps=(x.cc.steps||[]).filter(s=>need[s.id]);
+    const items=[{e:pet,t:n.name,cls:'pc-hero'},...steps.map(s=>({e:s.emoji,t:s.name,cls:state[s.id]?'':'todo'}))];
+    const wet=g.shampoo!=null&&g.dry_pct<100?Math.max(8,(100-Math.max(0,g.dry_pct))*.55):null;
+    return buildUp({kind:'bench',items,fill:wet,color:'#9fd3ef',caption:`✓ ${steps.filter(s=>state[s.id]).length}/${steps.length}`,label:`Bàn tắm: ${n.name||''}`});
+  }
+  if(t.job==='feed'){
+    const grams=t.fed?Number(t.bowl?.grams||0):Number(ui(x,t).grams||0),max=n.species==='cat'?150:600;
+    const food=(t.fed?t.bowl?.food:ui(x,t).food)==='own'?'🎒':itemInfo(x,x.cc.house_food?.[n.species]).emoji;
+    return buildUp({kind:'bowl',items:[{e:pet,t:n.name},...(t.fed?[{e:food}]:[])],fill:Math.min(100,grams/max*100),color:'#b98352',caption:`🥣 ${grams} g`,label:'Bát ăn'});
+  }
+  return '';
+}
 function ticket(t,x){
   const who=x.npc(t.npc),n=t.needs,ci=n.case?x.cc.cases?.[n.case]:null;
   const pill=clean()?`<span class="pc-tagq">${jobTag(x,t)}${helpQ(x)}</span>`:jobTag(x,t);
@@ -787,7 +808,7 @@ function ticket(t,x){
   const reg=t.regular!=null?bookOf(t,x):null;
   const tags=[reg?`<span class="tag green">⭐ Khách quen · ${x.esc(reg.trust_name)}</span>`:'',ci?`<span class="tag amber pc-case">${x.esc(ci.emoji)} ${x.esc(ci.label)}</span>`:'',n.humid?'<span class="tag blue">🌧️ Trời ẩm</span>':''].join('');
   return `<article class="card ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${pill}</div>
-    ${line}${tags?`<div class="row wrap pc-tags">${tags}</div>`:''}
+    ${withArt(`${line}${tags?`<div class="row wrap pc-tags">${tags}</div>`:''}`,careArt(t,x))}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 function runningTimers(t,x){

@@ -3,7 +3,7 @@
  *  alterations at Bà Tư's machine, returns by the house policy, sale tags, Zalo/Facebook
  *  parcels, the mannequin, and a real till (./till.js). Intro card "Giới thiệu nghề" on first open. */
 import {keepBarAboveFooter} from './food_kit.js';
-import {reqList,fold,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+import {reqList,fold,clean,tip,helpBtn,withWhy,withArt,buildUp} from '../ui-kit.js';
 import {stepRows,nextHint,stepBar,finalGo,pending,stepLine} from '../v4/guide.js';
 import {restockButton,restockGo,crates} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
@@ -93,12 +93,44 @@ function bookLine(x,t){
 }
 /** The job's kind as a tag; on the clean layout its icon only (the header says the job) and the shop's "?". */
 const kindTag=(x,t,kind)=>clean()?`<span class="ao-kindq"><span class="tag" title="${x.esc(kind)}" aria-label="${x.esc(kind)}">${KIND_ICON[t.kind]||'🧵'}</span>${helpQ(x)}</span>`:`<span class="tag">${KIND_ICON[t.kind]||''} ${x.esc(kind)}</span>`;
+/* ------------------------------------------------------------ the outfit preview (owner 21/10: like the milk-tea cup) */
+/** How each item sits on the figure: a top, a coat over it, trousers, shorts, a skirt, a dress to the knee or to the
+ * ankle, a pyjama set (top + trousers), shoes; the rest are accessories drawn beside it (the hat on the head). */
+const SHAPE={tee:'top',shirt:'top',polo:'top',blazer:'coat',cardigan:'coat',jeans:'pants',trousers:'pants',shorts:'shorts',skirt:'skirt',
+  dress:'dress',babydoll:'dress',set2:'dress',kids:'dress',maxi:'long',aodai:'long',pajama:'pj',sneaker:'shoes',sandal:'shoes'};
+const PAT={'hoa nhí':'flower',caro:'check','sọc':'stripe'};
+/** The figure dressing up as pieces land on the counter (or the mannequin): each piece in its own colour and shape;
+ * what the customer asked for and is not on the counter yet waits under it as a faint ghost. */
+function outfitArt(x,pieces,todo=[]){
+  const g=(p,shape)=>`<i class="ao-g g-${shape}${PAT[p.colour]?' pat-'+PAT[p.colour]:''}" style="--c:${x.esc(swatch(x,p.colour))}"></i>`;
+  let wear='',acc='',hat='';
+  for(const p of pieces){const s=SHAPE[p.item];
+    if(s==='pj')wear+=g(p,'pants')+g(p,'top');else if(s)wear+=g(p,s);
+    else if(p.item==='hat')hat=`<span class="ao-hat" aria-hidden="true">${x.esc(item(x,p.item).emoji)}</span>`;
+    else acc+=`<span aria-hidden="true">${x.esc(item(x,p.item).emoji)}</span>`;}
+  const ghosts=todo.map(l=>`<span class="ck-piece todo" title="${x.esc(item(x,l.item).name)}">${x.esc(item(x,l.item).emoji)}</span>`).join('');
+  const said=pieces.length?pieces.map(p=>`${item(x,p.item).name} ${p.colour}`).join(', '):'chưa mặc gì';
+  return `<figure class="ao-fig" role="img" aria-label="Bộ đồ: ${x.esc(said)}"><span class="ao-fig-body"><i class="ao-man"></i>${wear}${hat}</span>${acc?`<span class="ao-fig-acc">${acc}</span>`:''}
+    ${ghosts?`<span class="ao-fig-todo">${ghosts}</span>`:''}<figcaption>👚 ${pieces.length}${todo.length?`/${pieces.length+todo.length}`:''}</figcaption></figure>`;
+}
+/** Beside the customer's words: the figure for a fitting or an outfit, the parcel box for an online order, the
+ * mannequin for the window. */
+function orderArt(t,x){
+  if(t.kind==='fit'){const m=lineMatches(t);return outfitArt(x,t.picks,wanted(t).filter((l,k)=>m[k]<0));}
+  if(t.kind==='outfit')return outfitArt(x,t.picks);
+  if(t.kind==='display'&&t.disp)return outfitArt(x,t.disp.pieces);
+  if(t.kind==='online'&&t.parcel){const m=packMatch(t),pc=t.parcel;
+    const items=[...pc.items.map(p=>({e:item(x,p.item).emoji,t:pieceLabel(x,p),cls:m.includes(pc.items.indexOf(p))?'':'bad'})),
+      ...t.needs.lines.filter((l,k)=>m[k]<0).map(l=>({e:item(x,l.item).emoji,t:item(x,l.item).name,cls:'todo'}))];
+    return buildUp({kind:'box',items,caption:`📦 ${pc.items.length}/${t.needs.lines.length}${pc.label?' · 🖨️':''}${pc.sealed?' · ✓':''}`,label:'Gói hàng'});}
+  return '';
+}
 function ticket(t,x){
   const w=who(x,t),kind=x.cc.kinds?.[t.kind]||t.kind;
   const said=t.kind==='fit'?t.needs.lines.map(l=>l.say).join(' '):t.kind==='outfit'?t.needs.note:t.opening;
   const wish=t.wish?(t.wish.kind==='addon'?t.wish.line.say:t.wish.say):'';
   return `<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,52)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3>${kindTag(x,t,kind)}</div>
-    <p class="ao-said">“${x.esc(said)}”</p>${wish?`<p class="ao-said ao-wish">💬 “${x.esc(wish)}”${t.wish.skipped?' <small>(tiệm hết hàng)</small>':''}</p>`:''}${t.abroad?'':bookLine(x,t)}${abroadCard(t,x)}
+    ${withArt(`<p class="ao-said">“${x.esc(said)}”</p>${wish?`<p class="ao-said ao-wish">💬 “${x.esc(wish)}”${t.wish.skipped?' <small>(tiệm hết hàng)</small>':''}</p>`:''}`,t.stage==='pay'?'':orderArt(t,x))}${t.abroad?'':bookLine(x,t)}${abroadCard(t,x)}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 

@@ -9,7 +9,7 @@
  * The server decides everything; one tap sends one command. */
 import {nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tile,tip,clean} from './street_kit.js';
+import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tile,tip,clean,buildUp} from './street_kit.js';
 
 /** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
  * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
@@ -29,6 +29,21 @@ function notebook(x,auto=false){
 }
 
 /* ------------------------------------------------------------ the job card */
+/** What the chore has gathered so far (owner 21/10, like the milk-tea cup): the things picked or lined up, and for a
+ * "put each in its place" step what each one got (the bin's mark: a portion, a shelf…), dropping into the basket
+ * (market), the tray (cooking)… One still to place in the step on screen is a grey ghost; a pick or an order shows
+ * only what was tapped (no ghosts: those are the player's call). */
+const VESSEL={market:'basket',cook:'tray',dishes:'tray',laundry:'basket',garden:'basket',elder:'tray',kids:'box',fridge:'box',clean:'box',tet:'box',setup:'paper',incident:'box'};
+function choreArt(t,x){
+  const ss=steps(t);if(!ss.some(s=>['pick','sort','order'].includes(s.type)))return '';
+  const items=[];
+  ss.forEach((s,i)=>{if(i>t.at)return;const w=t.work?.[s.id],by=Object.fromEntries((s.items||[]).map(it=>[it.id,it]));
+    if(s.type==='pick'||s.type==='order')(w||[]).forEach(id=>by[id]&&items.push({e:by[id].emoji,t:by[id].name}));
+    else if(s.type==='sort'){const bin=Object.fromEntries((s.bins||[]).map(b=>[b.id,b]));
+      (s.items||[]).forEach(it=>{const b=bin[w?.[it.id]];if(b)items.push({e:b.emoji,t:`${it.name}: ${b.label}`});else if(i===t.at)items.push({e:'◌',t:it.name,cls:'todo'});});}});
+  const done=(t.closed||[]).length;
+  return buildUp({kind:VESSEL[t.kind]||'tray',items,caption:`${kindEmoji(x,t.kind)} ${done}/${ss.length}`,empty:'…',label:kindLabel(x,t.kind)||'Việc nhà',max:10});
+}
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Nghe dặn');
   const tag=`<span class="tag nt-kind">${x.esc(kindEmoji(x,t.kind))} ${x.esc(kindLabel(x,t.kind))}</span>`;
@@ -36,7 +51,7 @@ function ticket(t,x){
   // Clean layout: the morning hand-over is a scene ("?"), and the morning has no customer card at all; a chore's
   // opening is the ask and stays.
   if(clean()&&t.kind==='setup')return tip(x.esc(t.opening),'Chị Thảo dặn','p');
-  return person(x,t,`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag);
+  return person(x,t,`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag,choreArt(t,x));
 }
 function progress(t,x){
   const ss=steps(t);if(ss.length<2)return '';

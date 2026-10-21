@@ -2,7 +2,7 @@
  * Server decides every result (readings, quote reply, final test, used-part luck, money).
  * Local state here is only what the player is ticking before sending, and which step tab is open.
  * Phone first: one step panel at a time, one primary button per panel. */
-import {reqList,fold,actBar,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+import {reqList,fold,actBar,clean,tip,helpBtn,withWhy,buildUp,withArt} from '../ui-kit.js';
 import {stepRows,nextHint,stepBar,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton,restockGo} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
@@ -202,6 +202,18 @@ function deskCard(x){
 }
 function lastDesk(x){const l=x.room.data?.desk?.last;if(!l||l.day!==x.room.day)return '';return `<p class="rp-last ${l.good===true?'good':l.good===false?'bad':''}" aria-live="polite"><span aria-hidden="true">${x.esc(l.emoji)}</span> <b>${x.esc(l.title)}:</b> ${x.esc(l.outcome)}</p>`;}
 
+/** The machine on the bench as it gets fixed (owner 21/10, like the milk-tea cup): the device, then one piece per job
+ * found (the part going in, or 🧽 for a clean): grey until it is done; ✅ once the final test passes. */
+function benchArt(t,x){
+  const b=t.bench||{},n=t.needs||{},dev=devOf(x,t),open=t.open_scope||[],items=[{e:dev.emoji,t:dev.name,cls:'rp-dev'}];
+  const jobs=[...new Set([...open,...Object.keys(b.fixed||{})])];
+  for(const f of jobs){const fd=faultOf(x,n.device,f),g=(b.fixed||{})[f]??b.approved?.[f]?.grade,it=g&&fd.parts[g]?itemOf(x,fd.parts[g]):null;
+    items.push({e:it?it.emoji:g?'🧽':'🔧',t:fd.name,cls:f in (b.fixed||{})?'':'todo'});}
+  if(!jobs.length&&b.intake)items.push({e:'❓',t:'Chưa tìm ra bệnh',cls:'todo'});
+  if(b.final==='pass')items.push({e:'✅',t:'Chạy thử đạt'});
+  const done=Object.keys(b.fixed||{}).length;
+  return buildUp({kind:'bench',items,caption:jobs.length?`🛠️ ${done}/${jobs.length}`:'',label:`${dev.name} trên bàn thợ`,cls:'rp-build'});
+}
 function ticket(t,x){
   const who=x.npc(t.npc),n=t.needs,dev=devOf(x,t),cs=caseOf(t),cinfo=cs?x.cc.cases?.[cs]:null,left=rushLeft(t,x);
   const tags=[`<span class="tag blue">${x.esc(dev.emoji)} ${x.esc(dev.name)}</span>`];
@@ -211,7 +223,7 @@ function ticket(t,x){
   if(left!=null)tags.push(`<span class="tag ${left>=0?(left<=4?'danger':'green'):'danger'} rp-rush">⏱️ ${left>=0?`còn ${left} nhịp · +${x.esc(x.money(n.rush.bonus))}`:'đã trễ hẹn gấp'}</span>`);
   // Compact: face, name and patience on one line; the complaint and the tags under it; notes fold.
   return `<article class="card rp-ticket rp-tk"><div class="rp-tk-head">${x.portrait(who,32)}<h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div>${clean()?helpQ(x):''}</div><div>
-    <p class="rp-symptom">“${x.esc(n.symptom)}”</p><div class="row wrap rp-tags">${tags.join('')}</div>
+    ${withArt(`<p class="rp-symptom">“${x.esc(n.symptom)}”</p><div class="row wrap rp-tags">${tags.join('')}</div>`,caseOf(t)==='buyin'?'':benchArt(t,x))}
     <details class="rp-note"><summary>${clean()?'💬 Lời dặn':'Lời dặn của khách'}</summary><p class="small">${x.esc(n.note)}</p>${n.request?`<p class="small"><b>Khách nhờ thêm:</b> “${x.esc(n.request)}”</p>`:''}${n.claim?`<p class="small"><b>Phiếu:</b> ${x.esc(n.claim.said)}</p>`:''}</details>
     ${regularCard(t,x)}
   </div></article>`;

@@ -298,3 +298,6 @@
 .career-job.ps .ps-heard.brief p{margin:0;padding:2px 8px;font-size:.88rem;line-height:1.3}
 .career-job.ps .ps-ask-card.brief .ps-chips{display:flex;flex-wrap:wrap;gap:6px}
 .career-job.ps .ps-ask-card.brief .ps-chips>.btn{width:auto;flex:0 1 auto;padding:6px 10px;font-size:.86rem}
+
+/* The tank beside the order (cartArt): a glass box, water rising as fish go in. */
+.ck-build.ps-tankart .ck-vessel{border:3px solid #9fb7c4;border-top-width:2px;border-radius:4px;background:rgb(225 242 250 / 70%)}

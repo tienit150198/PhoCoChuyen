@@ -3,8 +3,8 @@
  * back. The server grades each step (game/careers/moto.py); a wrong one stays open to fix and lowers the ticket's quality.
  * Other players' bikes (🔧 Bảo dưỡng xe máy, game/moto_service.py) are worked in the "Xe của người chơi" card. */
 import {data,person,askCard,introCard,deskCard,kitActions,kitInput,notesPage} from './street_kit.js';
-import {current,stepsOf,stepCard,rulesList,statsCard,ordersCard,inboxTick,slipActions} from './slip_kit.js';
-import {clean} from '../ui-kit.js';
+import {current,stepsOf,stepCard,rulesList,statsCard,ordersCard,inboxTick,slipActions,stepsArt} from './slip_kit.js';
+import {clean,withArt} from '../ui-kit.js';
 
 const wrap=body=>`<div class="career-job sk slip moto">${body}</div>`;
 const ORDERS={id:'moto',svcCmd:'xm_svc',attrs:'data-coach="moto-orders"',title:'Xe của người chơi',emoji:'🏍️',noun:'Xe',
@@ -16,12 +16,15 @@ const notebook=x=>`<details class="sl-notebook"><summary>📒 Sổ tay tiệm Ú
 const top=x=>`${introCard(x,'xm_intro','🏍️')}${deskCard(x,'xm_desk','Chuyện ở tiệm')}`;
 const tail=x=>ordersCard(x,ORDERS)+statsCard(x,STATS);
 
+/** The bike on the stand: one part per step of the ticket (✓ fitted, ringed: now, grey: still to do). */
+const PART={nghe:'👂',khach:'💬',ap:'🛞',nhot:'🛢️',bugi:'🔌',sen:'⛓️',phanh:'🛑',den:'💡',binh:'🔋',ngap:'🌊',kiem:'✅',giao:'🔑'};
 /** The ticket on the handlebar: the bike, and the fault once it is settled (not before: that is the first step). */
 function ticketCard(t,x){
   const n=t.needs||{},known=t.at>0;
-  return `<article class="sl-ticket"><small>Phiếu ${x.esc(n.tag)} · biển ${x.esc(n.plate)}</small>
+  return `<article class="sl-ticket">${withArt(`<small>Phiếu ${x.esc(n.tag)} · biển ${x.esc(n.plate)}</small>
     <h3><span aria-hidden="true">${known?x.esc(n.emoji):'🏍️'}</span> ${x.esc(known?n.fault_name:`${n.bike} màu ${n.color}`)}</h3>
-    ${known?`<p class="small">${x.esc(n.bike)} màu ${x.esc(n.color)} · phụ tùng tiệm ứng ${x.fmt(n.cost||0)} xu, trừ khi giao xe.</p>`:'<p class="small">Chưa chốt lỗi: nghe khách, nhìn xe rồi chốt.</p>'}</article>`;
+    ${known?`<p class="small">${x.esc(n.bike)} màu ${x.esc(n.color)} · phụ tùng tiệm ứng ${x.fmt(n.cost||0)} xu, trừ khi giao xe.</p>`:'<p class="small">Chưa chốt lỗi: nghe khách, nhìn xe rồi chốt.</p>'}`,
+    stepsArt(t,{kind:'bench',icons:PART,head:'🏍️',label:'Xe trên bàn sửa'}))}</article>`;
 }
 
 function slip(t,x){

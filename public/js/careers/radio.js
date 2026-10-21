@@ -3,7 +3,8 @@
  * grades each step; a wrong one stays open to fix and lowers the job's quality. Players' ads and songs on the town ticker
  * (game/radio_station.py) are aired from 📻 Đơn lên sóng (../v4/radio.js), the same entry in both layouts. */
 import {data,cc,person,askCard,introCard,deskCard,kitActions,amountBox,kitInput,notesPage,act} from './street_kit.js';
-import {clean,tip} from '../ui-kit.js';
+import {clean,tip,withArt} from '../ui-kit.js';
+import {stepsArt} from './slip_kit.js';
 
 const wrap=body=>`<div class="career-job sk radio">${body}</div>`;
 const stepsOf=t=>t.needs?.steps||[];
@@ -94,9 +95,13 @@ function shiftCard(x){
   return `<section class="card rd-shift" aria-label="Việc đầu ca ở đài">${body}</section>`;
 }
 
+/** The show's running order filling up (owner 21/10, like the milk-tea cup): one line per step, solid once done. */
+const RUN={bulletin:'📰',callin:'☎️',playlist:'🎵',request:'🎶',spot:'📢',wishes:'💌',secs:'⏱️',studio:'🎙️',talk:'🎙️',
+  cut:'✂️',version:'📼',log:'📒',name:'💌',find:'🔍',rights:'©️'};
 function briefCard(t,x){
   const j=t.job||{},r=t.role_info||{};
-  return `<article class="rd-post"><small>${x.esc(r.emoji||'🎙️')} ${x.esc(r.label||'')} · ${x.esc(j.emoji||'')} ${x.esc(j.label||'')}</small><h3>${x.esc(t.title)}</h3></article>`;
+  return `<article class="rd-post">${withArt(`<small>${x.esc(r.emoji||'🎙️')} ${x.esc(r.label||'')} · ${x.esc(j.emoji||'')} ${x.esc(j.label||'')}</small><h3>${x.esc(t.title)}</h3>`,
+    stepsArt(t,{kind:'paper',icons:RUN,head:'📻',label:'Kịch bản lên sóng'}))}</article>`;
 }
 
 function stepCard(t,x){

@@ -115,3 +115,6 @@ html[data-theme="dem"] .teller .tl-idcard{background:#173230;color:#d3ece7;borde
   .teller .tl-papers:has(.tl-slip){grid-template-columns:minmax(0,1fr)}
   .teller .tl-step,.teller .tl-shift,.teller .tl-close,.teller .tl-learn,.teller .tl-exam,.teller .tl-review{padding:13px}
 }
+
+/* The step being done in the build-up preview (slip_kit stepsArt): ringed in the career colour. */
+.career-job.teller .ck-piece.todo.now{opacity:.85;filter:none;outline:2px dashed var(--sk-accent);outline-offset:1px;border-radius:6px}

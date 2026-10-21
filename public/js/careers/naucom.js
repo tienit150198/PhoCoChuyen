@@ -7,7 +7,7 @@
  * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine,firstTime} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tip,clean} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tip,clean,buildUp} from './street_kit.js';
 
 const GROUP_ORDER=['canh','man','xao','rau'];
 const DISH=(x,k)=>(cc(x).dishes||{})[k]||{name:k,emoji:'🍽️',group:'',ings:[],method:'nau',heat:'vua',tags:[]};
@@ -60,13 +60,34 @@ function suggest(x,t){
 }
 
 /* ------------------------------------------------------------ the request */
+/** The meal as it comes together (owner 21/10, like the milk-tea cup): the menu on the mâm while planning, the market
+ * basket while shopping, then the mâm again with each dish landing as it is cooked; what is still to do stays grey. */
+function mealArt(t,x){
+  const items=[];
+  if(t.stage==='settle'||t.stage==='done')return '';
+  if(!isMeal(t)){const k=t.needs?.x;if(!k)return '';const st=(t.dishes||{})[k];
+    return buildUp({kind:'plate',items:[{e:DISH(x,k).emoji,t:DISH(x,k).name,cls:st?.done!=null?'':'todo'}],caption:DISH(x,k).emoji,label:DISH(x,k).name});}
+  if(t.stage==='plan'){
+    for(const g of GROUP_ORDER){const k=t.menu?.[g];items.push(k?{e:DISH(x,k).emoji,t:DISH(x,k).name,cls:clash(x,t,k).length?'bad':''}:{e:GROUP(x,g).emoji,t:GROUP(x,g).name,cls:'todo'});}
+    return buildUp({kind:'tray',items,caption:`📝 ${GROUP_ORDER.filter(g=>t.menu?.[g]).length}/${GROUP_ORDER.length}`,label:'Mâm cơm'});
+  }
+  if(t.stage==='market'){
+    for(const [i,row] of Object.entries(t.cart||{}))items.push({e:ING(x,i).emoji,t:`${ING(x,i).name}${row.n?` ${row.n} phần`:''}`,cls:row.n>0?(row.look==='uon'&&!row.swap?'bad':''):'todo'});
+    return buildUp({kind:'basket',items,caption:`🛒 ${items.filter(i=>i.cls!=='todo').length}/${items.length}`,label:'Giỏ đi chợ'});
+  }
+  const r=t.rice,tb=t.table||{},ks=order(x,t);
+  items.push({e:'🍚',t:'Nồi cơm',cls:r&&x.now()>=Number(r.at)?'':'todo'});
+  for(const k of ks)items.push({e:DISH(x,k).emoji,t:DISH(x,k).name,cls:t.dishes[k].done!=null?'':'todo'});
+  items.push({e:'🥢',t:'Chén đũa',cls:tb.bowls?'':'todo'},{e:'🫙',t:'Nước mắm',cls:tb.tasted&&tb.mam==='ok'?'':'todo'});
+  return buildUp({kind:'tray',items,caption:`🍲 ${ks.filter(k=>t.dishes[k].done!=null).length}/${ks.length}`,label:'Mâm cơm'});
+}
 function ticket(t,x){
   // Clean layout: before the ask, Cô Hạnh's hand-over is a scene ("?"); what the family wants comes with the ask.
   if(!t.known)return clean()?`<article class="card sk-ticket"><div class="row">${x.portrait(x.npc(t.npc),48)}<div class="grow"><h3>${x.esc(x.npc(t.npc).display_name)}</h3>${tip(x.esc(t.opening),'Lời dặn','p')}</div></div></article>`:askCard(x,t,'👂 Nghe chủ nhà dặn');
   const n=t.needs||{},c=CONS(x,t);
-  if(!isMeal(t))return person(x,t,`<p class="small">${x.esc(n.note||'')}</p>`,'<span class="tag">🍽️ Nấu thêm</span>');
+  if(!isMeal(t))return person(x,t,`<p class="small">${x.esc(n.note||'')}</p>`,'<span class="tag">🍽️ Nấu thêm</span>',mealArt(withDish(t),x));
   const chips=[`👥 ${n.n} người`,`💰 ${n.budget} xu`,`${c.emoji} ${c.label}`,TASTE(x,t).label].filter(Boolean).map(s=>`<span class="nc-chip">${x.esc(s)}</span>`).join('');
-  return person(x,t,`<p class="nc-chips">${chips}</p><p class="small nc-rule">${x.esc(c.rule)}</p>`);
+  return person(x,t,`<p class="nc-chips">${chips}</p><p class="small nc-rule">${x.esc(c.rule)}</p>`,'',mealArt(t,x));
 }
 
 /* ------------------------------------------------------------ ① the menu */

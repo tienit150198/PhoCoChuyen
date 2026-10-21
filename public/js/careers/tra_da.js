@@ -9,7 +9,7 @@ import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {linesSummary} from './tomorrow_kit.js';
 import {shortLine,introHelp} from './street_kit.js';
-import {helpBtn,tip,clean,few} from '../ui-kit.js';
+import {helpBtn,tip,clean,few,buildUp,withArt} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
 const DONE=['completed','cancelled','referred'];
@@ -148,9 +148,22 @@ function ticket(t,x){
     ...Object.entries(n.snacks||{}).map(([k,q])=>{const s=snackOf(x,k),h=(t.snacks||{})[k]||0,kid=n.kid&&k==='thuoc_la';return `<span class="td-chip ${kid?'no':h>=q?'ok':''}">${x.esc(s.emoji)} ${kid?'':`${h}/`}${q} ${x.esc(s.unit)} ${x.esc(lower(s.name))}${kid?' <small>trẻ con hỏi mua</small>':` <small>${price(x,k)} xu</small>`}</span>`;})].join('');
   const match=t.kind==='match'&&t.start_turn!=null?Math.max(0,(cc(x).match_turns||8)-((x.room.turn||0)-t.start_turn)):null;
   return `<article class="card td-ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${n.pay==='tab'?'<span class="tag amber">📒 Ghi sổ</span>':'<span class="tag green">💵 Tiền mặt</span>'}</div>
-    <p class="small"><b>${x.esc(t.title)}</b> · ${n.seats>1?`${n.seats} người ngồi`:'1 người'}</p><p class="td-chips">${chips}</p><p class="muted small">“${x.esc(n.note||'')}”</p>
+    <p class="small"><b>${x.esc(t.title)}</b> · ${n.seats>1?`${n.seats} người ngồi`:'1 người'}</p>${withArt(`<p class="td-chips">${chips}</p><p class="muted small">“${x.esc(n.note||'')}”</p>`,t.stage==='pay'||t.stage==='book'?'':trayArt(t,x))}
     ${match!=null?`<p class="notice ${match<=2?'amber':''} small">⚽ Còn khoảng ${match} lượt nữa là hết hiệp một.</p>`:''}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
+}
+/** The tray as it fills (owner 21/10, like the milk-tea cup): every glass and snack poured so far drops onto it,
+ * what the customer still waits for stays as a grey ghost, and anything not ordered is ringed red. */
+function trayArt(t,x){
+  const n=t.needs||{},items=[],seen={};
+  (t.tray||[]).forEach(gl=>{const dr=drinkOf(x,gl.d);seen[gl.d]=(seen[gl.d]||0)+1;
+    items.push({e:dr.emoji,t:`${dr.name}${dr.cold?(gl.ice?' có đá':' không đá'):''}`,cls:seen[gl.d]>need(t,gl.d)?'bad':''});});
+  for(const [k,q] of Object.entries(n.drinks||{}))for(let i=count(t.tray,k);i<q;i++)items.push({e:drinkOf(x,k).emoji,t:drinkOf(x,k).name,cls:'todo'});
+  for(const [k,q] of Object.entries(t.snacks||{})){const s=snackOf(x,k),w=(n.snacks||{})[k]||0,bad=!w||(n.kid&&k==='thuoc_la');
+    for(let i=0;i<Math.min(q,4);i++)items.push({e:s.emoji,t:s.name,cls:bad||i>=w?'bad':''});}
+  for(const [k,q] of Object.entries(n.snacks||{})){if(n.kid&&k==='thuoc_la')continue;const s=snackOf(x,k);for(let i=(t.snacks||{})[k]||0;i<Math.min(q,4);i++)items.push({e:s.emoji,t:s.name,cls:'todo'});}
+  const done=items.filter(i=>i.cls!=='todo').length;
+  return buildUp({kind:'tray',items,caption:`🍽️ ${done}/${items.filter(i=>i.cls!=='bad').length}`,label:'Khay mang ra'});
 }
 function pourPanel(t,x){
   const n=t.needs||{},d=data(x),th=d.thermos||{},g=d.glasses||{};

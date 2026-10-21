@@ -145,6 +145,7 @@ loại hoa xong ruy băng này kia để chọn". The compact side of an order s
    slip's own frame and title inside a customer card (street careers). `side` holds the
    work so far (milk tea: the cup being made, the tea pours in and the ice drops in). A row with a guide step gets
    `todoAttrs(step)` and is a tap target.
+1b. **`buildUp({kind, items, fill, color, caption, label})`**: the live build-up of what is being made (owner 21/10: "chỗ Ly trà sữa đó cập nhật cho các nghề khác tương tự"). A vessel (`kind`: tray, basket, bag, plate, bowl, pot, box, cup, cone, bench, paper, cash; class `ck-k-<kind>`, not `ck-box`, which calm.css owns) with one piece per thing added so far (`{e, t, cls}`), each dropping in as it lands; `cls:'todo'` is a grey ghost for what the order still wants, `'bad'` rings a piece nobody asked for. It sits beside the order: `withArt(inner, art)`, or street_kit `person(x, t, inner, tag, art)`. Step-graded careers use slip_kit `stepsArt(t, {kind, icons})` (one piece per step, the current one outlined). Never show a ghost that gives the answer away when picking it is the test (homemaker picks, pet food grams).
 2. **`steps(list)`**: the numbered steps of the order (`{label, state:'done'|'now'|'bad'|'', attrs}`); the step being
    made is filled with the career colour, a tap jumps to its part (`fixAttrs({sel})`, or a tab switch).
 3. **The board**: every choice open at once, each part headed by `secHead({n, icon, title, hint, state})` with the same

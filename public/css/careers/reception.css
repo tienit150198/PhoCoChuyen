@@ -123,3 +123,6 @@ html[data-theme="dem"] .reception .rc-cart{background:#22262a}
 @media(max-width:400px){.reception .rc-options{grid-template-columns:minmax(0,1fr)}.reception .rc-step,.reception .rc-post{padding:11px}.reception .rc-room{padding:5px;min-height:92px}.reception .rc-room-no{font-size:15px}}
 /* landscape phone (844×390): the board's floors side by side, the desk under them */
 @media(orientation:landscape) and (max-height:500px){.reception .rc-board{grid-template-columns:1fr 1fr}.reception .rc-desk{grid-column:1/-1}.reception .rc-room{min-height:78px}}
+
+/* The step being done in the build-up preview (slip_kit stepsArt): ringed in the career colour. */
+.career-job.reception .ck-piece.todo.now{opacity:.85;filter:none;outline:2px dashed var(--sk-accent);outline-offset:1px;border-radius:6px}

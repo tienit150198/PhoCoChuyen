@@ -270,3 +270,5 @@ body.reduce-motion .career-job.rp .rp-big,html.reduce-motion .career-job.rp .rp-
 .career-job.rp .rp-acc>.asm-need{left:auto;right:6px}
 /* Tap targets ≥ 44 px: the order slip's fold header and its tappable chips (asm_kit). */
 .career-job.rp button.asm-pin-head,.career-job.rp button.asm-chip{min-height:44px}
+/* the bench preview (benchArt): the machine drawn bigger than its parts */
+.rp-build .ck-piece.rp-dev{font-size:30px}

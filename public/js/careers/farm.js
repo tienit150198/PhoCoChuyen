@@ -1,7 +1,7 @@
 /** Nông Trại Đồi Gió — six plots, a hen house, the cold room and the packing
  *  table. Field state is persistent and turn-based; everything is recomputed
  *  on the server, the client only shows it. */
-import {reqList,clean,actBar,few} from '../ui-kit.js';
+import {reqList,clean,actBar,few,buildUp} from '../ui-kit.js';
 import {stepRows,nextHint,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel,barParts,stepBar} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
@@ -257,11 +257,21 @@ const labelTiles=(t,x,cls='')=>{
 };
 /* The label is the step: its two choices ride in the bottom bar, right over the button. */
 const labelStep=(t,x,g)=>t.known&&pending(g.steps)?.key==='label';
+/* The carton / paper bag as it fills (owner 21/10, like the milk-tea cup): each crop of the order drops in as lots are
+   packed, what is still missing stays a grey ghost (a long order is drawn scaled down to six pieces a crop), the label
+   sits on top once chosen. */
+function crateArt(t,x){
+  const n=t.needs||{},items=[];let have=0,want=0;
+  for(const [k,q] of Object.entries(n.items||{})){const p=produce(x,k),h=Math.min(packed(t,k),q),show=Math.min(q,6),on=Math.round(h/Math.max(1,q)*show);
+    have+=h;want+=q;for(let i=0;i<show;i++)items.push({e:p.emoji,t:p.name,cls:i<on?'':'todo'});}
+  if(t.label)items.push({e:t.label==='organic'?'🌿':'🏷️',t:t.label==='organic'?'Nhãn hữu cơ':'Nhãn thường'});
+  return buildUp({kind:n.kind==='contract'?'box':'bag',items,caption:`${have}/${want}`,label:n.kind==='contract'?'Thùng carton':'Túi giấy',max:13});
+}
 function crateSide(t,x,g){
   if(!t.known)return `<div class="card"><p class="small">Nhận đơn để mở bàn đóng thùng.</p></div>`;
   const n=t.needs,crate=t.crate||[],steps=g.steps||[],open=!!x.ui.stepsOpen,done=steps.filter(s=>s.ok===true).length;
   return `<div class="fa-crate card"><h4>${n.kind==='contract'?'📦 Thùng carton':'🛍️ Túi giấy'} cho ${x.esc(x.npc(t.npc).display_name)}</h4>
-    <div class="fa-crate-box">${crate.map(e=>{const p=produce(x,e.crop);return `<div class="fa-crate-line"><span>${p.emoji} ${e.qty} ${x.esc(p.unit)} · ${x.esc(e.grade)}${e.organic?' 🌿':''}</span><small>lô ${x.esc(e.lot)}</small><button type="button" class="icon-btn" aria-label="Trả lô ${x.esc(e.lot)} về kho" data-command="fa_unpack" data-payload="${x.esc(JSON.stringify({task:t.id,lot:e.lot}))}">↩︎</button></div>`;}).join('')||'<small class="muted">Thùng trống — xếp hàng từ Kho mát.</small>'}</div>
+    <div class="fa-crate-art">${crateArt(t,x)}</div><div class="fa-crate-box">${crate.map(e=>{const p=produce(x,e.crop);return `<div class="fa-crate-line"><span>${p.emoji} ${e.qty} ${x.esc(p.unit)} · ${x.esc(e.grade)}${e.organic?' 🌿':''}</span><small>lô ${x.esc(e.lot)}</small><button type="button" class="icon-btn" aria-label="Trả lô ${x.esc(e.lot)} về kho" data-command="fa_unpack" data-payload="${x.esc(JSON.stringify({task:t.id,lot:e.lot}))}">↩︎</button></div>`;}).join('')||'<small class="muted">Thùng trống — xếp hàng từ Kho mát.</small>'}</div>
     ${labelStep(t,x,g)?'':`<h4 class="section-title">Nhãn</h4>${labelTiles(t,x)}`}
     <section class="fa-care fa-steps ${open?'open':''}">${carBtn(x,`<span class="fa-care-title">📋 Việc của đơn <b>${done}/${steps.length}</b></span>`,'steps',{},'fa-care-head ghost',` aria-expanded="${open}"`)}${open?stepRows(x,steps,'Việc của đơn'):''}</section></div>`;
 }
@@ -518,7 +528,9 @@ function walkView(t,x,g,idle=false){
     const labels=at==='pack'&&t&&labelStep(t,x,g)?labelTiles(t,x,'fa-bar-labels'):'';
     const top=`${placeLine(at,x)}${seeds}${labels}${own.length?`<div class="fv-btns">${own.map(o=>`<button type="button" class="btn small fv-btn ${o.cls}"${goAttrs(o)}>${o.label}</button>`).join('')}</div>`:''}`;
     // The order chip is a full row of its own (who, what is packed, A / 🌿 hữu cơ, the price), right above the button.
-    acts=actBar({top:top+orderChip(t,x),next:parts.next,main:parts.main,cls:'fa-bar fv-acts'});
+    // At the packing table and the bike the carton / bag itself rides above the order chip, filling as lots go in.
+    const crate=t?.known&&(at==='pack'||at==='bike')?`<div class="fa-bar-crate">${crateArt(t,x)}</div>`:'';
+    acts=actBar({top:top+crate+orderChip(t,x),next:parts.next,main:parts.main,cls:'fa-bar fv-acts'});
   }
   const top=ride?'':`<div class="fv-top">${camSeg(x)}${modeSeg(x,true)}</div>${plusChip(x,(...a)=>carBtn(x,...a))}`;
   const gardenHelp=!ride&&x.ui.fvCam==='iso'?'<p class="fv-garden-help">Chạm một chỗ để đến<span class="fv-key-help"> · WASD / phím mũi tên</span><span class="fv-touch-help"> · kéo bên trái để đi</span></p>':'';
