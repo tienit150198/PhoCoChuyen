@@ -3,7 +3,7 @@
 // With `--plan` it reads {kind, ...} JSON on stdin and prints the plan (tests/test_quay_manage.py feeds it real states).
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {againPlan,shortOf,groupStalls,stallLine,againAll,tillAll,openAll,STOCK_MAX} from '../public/js/v4/quay-manage.js';
+import {againPlan,shortOf,groupStalls,stallLine,againAll,tillAll,openAll,STOCK_MAX,autoNote,vnClock,autoLines} from '../public/js/v4/quay-manage.js';
 import {quayHave} from '../public/js/v4/select-all.js';
 
 if(process.argv.includes('--plan')){
@@ -34,6 +34,24 @@ assert.deepEqual(p,{items:{b:2},count:2,total:10,trimmed:true});
 p=againPlan(stall('q1','tea',{again:[{id:'a',qty:10},{id:'b',qty:10}],total:STOCK_MAX-12}));
 assert.deepEqual(p,{items:{a:10,b:2},count:12,total:40,trimmed:true});
 assert.equal(againPlan(stall('q1','tea',{again:[{id:'a',qty:10}],total:STOCK_MAX})),null,'A full stock room: nothing to send');
+
+// 🤖 Tự nhập hàng: the counter's note only while the switch is on; the times in Vietnam time
+assert.equal(autoNote({business:{auto:{why:'cash'}}},true),'Thiếu vốn, chưa tự nhập được');
+assert.equal(autoNote({business:{auto:{why:'none'}}},true),'Chưa có lần nhập trước');
+assert.equal(autoNote({business:{auto:{why:'cash'}}},false),'');
+assert.equal(autoNote({business:{auto:{why:null}}},true),'');
+assert.equal(autoNote({business:{}},true),'','An older server: no note');
+const noon=Date.UTC(2026,9,21,5,5)/1000;   // 12:05 on 21/10 in Vietnam
+assert.equal(vnClock(noon,noon+3600),'12:05');
+assert.equal(vnClock(noon-86400,noon),'20/10 12:05');
+assert.equal(vnClock(Date.UTC(2026,9,20,17,30)/1000,noon),'00:30','Vietnam midnight, not UTC');
+const money=v=>`${v} xu`;
+let al=autoLines({on:true,low:20,share:30,n:3,xu:1200,at:noon},noon+60,money);
+assert.equal(al.last,'Hôm nay đã tự nhập 3 quầy · 1200 xu · lần cuối 12:05');
+assert.match(al.rule,/dưới 20% kho.*tối đa 30% két \+ vốn/);
+assert.equal(autoLines({on:true,low:20,share:30,n:0,xu:0,at:noon-86400},noon,money).last,'Lần tự nhập gần nhất: 20/10 12:05');
+assert.equal(autoLines({on:false,low:20,share:30,n:0,xu:0,at:null},noon,money).last,'');
+assert.deepEqual(autoLines(undefined,noon,money),{rule:'',last:''});
 
 // 👛 the shortfall the wallet pays: till and fund first
 assert.equal(shortOf({till:5,fund:10},40),25);
