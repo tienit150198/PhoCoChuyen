@@ -564,8 +564,12 @@ def _peek_plan(c: dict) -> dict:
 # keep it (~14 % of days); with 🧊 Tủ trữ sữa riêng (game/career_gadgets.py) SOUR_KEEP_FRIDGE (~3 %, about once a
 # month). A dropped roll becomes another surprise of the day that is not in the plan yet (the day keeps its pace), or
 # 'skipped' when there is none. The rolls are fixed by the game day, so reloading never changes them.
-SOUR_KEEP = 0.6
-SOUR_KEEP_FRIDGE = 0.15
+# 21/10 (F#463): still "gần như ngày nào cũng hỏng sữa" — halved again: ~7 % of days, ~2 % with the fridge. A batch that
+# turns is found when the shift opens (SOUR_AT = 0 served orders: the box is opened first thing), never mid-shift
+# after the pastry is baked.
+SOUR_KEEP = 0.3
+SOUR_KEEP_FRIDGE = 0.08
+SOUR_AT = 0
 FRIDGE = 'milk_fridge'
 FRIDGE_ITEMS = ('milk',)
 
@@ -580,11 +584,15 @@ def sour_keep(c: dict) -> float:
 
 
 def _milk_luck(c: dict, p: dict) -> dict:
-    """A sour-milk surprise still waiting keeps its place only if today's roll is under sour_keep(c)."""
+    """A sour-milk surprise still waiting keeps its place only if today's roll is under sour_keep(c);
+    one that stays waits for the opening of the shift (SOUR_AT)."""
     for e in p['events']:
         if e['id'] != 'sour_milk' or e['status'] != 'waiting':
             continue
         if kit.rng(ID, 'sour_keep', p['day']).random() < sour_keep(c):
+            if e['at'] != SOUR_AT:
+                e['at'] = SOUR_AT
+                p['events'].sort(key=lambda x: x['at'])
             continue
         have = {x['id'] for x in p['events']}
         pool = [x['id'] for x in EVENTS if x['id'] not in have and x.get('min_day', 1) <= p['day']
@@ -687,7 +695,7 @@ def on_task(s: dict, c: dict, t: dict) -> None:
 
 def on_start(s: dict, c: dict) -> None:
     _migrate(c)
-    _plan(c)
+    FS.trigger(s, c, _plan(c), EVENT_INDEX)   # 🥛 a sour batch (SOUR_AT) is found as the shift opens
     for t in c['tasks']:
         if t['career'] == ID and t['status'] not in FS.DONE:
             on_task(s, c, t)

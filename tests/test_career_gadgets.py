@@ -124,9 +124,29 @@ class MilkFridge(unittest.TestCase):
         base = self.rate({})
         fridge = self.rate({'gadgets': {'milk_fridge': dict(paid=220, day=1)}})
         self.assertGreater(before, 0.2)                              # was ~23 % of days
-        self.assertLess(base, before * 0.7)                          # ~14 %
-        self.assertLess(fridge, 0.06)                                # ~3 %, about once a month
+        self.assertLess(base, before * 0.4)                          # ~7 % (F#463, 21/10: ~14 % before)
+        self.assertGreater(base, 0.03)
+        self.assertLess(fridge, 0.03)                                # ~2 %
         self.assertGreater(fridge, 0)
+
+    def test_sour_milk_waits_for_the_opening(self):
+        # F#463: the batch is found as the shift opens, not after the pastry is baked.
+        for d in range(2, 400):
+            for e in cb._milk_luck({}, FS.new_plan(cb.ID, d, cb.MODS, cb.EVENTS))['events']:
+                if e['id'] == 'sour_milk':
+                    self.assertEqual(e['at'], cb.SOUR_AT)
+        day = next(d for d in range(2, 400) if 'sour_milk' in [e['id'] for e in cb._milk_luck({}, FS.new_plan(cb.ID, d, cb.MODS, cb.EVENTS))['events']])
+        j = cafe()
+        while j.c['day'] < day:
+            j.act('end_day', carry_event=True)
+            if j.c['day'] < day:
+                j.act('start_day')
+        self.assertFalse(j.c['open'])
+        j.act('start_day')
+        ev = public_state(j.state)['careers']['cafe_bakery']['data']['day']['open_event']
+        self.assertEqual(ev['id'], 'sour_milk')
+        self.assertEqual(cb._plan(j.c)['served'], 0)
+        validate_state(json.loads(json.dumps(j.state)))
 
     def test_plan_is_stable_and_the_event_still_works(self):
         c = {}

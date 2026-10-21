@@ -35,8 +35,13 @@ from . import price_index as pi   # 💹 07/10: the flat fees (the percentages a
 
 VERSION = 1
 KIND = 'bank'               # journey wallet history kind (journey.HISTORY_KINDS)
-AMOUNT_MAX = 10**7
+AMOUNT_MAX = 10**7          # a payment through pay(), a loan, a rent (the validators' bounds: unchanged)
 BAL_MAX = 10**9
+# 21/10 (F#462): one deposit / ATM withdrawal / savings move may be this large (it was AMOUNT_MAX, so 10 triệu took
+# several tries). Sổ ví rows stay at most ROW_MAX each (every build's journey.validate), so a big one is written in several.
+TX_MAX = 10**9
+TERM_MAX = 10**7            # one sổ có kỳ hạn holds at most this (unchanged: the term-deposit economy is the owner's call)
+ROW_MAX = 10**7
 
 # Current account.
 ATM_OTHER_FEE = 1           # xu, "cây ATM khác ngân hàng"
@@ -225,7 +230,14 @@ def _score(b: dict, day: int, why: str, delta: int | None = None) -> int:
 
 
 def _wallet(s: dict, amount: int, label: str) -> None:
-    _jr()._wallet(s['journey'], amount, KIND, label)
+    """Cash in or out of the wallet, in Sổ ví rows of at most ROW_MAX (journey.validate's bound in every build)."""
+    left = amount
+    while True:
+        part = max(-ROW_MAX, min(ROW_MAX, left))
+        _jr()._wallet(s['journey'], part, KIND, label)
+        left -= part
+        if not left:
+            return
 
 
 def _fmt(n: int) -> str:
@@ -751,10 +763,11 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
 
 
 # ---------------------------------------------------------------- commands
-def _amount(p: dict, key: str = 'amount', low: int = 1) -> int:
+def _amount(p: dict, key: str = 'amount', low: int = 1, most: int = AMOUNT_MAX) -> int:
     e = _core()
     v = p.get(key)
-    e.need(type(v) is int and low <= v <= AMOUNT_MAX, f'Số tiền cần là số xu nguyên, ít nhất {_fmt(low)} xu.')
+    e.need(type(v) is int and v >= low, f'Số tiền cần là số xu nguyên, ít nhất {_fmt(low)} xu.')
+    e.need(v <= most, f'Mỗi lần tối đa {_fmt(most)} xu.')
     return v
 
 
@@ -829,18 +842,20 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need(b is not None, 'Mở tài khoản Ngân hàng Phố trước nhé.', 'no_account')
     c = b['card']
     if name == 'jr_bk_deposit':
-        amount = _amount(p)
+        amount = _amount(p, most=TX_MAX)
         need(j['wallet'] >= amount, f'Tiền mặt chỉ còn {_fmt(max(0, j["wallet"]))} xu.', 'not_enough')
+        need(b['balance'] + amount <= BAL_MAX, f'Tài khoản chỉ nhận thêm được {_fmt(max(0, BAL_MAX - b["balance"]))} xu.')
         _wallet(s, -amount, f'Nộp tiền vào tài khoản {K.BANK_SHORT}')
         b['balance'] += amount
         _log(b, day, 'acc', 'Nộp tiền mặt tại quầy', amount)
         return dict(message=f'Đã nộp {_fmt(amount)} xu vào tài khoản. Số dư {_fmt(b["balance"])} xu.')
     if name == 'jr_bk_withdraw':
-        amount = _amount(p)
+        amount = _amount(p, most=TX_MAX)
         atm = p.get('atm', 'own')
         need(atm in K.ATM, 'Chọn cây ATM nhé.')
         fee = ATM_OTHER_FEE if atm == 'other' else 0
         need(b['balance'] >= amount + fee, f'Tài khoản chỉ còn {_fmt(b["balance"])} xu' + (f' (phí rút {fee} xu).' if fee else '.'), 'not_enough')
+        need(j['wallet'] + amount <= _jr().WALLET_MAX, f'Ví chỉ giữ thêm được {_fmt(max(0, _jr().WALLET_MAX - j["wallet"]))} xu.')
         b['balance'] -= amount
         _log(b, day, 'acc', f'Rút tiền · {K.ATM[atm]}', -amount)
         if fee:
@@ -852,7 +867,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_bk_save':
         term = p.get('term')
         need(type(term) is int and (term == 0 or term in TERM_RATE), 'Chọn kỳ hạn gửi nhé.')
-        amount = _amount(p, low=1 if term == 0 else SAVE_MIN)
+        amount = _amount(p, low=1 if term == 0 else SAVE_MIN, most=TX_MAX)
+        need(not term or amount <= TERM_MAX, f'Sổ có kỳ hạn tối đa {_fmt(TERM_MAX)} xu mỗi sổ.')
+        need(term or b['demand'] + amount <= BAL_MAX, f'Sổ không kỳ hạn chỉ nhận thêm được {_fmt(max(0, BAL_MAX - b["demand"]))} xu.')
         src = _src(p)
         renew = p.get('renew', False)
         need(type(renew) is bool, 'Chọn có tái tục hay không nhé.')
@@ -873,8 +890,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_bk_unsave':
         tid = p.get('id')
         if tid == 'demand':
-            amount = _amount(p)
+            amount = _amount(p, most=TX_MAX)
             need(b['demand'] >= amount, f'Sổ không kỳ hạn chỉ có {_fmt(b["demand"])} xu.', 'not_enough')
+            need(b['balance'] + amount <= BAL_MAX, f'Tài khoản chỉ nhận thêm được {_fmt(max(0, BAL_MAX - b["balance"]))} xu.')
             b['demand'] -= amount
             if not b['demand']:
                 b['pend'] = 0
@@ -888,6 +906,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         held = max(0, day - t['start'] - ic.forfeited(s, t['start'], day))
         gain = t['amount'] * DEMAND_BP * held // 10000
         lost = term_interest(t['amount'], t['rate'], t['term']) - gain
+        need(b['balance'] + t['amount'] + gain <= BAL_MAX, f'Tài khoản chỉ nhận thêm được {_fmt(max(0, BAL_MAX - b["balance"]))} xu.')
         b['terms'].remove(t)
         b['balance'] += t['amount'] + gain
         b['stats']['interest_in'] += gain
@@ -925,7 +944,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         elif what == 'all':
             amount = c['bal']
         else:
-            amount = _amount(p)
+            amount = _amount(p, most=TX_MAX)
         amount = min(amount, c['bal'])
         if src == 'acc':
             need(b['balance'] >= amount, f'Tài khoản chỉ còn {_fmt(b["balance"])} xu.', 'not_enough')
@@ -1057,7 +1076,7 @@ def action(s: dict, name: str, p: dict) -> dict:
 # ---------------------------------------------------------------- views
 def rules() -> dict:
     return dict(demand_bp=DEMAND_BP, demand_rate=DEMAND_BP * YEAR_DAYS, term_rate={str(k): v for k, v in TERM_RATE.items()},
-                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX, renew_max=RENEW_MAX,
+                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX, renew_max=RENEW_MAX, tx_max=TX_MAX, term_max=TERM_MAX,
                 atm_fee=ATM_OTHER_FEE, card_cycle=CARD_CYCLE, card_grace=CARD_GRACE, card_min_pct=CARD_MIN_PCT,
                 card_min_floor=CARD_MIN_FLOOR, card_bp=CARD_BP, card_late_fee=CARD_LATE_FEE, cash_fee_pct=CASH_FEE_PCT,
                 cash_fee_min=CASH_FEE_MIN, cash_share=CASH_SHARE, loan_bp=dict(LOAN_BP), loan_terms=list(LOAN_TERMS),

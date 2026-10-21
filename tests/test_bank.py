@@ -112,6 +112,46 @@ class Account(unittest.TestCase):
         with self.assertRaises(GameError):
             act(s, 'jr_bk_deposit', amount=0)
 
+    def test_big_moves_up_to_a_billion(self):
+        # F#462 (21/10): more than 10 triệu answered "Số tiền cần là số xu nguyên, ít nhất 1 xu." and took several tries.
+        s = opened(wallet=900_000_000)
+        rows0 = len(s['journey']['history'])
+        s, r = act(s, 'jr_bk_deposit', amount=850_000_000)
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), (850_000_000, 50_000_000))
+        rows = s['journey']['history'][rows0:]
+        self.assertEqual(sum(x['amount'] for x in rows), -850_000_000)
+        self.assertTrue(all(abs(x['amount']) <= bk.ROW_MAX for x in rows))   # every build validates ±10 M a row
+        # A sổ có kỳ hạn keeps its old cap (the term-deposit economy is unchanged).
+        with self.assertRaisesRegex(GameError, 'Sổ có kỳ hạn tối đa 10.000.000 xu mỗi sổ'):
+            act(s, 'jr_bk_save', amount=bk.TERM_MAX + 1, term=30)
+        s, _ = act(s, 'jr_bk_save', amount=bk.TERM_MAX, term=30)
+        s, _ = act(s, 'jr_bk_save', amount=250_000_000, term=0)
+        s, _ = act(s, 'jr_bk_unsave', id='demand', amount=100_000_000)
+        self.assertEqual((B(s)['balance'], B(s)['demand'], B(s)['terms'][0]['amount']), (690_000_000, 150_000_000, bk.TERM_MAX))
+        s, _ = act(s, 'jr_bk_withdraw', amount=690_000_000)
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), (0, 740_000_000))
+        validate_state(copy.deepcopy(s))
+        with self.assertRaisesRegex(GameError, 'tối đa 1.000.000.000 xu'):
+            act(s, 'jr_bk_deposit', amount=10**9 + 1)
+        with self.assertRaisesRegex(GameError, 'ít nhất 1 xu'):
+            act(s, 'jr_bk_deposit', amount=0)
+        rules = public_state(s)['journey']['bank']['rules']
+        self.assertEqual((rules['tx_max'], rules['term_max']), (10**9, 10**7))
+
+    def test_big_moves_stop_at_what_the_save_can_hold(self):
+        s = opened(wallet=10**9)
+        s, _ = act(s, 'jr_bk_deposit', amount=10**9)
+        s['journey']['wallet'] = 900_000_000
+        with self.assertRaisesRegex(GameError, 'Ví chỉ giữ thêm được 100.000.000 xu'):
+            act(s, 'jr_bk_withdraw', amount=200_000_000)
+        with self.assertRaisesRegex(GameError, 'Tài khoản chỉ nhận thêm'):
+            act(s, 'jr_bk_deposit', amount=1)
+        s, _ = act(s, 'jr_bk_save', amount=bk.TERM_MAX, term=7)
+        B(s)['balance'] = bk.BAL_MAX - 1
+        tid = B(s)['terms'][0]['id']
+        with self.assertRaisesRegex(GameError, 'Tài khoản chỉ nhận thêm'):
+            act(s, 'jr_bk_unsave', id=tid, confirm=True)
+
     def test_sweep_covers_a_negative_wallet(self):
         s = opened(wallet=100, deposit=100)
         s['journey']['wallet'] = -30

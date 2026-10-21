@@ -187,6 +187,24 @@ class Savings(unittest.TestCase):
             act(s, 'iv_withdraw', all=True)
 
 
+    def test_big_deposit_and_withdrawal(self):
+        # F#462 (21/10): one move may be up to 1 tỷ (was 10 triệu); Sổ ví rows stay within ±10 M each.
+        s = state(wallet=600_000_000)
+        n0 = len(s['journey']['history'])
+        s, _ = act(s, 'iv_save', amount=450_000_000)
+        rows = s['journey']['history'][n0:]
+        self.assertEqual(sum(r['amount'] for r in rows), -450_000_000)
+        self.assertTrue(all(abs(r['amount']) <= iv.ROW_MAX for r in rows))
+        s, _ = act(s, 'iv_withdraw', amount=200_000_000)
+        self.assertEqual((inv(s)['saving']['balance'], s['journey']['wallet']), (250_000_000, 350_000_000))
+        s, _ = act(s, 'iv_save', all=True)
+        self.assertEqual(inv(s)['saving']['balance'], 600_000_000)
+        validate_state(s)
+        iv.validate(s)
+        with self.assertRaisesRegex(GameError, 'tối đa 1.000.000.000 xu'):
+            act(s, 'iv_withdraw', amount=10**9 + 1)
+
+
 def with_offer(s, kind='moon', pay_days=2):
     day = s['journey']['life_day']
     inv(s)['scam'] = dict(kind=kind, stage='offer', day=day, stake=0, paid=0, pay_days=pay_days, paid_days=0)

@@ -42574,6 +42574,14 @@
   "Giao xe đúng phiếu $1. Thu $2 xu: phụ tùng $3 xu, công $4 xu. 🎓 Đại lý bớt 1 xu phụ tùng nhờ chứng chỉ.": "Bike delivered per slip $1. Collected $2 coins: parts $3 coins, labor $4 coins. 🎓 The dealer took 1 coin off the parts for your certificate.",
     "Áo mẹ em mặc ngày cưới. Chỗ nách sờn rách, hàng cúc thiếu một hột. Kịp không $1?": "My mother wore this at her wedding. The underarm is worn through and one button is missing. Is there time, $1?",
     "Em đậu học bổng rồi $1 ơi! Phong bì tới đúng ngày luôn!": "I got the scholarship, $1! The envelope arrived right on time!",
-    "Cây phượng phải ở góc trái nha $1. Còn đây là bồn hoa lớp em trồng!": "The flame tree has to be in the left corner, $1. And this is the flowerbed my class planted!"
+    "Cây phượng phải ở góc trái nha $1. Còn đây là bồn hoa lớp em trồng!": "The flame tree has to be in the left corner, $1. And this is the flowerbed my class planted!",
+    "Số tiền cần là số xu nguyên, ít nhất $1 xu.": "The amount must be a whole number of xu, at least $1 xu.",
+    "Mỗi lần tối đa $1 xu.": "At most $1 xu at a time.",
+    "Tài khoản chỉ nhận thêm được $1 xu.": "The account can only take $1 more xu.",
+    "Ví chỉ giữ thêm được $1 xu.": "Your wallet can only hold $1 more xu.",
+    "Sổ không kỳ hạn chỉ nhận thêm được $1 xu.": "The demand savings book can only take $1 more xu.",
+    "Sổ chỉ nhận thêm được $1 xu.": "The savings book can only take $1 more xu.",
+    "$1 cần là số xu nguyên, ít nhất $2 xu.": "$1 must be a whole number of xu, at least $2 xu.",
+    "Sổ có kỳ hạn tối đa $1 xu mỗi sổ.": "A term deposit holds at most $1 xu per book."
   }
 }
