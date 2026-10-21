@@ -228,7 +228,7 @@ def ticket(day: int, slot: int) -> dict:
     # 5. the work: the first part in order [and its reading], the second part's reading
     ctx = dict(goal=goal, kind=kind, top=top, build=build)
     first = build[0]
-    add(sk.ordered(r, 'lap', first, C.WORK_TITLE[first], f'Lắp {lname(C.MODS[first]["name"])}: bấm lần lượt từng việc theo sổ tay.', C.STEPS[first]))
+    add(sk.ordered(r, 'lap', first, C.WORK_TITLE[first], f'{C.MODS[first]["name"]}: bấm lần lượt từng việc theo sổ tay.', C.STEPS[first]))
     if level >= 1 or len(build) == 1:
         pair = _mod_check(r, first, ctx)
         add(pair, None if first in ('khi_dong', 'son') else False)
@@ -389,7 +389,7 @@ def _warn(s: dict, c: dict, d: dict, t: dict, st: dict) -> str:
     if legal['warn'] % C.WARN_EVERY == 0:
         d['desk']['marks']['warned'] = c['day']
     tail = f' Xưởng bị phường nhắc nhở, nộp {fine} xu.' if fine else ' Xưởng bị phường nhắc nhở.'
-    return ' ⚖️ Lắp hay cho qua như vậy là trái luật: khách ra đường bị phạt.' + tail
+    return ' ⚖️ Lắp hay cho qua như vậy là trái luật, khách ra đường sẽ bị phạt.' + tail
 
 
 # ---------------------------------------------------------------- actions
