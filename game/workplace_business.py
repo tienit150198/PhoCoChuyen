@@ -102,6 +102,7 @@ ORDERS = {
     'radio': ('Việc riêng: thu một đoạn lời chúc cho nhà khách quen', 14, 3, {}),
     'moto': ('Đơn riêng: bảo dưỡng chiếc xe số của nhà khách quen', 16, 4, {}),
     'vet': ('Việc riêng: ghé nhà khách quen cắt móng, xem tai cho bé mèo', 14, 3, {}),
+    'tuning': ('Đơn riêng: thay lốp, chỉnh phuộc cho chiếc xe của nhà khách quen', 18, 4, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

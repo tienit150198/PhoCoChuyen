@@ -12,7 +12,7 @@ from tests.test_career_laundry import solve
 def test_all_careers_publish_competition_without_mutating_old_save():
     s = E.new_state()
     before = copy.deepcopy(s)
-    assert len(s['careers']) == 64   # + restore, + research, + radio, + moto, + vet
+    assert len(s['careers']) == 65   # + restore, + research, + radio, + moto, + vet, + tuning
     for cid in s['careers']:
         view = E.public_state(s, full=cid)['careers'][cid]['competition']
         assert len(view['standings']) == 4

@@ -73,6 +73,7 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   radio:style('antenna','banner','books','#3f6fb0','#e4eefb'),
   moto:style('scooter','workshop','toolbox','#c0562b','#fbe9dd'),
   vet:style('stethoscope','porch','planter','#2f8f7a','#dff3ee'),
+  tuning:style('dyno','workshop','toolbox','#b8322a','#fde4df'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -328,6 +329,10 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'stethoscope':  // a paw print on a clinic card, a stethoscope hung round it: the vet clinic
       round(-34,-38,68,72,10,body);ellipse(0,6,13,11,cream);for(const [x,y] of [[-15,-11],[-5,-18],[5,-18],[15,-11]])ellipse(x,y,5,6,cream);
       arc(0,14,30,.15,Math.PI-.15,ink,3);line([[-29,19],[-36,-30]],ink,3);line([[29,19],[36,-30]],ink,3);ellipse(0,44,7,7,s.light);line([[0,44],[0,37]],ink,3);break;
+    case 'dyno':  // a low sports car on the rollers under a rev gauge: the tuning shop
+      round(-44,30,88,8,3,'#6f7b86');ellipse(-24,26,10,10,ink);ellipse(-24,26,4,4,cream);ellipse(24,26,10,10,ink);ellipse(24,26,4,4,cream);
+      poly([[-40,22],[-36,8],[-14,4],[-4,-8],[18,-8],[30,4],[40,8],[42,22]],body);poly([[-8,-4],[2,-4],[2,4],[-12,4]],s.light);poly([[6,-4],[16,-4],[24,4],[6,4]],s.light);
+      arc(0,-26,22,Math.PI,Math.PI*2,ink,4);line([[0,-26],[14,-40]],'#d9534f',3);ellipse(0,-26,4,4,ink);break;
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;

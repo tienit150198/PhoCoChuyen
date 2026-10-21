@@ -37594,7 +37594,14 @@
     "Họ hoàn đúng khoản thu thêm rồi. Gọn, rõ, không ai phải to tiếng.": "They refunded exactly the extra charge. Clean, clear, nobody had to raise their voice.",
     "Cây bút chì này chị dùng gạch chân những dòng làm mình khó chịu. Đọc nó trước, mình mới không bị bất ngờ.": "I use this pencil to underline the lines that make me uncomfortable. Read those first and nothing catches you off guard.",
     "Cô cất bộ hồ sơ đánh số làm mẫu luôn. Lần sau giấy gì cô cũng xếp vậy.": "I'm keeping the numbered file as a model. From now on I'll arrange every paper like that.",
-    "Em sẽ làm như chị: đọc cả trang bất lợi, giữ kín chuyện của khách, kết luận đúng chứng cứ.": "I'll work like you: read the unfavourable page too, keep clients' matters private, conclude only from evidence."
+    "Em sẽ làm như chị: đọc cả trang bất lợi, giữ kín chuyện của khách, kết luận đúng chứng cứ.": "I'll work like you: read the unfavourable page too, keep clients' matters private, conclude only from evidence.",
+  "Bấm Nghe khách muốn độ gì để nhận xe.": "Tap Hear what they want tuned to take the vehicle in.",
+  "Nghe khách nói rồi chọn đúng mục tiêu.": "Hear the customer out, then pick the right goal.",
+  "Lên bảng độ theo thứ tự ưu tiên, trong ngân sách, bỏ đồ trái luật.": "Build the sheet in priority order, within budget, leaving out illegal parts.",
+  "Khách dặn điều oái oăm: chọn cách trả lời thật thà, đúng luật.": "The customer asks for something awkward: pick the honest, legal answer.",
+  "Đọc biểu đồ dyno, tính rồi bấm Ghi vào phiếu.": "Read the dyno chart, work it out, then tap Write on the ticket.",
+  "Chọn đồ trái luật thì xưởng bị nhắc nhở và phải làm lại.": "Pick an illegal part and the shop is warned, and the step must be redone.",
+  "Có chuyện ở xưởng: chọn cách xử lý rồi làm tiếp.": "Something came up at the shop: choose what to do, then carry on."
   },
   "patterns": {
     "Đang giữ $1 ở $2. Tiếp tục hoặc hủy trước khi nhận việc khác.": "You're holding $1 at $2. Continue or cancel it before taking another.",

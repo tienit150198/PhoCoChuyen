@@ -90,6 +90,8 @@ NORMS = {
     'moto': dict(rate=.10, cash=.70, lo=1, hi=3, bill=20),
     # 🩺 Phòng khám Thú y Cỏ May: a clinic takes no tips; a grateful owner leaves something for the staff's tea now and then
     'vet': dict(rate=.04, cash=0, lo=0, hi=0, bill=10),
+    # 🔧 Xưởng độ xe Tư Pít-tông: a happy rider rounds the bill up for Mi Lốp now and then
+    'tuning': dict(rate=.10, cash=.70, lo=1, hi=4, bill=30),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
     'zpop': dict(rate=.10, cash=.60, lo=1, hi=4, bill=30),
 }
@@ -272,6 +274,7 @@ CAREER_LINES = {
     'reception': ('Nói một lần là lễ tân nhớ hết mình cần gì.', 'Hành lý lên tận phòng, bình gốm không mẻ chút nào.', 'Mất gấu bông mà lễ tân tìm kịp giờ xe chạy.'),
     'teller': ('Đếm tiền trước mặt tôi, đọc to từng con số.', 'Đọc lại tên người nhận, khỏi lo chuyển nhầm.', 'Giải thích chậm rãi, tôi hiểu hết.'),
     'moto': ('Nói thật chỗ hư, không vẽ bệnh.', 'Bơm bánh đúng áp, xe chạy êm ru.', 'Thay nhớt xong còn đưa nhớt cũ cho coi.'),
+    'tuning': ('Chạy dyno cho coi tận mắt, số rõ ràng.', 'Nói thẳng món nào đi đăng kiểm không qua.', 'Độ xong xe bốc mà vẫn êm.'),
     'vet': ('Bác sĩ cân bé rồi mới tính thuốc, yên tâm ghê.', 'Ôm bé nhẹ nhàng, bé không sợ.', 'Nói thật bệnh, không bán thuốc thừa.'),
     'radio': ('Đài đọc đúng tên bà cụ nhà tôi, cả nhà vui.', 'Mất điện mà đài xin lỗi đàng hoàng, nghe dễ chịu.', 'Mở đúng bài tôi xin, hay ghê.'),
     'banquet': ('Món ra nóng hổi, bày đẹp như hình.', 'Sảnh trang trí đúng màu nhà mình chọn.', 'Bé dị ứng mà bếp nhớ đổi món, yên tâm ghê.'),
@@ -336,6 +339,7 @@ GIFTS = {
     'reception': (('🖍️', 'bức tranh bé Su vẽ cả quầy lễ tân'), ('💌', 'tấm thiệp cảm ơn kẹp dưới bảng móc chìa'), ('🍊', 'túi quýt ông Tư Bến mang từ quê')),
     'teller': (('🍵', 'ly trà đá bà Lựu mang sang'), ('💌', 'tấm thiệp cảm ơn kẹp ở Quầy số 3'), ('🍱', 'hộp cơm sườn dì Bảy để phần')),
     'moto': (('🥤', 'ly nước mía bà Chín mua cho cả tiệm'), ('🍌', 'nải chuối chú Hai Lúa mang từ quê'), ('💌', 'mảnh giấy cảm ơn kẹp ở yên xe')),
+    'tuning': (('🥤', 'thùng nước tăng lực cậu Khoa mua cho cả xưởng'), ('🏆', 'tấm ảnh cúp đua kẹp ở băng dyno'), ('💌', 'mảnh giấy cảm ơn dán trên mũ bảo hiểm')),
     'vet': (('🍊', 'túi quýt cô Ba Mập gửi cả phòng khám'), ('🖍️', 'bức vẽ bé Na tặng con hamster được chữa'), ('💌', 'tấm thiệp ông Sáu viết tay')),
     'radio': (('🍊', 'túi quýt cô Ba gửi cả đài'), ('💌', 'lá thư thính giả gửi qua hộp thư đài'), ('🎨', 'bức vẽ cái loa phường bé Su tặng')),
     'banquet': (('🍬', 'hộp kẹo cưới cô dâu gửi cả bếp'), ('💌', 'tấm thiệp cảm ơn của nhà mừng thọ'), ('🎂', 'miếng bánh kem sinh nhật bé Bin để phần')),

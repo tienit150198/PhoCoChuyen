@@ -77,6 +77,7 @@ CAREER_IDS = (
     "radio",
     "moto",
     "vet",
+    "tuning",
 )
 _FILES = (
     "career_specialisms.json",
@@ -92,6 +93,7 @@ _FILES = (
     "career_specialisms_radio.json",
     "career_specialisms_moto.json",
     "career_specialisms_vet.json",
+    "career_specialisms_tuning.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -163,6 +165,7 @@ _TITLE_DIGESTS = {
     "radio": "b82b3980ff10a04779e0e9b212732d34035a0a167814c269a1cd977c32cf1aea",
     "moto": "ebf0cfe2d167baa4427d6211f07d3991b93de2cd26c20304dee1384de5d7c56f",
     "vet": "05f95481948816ea7d681248b8686366eaab370a68aa520a7f029386aa3c279d",
+    "tuning": "7aa5bb240a032acbab94a498a73d1e6d479d82cfc267070bd1509e15c96119df",
 }
 
 

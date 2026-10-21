@@ -1,0 +1,39 @@
+/* 🔧 Xưởng độ xe Tư Pít-tông: racing red like the shop's sign, an asphalt-blue second colour for the players' vehicles.
+ * The vehicle on the ticket (buildUp kind car / bike) takes the customer's paint (--dx-paint); the dyno sheet is an SVG. */
+.career-job.tuning{--sk-accent:#b8322a;--sk-accent-2:#3b5f86}
+.tuning .sl-ticket{background:#fdf3f1}
+.tuning .dx-goal{margin:2px 0 6px;font-weight:700}
+.tuning .dx-build{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tuning .dx-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;border:1px dashed var(--sk-line,#c7cdd8);color:var(--sk-muted,#5d6675)}
+.tuning .dx-chip.on{border-style:solid;border-color:var(--sk-accent);color:inherit;font-weight:600}
+.tuning .dx-paint{display:grid;justify-items:center;gap:6px}
+.tuning .ck-k-car .ck-vessel,.tuning .ck-k-bike .ck-vessel{position:relative;width:118px;min-height:56px;padding:8px 8px 18px;place-items:center;overflow:visible}
+.tuning .ck-k-car .ck-vessel{border-radius:30px 40px 10px 10px;border:3px solid var(--dx-paint,#b8322a);background:color-mix(in srgb,var(--dx-paint,#b8322a) 18%,#fff)}
+.tuning .ck-k-bike .ck-vessel{border-radius:40px 14px 18px 18px;border:3px solid var(--dx-paint,#b8322a);background:color-mix(in srgb,var(--dx-paint,#b8322a) 14%,#fff)}
+.tuning .ck-k-car .ck-vessel::before,.tuning .ck-k-car .ck-vessel::after,.tuning .ck-k-bike .ck-vessel::before,.tuning .ck-k-bike .ck-vessel::after{content:"";position:absolute;bottom:-11px;width:22px;height:22px;border-radius:50%;background:#2b2b2b;box-shadow:inset 0 0 0 6px #2b2b2b,inset 0 0 0 9px #c9ced6}
+.tuning .ck-k-car .ck-vessel::before{left:14px}.tuning .ck-k-car .ck-vessel::after{right:14px}
+.tuning .ck-k-bike .ck-vessel::before{left:4px}.tuning .ck-k-bike .ck-vessel::after{right:4px}
+.tuning .ck-k-car .ck-pieces,.tuning .ck-k-bike .ck-pieces{font-size:18px}
+.tuning .dx-car figcaption{margin-top:12px}
+.tuning .dx-dyno{margin:12px 0;padding:12px 14px}
+.tuning .dx-dyno figcaption{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.tuning .dx-legend{font-size:12px;color:var(--sk-muted,#5d6675);display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+.tuning .dx-legend i{display:inline-block;width:18px;height:0;border-top:3px solid var(--sk-accent);vertical-align:middle}
+.tuning .dx-legend i.dx-k-before{border-top:3px dashed #8a8f99}
+.tuning .dx-svg{display:block;width:100%;height:auto;font-size:10px;fill:var(--sk-muted,#5d6675)}
+.tuning .dx-grid{stroke:var(--sk-line,#d8dde6);stroke-width:1}
+.tuning .dx-before{fill:none;stroke:#8a8f99;stroke-width:2;stroke-dasharray:5 4}
+.tuning .dx-after{fill:none;stroke:var(--sk-accent);stroke-width:3;stroke-linejoin:round}
+.tuning .dx-afr{fill:none;stroke:var(--sk-accent-2);stroke-width:2}
+.tuning .dx-limit{stroke:#c62828;stroke-width:1.5;stroke-dasharray:4 3}
+.tuning .dx-lean{fill:#c62828}
+.tuning .dx-axis{font-size:9px}
+.tuning .dx-afr-svg{margin-top:4px}
+.tuning .dx-table summary{min-height:40px;font-size:13px}
+.tuning .dx-table table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tuning .dx-table th,.tuning .dx-table td{padding:4px 6px;border-bottom:1px solid var(--sk-line,#d8dde6);text-align:right}
+.tuning .dx-legal{padding:10px 12px;border-left:3px solid #c62828;background:#fdecea;border-radius:8px}
+html[data-theme="dem"] .career-job.tuning{--sk-accent:#f08a7e;--sk-accent-2:#8fb6d4}
+html[data-theme="dem"] .tuning .sl-ticket{background:transparent}
+html[data-theme="dem"] .tuning .dx-legal{background:transparent}
+html[data-theme="dem"] .tuning .ck-k-car .ck-vessel,html[data-theme="dem"] .tuning .ck-k-bike .ck-vessel{background:color-mix(in srgb,var(--dx-paint,#b8322a) 30%,#1d1f24)}

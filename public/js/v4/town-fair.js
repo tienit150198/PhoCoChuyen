@@ -18,7 +18,7 @@ const WEEKDAY=['Chủ nhật','thứ Hai','thứ Ba','thứ Tư','thứ Năm','t
 const S={picked:false,dlg:null,env:null,tab:'walk',v:null,board:null,boardEvent:'',busy:false,loading:false,flash:null,group:'',pct:20,career:'',timer:0,tick:0,seq:0,emoji:null,more:[],needs:{}};
 /** Careers the catalogue sends without an emoji (journey.js falls back to ✨): the one their guide uses, so the booth
  * reads "🧰 Phục chế" like the career itself (tutorial/guide-content.js). */
-const CAREER_EMOJI={restore:'🧰',research:'🔬',radio:'📻',moto:'🏍️',vet:'🩺',hotel:'🛎️',banquet:'👨‍🍳',reception:'🔑',teller:'🏦',oil:'🛢️',railway:'🚦',nurse:'🏥',
+const CAREER_EMOJI={restore:'🧰',research:'🔬',radio:'📻',moto:'🏍️',vet:'🩺',tuning:'🔧',hotel:'🛎️',banquet:'👨‍🍳',reception:'🔑',teller:'🏦',oil:'🛢️',railway:'🚦',nurse:'🏥',
   lighthouse:'🗼',rescue:'📞',lifeguard:'🛟',library:'📚',police:'👮',zpop:'💿',art_studio:'🎨',lawyer:'⚖️',laundry:'🧺',post_office:'✉️',customs:'🛃',
   pilot:'🧑‍✈️',flight_attendant:'💁'};
 

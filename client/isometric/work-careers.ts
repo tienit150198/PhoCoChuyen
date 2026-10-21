@@ -66,6 +66,7 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   radio:identity('Kiểm phòng thu · đọc tin, quảng cáo duyệt và lời chúc đúng tên','Phòng thu','Bàn trộn âm & micro','Phòng máy & lịch phát sóng'),
   moto:identity('Nghe bệnh xe · chốt lỗi rồi mới cầm cờ lê · giao đúng biển số','Cầu nâng','Tủ đồ nghề & phụ tùng','Quầy nhận và giao xe'),
   vet:identity('Nghe chủ kể · cân bé, tính liều theo cân · trả đúng bé','Bàn khám','Tủ thuốc & sổ tiêm','Ghế chờ & lồng bé'),
+  tuning:identity('Nghe mục tiêu · lên bảng độ trong ngân sách · chạy dyno, đo ồn rồi mới giao','Băng thử dyno','Tủ đồ độ & cầu nâng','Quầy nhận xe & thẻ thông số'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
@@ -137,6 +138,12 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('workbench','bench',r(3.1,3.3,5.8,4.2),4.45,4.8,50,0xc0562b);
     f('pipework',r(2.85,.6,3.95,1.5),92,0x6f7b86);f('rack',r(4.4,.6,5.6,1.45),110,0x9aa7b8);f('crate',r(5.95,.7,6.55,1.5),50,0xc2a171);
     z(r(2.6,.3,6.7,1.9),'tile',0xd5d2cc);z(r(2.8,3,6.5,4.5),'mat',0xbfb8ad);
+  }else if(career==='tuning'){
+    // The dyno rollers in front, the parts wall on the left, the lift, the tyre rack and the noise meter on its stand behind.
+    clear(false,'tile');s('shelf','tools',r(.55,1.8,1.5,4),2,2.9,118,0x8a6f66);
+    s('workbench','bench',r(3,3.3,5.9,4.2),4.45,4.8,50,0xb8322a);
+    f('rack',r(2.85,.6,4.05,1.45),110,0x9aa7b8);f('pipework',r(4.4,.6,5.4,1.5),92,0x6f7b86);f('crate',r(5.75,.7,6.5,1.5),50,0xc2a171);
+    z(r(2.6,.3,6.7,1.9),'tile',0xd9d4d0);z(r(2.8,3,6.6,4.5),'mat',0xb7aea6);
   }else if(career==='vet'){
     // The examination table in front, the medicine cabinet on the left wall, the wash basin, pet carriers and the waiting bench behind.
     clear(false,'tile');s('shelf','medicine',r(.55,1.85,1.45,3.95),1.95,2.9,118,cream);

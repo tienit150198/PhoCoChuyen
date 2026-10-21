@@ -1,0 +1,250 @@
+{
+  "tuning": [
+    {
+      "tier": 1,
+      "title": "Lập bảng ưu tiên độ theo mục tiêu",
+      "output_unit": "bảng ưu tiên độ",
+      "inputs": [
+        {
+          "name": "Bộ thẻ mục tiêu hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chia bốn mục tiêu: đi phố êm, triển lãm, đua drag, đua đèo.",
+        "Ghi thứ tự món độ của từng mục tiêu theo sổ tay xưởng.",
+        "Dán bảng cạnh bàn nhận xe và cho chủ xưởng ký."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Mỗi mục tiêu có thứ tự món riêng, đèo bắt đầu bằng phanh.",
+        "bad": "Một danh sách chung, món đắt nhất đứng đầu.",
+        "why": "Đúng thứ tự thì tiền khách tiêu vào chỗ cần."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn phiếu nhận xe độ",
+      "output_unit": "phiếu nhận xe độ",
+      "inputs": [
+        {
+          "name": "Xấp phiếu nhận xe hư cấu",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Thêm ô số khung, số máy và ô đối chiếu giấy đăng ký.",
+        "Thêm ô nén máy, mòn phanh, mòn lốp và rò rỉ.",
+        "Cho khách ký mục tiêu và ngân sách trước khi đụng cờ lê."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Có số khung, số máy khớp giấy, số đo nén máy và chữ ký ngân sách.",
+        "bad": "Chỉ ghi tên khách và “độ cho bốc”.",
+        "why": "Không khớp giấy thì không độ."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập bảng giá đồ độ trong ngân sách",
+      "output_unit": "bảng giá đồ độ",
+      "inputs": [
+        {
+          "name": "Bộ catalô đồ độ giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Chép giá từng món cho xe máy và ô tô.",
+        "Đánh dấu món chỉ ô tô mới lắp: turbo, cánh gió.",
+        "Thêm cột cộng dồn để thợ cộng nhanh tổng bảng độ."
+      ],
+      "check": {
+        "prompt": "Bảng giá nào dùng được?",
+        "good": "Có giá riêng xe máy, ô tô, cột cộng dồn và dấu món chỉ dành cho ô tô.",
+        "bad": "Một giá chung, turbo ghi cả cho xe máy.",
+        "why": "Báo giá đúng thì khách không bị đội tiền."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Lập sổ đối chiếu luật độ xe",
+      "output_unit": "sổ luật độ xe",
+      "inputs": [
+        {
+          "name": "Bộ ảnh đồ độ hư cấu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Chia đồ độ thành đúng luật và không được lắp.",
+        "Ghi luật bị vi phạm: khí thải, tiếng ồn, đèn, biển số.",
+        "Thêm món thay thế đúng luật cho từng món bị cấm."
+      ],
+      "check": {
+        "prompt": "Sổ nào được duyệt?",
+        "good": "Mỗi món cấm có luật vi phạm và một món thay thế đạt chuẩn.",
+        "bad": "Chỉ ghi “đừng để công an thấy”.",
+        "why": "Khách bị phạt là xưởng làm hại khách."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Chuẩn hóa quy trình nạp map ECU",
+      "output_unit": "quy trình nạp map",
+      "inputs": [
+        {
+          "name": "Bộ hộp ECU tập huấn",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Lưu map gốc trước khi nạp.",
+        "Nạp map theo mục tiêu rồi đọc AFR ở tải lớn trên dyno.",
+        "Nghèo hơn 13,5 thì nạp lại, ghi số vào sổ dyno."
+      ],
+      "check": {
+        "prompt": "Quy trình nào an toàn?",
+        "good": "Có bước lưu map gốc và ngưỡng AFR 13,5 ở tải lớn.",
+        "bad": "Nạp map mạnh nhất cho mọi xe rồi giao.",
+        "why": "Map nghèo xăng làm cháy máy."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập bảng áp lốp theo mục tiêu",
+      "output_unit": "bảng áp lốp độ",
+      "inputs": [
+        {
+          "name": "Bộ tem áp lốp hư cấu",
+          "unit": "bộ",
+          "quantity": 4,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chép áp lạnh theo tem từng mẫu xe giả lập.",
+        "Ghi thêm cột đua đèo cộng 2 psi, đua drag bánh dẫn động bớt 4 psi.",
+        "Ghi chú cột drag chỉ dùng trong trường đua."
+      ],
+      "check": {
+        "prompt": "Bảng nào được nghiệm thu?",
+        "good": "Có áp theo tem, cột đèo cộng 2, cột drag bớt 4 kèm ghi chú trường đua.",
+        "bad": "Bơm căng hết cho “chạy nhẹ”.",
+        "why": "Áp đúng giữ lốp bám đường."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Soạn sổ đo tiếng ồn và khí thải",
+      "output_unit": "sổ đo ồn và khí thải",
+      "inputs": [
+        {
+          "name": "Máy đo ồn tập huấn",
+          "unit": "máy",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Đo tiếng ồn ở nửa vòng tua tối đa, cách pô 0,5 m.",
+        "Đo CO ở không tải khi máy đủ nóng.",
+        "So với giới hạn 95 dB xe máy, 96 dB ô tô, CO 4,5% rồi ký sổ."
+      ],
+      "check": {
+        "prompt": "Sổ nào đúng?",
+        "good": "Mỗi xe có số dB ở nửa vòng tua, số CO không tải và chữ ký so giới hạn.",
+        "bad": "Đo lúc máy nguội cho số đẹp.",
+        "why": "Số đo thật mới qua được đăng kiểm."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lập sổ đọc biểu đồ dyno",
+      "output_unit": "sổ đọc dyno",
+      "inputs": [
+        {
+          "name": "Bộ biểu đồ dyno mẫu",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đọc công suất trước và sau độ ở cùng vòng tua.",
+        "Ghi đỉnh công suất và vòng tua đạt đỉnh.",
+        "Tính phần tăng bằng sau trừ trước, không làm tròn lên."
+      ],
+      "check": {
+        "prompt": "Sổ nào được duyệt?",
+        "good": "Có trước, sau, đỉnh và phần tăng tính bằng phép trừ ở cùng vòng tua.",
+        "bad": "Ghi một con số tròn cho đẹp thẻ.",
+        "why": "Dyno là chữ ký của xưởng."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Diễn tập kiểm an toàn trước khi giao",
+      "output_unit": "buổi diễn tập giao xe",
+      "inputs": [
+        {
+          "name": "Ô tô tập huấn hư cấu",
+          "unit": "chiếc",
+          "quantity": 1,
+          "unit_cost": 30000
+        },
+        {
+          "name": "Can dầu phanh",
+          "unit": "can",
+          "quantity": 2,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Siết ốc bánh đúng lực bằng cần lực.",
+        "Xả gió dầu phanh, kiểm rò rỉ xăng, nhớt, nước làm mát.",
+        "Chạy thử ở đường thử của xưởng, ghi cảm nhận vào phiếu."
+      ],
+      "check": {
+        "prompt": "Buổi diễn tập nào đạt?",
+        "good": "Đủ cần lực, xả gió phanh, kiểm rò rỉ và chạy thử ở đường thử.",
+        "bad": "Bỏ chạy thử vì khách đang gấp.",
+        "why": "Xe độ phải dừng được trước khi chạy nhanh."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Chuẩn hóa thẻ thông số giao xe",
+      "output_unit": "bộ thẻ thông số",
+      "inputs": [
+        {
+          "name": "Xấp thẻ thông số hư cấu",
+          "unit": "xấp",
+          "quantity": 4,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi đủ hạng mục đã độ và nơi mua đồ.",
+        "Chép đúng số dyno, AFR, dB và CO đã đo.",
+        "Dặn khách khai báo đổi màu, mang thẻ khi đi đăng kiểm."
+      ],
+      "check": {
+        "prompt": "Thẻ nào được giao?",
+        "good": "Đủ hạng mục, đúng số đo và lời dặn đăng kiểm.",
+        "bad": "Thẻ ghi tròn số, bỏ bớt món độ.",
+        "why": "Thẻ đúng giúp khách qua đăng kiểm."
+      }
+    }
+  ]
+}

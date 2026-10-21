@@ -20,7 +20,7 @@ if V is not None:
 @unittest.skipIf(V is None, 'vet filtered out by MNL_CAREERS')
 class Registration(unittest.TestCase):
     def test_registered_last_dormant_salaried_late_unlock(self):
-        self.assertEqual(ORDER[-1], 'vet')
+        self.assertEqual(ORDER[ORDER.index('moto') + 1], 'vet')   # 🔧 tuning appended after
         self.assertIn('vet', DORMANT)
         self.assertEqual(jr.LATE_UNLOCKS['vet'], 3)
         post = V.SPEC['employment']['postings'][0]

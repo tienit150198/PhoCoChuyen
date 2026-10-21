@@ -2234,6 +2234,45 @@ ARCS = {
                 ('me', 'Em sẽ giữ như chị dạy: cân trước, tính liều sau, nói thật với chủ.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🔧 Xưởng độ xe Tư Pít-tông (từ chương 2)
+    'tuning': dict(
+        title='Chiếc đồng hồ đo áp', emoji='⏱️',
+        keepsake=dict(emoji='⏱️', name='Chiếc đồng hồ đo áp của anh Tư', desc='Chiếc đồng hồ đo áp lốp kim đồng, mặt kính trầy xước sau hai mươi năm ở đường thử. Anh Tư dặn: nhanh mà phải dừng được.'),
+        cast={'tu': _p('Anh Tư Pít-tông', '🔧', 'Chủ xưởng độ', 'tuning_npc_01'),
+              'mi': _p('Mi Lốp', '🛞', 'Thợ phụ', 'tuning_npc_02'),
+              'kieu': _p('Chị Kiều', '📈', 'Kỹ sư dyno', 'tuning_npc_03'),
+              'sang': _p('Anh Sang', '🔊', 'Thanh niên mê pô', 'tuning_npc_08')},
+        beats=[
+            _b('Nhanh mà phải dừng được', '🛑', 'Ngày đầu ở xưởng, anh Tư chỉ vào cặp phanh trước khi chỉ vào cái máy.', [
+                ('tu', 'Khách nào cũng hỏi thêm bao nhiêu ngựa. Em hỏi lại: phanh ăn chưa, lốp còn bám không?'),
+                ('mi', 'Sổ của xưởng: đua đèo thì phanh trước, lốp sau, rồi mới tới ECU.'),
+                ('me', 'Dạ, nhanh mà phải dừng được.')]),
+            _b('Cái pô thẳng', '🔊', 'Anh Sang dựng xe trước cửa, xin lắp pô thẳng không tiêu âm.', [
+                ('sang', 'Anh trả gấp đôi, lắp pô thẳng cho nó nổ lụp bụp cho đã.'),
+                ('me', 'Pô đó vượt giới hạn tiếng ồn, xưởng không lắp anh ơi. Em có pô tiêu âm đạt chuẩn, tiếng vẫn trầm.'),
+                ('tu', 'Lắp cho khách cái bị phạt là hại khách, chứ không phải chiều khách.')],
+                _c('Anh Sang cau mặt, đòi qua tiệm khác. Bạn nói sao?',
+                   _o('a', 'Mời anh nghe thử pô tiêu âm trên băng dyno rồi hẵng quyết', [('sang', 'Ờ, nghe cũng trầm đó chớ. Thôi lắp cái này.')], rel='sang'),
+                   _o('b', 'Để anh đi, xưởng không cần khách như vậy', [('sang', 'Đi thì đi, tiệm nào chả lắp.')], rel='sang'))),
+            _b('Băng dyno nói thật', '📈', 'Cậu Khoa xin ghi thẻ thông số tròn lên 120 mã lực cho “đẹp hồ sơ”.', [
+                ('kieu', 'Băng đo 113,6. Thẻ ghi 113,6.'),
+                ('me', 'Khoa ơi, ra trường đua người ta đo lại, ghi sai là mất uy tín cả em lẫn xưởng.'),
+                ('tu', 'Con số trên thẻ là chữ ký của xưởng.')],
+                days=4, served=10, gap=1),
+            _b('Giấc mơ trường đua', '🏁', 'Mi Lốp lén độ chiếc xe số của mình, định chạy đua ngoài đường đêm nay.', [
+                ('mi', 'Chỉ một vòng thôi mà anh chị, đường vắng lắm.'),
+                ('me', 'Đua ngoài đường là liều cả mạng người khác. Tháng sau trường đua Bến Mây mở ngày chạy thử, mình đăng ký đàng hoàng.'),
+                ('kieu', 'Chị chạy dyno cho xe em trước, coi nó chịu nổi không đã.')],
+                _c('Mi đỏ mặt, hỏi bạn có giữ bí mật với anh Tư không. Bạn làm gì?',
+                   _o('a', 'Giữ bí mật, nhưng tối nay chở Mi về tận nhà', [('mi', 'Dạ… em hứa chờ tới ngày trường đua mở.')], rel='mi'),
+                   _o('b', 'Rủ Mi tự kể với anh Tư, mình đứng cạnh', [('tu', 'Thú nhận là được rồi. Tháng sau anh đóng phí trường đua cho.')], rel='mi')),
+                days=6, served=14, gap=1),
+            _b('Chiếc đồng hồ đo áp', '⏱️', 'Anh Tư đi làm trọng tài kỹ thuật cho giải đua, trao lại chiếc đồng hồ đo áp kim đồng.', [
+                ('tu', 'Lốp đúng áp, phanh đúng lực, giấy đúng số. Còn lại mới là tốc độ.'),
+                ('mi', 'Từ mai em theo anh chị học chạy dyno nghe!'),
+                ('me', 'Em sẽ giữ như anh dạy: độ đúng luật, đo thật, giao xe an toàn.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

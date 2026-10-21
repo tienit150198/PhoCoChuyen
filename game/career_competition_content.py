@@ -539,6 +539,17 @@ _profile('vet', 'Hồng Nhung | Đức Anh | Phương Vy',
     'đã cách ly đúng lúc, tính liều theo cân thật và loại vắc xin mất lạnh // isolated in time, dosed by real weights, and discarded the warmed vaccines',
     'phiếu khám ghi số cân và sổ nhiệt độ tủ vắc xin // the case slip with the weight and the vaccine fridge temperature log')
 
+_profile('tuning', 'Trọng Nghĩa | Gia Bảo | Khánh Linh',
+    'Anh Tư Pít-tông · chủ xưởng độ xe // Tư Pít-tông · owner of the tuning shop',
+    'độ đúng mục tiêu trong ngân sách, đúng luật và đo thật trên dyno // builds that fit the goal and the budget, stay legal, and are measured honestly on the dyno',
+    'map ECU và dyno | phanh và gầm | đo ồn và khí thải // ECU maps and the dyno | brakes and chassis | noise and emission checks',
+    'Sáng thứ bảy trước ngày đua đèo, bốn xe chờ lên băng dyno, một khách đòi lắp pô thẳng cho kịp giờ và thùng turbo giá rẻ không hóa đơn vừa chở tới. // The Saturday before a hill-climb day: four cars wait for the dyno, one customer wants a straight pipe fitted in time, and a box of cheap turbos with no invoice has just arrived.',
+    'Giao {a} chạy dyno và đọc AFR từng xe, {b} kiểm phanh, ốc bánh và rò rỉ trước khi chạy thử, {c} đo tiếng ồn, khí thải và từ chối đồ không rõ nguồn. // Have {a} run the dyno and read each AFR, {b} check brakes, wheel nuts and leaks before any test drive, and {c} measure noise and emissions and refuse untraceable parts.',
+    'Một xe đua đèo đã nạp map mới nhưng AFR ở tải lớn đọc 14,1, phiếu vẫn ghi “đạt”. // One hill-climb car has a new map but reads AFR 14.1 at full load, and the slip still says “passed”.',
+    'Dừng giao xe, nạp lại map, đọc lại AFR trên dyno, ghi đúng số vào thẻ thông số và báo chủ xưởng. // Hold the handover, reflash the map, read the AFR again on the dyno, write the true figure on the spec card, and tell the owner.',
+    'đã đọc lại AFR từng xe, từ chối pô thẳng và turbo không rõ nguồn, chạy thử đủ trước khi giao // re-read every AFR, refused the straight pipe and the untraceable turbos, and test-drove every car before handover',
+    'sổ dyno ghi trước và sau độ cùng thẻ thông số có số đo ồn và khí thải // the dyno log with before and after figures and the spec card with noise and emission readings')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

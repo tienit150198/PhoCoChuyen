@@ -41,6 +41,7 @@ NAMES = {
  'research':'Kính hiển vi và cân phân tích',
  'moto':'Bộ cờ lê, đồng hồ đo áp suất và đồng hồ vôn',
  'vet':'Ống nghe, cân điện tử và nhiệt kế thú y',
+ 'tuning':'Máy đọc ECU, đồng hồ đo ồn và băng thử dyno',
  'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)
