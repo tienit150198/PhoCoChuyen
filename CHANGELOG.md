@@ -1,6 +1,9 @@
 # v2.5.1 — 2026-10-22
 
 feat/careers-batch-3: 🏍️ Tiệm sửa xe Út Lanh (moto, chương 2) và 🩺 Phòng khám Thú y Cỏ May (vet, chương 3), dịch vụ Phố dịch vụ 🔧 bảo dưỡng xe, 🩺 khám, 💉 tiêm; không đổi schema (79 để trống), khóa save tùy chọn journey.xe_care; moto vào nhóm tăng tiền công LOW (+20%), vet MID. Có gì mới 2.5.1: 2 dòng.
+# v2.5.0.1 — 2026-10-21
+
+💐 Hotfix (chủ game 21/10 "viết thiệp giờ login vào vẫn bị thông báo đó, xóa đi"): public/js/isometric/town-utilities.js EV2010_UNTIL còn 21/10 23:59:59 nên thẻ Thiệp 20/10 giữa màn hình, thẻ ở Hành trình và lối vào trong Tiện ích vẫn hiện dù máy chủ đã đóng viết từ 20/10 23:59:59 (MNL_2010_UNTIL). Nay EV2010_UNTIL = 20/10 23:59:59; trang /2010 vẫn mở đọc thiệp bằng link tới hết 25/10. Không có dòng Có gì mới.
 
 # v2.5.0 — 2026-10-21
 
