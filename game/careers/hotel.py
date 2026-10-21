@@ -20,7 +20,7 @@ from . import hotel_content as hc
 from .. import consequences as cq
 
 ID = 'hotel'
-GEN = 1
+GEN = 2
 PEOPLE = hc.PEOPLE
 KINDS = hc.KINDS
 FIXED = ('gen', 'needs', '_key', 'kind')
@@ -376,16 +376,142 @@ def _decor(r, day, slot):
 BUILD = dict(checkin=_checkin, housekeeping=_housekeeping, laundry=_laundry, breakfast=_breakfast, repair=_repair, decor=_decor)
 
 
+# ---------------------------------------------------------------- generator 2 (22/10, feedback #466): a big hotel, you are staff
+def _clock(m: int) -> str:
+    return f'{m // 60}:{m % 60:02d}'
+
+
+def _board_rows(r, keep: dict, pool: tuple) -> list:
+    """The sixteen rooms with the housekeeping supervisor's statuses; `keep` fixes some of them."""
+    return [dict(no=room[0], floor=int(room[0][0]), bed=room[1], view=room[2], spot=room[3], access=room[4],
+                 status=keep.get(room[0]) or r.choice(pool)) for room in hc.ROOMS]
+
+
+def _rush(r, day, slot):
+    """Lễ tân at rush hour: four guests at once. Hand the VIP and the agency's group leader to the colleague the duty
+    sheet names, serve the others by the time they must be done, give the arriving guest a room the supervisor has
+    signed off ("Sạch · đã kiểm") and the right key cards, and take a complaint through the protocol."""
+    req_id, req_text, test = hc.REQUESTS[r.randrange(len(hc.REQUESTS))]
+    match = [room for room in hc.ROOMS if test(room)]
+    target = r.choice(match)
+    traps = ['vc', 'cleaning', 'vd', 'ooo', 'oc']
+    r.shuffle(traps)
+    keep = {target[0]: 'vci'}
+    keep.update({room[0]: status for room, status in zip([x for x in match if x is not target], traps)})
+    board = _board_rows(r, keep, ('oc', 'oc', 'oc', 'vd', 'vc', 'cleaning', 'vci'))
+    hand = r.sample(('vip', 'grp'), r.choice((1, 1, 2)))
+    kinds = ['arr'] + hand + r.sample(('out', 'walk', 'info', 'cmp'), 3 - len(hand))
+    r.shuffle(kinds)
+    now = 10 * 60 + 5 * r.randint(0, 6)
+    mins = r.sample((5, 10, 15, 20, 25, 30, 40, 45, 50), 4)
+    rows = [dict(id=f'q{i + 1}', kind=k, who=who, at=m) for i, (k, who, m) in enumerate(zip(kinds, r.sample(hc.QUEUE_NAMES, 4), mins))]
+    queue = [dict(id=q['id'], kind=q['kind'], who=q['who'], emoji=hc.QUEUE[q['kind']][0], need=hc.QUEUE[q['kind']][1], by=_clock(now + q['at']))
+             for q in rows]
+    label = {q['id']: f'{q["emoji"]} {q["who"]} · {q["need"]} · xong trước {q["by"]}' for q in queue}
+    mine = sorted((q for q in rows if not hc.QUEUE[q['kind']][2]), key=lambda q: q['at'])
+    shown = list(mine)
+    r.shuffle(shown)
+    arr = next(q for q in rows if q['kind'] == 'arr')
+    guests = 4 if req_id in ('family', 'river_family') else 2 if req_id in ('access', 'lift_double') else r.choice((1, 2))
+    cards = min(2, guests)
+    no = target[0]
+    alt = no[::-1] if no[0] != no[2] else no[0] + '0' + str(5 - int(no[2]))
+    steps = [
+        _step('rush', 'handoff', 'multi', 'Chuyển khách cho đồng đội',
+              f'Bốn khách cùng tới quầy lúc {_clock(now)}. Sổ phân công: VIP → quản lý trực; trưởng đoàn đại lý → quầy đoàn. Chọn những khách chuyển đi ngay.',
+              [dict(id=q['id'], label=label[q['id']]) for q in queue]),
+        _step('rush', 'order', 'order', 'Xếp thứ tự phục vụ tại quầy', 'Những khách còn lại: ai có giờ cần xong sớm hơn thì làm trước.',
+              [dict(id=q['id'], label=label[q['id']]) for q in shown]),
+        _step('rush', 'room', 'choice', 'Xếp phòng cho khách nhận phòng',
+              f'{arr["who"]} ({guests} khách) đặt: {req_text} Chỉ giao phòng “{hc.STATUS2["vci"]}”.',
+              [dict(id=b['no'], label=f'Phòng {b["no"]}') for b in board]),
+        _step('rush', 'cards', 'choice', 'Cài thẻ từ', f'{arr["who"]}: {guests} khách. Mỗi khách một thẻ, tối đa 2 thẻ một phòng.',
+              _opts(r, [(f'{no}-1', f'Thẻ phòng {no} · 1 thẻ'), (f'{no}-2', f'Thẻ phòng {no} · 2 thẻ'), (f'{alt}-{cards}', f'Thẻ phòng {alt} · {cards} thẻ')])),
+    ]
+    key = {'rush.handoff': sorted(q['id'] for q in rows if hc.QUEUE[q['kind']][2]), 'rush.order': [q['id'] for q in mine],
+           'rush.room': no, 'rush.cards': f'{no}-{cards}'}
+    cmp = next((q for q in rows if q['kind'] == 'cmp'), None)
+    if cmp:
+        steps.append(_step('rush', 'calm', 'order', 'Xử lý phàn nàn theo quy trình',
+                           f'{cmp["who"]}: “Phòng ồn quá, đêm qua tôi không ngủ được.” Làm đúng thứ tự trong sổ quy trình xử lý phàn nàn.', _opts(r, hc.CALM)))
+        key['rush.calm'] = [k for k, _ in hc.CALM]
+    needs = dict(now=_clock(now), queue=queue, board=board, request=req_text, arrival=arr['who'], guests=guests, steps=steps)
+    return (needs, key, 'Quầy giờ cao điểm: bốn khách cùng lúc',
+            'Bốn khách cùng tới quầy. Chị Hằng: “Chuyển đúng người cho đồng đội, ai gấp làm trước, chỉ giao phòng đã kiểm.”', 0)
+
+
+def _roomboard(r, day, slot):
+    """Buồng phòng as the floor supervisor: which dirty rooms go first (today's arrivals), lock a broken room, split
+    the rest between the two housekeepers by floor, inspect a room just cleaned, tell the desk how many sell now."""
+    rooms = list(hc.ROOMS)
+    arrive = r.sample(rooms, 3)
+    fault = r.choice([x for x in rooms if x not in arrive])
+    check = r.choice([x for x in rooms if x not in arrive and x is not fault])
+    first = r.sample(arrive, r.choice((2, 2, 3)))
+    keep = {x[0]: 'vd' if x in first else r.choice(('vci', 'cleaning')) for x in arrive}
+    keep.update({fault[0]: 'vd', check[0]: 'vc'})
+    board = _board_rows(r, keep, ('oc', 'oc', 'oc', 'vd', 'vd', 'vci', 'cleaning'))
+    etas = r.sample((12 * 60, 13 * 60, 14 * 60, 15 * 60 + 30, 17 * 60, 19 * 60), 3)
+    vip = r.randrange(3)
+    names = r.sample(hc.QUEUE_NAMES, 3)
+    arrivals = sorted((dict(name=names[i], room=x[0], eta=etas[i], vip=i == vip) for i, x in enumerate(arrive)), key=lambda a: a['eta'])
+    arrivals = [dict(a, eta=_clock(a['eta'])) for a in arrivals]
+    text, verdict = r.choice(hc.FINDINGS)
+    side = 'low' if int(check[0][0]) <= 2 else 'high'
+    issue = r.choice(hc.BOARD_FAULTS)
+    dirty = [b['no'] for b in board if b['status'] == 'vd']
+    split = {k: sum(1 for no in dirty if no != fault[0] and (int(no[0]) <= 2) == (k == 'low')) for k in hc.TEAM}
+    sell = sum(1 for b in board if b['status'] == 'vci' and b['no'] not in {x[0] for x in arrive}) + (verdict == 'pass')
+    who = hc.TEAM[side][0]
+    steps = [
+        _step('housekeeping', 'first', 'multi', 'Phòng phải dọn trước',
+              'Đối chiếu danh sách khách đến hôm nay: phòng bẩn đã gán cho khách đến thì dọn trước.',
+              [dict(id=no, label=f'Phòng {no} · {hc.STATUS2["vd"]}') for no in sorted(dirty)]),
+        _step('housekeeping', 'ooo', 'choice', 'Phòng báo hỏng', f'Phòng {fault[0]} (bẩn, vừa trả) báo: {issue.lower()}.', _opts(r, hc.OOO_OPTIONS)),
+        _step('housekeeping', 'split', 'counts', 'Chia phòng bẩn cho tổ',
+              'Giao hết phòng bẩn theo tầng phụ trách, trừ phòng hỏng. Ghi số phòng mỗi người.',
+              fields=[dict(id=k, label=f'{n} · {f}') for k, (n, f) in hc.TEAM.items()]),
+        _step('housekeeping', 'inspect', 'choice', 'Kiểm phòng vừa dọn', f'{who} báo phòng {check[0]} dọn xong. Bạn kiểm: {text}',
+              _opts(r, hc.INSPECT_OPTIONS)),
+        _step('housekeeping', 'sell', 'number', 'Báo lễ tân số phòng bán được ngay',
+              'Phòng trống “Sạch · đã kiểm”, chưa gán cho khách đến; tính cả phòng vừa kiểm nếu đạt.', unit='phòng'),
+    ]
+    key = {'housekeeping.first': sorted(x[0] for x in first), 'housekeeping.ooo': 'ooo', 'housekeeping.split': split,
+           'housekeeping.inspect': verdict, 'housekeeping.sell': sell}
+    needs = dict(board=board, arrivals=arrivals, team=[dict(id=k, who=n, floors=f) for k, (n, f) in hc.TEAM.items()],
+                 fault=dict(room=fault[0], text=issue), check=dict(room=check[0], by=who, finding=text), steps=steps)
+    return needs, key, 'Bảng phòng ca sáng: chia việc cho tổ buồng', 'Cô Tư giao bạn trực bảng phòng: phòng nào dọn trước, chia việc cho tổ, kiểm phòng, báo lễ tân.', 2
+
+
+BUILD2 = dict(checkin=_rush, housekeeping=_roomboard)
+
+
 def kind_of(day: int, slot: int) -> str:
     """The post of (day, slot): the shift rotates through the six posts."""
     return KINDS[(day - 1 + slot) % len(KINDS)]
 
 
 def make_task(day: int, slot: int, serial: int) -> dict:
+    """Generator 2 (22/10): the front desk at rush hour and the room board; a task made before it (kit legacy serial
+    band, heal_save) is rebuilt by generator 1 exactly as it was made."""
     kind = kind_of(day, slot)
-    needs, key, title, opening, npc = BUILD[kind](kit.rng(ID, day, slot), day, slot)
-    return kit.base_task(ID, day, slot, serial, npc, title, opening, gen=GEN, kind=kind, needs=needs, _key=key,
+    gen = 1 if kit.legacy(serial) else GEN
+    build = BUILD2.get(kind) if gen >= 2 else None
+    if build:
+        needs, key, title, opening, npc = build(kit.rng(ID, 'g2', day, slot), day, slot)
+    else:
+        needs, key, title, opening, npc = BUILD[kind](kit.rng(ID, day, slot), day, slot)
+    return kit.base_task(ID, day, slot, serial, npc, title, opening, gen=gen, kind=kind, needs=needs, _key=key,
                          at=0, work={}, errors=[], wrong=0, quality=100, paid=0, lines=[], stage='work', season='none')
+
+
+def heal_save(s: dict, c: dict) -> None:
+    """migrate_state: tasks made by generator 1 move into the kit legacy serial band, so make_task rebuilds them as they
+    were made (generator 2 changes what the desk and the rooms post give for a day and slot)."""
+    for t in c.get('tasks') if isinstance(c.get('tasks'), list) else ():
+        if (isinstance(t, dict) and t.get('career') == ID and t.get('gen') == 1 and type(t.get('created_turn')) is int
+                and 0 <= t['created_turn'] < kit.LEGACY_TURN):
+            t['created_turn'] += kit.LEGACY_TURN
 
 
 def _slot(t: dict) -> int:
@@ -413,6 +539,8 @@ def _quality_ok(t: dict, wrong: int) -> bool:
 
 # The way to work out a number step, said on its first slip (17/10: "dễ chơi hơn"); the second slip shows the answer.
 HOW = {
+    'housekeeping.split': 'Đếm mọi phòng “Bẩn” trên bảng theo tầng (tầng 1–2, tầng 3–4), bỏ phòng hỏng ra.',
+    'housekeeping.sell': 'Đếm phòng “Sạch · đã kiểm” trên bảng không gán cho khách đến (phòng vừa kiểm đạt đã lên bảng).',
     'housekeeping.minibar': 'Mỗi món: (số lúc đầu − số còn lại) × giá, rồi cộng các món lại. Món miễn phí không tính tiền.',
     'breakfast.boxes': 'Mỗi khách đi tour sớm một hộp.',
     'breakfast.kitchen': 'Đếm từng món của các phòng ăn tại nhà hàng (món trái lưu ý tính theo món đã đổi); phòng đi tour không tính.',
@@ -423,7 +551,13 @@ def _bonus(t: dict) -> int:
     bonus = max(3, round(hc.BONUS[t['kind']] * t['quality'] / 100))
     if t.get('season') in hc.SEASONS:
         bonus = round(bonus * hc.SEASON_BONUS)
-    return bonus
+    return bonus + (hc.FAST_BONUS if t.get('fast') is True else 0)
+
+
+def _speed(t: dict) -> None:
+    """A generator-2 job done with no slip within its procedure time is "Nhanh" (decided once, at the last step)."""
+    if t.get('gen', 1) >= 2 and isinstance(t.get('t0'), (int, float)):
+        t['fast'] = t['wrong'] == 0 and kit.now() - t['t0'] <= hc.TARGET[t['kind']]
 
 
 def _same(a, b) -> bool:
@@ -484,6 +618,8 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     kit.need(isinstance(p.get('step'), str) and p['step'] == st['id'], 'Làm theo bước đang mở trên phiếu nhé.')
     value = _value(st, p.get('value'))
     kit.start_work(t)
+    if t.get('gen', 1) >= 2 and 't0' not in t:
+        t['t0'] = round(kit.now(), 3)   # the procedure clock starts at the first step tried
     if not _same(value, key[st['id']]):
         if st['id'] not in t['errors']:
             t['errors'].append(st['id'])
@@ -491,7 +627,8 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         t['wrong'] += 1
         t['mistakes'] += 1
         t['quality'] = _quality(t['wrong'])
-        again = 'Đếm lại từng món nhé.' if st['id'] == 'laundry.tally' else 'Đọc lại phiếu và sổ quy trình rồi làm lại bước này.'
+        again = ('Đếm lại từng món nhé.' if st['id'] == 'laundry.tally' else 'Xem lại bảng phòng và sổ quy trình rồi làm lại bước này.'
+                 if st['id'].startswith(('rush.', 'housekeeping.')) and t.get('gen', 1) >= 2 else 'Đọc lại phiếu và sổ quy trình rồi làm lại bước này.')
         if st['id'] == 'decor.items':
             again = decor_hint(brief, value, key[st['id']]) or again
         elif st['id'] == 'decor.cost':
@@ -509,6 +646,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         result = dict(message='Đúng rồi. Tiếp: ' + steps[t['at']]['title'].lower() + '.', correct=True)
         _after(s, c, d, result)
         return result
+    _speed(t)
     bonus = _bonus(t)
     t['paid'] = bonus
     t['stage'] = 'done'
@@ -521,9 +659,13 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         d['stats']['posts'][t['kind']] += 1
     if t.get('season') in hc.SEASONS:
         d['stats']['seasonal'] += 1
-    post = hc.POSTS[t['kind']]
+    post = _post(t)
     kit.complete(s, c, t, bonus, f'Xong việc {post[0].lower()}: {post[2].lower()}, chất lượng {t["quality"]}%.')
     extra = ' Thưởng mùa lễ ×1.5.' if t.get('season') in hc.SEASONS else ''
+    if t.get('fast') is True:
+        extra += f' ⏱️ Nhanh, đúng quy trình: +{hc.FAST_BONUS} xu.'
+    elif t.get('fast') is False and t['wrong'] == 0:
+        extra += f' ⏱️ Quá thời gian chuẩn ({hc.TARGET[t["kind"]]} giây).'
     result = dict(message=f'Xong việc {post[0].lower()}. Chất lượng {t["quality"]}%, thưởng {bonus} xu.{extra}', correct=good, celebrate=good)
     _after(s, c, d, result)
     return result
@@ -565,9 +707,19 @@ def _extra_guest(s: dict, c: dict) -> None:
         c['active_task'] = t['id']
 
 
+def briefing(day: int) -> str:
+    """The manager's word at the start of the shift (a pure function of the day): a big hotel's numbers."""
+    r = kit.rng(ID, 'brief', day)
+    occ, arr, vip, grp = r.choice((72, 78, 84, 88, 91, 95)), r.randint(9, 18), r.randint(1, 3), r.randint(0, 2)
+    if grp:
+        return f'📋 Giao ban: công suất {occ}%, {arr} lượt khách đến, {vip} khách VIP, {grp} đoàn đại lý. Trưởng ca: Chị Hằng, quản lý trực: Anh Khôi.'
+    return f'📋 Giao ban: công suất {occ}%, {arr} lượt khách đến, {vip} khách VIP. Trưởng ca: Chị Hằng, quản lý trực: Anh Khôi.'
+
+
 def on_start(s: dict, c: dict) -> None:
     d = _data(c)
     season = season_now()
+    kit.log(s, c, ID, briefing(c['day']))
     if season != 'none' and c.get('open'):
         _extra_guest(s, c)
     kit.desk_start(s, c, ID, d['desk'], hc.DESK, None, c['life'].get('mode') == 'festival' or season != 'none')
@@ -587,8 +739,14 @@ def on_close(s: dict, c: dict) -> dict:
     return dict(lines=lines, note='Lương ca do hợp đồng chi trả. Ngày có việc đạt từ 90% mới ghi vào hành trình nghề.')
 
 
-def known_request(c: dict, t: dict) -> str:
+def _post(t: dict) -> tuple:
+    """(label, emoji, work) of the task's post; generator 2 changed what the desk and the rooms post do."""
     post = hc.POSTS[t['kind']]
+    return (post[0], post[1], hc.WORK2[t['kind']]) if t.get('gen', 1) >= 2 and t['kind'] in hc.WORK2 else post
+
+
+def known_request(c: dict, t: dict) -> str:
+    post = _post(t)
     return f'{post[1]} {post[0]}: {t["opening"]}'
 
 
@@ -604,8 +762,12 @@ def hint(c: dict, t: dict) -> str:
 def feedback(c: dict, t: dict) -> dict:
     _, steps, _ = _active(t)
     n = len(t['errors'])
-    return dict(criteria=[dict(key='steps', label='Làm đúng quy trình', score=max(1, 5 - n), note=f'{len(steps) - n}/{len(steps)} bước đúng ngay lần đầu.'),
-                          dict(key='care', label='Chất lượng phục vụ', score=max(1, min(5, (t['quality'] + 19) // 20)), note=f'Chất lượng {t["quality"]}%.')])
+    rows = [dict(key='steps', label='Làm đúng quy trình', score=max(1, 5 - n), note=f'{len(steps) - n}/{len(steps)} bước đúng ngay lần đầu.'),
+            dict(key='care', label='Chất lượng phục vụ', score=max(1, min(5, (t['quality'] + 19) // 20)), note=f'Chất lượng {t["quality"]}%.')]
+    if t.get('fast') in (True, False):
+        rows.append(dict(key='speed', label='Tốc độ', score=5 if t['fast'] else 3,
+                         note=f'Trong thời gian chuẩn ({hc.TARGET[t["kind"]]} giây).' if t['fast'] else f'Quá thời gian chuẩn ({hc.TARGET[t["kind"]]} giây) hoặc có bước làm lại.'))
+    return dict(criteria=rows)
 
 
 def public_task(t: dict) -> dict:
@@ -617,9 +779,10 @@ def public_task(t: dict) -> dict:
         v['needs'] = deepcopy(brief)
         if t['kind'] == 'decor':
             v['needs']['rule'] = decor_rule(brief)   # shown on the screen only: not part of the task (#404)
-    post = hc.POSTS[t['kind']]
+    post = _post(t)
     v['post'] = dict(id=t['kind'], label=post[0], emoji=post[1], work=post[2])
     v['season_info'] = season_view(t.get('season', 'none'))
+    v['target'] = hc.TARGET[t['kind']] if t.get('gen', 1) >= 2 else None   # the procedure time in seconds (generator 2)
     return v
 
 
@@ -631,21 +794,23 @@ def public_data(c: dict) -> dict:
     d['progress'] = dict(earned=[m['id'] for m in milestones if m['achieved']], milestones=milestones, posts=posts)
     d['desk'] = kit.desk_public(d['desk'], hc.DESK, ID, c)
     d['season'] = season_view()
+    d['briefing'] = briefing(c['day'])
     return d
 
 
 def content() -> dict:
     return dict(
-        notebook=hc.NOTEBOOK,
+        notebook=hc.NOTEBOOK[:1] + hc.NOTEBOOK2 + hc.NOTEBOOK[1:],
         posts=[dict(id=k, label=v[0], emoji=v[1], work=v[2]) for k, v in hc.POSTS.items()],
-        beds=hc.BEDS, views=hc.VIEWS, spots=hc.SPOTS, status=hc.STATUS,
+        beds=hc.BEDS, views=hc.VIEWS, spots=hc.SPOTS, status=hc.STATUS, status2=hc.STATUS2,
         seasons=[dict(id=k, label=v[0], emoji=v[1], note=v[2]) for k, v in hc.SEASONS.items()],
         intro=dict(title='Một ca ở Khách sạn Sông Mây',
-                   lead='Khách sạn bốn tầng bên sông. Mỗi ca bạn luân phiên lễ tân, buồng phòng, giặt là, bữa sáng, bảo trì và trang trí. '
-                        'Bạn nhận lương ca theo hợp đồng và thưởng chất lượng nhỏ; mùa lễ khách đông hơn, thưởng ×1.5.',
-                   work=[['🛎️', 'Nhận khách, chọn phòng, giao thẻ'], ['🧹', 'Dọn phòng, giặt chăn gối, sắp bữa sáng'], ['🔧', 'Sửa trong phòng, trang trí theo dịp']],
-                   meet=[['🙂', 'Chị Hằng trưởng ca lễ tân'], ['🧰', 'Anh Bảo tổ bảo trì'], ['🧺', 'Cô Tư trưởng buồng phòng']],
-                   stars=[['✓', 'Đọc kỹ phiếu, chọn đúng phòng sạch'], ['✓', 'Đếm thực tế, an toàn trước khi sửa'],
+                   lead='Khách sạn bốn tầng, mười sáu phòng bên sông; bạn là nhân viên ca. Mỗi ca luân phiên các vị trí theo bảng phân công; '
+                        'chấm theo đúng quy trình và tốc độ. Lương ca theo hợp đồng, thưởng nhỏ từng việc; thăng tiến lên trưởng ca, quản lý.',
+                   work=[['🛎️', 'Quầy giờ cao điểm: nhiều khách cùng lúc, chuyển đúng người'], ['📋', 'Bảng phòng: chia việc cho tổ buồng, kiểm phòng'],
+                         ['🔧', 'Giặt là, bữa sáng, bảo trì, trang trí theo phiếu']],
+                   meet=[['🙂', 'Chị Hằng trưởng ca lễ tân'], ['🧑‍💼', 'Anh Khôi quản lý trực'], ['🧺', 'Cô Tư trưởng buồng phòng']],
+                   stars=[['✓', 'Chỉ giao phòng “Sạch · đã kiểm”'], ['⏱️', 'Đúng quy trình trong thời gian chuẩn là “Nhanh”'],
                           ['✓', 'Trang trí: chọn tất cả món hợp dịp (không phải một combo vừa tiền), bỏ món khách dặn tránh']]))
 
 
@@ -668,6 +833,11 @@ def validate_task(t: dict, original: dict) -> None:
     wrong = kit.integer(t.get('wrong'), 0, 100000)
     kit.need(len(errors) <= wrong <= t.get('mistakes', 0) and (wrong == 0) == (not errors), 'Số lần làm lại sai.')
     kit.need(_quality_ok(t, wrong), 'Điểm chất lượng khách sạn không khớp.')
+    if 't0' in t:   # generator 2: the procedure clock (seconds since the epoch) and its verdict at the last step
+        kit.need(t.get('gen', 1) >= 2 and isinstance(t['t0'], (int, float)) and not isinstance(t['t0'], bool) and 0 <= t['t0'] < 10**11,
+                 'Đồng hồ quy trình khách sạn sai.')
+    if 'fast' in t:
+        kit.need(type(t['fast']) is bool and 't0' in t and at == len(steps) and (wrong == 0 or not t['fast']), 'Tốc độ khách sạn sai.')
     kit.need(type(t.get('paid')) is int and t['paid'] == (_bonus(t) if at == len(steps) else 0), 'Tiền thưởng khách sạn không khớp.')
     kit.need(isinstance(t.get('lines'), list) and len(t['lines']) <= 24 and all(isinstance(x, str) and len(x) < 500 for x in t['lines']),
              'Nhật ký khách sạn sai.')
@@ -701,21 +871,22 @@ def validate_data(c: dict) -> None:
 
 SPEC = dict(
     id=ID, prefix='ht_', category='service', people=PEOPLE,
-    meta=dict(short='Khách sạn', place='Khách sạn Sông Mây', tagline='Phòng sạch, thẻ đúng, khách ngủ ngon.', icon='bell',
-              color='#7a5a9e', light='#f1eaf8', weather='Gió sông thổi qua sảnh', work='Phiếu việc', station='Quầy lễ tân & các tầng phòng',
-              greeting='Bảng phân ca treo cạnh quầy: hôm nay bạn đi đủ các vị trí. Đọc phiếu kỹ, làm đúng thứ tự.',
-              caption='Bốn tầng phòng, một ca luân phiên', map_label='KHÁCH SẠN SÔNG MÂY'),
+    meta=dict(short='Nhân viên khách sạn', place='Khách sạn Sông Mây', tagline='Làm ca ở khách sạn lớn: đông khách, đúng quy trình, nhanh tay.',
+              icon='bell', color='#7a5a9e', light='#f1eaf8', weather='Gió sông thổi qua sảnh', work='Phiếu việc', station='Quầy lễ tân & bảng phòng',
+              greeting='Giao ban xong, bảng phân ca treo cạnh quầy. Hôm nay đông khách: làm đúng quy trình, nhanh tay mà không vội.',
+              caption='Mười sáu phòng, một ca làm thuê theo quy trình', map_label='KHÁCH SẠN SÔNG MÂY'),
     staff=[('Chị Hằng', 'desk', 'Trưởng ca lễ tân, nhớ mặt khách quen.', 84, 90), ('Cô Tư', 'rooms', 'Trưởng buồng phòng, gấp ga vuông như thước.', 80, 92)],
     roles={'desk': 'Lễ tân', 'rooms': 'Buồng phòng'}, tip=0, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK,
-    activity=('🛎️', 'Một ca ở Sông Mây', [('Lễ tân', 'Phiếu đúng, phòng sạch'), ('Buồng phòng', 'Đúng thứ tự'), ('Giặt là', 'Đếm thực tế'),
+    activity=('🛎️', 'Một ca ở Sông Mây', [('Lễ tân', 'Chuyển đúng người, phòng đã kiểm'), ('Buồng phòng', 'Chia việc cho tổ'), ('Giặt là', 'Đếm thực tế'),
                                           ('Bảo trì', 'An toàn trước')],
               ['Đọc phiếu việc', 'Làm từng bước', 'Sửa bước sai tại chỗ', 'Báo lại cho ca sau']),
     stories=[('Chiếc chuông quầy lễ tân', ('Chiếc chuông đồng trên quầy đã mòn nút bấm.', 'Bạn lau chuông, ghi giờ ca vào sổ bàn giao.',
                                            'Chị Hằng cười: “Chuông kêu đúng lúc là khách biết có người chờ mình.”'))],
     review_asides=['Nhận phòng nhanh, phòng sạch thơm.', 'Lễ tân dặn giờ ăn sáng rõ ràng.', 'Báo hỏng là có người lên sửa ngay.'], situations=[],
     more_line='Thêm một phiếu việc vừa được giao.', open_line='Chị Hằng đã mở quầy; bảng phòng và sổ quy trình đặt cạnh chuông.',
-    guide='Mỗi ca luân phiên: lễ tân (phiếu, giấy tờ, phòng, thẻ, giờ ăn sáng) → buồng phòng → giặt là → bữa sáng → bảo trì → trang trí. '
-          'Làm từng bước theo phiếu; sai bước thì sửa ngay, thưởng giảm theo chất lượng. Mùa Valentine, Tết, Giáng sinh khách đông hơn, thưởng ×1.5.',
+    guide='Mỗi ca luân phiên: quầy giờ cao điểm (chuyển khách cho đồng đội, ai gấp làm trước, phòng đã kiểm, thẻ từ) → bảng phòng (dọn trước, '
+          'khóa phòng hỏng, chia tổ, kiểm phòng) → giặt là → bữa sáng → bảo trì → trang trí. Sai bước thì sửa ngay, thưởng giảm; '
+          'đúng hết trong thời gian chuẩn được thêm 1 xu. Mùa Valentine, Tết, Giáng sinh khách đông hơn, thưởng ×1.5.',
     employment=dict(postings=[dict(id='hotel-songmay', org='Khách sạn Sông Mây', kind='company', title='Nhân viên khách sạn (luân phiên)',
                                    salary=(52, 66), probation_days=3, wants=['careful', 'communication', 'patience'],
                                    perks=['Chị Hằng kèm những ca đầu', 'Thưởng chất lượng nhỏ, mùa lễ ×1.5', 'Lương ca theo hợp đồng'],

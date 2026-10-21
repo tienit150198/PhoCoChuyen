@@ -153,7 +153,7 @@ class Posts(unittest.TestCase):
         j = Journey('hotel', day=3, slot=slot_of('repair'))
         j.task['season'] = 'none'
         done = solve(j)
-        self.assertEqual((done['quality'], done['paid']), (100, HC.BONUS['repair']))
+        self.assertEqual((done['quality'], done['paid'], done['fast']), (100, HC.BONUS['repair'] + HC.FAST_BONUS, True))   # clean and fast (#466)
         d = j.c['ext']['data']
         self.assertEqual((d['stats']['good'], d['stats']['posts']['repair'], d['today']['good']), (1, 1, 1))
         H.on_close(j.state, j.c)
@@ -237,18 +237,21 @@ class Saves(unittest.TestCase):
         j = self.halfway()
         forge = {
             'needs': lambda t: t['needs'].update(room='999'),
-            '_key': lambda t: t['_key'].update({'housekeeping.minibar': 0 if t['_key']['housekeeping.minibar'] else 5}),
+            '_key': lambda t: t['_key'].update({'housekeeping.sell': t['_key']['housekeeping.sell'] + 1}),
             'kind': lambda t: t.update(kind='decor'),
-            'work': lambda t: t['work'].pop('housekeeping.order'),
-            'work value': lambda t: t['work'].update({'housekeeping.linen': 'f' if t['work']['housekeeping.linen'] != 'f' else 'd'}),
+            'work': lambda t: t['work'].pop('housekeeping.first'),
+            'work value': lambda t: t['work'].update({'housekeeping.ooo': 'clean'}),
             'at': lambda t: t.update(at=t['at'] + 1),
             'quality': lambda t: t.update(quality=100),
             'wrong': lambda t: t.update(wrong=0),
             'errors': lambda t: t.update(errors=[]),
-            'errors ahead': lambda t: t['errors'].append('housekeeping.report'),
+            'errors ahead': lambda t: t['errors'].append('housekeeping.sell'),
             'paid': lambda t: t.update(paid=50),
             'stage': lambda t: t.update(stage='done'),
             'season': lambda t: t.update(season='halloween'),
+            'clock type': lambda t: t.update(t0='10:00'),
+            'fast before the end': lambda t: t.update(fast=True),
+            'gen': lambda t: t.update(gen=1),
         }
         for name, fn in forge.items():
             with self.subTest(field=name):
@@ -325,7 +328,7 @@ class Seasons(unittest.TestCase):
         self.assertNotEqual(brief, t['needs'])   # the stored year-round brief stays as made
         roundtrip(j)   # validates on another (out of season) date too: the brief is a pure function
         done = solve(j)
-        self.assertEqual(done['paid'], round(HC.BONUS['decor'] * 1.5))
+        self.assertEqual(done['paid'], round(HC.BONUS['decor'] * 1.5) + HC.FAST_BONUS)
         self.assertEqual(j.c['ext']['data']['stats']['seasonal'], 1)
         roundtrip(j)
 
@@ -526,6 +529,116 @@ class DecorHints(unittest.TestCase):
         roundtrip(j)
         again, _, key2 = H.decor_brief(3, slot_of('decor'), brief['theme'])
         self.assertEqual((brief, key), (again, key2))
+
+
+@unittest.skipUnless(H, 'hotel filtered out by MNL_CAREERS')
+class Generator2(unittest.TestCase):
+    """Feedback #466 (owner: "ok làm luôn"): the hotel no longer plays like the homestay. You are staff in a big hotel:
+    the desk at rush hour (several guests at once, colleagues to hand over to, the supervisor's room board), the
+    room post as the board (split the team by floor, inspect, lock a broken room), a procedure time on every job
+    and the duty manager's briefing. Tasks made by generator 1 keep their content (legacy serial band)."""
+
+    def test_a_generator_1_task_from_2_5_1_still_loads_and_solves(self):
+        from game.engine import migrate_state
+        j = Journey('hotel', day=3, slot=slot_of('checkin'))
+        old = H.make_task(3, slot_of('checkin'), kit.LEGACY_TURN + 1)
+        old['created_turn'] = 1                     # as 2.5.1 stored it: gen 1, a small serial
+        self.assertEqual((old['gen'], old['needs']['steps'][0]['id']), (1, 'checkin.booking'))
+        j.c['tasks'] = [old]
+        j.c['active_task'] = old['id']
+        H.on_task(j.state, j.c, old)
+        j.state = migrate_state(json.loads(json.dumps(j.state)))
+        validate_state(j.state)
+        self.assertEqual(j.task['created_turn'], kit.LEGACY_TURN + 1)
+        j.task['season'] = 'none'
+        done = solve(j)
+        self.assertEqual((done['gen'], done['paid']), (1, HC.BONUS['checkin']))   # no procedure clock on a generator-1 job
+        self.assertNotIn('fast', done)
+        roundtrip(j)
+
+    def test_rush_hour_at_the_desk(self):
+        seen = set()
+        for day in range(1, 41):
+            for slot in range(12):
+                if H.kind_of(day, slot) != 'checkin':
+                    continue
+                t = H.make_task(day, slot, 1)
+                n, key = t['needs'], t['_key']
+                kinds = {q['id']: q['kind'] for q in n['queue']}
+                self.assertEqual(len(n['queue']), 4)
+                self.assertEqual(sum(k == 'arr' for k in kinds.values()), 1)
+                self.assertEqual(key['rush.handoff'], sorted(i for i, k in kinds.items() if k in ('vip', 'grp')))
+                self.assertTrue(key['rush.handoff'])
+                by = {q['id']: q['by'] for q in n['queue']}
+                mine = [i for i in kinds if i not in key['rush.handoff']]
+                self.assertEqual(key['rush.order'], sorted(mine, key=lambda i: (len(by[i]), by[i])))
+                room = next(b for b in n['board'] if b['no'] == key['rush.room'])
+                self.assertEqual(room['status'], 'vci')
+                test = next(x[2] for x in HC.REQUESTS if x[1] == n['request'])
+                row = next(x for x in HC.ROOMS if x[0] == room['no'])
+                self.assertTrue(test(row))
+                self.assertEqual([b['no'] for b in n['board'] if b['status'] == 'vci' and test(next(x for x in HC.ROOMS if x[0] == b['no']))],
+                                 [room['no']])   # one right room
+                self.assertEqual(key['rush.cards'], f'{room["no"]}-{min(2, n["guests"])}')
+                self.assertEqual('rush.calm' in key, 'cmp' in kinds.values())
+                for q in n['queue']:
+                    self.assertNotIn('to', q)   # the duty sheet is the rule; the colleague is never written on the guest
+                seen.update(kinds.values())
+        self.assertEqual(seen, set(HC.QUEUE))
+
+    def test_the_room_board(self):
+        for day in range(1, 41):
+            for slot in range(12):
+                if H.kind_of(day, slot) != 'housekeeping':
+                    continue
+                t = H.make_task(day, slot, 1)
+                n, key = t['needs'], t['_key']
+                status = {b['no']: b['status'] for b in n['board']}
+                arrive = {a['room'] for a in n['arrivals']}
+                self.assertEqual(key['housekeeping.first'], sorted(no for no in arrive if status[no] == 'vd'))
+                self.assertTrue(key['housekeeping.first'])
+                self.assertEqual(status[n['fault']['room']], 'vd')
+                self.assertNotIn(n['fault']['room'], arrive)
+                dirty = [no for no, st in status.items() if st == 'vd' and no != n['fault']['room']]
+                self.assertEqual(key['housekeeping.split'], dict(low=sum(int(no[0]) <= 2 for no in dirty), high=sum(int(no[0]) >= 3 for no in dirty)))
+                self.assertEqual(status[n['check']['room']], 'vc')
+                self.assertEqual(sum(st == 'vc' for st in status.values()), 1)
+                free = sum(1 for no, st in status.items() if st == 'vci' and no not in arrive)
+                self.assertEqual(key['housekeeping.sell'], free + (key['housekeeping.inspect'] == 'pass'))
+                self.assertEqual(t['needs']['steps'][0]['options'], [dict(id=no, label=f'Phòng {no} · Bẩn · vừa trả') for no in sorted(status) if status[no] == 'vd'])
+
+    def test_a_slow_job_pays_the_quality_bonus_only(self):
+        clock = iter(range(1_800_000_000, 1_800_000_000 + 10_000, 100))   # 100 s a step
+        with mock.patch('game.careers.kit.now', side_effect=lambda: float(next(clock))):
+            j = Journey('hotel', day=3, slot=slot_of('checkin'))
+            j.task['season'] = 'none'
+            done = solve(j)
+        self.assertEqual((done['quality'], done['fast'], done['paid']), (100, False, HC.BONUS['checkin']))
+        self.assertIn('speed', [c['key'] for c in H.feedback(j.c, done)['criteria']])
+        roundtrip(j)
+
+    def test_a_slip_is_never_fast(self):
+        j = Journey('hotel', day=3, slot=slot_of('housekeeping'))
+        j.task['season'] = 'none'
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        _, steps, key = H._active(j.get(tid))
+        j.act('ht_step', task=tid, step=steps[0]['id'], value=wrong_value(steps[0], key[steps[0]['id']]))
+        done = solve(j, tid)
+        self.assertEqual((done['fast'], done['paid']), (False, max(3, round(HC.BONUS['housekeeping'] * 94 / 100))))
+        roundtrip(j)
+
+    def test_the_briefing_and_the_new_board_reach_the_client(self):
+        j = Journey('hotel')
+        self.assertIn(H.briefing(j.c['day']), [e.get('message') for e in j.c.get('journal', [])] + [H.public_data(j.c)['briefing']])
+        self.assertTrue(H.briefing(5).startswith('📋 Giao ban: công suất '))
+        self.assertEqual(H.briefing(5), H.briefing(5))
+        t = dict(H.make_task(3, slot_of('housekeeping'), 1), known=True)
+        v = H.public_task(t)
+        self.assertEqual(v['target'], HC.TARGET['housekeeping'])
+        self.assertNotIn('_key', v)
+        self.assertEqual(H.content()['status2'], HC.STATUS2)
+        self.assertIsNone(H.public_task(dict(H.make_task(3, 0, kit.LEGACY_TURN + 1), known=True))['target'])
 
 
 if __name__ == '__main__':

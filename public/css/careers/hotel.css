@@ -50,4 +50,42 @@ html[data-theme="dem"] .hotel .ht-room.st-clean{background:#1f3326}
 html[data-theme="dem"] .hotel .ht-room.st-clean em{color:#9fd3ad}
 html[data-theme="dem"] .hotel .ht-room.st-dirty em{color:#e7b48a}
 html[data-theme="dem"] .hotel .ht-notes,html[data-theme="dem"] .hotel .ht-room.st-maintenance em{color:#f0a3a3}
+/* Generator 2 (#466): the duty briefing, the rush-hour queue, today's arrivals and the supervisor's room board. */
+.hotel .ht-brief{margin:10px 0;padding:9px 12px;border-radius:10px;background:var(--sk-surface,#fffaf0);border:1px dashed var(--sk-accent);font-size:13px;line-height:1.5}
+.hotel .ht-queue,.hotel .ht-arrivals{margin:12px 0}
+.hotel .ht-queue h4{margin:0 0 8px}
+.hotel .ht-queue ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+.hotel .ht-guest{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--sk-line,#d9c7ad);border-radius:10px;background:var(--sk-surface,#fffaf0)}
+.hotel .ht-guest-ico{font-size:22px;flex:0 0 auto}
+.hotel .ht-guest .grow{display:grid;gap:2px;min-width:0}
+.hotel .ht-guest small{color:var(--sk-muted,#6e5f74);line-height:1.35}
+.hotel .ht-guest em{font-style:normal;font-weight:700;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hotel .ht-team{margin:8px 0 0;font-size:12px;color:var(--sk-muted,#6e5f74);line-height:1.45}
+.hotel .ht-board2 .ht-floor{display:grid;gap:4px;margin-bottom:6px}
+.hotel .ht-board2 .ht-floor>small{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--sk-muted,#6e5f74)}
+.hotel .ht-board2 ul{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.hotel .ht-board2 .ht-room{padding:6px 6px 6px 8px;border-left-width:4px;font-size:11px;gap:1px}
+.hotel .ht-board2 .ht-room b{font-size:14px}
+.hotel .ht-board2 .ht-room em{font-size:11px}
+.hotel .ht-room.st-vci{border-color:#4f8a63;background:#eef6ee}
+.hotel .ht-room.st-vci em{color:#2f6b45}
+.hotel .ht-room.st-vc{border-left-color:#7fb08d}
+.hotel .ht-room.st-vc em{color:#4d7a5b}
+.hotel .ht-room.st-cleaning{border-left-color:#5a7fb0}
+.hotel .ht-room.st-cleaning em{color:#3f5f8f}
+.hotel .ht-room.st-vd{border-left-color:#c58a4a}
+.hotel .ht-room.st-vd em{color:#9a5a2e}
+.hotel .ht-room.st-ooo{border-left-color:#b04a4a;background:#fbeeee}
+.hotel .ht-room.st-ooo em{color:#a03f3f}
+.hotel .ht-room.st-oc{opacity:.72}
+.hotel .ht-legend{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0;font-size:11px}
+.hotel .ht-key{padding:2px 7px;border-radius:999px;border:1px solid var(--sk-line,#d9c7ad);border-left-width:4px}
+.hotel .ht-key.st-vci{border-left-color:#4f8a63}.hotel .ht-key.st-vc{border-left-color:#7fb08d}.hotel .ht-key.st-cleaning{border-left-color:#5a7fb0}
+.hotel .ht-key.st-vd{border-left-color:#c58a4a}.hotel .ht-key.st-ooo{border-left-color:#b04a4a}.hotel .ht-key.st-oc{opacity:.72}
+html[data-theme="dem"] .hotel .ht-room.st-vci{background:#1f3326}
+html[data-theme="dem"] .hotel .ht-room.st-vci em,html[data-theme="dem"] .hotel .ht-room.st-vc em{color:#9fd3ad}
+html[data-theme="dem"] .hotel .ht-room.st-cleaning em{color:#a9c3ea}
+html[data-theme="dem"] .hotel .ht-room.st-vd em{color:#e7b48a}
+html[data-theme="dem"] .hotel .ht-room.st-ooo{background:#3a2020}
+html[data-theme="dem"] .hotel .ht-room.st-ooo em{color:#f0a3a3}
 @media(max-width:480px){.hotel .ht-options,.hotel .ht-picks{grid-template-columns:minmax(0,1fr)}.hotel .ht-step,.hotel .ht-post{padding:13px}}

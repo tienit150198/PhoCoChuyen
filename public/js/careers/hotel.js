@@ -24,10 +24,47 @@ function notebook(x){
   return `<ul class="ht-rules">${(cc(x).notebook||[]).map(n=>`<li>${x.esc(n)}</li>`).join('')}</ul>`;
 }
 
+/** The shift's briefing from the duty manager (a big hotel's numbers). */
+const briefLine=x=>data(x).briefing?`<p class="ht-brief" role="note">${x.esc(data(x).briefing)}</p>`:'';
+
+/* Generator 2 (#466): the housekeeping supervisor's board, floor 4 at the top like the one behind the desk. */
+const SHORT_BED={double:'Đôi',twin:'2 đơn',family:'Gia đình'},SHORT_VIEW={river:'Sông',street:'Phố',garden:'Vườn'},SHORT_SPOT={lift:'Gần thang',quiet:'Yên tĩnh'};
+function statusBoard(t,x,title){
+  const c=cc(x),n=t.needs||{},w=t.work||{};
+  // The supervisor's own decisions show on the board as soon as they are made: a locked room, a signed-off room.
+  const now={};
+  if(n.fault&&w['housekeeping.ooo']==='ooo')now[n.fault.room]='ooo';
+  if(n.check&&w['housekeeping.inspect']==='pass')now[n.check.room]='vci';
+  const board=(n.board||[]).map(r=>now[r.no]?{...r,status:now[r.no]}:r);
+  const floors=[...new Set(board.map(r=>r.floor))].sort((a,b)=>b-a);
+  const legend=Object.entries(c.status2||{}).map(([k,v])=>`<span class="ht-key st-${x.esc(k)}">${x.esc(v)}</span>`).join('');
+  return `<section class="ht-board ht-board2" aria-label="${x.esc(title)}"><h4>${x.esc(title)}</h4>${floors.map(f=>`<div class="ht-floor"><small>Tầng ${f}</small><ul>${board.filter(r=>r.floor===f).map(r=>`<li class="ht-room st-${x.esc(r.status)}">
+    <b>${x.esc(r.no)}</b><span>${x.esc(SHORT_BED[r.bed]||r.bed)} · ${x.esc(SHORT_VIEW[r.view]||r.view)}${r.spot?` · ${x.esc(SHORT_SPOT[r.spot]||r.spot)}`:''}${r.access?' · ♿':''}</span>
+    <em>${x.esc(c.status2?.[r.status]||r.status)}</em></li>`).join('')}</ul></div>`).join('')}<p class="ht-legend">${legend}</p></section>`;
+}
+
+/** Rush hour at the desk: everyone waiting at once, what they need and by when, and who is on the team today. */
+function queueCard(t,x){
+  const q=t.needs?.queue||[];
+  if(!q.length)return '';
+  return `<section class="ht-queue" aria-label="Hàng chờ ở quầy"><h4>🕒 ${x.esc(t.needs.now)} · ${q.length} khách đang chờ ở quầy</h4><ul>${q.map(g=>`<li class="ht-guest k-${x.esc(g.kind)}">
+    <span class="ht-guest-ico" aria-hidden="true">${x.esc(g.emoji)}</span><span class="grow"><b>${x.esc(g.who)}</b><small>${x.esc(g.need)}</small></span><em>xong trước ${x.esc(g.by)}</em></li>`).join('')}</ul>
+    <p class="ht-team">👥 Ca này: Chị Hằng trưởng ca · Anh Khôi quản lý trực · Tú quầy đoàn</p></section>`;
+}
+
+/** The room post as supervisor: today's arrivals (rooms already assigned) and the housekeeping team by floor. */
+function arrivalsCard(t,x){
+  const n=t.needs||{},a=n.arrivals||[];
+  if(!a.length)return '';
+  return `<section class="ht-list ht-arrivals" aria-label="Khách đến hôm nay"><h4>🧳 Khách đến hôm nay</h4><ul>${a.map(g=>`<li><b>${x.esc(g.eta)} · ${x.esc(g.name)}${g.vip?' ⭐ VIP':''}</b><span>Phòng đã gán: ${x.esc(g.room)}</span></li>`).join('')}</ul>
+    <p class="ht-team">🧺 Tổ buồng: ${(n.team||[]).map(m=>`${x.esc(m.who)} (${x.esc(m.floors)})`).join(' · ')}</p></section>`;
+}
+
 /** The room board of a check-in: every room's bed, view, spot, access and status (the room step reads it). */
 function roomBoard(t,x){
   const c=cc(x),board=t.needs?.board||[];
   if(!board.length)return '';
+  if(t.gen>=2)return statusBoard(t,x,'Bảng phòng');
   return `<section class="ht-board" aria-label="Bảng phòng"><h4>Bảng phòng</h4><ul>${board.map(r=>`<li class="ht-room st-${x.esc(r.status)}">
     <b>${x.esc(r.no)}</b><span>${x.esc(c.beds?.[r.bed]||r.bed)}</span><span>${x.esc(c.views?.[r.view]||r.view)}${r.spot?` · ${x.esc(c.spots?.[r.spot]||r.spot)}`:''}${r.access?' · ♿ Tiếp cận':''}</span>
     <em>${x.esc(c.status?.[r.status]||r.status)}</em></li>`).join('')}</ul></section>`;
@@ -78,21 +115,21 @@ function countsStep(t,st,x){
 }
 
 function numberStep(t,st,x){
-  return amountBox(x,`ht-${t.id}-${st.id}`,0,{min:0,max:10000,label:st.unit==='hộp'?'Số hộp mang đi':'Số tiền (xu)',send:'Ghi vào phiếu',
+  return amountBox(x,`ht-${t.id}-${st.id}`,0,{min:0,max:10000,label:st.unit==='hộp'?'Số hộp mang đi':st.unit==='phòng'?'Số phòng':'Số tiền (xu)',send:'Ghi vào phiếu',
     cmd:'ht_step',payload:{task:t.id,step:st.id},field:'value',unit:st.unit||'xu'});
 }
 
 function stepCard(t,x){
   const st=current(t),steps=stepsOf(t);
-  if(!st)return `<p class="ht-finished" role="status">✓ Xong việc · chất lượng ${x.esc(t.quality)}% · thưởng ${x.fmt(t.paid||0)} xu.</p>`;
+  if(!st)return `<p class="ht-finished" role="status">✓ Xong việc · chất lượng ${x.esc(t.quality)}% · thưởng ${x.fmt(t.paid||0)} xu.${t.fast===true?' ⏱️ Nhanh, đúng quy trình.':''}</p>`;
   const body=st.type==='choice'?choiceStep(t,st,x):st.type==='order'?pickStep(t,st,x,true):st.type==='multi'?pickStep(t,st,x,false):
     st.type==='counts'?countsStep(t,st,x):numberStep(t,st,x);
   return `<section class="card ht-step" aria-labelledby="ht-step-title">
-    <p class="ht-step-count" role="status">Bước ${t.at+1}/${steps.length} · chất lượng ${x.esc(t.quality??100)}%</p>
+    <p class="ht-step-count" role="status">Bước ${t.at+1}/${steps.length} · chất lượng ${x.esc(t.quality??100)}%${t.target?` · ⏱️ chuẩn ${x.esc(t.target)} giây`:''}</p>
     <progress value="${t.at}" max="${steps.length}" aria-label="Tiến trình phiếu việc"></progress>
     <h3 id="ht-step-title">${x.esc(st.title)}</h3><p class="ht-evidence">${x.esc(st.evidence)}</p>
     ${st.id==='decor.items'&&t.needs?.rule?`<p class="ht-rule" role="note"><span aria-hidden="true">📌</span> ${x.esc(t.needs.rule)}</p>`:''}
-    ${st.id==='checkin.room'?roomBoard(t,x):''}${body}</section>`;
+    ${st.id==='checkin.room'||st.id==='rush.room'?roomBoard(t,x):''}${body}</section>`;
 }
 
 const top=x=>`${introCard(x,'ht_intro','🛎️')}${deskCard(x,'ht_desk','Chuyện ở quầy')}`;
@@ -102,14 +139,15 @@ export default {
   next(t,x){return x.esc(!t.known?'Đọc phiếu việc':current(t)?.title||'Đã xong việc');},
   job(t,x){
     if(!data(x).intro||x.ui.intro)return wrap(introCard(x,'ht_intro','🛎️'));
-    if(!t.known)return wrap(top(x)+seasonBanner(x,data(x).season)+askCard(x,t,'Đọc phiếu việc')+progress(x));
+    if(!t.known)return wrap(top(x)+seasonBanner(x,data(x).season)+briefLine(x)+askCard(x,t,'Đọc phiếu việc')+progress(x));
+    const roomsPost=t.kind==='housekeeping'&&t.gen>=2;
     return wrap(top(x)+seasonBanner(x,t.season_info)+person(x,t,`<p class="small">${x.esc(t.opening)}</p>`)+briefCard(t,x)+
-      breakfastList(t,x)+stepCard(t,x)+
+      breakfastList(t,x)+queueCard(t,x)+(roomsPost?arrivalsCard(t,x):'')+stepCard(t,x)+(roomsPost?statusBoard(t,x,'Bảng tình trạng phòng'):'')+
       (t.lines?.length?`<p class="ht-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'')+
       `<details class="ht-notebook"><summary>Sổ quy trình Sông Mây</summary>${notebook(x)}</details>`+progress(x));
   },
   // Compact layout: the notebook folds like on the work screen (the full layout keeps it open, as before).
-  idle(x){return wrap(top(x)+seasonBanner(x,data(x).season)+progress(x)+(clean()?`<details class="ht-notebook"><summary>Sổ quy trình Sông Mây</summary>${notebook(x)}</details>`:notebook(x)));},
+  idle(x){return wrap(top(x)+seasonBanner(x,data(x).season)+briefLine(x)+progress(x)+(clean()?`<details class="ht-notebook"><summary>Sổ quy trình Sông Mây</summary>${notebook(x)}</details>`:notebook(x)));},
   input(el,x){
     const key=el.dataset?.htCnt;
     if(key){((x.ui.htCnt??={})[key]??={})[el.dataset.field]=el.value===''?'':Math.floor(Number(el.value)||0);return true;}
@@ -138,5 +176,5 @@ export default {
       await x.send(d.cmd,{...JSON.parse(d.extra||'{}'),[d.field]:value});
     },
   },
-  dock:[['car:notes','book','Sổ quy trình','Nội quy, giá và mùa lễ của Sông Mây'],['car:intro','question','Giới thiệu nghề','Một ca luân phiên sáu vị trí']],
+  dock:[['car:notes','book','Sổ quy trình','Nội quy, giá và mùa lễ của Sông Mây'],['car:intro','question','Giới thiệu nghề','Một ca làm thuê theo quy trình']],
 };

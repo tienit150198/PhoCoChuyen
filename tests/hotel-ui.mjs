@@ -60,7 +60,9 @@ for(const [kind,task] of Object.entries(tasks)){
         assert.match(html,/htPick/);
         for(const o of st.options)assert.ok(html.includes(esc(o.label)));
       }
-      if(st.id==='checkin.room')assert.match(html,/Bảng phòng/);
+      if(st.id==='checkin.room'||st.id==='rush.room')assert.match(html,/Bảng phòng/);
+      if(kind==='checkin'){assert.match(html,/khách đang chờ ở quầy/);assert.match(html,/xong trước/);assert.match(html,/⏱️ chuẩn 150 giây/);}
+      if(kind==='housekeeping'){assert.match(html,/Khách đến hôm nay/);assert.match(html,/Bảng tình trạng phòng/);assert.match(html,/Sạch · đã kiểm/);}
     }
     const done=career.job({...task,at:steps.length,quality:88,paid:5},harness());
     assert.match(done,/Xong việc · chất lượng 88%/);
@@ -73,8 +75,17 @@ test('the season banner shows on a seasonal task and the decor brief is the seas
   assert.match(html,/Mùa Giáng sinh/);assert.match(html,/×1.5/);
 });
 
+test('the room board shows the supervisor\'s own decisions: the locked room and the signed-off room',()=>{
+  const t=tasks.housekeeping,n=t.needs,tile=(html,no)=>html.match(new RegExp(`<li class="ht-room st-(\\w+)">\\s*<b>${no}</b>`))?.[1];
+  const before=career.job({...t,at:2,work:{}},harness());
+  assert.equal(tile(before,n.fault.room),'vd');assert.equal(tile(before,n.check.room),'vc');
+  const after=career.job({...t,at:4,work:{'housekeeping.ooo':'ooo','housekeeping.inspect':'pass'}},harness());
+  assert.equal(tile(after,n.fault.room),'ooo');assert.equal(tile(after,n.check.room),'vci');
+});
+
 test('an ordered pick sends the tapped sequence and is disabled until complete',async()=>{
-  const t={...tasks.housekeeping,at:0},st=t.needs.steps[0],key=`${t.id}:${st.id}`,x=harness();
+  const t={...tasks.checkin,at:1},st=t.needs.steps[1],key=`${t.id}:${st.id}`,x=harness();   // the rush-hour serving order (#466)
+  assert.equal(st.type,'order');
   let html=career.job(t,x);
   assert.match(html,/Xác nhận thứ tự<\/button>/);assert.match(html,/disabled>Xác nhận thứ tự/);
   x.render=()=>{};
@@ -118,6 +129,7 @@ test('the intro, idle view and notebook page render',()=>{
   const x=harness();x.room.data.intro=false;
   assert.match(career.job(tasks.checkin,x),/ht_intro/);
   const idle=career.idle(harness());assert.match(idle,/Hành trình Sông Mây/);assert.match(idle,/hư cấu/);
+  const brief=harness();brief.room.data.briefing='📋 Giao ban: công suất 88%';assert.match(career.idle(brief),/ht-brief/);
   assert.match(career.page('car:notes',harness()),/Sổ quy trình/);
   assert.equal(career.page('other',harness()),'');
 });

@@ -327,6 +327,13 @@ function stayLog(x,r,st){
   const key='log-'+r.id;
   return panel(x,key,'📓 Nhật ký mấy ngày ở',`<ul class="hs-log">${st.log.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`,false,'hs-mini');
 }
+/* 🫖 After the keys, the owner's tea on the porch (#466): a talk that fits the guest (their profile, a regular's last visit). */
+function teaCard(x){
+  const rows=x.room.data?.tea||[];if(!rows.length)return '';
+  return rows.map(r=>`<article class="card hs-tea"><div class="row">${x.portrait(x.npc(r.npc),40)}<div class="grow"><h4>🫖 Trà ở hiên với ${x.esc(r.guest)}</h4>
+    <small class="muted">${x.esc(r.role)} · ${x.esc(r.note)}${r.visits?` · đã ghé ${x.esc(r.visits)} lần`:''}</small></div></div>
+    <p class="small">Rót chén trà, nói chuyện gì với khách?</p><div class="hs-tea-opts">${(r.options||[]).map(o=>x.cmd(`${x.esc(o.emoji)} ${x.esc(o.label)}`,'hs_tea',{task:r.task,topic:o.id},'ghost')).join('')}</div></article>`).join('');
+}
 function careList(x,open){
   const rows=x.room.data?.care||[];if(!rows.length)return '';
   const done=rows.filter(r=>r.ok===true).length,next=rows.find(r=>r.ok!==true);
@@ -821,6 +828,7 @@ function idleSteps(x){
       else rows.push({ok:null,label:`${r.name}: ${a.label.toLowerCase()}`,go:lacks(x,a.use||{}).length?lackGo(x,lacks(x,a.use||{})):{cmd:'hs_stay',payload:{room:rid,do:'ask'},label:`${a.emoji} ${x.esc(a.act||a.label)} · ${x.esc(r.name)}`}});
     }
   }
+  for(const r of d.tea||[])rows.push({ok:null,label:`Mời ${r.guest} chén trà ở hiên`,go:{sel:'.hs-tea',label:`🫖 Mời ${x.esc(r.guest)} chén trà`}});
   return rows;
 }
 
@@ -901,7 +909,7 @@ export default {
     const tab=x.ui.hsTab||'cal';
     const tabs=`<div class="hs-tabs" role="tablist" aria-label="Khu trong nhà">${IDLE_TABS.map(([id,label])=>carBtn(x,label,'tab',{tab:id},`hs-tab ${tab===id?'on':''}`,` role="tab" aria-selected="${tab===id}"`)).join('')}</div>`;
     const pane=tab==='rooms'?`${housekeeping(x)}`:tab==='garden'?gardenCard(x):tab==='book'?bookPanel(x,true):calendar(x);
-    return `<div class="career-job hs hs-idle">${hint}${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${careList(x,true)}${otaPanel(x,true)}${running(null,x)}
+    return `<div class="career-job hs hs-idle">${hint}${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${teaCard(x)}${careList(x,true)}${otaPanel(x,true)}${running(null,x)}
       ${tabs}<section class="hs-tabpane" role="tabpanel">${pane}</section>${foot(x)}${rules(x)}${bar}</div>`;
   },
   job(t,x){
@@ -917,7 +925,7 @@ export default {
       const head=C?'':`<div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div>`;
       const ask=C&&!desk?'':x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full gd-cta hs-ask',!!desk);
       const bar=C&&!desk?stepBar(x,g.steps,{label:'',go:null,ready:false},{cls:'hs-bar',style:'primary big grow'}):'';
-      return `<div class="career-job hs">${hint}${desk}${desk?running(t,x):lastDesk(x)}${todayLine(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow">${head}<p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${ask}</article>${desk?bottomBar(g,x):more+bar}</div>`;
+      return `<div class="career-job hs">${hint}${desk}${desk?running(t,x):lastDesk(x)}${todayLine(x)}${desk?'':teaCard(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow">${head}<p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${ask}</article>${desk?bottomBar(g,x):more+bar}</div>`;
     }
     if(desk)return `<div class="career-job hs">${hint}${desk}${running(t,x)}${ticketCard(t,x)}${bottomBar(g,x)}</div>`;
     const [main,side]=JOBS[t.job]||[()=>'',()=>''];

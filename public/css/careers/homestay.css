@@ -423,3 +423,10 @@ html[data-clean] .career-job.hs .wb-side:not(:has(>:not(.ui-chipped))){padding:0
 .career-job.hs .hs-donerow{display:flex;flex-wrap:wrap;gap:6px;margin:0}
 .career-job.hs .hs-done-btn{min-width:44px;min-height:44px;padding:0 6px;border:1px solid var(--hs-line);border-radius:12px;background:var(--hs-s1);color:inherit;font:inherit;cursor:pointer}
 .career-job.hs .hs-done-btn .hs-num{width:auto;padding:0 6px}
+/* 🫖 Trà ở hiên (#466): the owner's tea after the keys, a warm card in the garden colours. */
+.career-job.hs .hs-tea{border:1px solid var(--hs-line);border-left:5px solid #c08a4a;border-radius:14px;padding:12px 14px;margin:10px 0;background:var(--hs-s1)}
+.career-job.hs .hs-tea h4{margin:0 0 2px}
+.career-job.hs .hs-tea .row{gap:10px;align-items:center}
+.career-job.hs .hs-tea-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.career-job.hs .hs-tea-opts .btn{min-height:48px;white-space:normal;text-align:left;line-height:1.35;padding:10px 12px}
+@media(max-width:480px){.career-job.hs .hs-tea-opts{grid-template-columns:minmax(0,1fr)}}
