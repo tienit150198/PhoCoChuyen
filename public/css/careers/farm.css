@@ -445,3 +445,8 @@
 .career-job.fa .fv-plus.hot{animation:fp-glow 1.6s ease-in-out infinite}
 @keyframes fp-glow{0%,100%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 0 rgb(255 205 60 / 0%)}50%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 6px rgb(255 205 60 / 55%)}}
 @media (prefers-reduced-motion:reduce){.career-job.fa .fv-plus.hot{animation:none;box-shadow:0 0 0 3px rgb(255 205 60 / 70%)}}
+/* the carton / bag preview (crateArt) in the walk view's bar: small, beside nothing */
+.fa-bar-crate{display:flex;justify-content:center;margin:2px 0}
+.fa-bar-crate .ck-vessel{min-height:44px;width:120px;padding:3px}
+.fa-bar-crate .ck-pieces{font-size:17px}
+.fa-crate-art{display:flex;justify-content:center;margin-top:6px}

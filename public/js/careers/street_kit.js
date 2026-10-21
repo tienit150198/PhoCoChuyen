@@ -3,10 +3,10 @@
  * line, the day bar and the sticky next-step bar. Layout lives in public/css/careers/street_kit.css;
  * each career draws its own stations and keeps its own look in public/css/careers/<id>.css. */
 import {barParts} from '../v4/guide.js';
-import {actBar,helpBtn,whyAttrs,clean,tip,headChip,few} from '../ui-kit.js';
+import {actBar,helpBtn,whyAttrs,clean,tip,headChip,few,withArt,buildUp} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox} from '../qty-input.js';
-export {tip,clean,headChip,few};
+export {tip,clean,headChip,few,withArt,buildUp};
 
 export const DONE=['completed','cancelled','referred'];
 export const data=x=>x.room.data||{};
@@ -100,10 +100,11 @@ export function speaker(x,t){
   return g&&typeof g.name==='string'&&g.name?{...base,display_name:g.name,role:'Khách',visit:true,fc:g.fc,av:g.gender==='male'?'🧑':'👩'}:base;
 }
 /** The customer on the card: portrait, name, one line and the patience bar. */
-export function person(x,t,inner='',tag=''){
+/** art: a ui-kit buildUp figure (what is being made), drawn beside the order. */
+export function person(x,t,inner='',tag='',art=''){
   const who=speaker(x,t);
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
-    ${clean()&&(t.kind==='setup'||few(t.title,4,true)===String(t.title||'').trim())?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${inner}
+    ${clean()&&(t.kind==='setup'||few(t.title,4,true)===String(t.title||'').trim())?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${withArt(inner,art)}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 /** Before the first question: who is here and the one button to ask. */

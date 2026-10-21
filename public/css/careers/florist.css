@@ -393,3 +393,21 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-slip .ck-row .ck-txt b{font-weight:700}
 .career-job.fl .fl-slip>.fl-brief,.career-job.fl .fl-slip>.fl-ask{margin:0}
 .career-job.fl .fl-steps{padding:var(--sp-1) 0}
+
+/* The bouquet beside the order (miniBouquet): the same pieces as the bench stage, small, always in the ordered shape;
+   paper, bow and base not added yet are faint ghosts so the player sees what is still to come. */
+.career-job.fl .fl-mini{position:relative;flex:0 0 auto;width:84px;height:96px;margin:0 0 14px;border-radius:12px;background:radial-gradient(circle at 50% 35%,var(--fl-surface,#fff) 0,var(--fl-surface-2,#f6f1ea) 80%);border:1px solid var(--fl-line,#e6dccf)}
+.career-job.fl .fl-mini.done{display:grid;place-items:center;font-size:34px}
+.career-job.fl .fl-mini .fl-heads{position:absolute;inset:0;z-index:2}
+.career-job.fl .fl-mini .fl-head{position:absolute;transform:translate(-50%,-50%);font-size:15px;animation:ck-drop .35s ease-out both}
+.career-job.fl .fl-mini .fl-head.focal{font-size:18px}
+.career-job.fl .fl-mini .fl-head.filler{font-size:11px}
+.career-job.fl .fl-mini .fl-head.green{font-size:13px}
+.career-job.fl .fl-mini .fl-wrap{z-index:1}
+.career-job.fl .fl-mini .fl-wrap.ghost{background:repeating-linear-gradient(135deg,var(--fl-line,#e6dccf) 0 4px,transparent 4px 8px)}
+.career-job.fl .fl-mini .fl-base.ghost{opacity:.3}
+.career-job.fl .fl-mini .fl-bow{width:24px;height:13px}
+.career-job.fl .fl-mini .fl-bow::before,.career-job.fl .fl-mini .fl-bow::after{width:12px;height:11px}
+.career-job.fl .fl-mini .fl-bow.ghost::before,.career-job.fl .fl-mini .fl-bow.ghost::after{background:transparent;border:1.5px dashed var(--muted,#9a8f84)}
+.career-job.fl .fl-mini .fl-wrap:not(.ghost),.career-job.fl .fl-mini .fl-bow:not(.ghost){animation:ck-pour .4s ease-out both}
+.career-job.fl .fl-mini figcaption{position:absolute;left:0;right:0;bottom:-15px;font-size:.6875rem;font-weight:700;color:var(--muted);text-align:center;white-space:nowrap}

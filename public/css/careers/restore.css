@@ -18,3 +18,7 @@
 @media(max-width:560px){.rs .rs-list{grid-template-columns:minmax(0,1fr)}.rs .rs-ticket{padding:14px}.rs .rs-progress li{font-size:11px;padding:7px 4px}.rs .rs-row{padding:12px}.rs .rs-stage>h3{font-size:18px}}
 @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .rs .rs-ticket{background:linear-gradient(135deg,#3b2c1d,#2a231c);color:#f1e2cb;border-color:#5d4630}html:not([data-theme="light"]) .rs .rs-quote{background:#33281d;color:#f3e3cb}html:not([data-theme="light"]) .rs .rs-stats,html:not([data-theme="light"]) .rs .rs-note{background:#2c2620;color:#e9dccb}}
 .rs .rs-chips{display:flex;flex-wrap:wrap;gap:6px}.rs .rs-chips .tag{font-size:12px}
+
+/* The stage being done on the bench preview: ringed. */
+.rs .ck-piece.todo.now{opacity:.85;filter:none;outline:2px dashed #8a5a2b;outline-offset:1px;border-radius:6px}
+html[data-theme="dem"] .rs .ck-piece.todo.now{outline-color:#e0b07a}

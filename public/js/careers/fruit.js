@@ -7,7 +7,7 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tip,clean} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tip,clean,buildUp} from './street_kit.js';
 import {linesSummary} from './tomorrow_kit.js';
 
 /** A panel button's label in two words on the clean layout (the bar names the step in full); readers get the full one. */
@@ -65,6 +65,19 @@ function pickPanel(t,x){
   const rest=(cc(x).fruits||[]).filter(f=>!mine.has(f.id)).map(f=>fruitRow(t,x,f.id,[])).join('');
   return `<section class="card fr-pickwrap"><h4>🧺 Chọn trái</h4>${main}${rest?pane(x,`rest-${t.id}`,'Trái khác trên sạp',rest,false,'fr-rest'):''}</section>`;
 }
+/** The basket beside the order (owner 21/10: like the milk-tea cup): each fruit picked drops in; a bruised one, the
+ * wrong ripeness or a fruit nobody asked for is ringed red; what is still to pick waits as a grey ghost. */
+function basketArt(t,x){
+  const n=t.needs||{},lines=n.lines||[],items=[];
+  for(const b of t.bag||[]){const f=fruitOf(x,b.i),ln=lines.find(l=>l.i===b.i);
+    const off=t.kind==='bulk'?!cheap(x,b.s):!ln||!(ln.want||[]).includes(b.s);
+    items.push({e:f.emoji,t:`${f.name} ${lower(stageName(x,b.s))} ${b.g}g`,cls:b.b||off?'bad':''});}
+  if(t.kind==='bulk'){for(let i=(t.bag||[]).length;i<Number(n.min||0);i++)items.push({e:fruitOf(x,(n.bulk||[])[0]).emoji,cls:'todo'});}
+  else for(const ln of lines){const got=lineGot(t,ln),f=fruitOf(x,ln.i);
+    const left=ln.kg?(share(x,t,got.reduce((s,b)=>s+b.g,0))*100>=ln.kg*(cc(x).short||90)?0:1):Math.max(0,ln.n-got.length);
+    for(let i=0;i<Math.min(left,6);i++)items.push({e:f.emoji,t:f.name,cls:'todo'});}
+  return buildUp({kind:'basket',items,max:14,caption:`⚖️ ${kg(real(t))}`,label:'Rổ trái cây'});
+}
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Hỏi khách mua gì');
   const n=t.needs||{};
@@ -77,7 +90,7 @@ function ticket(t,x){
     return `<span class="fr-chip ${done?'ok':''}">${x.esc(f.emoji)} ${x.esc(lineText(x,ln))} · <i>${ln.want.map(s=>x.esc(lower(stageName(x,s)))).join('/')}</i> <small>${x.esc(prog)}</small></span>`;
   }).join('');
   const tag=n.check?'<span class="tag amber">⚖️ Mang cân riêng</span>':'';
-  return person(x,t,`<p class="fr-chips">${chips}</p>${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tag);
+  return person(x,t,`<p class="fr-chips">${chips}</p>${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tag,t.stage==='pay'||t.kind==='return'?'':basketArt(t,x));
 }
 function hagglePanel(t,x){
   const mid=Math.floor((t.price+t.offer+1)/2),hasCam=Number(baskets(x).cam?.tuoi||0)+Number(baskets(x).cam?.heo||0)>0;

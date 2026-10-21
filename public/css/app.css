@@ -2134,6 +2134,36 @@ span.ck-step-b{cursor:default}
 .ck-pick{position:relative}
 .ck-pick.on,.ck-pick[aria-pressed="true"]{border-color:var(--career,var(--accent))!important;background:var(--career-soft,var(--accent-soft))!important;box-shadow:0 0 0 2px var(--career,var(--accent))!important}
 .ck-pick.on::before,.ck-pick[aria-pressed="true"]::before{content:"✓";position:absolute;top:-7px;right:-7px;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--career,var(--accent));color:var(--career-ink,var(--accent-ink));font-size:var(--fs-1);font-weight:900;line-height:1;box-shadow:0 0 0 2px var(--surface)}
+/* The live build-up (ui-kit buildUp): a vessel with the pieces added so far dropping in, an optional fill rising. Materials
+   are drawn colours (wood, wicker, paper, china) so they read the same in the dark theme. */
+.ck-build{display:grid;justify-items:center;align-content:start;gap:2px;margin:0;min-width:84px}
+.ck-build figcaption{font-size:.6875rem;font-weight:700;color:var(--muted);text-align:center;line-height:1.2}
+.ck-vessel{position:relative;display:grid;place-items:end center;width:100px;min-height:62px;padding:6px 5px;overflow:hidden;isolation:isolate}
+.ck-pieces{position:relative;z-index:1;display:flex;flex-wrap:wrap-reverse;justify-content:center;gap:0 1px;max-width:100%;font-size:20px;line-height:1.1}
+.ck-piece{animation:ck-drop .35s ease-out both}
+.ck-piece.todo{opacity:.5;filter:grayscale(1);animation:none;background:rgb(255 255 255 / 60%);border-radius:6px}
+.ck-with-art{display:flex;gap:8px;align-items:flex-start}
+.ck-with-art-l{flex:1 1 auto;min-width:0}
+.ck-with-art>.ck-build{flex:0 0 auto}
+.ck-piece.bad{filter:grayscale(.2);outline:2px solid var(--bad);outline-offset:-1px;border-radius:6px}
+.ck-pieces>small{font-size:.6875rem;font-weight:600;line-height:1.2;color:#6b5a48;text-align:center}
+.ck-more{align-self:center;font-size:.6875rem;color:#4a3a2c}
+.ck-fill{position:absolute;z-index:0;left:0;right:0;bottom:0;height:var(--f);background:var(--c,#c98a4b);opacity:.85;transform-origin:50% 100%;animation:ck-pour .5s ease-out both;transition:height .4s}
+.ck-k-tray .ck-vessel{min-height:52px;border-radius:10px;border:3px solid #a8774a;background:#e8d0a8;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
+.ck-k-basket .ck-vessel{border-radius:6px 6px 24px 24px;border-top:5px solid #8a5a2b;background:repeating-linear-gradient(45deg,#d2a466 0 6px,#bb8a4f 6px 12px)}
+.ck-k-bag .ck-vessel{border-radius:3px 3px 10px 10px;background:linear-gradient(#cfae80 0 8px,#dcc096 8px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
+.ck-k-plate .ck-vessel,.ck-k-bowl .ck-vessel{min-height:58px;border-radius:50%/0 0 100% 100%;border-top:6px solid #e4e6ea;background:radial-gradient(ellipse at 50% 0,#fdfdfb 55%,#dfe3e8)}
+.ck-k-plate .ck-vessel{border-radius:50%;border:4px solid #e4e6ea;background:radial-gradient(circle,#fdfdfb 55%,#e9ecef);place-items:center}
+.ck-k-pot .ck-vessel{border-radius:8px 8px 26px 26px;border-top:6px solid #3c424a;background:#5d646e}
+.ck-k-pot .ck-pieces>small{color:#e8e8e8}
+.ck-k-box .ck-vessel{border-radius:8px;border:3px solid #c3a97c;background:#f5ecd9}
+.ck-k-cup .ck-vessel{width:70px;min-height:80px;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);background:#e6eef3}
+.ck-k-cone .ck-vessel{width:76px;min-height:88px;padding-bottom:34px;place-items:end center;background:linear-gradient(#0000,#0000) }
+.ck-k-cone .ck-vessel::after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:38px;clip-path:polygon(0 0,100% 0,50% 100%);background:repeating-linear-gradient(60deg,#d9a35b 0 5px,#c58b45 5px 9px)}
+.ck-k-cone .ck-pieces{flex-direction:column-reverse;flex-wrap:nowrap;gap:0;font-size:24px;line-height:.8}
+.ck-k-bench .ck-vessel{border-radius:6px;background:repeating-linear-gradient(90deg,#dcb684 0 18px,#cda270 18px 20px);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+.ck-k-paper .ck-vessel{border-radius:3px;border:1px solid #d8d2c4;background:repeating-linear-gradient(#fbf8f1 0 13px,#e7e1d3 13px 14px);place-items:start center}
+.ck-k-cash .ck-vessel{border-radius:6px;border:3px solid #4f6b57;background:#dfe9df}
 @keyframes ck-pour{from{scale:1 0}to{scale:1 1}}
 @keyframes ck-drop{from{translate:0 -36px;opacity:0}to{translate:0 0;opacity:1}}
 

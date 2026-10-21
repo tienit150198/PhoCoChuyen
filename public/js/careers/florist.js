@@ -11,7 +11,7 @@
  * one; on the first order the right flowers glow (and the button picks them). */
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {splitMai} from './tomorrow_kit.js';
-import {reqList,fold,clean,slip,steps as ckSteps,headChip} from '../ui-kit.js';
+import {reqList,fold,clean,slip,steps as ckSteps,headChip,withArt} from '../ui-kit.js';
 import {nextHint,stepBar,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {lockChip} from './stage_fold.js';
@@ -130,6 +130,21 @@ function stage(t,x){
   const banner=w.base==='wreath'?`<div class="fl-banner"><span data-banner-live>${x.esc(w.banner||'')}</span></div>`:'';
   const cover=w.cover?'<i class="fl-cover" aria-hidden="true"></i>':'';
   return `<div class="fl-stage arranged base-${x.esc(w.base)}" role="img" aria-label="${x.esc(format(x,w.base).name)}${w.cover?', đã bọc nylon':''}">${wrap}<i class="fl-base"></i><div class="fl-heads">${heads}</div>${bow}${banner}${cover}</div>`;
+}
+/** The bouquet beside the order (owner 21/10: "chỗ Ly trà sữa đó cập nhật cho các nghề khác"): it builds as the
+ * player works, in the shape the customer ordered: each stem picked shows in its place, the wrapping paper turns the
+ * colour chosen, the bow the ribbon's; what is still to come (paper, bow, the vase or basket) stays a faint ghost. */
+function miniBouquet(t,x){
+  const w=t.work,sp=spec(t);
+  if(plated(t))return `<figure class="fl-mini done" role="img" aria-label="Món đã xong"><span aria-hidden="true">🎁</span></figure>`;
+  const base=w.base||sp.format||'bouquet',f=format(x,base),order={focal:0,filler:1,green:2};
+  const stems=[...w.stems].sort((a,b)=>(order[flower(x,a.i).role]??0)-(order[flower(x,b.i).role]??0)).slice(0,18),pos=spots(stems.length,base);
+  const heads=stems.map((s,i)=>{const fl=flower(x,s.i),l=look(x,s.i);return `<span class="fl-head ${x.esc(fl.role)} ${l.tint?'fl-tint '+l.tint:''}" style="left:${pos[i][0].toFixed(1)}%;top:${pos[i][1].toFixed(1)}%;z-index:${40-i}">${x.esc(l.emoji)}</span>`;}).join('');
+  const wrap=base==='bouquet'?`<i class="fl-wrap ${w.paper?'':'ghost'}"${w.paper?` style="--paper:${x.esc(paper(x,w.paper).hex)}"`:''}></i>`:'';
+  const bow=`<i class="fl-bow ${w.ribbon?'':'ghost'}"${w.ribbon?` style="--rib:${x.esc(ribbon(x,w.ribbon).hex)}"`:''}></i>`;
+  const said=[`${stems.length} cành`,w.paper?`giấy ${lower(paper(x,w.paper).name)}`:'',w.ribbon?`ruy băng ${lower(ribbon(x,w.ribbon).name)}`:''].filter(Boolean).join(', ');
+  const cap=[`🌿 ${w.stems.length}`,w.paper?'📜':'',w.ribbon?'🎀':'',w.card?'💌':''].filter(Boolean).join(' ');
+  return `<figure class="fl-mini base-${x.esc(base)}${w.arranged?' tied':''}" role="img" aria-label="${x.esc(f.name)}: ${x.esc(said)}">${wrap}<i class="fl-base ${w.base?'':'ghost'}"></i><span class="fl-heads">${heads}</span>${bow}${w.cover?'<i class="fl-cover" aria-hidden="true"></i>':''}<figcaption>${cap}</figcaption></figure>`;
 }
 function cardPreview(t,x){
   if(plated(t)||(!spec(t).card&&!t.work.card))return '';
@@ -375,7 +390,7 @@ function ticket(t,x,K={}){
   const list=`<details class="fl-brief"><summary><b>📝 ${x.esc(cap)}</b><small>${clean()?(nClues?`💬 ${nClues}`:''):`chi tiết${nClues?` · 💬 ${nClues} lời kể`:''}`}</small></summary>${reqRows(x,rows,cap)}${heardList(t,x)}</details>`;
   return `<article class="card ticket fl-ticket compact"><div class="fl-ticket-head">${x.portrait(who,40)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${price}</div>
     <p class="fl-tags">${tags.join(' ')}</p></div></div>
-    <p class="fl-note">“${x.esc(n.note)}”</p>${consult(t,x)}${isSet(t)?pieceTabs(t,x):''}${list}${regularCard(t,x)}${patience(t.patience)}</article>`;
+    ${withArt(`<p class="fl-note">“${x.esc(n.note)}”</p>`,miniBouquet(t,x))}${consult(t,x)}${isSet(t)?pieceTabs(t,x):''}${list}${regularCard(t,x)}${patience(t.patience)}</article>`;
 }
 
 /* ---------- station panels ---------- */
@@ -400,7 +415,7 @@ function slipFl(t,x,K){
   const need=rows.filter(r=>r.icon!=='💰'),done=need.filter(r=>r.state==='ok').length,bad=need.some(r=>r.state==='bad');
   const tags=[`${g.emoji||'🙂'} ${g.label||'Khách'}`,`${o.emoji} ${o.name}`,isSet(t)?`🎁 Bộ ${n.party.length} món`:'',deliver(t)?'':'🏪 Nhận tại tiệm'].filter(Boolean);
   const head=`${x.portrait(who,30)}<b class="fl-slip-who">${x.esc(who.display_name)}</b>${t.quoted_price!=null?`<b class="price fl-slip-price">${x.money(t.quoted_price)}</b>`:''}
-    <p class="fl-tags fl-slip-tags">${tags.map(v=>`<span class="tag">${x.esc(v)}</span>`).join(' ')}</p><p class="fl-note fl-slip-say">“${x.esc(n.note)}”</p>`;
+    <p class="fl-tags fl-slip-tags">${tags.map(v=>`<span class="tag">${x.esc(v)}</span>`).join(' ')}</p>${withArt(`<p class="fl-note fl-slip-say">“${x.esc(n.note)}”</p>`,miniBouquet(t,x))}`;
   const nClues=Object.keys(n.clues||{}).length;
   const foot=`${consult(t,x)}${nClues?`<details class="fl-brief"><summary><b>💬 Khách kể thêm</b><small>${nClues}</small></summary>${heardList(t,x)}</details>`:''}${isSet(t)?pieceTabs(t,x):''}${regularCard(t,x)}${patience(t.patience)}`;
   const title=isSet(t)&&!plated(t)?`Phiếu khách · Món ${t.cur+1}`:'Phiếu khách';

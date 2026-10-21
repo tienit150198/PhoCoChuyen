@@ -4,10 +4,23 @@
  * 🛎️ Phố dịch vụ, worked here step by step (<prefix>svc) and handed over with Giao (POST /api/svc/done).
  * Layout lives in public/css/careers/slip_kit.css; each career keeps its own colours in public/css/careers/<id>.css. */
 import {data,act,amountBox} from './street_kit.js';
-import {tip} from '../ui-kit.js';
+import {tip,buildUp} from '../ui-kit.js';
 
 export const stepsOf=t=>t.needs?.steps||[];
 export const current=t=>stepsOf(t)[t.at];
+
+/** The job taking shape step by step (owner 21/10, like the milk-tea cup): one piece per step of the slip, the done ones
+ * solid, the open one ringed (.now), the rest grey ghosts. Used by every step-slip trade (moto, vet, reception, teller,
+ * research, radio). `icons`: {step id | step name | job: emoji}; a step with none gets its kind's (choice 💬, number 🔢…). */
+const TYPE_ICON={choice:'💬',number:'🔢',order:'🔢',multi:'☑️',times:'🕒',assign:'📌',tray:'💵'};
+export function stepIcon(st,icons={}){const id=String(st.id||''),[job,name]=id.split('.');return icons[id]||icons[name]||icons[job]||TYPE_ICON[st.type]||'•';}
+export function stepsArt(t,{kind='tray',icons={},head='',label=''}={}){
+  const steps=stepsOf(t);if(!steps.length)return '';
+  const at=Math.min(Number(t.at)||0,steps.length);
+  // Steps after the open one stay blank ghosts: their parts would tell the fault before the player settles it.
+  const items=steps.map((st,i)=>i>at?{e:'◌',t:'',cls:'todo'}:{e:stepIcon(st,icons),t:st.title,cls:i<at?'':'todo now'});
+  return buildUp({kind,items,caption:`${head?head+' ':''}${at}/${steps.length}`,label,cls:'sl-art'});
+}
 
 /** Ordered or multiple picks, sent as one value: `cmd` with `payload` + {step, value}. */
 function pickStep(key,st,x,ordered,cmd,payload){

@@ -4,7 +4,8 @@
  * stays open to fix and lowers the job's quality. The Sổ nghề page keeps the trial, the people at the desk, the
  * keepsakes and the branch. */
 import {data,cc,person,askCard,introCard,deskCard,kitActions,amountBox,kitInput,notesPage,act} from './street_kit.js';
-import {clean,tip} from '../ui-kit.js';
+import {clean,tip,withArt} from '../ui-kit.js';
+import {stepsArt} from './slip_kit.js';
 
 const wrap=body=>`<div class="career-job sk reception">${body}</div>`;
 const stepsOf=t=>t.needs?.steps||[];
@@ -73,9 +74,13 @@ function bookPage(x){
     <h4>📖 Sổ quy trình Hoa Sứ</h4>${notebook(x)}`;
 }
 
+/** The job's folder filling up (owner 21/10, like the milk-tea cup): one item per step, solid once done. */
+const FOLDER={need:'👂',hear:'👂',early:'⏰',rooms:'🛏️',keys:'🔑',key:'🔑',cart:'🧳',note:'📒',log:'📒',plan:'🗓️',clash:'⚠️',fee:'💰',
+  bill:'🧾',hold:'💳',verify:'🪪',owner:'🪪',comp:'🎁',result:'✅',where:'📍',match:'🔍',check:'🔍',help:'🙋'};
 function briefCard(t,x){
   const post=t.post||{};
-  return `<article class="rc-post"><small>${x.esc(post.emoji||'🛎️')} ${x.esc(post.label||'Quầy')} · ${x.esc(post.work||'')}</small><h3>${x.esc(t.title)}</h3></article>`;
+  return `<article class="rc-post">${withArt(`<small>${x.esc(post.emoji||'🛎️')} ${x.esc(post.label||'Quầy')} · ${x.esc(post.work||'')}</small><h3>${x.esc(t.title)}</h3>`,
+    stepsArt(t,{kind:'paper',icons:FOLDER,head:'🔑',label:'Hồ sơ khách'}))}</article>`;
 }
 
 /* ------------------------------------------------------------ picks: multi / order */

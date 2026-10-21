@@ -320,3 +320,6 @@
 html[data-clean] .career-job.pc .pc-ck-steps{margin:var(--sp-1) 0 var(--sp-2)}
 html[data-clean] .career-job.pc .tile.selected{position:relative}
 html[data-clean] .career-job.pc .tile.selected::before{content:"✓";position:absolute;top:-7px;left:-7px;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--good);color:var(--surface);font-size:var(--fs-1);font-weight:900;box-shadow:0 0 0 2px var(--surface)}
+
+/* The grooming table beside the ticket (careArt): the pet large, the services it gets beside it. */
+.ck-build .ck-piece.pc-hero{font-size:30px;line-height:1}

@@ -123,6 +123,19 @@ export function slip({title='Phiếu khách',icon='🧾',head='',top='',rows=[],
  * value (a count, a temperature) sits at its end; a red rule not yet checked (an allergy) shows "!". */
 export const reqSlipRow=(r,attrs='')=>({icon:r.icon||'',value:r.label,note:r.value||'',attrs,
   state:r.ok===true?'ok':r.ok===false?'bad':r.tone==='danger'?'alert':''});
+/** The live build-up of what is being made (owner 21/10: "chỗ Ly trà sữa đó cập nhật cho các nghề khác tương tự"): a
+ * vessel (`kind`: tray, basket, bag, plate, bowl, pot, box, cup, cone, bench, paper, cash), the pieces in it so far
+ * ([{e: emoji, t: name, cls}], each drops in as it is added; cls 'bad' marks one that should not be there), an optional
+ * fill (0–100, `color`: tea in a glass, rice in a pot) and a caption. Only markup; app.css 27f draws it. */
+export function buildUp({kind='tray',items=[],fill=null,color='',caption='',empty='',max=12,label='',cls=''}={}){
+  const list=items.slice(0,max).map(i=>`<span class="ck-piece${i.cls?' '+e(i.cls):''}"${i.t?` title="${e(i.t)}"`:''}>${e(i.e)}</span>`).join('');
+  const more=items.length>max?`<b class="ck-more">+${items.length-max}</b>`:'';
+  const f=fill==null?'':`<i class="ck-fill" style="--f:${Math.max(0,Math.min(100,Number(fill)||0))}%${color?`;--c:${e(color)}`:''}"></i>`;
+  const said=`${label||caption}${items.length?`: ${items.map(i=>i.t||i.e).join(', ')}`:empty?`: ${empty}`:''}`;
+  return `<figure class="ck-build ck-k-${e(kind)}${cls?' '+e(cls):''}" role="img" aria-label="${e(said)}"><span class="ck-vessel">${f}<span class="ck-pieces">${list}${more}${!items.length&&empty?`<small>${e(empty)}</small>`:''}</span></span>${caption?`<figcaption>${e(caption)}</figcaption>`:''}</figure>`;
+}
+/** The order beside what is being made: `inner` (chips, slip rows) on the left, a buildUp figure on the right. */
+export const withArt=(inner,art)=>art?`<div class="ck-with-art"><div class="ck-with-art-l">${inner}</div>${art}</div>`:inner;
 /** list: [{icon, label, state:'done'|'now'|'bad'|'', attrs}]: one numbered step per part of the order; the current one
  * stands out, done ones show ✓, a wrong one ✗. attrs (e.g. fixAttrs({sel})) make a step jump to its part. */
 export function steps(list,{label='Các bước',cls=''}={}){

@@ -5,6 +5,7 @@
  * The counter's money is the bank's (nghìn đồng), never the player's xu or own bank account. */
 import {data,cc,person,askCard,introCard,deskCard,kitActions,amountBox,kitInput,notesPage,act,dayBar} from './street_kit.js';
 import {clean,tip} from '../ui-kit.js';
+import {stepsArt} from './slip_kit.js';
 
 const wrap=body=>`<div class="career-job sk teller">${body}</div>`;
 const DENOMS=['500','200','100','50','20','10'];
@@ -238,12 +239,16 @@ const notesFold=x=>`<details class="tl-notebook"><summary>📘 Sổ tay quầy g
 const top=x=>`${introCard(x,'tl_intro','🏦')}${deskCard(x,'tl_desk','Chuyện ở quầy')}`;
 const onboarding=x=>`${learnCard(x)}${examCard(x)}${badgeCard(x)}${reviewCard(x)}${arcCard(x)}`;
 
+/** The transaction filling up beside the customer (owner 21/10, like the milk-tea cup): one piece per step. */
+const DESK={tray:'💵',count:'💵',bundle:'💵',fill:'💵',cash:'💵',money:'💵',receipt:'🧾',check:'🪪',who:'🪪',person:'🪪',confirm:'✍️',
+  readback:'✍️',sign:'✍️',next:'🛎️',collect:'📥',advise:'💬',left:'🧮',lost:'🔍',short:'⚠️',settle:'🤝',journal:'📒',low:'🔻',
+  seal:'🔒',slot:'🏧',safety:'🔐',clean:'🧹',pending:'📋',power:'🔌',roster:'📋',issue:'⚠️'};
 function customer(t,x){
   const d=data(x);
   if(!t.known)return askCard(x,t,'Nhận yêu cầu')+(['learn','exam'].includes(d.stage)?shadowBtn(t,x):'');
   if(['learn','exam'].includes(d.stage))
     return person(x,t,`<p class="small">${x.esc(t.opening)}</p>`)+slipCard(t,x)+`<p class="tl-note-line">${d.stage==='learn'?'Học xong ba bài với chị Hạnh rồi mới đứng quầy.':'Chưa qua thi thực hành: đứng cạnh xem chị Hạnh làm.'}</p>`+shadowBtn(t,x);
-  return person(x,t,`<p class="small">${x.esc(t.opening)}</p>`)+slipCard(t,x)+stepCard(t,x)+
+  return person(x,t,`<p class="small">${x.esc(t.opening)}</p>`,'',stepsArt(t,{kind:'cash',icons:DESK,head:'🧾',label:'Giao dịch'}))+slipCard(t,x)+stepCard(t,x)+
     (t.lines?.length?`<p class="tl-last" role="status">${x.esc(t.lines.at(-1))}</p>`:'');
 }
 const shadowBtn=(t,x)=>(t.at||0)>0?'':`<div class="tl-row">${x.cmd('👀 Xem chị Hạnh làm','tl_shadow',{task:t.id},'tl-shadow')}</div>`;

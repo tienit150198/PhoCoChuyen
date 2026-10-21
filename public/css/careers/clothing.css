@@ -305,3 +305,27 @@
 .career-job.ao .ao-sizes.wait{opacity:.7}
 .career-job.ao .ao-slim{margin:var(--sp-2) 0 var(--sp-1);color:var(--ao-violet)}
 .career-job.ao .ao-swatch{min-width:44px;justify-content:center}
+
+/* The outfit preview beside the order (outfitArt): a grey mannequin that dresses up piece by piece in each piece's
+   own colour and shape; the hat sits on the head, other accessories beside; ghosts = asked for, not on the counter yet. */
+.career-job.ao .ao-fig{display:grid;grid-template-columns:auto auto;justify-items:center;align-items:start;gap:0 2px;margin:0;flex:0 0 auto}
+.career-job.ao .ao-fig-body{position:relative;width:60px;height:100px}
+.career-job.ao .ao-fig-body::before{content:"";position:absolute;left:22px;top:0;width:16px;height:16px;border-radius:50%;background:#e9cdb2;box-shadow:inset 0 -2px 0 rgb(0 0 0 / 8%)}
+.career-job.ao .ao-man{position:absolute;left:19px;top:17px;width:22px;height:80px;background:linear-gradient(#d9d5ce 0 40%,transparent 40%),linear-gradient(90deg,#d9d5ce 0 44%,transparent 44% 56%,#d9d5ce 56%);border-radius:7px 7px 3px 3px;opacity:.75}
+.career-job.ao .ao-g{position:absolute;background:var(--c);box-shadow:inset 0 0 0 1px rgb(0 0 0 / 14%);animation:ck-drop .35s ease-out both}
+.career-job.ao .ao-g.pat-flower{background-image:radial-gradient(circle,#fff 0 1.5px,transparent 2px),radial-gradient(circle,#e57a95 0 1.5px,transparent 2px);background-size:8px 8px;background-position:0 0,4px 4px}
+.career-job.ao .ao-g.pat-check{background-image:repeating-linear-gradient(0deg,rgb(0 0 0 / 18%) 0 2px,transparent 2px 6px),repeating-linear-gradient(90deg,rgb(0 0 0 / 18%) 0 2px,transparent 2px 6px)}
+.career-job.ao .ao-g.pat-stripe{background-image:repeating-linear-gradient(0deg,#fff 0 2px,transparent 2px 5px)}
+.career-job.ao .g-shoes{left:16px;bottom:0;width:28px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--c) 0 42%,transparent 42% 58%,var(--c) 58%);box-shadow:none;z-index:1}
+.career-job.ao .g-pants{left:18px;top:47px;width:24px;height:49px;clip-path:polygon(0 0,100% 0,100% 100%,58% 100%,50% 22%,42% 100%,0 100%);z-index:2}
+.career-job.ao .g-shorts{left:18px;top:47px;width:24px;height:22px;clip-path:polygon(0 0,100% 0,100% 100%,58% 100%,50% 45%,42% 100%,0 100%);z-index:2}
+.career-job.ao .g-skirt{left:13px;top:45px;width:34px;height:28px;clip-path:polygon(24% 0,76% 0,100% 100%,0 100%);z-index:2}
+.career-job.ao .g-top,.career-job.ao .g-coat{left:10px;top:17px;width:40px;height:32px;clip-path:polygon(32% 0,68% 0,100% 20%,90% 42%,78% 34%,78% 100%,22% 100%,22% 34%,10% 42%,0 20%);z-index:3}
+.career-job.ao .g-coat{height:38px;z-index:4;background-image:linear-gradient(90deg,transparent 47%,rgb(0 0 0 / 30%) 47% 53%,transparent 53%)}
+.career-job.ao .g-dress,.career-job.ao .g-long{left:8px;top:17px;width:44px;height:58px;clip-path:polygon(32% 0,68% 0,92% 14%,82% 28%,72% 22%,70% 44%,100% 100%,0 100%,30% 44%,28% 22%,18% 28%,8% 14%);z-index:3}
+.career-job.ao .g-long{height:78px}
+.career-job.ao .ao-hat{position:absolute;left:50%;top:-9px;translate:-50% 0;font-size:20px;z-index:5;animation:ck-drop .35s ease-out both}
+.career-job.ao .ao-fig-acc{display:grid;gap:2px;padding-top:20px;font-size:15px;line-height:1}
+.career-job.ao .ao-fig-acc>span{animation:ck-drop .35s ease-out both}
+.career-job.ao .ao-fig-todo{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:center;gap:1px;font-size:15px}
+.career-job.ao .ao-fig figcaption{grid-column:1/-1;font-size:.6875rem;font-weight:700;color:var(--muted)}

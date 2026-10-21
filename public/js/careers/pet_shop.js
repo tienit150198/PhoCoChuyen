@@ -5,7 +5,7 @@
  * coins (till.js). Everything is decided on the server; the client shows it and sends one command
  * per tap. */
 import {stepRows,nextHint,stepCta,finalGo,pending,stepLine,stepBar} from '../v4/guide.js';
-import {clean,tip,few,helpBtn} from '../ui-kit.js';
+import {clean,tip,few,helpBtn,buildUp,withArt} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
 import {keepBarAboveFooter} from './food_kit.js';
@@ -133,6 +133,22 @@ function dayBar(x,compact=false){
 }
 
 /* ------------------------------------------------------------ the customer */
+/** What the customer takes home, building up beside the order (owner 21/10: like the milk-tea cup): the bag on the
+ * counter for food and an animal, the parcel for a delivery (what the order still lacks as grey ghosts), and for a
+ * tank the first tank filling with water as fish go in (red once they need more water than it holds). */
+function cartArt(t,x){
+  const c=cc(x),cart=t.cart||{},rep=(e,q,name,cls='')=>Array.from({length:Math.min(q,4)},()=>({e,t:name,cls}));
+  if(t.job==='tank'){
+    const g=(t.tanks||[{cart,load:t.load||{litres:0,size:0}}])[0]||{},row=g.cart||{},load=g.load||{litres:0,size:0},over=load.size&&load.litres>load.size;
+    const items=(c.fish||[]).flatMap(k=>rep(c.animals[k]?.emoji||'🐟',row[k]||0,c.animals[k]?.name||k,over?'bad':''));
+    return buildUp({kind:'box',cls:'ps-tankart',items,fill:load.size?Math.min(100,load.litres/load.size*100):0,color:'#8fcde9',caption:`💧 ${load.litres}/${load.size||'?'} L${(t.tanks||[]).length>1?` · ${t.tanks.length} bể`:''}`,empty:'🫙',label:'Bể cá'});
+  }
+  if(!tillJob(t))return '';
+  const items=Object.entries(cart).flatMap(([k,q])=>{const i=info(x,t,k);return rep(i.emoji,q,i.name);});
+  if(t.job==='ship')for(const [k,q] of Object.entries(t.needs?.order||{}))items.push(...rep(c.items?.[k]?.emoji||'📦',Math.max(0,q-(cart[k]||0)),c.items?.[k]?.name||k,'todo'));
+  const n=Object.values(cart).reduce((a,v)=>a+Number(v||0),0);
+  return buildUp({kind:t.job==='ship'?'box':'bag',items,caption:`🛒 ${n}`,empty:'🛍️',label:t.job==='ship'?'Thùng hàng':'Túi đồ của khách'});
+}
 function ticket(t,x,pet=''){
   const who=x.npc(t.npc),c=cc(x),tag=`<span class="tag ps-tag">${x.esc(c.job_emoji?.[t.job]||'')} ${x.esc(c.jobs?.[t.job]||'')}</span>`;
   if(!t.known&&clean())return `<article class="card ps-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3>${tag}</div><p>${said(x,t.opening)}</p></div></div></article>`;
@@ -140,7 +156,7 @@ function ticket(t,x,pet=''){
   const n=t.needs||{};
   // The job's title is the sheet title already; the animal / item card sits inside the ticket as one row.
   return `<article class="card ps-ticket"><div class="row">${x.portrait(who,40)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
-    <p class="ps-req">“${x.esc(n.request||t.opening)}”</p>
+    ${withArt(`<p class="ps-req">“${x.esc(n.request||t.opening)}”</p>`,done(t)||t.cash?.outcome!=null?'':cartArt(t,x))}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div>${pet}</article>`;
 }
 /** What the customer says, without the scene around it ("Bà Hai xách cái giỏ nhựa vào…: “…”" → “…”), escaped. The scene

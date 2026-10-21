@@ -3,8 +3,8 @@
  * hand the right pet back. The server grades each step (game/careers/vet.py); a wrong one stays open to fix and lowers
  * the case's quality. Other players' pets (🩺 Khám, 💉 Tiêm, game/vet_service.py) are seen in the "Bé của người chơi" card. */
 import {data,person,askCard,introCard,deskCard,kitActions,kitInput,notesPage} from './street_kit.js';
-import {current,stepsOf,stepCard,rulesList,statsCard,ordersCard,inboxTick,slipActions} from './slip_kit.js';
-import {clean} from '../ui-kit.js';
+import {current,stepsOf,stepCard,rulesList,statsCard,ordersCard,inboxTick,slipActions,stepsArt} from './slip_kit.js';
+import {clean,withArt} from '../ui-kit.js';
 
 const wrap=body=>`<div class="career-job sk slip vet">${body}</div>`;
 const ORDERS={id:'vet',svcCmd:'ty_svc',attrs:'data-coach="vet-orders"',title:'Bé của người chơi',emoji:'🐾',noun:'Bé',
@@ -17,12 +17,16 @@ const top=x=>`${introCard(x,'ty_intro','🩺')}${deskCard(x,'ty_desk','Chuyện 
 const tail=x=>ordersCard(x,ORDERS)+statsCard(x,STATS);
 const KIND={dog:'🐶',cat:'🐱'};
 
+/** The treatment tray: one thing per step of the case (solid: done, ringed: now, grey: still to do). */
+const TOOL={kham:'🩺',chu:'💬',can:'⚖️',nhiet:'🌡️',tiem:'💉',mong:'✂️',ve:'🪲',socola:'🍫',parvo:'💧',tieu:'💧',divat:'🩻',triet:'🩹',
+  dv:'🩺',dan:'📋',lieu:'💊',dich:'💧',nuoc:'💧',phim:'🩻',nhin:'🕒',mo:'🩹',ong:'💊',tra:'🏷️'};
 /** The case card: the pet, and the case once it is settled (not before: that is the first step). */
 function caseCard(t,x){
   const n=t.needs||{},known=t.at>0;
-  return `<article class="sl-ticket"><small>Chuồng ${x.esc(n.cage)} · ${x.esc(n.collar)}</small>
+  return `<article class="sl-ticket">${withArt(`<small>Chuồng ${x.esc(n.cage)} · ${x.esc(n.collar)}</small>
     <h3><span aria-hidden="true">${known?x.esc(n.emoji):KIND[n.pet_kind]||'🐾'}</span> ${x.esc(known?n.case_name:`Bé ${n.pet}`)}</h3>
-    ${known?`<p class="small">Bé ${x.esc(n.pet)} · ${x.esc(n.what)}</p>`:`<p class="small">${x.esc(n.what)} · chưa chốt bệnh: nghe chủ kể, khám rồi chốt.</p>`}</article>`;
+    ${known?`<p class="small">Bé ${x.esc(n.pet)} · ${x.esc(n.what)}</p>`:`<p class="small">${x.esc(n.what)} · chưa chốt bệnh: nghe chủ kể, khám rồi chốt.</p>`}`,
+    stepsArt(t,{kind:'tray',icons:TOOL,head:KIND[n.pet_kind]||'🐾',label:'Khay khám'}))}</article>`;
 }
 
 function slip(t,x){

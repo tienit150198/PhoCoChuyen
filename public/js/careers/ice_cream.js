@@ -7,7 +7,7 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
+import {data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean,buildUp} from './street_kit.js';
 import {linesSummary} from './tomorrow_kit.js';
 
 /** A panel button's label in two words on the clean layout (the bar names the step in full); readers get the full one. */
@@ -67,12 +67,32 @@ function meltBar(t,x){
 }
 
 /* ------------------------------------------------------------ the order and the counter */
+/** The cup in hand as it fills (owner 21/10, like the milk-tea cup): the vessel the customer asked for, each scoop
+ * dropping in, the flavours and topping still missing as grey ghosts, a wrong scoop ringed red. */
+const KIND={ly:'cup',oc:'cone',dua_trai:'bowl',hop:'box',que:'tray'};
+function cupArt(t,x){
+  const lines=t.needs?.lines||[],cups=t.cups||[],{pairs,active,last}=plan(t),cup=cups[last];
+  const ln=cup?(active>=0?lines[active]:null):lines.find((l,i)=>!pairs.has(i));
+  const v=cup?cup.v:ln?.v;if(!v)return '';
+  const items=[];
+  if(v==='que')items.push({e:'🍡',t:VS(x,'que').name,cls:cup?'':'todo'});
+  else{
+    const need=[...(ln?.f||[])];
+    for(const s of cup?.sc||[]){const i=need.indexOf(s.f);if(i>=0)need.splice(i,1);items.push({e:FL(x,s.f).emoji,t:`${FL(x,s.f).name} ${s.g} g`,cls:ln&&i<0&&v!=='hop'?'bad':''});}
+    if(v!=='hop')need.forEach(f=>items.push({e:FL(x,f).emoji,t:FL(x,f).name,cls:'todo'}));
+    else if(!cup?.sc?.length&&ln)items.push({e:FL(x,ln.f[0]).emoji,t:FL(x,ln.f[0]).name,cls:'todo'});
+    if(cup?.top)items.push({e:TP(x,cup.top).emoji,t:TP(x,cup.top).name,cls:ln&&!(ln.top||[]).includes(cup.top)?'bad':''});
+    else for(const k of ln?.top||[])items.push({e:TP(x,k).emoji,t:TP(x,k).name,cls:'todo'});
+  }
+  const g=cup&&v==='hop'?` · ${grams(cup)} g`:'';
+  return buildUp({kind:KIND[v]||'cup',items,caption:`${VS(x,v).emoji} ${pairs.size}/${lines.length}${g}`,label:VS(x,v).name});
+}
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Hỏi khách gọi gì');
   const n=t.needs||{},{pairs}=plan(t);
   const chips=(n.lines||[]).map((ln,li)=>`<span class="km-chip ${pairs.has(li)?'ok':''}">${x.esc(lineText(x,ln))}</span>`).join('');
   const tags=[n.allergy?`<span class="tag red">⚠️ Dị ứng ${x.esc(cc(x).allergens?.[n.allergy]||n.allergy)}</span>`:'',n.check?'<span class="tag amber">👀 Nhìn cân kỹ</span>':'',n.coins?'<span class="tag">🪙 Trả xu lẻ</span>':''].join('');
-  return person(x,t,`<p class="km-chips">${chips}</p>${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tags?`<span class="km-tags">${tags}</span>`:'');
+  return person(x,t,`<p class="km-chips">${chips}</p>${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}`,tags?`<span class="km-tags">${tags}</span>`:'',t.stage==='pay'?'':cupArt(t,x));
 }
 function scaleRead(t,x){
   const cups=t.cups||[],cup=cups[cups.length-1];if(!cup)return '';

@@ -1,3 +1,14 @@
+# Chưa phát hành — career previews
+
+🧾 Món đang làm hiện ra dần, như ly trà sữa (chủ game 21/10: "chỗ Ly trà sữa đó cập nhật cho các nghề khác tương tự được luôn đi"). Chỉ đổi giao diện: không đổi chấm điểm, tiền công, save hay schema.
+- ui-kit `buildUp` + `withArt` (app.css 27f, lớp `ck-k-<loại>`): khay, rổ, túi, đĩa, tô, nồi, hộp, ly, ốc quế, bàn thợ, giấy, quầy tiền; món đã bỏ vào rơi xuống, món khách còn chờ là bóng xám, món khách không gọi viền đỏ. street_kit `person(x,t,inner,tag,art)` vẽ hình bên cạnh phiếu khách; slip_kit `stepsArt` cho nghề chấm theo bước.
+- Trà đá: khay mang ra (cốc có đá / không đá, đồ ăn vặt). Kem: ly / ốc quế / trái dừa / hộp với từng viên kem, topping. Cơm tấm: dĩa hoặc hộp (cơm, món tủ kính, ốp la, mỡ hành, nước mắm, canh). Nấu cơm: mâm thực đơn → giỏ đi chợ → mâm cơm, món chín đặt lên mâm.
+- Hoa: bó hoa đúng dáng khách đặt, từng cành, giấy gói và nơ đổi màu theo lựa chọn. Quần áo: ma-nơ-canh mặc dần từng món đúng màu / họa tiết, đơn online là thùng hàng. Trái cây: rổ trái cây, quả dập / sai độ chín viền đỏ. Cửa hàng thú cưng: túi đồ, thùng gửi, bể cá đầy nước dần. Chăm thú cưng: bàn tắm với từng dịch vụ, bát ăn theo gam.
+- Nông trại: thùng carton / túi giấy đầy dần, nhãn hữu cơ. Giặt ủi: rổ → giá phơi → túi, từng món theo chất liệu, màu, vết bẩn. Sửa chữa: món đồ trên bàn thợ, từng bộ phận thay xong, ✅ khi chạy thử đạt. Nội trợ: giỏ / khay / hộp theo việc.
+- Lễ tân (hồ sơ khách), giao dịch viên (giao dịch), phục chế (đồ trên bàn thợ), nghiên cứu (khay mẫu), đài phát thanh (kịch bản lên sóng), sửa xe (xe trên bàn sửa), thú y (khay khám): một mảnh cho mỗi bước, bước đang làm viền màu nghề.
+- Quán ăn và tiệm cà phê / bánh kem đã có hình từ đợt trước (tô, ly, bánh kem). Không có nghề nhà thuốc trong game nên không làm.
+- i18n/overrides.json: 18 chuỗi + 6 mẫu (nhãn đọc màn hình).
+
 # v2.5.1 — 2026-10-22
 
 feat/careers-batch-3: 🏍️ Tiệm sửa xe Út Lanh (moto, chương 2) và 🩺 Phòng khám Thú y Cỏ May (vet, chương 3), dịch vụ Phố dịch vụ 🔧 bảo dưỡng xe, 🩺 khám, 💉 tiêm; không đổi schema (79 để trống), khóa save tùy chọn journey.xe_care; moto vào nhóm tăng tiền công LOW (+20%), vet MID. Có gì mới 2.5.1: 2 dòng.

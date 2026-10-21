@@ -48,3 +48,6 @@ html[data-theme="dem"] .radio .rd-alarm{background:#3a201c;border-left-color:#f0
   .radio .rd-step,.radio .rd-post,.radio .rd-shift{padding:13px}
   .radio .rd-role-row button{min-height:52px}
 }
+
+/* The step being done in the build-up preview (slip_kit stepsArt): ringed in the career colour. */
+.career-job.radio .ck-piece.todo.now{opacity:.85;filter:none;outline:2px dashed var(--sk-accent);outline-offset:1px;border-radius:6px}
