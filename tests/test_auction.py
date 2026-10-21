@@ -64,10 +64,11 @@ class Catalogue(unittest.TestCase):
             d = datetime.date(2026, 10, 7) + datetime.timedelta(i)
             p = au.plan(d)
             self.assertEqual(p, au.plan(d))
-            self.assertTrue(1 <= len(p) <= 3)
+            self.assertTrue(2 <= len(p) <= 4)
+            self.assertEqual(p[-1]['slot'], C.PET_SLOT)    # 🐾 the pet-gear lot at 22:00 (owner 21/10)
             for x in p:
                 t = datetime.datetime.fromtimestamp(x['starts_at'], au.VN)
-                self.assertTrue((t.hour, t.minute) >= (20, 30) and t.hour < 22)
+                self.assertTrue((t.hour, t.minute) >= (20, 30) and (t.hour, t.minute) <= (22, 0))
                 self.assertEqual(x['ends_at'] - x['starts_at'], 24 * 3600)
             it = au.pick(d, 1, 1, set())
             self.assertEqual(it['tier'], 1)
@@ -409,6 +410,28 @@ class Database(unittest.TestCase):
         n = len(au.plan(datetime.date(2026, 10, 10)))
         self.assertEqual(sum(out), n)
         with self.store.connect() as db:
-            rows = db.execute("SELECT id, item, tier FROM auction_lots WHERE id LIKE '20261010-%' ORDER BY id").fetchall()
-        self.assertEqual([r['tier'] for r in rows], list(range(1, n + 1)))
+            rows = db.execute("SELECT id, item, kind, tier FROM auction_lots WHERE id LIKE '20261010-%' ORDER BY id").fetchall()
+        self.assertEqual([r['tier'] for r in rows if not r['id'].endswith('-p')], list(range(1, n)))
+        self.assertEqual([(r['id'], r['kind']) for r in rows if r['id'].endswith('-p')], [('20261010-p', 'petgear')])
         self.assertEqual(len({r['item'] for r in rows}), n)
+
+    def test_an_opened_lot_is_announced_once(self):
+        d = datetime.date(2026, 10, 10)
+        self.t[0] = datetime.datetime(2026, 10, 10, 9, 0, tzinfo=au.VN).timestamp()
+        au.ensure_plan(self.store, force=True)
+        self.assertEqual(au.announce_open(self.store), 0, 'nothing opened yet')
+        first = au.plan(d)[0]
+        self.t[0] = first['starts_at'] + 60
+        self.assertEqual(au.announce_open(self.store), 1)
+        self.assertEqual(au.announce_open(self.store), 0, 'once')
+        with self.store.connect() as db:
+            row = db.execute("SELECT kind, text FROM news WHERE ref=?", (f'auc-open:{first["id"]}',)).fetchone()
+        self.assertEqual(row['kind'], 'auction')
+        self.assertIn('Nhà đấu giá vừa mở phiên', row['text'])
+        pet = au.plan(d)[-1]
+        self.t[0] = pet['starts_at'] + 30
+        au.announce_open(self.store)
+        with self.store.connect() as db:
+            refs = [r['ref'] for r in db.execute("SELECT ref FROM news WHERE ref LIKE 'auc-open:20261010-%'").fetchall()]
+        self.assertEqual(refs.count(f'auc-open:{first["id"]}'), 1)
+        self.assertIn(f'auc-open:{pet["id"]}', refs, 'the 22:00 pet lot too')

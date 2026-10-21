@@ -65,6 +65,10 @@ OPEN_HOUR, OPEN_MIN = 20, 30
 SLOT_GAP_MIN = 30
 HOURS = 24
 COUNTS = (1, 2, 2, 3)          # the day's lot count: COUNTS[hash(date) % 4]
+# 🐾 Đồ thú cưng have a slot of their own every evening (owner 21/10 "sao lâu thế"): one piece a day at 22:00, the
+# cheapest rank first (A, then S, then SS); an unsold piece comes back the next evening. The other slots never pick one.
+PET_HOUR, PET_MIN = 22, 0
+PET_SLOT = 9
 SNIPE_SECS = 300               # a bid in the last 5 minutes adds 5 minutes
 SNIPE_CAP_SECS = 6 * 3600      # never more than 6 hours past the planned end
 ACCOUNT_DAYS = 3               # an account at least this many days old may bid (real days)

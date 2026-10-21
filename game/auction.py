@@ -10,7 +10,8 @@ PLATE_PCT, paid by game/journey.py _end_of_day, game/garage.py bonus_now). Nothi
 helps an exam.
 
 Schedule (plan(), ensure_plan()): 1–3 lots a Vietnam day, deterministic from the date and the pool of unsold items,
-opening 20:30 / 21:00 / 21:30 and running 24 hours. An admin may add a lot (admin_add, POST /api/admin/auction).
+opening 20:30 / 21:00 / 21:30 and running 24 hours, plus a 🐾 pet-gear lot at 22:00 (one piece a day, A → S → SS).
+When a lot opens the street's ticker says so, once (announce_open, news ref 'auc-open:<lot>'). An admin may add a lot (admin_add, POST /api/admin/auction).
 Rows are created by whoever comes first (housekeeping or a page), once: deterministic ids under an advisory lock.
 
 Bidding (jr_auc_bid {lot, amount, anon?}): one active bid per player per lot.
@@ -99,6 +100,7 @@ DAY = 86400
 PUSH_EVERY = 600                   # an outbid push per lot per player at most every 10 minutes
 HISTORY = 20
 NEWS_FROM = 50_000                 # a sale from this price gets a line on the street's ticker
+ANNOUNCE_SECS = 1800               # a lot that opened this recently gets its ticker line (a restart does not miss one)
 
 
 def now() -> float:
@@ -730,6 +732,8 @@ def plan(d: datetime.date) -> list[dict]:
     for i in range(n):
         t0 = base + i * C.SLOT_GAP_MIN * 60
         out.append(dict(id=f'{d:%Y%m%d}-{i + 1}', slot=i + 1, tier=i + 1, starts_at=t0, ends_at=t0 + C.HOURS * 3600))
+    t0 = datetime.datetime(d.year, d.month, d.day, C.PET_HOUR, C.PET_MIN, tzinfo=VN).timestamp()
+    out.append(dict(id=f'{d:%Y%m%d}-p', slot=C.PET_SLOT, tier=0, starts_at=t0, ends_at=t0 + C.HOURS * 3600))
     return out
 
 
@@ -742,9 +746,16 @@ def pet_ready(it: dict, taken: set) -> bool:
 
 
 def pick(d: datetime.date, slot: int, tier_n: int, taken: set) -> dict | None:
-    """The slot's item: deterministic from the date among the free items of its tier (then the lower tiers)."""
+    """The slot's item: deterministic from the date among the free items of its tier (then the lower tiers); the pet
+    slot takes the cheapest free pet piece."""
+    if slot == C.PET_SLOT:
+        free = [it for it in C.ITEMS if it['kind'] == 'petgear' and it['id'] not in taken and pet_ready(it, taken)]
+        if not free:
+            return None
+        low = sorted(it['id'] for it in free if it['rank'] == min(x['rank'] for x in free))
+        return C.ITEM[low[_h('pick', d.isoformat(), slot) % len(low)]]
     for t in range(tier_n, 0, -1):
-        free = sorted(it['id'] for it in C.ITEMS if it['tier'] == t and it['id'] not in taken and pet_ready(it, taken))
+        free = sorted(it['id'] for it in C.ITEMS if it['tier'] == t and it['kind'] != 'petgear' and it['id'] not in taken)
         if free:
             return C.ITEM[free[_h('pick', d.isoformat(), slot) % len(free)]]
     return None
@@ -986,11 +997,30 @@ def settle_due(store, t: float | None = None, limit: int = 20) -> list:
     return [(lid, s) for lid in ids if (s := settle_one(store, lid, t))]
 
 
+def announce_open(store, t: float | None = None) -> int:
+    """🔨 A line on the street's ticker for every lot that opened in the last ANNOUNCE_SECS, once (news.ref is unique)."""
+    t = now() if t is None else t
+    with store.connect() as db:
+        rows = db.execute("SELECT id, name, emoji, start FROM auction_lots WHERE status='open' AND starts_at<=? AND starts_at>? "
+                          'ORDER BY starts_at', (t, t - ANNOUNCE_SECS)).fetchall()
+    if not rows:
+        return 0
+    from . import marriage
+
+    def run(db):
+        return sum(marriage._post_news(db, 'auction', f'auc-open:{r["id"]}',
+                                       f'🔨 Nhà đấu giá vừa mở phiên: {r["emoji"]} {r["name"]}, khởi điểm {fmt(int(r["start"]))} xu, '
+                                       f'trả giá trong {C.HOURS} giờ!', '', '') for r in rows)
+    return store.transaction(run)
+
+
 def run_housekeeping(store) -> None:
-    """server.py maintenance (every 30 s, one process): today's lots, then the lots that ended. Never raises."""
+    """server.py maintenance (every 30 s, one process): today's lots, the ticker line of a lot that opened, then the
+    lots that ended. Never raises."""
     import sys
     try:
         ensure_plan(store)
+        announce_open(store)
         for lid, st in settle_due(store):
             sys.stderr.write(f'[auction] {lid}: {st}\n')
     except Exception as e:  # noqa: BLE001 - housekeeping never takes the server down

@@ -6,7 +6,7 @@ export default [
   {"emoji":"🩺","text":"Nghề mới Phòng khám Thú y Cỏ May: khám, tiêm, chăm các bé, nhận đơn khám và tiêm cho thú cưng người chơi."},
   {"emoji":"💛","text":"Thân với khách quen và hàng xóm là có lợi: khách trả thêm tới 6%, hàng xóm bớt tiền phòng, còn có bí mật 🔒 chờ bạn mở.","go":{"action":"people","data":{}}},
   {"emoji":"💡","text":"Hướng dẫn chơi → Tiền bạc có mục mới Mẹo kiếm tiền: nghề x3, tiền công thêm, khách quen, Phố dịch vụ, tiết kiệm."},
-  {"emoji":"🔨","text":"Đấu giá: đồ thú cưng cao nhất hạng SS, lên sàn lần lượt từ hạng A tới SS."},
+  {"emoji":"🔨","text":"Đấu giá: mỗi tối 22:00 lên sàn một món đồ thú cưng, từ hạng A tới SS. Phiên nào mở là cả phố được báo trên bảng tin."},
   {"emoji":"🎃","text":"Halloween 26–31/10: quầy đổi kẹo có túi 100.000, 200.000 và 500.000 xu, mỗi túi đổi được 1 lần."}
  ]},
  {"version":"2.5.0","date":"2026-10-21","items":[
