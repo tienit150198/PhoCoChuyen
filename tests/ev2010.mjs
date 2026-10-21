@@ -16,7 +16,7 @@ assert.equal(due({journey:{story:false}},null,{seen:'',coming:false,open:true}),
 assert.equal(due(s(1),null,{seen:'',coming:true,open:true}),'');
 assert.equal(due(s(1),acct,{seen:'1',coming:true,open:true}),'back');
 // the window: 21/10/2026 23:59:59 VN
-assert.equal(new Date(EV2010_UNTIL).toISOString(),'2026-10-21T16:59:59.000Z');
+assert.equal(new Date(EV2010_UNTIL).toISOString(),'2026-10-20T16:59:59.000Z');
 assert.ok(ev2010Open(EV2010_UNTIL)&&!ev2010Open(EV2010_UNTIL+1000));
 const has=()=>townUtilityGroups(s(5),{},{}).some(g=>g.items.some(i=>i.action==='ev2010'));
 assert.equal(townServiceAvailable('ev2010'),ev2010Open());

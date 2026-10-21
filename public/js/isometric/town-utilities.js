@@ -18,7 +18,7 @@ const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveK
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
 /** 💐 Thiệp 20/10 (/2010, game/event2010.py WRITE_UNTIL; tests/test_event2010.py keeps the two equal): the entries
  * (Tiện ích, the journey home, the card that opens once: v4/ev2010.js) show until writing closes, 21/10/2026 23:59 VN. */
-export const EV2010_UNTIL=1792601999e3;
+export const EV2010_UNTIL=1792515599e3;   // 20/10 23:59:59 VN: writing closed (owner 21/10), no card or entry after it
 export const ev2010Open=(t=Date.now())=>t<=EV2010_UNTIL;
 
 /** Known optional services use the app's gates; ordinary map actions stay available. */

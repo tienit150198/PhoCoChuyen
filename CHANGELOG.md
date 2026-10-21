@@ -1,3 +1,7 @@
+# v2.5.0.1 — 2026-10-21
+
+💐 Hotfix (chủ game 21/10 "viết thiệp giờ login vào vẫn bị thông báo đó, xóa đi"): public/js/isometric/town-utilities.js EV2010_UNTIL còn 21/10 23:59:59 nên thẻ Thiệp 20/10 giữa màn hình, thẻ ở Hành trình và lối vào trong Tiện ích vẫn hiện dù máy chủ đã đóng viết từ 20/10 23:59:59 (MNL_2010_UNTIL). Nay EV2010_UNTIL = 20/10 23:59:59; trang /2010 vẫn mở đọc thiệp bằng link tới hết 25/10. Không có dòng Có gì mới.
+
 # v2.5.0 — 2026-10-21
 
 Bản gộp lớn (khung 4–5h): careers-integ (5 nghề mới, Phố dịch vụ, phòng sinh, phòng khách sạn, hội chợ việc làm, dịch vụ cưới, chụp ảnh), hướng dẫn coach cho nghề mới, quầy chuỗi (trần thuê/điện, phí chuỗi không trừ thưởng lãi), đấu giá +50 món, Halloween 26–31/10 (schema 80), trang trí +55 món, nhà đảo + bang, thân thiết NPC, màn làm việc dễ nhìn, tiền công +8–20% và Tuần lễ tay nghề 22–28/10 (MNL_PAYWEEK_FROM/UNTIL). Có gì mới 2.5.0: 14 dòng.

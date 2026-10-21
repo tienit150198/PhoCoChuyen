@@ -144,9 +144,10 @@ class Window(unittest.TestCase):
             self.assertTrue(line['key'].startswith('ev2010:recap:'))
             self.assertIsNone(ev.recap_line(ev.READ_UNTIL + 1))
 
-    def test_the_game_shows_its_entries_for_the_same_window(self):
+    def test_the_game_hides_its_entries_once_writing_closed(self):   # owner 21/10: the card still showed on login: the game's
+        # entries follow the real close (prod MNL_2010_UNTIL, 20/10 23:59:59), not WRITE_UNTIL
         js = (ROOT / 'public/js/isometric/town-utilities.js').read_text(encoding='utf-8')
-        self.assertEqual(int(float(re.search(r'EV2010_UNTIL=([0-9e.]+)', js).group(1))), ev.WRITE_UNTIL * 1000)
+        self.assertEqual(int(float(re.search(r'EV2010_UNTIL=([0-9e.]+)', js).group(1))), ev.RECAP_FROM * 1000 - 1000)
 
     def test_every_theme_has_its_look_its_art_and_its_preview_picture(self):
         css = (ROOT / 'public/css/event2010.css').read_text(encoding='utf-8')
