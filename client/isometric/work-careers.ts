@@ -66,6 +66,9 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   radio:identity('Kiểm phòng thu · đọc tin, quảng cáo duyệt và lời chúc đúng tên','Phòng thu','Bàn trộn âm & micro','Phòng máy & lịch phát sóng'),
   moto:identity('Nghe bệnh xe · chốt lỗi rồi mới cầm cờ lê · giao đúng biển số','Cầu nâng','Tủ đồ nghề & phụ tùng','Quầy nhận và giao xe'),
   vet:identity('Nghe chủ kể · cân bé, tính liều theo cân · trả đúng bé','Bàn khám','Tủ thuốc & sổ tiêm','Ghế chờ & lồng bé'),
+  kol:identity('Đọc brief · ghi rõ quảng cáo · báo cáo số thật','Góc quay & bàn dựng','Kệ đèn & chân máy','Brief & hợp đồng'),
+  singer:identity('Nhìn khán phòng · khởi động, thử âm · hát thật, đúng giờ','Sân khấu nhỏ','Giá micro & sổ hợp âm','Bàn trà & giấy xin bài'),
+  actor:identity('Đọc kịch bản · đứng đúng dấu · an toàn trước khi quay','Trường quay','Giá trang phục & đạo cụ','Phòng hóa trang'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
@@ -144,6 +147,27 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
     f('sink',r(2.9,.6,3.6,1.45),62,blue);f('crate',r(4.05,.7,5.05,1.5),48,0xd9c8a5);f('bench',r(5.3,.7,6.5,1.4),44,mint);f('planter',r(6.05,3.4,6.5,4.1),70,0x9fb98f);
     z(r(2.6,.3,6.7,1.85),'tile',0xd3ebe4);z(r(2.85,2.95,6.7,4.45),'checker',0xe6efe9);
+  }else if(career==='kol'){
+    // Studio Hẻm Xanh: the shooting corner and editing desk in front, light stands on the left wall, a ring light, the sofa set and a box of samples behind.
+    clear(false,'plank');s('shelf','rack',r(.55,1.9,1.45,3.9),1.95,2.9,116,0x9a86c4);
+    s('workbench','desk',r(3.15,3.25,5.65,4.15),4.4,4.75,58,0xb9a4e0);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('console',r(2.85,.55,3.95,1.45),80,0x5b3fa0);f('sofa',r(4.35,.65,5.95,1.45),42,0xf0b3a3);f('crate',r(6.1,.7,6.55,1.5),40,0xd9c8a5);f('planter',r(6.05,3.4,6.5,4.1),70,0x9fb98f);
+    z(r(2.6,.3,6.7,1.85),'carpet',0xe1d6f2);z(r(2.85,2.95,6.7,4.45),'plank',0xeee4f6);
+  }else if(career==='singer'){
+    // Phòng trà Mây Chiều: the small stage and mic stand in front, the songbook shelf on the left, the piano, tea tables and the velvet sofa behind.
+    clear(false,'plank');s('shelf','bookcase',r(.55,1.9,1.45,3.9),1.95,2.9,116,0x8e2337);
+    s('workbench','counter',r(3.15,3.25,5.65,4.15),4.4,4.75,56,0xb0475f);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('console',r(2.85,.55,4.1,1.45),78,0x3a1c2a);f('desk',r(4.5,.65,5.3,1.45),46,0xc58a2b);f('sofa',r(5.55,.65,6.55,1.45),42,0xd98ea0);f('planter',r(6.05,3.4,6.5,4.1),70,0x9fb98f);
+    z(r(2.6,.3,6.7,1.85),'carpet',0xe8c3cd);z(r(2.85,2.95,6.7,4.45),'plank',0xf3e4e7);
+  }else if(career==='actor'){
+    // Hãng phim Bến Mây: the set with its tape marks in front, the costume rail on the left wall, the camera, a prop crate and the make-up mirror behind.
+    clear(false,'plank');s('shelf','rack',r(.55,1.9,1.45,3.9),1.95,2.9,116,0xc0812b);
+    s('workbench','desk',r(3.15,3.25,5.65,4.15),4.4,4.75,58,0x46607a);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('console',r(2.85,.55,3.95,1.45),82,0x2f3238);f('crate',r(4.35,.7,5.25,1.5),50,0xd2a86e);f('desk',r(5.5,.6,6.5,1.45),52,cream);f('sofa',r(5.95,3.35,6.5,4.15),42,0xe6c48f);
+    z(r(2.6,.3,6.7,1.85),'plank',0xe9d6b5);z(r(2.85,2.95,6.7,4.45),'mat',0xd5d9de);
   }else if(career==='banquet'){
     // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
     clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);
