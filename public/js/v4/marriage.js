@@ -11,12 +11,13 @@ import {myPortrait} from './look.js';
 import {confirmPurchase} from './payment.js';
 import {familyView,familyAction,familyRefresh} from './family.js';
 import {birthClock} from './birth.js';
+import {lifeView,lifeAction,lifeLabel,lifePaint} from './wedlife.js';   // 💍 Sống chung: lễ rước dâu, đi chơi cùng nhau, việc nhà (game/wedding_life.py)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox} from '../qty-input.js';
 
 const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'',quote:null,qTimer:0,qSeq:0,flash:null,busy:false,
   form:{code:'',ring:'',message:'',announce:true},found:null,confirm:'',answer:{},loading:false,err:'',
-  pick:{},recolor:null,fq:'',fres:null,partyAt:0,family:{},familySection:null,refresh:null,loadSeq:0,
+  pick:{},recolor:null,fq:'',fres:null,partyAt:0,family:{},life:{},familySection:null,refresh:null,loadSeq:0,
   money:{dep:'',wd:'',send:'',note:'none',loan:false,help:'',hnote:'none',hloan:false,gift:''},repay:{},cline:{},lline:{}};
 const rid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -102,7 +103,7 @@ function take(view){
   S.view=view;
   const h=view.home||{};
   const alerts=view.guest?0:(view.incoming?.length||0)+(view.me?.notice?1:0)+(view.wedding&&view.wedding.status==='proposed'&&!view.wedding.mine?1:0)+(view.wedding?.status==='done'&&!view.wedding.seen?1:0)
-    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length+(view.family?.birth?.stay?.can_answer?1:0);
+    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length+(view.family?.birth?.stay?.can_answer?1:0)+lifeAlerts(view.life);
   badges(alerts,view.friends?.incoming?.length||0);
   const married=view.couple?.status==='married';
   if(['fund','love'].includes(S.tab)&&!married)S.tab='home';
@@ -116,6 +117,9 @@ function take(view){
   const owned=(view.rings||[]).filter(r=>r.status==='owned');
   if(!owned.some(r=>r.id===S.form.ring))S.form.ring=owned[0]?.id||'';
 }
+/** 💍 Sống chung: what waits for this player (the ceremony's step, a trip offer or day, a chore asked). */
+const lifeAlerts=l=>l?Number(Boolean(l.rite?.my_turn))+Number(Boolean(l.trip&&((l.trip.status==='proposed'&&!l.trip.mine)||(l.trip.status==='on'&&l.trip.my_turn&&l.trip.ready))))
+  +(l.chores||[]).filter(x=>x.state==='open'&&!x.mine).length:0;
 /** Rail badges: "Hôn nhân" (proposals, plans, the spouse's moments and asks) and "Bạn bè" (friend requests). */
 export function badges(marriage,friends){
   const api=S.env?.api||null;if(api){api.marriageAlerts=marriage;api.friendAlerts=friends;}
@@ -232,6 +236,7 @@ async function onClick(mr,data,el){
   if(S.busy&&mr.startsWith('fam:'))return;
   if(mr==='fam:request'||mr==='fam:rename'||mr==='fam:birth-book'){const field=el.closest('section')?.querySelector('input[data-mr-field]');if(field&&!field.value.trim()){field.value='';field.reportValidity();return;}}
   if(await familyAction(mr,data,{env:S.env,family:S.view?.family,form:S.family,post,render}))return;
+  if(await lifeAction(mr,data,{env:S.env,life:S.view?.life,form:S.life,post,render,top:()=>{S.dlg.scrollTop=0;}}))return;
   const {env}=S;
   switch(mr){
     case'close':S.dlg.close();return;
@@ -379,6 +384,7 @@ function render(){
   if(!S.dlg)return;
   keepFocus(()=>{S.dlg.querySelector('.mr-root').innerHTML=page();});
   if(S.tab==='family')birthClock(S.dlg);   // 🏥 the birth room's countdown ticks between polls
+  if(S.tab==='life')lifePaint(S.dlg);      // 📸 the album's photos, drawn by the game (portrait-art.js)
   S.dlg.setAttribute('aria-busy',String(S.busy||S.loading));
   if(S.familySection&&!S.loading&&S.tab==='family'){const section=['children','room'].includes(S.familySection)?S.familySection:'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
 }
@@ -396,12 +402,13 @@ function page(){
   const c=v.couple,engaged=c?.status==='engaged',married=c?.status==='married';
   const fn=v.friends?.incoming?.length||0,hn=(v.home?.moments||[]).filter(m=>m.new).length,rq=(v.home?.requests||[]).filter(r=>!r.mine).length+(v.home?.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length;
   const dot=n=>n?` <em class="mr-dot">${n}</em>`:'';
-  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length+(v.family?.birth?.stay?.can_answer?1:0))}`],['home','💍 Hai bạn'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
-    :engaged?[['family','🏡 Nhà & Gia đình'],['home','💞 Hai bạn'],['plan','📋 Kế hoạch cưới'],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
+  const life=v.life?[['life',`${lifeLabel(c)}${dot(lifeAlerts(v.life))}`]]:[];
+  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length+(v.family?.birth?.stay?.can_answer?1:0))}`],['home','💍 Hai bạn'],...life,['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
+    :engaged?[['family','🏡 Nhà & Gia đình'],['home','💞 Hai bạn'],['plan','📋 Kế hoạch cưới'],...(v.life?.rite?life:[]),['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
     :[['family','🏡 Nhà & Gia đình'],['friends',`👥 Bạn bè${dot(fn)}`],['home',`💌 Cầu hôn${dot(v.incoming.length)}`],['shop','💍 Tiệm nhẫn']];
   if(!tabs.some(([id])=>id===S.tab))S.tab='home';
   const tabBar=`<div class="segmented mr-tabs" role="tablist" aria-label="Mục hôn nhân">${tabs.map(([id,label])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-mr="tab" data-tab="${id}">${label}</button>`).join('')}</div>`;
-  const body=S.tab==='family'?familyView(v.family,c,S.family):S.tab==='shop'?shop():S.tab==='friends'?friendsTab():S.tab==='fund'?fundTab():S.tab==='love'?loveTab():S.tab==='plan'&&engaged?planner():c?couple():single();
+  const body=S.tab==='family'?familyView(v.family,c,S.family):S.tab==='life'?lifeView(v.life,c,S.life,S.busy):S.tab==='shop'?shop():S.tab==='friends'?friendsTab():S.tab==='fund'?fundTab():S.tab==='love'?loveTab():S.tab==='plan'&&engaged?planner():c?couple():single();
   const sub=c?(engaged?`Đã đính hôn với ${esc(c.partner.name)}`:`Đã kết hôn với ${esc(c.partner.name)}`):'Kết bạn trước, rồi mới trao nhẫn.';
   return head(sub)+`<div class="sheet-body mr">${tabBar}${flash()}${body}</div>`;
 }

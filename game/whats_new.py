@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.2", date="2026-10-22", items=(
+        dict(emoji='🧺', text="Lễ rước dâu và lễ gia tiên: hai bạn lần lượt làm từng bước cùng hai họ, khách dự tiệc cưới được MC kể lại.", go=dict(action='marriage', data={'tab': 'life'})),
+        dict(emoji='✈️', text="Vợ chồng đi chơi cùng nhau thật: Đà Lạt, Hội An, Hạ Long, Phú Quốc, Seoul, Osaka… vé thường hay thuê máy bay, du thuyền."),
+        dict(emoji='📸', text="Mỗi ngày đi chơi có một tấm ảnh đôi vào album chung. Nhà có máy bay, du thuyền thì chỉ tốn tiền xăng."),
+        dict(emoji='🏠', text="Sống chung mỗi ngày: rủ nhau làm việc nhà, đi chợ, nấu cơm, chăm con, thêm điểm hạnh phúc và tinh thần."),
+    )),
     dict(version="2.5.1", date="2026-10-22", items=(
         dict(emoji='🏍️', text="Nghề mới Tiệm sửa xe Út Lanh: nghe bệnh xe, sửa đúng sổ tay, nhận đơn bảo dưỡng xe máy của người chơi."),
         dict(emoji='🩺', text="Nghề mới Phòng khám Thú y Cỏ May: khám, tiêm, chăm các bé, nhận đơn khám và tiêm cho thú cưng người chơi."),

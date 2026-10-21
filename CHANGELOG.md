@@ -1,3 +1,10 @@
+# Chưa phát hành — feat/wedding-life
+
+💍 Đời sống vợ chồng phase 1 (góp ý #442, #444; chủ game 21/10 "có đi thật luôn nhé, có chụp ảnh này kia luôn, thuê máy bay du thuyền gì đó"). Kế hoạch: docs/WEDDING_LIFE_PLAN.md. Schema 83 (bảng mới wl_rites, wl_trips, wl_photos, wl_chores; 81–82 để trống), không thêm khóa save.
+- game/wedding_life.py + wedding_life_content.py: 🧺 lễ rước dâu + lễ gia tiên 6 bước hai người lần lượt chọn (đính hôn đã chốt kế hoạch hoặc đã cưới; miễn phí nếu kế hoạch có gia tiên, chưa có thì phí gia tiên + mâm quả 5/7/9 theo giá ăn hỏi, hoãn / hết hạn 3 ngày / ly hôn hoàn đúng một lần). ✈️ chuyến đi 11 nơi (6 trong nước, 4 nước ngoài, đảo riêng), vé / thuê máy bay / thuê du thuyền / máy bay, du thuyền nhà mình (xăng = giá thuê ÷ 10), trả bằng quỹ chung / chia đôi / mình bao; tiền giữ tới khi người kia bấm đi, từ chối / hủy / 48 giờ / ly hôn hoàn đúng nơi đã trả. Mỗi ngày một người chọn, chuyện bất ngờ, ảnh đôi (dữ liệu vẽ của photo_studio). 🏠 việc nhà, đi chợ, nấu cơm, chăm con mỗi ngày (+hạnh phúc, +1 tinh thần, không ra tiền).
+- game/marriage.py (hành động wl_*, view.life), game/couple.py (ly hôn: hoàn tiền chuyến đi trước khi chia quỹ), live/wedding.py + wedfeast.js (MC kể lễ rước dâu cho khách), portrait-art.js (chú thích ảnh), public/js/v4/wedlife.js + marriage.js (tab 🏠 Sống chung / 🧺 Lễ gia tiên), marriage.css.
+- Có gì mới 2.5.2 (4 dòng, chưa nâng game.__version__), Hướng dẫn "Lễ rước dâu, đi chơi, sống chung", i18n/overrides.json.
+
 # Chưa phát hành — fix/fb-money-2110
 
 🏦 F#462 "giao dịch lớn hơn 10tr đều không được" + 🥛 F#463/#454 sữa tươi hỏng giữa ca. Không đổi schema, không thêm khóa save.

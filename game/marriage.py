@@ -1202,6 +1202,12 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
         state = got[0]
         out.update(state=public_state(state), revision=got[1])
     _expire(store, sid)
+    try:   # 💍 a ceremony or a trip left waiting too long is refunded, a trip on its way too long comes home (game/wedding_life.py)
+        from . import wedding_life as wlf
+        with store.connect() as db:
+            wlf.housekeep(store, _bond(db, sid))
+    except Exception:  # noqa: BLE001 - the next view tries again
+        pass
     from . import birth
     try:
         birth.settle_due(store, sid)   # 🏥 a birth room's hours are over: the baby is born now, once (game/birth.py)
@@ -1268,6 +1274,11 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
         friends = fr.view(db, sid)
         home = cp.view(db, sid, c)
         family = fam.view(db, sid, c, state or {})
+        try:   # 💍 Sống chung: lễ rước dâu, đi chơi cùng nhau, việc nhà (game/wedding_life.py)
+            from . import wedding_life as wlf
+            life = wlf.view(store, db, sid, c)
+        except Exception:  # noqa: BLE001 - a database without its tables: no tab
+            life = None
         bag = (((state or {}).get('journey') or {}).get('closeness') or {}).get('bag')
         home['bag'] = {k: int(n) for k, n in bag.items() if k in home['gifts'] and type(n) is int and n > 0} if isinstance(bag, dict) else {}
     j = (state or {}).get('journey') or {}
@@ -1276,7 +1287,7 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
                        proposals_left=max(0, W.PROPOSALS_PER_DAY - len(today)), notice=person['notice'], notice_at=int(person['notice_at'] or 0),
                        sticker=bool(((state or {}).get('marriage') or {}).get('sticker'))),
                rings=rings, incoming=incoming, outgoing=outgoing, blocks=blocks, couple=couple, wedding=wedding, last=last,
-               friends=friends, home=home, family=family)
+               friends=friends, home=home, family=family, life=life)
     return out
 
 
@@ -1337,10 +1348,11 @@ def _act(store, token: str, op: str, d: dict) -> dict:
 
 
 def _more_actions() -> dict:
-    from . import friends as fr, couple as cp, family as fam, jail, cand_ops, hq_ops
+    from . import friends as fr, couple as cp, family as fam, jail, cand_ops, hq_ops, wedding_life as wlf
     # 🚔 jail_ask, jail_bail (game/jail.py); 👮 cand_* (game/cand_ops.py: the patrol at Chợ đen, the commanders);
-    # 🛃 hq_* (game/hq_ops.py: the warehouse inspections of players' shops)
-    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS, **cand_ops.ACTIONS, **hq_ops.ACTIONS}
+    # 🛃 hq_* (game/hq_ops.py: the warehouse inspections of players' shops); 💍 wl_* (game/wedding_life.py: lễ rước dâu,
+    # đi chơi cùng nhau, sống chung)
+    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS, **cand_ops.ACTIONS, **hq_ops.ACTIONS, **wlf.ACTIONS}
 
 
 def _ring_buy(store, sid: str, display: str, d: dict) -> dict:

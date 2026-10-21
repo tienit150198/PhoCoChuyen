@@ -370,3 +370,44 @@ html[data-layout="phone"] .mr-ticker{top:calc(var(--safe-t) + 4px);width:calc(10
 .mr-team li small{color:var(--muted)}
 .mr-team li>small{flex:none;color:var(--warn);letter-spacing:-1px}
 .mr-team li.prep{background:transparent;border:1px dashed var(--line)}
+/* 💍 Sống chung (public/js/v4/wedlife.js, game/wedding_life.py): lễ rước dâu, đi chơi cùng nhau, việc nhà, album */
+.wl{display:grid;gap:12px}
+.wl-steps{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.wl-steps li{display:flex;flex-direction:column;gap:3px;padding:8px 10px;border-radius:12px;background:var(--surface-2)}
+.wl-steps li.later{opacity:.6;background:transparent;border:1px dashed var(--line)}
+.wl-steps li.now{box-shadow:0 0 0 2px var(--accent)}
+.wl-steps small,.wl-steps i{font-size:.85rem;color:var(--muted)}
+.wl-say{margin:2px 0}
+.wl-say span{font-weight:700}
+.wl-opts{display:grid;gap:6px;margin-top:6px}
+.wl-opts .wl-opt{justify-content:flex-start;text-align:left;white-space:normal;min-height:44px;height:auto;padding:8px 12px}
+.wl-grade{font-weight:800;font-size:1.05rem;margin:4px 0}
+.wl-scene{position:relative;height:72px;margin:-4px 0 8px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#bfe3f7,#e9f6fd 70%,#f7e7c6)}
+.wl-scene .wl-dest{position:absolute;right:14px;bottom:6px;font-size:40px}
+.wl-scene .wl-ride{position:absolute;left:12px;top:10px;font-size:28px}
+.wl-scene .wl-couple{position:absolute;left:14px;bottom:6px;font-size:30px}
+.wl-scene.go .wl-ride{animation:wl-fly 6s ease-in-out infinite alternate}
+@keyframes wl-fly{from{transform:translateX(0)}to{transform:translateX(min(220px,55vw))}}
+@media (prefers-reduced-motion:reduce){.wl-scene.go .wl-ride{animation:none}}
+.wl-dots{display:flex;gap:6px;margin:6px 0}
+.wl-dots i{width:22px;height:8px;border-radius:4px;background:var(--line)}
+.wl-dots i.done{background:var(--accent)}
+.wl-dots i.now{background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.wl-days li{max-width:none}
+.wl-days b{display:block;font-size:.92rem}
+.wl-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:8px 0}
+.wl-tile{padding:0;border:0;background:var(--surface-2);border-radius:8px;overflow:hidden;aspect-ratio:4/5;cursor:pointer}
+.wl-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.wl-big{width:100%;max-width:420px;aspect-ratio:4/5;display:block;margin:0 auto;border-radius:6px;background:var(--surface-2)}
+.wl-group{margin:10px 0 4px;font-weight:700;font-size:.9rem;color:var(--muted)}
+.wl-dests,.wl-rides{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.wl-dest-btn,.wl-ride-btn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 10px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:inherit;text-align:left;cursor:pointer}
+.wl-dest-btn span{font-size:1.3rem}
+.wl-dest-btn small,.wl-ride-btn small{color:var(--muted);font-size:.8rem}
+.wl-dest-btn.on,.wl-ride-btn.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);background:var(--accent-soft)}
+.wl-chores{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.wl-chore{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-radius:12px;background:var(--surface-2)}
+.wl-chore.open{box-shadow:0 0 0 2px var(--accent)}
+.wl-chore.locked{opacity:.6}
+.wl-chore small{color:var(--muted)}
+.wl-roles{display:flex;flex-wrap:wrap;gap:6px}
