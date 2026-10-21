@@ -1,5 +1,18 @@
 {
   "strings": {
+    "Số lần đã làm đúng": "Times done right",
+    "Xong hoặc hủy việc đang giữ suất trước nhé.": "Finish or cancel the job holding the allowance first.",
+    "hợp đồng điều phối": "a coordination contract",
+    "đơn chuyên môn": "a specialist order",
+    "Hợp đồng điều phối": "Coordination contract",
+    "Đơn chuyên môn": "Specialist order",
+    "ĐANG GIỮ SUẤT": "ALLOWANCE IN USE",
+    "Mỗi lúc chỉ giữ được một đề nghị. Tiếp tục làm, hoặc hủy để trả suất.": "You can hold one offer at a time. Carry on with it, or cancel it to get the allowance back.",
+    "Hủy · trả suất": "Cancel · return allowance",
+    "Suất giữ hợp đồng đã thay đổi. Mở lại bảng quản lý nhé.": "The held allowance has changed. Reopen the management board.",
+    "Đấu giá": "Auction",
+    "Đang giữ cho đấu giá": "Held for auction bids",
+    "Tiền đang giữ cho giá bạn trả ở Nhà đấu giá": "Money held for your bid at the Auction House",
     "Đấu giá: mỗi tối 22:00 lên sàn một món đồ thú cưng, từ hạng A tới SS. Phiên nào mở là cả phố được báo trên bảng tin.": "Auction: one pet gear piece goes up every evening at 22:00, rank A up to SS. Every new lot is announced on the town ticker.",
     "Halloween 26–31/10: quầy đổi kẹo có túi 100.000, 200.000 và 500.000 xu, mỗi túi đổi được 1 lần.": "Halloween 26–31/10: the candy shop has bags of 100,000, 200,000 and 500,000 xu, each bag once.",
     "Mỗi túi đổi 1 lần cả mùa. Tài khoản từ 3 ngày tuổi, nhân vật từ ngày sống thứ 3.": "Each bag once this season. Account at least 3 days old, character on life day 3 or later.",
@@ -37572,6 +37585,8 @@
     "Em sẽ làm như chị: đọc cả trang bất lợi, giữ kín chuyện của khách, kết luận đúng chứng cứ.": "I'll work like you: read the unfavourable page too, keep clients' matters private, conclude only from evidence."
   },
   "patterns": {
+    "Đang giữ $1 ở $2. Tiếp tục hoặc hủy trước khi nhận việc khác.": "You're holding $1 at $2. Continue or cancel it before taking another.",
+    "🔒 $1 xu đang giữ cho đấu giá. Có người trả cao hơn thì tiền về lại ngay; thắng phiên thì dùng để trả.": "🔒 $1 xu held for an auction bid. If someone bids higher it comes straight back; if you win, it pays for the lot.",
     "🔨 Nhà đấu giá vừa mở phiên: $1 $2, khởi điểm $3 xu, trả giá trong $4 giờ!": "🔨 The auction house just opened a lot: $1 $2, starting at $3 xu, bidding for $4 hours!",
     "🏥 Phòng sinh tạm đóng để bảo trì: lượt đặt được hủy, $1 xu hoàn đủ cho người trả.": "🏥 Birth rooms are closed for maintenance: the booking was cancelled and $1 xu refunded in full to the payer.",
     "Đã kết hôn với $1": "Married to $1",

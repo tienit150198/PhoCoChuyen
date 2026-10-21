@@ -11,7 +11,7 @@ from .career_scale_finance import move
 
 KEY = 'scale_contracts'
 ACTIONS = frozenset(('scale_offer','scale_plan','scale_allocate','scale_schedule','scale_start',
-                     'scale_resolve','scale_accept','scale_settle','scale_cancel'))
+                     'scale_resolve','scale_accept','scale_settle','scale_cancel','scale_release'))
 PHASES = ('planning','stock','staffing','exception','acceptance')
 OFFER_KEYS = {'id','tier','demand','resources','quote','phase','choices','allocated','scheduled',
               'incidents','acceptances','escrow','started','reserved','created'}
@@ -82,6 +82,25 @@ def _check_snapshot(c,cid,o):
           'Bố trí người hoặc tài nguyên đã đổi. Hủy đề nghị rồi nhận lại để cập nhật bố trí cho ca.')
 
 
+def release_held(s,ref,at):
+    """F#469: the offer that holds the shared allowance (a contract or a specialist order, of any career), cancelled
+    from wherever the hold is shown, before it starts (the same cancel as on its own card)."""
+    h=quota.held(s,at)
+    _need(h is not None and h['id']==ref,'Suất giữ hợp đồng đã thay đổi. Mở lại bảng quản lý nhé.')
+    cid=h['career'];oc=s.get('careers',{}).get(cid)
+    _need(oc is not None,'Suất giữ hợp đồng đã thay đổi. Mở lại bảng quản lý nhé.')
+    if h['kind']=='special':
+        from . import career_specialism_jobs as jobs
+        return jobs.action(s,oc,cid,'special_cancel',{'id':ref},at)
+    return action(s,oc,cid,'scale_cancel',{'id':ref},at)
+
+
+def held_view(s,cid,now=None):
+    """The hold on the shared allowance as a card of career `cid` shows it (here: held by this same career), or None."""
+    h=quota.held(s,now)
+    return h and dict(h,here=h['career']==cid)
+
+
 def action(s,c,cid,name,p,now=None):
     from . import career_scale
     _need(name in ACTIONS and type(p) is dict)
@@ -89,6 +108,9 @@ def action(s,c,cid,name,p,now=None):
     quota.day(at)
     kind=content.profile(cid).kind
     r=_record(c)
+    if name=='scale_release':
+        _need(set(p)=={'id'} and type(p['id']) is str)
+        return release_held(s,p['id'],at)
     if name=='scale_offer':
         _need(not p)
         tier=c.get('scale',{}).get('tier',0)
@@ -228,7 +250,12 @@ def public(s,c,cid,now=None):
     if not c.get('scale',{}).get('tier'):
         return out
     if o is None or not o['started'] and not o['reserved']:
-        out['actions'].append(dict(command='scale_offer',label='Nhận lại đề nghị đã lưu' if o else 'Xem hợp đồng điều phối',payload={}))
+        # F#469: the one allowance already holds another offer: show it (what, where, continue / cancel), not a
+        # button that can only answer "Đang giữ…".
+        h=held_view(s,cid,now) if p.kind!='community' else None
+        if h:out['held']=h
+        out['actions'].append(dict(command='scale_offer',label='Nhận lại đề nghị đã lưu' if o else 'Xem hợp đồng điều phối',payload={},
+                                   disabled=bool(h),reason='Xong hoặc hủy việc đang giữ suất trước nhé.' if h else ''))
         return out
     actions=[];jobs=[];materials=[]
     v=dict(id=o['id'],title=p.scenario.title,description=p.focus,phase=o['phase'],quote=copy.deepcopy(o['quote']),

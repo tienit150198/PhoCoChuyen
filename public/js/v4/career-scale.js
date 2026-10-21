@@ -31,6 +31,15 @@ export function reqWhy(r,tx=esc){
     +(r.rule?`<details class="req-rule"><summary aria-label="${tx('Cách tính')}: ${tx(r.label)}">${tx('Cách tính')} ?</summary><p class="small">${tx(r.rule)}</p></details>`:'');
 }
 
+/** F#469: the one shared allowance already holds an offer (a contract or a specialist order, maybe of another
+ * career): what it is and where, then the way on: go to it, or cancel it and get the allowance back. */
+export function heldCard(h,tx=esc){
+  if(!h?.id)return '';
+  const go=h.here?`<button type="button" class="btn primary" data-action="scaleHeldShow" data-kind="${esc(h.kind)}">${tx('Tiếp tục')}</button>`
+    :`<button type="button" class="btn primary" data-action="choose" data-career="${esc(h.career)}">${tx(`Tới ${h.name}`)}</button>`;
+  return `<article class="scale-held" role="note"><p class="pm-eyebrow">📌 ${tx('ĐANG GIỮ SUẤT')}</p><h4>${tx(h.what)} · ${tx(h.name)}</h4><p class="small">${tx('Mỗi lúc chỉ giữ được một đề nghị. Tiếp tục làm, hoặc hủy để trả suất.')}</p><div class="row wrap scale-held-acts">${go}<button type="button" class="btn ghost" data-action="scaleSubmit" data-command-name="scale_release" data-payload="${esc(JSON.stringify({id:h.id}))}">${tx('Hủy · trả suất')}</button></div></article>`;
+}
+
 function requirements(rows){
   return `<ul class="scale-requirements">${(rows||[]).map(r=>`<li class="${r.met?'is-met':''}"><span>${r.met?'✓':'○'} ${esc(r.label)}</span>${r.got!=null?`<b>${number(r.got)} / ${number(r.need)}</b>`:''}${r.reason?`<small>${esc(r.reason)}</small>`:''}${reqWhy(r)}</li>`).join('')}</ul>`;
 }
@@ -71,7 +80,7 @@ export function scaleCard(s,{compact=false,site=null}={}){
     ${s.stages?`<details class="pm-more"><summary>Lộ trình 8 mốc</summary><ol class="scale-path">${s.stages.map(t=>`<li><span>${esc(t.title)}</span><b>${t.fee?coins(t.fee):'Theo tiến độ'}</b></li>`).join('')}</ol></details>`:''}
     ${s.quota&&!community?`<p class="scale-quota">Còn <b>${number(s.quota.available)}</b> suất quản lý · +${number(s.quota.daily)}/ngày thực · giữ tối đa ${number(s.quota.cap)}</p>`:''}
     ${selected?`<p class="scale-note">Đang điều phối tại <b>${esc(selected.name)}</b> <button class="btn ghost" data-action="scaleAllSites">Xem toàn mạng</button></p>`:''}
-    ${contractCard(s.contract,s.kind,site)}${otherActions.map(action).join('')}
+    ${contractCard(s.contract,s.kind,site)}${heldCard(s.held)}${otherActions.map(action).join('')}
     ${stock?.items?.length?`<details class="scale-stock"${s.contract?.phase==='stock'?' open':''}><summary>Kho vật tư điều phối</summary><p class="small">Vật tư này dùng cho hợp đồng quản lý. Sức chứa tính chung mọi cơ sở, gồm hàng đang về và giữ chỗ.</p>${stock.items.map(m=>`<article><h4>${esc(m.name)}</h4><p>${number(m.occupied)}/${number(m.capacity)} thùng · tối đa ${number(m.order)} thùng/lần</p>${m.locations.filter(x=>!site||x.site===site).map(x=>`<p class="small">${esc(x.name)}: ${number(x.units)} ${esc(m.unit)} · tự do ${number(x.available)}</p>`).join('')}</article>`).join('')}${stockActions.map(action).join('')}</details>`:''}
     ${crewActions.length?`<details class="scale-crew"><summary>Đội ngũ · ${(s.crew||[]).length} người</summary>${(s.crew||[]).map(p=>`<p class="small">${esc(p.name)} · ${esc(p.role)}</p>`).join('')}${crewActions.map(action).join('')}</details>`:''}
     <details class="scale-guest"><summary>Thăm cơ sở bạn bè</summary><label>Mã cơ sở<input name="scale-guest-code" maxlength="120" placeholder="Dán mã cơ sở công khai" /></label><button class="btn ghost full" data-action="scaleVisitGuest">Đi đến cơ sở</button></details>
@@ -84,6 +93,11 @@ export function scaleCard(s,{compact=false,site=null}={}){
 
 export async function scaleAction(name,data,el,env){
   if(name==='scaleAllSites'){env.ui.scaleSite=null;env.renderSheet?.();return true;}
+  if(name==='scaleHeldShow'){   // F#469 "Tiếp tục": the held offer is on this same sheet (the other card)
+    const box=el?.closest?.('dialog,.sheet')||globalThis.document;
+    box?.querySelector?.(data.kind==='special'?'.special-job':'.scale-contract')?.scrollIntoView?.({block:'start',behavior:'smooth'});
+    return true;
+  }
   if(name==='scaleVisitGuest'){
     const code=el?.closest?.('.scale-guest')?.querySelector('[name="scale-guest-code"]')?.value?.trim();
     if(!code){env.toast?.('Nhập mã cơ sở công khai trước nhé.');return true;}

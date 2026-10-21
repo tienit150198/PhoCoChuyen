@@ -131,6 +131,13 @@ def public(s,c,cid,now=None):
             feedback=st['feedback'],progress=f"Bước {st['step']+1}/5 · lần {st['attempt']}",
             actions=[question_button('special_practice',dict(tier=st['tier'],step=st['step']),q)])
     out['job'],out['actions']=jobs.public(s,c,cid,now)
+    if k!='community' and any(a['command']=='special_offer' for a in out['actions']):
+        from .career_scale_contracts import held_view   # F#469: the shared allowance holds another offer: say which
+        h=held_view(s,cid,now)
+        if h:
+            out['held']=h
+            for a in out['actions']:
+                if a['command']=='special_offer':a.update(disabled=True,reason='Xong hoặc hủy việc đang giữ suất trước nhé.')
     return out
 
 

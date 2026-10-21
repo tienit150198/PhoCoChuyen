@@ -31,6 +31,9 @@ assert.equal(chipText(both),'Ví 60 xu, Quỹ tiệm 314 xu');
 assert.match(chipHTML(both),/👛.*Ví <b>60 xu<\/b>.*🏪.*Quỹ tiệm <b>314 xu<\/b>/);
 assert.match(chipHTML({wallet:-20,fund:null}),/class="mn-part mn-wallet neg".*−20 xu/,'a wallet in debt shows as negative');
 assert.equal(chipHTML(null),'');
+// 🔒 F#465: the auction escrow keeps a word on phones and is a button that explains it (app.js moneyHeld).
+assert.match(chipHTML({wallet:null,fund:805,fundName:'Quỹ nghề',held:6500},{phone:true}),/<button type="button" class="mn-part mn-held" data-action="moneyHeld" data-held="6500"[^>]*>.*🔒.*<span class="mn-lbl">Đấu giá<\/span> <b>6\.500 xu<\/b><\/button>/);
+assert.match(chipHTML({wallet:1,fund:null,held:20}),/Đang giữ cho đấu giá<\/span> <b>20 xu/);
 
 // Reading a confirm: one price, spending words only.
 assert.equal(priceIn('Đặt hàng?','10 nhánh Baby trắng: trả 10 xu ngay.'),10);

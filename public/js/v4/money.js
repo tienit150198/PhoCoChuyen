@@ -77,7 +77,9 @@ export function chipHTML(b,{phone=false}={}){
   if(b.account!=null)bits.push(part('🏦',phone?'TK':'Tài khoản',b.account,'mn-account'));
   if(b.joint!=null)bits.push(part('💞','Quỹ chung',b.joint,'mn-joint'));
   if(b.fund!=null)bits.push(part('🏪',b.fundName||'Quỹ tiệm',b.fund,'mn-fund'));
-  if(b.held)bits.push(part('🔒',phone?'Giữ':'Đang giữ cho đấu giá',b.held,'mn-held'));
+  // 🔒 F#465: a bare "🔒 6.500 xu" read as money locked away; it keeps its word on phones too ("Đấu giá"), and a tap
+  // says what it is and when it comes back (app.js moneyHeld).
+  if(b.held)bits.push(`<button type="button" class="mn-part mn-held" data-action="moneyHeld" data-held="${Number(b.held)||0}" title="Tiền đang giữ cho giá bạn trả ở Nhà đấu giá"><span aria-hidden="true">🔒</span> <span class="mn-lbl">${phone?'Đấu giá':'Đang giữ cho đấu giá'}</span> <b>${esc(shortXu(b.held,phone))}</b></button>`);
   return bits.join('<span class="mn-sep" aria-hidden="true">·</span>');
 }
 /** Plain text of the same line (tests, screen-reader labels). */

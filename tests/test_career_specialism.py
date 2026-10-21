@@ -171,3 +171,13 @@ def test_f382_specialism_shows_real_day_rule_today_and_reason():
  scale.ensure(c,'clothing',NOW)['clean']=13
  nxt=sp.public(s,c,'clothing',NOW)['next']
  assert nxt['can_enrol'] is False and nxt['reason']=='Cần thêm 2 ngày thực đạt chuẩn.'
+def test_offer_held_elsewhere_disables_the_order_and_names_it():
+ """F#469: a contract of another career holds the shared allowance: the order button waits and the card says which."""
+ s,c=prepared();learn(s,c,'grocery',1);quota.reserve(s,'clothing-1',NOW)
+ view=sp.public(s,c,'grocery',NOW)
+ assert view['held']['id']=='clothing-1' and view['held']['kind']=='scale' and not view['held']['here']
+ assert all(a['disabled'] for a in view['actions'] if a['command']=='special_offer')
+ with pytest.raises(e.GameError,match='Đang giữ hợp đồng điều phối ở Shop quần áo'):act(s,c,'grocery','special_offer',{'tier':1})
+ quota.cancel(s,'clothing-1',NOW)
+ view=sp.public(s,c,'grocery',NOW)
+ assert 'held' not in view and not any(a.get('disabled') for a in view['actions'] if a['command']=='special_offer')

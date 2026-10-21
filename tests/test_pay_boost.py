@@ -278,6 +278,9 @@ class Fast(unittest.TestCase):
         self.assertEqual(stage, 'sort')
         view = public_state(r.state)['careers']['laundry']['paykit']['fast']
         self.assertEqual(view['ready']['task'], tid)
+        # F#473: each counted step has its own name, in the order of the job (the card lists them one a line)
+        self.assertEqual([(x['action'], x['label'], x['n']) for x in view['steps']],
+                         [('ld_sort', 'Tách màu và chất liệu', pb.FAST_NEED), ('ld_treat', 'Xử lý vết bẩn', pb.FAST_NEED)])
         res = r.act('payk_fast', task=tid)
         self.assertTrue(res['fast'])
         self.assertTrue(res['message'].startswith('⏩'))
