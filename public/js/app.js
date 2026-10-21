@@ -72,10 +72,12 @@ const L={
   tm:lazy(()=>import('./careers/tomorrow_kit.js'),{css:['/css/careers/tomorrow_kit.css']}),  // 🌅 Ngày mai in the pharmacy's day summary
   promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css','/css/career-scale.css','/css/career-specialism.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý
   abroad:lazy(()=>import('./v4/abroad.js'),{css:['/css/abroad.css']}),  // ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
+  remote:lazy(()=>import('./v4/remote-close.js'),{css:['/css/abroad.css']}),  // 📲 Đóng ca từ xa (game/remote_close.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay','coachStart']);  // tutorial actions whose buttons other modules render
 const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice','pmForce']);  // 🎖️ v4/promo.js
 const ABROAD_OPEN=new Set(['abroad','abTab','abJob','abLesson']);  // ✈️🌏 v4/abroad.js
+const REMOTE_OPEN=new Set(['remoteClose','rcClose']);  // 📲 v4/remote-close.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
 /** A sheet that reads the catalogue's `more` part (api.more(): job postings, the shop book, situations, story texts):
@@ -390,6 +392,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.content?.journey?.lixi)items.push(['lixi','gift','Lì xì']);  // 🧧 phát & giật lì xì (v4/lixi.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.marriage?.spouse)items.push(['wedInvite','mail','Thiệp mời cưới']);  // 💌 thiệp mời cưới cả phố (v4/wedinvite.js): engaged or married
   if(api.state?.journey?.story&&api.state.journey.abroad)items.push(['abroad','globe','Du học & nước ngoài',api.state.journey.abroad.study?.lesson?'dot':0]);  // ✈️🌏 v4/abroad.js: a dot when today's lesson waits
+  {const rm=api.state?.journey?.story&&api.state.journey.remote,n=(rm?.shops||[]).filter(x=>!x.here).length;if(n)items.push(['remoteClose','exit','Đóng ca từ xa',rm.own?n:0]);}  // 📲 v4/remote-close.js: only while a shift is open somewhere else (its count once the device is owned)
   if(api.state?.journey?.story&&api.content?.journey?.auction)items.push(['auction','award','Nhà đấu giá']);  // 🔨 đồ độc bản (v4/auction.js, own dialog): only once the server has it  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
@@ -428,7 +431,7 @@ function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)retur
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={halloween:'Săn bí ngô, gõ cửa xin kẹo',townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={remoteClose:'Khép ca ở nơi khác, khỏi về tiệm',halloween:'Săn bí ngô, gõ cửa xin kẹo',townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
@@ -736,6 +739,7 @@ function renderSheet(preserve=true){
     case'promo':dialog.classList.add('narrow','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.promoView(env()));break;  // 🎖️
     case'manager':dialog.classList.add('medium','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.managerView(env()));break;  // 🧑‍💼
     case'abroad':dialog.classList.add('medium','v4-sheet','ab-sheet');html=lazyView(L.abroad,m=>m.abroadView(env()));break;  // ✈️🌏
+    case'remoteClose':dialog.classList.add('narrow','v4-sheet','ab-sheet');html=lazyView(L.remote,m=>m.remoteView(env()));break;  // 📲
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
   html=shortWork(shutWork(html));
@@ -1742,6 +1746,7 @@ async function handleAction(action,data,el){
       if((L.rank.m||action==='rank'||action==='rankWork')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if((L.promo.m||PROMO_OPEN.has(action))&&await (await viaLazy(L.promo,el)).promoAction(action,data,el,env()))break;  // 🎖️🧑‍💼
       if(ABROAD_OPEN.has(action)&&await (await viaLazy(L.abroad,el)).abroadAction(action,data,el,env()))break;  // ✈️🌏
+      if(REMOTE_OPEN.has(action)&&await (await viaLazy(L.remote,el)).remoteAction(action,data,el,env()))break;  // 📲
 
       if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
       if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench

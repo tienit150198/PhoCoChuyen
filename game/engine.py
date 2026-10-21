@@ -107,6 +107,7 @@ def normalize(s: str) -> str:
 from . import accounting_school as accounting_school_
 from . import convenience as warehouse
 from . import history_course as history_course_  # 📜 Học lịch sử Việt Nam (vs_*): its block is created on first use
+from . import remote_close as rc  # 📲 Máy quản lý từ xa: end_day {remote: true} from anywhere (#456)
 
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
@@ -692,8 +693,14 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return lfx.apply(s,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
+    remote=rc.asked(action,p)  # 📲 Máy quản lý từ xa (game/remote_close.py): this end_day, from wherever you are
+    if remote:
+        same=rc.gate(s,career)  # no device: refused; a shift already closed: a quiet answer, nothing changes
+        if same:return s,same
+        p=rc.payload(p)
     jr.gate(s,career,action,internal,p)
-    if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
+    if career!=s.get("current") and not remote:ab.check(s,career,{},internal)  # leaving work in progress only through select_career
+    stay=s.get("current") if remote else None
     c=s["careers"][career]
     if action.startswith('special_'):
         need(career==s.get('current'),'Chọn nghề này trước khi học hoặc nhận đơn chuyên môn.')
@@ -1297,6 +1304,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         for t in s["careers"][career]["tasks"]:
             was=prior_patience.get(t["id"])
             if isinstance(was,int) and isinstance(t.get("patience"),int) and t["patience"]<was:t["patience"]=was
+    if remote:  # 📲 closed from afar: the player stays on the screen they were on (nobody left it, no abandon check)
+        if stay in s["careers"]:s["current"]=stay
+        result.update(message=f"📲 Đã khép ca từ xa ở {CAREER_META[career]['place']}.",remote=career)
     validate_state(s)
     return s,result
 
