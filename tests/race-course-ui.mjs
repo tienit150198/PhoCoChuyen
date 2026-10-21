@@ -1,4 +1,4 @@
-// 🏁 Đường đua Bến Mây (public/js/v4/race-track.js on game/racing.py). In node: every tab renders from a payload the
+// 🏁 Đường đua Bến Mây (public/js/v4/race-course.js on game/racing.py). In node: every tab renders from a payload the
 // server's own code builds (a story save with a tuned motorbike and a car, the static rules, duels of each kind, a run
 // and a replay computed by racing.run): the parts with their next stage and price, the driver's choices of both tracks,
 // the duels a player may race and the ones that are out of league, the boards and their titles, players' names escaped,
@@ -48,7 +48,7 @@ replay = dict(kind='duel', track='drag', runs=[dict(vid='xe_so', vehicle=R._veh_
 print(json.dumps(dict(home=home, run=run, deo=deo, replay=replay, perf=p), ensure_ascii=False))
 `],{cwd:ROOT,encoding:'utf8',env:{...process.env,PYTHONUTF8:'1'}}));
 
-const {_view}=await import('../public/js/v4/race-track.js');
+const {_view}=await import('../public/js/v4/race-course.js');
 const {S,page}=_view;
 const draw=(tab,extra={})=>{Object.assign(S,{home:dump.home,tab,vid:'xe_so',track:'drag',fee:20,ch:{drag:{launch:'vua',shifts:['dung','dung','dung']},deo:{brakes:['vua','vua','vua','vua','vua']}},run:null,replay:null,busy:false,flash:null,board:'race_drag_bike'},extra);return page();};
 const text=html=>html.replace(/<(script|style)[\s\S]*?<\/\1>/g,'').split(/<[^>]+>/).map(x=>x.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').trim()).filter(Boolean);

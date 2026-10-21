@@ -92,7 +92,7 @@ class Pure(unittest.TestCase):
 
 
 class English(unittest.TestCase):
-    """The racing content ships its English (public/i18n/en.json); the page itself: tests/race-track-ui.mjs."""
+    """The racing content ships its English (public/i18n/en.json); the page itself: tests/race-course-ui.mjs."""
 
     def test_the_content_lines_and_the_titles(self):
         import json

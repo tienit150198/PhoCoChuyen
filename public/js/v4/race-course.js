@@ -229,5 +229,5 @@ function boardView(){
     ${rows?`<ol class="rc-board">${rows}</ol>`:'<p class="bk-hint">Tuần này chưa ai chạy tính giờ ở đây. Ghi tên đầu tiên đi!</p>'}
     <p class="bk-hint">Mỗi người tính lượt chạy nhanh nhất trong tuần. Top 3 giữ danh hiệu tuần.</p></section>`;
 }
-/** Tests only (tests/race-track-ui.mjs): the page state and its markup. */
+/** Tests only (tests/race-course-ui.mjs): the page state and its markup. */
 export const _view={S,page};
