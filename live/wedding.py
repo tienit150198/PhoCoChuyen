@@ -68,6 +68,7 @@ import time
 
 from game import wedding_live as WL
 from game import wed_services_content as WS   # 💒 the players serving a wedding (the credits query, pure)
+from game import wedding_life_content as WLC  # 🧺 the couple's lễ rước dâu (its query, pure)
 
 from . import effects
 from .auth import clean_name, pid_of
@@ -185,6 +186,12 @@ class WeddingFeature(Feature):
             p['svc'] = WS.credits_from_rows(rows, photos, c['id'])
         except Exception as e:  # noqa: BLE001  (an older database without the table: the party as before)
             log('wedding svc', e)
+            return
+        try:   # 🧺 game/wedding_life.py: the MC tells the guests about the couple's lễ rước dâu + lễ gia tiên
+            r = await self.db.fetchrow(WLC.RITE_SQL, (p['couple'],))
+            p['rite'] = WLC.rite_brief(r, p['a']) if r else None
+        except Exception as e:  # noqa: BLE001  (a database before SCHEMA_VERSION 83: no line)
+            log('wedding rite', e)
 
     def _discard(self, p: dict) -> None:
         p['closed'] = True
@@ -291,7 +298,7 @@ class WeddingFeature(Feature):
                     minutes=WL.PARTY_MINUTES, xu=WL.MINUTE_XU, host_xu=WL.HOST_XU, mins=self._mins(p, pid),
                     envs=list(WL.ENVELOPES), env_free=True, env_max=WL.ENVELOPE_MAX_OLD, wishes=list(WL.WISHES),
                     dishes=list(WL.DISHES), eat=self._left(p, pid), toss=self._toss_view(p), music=p.get('music'),
-                    musics=list(WL.MUSIC), svc=p.get('svc') or [])
+                    musics=list(WL.MUSIC), svc=p.get('svc') or [], rite=p.get('rite'))
 
     @on('wed_list', rate=(10, 10))
     async def wed_list(self, conn, f):

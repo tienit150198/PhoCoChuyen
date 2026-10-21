@@ -261,10 +261,12 @@ export async function paintPhoto(cv,photo,{scale=1,cat=null,moment=null,preview=
   c.strokeStyle='#00000014';c.lineWidth=1;c.strokeRect(AX+.5,AY+.5,AW-1,AH-1);
   // the caption: the studio and the photographer, the date
   const by=String(photo?.by||'').slice(0,24),day=String(photo?.day||''),y=AY+AH+FOOT/2+2;
-  const head=`Tách Tách · ${by||tr('Phố Có Chuyện')}`;
+  // 💍 a couple's trip / ceremony photo (game/wedding_life.py) names its place and moment instead of a studio
+  const head=photo?.head?tr(String(photo.head).slice(0,40)):`Tách Tách · ${by||tr('Phố Có Chuyện')}`;
+  const sub=photo?.sub?tr(String(photo.sub).slice(0,60)):tr('Ảnh chụp ở Phố Có Chuyện');
   c.fillStyle='#6b4d3a';c.textBaseline='middle';c.textAlign='left';
   c.font=`italic 700 ${fitText(c,head,W*.6,19,'italic 700',SERIF)}px ${SERIF}`;c.fillText(head,AX+2,y-6);
-  c.font=`600 11px ${SANS}`;c.fillStyle='#a0856f';c.fillText(tr('Ảnh chụp ở Phố Có Chuyện'),AX+2,y+14);
+  c.font=`600 ${fitText(c,sub,W*.62,11,600,SANS)}px ${SANS}`;c.fillStyle='#a0856f';c.fillText(sub,AX+2,y+14);
   if(day){c.textAlign='right';c.font=`700 15px "Courier New",ui-monospace,monospace`;c.fillStyle='#d0763f';c.fillText(day,AX+AW-2,y-4);}
   return cv;
 }
@@ -272,7 +274,7 @@ export async function paintPhoto(cv,photo,{scale=1,cat=null,moment=null,preview=
 const URLS=new Map();
 /** A cached JPEG data URL of the print, `width` px wide (album tiles, frames at home, the profile card). */
 export function photoURL(photo,{width=240,cat=null,preview=false}={}){
-  const key=JSON.stringify([photo?.id||'',photo?.set,photo?.q,photo?.rt,width,preview,!!cat]);
+  const key=JSON.stringify([photo?.id||'',photo?.set,photo?.q,photo?.rt,photo?.head||'',width,preview,!!cat]);
   let p=URLS.get(key);
   if(!p){if(URLS.size>80)URLS.clear();
     p=(async()=>{const cv=document.createElement('canvas');await paintPhoto(cv,photo,{scale:width/(preview?AW:W),cat,preview});

@@ -4,7 +4,11 @@ export default [
  {"version":"2.5.2","date":"2026-10-22","items":[
   {"emoji":"📲","text":"Máy quản lý từ xa ở Mây Mobile: khép ca các tiệm từ xa, kể cả lúc làm ở nước ngoài. Tiền ca tính y như khép ở tiệm.","go":{"action":"gadgets","data":{"tab":"tool"}}},
   {"emoji":"♿","text":"Bày trí phòng không cần kéo thả: chạm chọn món đồ rồi chạm chỗ muốn đặt, có nút dời từng ô, đọc được bằng trình đọc màn hình."},
-  {"emoji":"🛎️","text":"Homestay giờ là nhà của bạn, mời khách trà ở hiên. Khách sạn Sông Mây: quầy giờ cao điểm, bảng phòng, chấm cả tốc độ."}
+  {"emoji":"🛎️","text":"Homestay giờ là nhà của bạn, mời khách trà ở hiên. Khách sạn Sông Mây: quầy giờ cao điểm, bảng phòng, chấm cả tốc độ."},
+  {"emoji":"🧺","text":"Lễ rước dâu và lễ gia tiên: hai bạn lần lượt làm từng bước cùng hai họ, khách dự tiệc cưới được MC kể lại.","go":{"action":"marriage","data":{"tab":"life"}}},
+  {"emoji":"✈️","text":"Vợ chồng đi chơi cùng nhau thật: Đà Lạt, Hội An, Hạ Long, Phú Quốc, Seoul, Osaka… vé thường hay thuê máy bay, du thuyền."},
+  {"emoji":"📸","text":"Mỗi ngày đi chơi có một tấm ảnh đôi vào album chung. Nhà có máy bay, du thuyền thì chỉ tốn tiền xăng."},
+  {"emoji":"🏠","text":"Sống chung mỗi ngày: rủ nhau làm việc nhà, đi chợ, nấu cơm, chăm con, thêm điểm hạnh phúc và tinh thần."}
  ]},
  {"version":"2.5.1","date":"2026-10-22","items":[
   {"emoji":"🏍️","text":"Nghề mới Tiệm sửa xe Út Lanh: nghe bệnh xe, sửa đúng sổ tay, nhận đơn bảo dưỡng xe máy của người chơi."},

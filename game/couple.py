@@ -533,6 +533,8 @@ def on_end(db, c: dict, filer: str | None, deleted: str | None = None) -> list:
     # it or refused (couple-race 10/10).
     cur = db.execute('SELECT status FROM couples WHERE id=? FOR UPDATE', (cid,)).fetchone()
     _need(cur and cur['status'] not in ('engaged', 'married'), 'Chuyện này đã khép lại rồi.', 'gone', 409)
+    from . import wedding_life   # 💍 a ceremony or a trip not yet on its way: refunded (a fund part back into the fund, split below)
+    life = wedding_life.on_end(db, c, deleted)
     r = db.execute('SELECT balance FROM joint_funds WHERE couple=? FOR UPDATE', (cid,)).fetchone()
     bal = int(r['balance']) if r else 0
     if deleted:  # the one who stays keeps the whole fund; debts between them are cleared
@@ -550,7 +552,7 @@ def on_end(db, c: dict, filer: str | None, deleted: str | None = None) -> list:
         share[r['lender']] = share.get(r['lender'], 0) + pay
         db.execute('UPDATE couple_debts SET repaid=repaid+?,status=?,updated=? WHERE id=?', (pay, 'settled' if pay == owed else 'cleared', t, r['id']))
     db.execute("UPDATE couple_requests SET status='cancelled',decided=? WHERE couple=? AND status IN ('pending','later')", (t, cid))
-    effects = []
+    effects = life
     if bal:
         db.execute('UPDATE joint_funds SET balance=0,updated=? WHERE couple=?', (t, cid))
         db.execute("INSERT INTO joint_ledger(couple,sid,kind,amount,balance,label,ref,status,at) VALUES(?,?,'split',?,0,?,?,'done',?) ON CONFLICT DO NOTHING",

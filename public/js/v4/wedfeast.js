@@ -87,6 +87,13 @@ function svcOf(w){
      flower:FLOWER[done.find(x=>x.key==='hoa')?.color]||null};
   if(w)SVC_CACHE.set(w,v);return v;
 }
+/** 🧺 The couple's lễ rước dâu + lễ gia tiên (game/wedding_life.py, live/wedding.py wed.rite): the MC tells the guests. */
+function riteLines(w){
+  const r=w?.rite;if(!r||!Number.isFinite(r.trays))return [];
+  const lead=r.lead==='b'?w.b:w.a,host=r.lead==='b'?w.a:w.b;
+  return [[-120,`Sáng nay họ nhà ${lead} đã sang rước dâu nhà ${host} với ${r.trays} mâm quả, lễ gia tiên ${r.full?'trọn vẹn':'ấm cúng'} lắm ạ! 🕯️`],
+    [96,`Hai họ đã thắp hương gia tiên xong xuôi, giờ cả nhà cùng chung vui với ${lead} và ${host} nào! 🧺`]];
+}
 let BOUQUET=null;   // the florist's petals for the bouquet (set while the party is drawn)
 const NB_LINES=[
   'Chúc hai cháu trăm năm hạnh phúc, sớm có tin vui nha!','Cỗ hôm nay ngon ghê, nem rán giòn rụm luôn!',
@@ -125,7 +132,7 @@ function chatter(w,s){
   if(s<-300||s>=600)return null;
   const slot=Math.floor(s/7),from=slot*7;if(s-from>SAY)return null;
   const h=hash(w.id*7919+slot+1000);
-  if(MC_LINES.some(([t])=>Math.abs(t-from)<4)||svcOf(w).lines.some(([t])=>Math.abs(t-from)<4)||(PICK&&Math.abs(PICK.s-from)<6))return null;   // the MC has the floor
+  if(MC_LINES.some(([t])=>Math.abs(t-from)<4)||svcOf(w).lines.some(([t])=>Math.abs(t-from)<4)||riteLines(w).some(([t])=>Math.abs(t-from)<4)||(PICK&&Math.abs(PICK.s-from)<6))return null;   // the MC has the floor
   const kid=kidsOn(from)&&h%5<3;
   if(kid){const i=h%KIDS.length;return {who:'kid',i,text:KID_LINES[(h>>>3)%KID_LINES.length],t0:from};}
   if(h%4===3)return null;                                      // a quiet moment now and then
@@ -134,6 +141,7 @@ function chatter(w,s){
 function mcLine(w,s){
   const P=PICK;if(P&&s>=P.s&&s<P.s+SAY+1)return {text:pickLine(P),t0:P.s};   // 🎧 a new song: the MC says so
   for(const [t,text] of svcOf(w).lines)if(s>=t&&s<t+SAY+1)return {text,t0:t};   // 💒 thanks to a player who served
+  for(const [t,text] of riteLines(w))if(s>=t&&s<t+SAY+1)return {text,t0:t};      // 🧺 the morning's lễ rước dâu
   for(const [t,text] of MC_LINES)if(s>=t&&s<t+SAY+1)return {text:fill(text,w),t0:t};return null;}
 /** A kid's spot: running a loop around the lawn while the kids are about, in from the gate and out again. */
 function kidPos(i,s,sec){
