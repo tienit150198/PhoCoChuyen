@@ -58,7 +58,7 @@ PIECES = {
     'vg_day_chuyen': dict(name='Dây chuyền 18K', emoji='📿', tuoi='18k', phan=15, cong='cong_tay', start=1, unit='sợi'),
     'vg_lac_14k': dict(name='Lắc tay 14K', emoji='⛓️', tuoi='14k', phan=10, cong='cong_tay', start=1, unit='chiếc'),
     'vg_lac_bac': dict(name='Lắc tay bạc 925', emoji='🪙', tuoi='bac', phan=20, cong='cong_bac', start=4, unit='chiếc'),
-    'vg_kieng_bac': dict(name='Vòng kiềng bạc cho bé', emoji='🧿', tuoi='bac', phan=15, cong='cong_bac', start=2, unit='chiếc'),
+    'vg_kieng_bac': dict(name='Vòng kiềng bạc cho bé', emoji='🧿', tuoi='bac', phan=15, cong='cong_bac', start=1, unit='chiếc'),
     'vg_nhan_cuoi': dict(name='Cặp nhẫn cưới 18K', emoji='💞', tuoi='18k', phan=20, cong='cong_cuoi', start=0, unit='cặp', unlock=2),
     'vg_nhan_kc': dict(name='Nhẫn kim cương 18K', emoji='💎', tuoi='18k', phan=12, cong='cong_kc', start=0, unit='chiếc', unlock=3, stone=300),
 }

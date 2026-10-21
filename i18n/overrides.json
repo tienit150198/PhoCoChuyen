@@ -39088,7 +39088,11 @@
     "Ghi nhận dựa trên hồ sơ: Hoàng Long đã tư vấn đúng nhu cầu, kiểm đủ xe mới và giao xe khi hồ sơ đủ. Đồng nghiệp cũng được hướng dẫn cải thiện. Đây là đề nghị trong tổ NPC, không tự cấp chức vụ.": "Recognition follows the evidence: Hoàng Long advised by real needs, checked every new vehicle, and handed over only with complete papers. Colleagues also receive guidance. This NPC-team recommendation does not grant a job rank.",
     "Lời cảm ơn hỗ trợ tinh thần, nhưng chưa ghi nhận đúng đóng góp đã kiểm của Hoàng Long.": "Thanking the team supports morale, but does not recognize Hoàng Long's verified contribution.",
     "Anh Quân · chủ đại lý xe Phố Mây": "Quân · owner of the Phố Mây dealership",
-    "xe đúng nhu cầu khách, thông số theo hãng, đủ giấy tờ và không tự cho nợ": "the right vehicle for each customer, the maker's specs, complete papers, and no in-house credit"
+    "xe đúng nhu cầu khách, thông số theo hãng, đủ giấy tờ và không tự cho nợ": "the right vehicle for each customer, the maker's specs, complete papers, and no in-house credit",
+    "Xe áp tải Kim Mây": "Kim Mây armoured van",
+    "Kim Mây cho xe áp tải mang hàng tới trong 15–30 phút, tính thêm phí gấp. Dùng khi khách đang chờ món đã hết.": "Kim Mây sends an armoured van within 15–30 minutes, with a rush fee. Use it when a customer is waiting for a piece that's sold out.",
+    "Bãi xe Mây Motor gần phố": "Mây Motor lot down the street",
+    "Bãi xe của hãng ngay đầu phố: tài xế chạy xe sang trong 15–30 phút, tính thêm phí gấp. Dùng khi khách đang chờ mẫu đã hết.": "The brand's lot at the end of the street: a driver brings the vehicle over in 15–30 minutes, with a rush fee. Use it when a customer is waiting for a model that's sold out."
   },
   "patterns": {
     "Đang giữ $1 ở $2. Tiếp tục hoặc hủy trước khi nhận việc khác.": "You're holding $1 at $2. Continue or cancel it before taking another.",

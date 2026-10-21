@@ -588,7 +588,7 @@ SPEC = dict(
               caption='Xe đúng người, giấy đủ tờ', map_label='ĐẠI LÝ XE PHỐ MÂY'),
     staff=[('Tú', 'tech', 'Kỹ thuật viên: kiểm xe mới, bảo dưỡng, lau xe trước khi giao.', 72, 80)], roles={'tech': 'Kỹ thuật viên'},
     tip=1, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK, waste_items=(),
-    inventory=dict(items=ITEMS, capacity=10),
+    inventory=dict(items=ITEMS, capacity=80),   # inventory.LINE_MAX: every stocked shelf holds 80 (tests/test_stock_limits.py)
     prices=PRICES,
     activity=('🚗', 'Sổ tay đại lý xe', [('Trước bạ', 'Xe máy 2%, ô tô 10%'), ('Trả góp', 'Trả trước 30%, góp ≤ 40% thu nhập'),
                                        ('Thu xe cũ', 'Trừ 10% mỗi năm'), ('Bảo hành', '3 năm / 30.000 km')],

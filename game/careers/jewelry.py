@@ -563,7 +563,7 @@ SPEC = dict(
               caption='Vàng thật, giá thật, giấy tờ thật', map_label='TIỆM VÀNG NGỌC MÂY'),
     staff=[('Chú Tư Bạc', 'smith', 'Thợ kim hoàn: đánh bóng, hàn khoen, khắc chữ, coi tủ kính.', 72, 80)], roles={'smith': 'Thợ kim hoàn'},
     tip=1, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK, waste_items=(),
-    inventory=dict(items=ITEMS, capacity=12),
+    inventory=dict(items=ITEMS, capacity=80),   # inventory.LINE_MAX: every stocked shelf holds 80 (tests/test_stock_limits.py)
     prices=PRICES,
     activity=('💍', 'Sổ tay tiệm vàng', [('1 chỉ', '10 phân = 3,75 g'), ('18K', '75% vàng'), ('Mua lại', 'Trừ 3% hàng tiệm khác'),
                                        ('Kim cương', '1 ct = 0,2 g')],
