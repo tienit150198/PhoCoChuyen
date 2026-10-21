@@ -146,6 +146,27 @@
 .dc-spots{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .dc-spots>small{color:var(--ink-2);font-weight:700}
 .dc-spots .btn{min-height:40px}
+/* ♿ chạm chọn, chạm đặt (góp ý #443): the cells over the drawing (transparent; a finger still reaches the drawing under
+   them, a screen reader and the keyboard reach the buttons), the small map under the 3D view, the step buttons */
+.dc-room:focus{outline:none}
+.dc-room:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dc-cells.over{position:absolute;left:0;top:0;width:100%;pointer-events:none}
+.dc-cells.over .dc-cell{position:absolute;margin:0;padding:0;border:0;border-radius:8px;background:transparent;pointer-events:none}
+.dc-cells.over .dc-cell:focus{outline:none}
+.dc-cells.over .dc-cell:focus-visible{outline:3px solid var(--focus);outline-offset:-2px;background:rgba(127,220,154,.3)}
+.dc-cells.over .dc-cell.bad:focus-visible{outline-color:#e2554a;background:rgba(226,85,74,.2)}
+.dc-cells.map{display:grid;gap:6px;padding:8px 10px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.dc-cells.map>small{color:var(--ink-2);font-weight:700;font-size:.82rem}
+.dc-cells-grid{display:grid;gap:4px}
+.dc-cells.map .dc-cell{min-height:36px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--good-soft);color:var(--ink);font:700 .9rem/1 var(--font);cursor:pointer}
+.dc-cells.map .dc-cell.has{background:var(--surface-2)}
+.dc-cells.map .dc-cell.bad{background:var(--bad-soft);color:var(--bad)}
+.dc-cells.map .dc-cell.now{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dc-cells.map .dc-cell:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.dc-steps{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
+.dc-steps .dc-step{flex:1 1 44px;min-width:44px;min-height:44px;padding-inline:4px;font-size:1.1rem}
+.dc-steps .dc-unsel{flex:2 1 auto;min-height:44px}
+.dc-tools-at{flex:none;color:var(--ink-2);font-size:.82rem;font-weight:700;white-space:nowrap}
 .dc-seg>button{flex:1 1 auto;min-width:0;padding-inline:6px;white-space:nowrap}
 @media (max-width:420px){.dc-seg>button{font-size:.8rem;padding-inline:4px}.dc-money{margin-left:auto}}
 /* 🎨 Tường & sàn: swatches */

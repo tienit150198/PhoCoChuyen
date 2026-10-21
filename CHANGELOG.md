@@ -1,3 +1,15 @@
+# Chưa phát hành — feat/deco-tap-place
+
+♿ Góp ý #443 (người chơi dùng trình đọc màn hình, chủ game duyệt): bày trí phòng bằng chạm chọn rồi chạm chỗ đặt, không cần kéo thả. Cùng lệnh jr_deco_put / jr_deco_buy / jr_deco_pick như kéo thả: không đổi schema, không thêm khóa save.
+- public/js/v4/reno.js: chạm một món (thẻ trong túi / cửa hàng, hoặc món đã bày) là chọn: viền chọn, aria-pressed, vùng đọc `.dc-live` (một vùng aria-live ngoài phần vẽ lại) đọc "Đã chọn …, hàng 2 cột 3. Chạm chỗ muốn đặt."; chạm chỗ trống trong phòng là đặt / dời tới đó (đồ nhỏ chạm lên bàn, kệ thì lên đó); chạm lại món đó hoặc ✕ Bỏ chọn / Esc là thôi. Món đã ghim không dời.
+- Mỗi ô trong vùng đặt của món đang chọn là một `<button>` thật có tên ("hàng 1 cột 4, trống", "…, có ghế đẩu", "…, vướng cửa ra vào", "…, đang ở đây"): trong suốt đè lên hình phòng 2D (ngón tay vẫn chạm hình bên dưới), dạng bản đồ ô nhỏ dưới cảnh 3D. Ô không đặt được bấm vào thì đọc lý do.
+- Món đang chọn có ⬅️⬆️⬇️➡️ dời từng ô (vướng cửa / cửa sổ thì nhảy tới ô trống kế tiếp; sát mép thì báo), ✕ Bỏ chọn, 📍 Đặt lên bàn / kệ cho đồ nhỏ. Tên món trong phòng kèm vị trí. Món bị TalkBack / Switch Access bấm (click không có ngón tay trước) cũng chọn được.
+- Tiêu điểm: nút đang giữ tiêu điểm bị vẽ lại / tạm khóa khi đang gửi lệnh thì trả tiêu điểm về đúng nút đó; nút biến mất (✕ Bỏ chọn, thẻ cuối cùng, Cất túi) thì về món đồ / căn phòng. Ô nhập chữ không bao giờ bị lấy lại tiêu điểm.
+- Dòng thông báo (bk-flash) không còn là vùng aria-live riêng: render() đọc nó qua `.dc-live` (cùng một câu lần sau vẫn được đọc). Thanh món đang cầm là nhóm có tên thay vì role=status.
+- public/css/reno.css: ô đè, bản đồ ô 3D, nút bước 44 px. Đảo riêng / đảo bang / gian hàng hội chợ dùng trình sửa khác (ô dựng cố định), không đổi.
+- Có gì mới 2.5.2 (một dòng ♿), game.__version__ 2.5.2. i18n/overrides.json: 19 chuỗi, 25 mẫu.
+- Tests: tests/deco_tap_place.mjs, tests/test_deco_tap_place.py; scripts/browser_deco_tap.py (390x844, cảm ứng).
+
 # Chưa phát hành — fix/fb-money-2110
 
 🏦 F#462 "giao dịch lớn hơn 10tr đều không được" + 🥛 F#463/#454 sữa tươi hỏng giữa ca. Không đổi schema, không thêm khóa save.
