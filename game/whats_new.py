@@ -35,6 +35,9 @@ ENTRIES = (
     dict(version="2.5.1", date="2026-10-22", items=(
         dict(emoji='🏍️', text="Nghề mới Tiệm sửa xe Út Lanh: nghe bệnh xe, sửa đúng sổ tay, nhận đơn bảo dưỡng xe máy của người chơi."),
         dict(emoji='🩺', text="Nghề mới Phòng khám Thú y Cỏ May: khám, tiêm, chăm các bé, nhận đơn khám và tiêm cho thú cưng người chơi."),
+        dict(emoji='💛', text="Thân với khách quen và hàng xóm là có lợi: khách trả thêm tới 6%, hàng xóm bớt tiền phòng, còn có bí mật 🔒 chờ bạn mở.", go=dict(action='people', data={})),
+        dict(emoji='💡', text="Hướng dẫn chơi → Tiền bạc có mục mới Mẹo kiếm tiền: nghề x3, tiền công thêm, khách quen, Phố dịch vụ, tiết kiệm."),
+        dict(emoji='🔨', text="Đấu giá: đồ thú cưng cao nhất hạng SS, lên sàn lần lượt từ hạng A tới SS."),
     )),
     dict(version="2.5.0", date="2026-10-21", items=(
         dict(emoji='🧑‍💼', text="5 nghề mới: Lễ tân khách sạn, Giao dịch viên ngân hàng, Thợ phục chế đồ xưa, Viện nghiên cứu, Đài phát thanh Sóng Mây."),
