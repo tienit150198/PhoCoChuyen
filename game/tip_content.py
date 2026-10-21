@@ -90,6 +90,12 @@ NORMS = {
     'moto': dict(rate=.10, cash=.70, lo=1, hi=3, bill=20),
     # 🩺 Phòng khám Thú y Cỏ May: a clinic takes no tips; a grateful owner leaves something for the staff's tea now and then
     'vet': dict(rate=.04, cash=0, lo=0, hi=0, bill=10),
+    # 📱 Studio Hẻm Xanh: a brand that liked the honest video sends a little extra for the crew's coffee now and then
+    'kol': dict(rate=.06, cash=0, lo=0, hi=0, bill=15),
+    # 🎤 Phòng trà Mây Chiều: a table slips a thank-you with the song slip now and then
+    'singer': dict(rate=.12, cash=.60, lo=1, hi=3, bill=10),
+    # 🎬 Hãng phim Bến Mây: the crew takes no tips; a fan's gift for the cast turns up now and then
+    'actor': dict(rate=.03, cash=0, lo=0, hi=0, bill=10),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
     'zpop': dict(rate=.10, cash=.60, lo=1, hi=4, bill=30),
 }
@@ -273,6 +279,9 @@ CAREER_LINES = {
     'teller': ('Đếm tiền trước mặt tôi, đọc to từng con số.', 'Đọc lại tên người nhận, khỏi lo chuyển nhầm.', 'Giải thích chậm rãi, tôi hiểu hết.'),
     'moto': ('Nói thật chỗ hư, không vẽ bệnh.', 'Bơm bánh đúng áp, xe chạy êm ru.', 'Thay nhớt xong còn đưa nhớt cũ cho coi.'),
     'vet': ('Bác sĩ cân bé rồi mới tính thuốc, yên tâm ghê.', 'Ôm bé nhẹ nhàng, bé không sợ.', 'Nói thật bệnh, không bán thuốc thừa.'),
+    'kol': ('Video ghi rõ quảng cáo, xem mà tin.', 'Trả lời bình luận tử tế, không né.', 'Báo cáo số thật, nhãn hàng yên tâm.'),
+    'singer': ('Hát thật, nghe mà nổi da gà.', 'Đọc lời chúc đúng tên, cả bàn cảm động.', 'Micro không hú lần nào, nghe êm tai.'),
+    'actor': ('Diễn thật, xem mà rưng rưng.', 'Thuộc thoại, đứng đúng dấu, đoàn quay nhanh.', 'Tập cảnh hành động kỹ, ai cũng an toàn.'),
     'radio': ('Đài đọc đúng tên bà cụ nhà tôi, cả nhà vui.', 'Mất điện mà đài xin lỗi đàng hoàng, nghe dễ chịu.', 'Mở đúng bài tôi xin, hay ghê.'),
     'banquet': ('Món ra nóng hổi, bày đẹp như hình.', 'Sảnh trang trí đúng màu nhà mình chọn.', 'Bé dị ứng mà bếp nhớ đổi món, yên tâm ghê.'),
     'research': ('Có khay đối chứng hẳn hoi, nhìn là tin.', 'Nói thật kết quả, không hứa hão.', 'Sổ thí nghiệm ghi kỹ từng lần, phục ghê.'),
@@ -337,6 +346,9 @@ GIFTS = {
     'teller': (('🍵', 'ly trà đá bà Lựu mang sang'), ('💌', 'tấm thiệp cảm ơn kẹp ở Quầy số 3'), ('🍱', 'hộp cơm sườn dì Bảy để phần')),
     'moto': (('🥤', 'ly nước mía bà Chín mua cho cả tiệm'), ('🍌', 'nải chuối chú Hai Lúa mang từ quê'), ('💌', 'mảnh giấy cảm ơn kẹp ở yên xe')),
     'vet': (('🍊', 'túi quýt cô Ba Mập gửi cả phòng khám'), ('🖍️', 'bức vẽ bé Na tặng con hamster được chữa'), ('💌', 'tấm thiệp ông Sáu viết tay')),
+    'kol': (('🍢', 'bịch bánh tráng chị Hồng gửi cả studio'), ('🖍️', 'bức vẽ bé Thư tặng kênh'), ('💌', 'tấm thiệp cảm ơn của homestay Đồi Gió')),
+    'singer': (('💐', 'bó hồng cô Mỹ mang tới bàn đầu'), ('🍵', 'gói trà sen ông bà Tư gửi'), ('💌', 'tờ giấy xin bài viết lời cảm ơn')),
+    'actor': (('🍮', 'nồi chè bà Năm nấu cho cả đoàn'), ('🖍️', 'bức vẽ bé Bắp tặng'), ('💌', 'lá thư khán giả gửi về hãng')),
     'radio': (('🍊', 'túi quýt cô Ba gửi cả đài'), ('💌', 'lá thư thính giả gửi qua hộp thư đài'), ('🎨', 'bức vẽ cái loa phường bé Su tặng')),
     'banquet': (('🍬', 'hộp kẹo cưới cô dâu gửi cả bếp'), ('💌', 'tấm thiệp cảm ơn của nhà mừng thọ'), ('🎂', 'miếng bánh kem sinh nhật bé Bin để phần')),
     'research': (('🌽', 'bao bắp đầu mùa bác Tư gửi cả phòng'), ('💌', 'lá thư cảm ơn của bếp ăn trường Sông Mây'), ('🎨', 'bức vẽ “cô nhà khoa học” của bé Na')),

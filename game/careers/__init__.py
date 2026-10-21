@@ -47,6 +47,9 @@ ORDER = (
     'radio',                       # đài phát thanh: Đài phát thanh Sóng Mây, salaried phát thanh viên (DJ after probation); players' ads and songs on the town ticker
     'moto',                        # sửa xe máy: Tiệm sửa xe Út Lanh, step-graded tickets (lốp, nhớt, bugi, sên, phanh, đèn, ắc quy, xe ngập); players' bikes serviced via Phố dịch vụ
     'vet',                         # bác sĩ thú y: Phòng khám Thú y Cỏ May, salaried, step-graded cases (tiêm, ve, ngộ độc, tắc tiểu, mổ); players' pets examined via Phố dịch vụ
+    'kol',                         # nhà sáng tạo nội dung: Studio Hẻm Xanh, step-graded brand deals (brief, quay, nhạc miễn phí bản quyền, bình luận, báo cáo số thật)
+    'singer',                      # ca sĩ phòng trà: Phòng trà Mây Chiều, salaried, step-graded sets (chọn bài, khởi động, thử âm, sự cố, lời chúc)
+    'actor',                       # diễn viên: Hãng phim Bến Mây, salaried, step-graded scenes (thoại, vị trí, nối cảnh, đạo diễn, hành động an toàn, họp báo)
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

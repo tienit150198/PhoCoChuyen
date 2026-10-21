@@ -76,7 +76,7 @@ test('guide direct utilities work without changing workplace mode and follow liv
   await x.h.goTo('utility:liveKara',x.env);assert.deepEqual(actions,['historyCourse','liveKara']);
 });
 
-test('all 68 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
+test('all 67 documented utilities dispatch existing actions and reject stale unavailable routes',async()=>{
   const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
   const calls=[],x=harness(false,({env,real})=>{
     real.mode='work';real.go=()=>assert.fail('a shared utility must not start an invented walk');
@@ -90,7 +90,7 @@ test('all 68 documented utilities dispatch existing actions and reject stale una
     await x.h.goTo('utility:'+route.id,x.env);
     assert.deepEqual(calls.at(-1),{action:route.action,data:route.data},route.id+' forwards unchanged action data');
   }
-  assert.equal(calls.length,68);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
+  assert.equal(calls.length,67);assert.equal(JSON.stringify(x.env.api.state),before,'entry routing cannot change money, eligibility or progress');
   x.env.api.state={journey:{story:false}};x.env.api.content={};x.socket.welcomed=false;x.socket.flags={};
   const available=new Set(townUtilities.townUtilityGroups(x.env.api.state,x.env.api.content,x.socket).flatMap(g=>g.items.map(i=>i.id)));
   for(const route of inventory.utilityRoutes.filter(route=>!available.has(route.id))){
@@ -98,7 +98,7 @@ test('all 68 documented utilities dispatch existing actions and reject stale una
   }
 });
 
-test('the guide lists all 64 real careers while retaining story locks and omitting unplayable entries',()=>{
+test('the guide lists all 67 real careers while retaining story locks and omitting unplayable entries',()=>{
   const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
   const x=harness(false,({env})=>{
     env.api.content.catalogue=[...inventory.careers.map(c=>({id:c.id,name:c.name,playable:true})),{id:'future-career',name:'Coming later',playable:false}];
@@ -106,7 +106,7 @@ test('the guide lists all 64 real careers while retaining story locks and omitti
     env.api.state.careers=Object.fromEntries(inventory.careers.map(c=>[c.id,{started:false}]));
   });
   const before=JSON.stringify(x.env.api.state),rows=x.h.destinations(x.env).filter(d=>d.dest.startsWith('career:'));
-  assert.equal(rows.length,64);assert.equal(rows.filter(d=>d.hint.includes('🔒')).length,63);
+  assert.equal(rows.length,67);assert.equal(rows.filter(d=>d.hint.includes('🔒')).length,66);
   assert.equal(rows.some(d=>d.dest==='career:future-career'),false);
   assert.equal(JSON.stringify(x.env.api.state),before);
   x.env.api.state.journey.story=false;

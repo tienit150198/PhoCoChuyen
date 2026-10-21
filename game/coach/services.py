@@ -1,6 +1,6 @@
 """🧭 Coach steps of the service trades (see game/coach/__init__.py): the airline crew (pilot, flight attendant), the
 offshore rig, the album shop, the laundry, the painting studio, the restoration workshop, the radio station, the motorbike
-repair shop and the vet clinic. Each opens on its intro card where it has one,
+repair shop, the vet clinic, the content studio, the tea room and the film studio. Each opens on its intro card where it has one,
 then walks the first day's own loop; the album shop ends with its stock round."""
 from . import S, V, stock  # noqa: F401
 
@@ -219,6 +219,49 @@ STEPS: dict[str, list[dict]] = {
         S('🔔', 'Có chuyện ở phòng khám: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
         S('🛎️', 'Bé của người chơi: nhận đơn, khám từng bước rồi bấm Giao.', (), ['[data-coach="vet-orders"]'], o=True),
     ],
+    # 📱 Studio Hẻm Xanh: the same slips, a brand deal at a time; no players' orders.
+    'kol': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="ko_intro"]'], o=True),
+        S('📝', 'Bấm Đọc brief của nhãn hàng để nhận hợp đồng.', ['Đọc brief của nhãn hàng'], ['.sk-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có nhãn hàng gửi brief.'),
+        S('🔎', 'Đọc brief rồi chọn đúng dạng nội dung.', (), ['.sl-step .sl-options'], g=0),
+        S('🏷️', 'Nhãn hàng dặn điều oái oăm: chọn cách làm thật thà.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('🔢', 'Việc có thứ tự: bấm lần lượt từng việc.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=2),
+        S('📊', 'Tính số cảnh, số món hay tỉ lệ rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=2),
+        S('☑️', 'Chọn mọi dòng đúng, bỏ dòng sai.', (), ['.sl-step .sl-picks[data-pick="multi"]'], o=True, g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
+        S('🔔', 'Có chuyện ở studio: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+    ],
+    # 🎤 Phòng trà Mây Chiều: the same slips, a turn on stage at a time.
+    'singer': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="cs_intro"]'], o=True),
+        S('🎤', 'Bấm Nghe khách muốn nghe gì để nhận lượt hát.', ['Nghe khách muốn nghe gì'], ['.sk-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi khán phòng có khách.'),
+        S('🔎', 'Nhìn khán phòng rồi chọn đúng kiểu hát.', (), ['.sl-step .sl-options'], g=0),
+        S('🌀', 'Khách dặn điều oái oăm: chọn cách trả lời khéo mà thật.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('🔢', 'Việc có thứ tự: bấm lần lượt từng việc.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=2),
+        S('⏱️', 'Tính số phút còn lại của lượt rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
+        S('🔔', 'Có chuyện ở phòng trà: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+    ],
+    # 🎬 Hãng phim Bến Mây: the same slips, a scene at a time.
+    'actor': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="dn_intro"]'], o=True),
+        S('📜', 'Bấm Đọc trang kịch bản để nhận cảnh quay.', ['Đọc trang kịch bản'], ['.sk-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có trang kịch bản mới.'),
+        S('🔎', 'Đọc trang kịch bản rồi chọn đúng cảnh.', (), ['.sl-step .sl-options'], g=0),
+        S('🌀', 'Đoàn phim dặn điều oái oăm: chọn cách an toàn, thật thà.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('🗣️', 'Thoại có thứ tự: bấm lần lượt từng câu.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=2),
+        S('🔁', 'Đếm lượt còn phải quay rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=2),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=2,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=2),
+        S('🔔', 'Có chuyện ở trường quay: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -365,4 +408,24 @@ EN: dict[str, str] = {
     'Cân bé, tính liều theo sổ tay rồi bấm Ghi vào phiếu.': 'Weigh the pet, work out the dose from the notebook, then tap Write on the ticket.',
     'Có chuyện ở phòng khám: chọn cách xử lý rồi làm tiếp.': 'Something came up at the clinic: choose what to do, then carry on.',
     'Bé của người chơi: nhận đơn, khám từng bước rồi bấm Giao.': "Players' pets: take the order, examine step by step, then tap Hand over.",
+    # content studio, tea room and film studio
+    'Bấm Đọc brief của nhãn hàng để nhận hợp đồng.': "Tap Read the brand's brief to take the deal.",
+    'Nút hiện khi có nhãn hàng gửi brief.': 'The button shows when a brand sends a brief.',
+    'Đọc brief rồi chọn đúng dạng nội dung.': 'Read the brief, then pick the right format.',
+    'Nhãn hàng dặn điều oái oăm: chọn cách làm thật thà.': 'The brand asks for something awkward: pick the honest way.',
+    'Tính số cảnh, số món hay tỉ lệ rồi bấm Ghi vào phiếu.': 'Work out the scenes, the products or the rate, then tap Write on the ticket.',
+    'Có chuyện ở studio: chọn cách xử lý rồi làm tiếp.': 'Something came up at the studio: choose what to do, then carry on.',
+    'Bấm Nghe khách muốn nghe gì để nhận lượt hát.': 'Tap Hear what the guests want to take the set.',
+    'Nút hiện khi khán phòng có khách.': 'The button shows when guests are seated.',
+    'Nhìn khán phòng rồi chọn đúng kiểu hát.': 'Look at the room, then pick the right kind of set.',
+    'Khách dặn điều oái oăm: chọn cách trả lời khéo mà thật.': 'A guest asks for something awkward: pick the kind, honest answer.',
+    'Tính số phút còn lại của lượt rồi bấm Ghi vào phiếu.': 'Work out the minutes left in your turn, then tap Write on the ticket.',
+    'Có chuyện ở phòng trà: chọn cách xử lý rồi làm tiếp.': 'Something came up at the tea room: choose what to do, then carry on.',
+    'Bấm Đọc trang kịch bản để nhận cảnh quay.': 'Tap Read the script page to take the scene.',
+    'Nút hiện khi có trang kịch bản mới.': 'The button shows when a new script page arrives.',
+    'Đọc trang kịch bản rồi chọn đúng cảnh.': 'Read the script page, then pick the right scene.',
+    'Đoàn phim dặn điều oái oăm: chọn cách an toàn, thật thà.': 'The crew asks for something awkward: pick the safe, honest way.',
+    'Thoại có thứ tự: bấm lần lượt từng câu.': 'Lines in order: tap each line in turn.',
+    'Đếm lượt còn phải quay rồi bấm Ghi vào phiếu.': 'Count the takes left, then tap Write on the ticket.',
+    'Có chuyện ở trường quay: chọn cách xử lý rồi làm tiếp.': 'Something came up on set: choose what to do, then carry on.',
 }

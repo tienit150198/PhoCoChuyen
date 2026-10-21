@@ -73,6 +73,9 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   radio:style('antenna','banner','books','#3f6fb0','#e4eefb'),
   moto:style('scooter','workshop','toolbox','#c0562b','#fbe9dd'),
   vet:style('stethoscope','porch','planter','#2f8f7a','#dff3ee'),
+  kol:style('phone','scallop','flowers','#7b4fc9','#efe7fb'),
+  singer:style('microphone','banner','stools','#b0475f','#fcf1f4'),
+  actor:style('clapper','civic','luggage','#c0812b','#fdf6ea'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -328,6 +331,17 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'stethoscope':  // a paw print on a clinic card, a stethoscope hung round it: the vet clinic
       round(-34,-38,68,72,10,body);ellipse(0,6,13,11,cream);for(const [x,y] of [[-15,-11],[-5,-18],[5,-18],[15,-11]])ellipse(x,y,5,6,cream);
       arc(0,14,30,.15,Math.PI-.15,ink,3);line([[-29,19],[-36,-30]],ink,3);line([[29,19],[36,-30]],ink,3);ellipse(0,44,7,7,s.light);line([[0,44],[0,37]],ink,3);break;
+    case 'phone':  // a phone held up on a little tripod inside a ring light, a heart floating off the screen: the content studio
+      arc(0,-8,38,0,Math.PI*2,'#f6e7b8',7);line([[0,24],[-18,44]],ink,3);line([[0,24],[18,44]],ink,3);line([[0,24],[0,44]],ink,3);
+      round(-16,-36,32,60,6,ink);round(-12,-30,24,46,3,body);ellipse(7,-24,3,3,'#d9534f');round(-8,-6,16,4,2,cream);round(-8,2,11,4,2,cream);heart(25,-34,9,'#e0735a');break;
+    case 'microphone':  // an old-style stage microphone on its stand, two notes drifting off it: the tea room
+      round(-13,-46,26,34,13,body);line([[-9,-36],[9,-36]],cream,2);line([[-9,-28],[9,-28]],cream,2);arc(0,-24,17,0,Math.PI,ink,3);
+      line([[0,-7],[0,36]],ink,4);ellipse(0,38,20,5,s.main);
+      ellipse(-30,-4,6,5,s.light);line([[-25,-4],[-25,-28]],ink,3);line([[-25,-28],[-16,-24]],ink,3);ellipse(30,8,6,5,s.light);line([[35,8],[35,-16]],ink,3);break;
+    case 'clapper':  // a clapperboard with its striped arm raised and a little star: the film studio
+      round(-38,-6,76,44,4,body);poly([[-38,-10],[34,-32],[37,-23],[-35,-1]],ink);
+      for(const x of [-26,-8,10])poly([[x,-14],[x+8,-16],[x+13,-9],[x+5,-6]],cream);ellipse(-36,-6,4,4,cream);
+      line([[-30,10],[30,10]],cream,3);line([[-30,24],[30,24]],cream,3);line([[0,10],[0,36]],cream,2);star(30,-42,9,'#f1dca1');break;
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;

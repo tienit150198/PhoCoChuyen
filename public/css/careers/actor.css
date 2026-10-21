@@ -1,0 +1,7 @@
+/* 🎬 Hãng phim Bến Mây: film amber, a slate blue second colour; the scene fills a clapperboard. */
+.career-job.actor{--sk-accent:#c0812b;--sk-accent-2:#46607a}
+.actor .sl-ticket{background:#fdf6ea}
+.ck-k-clapper .ck-vessel{min-height:58px;padding-top:16px;border-radius:4px;background:#2f3238}
+.ck-k-clapper .ck-vessel::before{content:"";position:absolute;left:0;right:0;top:0;height:11px;background:repeating-linear-gradient(120deg,#f4f4f4 0 9px,#2f3238 9px 18px)}
+html[data-theme="dem"] .career-job.actor{--sk-accent:#ecb46a;--sk-accent-2:#93afcb}
+html[data-theme="dem"] .actor .sl-ticket{background:transparent}

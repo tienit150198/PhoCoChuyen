@@ -2234,6 +2234,123 @@ ARCS = {
                 ('me', 'Em sẽ giữ như chị dạy: cân trước, tính liều sau, nói thật với chủ.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 📱 Studio Hẻm Xanh (từ chương 2)
+    'kol': dict(
+        title='Chiếc đèn tròn tróc sơn', emoji='📱',
+        keepsake=dict(emoji='💡', name='Chiếc đèn tròn của chị Ngân', desc='Chiếc đèn tròn tróc sơn, mua bằng cát-xê đầu tiên của chị Ngân. Chị dặn: đèn soi mặt mình, chữ quảng cáo soi lòng mình.'),
+        cast={'ngan': _p('Chị Ngân', '🎙️', 'Chủ studio', 'kol_npc_01'),
+              'bin': _p('Bin', '🎬', 'Quay phim', 'kol_npc_02'),
+              'hong': _p('Chị Hồng', '🍢', 'Tiệm bánh tráng', 'kol_npc_03'),
+              'thu': _p('Bé Thư', '📱', 'Người xem', 'kol_npc_07')},
+        beats=[
+            _b('Chữ quảng cáo đầu tiên', '🏷️', 'Hợp đồng đầu tiên, chị Ngân chỉ góc màn hình.', [
+                ('ngan', 'Nhận tiền hay nhận quà là ghi “Quảng cáo” ngay ba giây đầu. Người xem có quyền biết.'),
+                ('bin', 'Ghi vậy người ta lướt qua mất chị ơi.'),
+                ('me', 'Lướt qua thì thôi, còn ai ở lại là người tin mình.')]),
+            _b('Bánh tráng chị Hồng', '🍢', 'Chị Hồng muốn video nói “ăn hoài không ngán, ăn là ghiền”.', [
+                ('hong', 'Em nói giùm chị ăn một bịch là ghiền luôn nha.'),
+                ('me', 'Em nói thật điều em thấy: bánh giòn, sốt me vừa, đóng gói sạch. Vậy người ta mới mua lần hai chị ạ.'),
+                ('ngan', 'Khen đúng chỗ thì khách quen ở lâu hơn khách lạ.')],
+                _c('Chị Hồng hơi buồn vì câu quảng cáo “không đủ mạnh”. Bạn nói sao?',
+                   _o('a', 'Rủ chị quay cảnh chị trộn bánh lúc năm giờ sáng, để người xem thấy công của chị', [('hong', 'Ờ ha, cái đó là thiệt nhất.')], rel='hong'),
+                   _o('b', 'Bảo chị cứ tin em', [('hong', 'Ừ thì… chị tin.')], rel='hong'))),
+            _b('Bình luận của bé Thư', '💬', 'Một người xem nhỏ tuổi hỏi thật lòng.', [
+                ('thu', 'Chị ơi, video nào của chị cũng là quảng cáo hả? Em có nên tin không?'),
+                ('me', 'Video nào có tiền chị đều ghi rõ. Cái nào chị chưa dùng thật, chị không khen.'),
+                ('bin', 'Bé đó còn ghim câu trả lời của chị lên trang của bé luôn.')],
+                days=4, served=10, gap=1),
+            _b('Lời mời mua lượt xem', '📈', 'Một công ty đề nghị “đẩy số” cho kênh trước mùa hợp đồng lớn.', [
+                ('bin', 'Có công ty bán gói một trăm ngàn lượt xem. Kênh mình lên top liền đó chị.'),
+                ('me', 'Số mua về thì báo cáo nào cũng là nói dối.'),
+                ('ngan', 'Kênh nhỏ mà thật thì nhãn hàng tử tế tự tìm tới.')],
+                _c('Bin vẫn tiếc vì kênh bên cạnh tăng nhanh. Bạn làm gì?',
+                   _o('a', 'Cùng Bin xem lại ba video nhiều người xem thật nhất, học cách mở đầu', [('bin', 'Thì ra người ta thích xem chị nói thật. Em ghi lại rồi.')], rel='bin'),
+                   _o('b', 'Bảo Bin đừng so bì nữa', [('bin', 'Dạ… em biết rồi.')], rel='bin')),
+                days=6, served=14, gap=1),
+            _b('Chiếc đèn tròn tróc sơn', '💡', 'Chị Ngân nhận dẫn chương trình ở thành phố, trao lại studio.', [
+                ('ngan', 'Đèn soi mặt mình, chữ quảng cáo soi lòng mình. Đừng tắt cái nào nghe em.'),
+                ('bin', 'Thẻ nhớ với pin để em giữ, chị cứ yên tâm.'),
+                ('me', 'Em sẽ giữ như chị dạy: nói thật trước, quay đẹp sau, báo số thật.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🎤 Phòng trà Mây Chiều (từ chương 2)
+    'singer': dict(
+        title='Cây giá micro bằng đồng', emoji='🎤',
+        keepsake=dict(emoji='🎤', name='Cây giá micro của cô Diệu Hiền', desc='Cây giá micro bằng đồng mòn chỗ tay cầm, ba mươi năm đứng giữa sân khấu Mây Chiều. Cô dặn: hát cho người ngồi trước mặt mình.'),
+        cast={'hien': _p('Cô Diệu Hiền', '🎤', 'Chủ phòng trà', 'singer_npc_01'),
+              'bay': _p('Chú Bảy', '🎹', 'Trưởng ban nhạc', 'singer_npc_03'),
+              'tu': _p('Ông bà Tư', '👴', 'Khách quen bàn số 3', 'singer_npc_04'),
+              'linh': _p('Bé Linh', '🎼', 'Sinh viên trường nhạc', 'singer_npc_07')},
+        beats=[
+            _b('Hát cho người ngồi trước mặt', '🌙', 'Tối đầu tiên, cô Diệu Hiền đứng sau cánh gà với bạn.', [
+                ('hien', 'Đừng hát cho cái micro. Nhìn xuống bàn số 3 kìa, hai ông bà đó chờ con.'),
+                ('bay', 'Con gật đầu là chú vào nhạc, khỏi lo.'),
+                ('me', 'Dạ, con hát chậm thôi, cho hai ông bà nghe rõ từng chữ.')]),
+            _b('Đêm khàn tiếng', '🤒', 'Bạn khàn tiếng, có người gợi ý chạy bản thu cho khỏe.', [
+                ('hien', 'Ở Mây Chiều không ai hát nhép. Khàn thì hạ tông, chọn bài nhẹ.'),
+                ('bay', 'Chú hạ hai cung, con thử câu đầu coi.'),
+                ('me', 'Dạ, giọng con khàn mà vẫn là giọng thật của con.')],
+                _c('Bé Linh ngồi góc cuối, hỏi sao không hát nhép cho đỡ mệt. Bạn nói sao?',
+                   _o('a', 'Chỉ bé cách hạ tông và chọn bài khi giọng mệt', [('linh', 'Em ghi vô sổ liền. Hóa ra có cách mà vẫn hát thật.')], rel='linh'),
+                   _o('b', 'Nói “phòng trà cấm” rồi thôi', [('linh', 'Dạ…')], rel='linh'))),
+            _b('Bài hát tặng bà Tư', '📞', 'Bà Tư nằm viện, ông Tư ngồi một mình bàn số 3.', [
+                ('tu', 'Con hát giùm bài hai ông bà hay nghe, ông gọi video cho bà nghe với.'),
+                ('me', 'Dạ, con xin cô năm phút. Ông cầm điện thoại gần sân khấu nha.'),
+                ('hien', 'Hát đi con. Có những bài hát còn quan trọng hơn cả đêm nhạc.')],
+                days=4, served=10, gap=1),
+            _b('Cúp điện giữa đêm nhạc', '🕯️', 'Cả dãy phố tối om khi phòng trà đang kín bàn.', [
+                ('bay', 'Chú ôm guitar ra giữa phòng nè.'),
+                ('me', 'Mọi người ngồi lại nha, mình hát mộc một bài.'),
+                ('hien', 'Ba mươi năm cô chưa thấy phòng trà im lặng nghe hát như đêm nay.')],
+                _c('Đêm mộc xong, khách xin quay lại tối sau. Bạn làm gì?',
+                   _o('a', 'Rủ chú Bảy mỗi tháng làm một đêm hát mộc', [('bay', 'Được! Chú tập thêm mấy bài guitar.')], rel='bay'),
+                   _o('b', 'Hẹn mọi người tối sau nghe đủ loa đèn', [('hien', 'Ừ, mà cô vẫn nhớ đêm nay.')], rel='hien')),
+                days=6, served=14, gap=1),
+            _b('Cây giá micro bằng đồng', '🎤', 'Cô Diệu Hiền nghỉ hát, trao lại cây giá micro cũ.', [
+                ('hien', 'Ba mươi năm cô đứng sau cây giá này. Giờ tới lượt con.'),
+                ('bay', 'Lượt chín giờ từ mai là của con đó.'),
+                ('me', 'Con sẽ giữ như cô dạy: hát thật, đúng giờ, hát cho người ngồi trước mặt.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🎬 Hãng phim Bến Mây (từ chương 3)
+    'actor': dict(
+        title='Tập kịch bản có tên mình', emoji='🎬',
+        keepsake=dict(emoji='📜', name='Tập kịch bản tập một', desc='Tập kịch bản “Ngõ Nhỏ Có Nắng” tập một, góc giấy có tên bạn và chữ ký của đạo diễn Minh Triết.'),
+        cast={'triet': _p('Đạo diễn Minh Triết', '🎬', 'Đạo diễn', 'actor_npc_01'),
+              'kieu': _p('Chị Kiều', '📋', 'Thư ký trường quay', 'actor_npc_02'),
+              'luc': _p('Anh Lực', '🥋', 'Điều phối hành động', 'actor_npc_03'),
+              'bap': _p('Bé Bắp', '🧒', 'Diễn viên nhí', 'actor_npc_05')},
+        beats=[
+            _b('Diễn ít thôi, sống nhiều vào', '🎬', 'Cảnh đầu tiên, bạn diễn to như trên sân khấu.', [
+                ('triet', 'Máy quay ở sát mặt em rồi. Diễn ít thôi, sống nhiều vào.'),
+                ('kieu', 'Đứng đúng dấu X nha em, đèn canh sẵn rồi.'),
+                ('me', 'Dạ, em nói nhỏ lại, để mắt kể chuyện.')]),
+            _b('Cú tát giả', '🥋', 'Bạn diễn muốn tát thật cho “cảm xúc”.', [
+                ('luc', 'Không ai bị đau thật trên trường quay của anh. Góc máy che, tập chậm ba lần.'),
+                ('me', 'Dạ, em tập với anh trước rồi mới quay.'),
+                ('triet', 'Cảnh đẹp nhất là cảnh không ai bị thương.')],
+                _c('Bạn diễn chê “tập chậm mất thời gian”. Bạn nói sao?',
+                   _o('a', 'Rủ bạn diễn cùng tập, nói thật mình sợ làm đau nhau', [('luc', 'Hai đứa tập ba lượt là quay một lượt đạt. Nhanh hơn đó.')], rel='luc'),
+                   _o('b', 'Mặc kệ, tự tập một mình', [('luc', 'Tập một mình thì cảnh hai người vẫn lệch nhịp đó em.')], rel='luc'))),
+            _b('Bé Bắp ngủ gục', '😴', 'Mười giờ đêm, bé Bắp ngủ gục trên ghế, cảnh còn hai lượt.', [
+                ('bap', 'Con buồn ngủ quá chú ơi…'),
+                ('me', 'Đạo diễn ơi, mình cho bé về, cảnh của bé quay sáng mai nha.'),
+                ('triet', 'Đúng. Bé là trẻ con trước khi là diễn viên.')],
+                days=4, served=10, gap=1),
+            _b('Trang kịch bản bị chụp', '📸', 'Có người chụp trang kịch bản tập cuối trong phòng hóa trang.', [
+                ('kieu', 'Kịch bản tập cuối mà lộ là cả đoàn mất công nửa năm.'),
+                ('me', 'Em nhắc bạn ấy xóa ảnh rồi, chị khóa tủ kịch bản giùm em.'),
+                ('triet', 'Giữ kịch bản như giữ ví. Cảm ơn em.')],
+                _c('Truyền thông của hãng muốn “lộ nhẹ” một trang cho phim nổi. Bạn làm gì?',
+                   _o('a', 'Đề nghị đăng ảnh hậu trường thật thay vì lộ kịch bản', [('kieu', 'Ảnh hậu trường chị có cả trăm tấm, chọn đi.')], rel='kieu'),
+                   _o('b', 'Để hãng tự quyết', [('triet', 'Ừ… để anh nói chuyện với bên truyền thông.')], rel='triet')),
+                days=6, served=14, gap=1),
+            _b('Tập kịch bản có tên mình', '📜', 'Buổi ra mắt phim, đạo diễn ký vào tập kịch bản tập một của bạn.', [
+                ('bap', 'Phim sau con đóng chung nữa nha!'),
+                ('triet', 'Người không run thì không biết sợ cho nhân vật. Giữ cái run đó nghe em.'),
+                ('me', 'Dạ, em sẽ giữ như anh dạy: diễn thật, an toàn trước, giữ lời với cả đoàn.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

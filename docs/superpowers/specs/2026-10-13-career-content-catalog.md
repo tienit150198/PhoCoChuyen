@@ -961,3 +961,48 @@ Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chun
 8. Soạn phiếu theo dõi mèo tắc tiểu
 9. Lập quy trình chuẩn bị mổ
 10. Chuẩn hóa phiếu trả bé
+
+## 65. Nhà sáng tạo nội dung (`kol`)
+
+Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập mẫu đọc brief nhãn hàng
+2. Soạn bảng ghi rõ quảng cáo
+3. Dựng góc quay dọc đủ sáng
+4. Viết ba câu mở đầu trung thực
+5. Tính số cảnh và lịch quay
+6. Lập thư viện nhạc miễn phí bản quyền
+7. Soạn sổ tay trả lời bình luận
+8. Lập mẫu báo cáo số thật
+9. Lên kịch bản buổi livestream
+10. Kèm bạn mới làm video trung thực
+
+## 66. Ca sĩ phòng trà (`singer`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bài khởi động giọng mười phút
+2. Soạn sổ hợp âm đã xin phép
+3. Lập bảng thử âm với kỹ thuật
+4. Xếp danh sách bài theo khán phòng
+5. Tính giờ lượt hát
+6. Soạn quy trình giấy xin bài
+7. Lập phiếu xử lý sự cố sân khấu
+8. Chăm giọng trong tuần diễn dày
+9. Dàn dựng đêm nhạc chủ đề
+10. Kèm ca sĩ trẻ lần đầu lên sân khấu
+
+## 67. Diễn viên (`actor`)
+
+Nhóm dự toán: Phụ cấp cơ quan. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập mẫu đọc trang kịch bản
+2. Học thoại theo thứ tự cảnh
+3. Tập đứng đúng dấu
+4. Lập ảnh nối cảnh từng ngày
+5. Tính lượt quay theo góc máy
+6. Soạn quy trình tập cảnh hành động
+7. Lập nội quy làm việc với diễn viên nhí
+8. Kiểm an toàn cảnh mưa
+9. Chuẩn bị buổi ra mắt phim
+10. Kèm diễn viên mới ngày đầu trường quay

@@ -41,6 +41,9 @@ NAMES = {
  'research':'Kính hiển vi và cân phân tích',
  'moto':'Bộ cờ lê, đồng hồ đo áp suất và đồng hồ vôn',
  'vet':'Ống nghe, cân điện tử và nhiệt kế thú y',
+ 'kol':'Đèn tròn, chân máy điện thoại và micro cài áo',
+ 'singer':'Micro riêng, bình nước ấm và sổ hợp âm',
+ 'actor':'Tập kịch bản, bút dạ quang và bộ bảo hộ đóng cảnh',
  'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)

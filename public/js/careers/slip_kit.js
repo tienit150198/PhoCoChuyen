@@ -1,4 +1,5 @@
-/** Shared pieces of the two step-slip trades: 🏍️ Tiệm sửa xe Út Lanh (moto.js) and 🩺 Phòng khám Thú y Cỏ May (vet.js).
+/** Shared pieces of the step-slip trades: 🏍️ Tiệm sửa xe Út Lanh (moto.js), 🩺 Phòng khám Thú y Cỏ May (vet.js), 📱 Studio
+ * Hẻm Xanh (kol.js), 🎤 Phòng trà Mây Chiều (singer.js) and 🎬 Hãng phim Bến Mây (actor.js).
  * A job is a list of server-graded steps (game/careers/stepkit.py), one open at a time: choice, order (tap in turn),
  * multi (tap the right lines) and number (with its unit). The second half is the card of other players' orders from
  * 🛎️ Phố dịch vụ, worked here step by step (<prefix>svc) and handed over with Giao (POST /api/svc/done).
@@ -11,7 +12,7 @@ export const current=t=>stepsOf(t)[t.at];
 
 /** The job taking shape step by step (owner 21/10, like the milk-tea cup): one piece per step of the slip, the done ones
  * solid, the open one ringed (.now), the rest grey ghosts. Used by every step-slip trade (moto, vet, reception, teller,
- * research, radio). `icons`: {step id | step name | job: emoji}; a step with none gets its kind's (choice 💬, number 🔢…). */
+ * research, radio, kol, singer, actor). `icons`: {step id | step name | job: emoji}; a step with none gets its kind's (choice 💬, number 🔢…). */
 const TYPE_ICON={choice:'💬',number:'🔢',order:'🔢',multi:'☑️',times:'🕒',assign:'📌',tray:'💵'};
 export function stepIcon(st,icons={}){const id=String(st.id||''),[job,name]=id.split('.');return icons[id]||icons[name]||icons[job]||TYPE_ICON[st.type]||'•';}
 export function stepsArt(t,{kind='tray',icons={},head='',label=''}={}){
@@ -62,12 +63,13 @@ export function rulesList(x){
   return `<ul class="sl-rules">${(x.cc?.rules||[]).map(n=>`<li>${x.esc(n)}</li>`).join('')}</ul>`;
 }
 
-/** Today's count and the journey so far. `money`: the field and its label (moto: earned · công, vet: bonus · thưởng). */
+/** Today's count and the journey so far. `money`: the field and its label (moto: earned · công, vet: bonus · thưởng).
+ * Players' orders are counted only where the career takes them (stats.svc). */
 export function statsCard(x,{noun,money,moneyLabel,master,title}){
   const d=data(x),t=d.today||{},s=d.stats||{},today=t.day===x.room.day?t:{jobs:0,good:0,[money]:0};
   const badge=d.expert?' · 🏅 Chuyên gia':d.mastered?' · ⭐ Thành thạo':'';
   return `<details class="sl-stats"><summary>📊 Hôm nay: ${x.esc(today.jobs||0)} ${noun} · ${x.esc(today.good||0)} đạt · ${x.fmt(today[money]||0)} xu ${moneyLabel}</summary>
-    <p class="small">${x.esc(title)}${badge}: ${x.esc(s.good||0)} ${noun} đạt / ${x.esc(s.jobs||0)} ${noun} · ${x.esc(s.active_days||0)} ngày làm · ${x.fmt(s[money]||0)} xu ${moneyLabel} · ${x.esc(s.svc||0)} đơn người chơi.</p>
+    <p class="small">${x.esc(title)}${badge}: ${x.esc(s.good||0)} ${noun} đạt / ${x.esc(s.jobs||0)} ${noun} · ${x.esc(s.active_days||0)} ngày làm · ${x.fmt(s[money]||0)} xu ${moneyLabel}${s.svc===undefined?'':` · ${x.esc(s.svc)} đơn người chơi`}.</p>
     <p class="small">${noun[0].toUpperCase()+noun.slice(1)} đạt từ 90% chất lượng mới được ghi; ngày có ${noun} đạt mới tính ngày làm. Thành thạo: ${x.esc(master[0])} ${noun} đạt và ${x.esc(master[1])} ngày làm.</p></details>`;
 }
 

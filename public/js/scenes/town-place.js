@@ -25,7 +25,7 @@ export const ROWS=[
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','lm:daugia','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk','lawyer','research','radio']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['art_studio','laundry','salon','nail','photobooth','pet_care','vet','repair','moto','restore','pharmacy','nurse','police','rescue','clothing','pet_shop','customs','hotel','reception','lm:pets','lm:garage','lm:gadgets','lm:spa','lm:style','lm:hanghieu']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['post_office','florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','banquet','teller','delivery','pho','com','zpop','lm:quan']}],
-  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lm:ghepba','lm:mtq','lifeguard']}],
+  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lm:ghepba','lm:mtq','lifeguard','kol','singer','actor']}],
   [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square','lm:dinhthu']},
     {id:'cong_trinh',name:'Công trình phố',emoji:'🏗️',items:['lm:tp_cong_vien','lm:tp_rap_phim','lm:tp_thu_vien','lm:tp_san_van_dong','lm:tp_cau_ra_dao','lm:tp_benh_vien']}],
 ];
@@ -53,7 +53,7 @@ export const LANDMARKS={
 };
 /** The sign over each door: an emoji and a short name (the card says the full place name). */
 export const SIGNS={
-  art_studio:['🎨','Xưởng vẽ'],lawyer:['⚖️','Văn phòng luật'],laundry:['🧺','Giặt ủi'],post_office:['📮','Bưu điện'],customs:['🛃','Hải quan'],hotel:['🛎️','Khách sạn'],banquet:['💒','Nhà hàng tiệc'],reception:['🔑','Lễ tân'],teller:['🏦','Ngân hàng'],restore:['🧰','Phục chế'],research:['🔬','Viện nghiên cứu'],radio:['📻','Đài phát thanh'],moto:['🏍️','Sửa xe máy'],vet:['🩺','Thú y Cỏ May'],
+  art_studio:['🎨','Xưởng vẽ'],lawyer:['⚖️','Văn phòng luật'],laundry:['🧺','Giặt ủi'],post_office:['📮','Bưu điện'],customs:['🛃','Hải quan'],hotel:['🛎️','Khách sạn'],banquet:['💒','Nhà hàng tiệc'],reception:['🔑','Lễ tân'],teller:['🏦','Ngân hàng'],restore:['🧰','Phục chế'],research:['🔬','Viện nghiên cứu'],radio:['📻','Đài phát thanh'],moto:['🏍️','Sửa xe máy'],vet:['🩺','Thú y Cỏ May'],kol:['📱','Studio Hẻm Xanh'],singer:['🎤','Phòng trà Mây Chiều'],actor:['🎬','Hãng phim Bến Mây'],
   milk_tea:['🧋','Trà sữa'],grocery:['🛒','Tạp hóa'],delivery:['🛵','Giao hàng'],cafe_bakery:['🥐','Bánh & cà phê'],florist:['💐','Tiệm hoa'],
   mother_baby:['🎁','Mẹ & bé'],restaurant:['🌶️','Mì cay'],pho:['🍜','Phở'],com:['🍚','Cơm tấm'],clothing:['👕','Quần áo'],pet_shop:['🐠','Shop thú cưng'],
   salon:['💇','Salon tóc'],nail:['💅','Làm móng'],photobooth:['📸','Chụp ảnh'],pet_care:['🐾','Chăm thú cưng'],repair:['🔧','Sửa đồ'],pharmacy:['💊','Nhà thuốc'],
@@ -65,7 +65,7 @@ export const SIGNS={
   nurse:['🏥','Bệnh viện'],lighthouse:['🗼','Hải đăng'],rescue:['📞','Tổng đài cứu hộ'],lifeguard:['🛟','Hồ bơi'],
   police:['👮','Công an phường'],zpop:['💿','Album ZPOP'],
 };
-const KIND={art_studio:'shop',lawyer:'office',laundry:'shop',post_office:'office',customs:'office',hotel:'lodge',banquet:'lodge',reception:'lodge',teller:'office',radio:'office',research:'office',restore:'shop',moto:'shop',vet:'office',pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
+const KIND={art_studio:'shop',lawyer:'office',laundry:'shop',post_office:'office',customs:'office',hotel:'lodge',banquet:'lodge',reception:'lodge',teller:'office',radio:'office',research:'office',restore:'shop',moto:'shop',vet:'office',kol:'shop',singer:'shop',actor:'office',pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',rescue:'office',lifeguard:'pool',police:'office',
   'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza','lm:congduc':'kiosk','lm:rap':'office','lm:travel':'kiosk','lm:duhoc':'kiosk','lm:mtq':'board','lm:dinhthu':'home','lm:daugia':'bank','lm:danhthang':'board',

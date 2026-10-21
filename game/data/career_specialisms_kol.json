@@ -1,0 +1,250 @@
+{
+  "kol": [
+    {
+      "tier": 1,
+      "title": "Lập mẫu đọc brief nhãn hàng",
+      "output_unit": "mẫu đọc brief",
+      "inputs": [
+        {
+          "name": "Xấp brief nhãn hàng giả lập",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Kẻ bốn ô: sản phẩm, không khí, dạng nội dung, điều nhãn hàng dặn.",
+        "Tập điền trên các brief giả lập, gạch chân chỗ phải hỏi lại nhãn hàng.",
+        "Dán mẫu cạnh bàn dựng và cho chị chủ studio duyệt."
+      ],
+      "check": {
+        "prompt": "Mẫu nào được duyệt?",
+        "good": "Có đủ bốn ô và cột câu cần hỏi lại nhãn hàng.",
+        "bad": "Chỉ ghi tên sản phẩm, còn lại nhớ trong đầu.",
+        "why": "Đọc sai brief là quay sai từ đầu."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn bảng ghi rõ quảng cáo",
+      "output_unit": "bảng ghi nhãn quảng cáo",
+      "inputs": [
+        {
+          "name": "Bộ nhãn dán “Quảng cáo” mẫu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Liệt kê các trường hợp phải ghi quảng cáo: nhận tiền, nhận quà, nhận giảm giá.",
+        "Ghi chỗ đặt chữ: ba giây đầu video và dòng đầu mô tả.",
+        "Thêm câu nói sẵn để đọc lên trong video."
+      ],
+      "check": {
+        "prompt": "Bảng nào đạt?",
+        "good": "Có đủ ba trường hợp, chữ ở ba giây đầu và câu nói sẵn.",
+        "bad": "Chỉ ghi quảng cáo khi nhãn hàng yêu cầu.",
+        "why": "Người xem có quyền biết video được trả tiền."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Dựng góc quay dọc đủ sáng",
+      "output_unit": "góc quay dọc",
+      "inputs": [
+        {
+          "name": "Đèn tròn tập quay",
+          "unit": "chiếc",
+          "quantity": 1,
+          "unit_cost": 15000
+        },
+        {
+          "name": "Chân máy điện thoại",
+          "unit": "chiếc",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Đặt điện thoại dọc ngang tầm mắt trên chân máy.",
+        "Kéo đèn chếch một bên, thử ba khoảng cách và chụp lại.",
+        "Đánh dấu chỗ đứng bằng băng keo cho các lần quay sau."
+      ],
+      "check": {
+        "prompt": "Góc quay nào được nghiệm thu?",
+        "good": "Khung dọc, mặt sáng đều không bóng nhẫy, có dấu chỗ đứng.",
+        "bad": "Rọi đèn thẳng mặt hết cỡ cho thật sáng.",
+        "why": "Ánh sáng chếch mềm mặt, dấu đứng giúp các cảnh khớp nhau."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Viết ba câu mở đầu trung thực",
+      "output_unit": "bộ câu mở đầu",
+      "inputs": [
+        {
+          "name": "Xấp thẻ ghi câu mở đầu",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Viết ba câu cho ba giây đầu, mỗi câu nói thật một điều người xem được.",
+        "Gạch các chữ giật tít như “sốc”, “không xem là phí”.",
+        "Đọc to trước gương, chọn câu ngắn nhất."
+      ],
+      "check": {
+        "prompt": "Bộ câu nào đạt?",
+        "good": "Ba câu nói thật lợi ích, không chữ giật tít.",
+        "bad": "Câu “Sốc! Ai cũng phải mua” cho nhiều lượt xem.",
+        "why": "Giật tít kéo người xem vào rồi làm họ mất lòng tin."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Tính số cảnh và lịch quay",
+      "output_unit": "lịch quay",
+      "inputs": [
+        {
+          "name": "Bảng kế hoạch quay in sẵn",
+          "unit": "tờ",
+          "quantity": 4,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Chia độ dài video cho số giây tối đa mỗi cảnh để ra số cảnh.",
+        "Xếp cảnh theo chỗ quay để khỏi dọn đi dọn lại.",
+        "Chừa một lượt quay lại cho mỗi cảnh khó."
+      ],
+      "check": {
+        "prompt": "Lịch nào được duyệt?",
+        "good": "Đủ số cảnh theo phép chia, gom theo chỗ quay, có lượt dự phòng.",
+        "bad": "Quay tới đâu tính tới đó.",
+        "why": "Có lịch thì quay đủ cảnh mà không trễ hẹn nhãn hàng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Lập thư viện nhạc miễn phí bản quyền",
+      "output_unit": "thư viện nhạc",
+      "inputs": [
+        {
+          "name": "Ổ nhớ lưu nhạc",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 12000
+        }
+      ],
+      "procedure": [
+        "Chỉ lưu bản nhạc có giấy phép dùng miễn phí, ghi nguồn từng bài.",
+        "Chia thư mục theo không khí: vui tươi, ấm áp, sôi động, nhẹ nhàng.",
+        "Ghi cấm dùng bài hit chưa xin phép ở đầu thư mục."
+      ],
+      "check": {
+        "prompt": "Thư viện nào đạt?",
+        "good": "Bài nào cũng có nguồn và giấy phép, chia theo không khí.",
+        "bad": "Tải bài hit trên mạng về cho đủ bộ.",
+        "why": "Nhạc không phép thì video bị gỡ và nhãn hàng bị liên lụy."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Soạn sổ tay trả lời bình luận",
+      "output_unit": "sổ tay bình luận",
+      "inputs": [
+        {
+          "name": "Sổ tay bìa cứng",
+          "unit": "cuốn",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Chia bốn loại: câu hỏi, góp ý, chê gay gắt, trang giả mạo.",
+        "Viết câu trả lời mẫu tử tế cho từng loại.",
+        "Ghi cách ghim cảnh báo khi có trang giả mạo lừa người xem."
+      ],
+      "check": {
+        "prompt": "Sổ nào được duyệt?",
+        "good": "Đủ bốn loại, câu trả lời tử tế, có cách cảnh báo lừa đảo.",
+        "bad": "Xóa hết bình luận chê cho kênh đẹp.",
+        "why": "Người xem tin kênh biết lắng nghe và bảo vệ họ."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Lập mẫu báo cáo số thật",
+      "output_unit": "mẫu báo cáo",
+      "inputs": [
+        {
+          "name": "Xấp mẫu báo cáo in sẵn",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Kẻ cột lượt xem, thích, bình luận, chia sẻ, đơn hàng.",
+        "Ghi công thức tỉ lệ tương tác và tỉ lệ chốt đơn ngay dưới bảng.",
+        "Thêm ô đường dẫn video và mã hợp đồng."
+      ],
+      "check": {
+        "prompt": "Mẫu nào đạt?",
+        "good": "Đủ cột số, có công thức và mã hợp đồng.",
+        "bad": "Chỉ ghi con số đẹp nhất cho nhãn hàng vui.",
+        "why": "Nhãn hàng trả tiền cho số thật, không phải số đẹp."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Lên kịch bản buổi livestream",
+      "output_unit": "kịch bản livestream",
+      "inputs": [
+        {
+          "name": "Bảng trắng nhỏ",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 10000
+        }
+      ],
+      "procedure": [
+        "Ghi trình tự: chào, ghi rõ quảng cáo, giới thiệu món, trả lời câu hỏi, chốt đơn, cảm ơn.",
+        "Tính số món theo phút lên sóng trừ phút trả lời câu hỏi.",
+        "Ghi giá thật từng món, không ghi giá gạch khống."
+      ],
+      "check": {
+        "prompt": "Kịch bản nào được duyệt?",
+        "good": "Đúng trình tự, số món khớp số phút, giá thật.",
+        "bad": "Giới thiệu thật nhiều món, kéo dài tới khi hết người xem.",
+        "why": "Buổi live có kịch bản thì người xem không bị dắt mua."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Kèm bạn mới làm video trung thực",
+      "output_unit": "buổi kèm nghề",
+      "inputs": [
+        {
+          "name": "Bộ phiếu chấm video mẫu",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Cho bạn mới xem một video mẫu có lỗi giật tít và thiếu chữ quảng cáo.",
+        "Cùng sửa từng lỗi theo sổ tay studio.",
+        "Để bạn tự làm một video ngắn rồi chấm theo phiếu."
+      ],
+      "check": {
+        "prompt": "Buổi kèm nào đạt?",
+        "good": "Bạn mới tự sửa được lỗi và video cuối ghi rõ quảng cáo.",
+        "bad": "Làm hộ cho nhanh, bạn mới đứng xem.",
+        "why": "Người mới phải tự tay làm mới giữ được nghề thật thà."
+      }
+    }
+  ]
+}

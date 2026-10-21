@@ -271,6 +271,22 @@ _ROWS['vet'] = dict(place='phòng khám thú y', self='phòng khám', people='ch
                    invite='Mời {who} đưa bé ghé tái khám, Cỏ May sẽ khám lại kỹ cho bé ạ.',
                    process='Phòng khám làm theo sổ tay: cân bé, đo nhiệt, tính liều theo cân rồi mới làm. Hôm đó {fact} ạ.')
 
+_ROWS['singer'] = dict(place='phòng trà', self='phòng trà', people='khán giả', who='anh chị', owner='ca sĩ',
+                      served='lượt hát', record='giấy xin bài', review='góp ý của khán giả', reply='phản hồi',
+                      books='Sổ lượt hát', rail_in='Ở phòng trà', confirm='Xác nhận lượt hát', team='Ban nhạc Mây Chiều',
+                      daily='Đèn sân khấu đã bật, sổ hợp âm đã mở. Khởi động giọng rồi lên hát ở Mây Chiều nhé!',
+                      invite_label='Mời nghe lại tối sau', offers=dict(drink=None, gift=None, refund=None),
+                      invite='Mời {who} ghé lại tối sau, Mây Chiều sẽ dành một bài tặng riêng ạ.',
+                      process='Phòng trà làm theo sổ tay: khởi động, thử âm, chỉ hát bài đã xin phép. Hôm đó {fact} ạ.')
+
+_ROWS['actor'] = dict(place='hãng phim', self='hãng phim', people='khán giả', who='anh chị', owner='diễn viên',
+                     served='cảnh quay', record='trang kịch bản', review='góp ý của khán giả', reply='phản hồi',
+                     books='Sổ trường quay', rail_in='Ở trường quay', confirm='Xác nhận cảnh quay', team='Đoàn phim Bến Mây',
+                     daily='Lịch quay hôm nay đã dán. Đọc kịch bản rồi ra trường quay Bến Mây nhé!',
+                     invite_label='Mời xem hậu trường', offers=dict(drink=None, gift=None, refund=None),
+                     invite='Mời {who} xem buổi chiếu ra mắt, Bến Mây sẽ lắng nghe góp ý ạ.',
+                     process='Hãng phim làm theo sổ tay: đọc kịch bản, tập an toàn, nối cảnh theo ảnh rồi mới quay. Hôm đó {fact} ạ.')
+
 _ROWS['banquet'] = dict(place='nhà hàng tiệc', self='nhà hàng', people='khách đặt tiệc', who='anh chị', owner='nhân viên nhà hàng',
                        served='bữa tiệc đã lo', record='phiếu tiệc', review='góp ý của khách', reply='phản hồi',
                        books='Sổ ca nhà hàng', rail_in='Ở nhà hàng tiệc', confirm='Xác nhận việc trong ca', team='Ca bếp và sảnh Hồng Mây',
@@ -404,7 +420,7 @@ _SALARIED = frozenset((
     'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
     'pilot', 'flight_attendant', 'oil',
     'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
-    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio', 'vet',
+    'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio', 'vet', 'singer', 'actor',
 ))
 
 
