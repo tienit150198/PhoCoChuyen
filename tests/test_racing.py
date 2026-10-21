@@ -203,7 +203,10 @@ class Trials(Base2):
             self.refused('trial_day', self.post, tok, 'trial', track='deo', vid='xe_so', choices=dict(brakes=['vua'] * 5))
             self.assertEqual(self.total(tok), before, 'a refused run costs nothing')
         guest, _, _ = self.store.session()
-        self.refused('account_required', self.post, guest, 'home')
+        page = self.post(guest, 'home')
+        self.assertEqual((page['account'], page['old_enough']), (False, False), 'a guest may look at the track')
+        self.refused('account_required', self.post, guest, 'trial', track='drag', vid='xe_so', choices=DRAG_OK)
+        self.refused('account_required', self.post, guest, 'challenge', track='drag', vid='xe_so', fee=10, choices=DRAG_OK)
         with patch.dict(os.environ, {'MNL_RACE_OFF': '1'}):
             self.refused('race_off', self.post, tok, 'trial', track='drag', vid='xe_so', choices=DRAG_OK)
         self.refused('bad_vehicle', self.post, tok, 'trial', track='drag', vid='o_to_mini', choices=DRAG_OK)

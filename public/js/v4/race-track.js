@@ -181,12 +181,15 @@ function trialView(){
   const c=car();if(!c)return '';
   const fee=R().trial_fee?.[S.track]||0,today=H().today||{},left=Math.max(0,(R().trial_day||20)-(today.trials||0));
   const best=H().best?.[`race_${S.track}_${c.cls}`];
-  const why=c.broken?'Xe đang hỏng':left?'':'Hết lượt hôm nay';
+  const why=H().account===false?'Cần tài khoản':c.broken?'Xe đang hỏng':left?'':'Hết lượt hôm nay';
   return `<section class="bk-card">${trackPick()}<p class="bk-hint">${[esc(R().tracks?.[S.track]?.where||''),`phí sân ${xu(fee)} một lượt`,`hôm nay chạy được thêm ${fmt(left)} lượt`,best?`kỷ lục tuần của bạn ${secs(best.ms)} (hạng ${best.rank})`:''].filter(Boolean).join(' · ')}</p>
-    ${stats(c.perf)}<div class="rc-choices">${choices(S.track)}</div>${notes()}
+    ${stats(c.perf)}<div class="rc-choices">${choices(S.track)}</div>${notes()}${guestNote()}
     <div class="bk-actions">${btn(`🏁 Chạy · ${xu(fee)}`,'trial',{},'primary big',why)}</div>
     ${S.run?.run?legs(S.run.run,'Lượt vừa chạy'):''}</section>`;
 }
+
+/* 👤 A guest may tune and look, but runs and duels go on the boards by name. */
+const guestNote=()=>H().account===false?'<p class="bk-alert warn">Tạo tài khoản để chạy tính giờ và đua tay đôi nhé.</p>':'';
 
 /* ⚔️ Duels: open one (the fee escrowed), race someone's (same class, close numbers), cancel yours, the results. */
 function duelView(){
@@ -195,15 +198,15 @@ function duelView(){
   const name=t=>`${R().tracks?.[t]?.emoji||''} ${esc(R().tracks?.[t]?.name||'')}`;
   const mine=(H().open||[]).map(d=>`<li class="rc-duel"><span>${name(d.track)} · ${xu(d.fee)} · ${secs(d.a.ms)}</span>${btn('Hủy','cancel',{id:d.id},'ghost small')}</li>`).join('');
   const others=(H().others||[]).map(d=>{const fit=d.cls===cls&&c.perf.pi>=d.a.pi*(100-gap)/100&&c.perf.pi<=d.a.pi*(100+gap)/100;
-    return `<li class="rc-duel"><span><b>${esc(d.a_name)}</b> · ${esc(d.a_vehicle)} · ${name(d.track)} · ${xu(d.fee)}<small>Chỉ số đua ${fmt(d.a.pi)}</small></span>${btn('Đua','accept',{id:d.id},'primary small',!old?'Tài khoản chưa đủ ngày':d.cls!==cls?'Khác hạng xe':!fit?`Chênh quá ${gap}% chỉ số đua`:c.broken?'Xe đang hỏng':'')}</li>`;}).join('');
+    return `<li class="rc-duel"><span><b>${esc(d.a_name)}</b> · ${esc(d.a_vehicle)} · ${name(d.track)} · ${xu(d.fee)}<small>Chỉ số đua ${fmt(d.a.pi)}</small></span>${btn('Đua','accept',{id:d.id},'primary small',H().account===false?'Cần tài khoản':!old?'Tài khoản chưa đủ ngày':d.cls!==cls?'Khác hạng xe':!fit?`Chênh quá ${gap}% chỉ số đua`:c.broken?'Xe đang hỏng':'')}</li>`;}).join('');
   const recent=(H().recent||[]).map(d=>{const me=d.me==='a'?d.a:d.b,them=d.me==='a'?d.b:d.a,who=d.me==='a'?d.b_name:d.a_name;
     const res=d.status==='tie'?'🤝 Hòa':d.won?`🏆 Thắng +${xu(d.prize)}`:'😤 Thua';
     return `<li class="rc-duel"><span>${res} · ${esc(who||'')} · ${name(d.track)}<small>${secs(me?.ms||0)} – ${secs(them?.ms||0)}</small></span>${btn('Xem lại','replay',{id:d.id},'ghost small')}</li>`;}).join('');
   return `<section class="bk-card"><h3>Mở lời thách đấu</h3>${trackPick()}
     <div class="rc-fees" role="radiogroup" aria-label="Phí vào cửa">${(R().fees||[]).map(f=>`<button type="button" role="radio" aria-checked="${S.fee===f}" class="rc-opt${S.fee===f?' on':''}" data-rc="fee" data-fee="${f}">${xu(f)}</button>`).join('')}</div>
     <div class="rc-choices">${choices(S.track)}</div>${notes()}
-    ${old?'':`<p class="bk-alert warn">Đua tay đôi mở cho tài khoản từ ${fmt(R().account_days||3)} ngày trở lên.</p>`}
-    <div class="bk-actions">${btn(`⚔️ Thách đấu · ${xu(S.fee)}`,'challenge',{},'primary',!old?'Tài khoản chưa đủ ngày':c.broken?'Xe đang hỏng':'')}</div>
+    ${H().account===false?guestNote():old?'':`<p class="bk-alert warn">Đua tay đôi mở cho tài khoản từ ${fmt(R().account_days||3)} ngày trở lên.</p>`}
+    <div class="bk-actions">${btn(`⚔️ Thách đấu · ${xu(S.fee)}`,'challenge',{},'primary',H().account===false?'Cần tài khoản':!old?'Tài khoản chưa đủ ngày':c.broken?'Xe đang hỏng':'')}</div>
     <p class="bk-hint">Hai bên cùng phí. Người nhanh hơn lấy cả hũ trừ ${fmt(R().burn_pct||20)}% phí sân; hòa thì hoàn phí. Không cược thêm. Mỗi ngày nhận tối đa ${fmt(R().duel_day||10)} lời thách đấu, cùng một người tối đa ${fmt(R().pair_day||2)} trận.</p></section>
     ${mine?`<section class="bk-card"><h3>Lời thách đấu của bạn</h3><ul class="rc-list">${mine}</ul></section>`:''}
     <section class="bk-card"><h3>Đang chờ người đua</h3>${others?`<ul class="rc-list">${others}</ul><p class="bk-hint">Nhận đua là chạy ngay với cách chạy bạn đang chọn ở trên cho đường đua đó.</p>`:'<p class="bk-hint">Chưa có lời thách đấu nào. Mở một lời đi!</p>'}</section>

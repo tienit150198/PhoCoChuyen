@@ -6,6 +6,8 @@
 .rc-logo{background:#3a3f4a}
 .rc-tabs>button,.rc-tracks>button{white-space:nowrap}
 .rc-tracks{margin-bottom:8px}
+/* Four tabs on a 390px phone without the last one running off the edge. */
+@media (max-width:480px){.rc-tabs>button{padding:6px 3px;font-size:.8rem}}
 
 /* The vehicles that can race: one chip each, the chosen one outlined. */
 .rc-cars{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin:10px 0 4px;scrollbar-width:thin}

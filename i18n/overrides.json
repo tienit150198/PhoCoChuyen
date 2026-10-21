@@ -38628,7 +38628,9 @@
     "⚔️ Tay đôi": "⚔️ Head-to-head",
     "🏆 Bảng tuần": "🏆 Weekly board",
     "🏁 Chạy": "🏁 Run",
-    "⚔️ Thách đấu": "⚔️ Challenge"
+    "⚔️ Thách đấu": "⚔️ Challenge",
+    "Cần tài khoản": "Needs an account",
+    "Tạo tài khoản để chạy tính giờ và đua tay đôi nhé.": "Create an account to do timed runs and head-to-head races."
   },
   "patterns": {
     "Đang giữ $1 ở $2. Tiếp tục hoặc hủy trước khi nhận việc khác.": "You're holding $1 at $2. Continue or cancel it before taking another.",

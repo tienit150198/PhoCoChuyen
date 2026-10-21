@@ -526,10 +526,14 @@ def pid_of(sid: str) -> str:
     return pet_arena.pid_of(sid)
 
 
-def _who(store, token) -> tuple:
+ACCOUNT_LINE = 'Tạo tài khoản để chạy tính giờ và đua tay đôi nhé.'
+
+
+def _who(store, token, guest_ok: bool = False) -> tuple:
+    """The caller. A guest (no account) may look (home: tune page, boards) but not race: boards show names."""
     sid, display = mr.whoami(store, token)
     need(sid, 'Phiên chơi đã hết hạn. Tải lại trang nhé.', 'session_missing', 401)
-    need(display, 'Tạo tài khoản để vào đường đua nhé.', 'account_required', 403)
+    need(display or guest_ok, ACCOUNT_LINE, 'account_required', 403)
     return sid, display
 
 
@@ -844,7 +848,7 @@ def standings(db, board_id: str, t: float, n: int) -> list:
     return [(board_id, i + 1, sid, ms) for i, (sid, _pid, ms, _vid) in enumerate(board(db, track, cls, vn_week(t), n, visible=True))]
 
 
-def home(store, token, sid: str) -> dict:
+def home(store, token, sid: str, account: bool = True) -> dict:
     """Everything the track page needs: your vehicles, today's counts, your open and recent duels, the open duels of
     others, the week's boards."""
     expire(store, sid, 10)
@@ -882,7 +886,7 @@ def home(store, token, sid: str) -> dict:
     dv = lambda r: dict(duel_view(r, sid), a_name=names.get(r['a_sid'], 'Một người chơi'), b_name=names.get(r.get('b_sid') or '', ''),
                         a_vehicle=_veh_name(_j(r['a_run'], {}).get('vid', '')))
     return dict(ok=True, off=off(), garage=view(s), rules=content(), week=week, today=dict(trials=trials, duels=duels),
-                old_enough=old, open=[dv(r) for r in mine_open], recent=[dv(r) for r in recent], others=[dv(r) for r in others],
+                account=account, old_enough=old and account, open=[dv(r) for r in mine_open], recent=[dv(r) for r in recent], others=[dv(r) for r in others],
                 boards=out_boards, best=mine_best, weekly=weekly)
 
 
@@ -892,9 +896,9 @@ OPS = ('home', 'trial', 'challenge', 'accept', 'cancel', 'replay')
 def post(store, token, op: str, d: dict, ip: str = '') -> dict:
     need(op in OPS, 'Thao tác không hợp lệ.', 'unknown', 404)
     need(isinstance(d, dict), 'Thông tin không hợp lệ.', 'bad')
-    sid, _display = _who(store, token)
+    sid, display = _who(store, token, guest_ok=op == 'home')
     if op == 'home':
-        return home(store, token, sid)
+        return home(store, token, sid, bool(display))
     if op == 'trial':
         return trial(store, sid, d, ip)
     if op == 'challenge':
