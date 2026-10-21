@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import random
 import re
+import time
 
 from . import archive as ar
 from . import bank as bk
@@ -508,6 +509,9 @@ def action(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_quay_license_keep':
         from .business_progression import choose
         return choose(s, p)
+    if name == 'jr_quay_auto':   # 🤖 Tự nhập hàng, one switch for every counter (game/quay_auto.py)
+        from .quay_auto import toggle
+        return toggle(s, p)
     st = stall(s, p.get('stall'))
     if name == 'jr_quay_event':
         from .shop_events import choose_quay
@@ -867,6 +871,8 @@ def public(s: dict) -> dict:
                 st['business']['running_cost']['accruing'] = False
     out['open_requirements'] = {k: bp.open_requirement(s, k) for k in PLACE_IDS}
     out['receipts']=q.get('receipts',[])
+    from .quay_auto import public as auto_public
+    out['auto'] = auto_public(s, q, time.time())
     if q.get('shift'):
         out['shift'] = {k: q['shift'][k] for k in ('id', 'career', 'wage', 'who', 'name', 'until')}
     if q.get('out'):
@@ -915,6 +921,8 @@ def validate(s: dict) -> None:
     validate_license(q, need, _int)
     from .quay_progression import validate as validate_paid
     validate_paid(q, ('slots',), need, _int)
+    from .quay_auto import validate_root
+    validate_root(q, need)
     ids = set()
     for st in q['stalls']:
         need(isinstance(st, dict) and STALL_KEYS <= set(st))

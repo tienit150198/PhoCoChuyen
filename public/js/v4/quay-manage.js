@@ -71,3 +71,24 @@ export function tillAll(stalls){
 export function openAll(stalls){
   return {steps:(stalls||[]).filter(st=>st?.business?.paused&&!st.due&&!st.license_blocked).map(st=>({stall:st.id,on:false}))};
 }
+
+/* 🤖 Tự nhập hàng (game/quay_auto.py, #461): one switch for every counter (journey.quay.auto, business.auto). An older
+ * server sends neither: quay.js shows nothing. */
+export const AUTO_WHY={none:'Chưa có lần nhập trước',cash:'Thiếu vốn, chưa tự nhập được',cap:'Hết mức tự nhập hôm nay'};
+/** Why the switch could not restock this counter ('' when it could, or when the switch is off). */
+export const autoNote=(st,on)=>on&&AUTO_WHY[st?.business?.auto?.why]||'';
+const two=x=>String(x).padStart(2,'0');
+/** "14:05" in Vietnam time, with the date ("20/10 14:05") when it is not the day of `now` (both in seconds). */
+export function vnClock(at,now){
+  const d=new Date((at+7*3600)*1000),t=new Date((now+7*3600)*1000);
+  const hm=`${two(d.getUTCHours())}:${two(d.getUTCMinutes())}`;
+  return d.toISOString().slice(0,10)===t.toISOString().slice(0,10)?hm:`${two(d.getUTCDate())}/${two(d.getUTCMonth()+1)} ${hm}`;
+}
+/** {rule, last}: the lines under the switch (`xu` formats an amount). */
+export function autoLines(a,now,xu){
+  if(!a)return {rule:'',last:''};
+  const rule=`Quầy còn dưới ${a.low}% kho thì nhập như lần trước, mỗi quầy tối đa ${a.share}% két + vốn mỗi ngày.`;
+  const last=a.n?`Hôm nay đã tự nhập ${a.n} quầy · ${xu(a.xu)} · lần cuối ${vnClock(a.at,now)}`
+    :a.at!=null?`Lần tự nhập gần nhất: ${vnClock(a.at,now)}`:'';
+  return {rule,last};
+}

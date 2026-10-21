@@ -192,6 +192,9 @@ html[data-clean] .qy-help{width:44px;height:44px}
 /* F#295/#296: 🔁 Nhập lại như lần trước, 👛 thiếu thì lấy từ ví, 🏗️ Mở rộng quầy, 📋 Quản lý chung (quay.js) */
 .qy-again{margin:0 0 10px;padding:10px 12px;border-radius:var(--radius-sm);border:1px dashed var(--line-strong);background:var(--surface)}.qy-again .qy-line{margin:0 0 8px;overflow-wrap:anywhere}.qy-again .qy-all{margin:0}
 .qy-short{margin:4px 0 8px;font-weight:700;color:var(--warn)}
+/* 🤖 Tự nhập hàng (#461): the switch, its rule and today's automatic restocks (quay.js autoRow) */
+.qy-auto{display:grid;justify-items:start;gap:6px;margin:0 0 10px}.qy-auto .qy-line{margin:0;overflow-wrap:anywhere}.qy-auto-last{font-weight:700}
+.qy-mnote{font-size:.8rem;font-weight:700;color:var(--warn)}
 .qy-grow{margin:0 0 12px}
 .qy-bulk{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}.qy-bulk>.btn{min-height:44px;white-space:normal}
 .qy-manage{gap:6px}

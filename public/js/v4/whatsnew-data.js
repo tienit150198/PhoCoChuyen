@@ -7,7 +7,8 @@ export default [
   {"emoji":"💛","text":"Thân với khách quen và hàng xóm là có lợi: khách trả thêm tới 6%, hàng xóm bớt tiền phòng, còn có bí mật 🔒 chờ bạn mở.","go":{"action":"people","data":{}}},
   {"emoji":"💡","text":"Hướng dẫn chơi → Tiền bạc có mục mới Mẹo kiếm tiền: nghề x3, tiền công thêm, khách quen, Phố dịch vụ, tiết kiệm."},
   {"emoji":"🔨","text":"Đấu giá: mỗi tối 22:00 lên sàn một món đồ thú cưng, từ hạng A tới SS. Phiên nào mở là cả phố được báo trên bảng tin."},
-  {"emoji":"🎃","text":"Halloween 26–31/10: quầy đổi kẹo có túi 100.000, 200.000 và 500.000 xu, mỗi túi đổi được 1 lần."}
+  {"emoji":"🎃","text":"Halloween 26–31/10: quầy đổi kẹo có túi 100.000, 200.000 và 500.000 xu, mỗi túi đổi được 1 lần."},
+  {"emoji":"🤖","text":"Quầy của bạn có nút Tự nhập hàng: quầy còn dưới 20% kho tự nhập như lần trước, mỗi ngày tối đa 30% két + vốn quầy.","go":{"action":"quay","data":{}}}
  ]},
  {"version":"2.5.0","date":"2026-10-21","items":[
   {"emoji":"🧑‍💼","text":"5 nghề mới: Lễ tân khách sạn, Giao dịch viên ngân hàng, Thợ phục chế đồ xưa, Viện nghiên cứu, Đài phát thanh Sóng Mây."},

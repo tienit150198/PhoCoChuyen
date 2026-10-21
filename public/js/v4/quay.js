@@ -34,7 +34,7 @@ import {qtyBox,QTY} from '../qty-input.js';
 // "Tất cả" (F#290): lắp hết thiết bị, thuê đủ chỗ, reusing the per-item commands one by one.
 import {buyAllPlan,quayHave,hireAllPlan,runAll} from './select-all.js';
 // F#295/#296: 🔁 Nhập lại như lần trước, 👛 thiếu thì lấy từ ví, 📋 Quản lý chung (pure plans, tests/quay_manage.mjs).
-import {againPlan,shortOf,groupStalls,stallLine,againAll,tillAll,openAll,collectableTill} from './quay-manage.js';
+import {againPlan,shortOf,groupStalls,stallLine,againAll,tillAll,openAll,collectableTill,autoNote,autoLines} from './quay-manage.js';
 // Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so the node tests can load this file.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 
@@ -199,6 +199,7 @@ async function onClick(op,data,el){
       if(await ask(`Mở rộng thành ${P.name.toLowerCase()}?`,`Giữ nguyên hàng, nhân viên, menu, két và vốn của ${st.name}. Đủ chỗ cho ${P.slots} nhân viên, khách đông hơn, chi phí chạy quầy cao hơn. Trả phần chênh ${xu(g.cost)} từ ví, thiếu mới lấy tài khoản.`,`Mở rộng · ${xu(g.cost)}`,{cost:g.cost,pocket:['wallet','account']}))
         send('jr_quay_upgrade',{stall:st.id,place:g.place,confirm:true});return;}
     case'manage':S.view='all';S.flash=null;render();toTop();return;   // 📋 F#295 (4/6)
+    case'auto':send('jr_quay_auto',{on:data.on==='true'});return;   // 🤖 Tự nhập hàng (#461)
     case'goStall':{const all=V()?.stalls||[],i=all.findIndex(x=>x.id===data.id);if(i<0)return;S.view='list';S.page=Math.floor(i/PAGE_SIZE);S.open[data.id]=S.open[data.id]||'stock';render();
       requestAnimationFrame(()=>{S.anchor='';S.hold=null;const card=S.dlg?.querySelector(`[data-qk="st:${CSS.escape(data.id)}"]`);if(card)card.scrollIntoView({block:'start'});});return;}
     case'bulkAgain':{if(S.busy)return;const list=groupOf(data.g),plan=againAll(list,quayHave(J()));if(!plan.steps.length)return;
@@ -464,7 +465,8 @@ function listView(v){
   const pages=Math.ceil(v.stalls.length/PAGE_SIZE);S.page=Math.min(S.page,pages-1);
   const nav=pages>1?`<nav class="bk-actions center" aria-label="Trang quầy">${btn('‹ Trước','page',{page:S.page-1},'small',S.page?'':'Trang đầu')}<span>${fmt(v.stalls.length)} quầy · ${S.page+1}/${pages}</span>${btn('Sau ›','page',{page:S.page+1},'small',S.page<pages-1?'':'Trang cuối')}</nav>`:'';
   const manage=v.stalls.length>=2?`<div class="bk-actions qy-all">${btn(`📋 Quản lý chung · ${fmt(v.stalls.length)} quầy`,'manage',{},'primary')}</div>`:'';
-  return slotsPart(v)+marketBanner(v.stalls)+manage+nav+v.stalls.slice(S.page*PAGE_SIZE,(S.page+1)*PAGE_SIZE).map(stallCard).join('')+nav+more+hiredReceipts(v.receipts);
+  const auto=v.stalls.length<2&&v.auto?`<section class="bk-card">${autoRow(v)}</section>`:'';   // 📋 shows it from two counters
+  return slotsPart(v)+marketBanner(v.stalls)+manage+auto+nav+v.stalls.slice(S.page*PAGE_SIZE,(S.page+1)*PAGE_SIZE).map(stallCard).join('')+nav+more+hiredReceipts(v.receipts);
 }
 
 /* 📋 Quản lý chung (F#295/#296 "nhiều quầy (>10)… quản lý chung, hay cùng loại tiệm với nhau"): every counter on one
@@ -478,16 +480,24 @@ function bulkRow(list,g){
     o.steps.length?btn(`▶️ Mở bán lại · ${fmt(o.steps.length)} quầy`,'bulkOpen',{g},'small'):''].join('');
   return out?`<div class="bk-actions qy-bulk">${out}</div>`:'';
 }
+/* 🤖 Tự nhập hàng (#461, game/quay_auto.py): one switch for every counter, beside 🔁 Nhập lại; the rule in one line and
+ * today's automatic restocks. An older server sends no quay.auto: nothing shows. */
+function autoRow(v){
+  const a=v.auto;if(!a)return '';
+  const {rule,last}=autoLines(a,Date.now()/1000,xu);
+  return `<div class="qy-auto"><button type="button" class="qy-switch${a.on?' on':''}" role="switch" aria-checked="${a.on?'true':'false'}" data-qy="auto" data-on="${a.on?'false':'true'}"${S.busy?' disabled':''}><span class="qy-knob" aria-hidden="true"></span>🤖 Tự nhập hàng</button><p class="qy-line">${rule}</p>${a.on&&last?`<p class="qy-line qy-auto-last">${last}</p>`:''}</div>`;
+}
+const autoWhy=st=>{const t=autoNote(st,V()?.auto?.on);return t?`<p class="qy-short">🤖 ${t}</p>`:'';};
 function manageRow(st){
-  const P=place(st.place),x=stallLine(st);
+  const P=place(st.place),x=stallLine(st),note=autoNote(st,V()?.auto?.on);
   return `<li class="qy-mrow${x.low?' low':''}" data-qk="m:${st.id}"><button type="button" class="qy-mbtn" data-qy="goStall" data-id="${st.id}"${S.busy?' disabled':''}>
     <span class="qy-mname">${P.emoji||'🏪'} ${esc(st.name)}</span>
-    <span class="qy-mfacts"><span>${LINE[x.status]||esc(st.business?.reason||'')}</span><span>📦 ${fmt(x.stock)}${x.low?' · sắp hết':''}</span><span>💰 ${xu(x.cash)}</span><span>👥 ${x.staff}/${P.slots||1}</span></span></button></li>`;
+    <span class="qy-mfacts"><span>${LINE[x.status]||esc(st.business?.reason||'')}</span><span>📦 ${fmt(x.stock)}${x.low?' · sắp hết':''}</span><span>💰 ${xu(x.cash)}</span><span>👥 ${x.staff}/${P.slots||1}</span></span>${note?`<span class="qy-mnote">🤖 ${note}</span>`:''}</button></li>`;
 }
 function manageView(v){
   const groups=groupStalls(v.stalls),cash=v.stalls.reduce((a,st)=>a+stallLine(st).cash,0),low=v.stalls.filter(st=>stallLine(st).low).length;
   const top=`<section class="bk-card qy-manage-top"><h3>📋 Quản lý chung</h3><p class="qy-line">${fmt(v.stalls.length)} quầy · két + vốn ${xu(cash)}${low?` · ${fmt(low)} quầy sắp hết hàng`:''}</p>
-    ${why('manage','Chạm một quầy để mở thẻ của quầy đó. Nút của mỗi nhóm làm cho cả nhóm, từng quầy một. Nhập lại dùng két/vốn của từng quầy; thiếu thì lấy từ ví, rồi tài khoản.')}${groups.length>1?bulkRow(v.stalls,''):''}</section>`;
+    ${why('manage','Chạm một quầy để mở thẻ của quầy đó. Nút của mỗi nhóm làm cho cả nhóm, từng quầy một. Nhập lại dùng két/vốn của từng quầy; thiếu thì lấy từ ví, rồi tài khoản.')}${autoRow(v)}${groups.length>1?bulkRow(v.stalls,''):''}</section>`;
   return slotsPart(v)+top+groups.map(gr=>{const T=trade(gr.trade);
     return `<section class="bk-card qy-group" data-qk="grp:${gr.trade}"><h3>${T.emoji} ${esc(T.name)} · ${fmt(gr.stalls.length)} quầy</h3>${bulkRow(gr.stalls,gr.trade)}<ul class="qy-list qy-manage">${gr.stalls.map(manageRow).join('')}</ul></section>`;}).join('');
 }
@@ -571,7 +581,7 @@ function stockPart(st){
     // their three-dish default board; restocking a dish now turns it on by itself).
     const on=st.menu?.on,off=on?rows.filter(row=>row.qty>0&&!on.includes(row.id)).map(row=>row.id):[];
     const offAll=off.length>1?`<p class="bk-alert warn qy-off-menu">${off.length} món có hàng chưa bật ở Menu. ${btn('Bật tất cả món có hàng','menuon',{id:st.id,k:off.join(',')},'small primary')}</p>`:'';
-    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} / ${fmt(b.stock_capacity??20000)} phần</h4><p class="qy-line">Giữ cho khách: ${fmt(b.stock_reserved||0)} phần · nhập tối đa ${fmt(b.restock_batch??20000)} phần/lần · còn chỗ nhập ${fmt(room)} phần.</p>${b.stock_total+(b.stock_reserved||0)>(b.stock_capacity??20000)?'<p class="qy-line">Hàng hiện có vẫn bán và phục vụ được. Cần bán bớt hoặc nâng kho trước khi nhập thêm.</p>':''}${paidPart(st)}${why('stock',`Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; thiếu thì lấy từ ví, rồi tài khoản. Giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.`)}${againRow(st)}${offAll}<ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id),isOff=off.includes(row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small>${isOff?`<small class="qy-off-tag">Chưa bật ở Menu ${btn('Bật','menuon',{id:st.id,k:row.id},'small ghost')}</small>`:''}${'keep' in row&&(st.staff.length||row.keep)?keepStepper(row.keep,q=>`data-qy="keep"${attrs({id:st.id,k:row.id,n:q})}${S.busy?' disabled':''}`,dish.name):''}</span><label><span>Nhập thêm</span>${qtyBox({value:draft[row.id]??'',min:0,max:room,label:`Nhập thêm ${dish.name}`,placeholder:'0',attrs:`name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}"`})}</label></li>`;}).join('')}</ul>${(()=>{const typed=Object.values(draft).reduce((a,x)=>a+(Number(x)>0?Math.floor(Number(x)):0),0);return !quote&&typed>room?`<p class="qy-short">⚠️ Đang nhập ${fmt(typed)} phần, vượt mức ${fmt(room)} phần mỗi lần. Giảm bớt hoặc nâng “Nhập hàng mỗi lần” ở Nâng cấp.</p>`:'';})()}<p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p>${quote&&shortOf(st,quote.total)?`<p class="qy-short">👛 Thiếu ${xu(shortOf(st,quote.total))}, lấy từ ví</p>`:''}<div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trong giới hạn kho và mỗi lần nhập':shortOf(st,quote.total)>quayHave(J())?'Két, vốn và ví chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
+    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} / ${fmt(b.stock_capacity??20000)} phần</h4><p class="qy-line">Giữ cho khách: ${fmt(b.stock_reserved||0)} phần · nhập tối đa ${fmt(b.restock_batch??20000)} phần/lần · còn chỗ nhập ${fmt(room)} phần.</p>${b.stock_total+(b.stock_reserved||0)>(b.stock_capacity??20000)?'<p class="qy-line">Hàng hiện có vẫn bán và phục vụ được. Cần bán bớt hoặc nâng kho trước khi nhập thêm.</p>':''}${paidPart(st)}${why('stock',`Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; thiếu thì lấy từ ví, rồi tài khoản. Giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.`)}${autoWhy(st)}${againRow(st)}${offAll}<ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id),isOff=off.includes(row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small>${isOff?`<small class="qy-off-tag">Chưa bật ở Menu ${btn('Bật','menuon',{id:st.id,k:row.id},'small ghost')}</small>`:''}${'keep' in row&&(st.staff.length||row.keep)?keepStepper(row.keep,q=>`data-qy="keep"${attrs({id:st.id,k:row.id,n:q})}${S.busy?' disabled':''}`,dish.name):''}</span><label><span>Nhập thêm</span>${qtyBox({value:draft[row.id]??'',min:0,max:room,label:`Nhập thêm ${dish.name}`,placeholder:'0',attrs:`name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}"`})}</label></li>`;}).join('')}</ul>${(()=>{const typed=Object.values(draft).reduce((a,x)=>a+(Number(x)>0?Math.floor(Number(x)):0),0);return !quote&&typed>room?`<p class="qy-short">⚠️ Đang nhập ${fmt(typed)} phần, vượt mức ${fmt(room)} phần mỗi lần. Giảm bớt hoặc nâng “Nhập hàng mỗi lần” ở Nâng cấp.</p>`:'';})()}<p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p>${quote&&shortOf(st,quote.total)?`<p class="qy-short">👛 Thiếu ${xu(shortOf(st,quote.total))}, lấy từ ví</p>`:''}<div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trong giới hạn kho và mỗi lần nhập':shortOf(st,quote.total)>quayHave(J())?'Két, vốn và ví chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
   }
   return `<div class="qy-part"><p class="qy-line">Hôm nay ${cat.weather[st.today?.w]||''} · ${cat.pace[st.today?.pace]||''} · khoảng ${fmt(st.today?.n)} khách ${helpBtn('stock')}</p>
     ${helpText('stock','Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.')}

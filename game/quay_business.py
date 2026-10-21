@@ -16,6 +16,7 @@ import time
 from . import quay as qy
 from . import quay_self as qs
 from . import quay_market as market
+from . import quay_auto
 from . import wealth_pricing
 from . import income_gear
 from . import business_progression as bp
@@ -455,11 +456,13 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
 def due(s, now=None):
     from .player_service_tasks import visit_due
     at = _ms(now)
+    auto = quay_auto.on(s)
     return bp.due(s, now=now) or any(not isinstance(st.get('business'), dict) or
                (wealth_pricing.ENABLED and st['business'].get('protection_quote', {}).get('day') != s['journey']['life_day']) or
                'profit_boost' not in st['business'] or 'market_epoch' not in st['business'] or
                visit_due(st,at) or
                st['business'].get('unpaid_fines', 0) > 0 or
+               (auto and quay_auto.due(st, at)) or
                (at > st['business']['cursor'] and (status(st) == 'running' or
                 (not st['business']['paused'] and isinstance(st.get('run'), dict) and st['run'].get('continuous') and not st['run'].get('x'))))
                for st in (qy.get(s) or {}).get('stalls', []))
@@ -513,21 +516,36 @@ def _settle(s, now=None, *, _policy=True, _exclusive=False):
         intervals = _intervals(st)
         if not st['staff'] and manual:
             _charge(st, at - cursor, start=cursor)
-        while status(st) == 'running':
-            arrivals = [(max(cursor, when), d) for d, when in b['arrivals'].items() if _for_staff(st, d) > 0]
-            when, dish = min(arrivals)
-            end = min(when, at)
-            if not _charge(st, end - cursor, start=cursor):
+        # 🤖 Tự nhập hàng (game/quay_auto.py): after each staff sale that leaves the shelf under the threshold, at its
+        # own time; an empty shelf at the cursor and again at each Vietnam midnight before `at` (a new day's limit), so
+        # a catch-up after days offline buys what live polling would have bought.
+        auto = quay_auto.on(s)
+        if auto and status(st) == 'out_of_stock':
+            quay_auto.attempt(s, st, cursor)
+        while True:
+            while status(st) == 'running':
+                arrivals = [(max(cursor, when), d) for d, when in b['arrivals'].items() if _for_staff(st, d) > 0]
+                when, dish = min(arrivals)
+                end = min(when, at)
+                if not _charge(st, end - cursor, start=cursor):
+                    break
+                cursor = end
+                if when > at or (_exclusive and when == at) or status(st) == 'no_funds':
+                    break
+                qs.settle_queue(s, st, when)
+                channel = income_gear.channel(st,b['seq'])
+                employee = st['staff'][b['seq'] % len(st['staff'])]
+                sale(st, [dish], when, channel=channel, employee=employee, owner=s)
+                tick_staff(s, st)
+                b['arrivals'][dish] = market.advance(when, intervals[dish])
+                if auto:
+                    quay_auto.attempt(s, st, when)
+            midnight = quay_auto.next_midnight(cursor) if auto and status(st) == 'out_of_stock' else at
+            if midnight >= at:
                 break
-            cursor = end
-            if when > at or (_exclusive and when == at) or status(st) == 'no_funds':
-                break
-            qs.settle_queue(s, st, when)
-            channel = income_gear.channel(st,b['seq'])
-            employee = st['staff'][b['seq'] % len(st['staff'])]
-            sale(st, [dish], when, channel=channel, employee=employee, owner=s)
-            tick_staff(s, st)
-            b['arrivals'][dish] = market.advance(when, intervals[dish])
+            cursor = midnight   # an empty counter accrues no time costs: nothing to bill up to here
+            b['arrivals'] = _fresh(cursor, intervals)
+            quay_auto.attempt(s, st, cursor)
         market.enter_epoch(st, at)
         if status(st) != 'running':
             # Time while closed never becomes deferred sales after restocking.
@@ -584,7 +602,7 @@ def action(s, st, name, p):
     capacity, batch = limit(b, 'storage'), limit(b, 'restock')
     need(sum(items.values()) <= batch, f'Mỗi lần nhập tối đa {batch} phần, tính chung tất cả món.')
     need(sum(b['stock'].values()) + reserved(st) + sum(items.values()) <= capacity, f'Kho chứa tối đa {capacity} phần, gồm hàng giữ cho khách.')
-    cost = sum(unit_cost(st, d) * n for d, n in items.items())
+    cost = goods_cost(st, items)
     # F#295 (2) "tự trừ từ tài khoản của mình mà không cần nhập tiền qua góp vốn": `wallet: true` pays what the till and
     # the fund lack from the wallet, then the bank account (as 💼 Góp vốn does, quay._take), in this same command.
     # Never into debt; without the flag a short counter is refused exactly as before.
@@ -596,11 +614,7 @@ def action(s, st, name, p):
         need(qy._have(s) >= short, f'Thiếu {short} xu: ví và tài khoản chưa đủ.', 'no_money')
         qy._take(s, short, f'Nhập hàng {st["name"]}', st['trade'])
         st['fund'] += short   # fund + short = cost - till <= cost: within MONEY_MAX
-    qy._from_till_fund(st, cost)
-    for d, n in items.items():
-        b['stock'][d] = b['stock'].get(d, 0) + n
-    b['expenses']['goods'] += cost
-    b['halted'] = -1
+    shelve(st, items, cost)
     # 🔁 Nhập lại như lần trước (F#295 (1)): the last order, an optional key (1.9.35 and older accept and ignore it).
     b['again'] = {d: items[d] for d in sorted(items)}
     qy._log(st, s['journey']['life_day'], 'Nhập hàng vào kho', -cost)
@@ -610,6 +624,22 @@ def action(s, st, name, p):
     tail = f' Đã bật ở Menu: {", ".join(rows[d]["name"] for d in added)}.' if added else ''
     paid = f' Lấy {short} xu từ ví.' if short else ''
     return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.{paid}{tail}')
+
+
+def goods_cost(st, items):
+    """What a restock of {dish: portions} costs (unit_cost × qty): jr_quay_restock and 🤖 Tự nhập hàng (game/quay_auto.py)."""
+    return sum(unit_cost(st, d) * n for d, n in items.items())
+
+
+def shelve(st, items, cost):
+    """Pay a restock from the till, then the fund (the caller checked they hold `cost`), put it on the shelf and book
+    it once as a goods expense (the Lãi line adds the shelf back at cost, public())."""
+    b = st['business']
+    qy._from_till_fund(st, cost)
+    for d, n in items.items():
+        b['stock'][d] = b['stock'].get(d, 0) + n
+    b['expenses']['goods'] += cost
+    b['halted'] = -1
 
 
 def income(st, at):
@@ -694,6 +724,7 @@ def public(st):
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],
         kept=held, again=[dict(id=d, qty=n) for d, n in (b.get('again') or {}).items() if d in rows],
+        auto=quay_auto.stall_public(st),
         period_seconds=PERIOD, wage=sum(staff_wage(st, e) for e in st['staff']), revenue=b['revenue'], sold=b['sold'],
         speed_factor=b.get('speed_factor', 1),
         profit_bonus=b.get('profit_boost', {}).get('total', 0),
@@ -737,6 +768,7 @@ def validate(st, need, integer):
     if 'again' in b:
         need(isinstance(b['again'], dict) and len(b['again']) > 0 and set(b['again']) <= set(qs.DISH[st['trade']])
              and all(integer(v, 1, STOCK_MAX) for v in b['again'].values()))
+    quay_auto.validate(b, need, integer, qy.MONEY_MAX)
     if 'keep' in b:
         need(isinstance(b['keep'], dict) and set(b['keep']) <= set(qs.DISH[st['trade']]) and all(integer(v, 0, KEEP_MAX) for v in b['keep'].values()))
     if 'market_epoch' in b:
