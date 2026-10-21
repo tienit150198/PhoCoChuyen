@@ -210,8 +210,11 @@ STEPS: dict[str, list[dict]] = {
         S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn', 'Ghi số vào phiếu', 'Ghi vào phiếu'],
           [READY.format('.ht-step .ht-send'), '.ht-step .sk-amt-go'], o=True,
           v=V('Chọn đủ, đúng thứ tự trước.', [], ['.ht-step .ht-picks']), g=1),
+        S('👥', 'Đông khách: VIP, đoàn đại lý chuyển đồng đội; ai gấp làm trước.', [], ['.ht-queue'], o=True, g=1),
+        S('📋', 'Bảng phòng: chỉ giao phòng Sạch · đã kiểm.', [], ['.ht-board2'], o=True, g=1),
         S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng ca giảm.', x=True, g=2),
         S('💰', 'Xong việc có thưởng nhỏ; lương ca trả khi khép ca.', x=True, g=3),
+        S('⏱️', 'Đúng hết trong thời gian chuẩn: thưởng thêm 1 xu.', x=True, g=('stars', 1)),
     ],
     'reception': [
         # fix=True: a wrong answer stays open to fix (the quality drops); the walk goes back to it, not on to the next
@@ -248,6 +251,7 @@ STEPS: dict[str, list[dict]] = {
         S('🔥', 'Đêm lạnh: bấm Lắp gas máy sưởi.', ['Lắp gas máy sưởi'], ['[data-command="hs_heater"]'], o=True, g=3),
         S('🔑', 'Bấm Trao chìa khóa & thu tiền.', [], final('hs_welcome'), g=4,
           w='Giao phòng xong thì nút hiện ở thanh dưới.'),
+        S('🫖', 'Trao chìa xong: mời trà, chọn chuyện hợp người khách.', [], ['.hs-tea'], o=True, g=4),
         S('🍳', 'Bữa sáng: hỏi dị ứng, đập trứng, canh giây rồi nhấc ra.', ['Hỏi dị ứng, ăn kiêng', 'Đập trứng vào chảo', 'Nhấc trứng ra đĩa'],
           ['[data-command="hs_diet"]', '[data-command="hs_egg"]', '[data-command="hs_plate"]'], x=True, g=5),
         S('🧾', 'Trả phòng: Báo buồng phòng kiểm, sửa từng dòng, In hóa đơn.', ['Báo buồng phòng kiểm'],
@@ -444,6 +448,9 @@ EN: dict[str, str] = {
     'Cần tra giá, nội quy: mở Sổ quy trình Sông Mây.': 'Need prices or rules? Open the Sông Mây procedures book.',
     'Sai thì sửa ngay tại bước đó; chất lượng ca giảm.': "Wrong? Fix it right there; the shift's quality drops.",
     'Xong việc có thưởng nhỏ; lương ca trả khi khép ca.': 'Each job done gives a small bonus; shift pay comes when you close the shift.',
+    'Đông khách: VIP, đoàn đại lý chuyển đồng đội; ai gấp làm trước.': 'Busy desk: hand VIPs and agency group leaders to colleagues; the most urgent first.',
+    'Bảng phòng: chỉ giao phòng Sạch · đã kiểm.': 'Room board: only give rooms marked Clean · inspected.',
+    'Đúng hết trong thời gian chuẩn: thưởng thêm 1 xu.': 'All steps right within the standard time: 1 coin extra.',
     # reception
     'Bấm Đọc phiếu việc để nghe khách nói.': 'Tap Read the job slip to hear the guest.',
     'Chọn mọi yêu cầu khách vừa nói, rồi Chốt yêu cầu.': 'Pick every request the guest just made, then Confirm requests.',
@@ -469,6 +476,7 @@ EN: dict[str, str] = {
     'Chọn phòng sạch, trống đủ đêm, đủ chỗ rồi giao.': 'Pick a clean room, free for every night, big enough, then give it.',
     'Đêm lạnh: bấm Lắp gas máy sưởi.': 'Cold night: tap Fit the heater gas.',
     'Bấm Trao chìa khóa & thu tiền.': 'Tap Hand over the key & take payment.',
+    'Trao chìa xong: mời trà, chọn chuyện hợp người khách.': 'Keys handed over: pour some tea and pick a talk that suits the guest.',
     'Giao phòng xong thì nút hiện ở thanh dưới.': 'Once the room is given, the button shows on the bottom bar.',
     'Bữa sáng: hỏi dị ứng, đập trứng, canh giây rồi nhấc ra.': 'Breakfast: ask about allergies, crack the eggs, time them, lift them out.',
     'Trả phòng: Báo buồng phòng kiểm, sửa từng dòng, In hóa đơn.': 'Check-out: ask housekeeping to check, fix each line, print the bill.',

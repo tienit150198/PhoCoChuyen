@@ -358,3 +358,46 @@ NOTEBOOK = [
     'Mùa lễ (giờ Việt Nam): Valentine 1–14/2, Tết từ ba tuần trước tới một tuần sau mùng 1, Giáng sinh 1–25/12. Mùa lễ đông khách hơn, thưởng ×1.5.',
     'Lương ca trả theo hợp đồng khi khép ca; thưởng chất lượng nhỏ theo từng việc, sai bước thì sửa tại chỗ và thưởng giảm.',
 ]
+
+# ---------------------------------------------------------------- generator 2 (22/10, feedback #466): a big hotel, you are staff
+# Tasks made by generator 1 keep their content (kit legacy serial band, hotel.heal_save). Generator 2 changes two posts:
+# Lễ tân becomes the front desk at rush hour (several guests at once, colleagues to hand over to, the room board with
+# the housekeeping supervisor's statuses) and Buồng phòng becomes the room-status board (you split the rooms between
+# the team, inspect, lock a broken room). The other posts keep their jobs; every generator-2 job has a procedure time.
+STATUS2 = dict(vci='Sạch · đã kiểm', vc='Sạch · chờ kiểm', cleaning='Đang dọn', vd='Bẩn · vừa trả', ooo='Hỏng · khóa bán', oc='Có khách')
+TEAM = dict(low=('Chị Hoa', 'tầng 1–2'), high=('Chị Lụa', 'tầng 3–4'))
+WORK2 = dict(checkin='Quầy giờ cao điểm', housekeeping='Điều phối bảng phòng')   # what the two changed posts do now
+# Who stands at the desk at rush hour: emoji, what they need, the colleague they go to (None: you serve them).
+QUEUE = {
+    'arr': ('🛎️', 'Nhận phòng đã đặt trước', None),
+    'out': ('🧳', 'Trả phòng, xe ra sân bay đang chờ', None),
+    'walk': ('🚶', 'Khách vãng lai hỏi phòng tối nay', None),
+    'info': ('🗺️', 'Gửi hành lý, hỏi đường ra bến sông', None),
+    'cmp': ('😤', 'Phàn nàn: phòng ồn, đêm qua mất ngủ', None),
+    'vip': ('⭐', 'Khách VIP hội viên vàng', 'Anh Khôi, quản lý trực: đón VIP, làm thủ tục tại phòng'),
+    'grp': ('🚌', 'Trưởng đoàn đại lý Mây Travel, 12 khách', 'Tú ở quầy đoàn: nhận danh sách phòng của đại lý'),
+}
+QUEUE_NAMES = ('Ông Hòa', 'Chị My', 'Anh Duy', 'Cô Nga', 'Bạn Khánh', 'Chú Sơn', 'Chị Thơ', 'Anh Lực', 'Bà Ngọc', 'Bạn Uyên')
+CALM = [('listen', 'Lắng nghe trọn, không ngắt lời'), ('sorry', 'Xin lỗi, cảm ơn khách đã báo'),
+        ('offer', 'Đề xuất trong quyền hạn: đổi phòng cùng hạng đã kiểm'), ('log', 'Ghi sổ sự cố, báo trưởng ca')]
+BOARD_FAULTS = ('Điều hòa chảy nước ướt thảm', 'Khóa thẻ nháy đỏ, không mở', 'Bồn cầu rò nước ra sàn', 'Ổ cắm cạnh bàn có mùi khét')
+OOO_OPTIONS = [('ooo', 'Khóa bán (OOO), gửi phiếu bảo trì, chưa giao dọn'), ('clean', 'Giao dọn như thường, sửa sau'),
+               ('sell', 'Vẫn bán, dặn khách chịu khó'), ('ready', 'Báo lễ tân phòng sạch')]
+FINDINGS = [('Ga phẳng, phòng tắm khô, đủ tiện nghi, minibar đủ.', 'pass'), ('Đủ đồ, gương sáng, thùng rác đã thay túi.', 'pass'),
+            ('Tóc trên gối, thùng rác chưa thay túi.', 'redo'), ('Thiếu một chai nước, khăn tắm còn ẩm.', 'redo')]
+INSPECT_OPTIONS = [('pass', 'Ký “đã kiểm”: phòng bán được'), ('redo', 'Trả lại người dọn làm nốt, ghi sổ kiểm phòng'),
+                   ('self', 'Tự làm nốt cho nhanh, không ghi sổ')]
+# Procedure time of a generator-2 job (seconds from the first step to the last): a job with no slip within it is "Nhanh".
+TARGET = dict(checkin=150, housekeeping=180, laundry=150, breakfast=150, repair=120, decor=150)
+FAST_BONUS = 1   # xu on a clean, fast job: pay stays in range (about +1 xu a job)
+NOTEBOOK2 = [
+    'Giờ cao điểm ở quầy: khách VIP chuyển ngay cho quản lý trực, trưởng đoàn đại lý chuyển cho quầy đoàn; còn lại ai có giờ cần xong sớm hơn thì làm trước.',
+    'Bảng phòng: chỉ bán phòng “Sạch · đã kiểm” (giám sát buồng đã ký). “Sạch · chờ kiểm”, “Đang dọn”, “Bẩn”, “Hỏng” đều chưa bán.',
+    'Thẻ phòng: mỗi khách một thẻ, tối đa 2 thẻ một phòng.',
+    'Phàn nàn: lắng nghe trọn → xin lỗi, cảm ơn khách đã báo → đề xuất trong quyền hạn → ghi sổ sự cố, báo trưởng ca. Giảm giá, hoàn tiền là việc của trưởng ca.',
+    'Điều phối buồng phòng: phòng bẩn đã gán cho khách đến hôm nay dọn trước. Phòng hỏng khóa bán (OOO), gửi phiếu bảo trì, không giao dọn. '
+    'Phòng bẩn còn lại chia theo tầng: Chị Hoa tầng 1–2, Chị Lụa tầng 3–4.',
+    'Kiểm phòng: đạt thì ký “đã kiểm”; chưa đạt thì trả người dọn làm nốt và ghi sổ kiểm, không tự làm thay.',
+    'Phòng bán được ngay: trống, “Sạch · đã kiểm”, chưa gán cho khách đến hôm nay.',
+    'Mỗi việc có thời gian chuẩn của quy trình. Đúng hết các bước trong thời gian đó là “Nhanh”, thưởng thêm 1 xu.',
+]

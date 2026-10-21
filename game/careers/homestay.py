@@ -1074,7 +1074,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return _ota_sync(s, c, p)
     if name == 'hs_walk':
         return _ota_walk(s, c, p)
-    care = dict(hs_deep=_deep, hs_fix=_fix, hs_garden=_garden, hs_wood=_wood, hs_stay=_stay_act).get(name)
+    care = dict(hs_deep=_deep, hs_fix=_fix, hs_garden=_garden, hs_wood=_wood, hs_stay=_stay_act, hs_tea=_tea).get(name)
     if care:
         return care(s, c, p)
     t = _task(s, c, p)
@@ -2284,6 +2284,7 @@ def public_data(c: dict) -> dict:
     d['ota'] = [o for o in d['ota'] if o['status'] == 'new' or o['day'] >= day - 1]
     _care_public(c, d)
     d['can'] = dict(hs_assign=_assign_can(c))   # view only: the room tiles a check-in cannot take yet, with the reason
+    d['tea'] = _tea_rows(c)
     return d
 
 
@@ -2314,6 +2315,7 @@ def validate_task(t: dict, original: dict) -> None:
             kit.need(isinstance(reg, dict) and set(reg) == {'score', 'fav', 'visits'} and reg['score'] in (4, 5)
                      and (reg['fav'] is None or reg['fav'] in ROOM_INDEX), 'Ghi chú khách quen sai.')
             kit.integer(reg['visits'], 1, 99)
+        kit.need(t.get('tea') is None or (t['tea'] in TEA_INDEX and t.get('status') == 'completed'), 'Chén trà ở hiên sai.')
     elif job == 'checkout':
         kit.need(t['room'] is None or t['room'] in ROOM_INDEX, 'Phòng trả sai.')
         for k in ('bound', 'checked', 'returned'):
@@ -2985,6 +2987,79 @@ def _stay_act(s: dict, c: dict, p: dict) -> dict:
                          'umbrella': 'Đưa hai cái ô và áo mưa của nhà, dặn đường đất trơn.'}[st['ask']])
 
 
+# ---------------------------------------------------------------- 🫖 trà ở hiên (22/10, feedback #466)
+# The house is yours: after the keys, the owner sits the new guest down on the porch for a cup of tea and a talk that
+# fits who they are (their profile, a regular's last visit). A talk that fits lifts the stay's mood; any cup is kind.
+# Optional, once per check-in, the same day; other guests wait a little (a physical action).
+TEA = [dict(id='ginger', emoji='🫚', label='Mời trà gừng nóng, hỏi đường lên dốc có lạnh, có mệt không'),
+       dict(id='map', emoji='🗺️', label='Vẽ tay đường ra chợ đêm, quán bánh căn của người quen'),
+       dict(id='kids', emoji='🧸', label='Chỉ góc vườn cho bé chơi, hỏi bé sáng mai thích ăn gì'),
+       dict(id='view', emoji='🌅', label='Kể giờ mây trôi ngang đồi, chỉ góc ban công ngắm đẹp nhất'),
+       dict(id='brief', emoji='🤫', label='Nói gọn wifi, giờ ăn sáng rồi để khách nghỉ sớm'),
+       dict(id='again', emoji='📖', label='Hỏi chuyện lần trước ghé nhà, nhắc món khách thích')]
+TEA_INDEX = {x['id']: x for x in TEA}
+TEA_FIT = {0: ('view',), 1: ('map',), 2: ('ginger',), 3: ('kids',), 4: ('view', 'map'), 5: ('ginger',), 6: ('brief',), 8: ('view',),
+           9: ('again',), 10: ('brief',), 13: ('view', 'map'), 14: ('ginger',)}
+TEA_MOOD, TEA_KIND = 8, 2      # stay mood: a talk that fits the guest / any cup of tea
+TEA_SAY = dict(ginger='Ấm cả bụng. Lên dốc mệt mà giờ thấy như về nhà.', map='Bản đồ vẽ tay này mình giữ làm kỷ niệm luôn!',
+               kids='Bé chạy ra vườn liền, đòi mai ở thêm một đêm.', view='Năm giờ sáng mai mình ra ban công canh mây.',
+               brief='Cảm ơn nha, mình mệt quá, được nghỉ sớm là quý nhất.', again='Vẫn nhớ mình à? Lên đây lần nào cũng như về nhà người quen.')
+
+
+def _tea_fit(t: dict) -> tuple:
+    npc = _npc_index(t)
+    fit = TEA_FIT.get(npc, ('ginger', 'view'))
+    return fit + ('again',) if t.get('regular') and 'again' not in fit else fit
+
+
+def _tea_options(t: dict) -> list:
+    fit = list(_tea_fit(t))[:2]
+    rest = [x['id'] for x in TEA if x['id'] not in fit]
+    pick = set(fit + kit.rng(ID, 'tea', t['id']).sample(rest, 4 - len(fit)))
+    return [x['id'] for x in TEA if x['id'] in pick]
+
+
+def _tea_open(c: dict, t: dict) -> list:
+    """The rooms of a check-in finished today whose guest is still in, while no tea was poured yet."""
+    if not (t.get('career') == ID and t.get('job') == 'checkin' and t.get('gen') and t.get('status') == 'completed'
+            and t.get('day') == c['day'] and t.get('tea') is None):
+        return []
+    stays, guest = _data(c)['stays'], _guest(t)
+    return [rid for rid in t['ci']['rooms'] if (stays.get(rid) or {}).get('guest') == guest]
+
+
+def _tea_rows(c: dict) -> list:
+    rows = []
+    for t in c['tasks']:
+        rooms = _tea_open(c, t)
+        if rooms:
+            p = PEOPLE[_npc_index(t)]
+            rows.append(dict(task=t['id'], npc=t['npc'], guest=p[0], role=p[1], note=p[2], rooms=[ROOM_INDEX[r]['name'] for r in rooms],
+                             visits=(t.get('regular') or {}).get('visits', 0), options=[TEA_INDEX[k] for k in _tea_options(t)]))
+    return rows
+
+
+def _tea(s: dict, c: dict, p: dict) -> dict:
+    tid = p.get('task')
+    t = next((x for x in c['tasks'] if isinstance(tid, str) and x.get('id') == tid), None)
+    kit.need(t is not None, 'Không tìm thấy khách vừa nhận phòng.')
+    rooms = _tea_open(c, t)
+    kit.need(rooms, 'Khách này đã uống trà rồi, hoặc không còn ở nhà.')
+    topic = kit.one_of(p.get('topic'), _tea_options(t), 'Chọn một chuyện để nói với khách.')
+    fit = topic in _tea_fit(t)
+    stays = _data(c)['stays']
+    for rid in rooms:
+        st = stays[rid]
+        st['mood'] = min(100, st['mood'] + (TEA_MOOD if fit else TEA_KIND))
+        if fit:
+            _stay_log(st, f'Ngày {c["day"]}: trà ở hiên với chủ nhà')
+    t['tea'] = topic
+    kit.metric(c, 'hs_tea')
+    if fit:
+        return dict(message=f'🫖 {_guest(t)}: “{TEA_SAY[topic]}”', celebrate=True)
+    return dict(message=f'🫖 {_guest(t)} nhận chén trà, cười cảm ơn rồi xin phép lên phòng nghỉ.')
+
+
 # ---------------------------------------------------------------- care: public view
 def _care_rows(c: dict, d: dict) -> list:
     day, rows = c['day'], []
@@ -3147,7 +3222,7 @@ def content() -> dict:
                 jobs=JOB_NAMES, repair_cost=REPAIR_COST, renovation_cost=RENOVATION_COST, today=TODAY, rates=RATES, claim_qs=CLAIM_QS,
                 rules=HOUSE_RULES, walk_fee=WALK_FEE, commission=OTA_COMMISSION, air_rain=AIR_RAIN, otas=list(OTAS),
                 asks=ASKS, trips=TRIPS, wood_pack=WOOD_PACK, wood_cost=WOOD_COST, wood_max=WOOD_MAX, deep_cost=DEEP_COST, fix_cost=FIX_COST,
-                wear_low=WEAR_LOW, garden_bloom=GARDEN_BLOOM, garden_wilt=GARDEN_WILT, anniv_name=ANNIV_NAME, anniv_room=ANNIV_ROOM)
+                wear_low=WEAR_LOW, garden_bloom=GARDEN_BLOOM, garden_wilt=GARDEN_WILT, anniv_name=ANNIV_NAME, anniv_room=ANNIV_ROOM, tea=TEA)
 
 
 def _p(who, emoji, text):
@@ -3491,10 +3566,10 @@ DESK = [
 
 SPEC = dict(
     id=ID, prefix='hs_', category='service',
-    meta=dict(short='Homestay nhỏ', place='Homestay Mây Đà Lạt', tagline='Phòng thơm gỗ thông. Lịch không trùng đêm nào.', icon='bed',
-              color='#6f8f6a', light='#eef4e6', weather='Sương lạnh 12°C', work='Khách', station='Quầy lễ tân',
-              greeting='Xem lịch phòng, đón khách, dọn phòng đúng thứ tự và tính hóa đơn từng dòng nhé.',
-              caption='Năm căn phòng, rất nhiều câu chuyện trên đồi', map_label='10 · HOMESTAY MÂY'),
+    meta=dict(short='Homestay nhà mình', place='Homestay Mây Đà Lạt', tagline='Nhà năm phòng của bạn: tự tay đón khách, nấu sáng, mời trà.', icon='bed',
+              color='#6f8f6a', light='#eef4e6', weather='Sương lạnh 12°C', work='Khách', station='Hiên nhà & bàn trà',
+              greeting='Nhà mình hôm nay: xem lịch phòng, ra cổng đón khách, mời trà, tự dọn phòng và nấu bữa sáng nhé.',
+              caption='Năm căn phòng của bạn, rất nhiều câu chuyện trên đồi', map_label='10 · HOMESTAY MÂY'),
     people=PEOPLE,
     staff=[('Chị Lành', 'housekeeping', 'Dọn phòng nhanh, nhớ từng góc bụi.', 80, 88), ('Tín', 'reception', 'Nhớ tên khách, dò mã đặt phòng rất nhanh.', 84, 80),
            ('Bà Sáu', 'kitchen', 'Chiên trứng lòng đào đều tay, dậy từ 5 giờ.', 70, 93), ('Nhung', 'housekeeping', 'Cẩn thận, hay tìm ra đồ khách bỏ quên.', 72, 95)],
@@ -3502,7 +3577,7 @@ SPEC = dict(
     inventory=dict(items=ITEMS, capacity=80),
     prices={'thong': 30, 'suong': 28, 'gac': 36, 'quy': 48, 'ho': 44, 'breakfast': 12, 'guide': 8},
     tip=2,
-    physical=('hs_clean', 'hs_welcome', 'hs_settle', 'hs_serve', 'hs_egg', 'hs_repair', 'hs_safety', 'hs_deep', 'hs_garden'),
+    physical=('hs_clean', 'hs_welcome', 'hs_settle', 'hs_serve', 'hs_egg', 'hs_repair', 'hs_safety', 'hs_deep', 'hs_garden', 'hs_tea'),
     free_actions=(),
     no_tick=('hs_line', 'hs_pick', 'hs_release', 'hs_plate', 'hs_rate', 'hs_desk'),
     waste_items=('tray',),
@@ -3520,5 +3595,5 @@ SPEC = dict(
     review_asides=['Phòng thơm mùi gỗ thông, chăn ấm như ổ mèo 🐱', 'Hóa đơn ghi rõ từng chai nước, thích sự minh bạch này.',
                    'Trứng lòng đào chuẩn không cần chỉnh!', 'Sáng ra mở cửa sổ thấy mây bay ngang ban công.'],
     situations=SITUATIONS,
-    guide='Lịch phòng → nhận/trả phòng → dọn phòng đúng thứ tự → bữa sáng → gợi ý đi chơi.',
+    guide='Nhà của bạn: lịch phòng → ra cổng đón khách, mời trà ở hiên → tự dọn phòng → nấu bữa sáng → kể chỗ đi chơi → hóa đơn sòng phẳng.',
 )

@@ -18,6 +18,15 @@
 - public/css/reno.css: ô đè, bản đồ ô 3D, nút bước 44 px. Đảo riêng / đảo bang / gian hàng hội chợ dùng trình sửa khác (ô dựng cố định), không đổi.
 - Có gì mới 2.5.2 (một dòng ♿), game.__version__ 2.5.2. i18n/overrides.json: 19 chuỗi, 25 mẫu.
 - Tests: tests/deco_tap_place.mjs, tests/test_deco_tap_place.py; scripts/browser_deco_tap.py (390x844, cảm ứng).
+# Chưa phát hành — feat/hotel-homestay-distinct
+
+🏡🛎️ F#466 "homestay và khách sạn không khác gì cả". Homestay = nhà năm phòng của bạn; khách sạn Sông Mây = bạn làm thuê theo ca, quy trình, đồng đội. Không đổi schema; hotel: khóa task mới tùy chọn (t0, fast), homestay: khóa task mới tùy chọn (tea).
+- game/careers/hotel.py + hotel_content.py: bộ sinh việc 2 (GEN 2) cho lễ tân và buồng phòng. Lễ tân = "Quầy giờ cao điểm": 4 khách cùng lúc (VIP → Anh Khôi quản lý trực, trưởng đoàn đại lý → Tú quầy đoàn), xếp thứ tự theo giờ cần xong, chỉ giao phòng "Sạch · đã kiểm" trên bảng 16 phòng 6 trạng thái, cài thẻ, phàn nàn theo quy trình. Buồng phòng = "Bảng phòng": dọn trước phòng của khách sắp đến, khóa phòng hỏng (OOO), chia phòng bẩn cho tổ theo tầng (Chị Hoa / Chị Lụa), kiểm phòng, báo số phòng bán được. Giao ban đầu ca (công suất, lượt đến, VIP, đoàn). Chấm cả tốc độ: đúng hết trong thời gian chuẩn (TARGET 120–180 giây) = "Nhanh", +1 xu (FAST_BONUS). Lương ngày 52–66 xu và thưởng 5–7 xu/việc giữ nguyên.
+- Việc hotel tạo trước (gen 1) dời created_turn sang dải legacy (heal_save) nên vẫn dựng lại đúng như cũ; 4 việc còn lại (giặt là, bữa sáng, bảo trì, trang trí) giữ nguyên nội dung.
+- game/careers/homestay.py: 🫖 Trà ở hiên sau khi trao chìa (hs_tea): chọn chuyện hợp người khách → tâm trạng +8 (sai +2), một lần mỗi lượt nhận phòng. Không đổi giá, không đổi tiền.
+- Mô tả chọn nghề: "Homestay nhà mình" / "Nhân viên khách sạn"; hướng dẫn, coach, Có gì mới 2.5.2.
+- public/js/careers/hotel.js + hotel.css: hàng chờ ở quầy, bảng tình trạng phòng theo tầng (đổi ngay khi khóa phòng / ký kiểm), khách đến hôm nay + tổ buồng, ⏱️ chuẩn N giây. homestay.js + homestay.css: thẻ trà ở hiên.
+- i18n/overrides.json: ~130 câu + ~25 mẫu.
 
 # Chưa phát hành — fix/fb-money-2110
 

@@ -2193,5 +2193,92 @@ class HomestayCareTests(unittest.TestCase):
             self.assertNotIn(bad, texts)
 
 
+class HomestayTeaTests(unittest.TestCase):
+    """Feedback #466: the homestay is the player's own house. After the keys, tea on the porch with a talk that fits
+    the guest (their profile, a regular's last visit) lifts the stay; any cup is kind; once per check-in, that day."""
+
+    setUp, tearDown = HomestayTests.setUp, HomestayTests.tearDown
+    rooms, make_clean, clear_bookings, do_checkin = HomestayTests.rooms, HomestayTests.make_clean, HomestayTests.clear_bookings, HomestayTests.do_checkin
+
+    def checked_in(self, pred=lambda t: True):
+        day, slot = find('checkin', lambda t: t['_x']['adults'] == t['needs']['adults'] and t['_x']['kids'] == t['needs']['kids'] and pred(t))
+        j = Journey('homestay', slot=slot, day=day)
+        self.clear_bookings(j)
+        self.make_clean(j, 'thong', 'suong', 'gac', 'quy')
+        tid = self.do_checkin(j)
+        j.act('hs_welcome', task=tid, confirm=True)
+        self.assertEqual(j.get(tid)['status'], 'completed')
+        return j, tid
+
+    def test_tea_that_fits_lifts_the_stay_once(self):
+        j, tid = self.checked_in()
+        t = j.get(tid)
+        rows = public_state(j.state)['careers']['homestay']['data']['tea']
+        self.assertEqual([r['task'] for r in rows], [tid])
+        row = rows[0]
+        self.assertEqual(len(row['options']), 4)
+        fit = H._tea_fit(t)
+        right = next(o['id'] for o in row['options'] if o['id'] in fit)
+        rid = t['ci']['rooms'][0]
+        mood = j.c['ext']['data']['stays'][rid]['mood']
+        r = j.act('hs_tea', task=tid, topic=right)
+        self.assertTrue(r.get('celebrate'))
+        self.assertIn(H.TEA_SAY[right], r['message'])
+        st = j.c['ext']['data']['stays'][rid]
+        self.assertEqual(st['mood'], min(100, mood + H.TEA_MOOD))
+        self.assertIn('trà ở hiên', st['log'][-1])
+        self.assertEqual(j.get(tid)['tea'], right)
+        self.assertEqual(public_state(j.state)['careers']['homestay']['data']['tea'], [])
+        before = copy.deepcopy(j.state)
+        with self.assertRaises(GameError):
+            j.act('hs_tea', task=tid, topic=right)
+        self.assertEqual(j.state, before)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_any_cup_is_kind_and_bad_payloads_change_nothing(self):
+        j, tid = self.checked_in()
+        t = j.get(tid)
+        opts = [o['id'] for o in public_state(j.state)['careers']['homestay']['data']['tea'][0]['options']]
+        miss = next(o for o in opts if o not in H._tea_fit(t))
+        for p in (dict(task=tid, topic='karaoke'), dict(task=tid, topic=next(x['id'] for x in H.TEA if x['id'] not in opts)),
+                  dict(task='homestay-9999-00', topic=miss), dict(topic=miss)):
+            before = copy.deepcopy(j.state)
+            with self.assertRaises(GameError):
+                j.act('hs_tea', **p)
+            self.assertEqual(j.state, before)
+        rid = t['ci']['rooms'][0]
+        mood = j.c['ext']['data']['stays'][rid]['mood']
+        r = j.act('hs_tea', task=tid, topic=miss)
+        self.assertFalse(r.get('celebrate'))
+        self.assertEqual(j.c['ext']['data']['stays'][rid]['mood'], min(100, mood + H.TEA_KIND))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_a_forged_tea_is_refused(self):
+        j, tid = self.checked_in()
+        bad = copy.deepcopy(j.state)
+        next(t for t in bad['careers']['homestay']['tasks'] if t['id'] == tid)['tea'] = 'karaoke'
+        with self.assertRaises(GameError):
+            validate_state(bad)
+
+    def test_every_guest_has_a_fitting_talk_among_four(self):
+        for day in range(1, 40):
+            for slot in range(12):
+                t = H.make_task(day, slot, 1)
+                if t['job'] != 'checkin':
+                    continue
+                for regular in (None, dict(score=5, fav=None, visits=2)):
+                    x = dict(t, regular=regular)
+                    opts = H._tea_options(x)
+                    self.assertEqual(len(opts), 4)
+                    self.assertTrue(set(opts) & set(H._tea_fit(x)))
+                    if regular:
+                        self.assertIn('again', H._tea_fit(x))
+
+    def test_the_owner_framing_reaches_the_picker(self):
+        self.assertEqual(H.SPEC['meta']['short'], 'Homestay nhà mình')
+        self.assertIn('Hiên nhà', H.SPEC['meta']['station'])
+        self.assertEqual(H.content()['tea'], H.TEA)
+
+
 if __name__ == '__main__':
     unittest.main()
