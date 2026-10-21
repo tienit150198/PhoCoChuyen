@@ -22,7 +22,7 @@ ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tou
        'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
        'corp_accounting', 'tax_payroll', 'group_accounting', 'tra_da', 'clothing', 'pet_shop',
        'fruit', 'garbage', 'drain', 'homemaker', 'ice_cream', 'nail', 'pagoda', 'pho', 'com', 'photobooth', 'giupviec', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil', 'hr_admin', 'secretary', 'it_helpdesk', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'zpop',
-       'art_studio', 'lawyer', 'laundry', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet')
+       'art_studio', 'lawyer', 'laundry', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'jewelry', 'car_dealer')
 EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting', 'pilot', 'flight_attendant', 'oil',
             'hr_admin', 'secretary', 'it_helpdesk', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'lawyer', 'post_office', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'research', 'radio', 'vet')
 RETAIL = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon', 'repair',
@@ -30,12 +30,12 @@ RETAIL = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bak
 FOOD = ('milk_tea', 'cafe_bakery', 'restaurant')
 FRONT = ('milk_tea', 'cafe_bakery', 'restaurant', 'florist', 'grocery', 'repair', 'tra_da', 'fruit', 'ice_cream', 'pho', 'com')
 MUSIC = ('milk_tea', 'cafe_bakery', 'restaurant', 'salon', 'homestay', 'nail', 'zpop')
-CASH = RETAIL + ('homestay', 'delivery', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'zpop', 'art_studio', 'laundry', 'restore', 'moto')
+CASH = RETAIL + ('homestay', 'delivery', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'zpop', 'art_studio', 'laundry', 'restore', 'moto', 'jewelry', 'car_dealer')
 CREW = ('garbage', 'homemaker', 'pagoda', 'giupviec', 'naucom', 'babysitter', 'library')   # paid by the ward's cooperative / by the family / by the pagoda / through cô Mai's team / cô Tâm's sitting service: no licence or lump-sum tax of their own
 OWNER = tuple(c for c in ALL if c not in EMPLOYEE + CREW)
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'lawyer', 'post_office', 'customs', 'teller')
 BOOKS = ('accounting', 'corp_accounting', 'tax_payroll', 'group_accounting')
-SHOPS = RETAIL + ('homestay', 'art_studio', 'laundry', 'restore', 'moto')
+SHOPS = RETAIL + ('homestay', 'art_studio', 'laundry', 'restore', 'moto', 'jewelry', 'car_dealer')
 
 CATS = {
     'phat': ('⚖️', 'Quyết định xử phạt'),

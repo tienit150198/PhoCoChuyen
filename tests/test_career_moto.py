@@ -81,7 +81,7 @@ ORDER_B = 'sv_' + 'b2' * 12
 @unittest.skipIf(M is None, 'moto filtered out by MNL_CAREERS')
 class Registration(unittest.TestCase):
     def test_registered_last_dormant_late_unlock_owner_shop(self):
-        self.assertEqual(tuple(ORDER[-2:]), ('moto', 'vet'))
+        self.assertEqual(tuple(ORDER[ORDER.index('moto'):ORDER.index('moto') + 2]), ('moto', 'vet'))   # 💍 jewelry and 🚗 car_dealer came after
         self.assertIn('moto', DORMANT)
         self.assertEqual(jr.LATE_UNLOCKS['moto'], 2)
         self.assertEqual(M.SPEC['category'], 'shop')

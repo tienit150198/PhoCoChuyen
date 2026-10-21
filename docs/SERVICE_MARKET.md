@@ -153,6 +153,17 @@ market's own.
 * 🛑 `MNL_MOTO_SVC_OFF=1` / `MNL_VET_SVC_OFF=1`: `done` refused (`moto_off` / `vet_off`); orders keep settling and
   refunding as usual. No table, no column; `journey.xe_care` is optional and 2.4.71 keeps it untouched.
 
+## 🚗 Bảo dưỡng ô tô (car_dealer: worked at the showroom)
+
+`game/dealer_service.py` registers `('car_dealer', 'bao_duong_oto')` (base 120 xu, one car per order: qty_max 1; needs a
+car in the garage, a motorbike is not enough; any started 🚗 Đại lý xe player may list it). The same flow as 🏍️: the
+dealer takes the order, works three server-graded steps in the showroom's "Xe của người chơi" card (`dx_svc`: the
+service in order, the next service mark in km, the safety picks), the job lands in `svc_ok`, and `deliver` refuses
+(`dealer_bench`) until it is there. Buyer's save, once: the warned car first (`moto_service.apply(..., group='car')`),
+`journey.xe_care` for `CARE_DAYS` days and the pending "xe sắp hỏng" warning cleared; a bike's calmer days are kept.
+The showroom never sells a vehicle to a player: a player buys one in 🚗 Xe & phương tiện (`game/garage.py`).
+🛑 `MNL_DEALER_SVC_OFF=1`: not listed, `done` refused (`dealer_off`). No table, no column, no new save key.
+
 ## HTTP
 
 GET `/api/svc/dir?career=&service=&sort=rating|price|online|deals&offset=` · `/api/svc/provider?pid=` · `/api/svc/inbox`
@@ -197,7 +208,7 @@ table here stays (nothing is dropped), but it must never meet money this build s
 Steps, in order, on this build:
 
 1. Stop new money coming in: set `MNL_SVC_OFF=1`, `MNL_BIRTH_OFF=1`, `MNL_HOTEL_OFF=1`, `MNL_PHOTO_DIRECT_OFF=1` (also
-   `MNL_WEDSVC_OFF`, `MNL_RADIO_OFF`, `MNL_RESTORE_OFF`, `MNL_RESEARCH_OFF`, `MNL_MOTO_SVC_OFF`, `MNL_VET_SVC_OFF`,
+   `MNL_WEDSVC_OFF`, `MNL_RADIO_OFF`, `MNL_RESTORE_OFF`, `MNL_RESEARCH_OFF`, `MNL_MOTO_SVC_OFF`, `MNL_VET_SVC_OFF`, `MNL_DEALER_SVC_OFF`,
    `MNL_FAIR_OFF` if wanted; use `1`, which every
    switch reads as on) and restart. Paid orders keep settling and refunding meanwhile.
 2. Look: `python scripts/svc_drain.py` (dry run: what is held, per table and status, in xu).
@@ -209,7 +220,7 @@ Steps, in order, on this build:
    prints the counts again: everything should be 0 (exit code 1 otherwise, with the rows that refused in `log`; run
    it again, a busy save just retries).
 4. Strip the new careers from the saves (an older build refuses a save with a career it does not know):
-   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet --db --archive removed.jsonl`
+   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet,jewelry,car_dealer --db --archive removed.jsonl`
    (counts), then the same with `--write` (that list is the script's default). Keep `removed.jsonl`: `restore` puts it
    back after rolling forward.
 5. Deploy 2.4.68.

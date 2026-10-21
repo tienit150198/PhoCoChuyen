@@ -1,0 +1,6 @@
+/* 🚗 Đại lý xe Phố Mây: showroom navy, a signal red second colour for the players' cars. */
+.career-job.car_dealer{--sk-accent:#1f5f8b;--sk-accent-2:#c8432f}
+.car_dealer .sl-ticket{background:#eef5fb}
+.car_dealer .dx-own{justify-content:flex-end;flex-wrap:wrap}
+html[data-theme="dem"] .career-job.car_dealer{--sk-accent:#8cc0e6;--sk-accent-2:#f29a8a}
+html[data-theme="dem"] .car_dealer .sl-ticket{background:transparent}

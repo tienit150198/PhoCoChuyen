@@ -15,7 +15,7 @@ def approved_titles():
 
 def test_exact_approved_540_titles_and_real_procedure_diversity():
     expected = approved_titles()
-    assert len(expected) == 64   # 🔑 reception the 58th, 🏦 teller the 59th, 🧰 restore the 60th, 🔬 research the 61st, 📻 radio the 62nd
+    assert len(expected) == 66   # 💍 jewelry, 🚗 car_dealer; 🔑 reception the 58th, 🏦 teller the 59th, 🧰 restore the 60th, 🔬 research the 61st, 📻 radio the 62nd
     assert set(content.CAREER_IDS) == set(expected)
     all_procedures, all_checks = set(), set()
     for cid, titles in expected.items():

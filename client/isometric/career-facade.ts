@@ -73,6 +73,8 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   radio:style('antenna','banner','books','#3f6fb0','#e4eefb'),
   moto:style('scooter','workshop','toolbox','#c0562b','#fbe9dd'),
   vet:style('stethoscope','porch','planter','#2f8f7a','#dff3ee'),
+  jewelry:style('ring','scallop','flowers','#b8860b','#f6e7b8'),
+  car_dealer:style('car','banner','planter','#1f5f8b','#dcebf5'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -328,6 +330,15 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
     case 'stethoscope':  // a paw print on a clinic card, a stethoscope hung round it: the vet clinic
       round(-34,-38,68,72,10,body);ellipse(0,6,13,11,cream);for(const [x,y] of [[-15,-11],[-5,-18],[5,-18],[15,-11]])ellipse(x,y,5,6,cream);
       arc(0,14,30,.15,Math.PI-.15,ink,3);line([[-29,19],[-36,-30]],ink,3);line([[29,19],[36,-30]],ink,3);ellipse(0,44,7,7,s.light);line([[0,44],[0,37]],ink,3);break;
+    case 'ring':  // a gold ring with a cut diamond set on top: the gold shop
+      ellipse(0,20,30,24,'#d9a93a');ellipse(0,20,21,15,cream);arc(0,20,26,-2.6,-.55,'#f2cf74',3);
+      poly([[-16,-30],[16,-30],[25,-19],[0,6],[-25,-19]],'#d6eef8');line([[-25,-19],[25,-19]],ink,2);
+      line([[-7,-30],[-10,-19],[0,6]],ink,1.5);line([[7,-30],[10,-19],[0,6]],ink,1.5);ellipse(-12,-25,3,2,cream);break;
+    case 'car':  // a small car on the showroom floor under a price tag: the car dealership
+      round(-40,0,80,22,8,body);poly([[-25,1],[-14,-20],[15,-20],[28,1]],body);
+      poly([[-19,-2],[-11,-16],[-1,-16],[-1,-2]],'#cfe3ef');poly([[4,-2],[4,-16],[13,-16],[22,-2]],'#cfe3ef');
+      ellipse(-22,24,10,10,ink);ellipse(-22,24,4,4,cream);ellipse(24,24,10,10,ink);ellipse(24,24,4,4,cream);ellipse(37,8,3,3,'#f2cf74');
+      round(-12,-38,24,10,3,cream);line([[0,-28],[0,-20]],ink,2);break;
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;

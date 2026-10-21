@@ -16,7 +16,7 @@ test('50 career exteriors have separate files, architectural briefs and trade na
   assert.ok(registry.CAREER_ART,'dedicated career artwork registry exists');
   const entries=Object.values(registry.CAREER_ART);
   assert.equal(entries.length,50);
-  assert.deepEqual(entries.map(a=>a.career).sort(),layout.careerOrder.filter(id=>!['art_studio','lawyer','laundry','post_office','customs','hotel','banquet','reception','teller','restore','research','radio','moto','vet'].includes(id)).sort());
+  assert.deepEqual(entries.map(a=>a.career).sort(),layout.careerOrder.filter(id=>!['art_studio','lawyer','laundry','post_office','customs','hotel','banquet','reception','teller','restore','research','radio','moto','vet','jewelry','car_dealer'].includes(id)).sort());
   for(const a of entries){
     assert.equal(a.key,'career-'+a.career);
     assert.equal(a.src,'/icons/careers-v1/'+a.career+'.webp');

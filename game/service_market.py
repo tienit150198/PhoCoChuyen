@@ -344,6 +344,7 @@ def _seed() -> None:
             base=_legacy_base(career), unit='đơn', duration=10, can_provide=_career_started(career)))
     from . import restore_service   # noqa: F401  🧰 its services register at import: every process that settles knows its on_buyer
     from . import moto_service, vet_service   # noqa: F401  🏍️ 🩺 the same (bảo dưỡng xe, khám / tiêm thú cưng)
+    from . import dealer_service   # noqa: F401  🚗 the same (bảo dưỡng ô tô)
     if ('quay', 'dish') not in REGISTRY:
         REGISTRY[('quay', 'dish')] = _norm(('quay', 'dish'), dict(
             name='Món ở quầy', icon='🏪', desc='Quầy của bạn', legacy='quay', base=_legacy_base('quay'), unit='món',

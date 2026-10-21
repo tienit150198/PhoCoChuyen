@@ -1,0 +1,244 @@
+{
+  "jewelry": [
+    {
+      "tier": 1,
+      "title": "Lập bảng quy đổi chỉ, phân, gam",
+      "output_unit": "bảng quy đổi",
+      "inputs": [
+        {
+          "name": "Xấp thẻ quy đổi giả lập",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi 1 lượng = 10 chỉ, 1 chỉ = 10 phân = 3,75 g.",
+        "Thêm cột số gam thường gặp từ 0,375 g tới 37,5 g.",
+        "Dán bảng cạnh cân và cho chủ tiệm ký."
+      ],
+      "check": {
+        "prompt": "Bảng nào được duyệt?",
+        "good": "Đủ ba đơn vị, cột gam tính đúng và có chữ ký chủ tiệm.",
+        "bad": "Làm tròn 1 chỉ thành 4 g cho dễ nhớ.",
+        "why": "Sai một chút mỗi món là lệch cả trăm xu mỗi ngày."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn quy trình kiểm cân mỗi sáng",
+      "output_unit": "quy trình kiểm cân",
+      "inputs": [
+        {
+          "name": "Bộ quả cân chuẩn mẫu",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 9000
+        }
+      ],
+      "procedure": [
+        "Đặt quả cân chuẩn 10 g, ghi số màn hình vào sổ.",
+        "Lệch quá 0,01 g thì ngưng, chỉnh chuẩn rồi đặt lại.",
+        "Ký tên và giờ kiểm cân trước khi mở cửa."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Có quả cân chuẩn, mức lệch cho phép và chữ ký giờ kiểm.",
+        "bad": "Cân lệch thì trừ nhẩm cho nhanh.",
+        "why": "Cân chuẩn là lời hứa đầu tiên với khách."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập bảng tuổi vàng và màu thường gặp",
+      "output_unit": "bảng tuổi vàng",
+      "inputs": [
+        {
+          "name": "Bộ mẫu vàng giả lập",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Ghi 9999 là 99,99%, 18K là 75%, 14K là 58,5%, 10K là 41,6%.",
+        "Ghi tên gọi quen: vàng ta, vàng tây, vàng trắng.",
+        "Thêm dòng: màu không quyết định tuổi, phải thử máy."
+      ],
+      "check": {
+        "prompt": "Bảng nào được dùng?",
+        "good": "Đúng phần trăm, đúng tên gọi và có dòng phải thử máy.",
+        "bad": "Nhìn màu vàng đậm là biết 9999.",
+        "why": "Màu có thể pha; chỉ máy hoặc đá thử mới nói đúng tuổi."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Soạn cách treo bảng giá mua vào bán ra",
+      "output_unit": "bảng giá mẫu",
+      "inputs": [
+        {
+          "name": "Bảng giá treo giả lập",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Lấy giá giữa của công ty mỗi sáng.",
+        "Bán ra cộng 1,2%, mua vào trừ 1,2%, làm tròn tới xu.",
+        "Ghi ngày giờ và cột so với hôm qua."
+      ],
+      "check": {
+        "prompt": "Bảng nào treo được?",
+        "good": "Đủ hai cột, cách tính đúng và có ngày giờ.",
+        "bad": "Chỉ treo giá bán ra, giá mua vào hỏi riêng.",
+        "why": "Khách phải thấy cả hai giá để tin tiệm."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập mẫu hóa đơn nữ trang",
+      "output_unit": "mẫu hóa đơn",
+      "inputs": [
+        {
+          "name": "Xấp hóa đơn trắng giả lập",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Ghi tên món, tuổi vàng, số phân, giá một chỉ hôm đó.",
+        "Ghi riêng tiền vàng, tiền công, tiền đá.",
+        "Thêm dòng: hàng tiệm còn hóa đơn mua lại không trừ."
+      ],
+      "check": {
+        "prompt": "Mẫu nào được duyệt?",
+        "good": "Đủ tuổi, phân, giá, tiền tách dòng và dòng mua lại.",
+        "bad": "Ghi gộp “nhẫn vàng, 500 xu” cho gọn.",
+        "why": "Hóa đơn đủ dòng là bằng chứng khi khách bán lại."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soạn quy trình mua lại vàng cũ",
+      "output_unit": "quy trình mua lại",
+      "inputs": [
+        {
+          "name": "Sổ mua hàng giả lập",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Xem CCCD đúng người bán, chụp món.",
+        "Quét tuổi vàng, cân trừ đá, tính theo giá mua vào.",
+        "Ghi sổ đủ dòng, trừ 3% nếu hàng tiệm khác hoặc không hóa đơn."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Có CCCD, quét tuổi, trừ đá, đúng mức trừ và ghi sổ.",
+        "bad": "Khách quen thì khỏi xem giấy.",
+        "why": "Sổ mua hàng giúp trả lại đồ mất cắp cho đúng người."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập bảng nhận biết đồ mạ, đồ giả",
+      "output_unit": "bảng nhận biết đồ giả",
+      "inputs": [
+        {
+          "name": "Bộ mẫu đồ mạ giả lập",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Ghi dấu hiệu: màu quá sáng, khắc chữ mờ, nặng nhẹ bất thường.",
+        "Ghi kết quả máy quét: chỉ lớp mỏng ngoài là vàng.",
+        "Thêm cách nói với khách: nhẹ nhàng, trả món, chỉ chỗ báo."
+      ],
+      "check": {
+        "prompt": "Bảng nào được dùng?",
+        "good": "Có dấu hiệu, kết quả máy quét và cách nói với khách.",
+        "bad": "Đồ nghi mạ thì mua rẻ cho khỏi mất khách.",
+        "why": "Mua đồ mạ một lần là mất tiền và mất tiếng."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Soạn phiếu kiểm định kim cương 4C",
+      "output_unit": "mẫu phiếu 4C",
+      "inputs": [
+        {
+          "name": "Xấp phiếu kiểm định giả lập",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Ghi carat theo cân: 1 ct = 0,2 g = 100 điểm.",
+        "Ghi màu theo đá mẫu, độ sạch soi kính 10x, giác cắt.",
+        "Đối số giấy với số khắc laser, ghi khớp hay không khớp."
+      ],
+      "check": {
+        "prompt": "Phiếu nào được duyệt?",
+        "good": "Đủ bốn chữ C và dòng đối số laser.",
+        "bad": "Ghi theo giấy khách mang tới, khỏi soi lại.",
+        "why": "Giấy có thể của viên đá khác."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Soạn quy trình đóng két cuối ngày",
+      "output_unit": "quy trình đóng két",
+      "inputs": [
+        {
+          "name": "Sổ giao ca giả lập",
+          "unit": "cuốn",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Đếm từng khay, ghi số món và tổng số phân.",
+        "Hai người cùng ký, khóa két, cất mã riêng.",
+        "Lệch số thì báo chủ tiệm ngay, không tự bù."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Đếm khay, hai chữ ký, mã riêng và báo khi lệch.",
+        "bad": "Một người đếm cho nhanh, mã dán dưới quầy.",
+        "why": "Két là tài sản của cả tiệm, phải có hai người chứng."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Lập sổ tay quầy vàng cho người mới",
+      "output_unit": "sổ tay quầy",
+      "inputs": [
+        {
+          "name": "Bộ sổ tay in giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Gom bảng quy đổi, tuổi vàng, bảng giá, hóa đơn.",
+        "Thêm quy trình mua lại, đồ giả, kiểm định, đóng két.",
+        "Cho người mới tập một buổi với cô chủ rồi mới đứng quầy."
+      ],
+      "check": {
+        "prompt": "Sổ tay nào được phát?",
+        "good": "Đủ các quy trình, có buổi tập và người kèm.",
+        "bad": "Đưa sổ rồi cho đứng quầy một mình ngay.",
+        "why": "Người mới cần kèm một buổi mới quen tay."
+      }
+    }
+  ]
+}

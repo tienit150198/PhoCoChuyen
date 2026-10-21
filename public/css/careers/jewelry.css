@@ -1,0 +1,16 @@
+/* 💍 Tiệm vàng Ngọc Mây: old gold like the shop's sign, a jade green second colour; today's board as a small table. */
+.career-job.jewelry{--sk-accent:#a8780a;--sk-accent-2:#2f7d5b}
+.jewelry .sl-ticket{background:#fdf7e6}
+.jewelry .vg-board-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.jewelry .vg-board-head h3{margin:0}
+.jewelry .vg-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;margin:6px 0}
+.jewelry .vg-table th,.jewelry .vg-table td{padding:4px 6px;text-align:right;border-bottom:1px solid rgba(168,120,10,.22)}
+.jewelry .vg-table th[scope="row"],.jewelry .vg-table thead th:first-child{text-align:left}
+.jewelry .vg-table thead th{font-size:.78rem;font-weight:600;opacity:.8}
+.jewelry .vg-up{color:#b3261e;font-style:normal}
+.jewelry .vg-down{color:#2f7d5b;font-style:normal}
+.jewelry .vg-same{opacity:.6;font-style:normal}
+html[data-theme="dem"] .career-job.jewelry{--sk-accent:#e8c15a;--sk-accent-2:#7fd1aa}
+html[data-theme="dem"] .jewelry .sl-ticket{background:transparent}
+html[data-theme="dem"] .jewelry .vg-up{color:#ff9b8f}
+html[data-theme="dem"] .jewelry .vg-down{color:#8fe0b8}

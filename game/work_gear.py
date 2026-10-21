@@ -41,6 +41,8 @@ NAMES = {
  'research':'Kính hiển vi và cân phân tích',
  'moto':'Bộ cờ lê, đồng hồ đo áp suất và đồng hồ vôn',
  'vet':'Ống nghe, cân điện tử và nhiệt kế thú y',
+ 'jewelry':'Cân tiểu ly, máy quét tuổi vàng và kính lúp 10x',
+ 'car_dealer':'Máy đọc lỗi, đồng hồ áp suất lốp và cờ lê lực',
  'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)
