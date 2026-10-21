@@ -40,6 +40,7 @@ BAL_MAX = 10**9
 # 21/10 (F#462): one deposit / ATM withdrawal / savings move may be this large (it was AMOUNT_MAX, so 10 triệu took
 # several tries). Sổ ví rows stay at most ROW_MAX each (every build's journey.validate), so a big one is written in several.
 TX_MAX = 10**9
+TERM_MAX = 10**7            # one sổ có kỳ hạn holds at most this (unchanged: the term-deposit economy is the owner's call)
 ROW_MAX = 10**7
 
 # Current account.
@@ -867,6 +868,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         term = p.get('term')
         need(type(term) is int and (term == 0 or term in TERM_RATE), 'Chọn kỳ hạn gửi nhé.')
         amount = _amount(p, low=1 if term == 0 else SAVE_MIN, most=TX_MAX)
+        need(not term or amount <= TERM_MAX, f'Sổ có kỳ hạn tối đa {_fmt(TERM_MAX)} xu mỗi sổ.')
         need(term or b['demand'] + amount <= BAL_MAX, f'Sổ không kỳ hạn chỉ nhận thêm được {_fmt(max(0, BAL_MAX - b["demand"]))} xu.')
         src = _src(p)
         renew = p.get('renew', False)
@@ -1074,7 +1076,7 @@ def action(s: dict, name: str, p: dict) -> dict:
 # ---------------------------------------------------------------- views
 def rules() -> dict:
     return dict(demand_bp=DEMAND_BP, demand_rate=DEMAND_BP * YEAR_DAYS, term_rate={str(k): v for k, v in TERM_RATE.items()},
-                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX, renew_max=RENEW_MAX, tx_max=TX_MAX,
+                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX, renew_max=RENEW_MAX, tx_max=TX_MAX, term_max=TERM_MAX,
                 atm_fee=ATM_OTHER_FEE, card_cycle=CARD_CYCLE, card_grace=CARD_GRACE, card_min_pct=CARD_MIN_PCT,
                 card_min_floor=CARD_MIN_FLOOR, card_bp=CARD_BP, card_late_fee=CARD_LATE_FEE, cash_fee_pct=CASH_FEE_PCT,
                 cash_fee_min=CASH_FEE_MIN, cash_share=CASH_SHARE, loan_bp=dict(LOAN_BP), loan_terms=list(LOAN_TERMS),

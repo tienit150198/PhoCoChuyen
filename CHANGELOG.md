@@ -1,12 +1,12 @@
 # Chưa phát hành — fix/fb-money-2110
 
 🏦 F#462 "giao dịch lớn hơn 10tr đều không được" + 🥛 F#463/#454 sữa tươi hỏng giữa ca. Không đổi schema, không thêm khóa save.
-- game/bank.py: nộp / rút ATM / gửi tiết kiệm (không kỳ hạn, có kỳ hạn) / rút sổ không kỳ hạn / trả thẻ "số khác": mỗi lần tối đa 1.000.000.000 xu (TX_MAX, trước 10.000.000 = AMOUNT_MAX). Quá mức báo "Mỗi lần tối đa … xu." thay vì "ít nhất 1 xu". Dòng Sổ ví tách ≤ 10 triệu/dòng (journey.validate mọi bản). Chặn trước khi vượt BAL_MAX / WALLET_MAX (tài khoản, sổ không kỳ hạn, ví, tất toán sớm). AMOUNT_MAX (pay(), vay, thuê nhà, validator) và RENEW_MAX (tái tục 10 triệu) giữ nguyên. rules.tx_max cho client.
+- game/bank.py: nộp / rút ATM / gửi và rút sổ không kỳ hạn / trả thẻ "số khác": mỗi lần tối đa 1.000.000.000 xu (TX_MAX, trước 10.000.000 = AMOUNT_MAX). Sổ có kỳ hạn giữ 10.000.000 xu mỗi sổ (TERM_MAX, rules.term_max; báo "Sổ có kỳ hạn tối đa 10.000.000 xu mỗi sổ.": không đổi kinh tế tiền gửi khi chủ game chưa duyệt). Quá mức báo "Mỗi lần tối đa … xu." thay vì "ít nhất 1 xu". Dòng Sổ ví tách ≤ 10 triệu/dòng (journey.validate mọi bản). Chặn trước khi vượt BAL_MAX / WALLET_MAX (tài khoản, sổ không kỳ hạn, ví, tất toán sớm). AMOUNT_MAX (pay(), vay, thuê nhà, validator) và RENEW_MAX (tái tục 10 triệu) giữ nguyên. rules.tx_max cho client.
 - game/invest.py: sổ tiết kiệm 📈 gửi / rút mỗi lần tới 1 tỷ (lệnh coin, dự án giữ 10 triệu); _wallet tách dòng ≤ 10 triệu (cũng sửa "Tất cả" / bán coin trên 10 triệu từng bị validator từ chối).
 - game/journey.py: Góp vốn (jr_invest) mỗi lần tới FUND_MAX 1 tỷ (trước CAPITAL_MAX 100 triệu).
 - public/js/v4/bank.js: số quá rules.tx_max báo ngay "Mỗi lần tối đa … xu." (server cũ: 10 triệu).
 - cafe_bakery: "Ca sữa tươi vừa mở có mùi chua" giảm nửa lần nữa: SOUR_KEEP 0,6 → 0,3 (~14 % → ~7 % số ngày), có 🧊 Tủ trữ sữa riêng 0,15 → 0,08 (~3,6 % → ~1,9 %). Lô sữa hỏng lộ ra ngay lúc mở ca (at = 0, on_start mở chuyện), không còn bật giữa ca sau khi nướng bánh.
-- i18n/overrides.json: 7 mẫu.
+- i18n/overrides.json: 8 mẫu.
 
 # Chưa phát hành — career previews
 

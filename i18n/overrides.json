@@ -42581,6 +42581,7 @@
     "Ví chỉ giữ thêm được $1 xu.": "Your wallet can only hold $1 more xu.",
     "Sổ không kỳ hạn chỉ nhận thêm được $1 xu.": "The demand savings book can only take $1 more xu.",
     "Sổ chỉ nhận thêm được $1 xu.": "The savings book can only take $1 more xu.",
-    "$1 cần là số xu nguyên, ít nhất $2 xu.": "$1 must be a whole number of xu, at least $2 xu."
+    "$1 cần là số xu nguyên, ít nhất $2 xu.": "$1 must be a whole number of xu, at least $2 xu.",
+    "Sổ có kỳ hạn tối đa $1 xu mỗi sổ.": "A term deposit holds at most $1 xu per book."
   }
 }

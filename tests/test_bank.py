@@ -121,18 +121,22 @@ class Account(unittest.TestCase):
         rows = s['journey']['history'][rows0:]
         self.assertEqual(sum(x['amount'] for x in rows), -850_000_000)
         self.assertTrue(all(abs(x['amount']) <= bk.ROW_MAX for x in rows))   # every build validates ±10 M a row
-        s, _ = act(s, 'jr_bk_save', amount=300_000_000, term=30)
+        # A sổ có kỳ hạn keeps its old cap (the term-deposit economy is unchanged).
+        with self.assertRaisesRegex(GameError, 'Sổ có kỳ hạn tối đa 10.000.000 xu mỗi sổ'):
+            act(s, 'jr_bk_save', amount=bk.TERM_MAX + 1, term=30)
+        s, _ = act(s, 'jr_bk_save', amount=bk.TERM_MAX, term=30)
         s, _ = act(s, 'jr_bk_save', amount=250_000_000, term=0)
         s, _ = act(s, 'jr_bk_unsave', id='demand', amount=100_000_000)
-        self.assertEqual((B(s)['balance'], B(s)['demand'], B(s)['terms'][0]['amount']), (400_000_000, 150_000_000, 300_000_000))
-        s, _ = act(s, 'jr_bk_withdraw', amount=400_000_000)
-        self.assertEqual((B(s)['balance'], s['journey']['wallet']), (0, 450_000_000))
+        self.assertEqual((B(s)['balance'], B(s)['demand'], B(s)['terms'][0]['amount']), (690_000_000, 150_000_000, bk.TERM_MAX))
+        s, _ = act(s, 'jr_bk_withdraw', amount=690_000_000)
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), (0, 740_000_000))
         validate_state(copy.deepcopy(s))
         with self.assertRaisesRegex(GameError, 'tối đa 1.000.000.000 xu'):
             act(s, 'jr_bk_deposit', amount=10**9 + 1)
         with self.assertRaisesRegex(GameError, 'ít nhất 1 xu'):
             act(s, 'jr_bk_deposit', amount=0)
-        self.assertEqual(public_state(s)['journey']['bank']['rules']['tx_max'], 10**9)
+        rules = public_state(s)['journey']['bank']['rules']
+        self.assertEqual((rules['tx_max'], rules['term_max']), (10**9, 10**7))
 
     def test_big_moves_stop_at_what_the_save_can_hold(self):
         s = opened(wallet=10**9)
@@ -142,8 +146,8 @@ class Account(unittest.TestCase):
             act(s, 'jr_bk_withdraw', amount=200_000_000)
         with self.assertRaisesRegex(GameError, 'Tài khoản chỉ nhận thêm'):
             act(s, 'jr_bk_deposit', amount=1)
-        s, _ = act(s, 'jr_bk_save', amount=10**9, term=7)
-        B(s)['balance'] = 1
+        s, _ = act(s, 'jr_bk_save', amount=bk.TERM_MAX, term=7)
+        B(s)['balance'] = bk.BAL_MAX - 1
         tid = B(s)['terms'][0]['id']
         with self.assertRaisesRegex(GameError, 'Tài khoản chỉ nhận thêm'):
             act(s, 'jr_bk_unsave', id=tid, confirm=True)
