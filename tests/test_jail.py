@@ -232,7 +232,7 @@ class FalseReport(unittest.TestCase):
             r = b.cop(p['id'])
         self.assertEqual(r['cop'], 'fair')
         self.assertNotIn('jail', b.j.state['journey'])
-        q = b.post(2, 5)
+        q = b.post(4, 5)   # one star off: only that may stay unproven (owner 22/10, review_police SURE_GAP)
         with mock.patch.object(R, 'CONFIRM_PCT', 0), mock.patch.object(R, 'jail_roll', lambda post: True):
             r = b.cop(q['id'])
         self.assertEqual(r['cop'], 'unproven')

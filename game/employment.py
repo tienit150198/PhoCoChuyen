@@ -388,7 +388,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     need(required(career), 'Nghề này tự mở tiệm, không cần xin việc.')
     if name in ('job_apply', 'job_quick', 'job_backdoor', 'job_accept'):
         from . import promotion as pm
-        need(not pm.banned(s, career), 'Bạn đã bị khai trừ khỏi ngành nghề chính quyền: nơi này không tuyển lại.', 'gov_banned')
+        need(not pm.banned(s, career), 'Bạn đang chịu kỷ luật khai trừ khỏi ngành nghề chính quyền: nơi này chưa tuyển lại. '
+             + pm.redeem_text(s), 'gov_banned')   # owner 22/10: the way back (promotion.redeem_close)
         why = entry_block(s, career)   # 🛃 Hải quan: chapters, the police grade, the service record (game/gov_rules.py)
         need(why is None, why or '', 'entry_rules')
     if name == 'job_apply':
@@ -936,6 +937,9 @@ def public(c: dict, career: str, s: dict | None = None) -> dict:
         rows = entry_rows(s, career)
         if rows is not None:
             job['entry'] = rows   # 🛃 what applying asks, each met or not (shown before the postings)
+        from . import promotion
+        if promotion.banned(s, career):   # ⚖️ owner 22/10: the gov_ban and the good days still to go (Xin việc screen)
+            job['gov_ban'] = dict(promotion.redeem_view(s), text=promotion.redeem_text(s))
     ex = exam(career)
     app = job.get('application')
     sheet = app.get('exam') if isinstance(app, dict) else None

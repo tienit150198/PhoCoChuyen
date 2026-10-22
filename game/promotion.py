@@ -337,13 +337,77 @@ def discipline(s: dict, c: dict, career: str, grades: int, days: int, code: str,
     return f'⚖️ Kỷ luật: {why[:1].lower() + why[1:]}. {line}'
 
 
-GOV = ('police', 'customs')   # careers of the state (owner 11/10, 14/10: an expelled officer may never join any of them again)
+GOV = ('police', 'customs')   # careers of the state (owner 11/10, 14/10: an expelled officer may not join any of them; 22/10: until redeem_close lifts it)
 BAN_KEY = 'gov_ban'
 
 
 def banned(s: dict, career: str) -> bool:
     b = (s.get('journey') or {}).get(BAN_KEY)
     return career in GOV and isinstance(b, dict)
+
+
+# ⚖️ Xóa kỷ luật khai trừ (owner 22/10, player feedback #477: "có cách để làm việc tốt rồi làm đc ngành nhà nước lại"):
+# while banned, each day closed in a career outside the state that promotion.on_close books as a good day (worked, ≥2
+# jobs, today's ★ ≥3.5 or the career's own measure; not abandoned) and not in the trại tạm giữ at the close counts one.
+# REDEEM_DAYS of them lift the ban (gov_ban removed: police and customs may hire again, from the first grade). Every ban
+# lifted before doubles the days of the next one (15 → 30 → 60, REDEEM_MAX). A ban in a save from before starts at 0.
+# The count lives in its own journey key, not in gov_ban: builds up to 2.5.2.x validate that dict's keys exactly.
+REDO_KEY = 'gov_redo'   # {v: 1, n: good days counted, r: bans lifted before, b: the t of the ban n counts for}
+REDEEM_DAYS = 15
+REDEEM_MAX = 60
+REDO_KEYS = frozenset(('v', 'n', 'r', 'b'))
+
+
+def redeem_need(r: int) -> int:
+    return min(REDEEM_MAX, REDEEM_DAYS << min(max(0, r), 3))
+
+
+def redeem_view(s: dict) -> dict | None:
+    """While banned: {n, need, left} (good days counted, needed, still to go); None when there is no ban."""
+    j = s.get('journey') or {}
+    b = j.get(BAN_KEY)
+    if not isinstance(b, dict):
+        return None
+    x = j.get(REDO_KEY) if isinstance(j.get(REDO_KEY), dict) else {}
+    need = redeem_need(int(x.get('r') or 0))
+    n = min(need, int(x.get('n') or 0)) if x.get('b') == b.get('t') else 0
+    return dict(n=n, need=need, left=need - n)
+
+
+def redeem_text(s: dict) -> str:
+    """How the ban is lifted, for the refusal and the Xin việc screen ('' without a ban)."""
+    v = redeem_view(s)
+    if not v:
+        return ''
+    return (f'Còn {v["left"]} ngày làm việc tốt nữa ({v["n"]}/{v["need"]}) ở nghề ngoài nhà nước là được xóa kỷ luật, '
+            f'xin vào lại từ cấp đầu. Ngày tốt: xong từ 2 việc, sao khách trung bình từ 3,5, không bỏ ca, không bị tạm giữ.')
+
+
+def redeem_close(s: dict, c: dict, career: str, summary: dict) -> list[str]:
+    """end_day, after after_close: a good day outside the state counts towards lifting the ban; the last one lifts it."""
+    j = s.get('journey')
+    b = j.get(BAN_KEY) if isinstance(j, dict) else None
+    if not isinstance(b, dict) or career in GOV or summary.get('abandon'):
+        return []
+    if not isinstance(summary.get('promo'), dict) or summary['promo'].get('good') is not True:
+        return []
+    from . import jail
+    if jail.active(j):
+        return []
+    t = int(b.get('t') or 0)
+    x = j.get(REDO_KEY)
+    if not isinstance(x, dict):
+        x = j[REDO_KEY] = dict(v=1, n=0, r=0, b=t)
+    elif x['b'] != t:   # a new ban since this count: from 0
+        x.update(n=0, b=t)
+    need = redeem_need(x['r'])
+    x['n'] = min(need, x['n'] + 1)
+    if x['n'] < need:
+        return [f'⚖️ Hồ sơ hạnh kiểm: {x["n"]}/{need} ngày làm việc tốt. Đủ {need} ngày là được xóa kỷ luật khai trừ.']
+    del j[BAN_KEY]
+    x.update(n=0, r=min(99, x['r'] + 1), b=0)
+    return [f'🕊️ Xóa kỷ luật khai trừ: {need} ngày làm việc tốt, hồ sơ hạnh kiểm tốt. Bạn được xin việc lại Công an, '
+            f'Hải quan (bắt đầu từ cấp đầu). Lần khai trừ sau sẽ cần {redeem_need(x["r"])} ngày.']
 
 
 def expel_due(rec: dict | None) -> bool:
@@ -372,7 +436,7 @@ def after_close(s: dict, c: dict, career: str) -> list[str]:
     e['out']['t'] = t
     j = s['journey']
     j[BAN_KEY] = dict(v=1, t=t, d=int(j.get('life_day') or 1), c=str(e['out']['c'])[:40])
-    lines = [o.get('expel_line') or '🚨 Quyết định khai trừ khỏi lực lượng Công an. Không được tuyển lại vào ngành.']
+    lines = [o.get('expel_line') or '🚨 Quyết định khai trừ khỏi lực lượng Công an. Không được tuyển lại vào ngành cho đến khi được xóa kỷ luật.']
     from . import jail
     jd = int(o.get('expel_jail', 3))
     days = jail.arrest(j, 'cand', jd) if jd > 0 else 0
@@ -386,6 +450,8 @@ def after_close(s: dict, c: dict, career: str) -> list[str]:
     c['job'] = em.initial()
     c['job'].update(history=keep, backdoor=door)
     lines.append('🚧 Xí nghiệp Đường sắt Sông Mây đang cần người gác chắn: ghé Xin việc nếu muốn làm lại từ đầu.')
+    v = redeem_view(s)   # owner 22/10: the way back
+    lines.append(f'⚖️ Muốn quay lại ngành nhà nước: làm {v["need"]} ngày làm việc tốt ở nghề khác để được xóa kỷ luật.')
     return lines
 
 
@@ -1340,6 +1406,9 @@ def validate(s: dict) -> None:
     if isinstance(j, dict) and BAN_KEY in j:
         e0 = _core()
         validate_ban(j, e0.need, e0.integer, e0.clean_text, 'Dữ liệu thăng tiến không hợp lệ.')
+    if isinstance(j, dict) and REDO_KEY in j:
+        e0 = _core()
+        validate_redo(j, e0.need, e0.integer, 'Dữ liệu thăng tiến không hợp lệ.')
     if isinstance(j, dict) and ORG.SVC_KEY in j:
         e0 = _core()
         ORG.validate_svc(j, e0.need, e0.integer, 'Dữ liệu hồ sơ công tác không hợp lệ.')
@@ -1455,3 +1524,13 @@ def validate_ban(j: dict, need, integer, txt, bad: str) -> None:
     integer(b['t'], 0, 10**11)
     integer(b['d'], 1, 10**6)
     txt(b['c'], 40)
+
+
+def validate_redo(j: dict, need, integer, bad: str) -> None:
+    x = j.get(REDO_KEY)
+    if x is None:
+        return
+    need(isinstance(x, dict) and set(x) == REDO_KEYS and x['v'] == 1, bad, 'invalid_save')
+    integer(x['r'], 0, 99)
+    integer(x['n'], 0, redeem_need(x['r']))
+    integer(x['b'], 0, 10**11)

@@ -563,7 +563,8 @@ def svc_add(s: dict, x: dict) -> None:
 # while serving on a state ladder, not suspended, CLEAR_RUN worked days in a row without a violation (x['clean']) and
 # ★ ≥ CLEAR_STARS, the officer pays a fine (CLEAR_FINE × the n-th clearing, from the 👛 wallet) and one violation leaves
 # the record (this career's first, else the career with the most). The good run starts again from 0. journey[SVC_KEY]
-# ['pd'] counts the clearings (the fine grows); a khai trừ (gov_ban) is never cleared: there is no ladder to serve on.
+# ['pd'] counts the clearings (the fine grows); a khai trừ (gov_ban) is not cleared here: there is no ladder to serve on
+# (owner 22/10: good days in another career lift it, promotion.redeem_close).
 CLEAR_RUN = 10
 CLEAR_STARS = 40
 CLEAR_FINE = 500_000
