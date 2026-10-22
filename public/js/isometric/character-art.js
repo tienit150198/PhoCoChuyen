@@ -196,9 +196,15 @@ export function paintWardrobeOverlay(c,options={},box,alignment={}){
  * sparkles then over it); seen from the back (nw, ne) they lie over the back. Inside the 120×160 stamp: every consumer
  * keeps its size and feet. */
 function paintStampWings(c,o,[tx,ty]){
-  const back=o.direction==='nw'||o.direction==='ne',[x,y]=[tx,ty+(back?6:22)],opts={s:back?.86:.9,gap:back?6:8,tall:back?1.1:1.3,spread:back?.5:.5,sparkle:false};
-  c.save();c.globalCompositeOperation='destination-over';drawWings(c,CANVAS,o.look.wg,x,y,{...opts,body:!back});c.restore();   // the glow always behind
-  if(back)drawWings(c,CANVAS,o.look.wg,x,y,{...opts,aura:false});
+  const back=o.direction==='nw'||o.direction==='ne',[x,y]=[tx,ty+(back?6:22)],opts={s:back?.86:.86,gap:back?6:8,tall:back?1.1:1.35,spread:back?.5:.42,sparkle:false};
+  const doc=globalThis.document,layer=doc?.createElement?.('canvas'),q=layer?.getContext?.('2d');
+  const paint=(k,o2)=>drawWings(k,CANVAS,o.look.wg,x,y,{...opts,...o2});
+  if(!q){c.save();c.globalCompositeOperation='destination-over';paint(c,{body:!back});c.restore();if(back)paint(c,{aura:false});wingSparkles(c,CANVAS,o.look.wg,x,y,{s:opts.s});return;}
+  // On a layer of the stamp's size, its sides faded out: a wing reaching past the stamp ends softly, never cut straight.
+  layer.width=WIDTH;layer.height=HEIGHT;paint(q,{body:!back});
+  const fade=()=>{q.save();q.globalCompositeOperation='destination-out';for(const [x0,x1] of [[0,10],[WIDTH,WIDTH-10]]){const g=q.createLinearGradient(x0,0,x1,0);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=g;q.fillRect(Math.min(x0,x1),0,10,HEIGHT);}q.restore();};
+  fade();c.save();c.globalCompositeOperation='destination-over';c.drawImage(layer,0,0);c.restore();   // facing us: behind the chibi (the glow always behind)
+  if(back){q.clearRect(0,0,WIDTH,HEIGHT);paint(q,{aura:false});fade();c.drawImage(layer,0,0);}   // seen from the back: over it
   wingSparkles(c,CANVAS,o.look.wg,x,y,{s:opts.s});
 }
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */

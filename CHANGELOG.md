@@ -1,3 +1,31 @@
+# 2.5.4 — 23/10/2026
+
+feat/pairs-wings (từ origin/main afb38304 = 2.5.3): 🤝 thêm 7 phụ kiện đôi + giá mới, 💞 quan hệ bạn bè, 🪽 cánh có hạng D → Huyền thoại (chủ game 22/10: "tính xem thêm cánh cho người dùng nhé, cánh sẽ buff cho người chơi khi đánh pet", "cánh này là làm đẹp cho người dùng nhé, với tăng tiền kiếm được nữa", "cho nâng nữa, nâng lên như thú đi", "mua thì mặc định D hoặc C ngẫu nhiên", "cho cánh đẹp tí, có cả mode cũ và mode mới đều hiển thị được nhé"). Schema 89 → 90 (chỉ thêm bảng friend_bonds, wing_worn). Save: khóa mới journey['wings'] (2.5.3 giữ nguyên, không đọc). Có gì mới 2.5.4.
+
+## 🤝 Phụ kiện đôi
+- Giá tăng 50% (chủ game 22/10 "giá như này rẻ quá, tăng nhẹ tí nữa"): Chí cốt 220 → 330, Bạn thân 175 → 265, Tri kỉ 130 → 200 xu. Lý do ghi trong docstring game/friend_charms_content.py: giá cũ chỉ bằng nửa ngày công người chơi trung vị (≈ 170 xu/ngày đo 21/10, ≈ 250 với 📈 thu nhập tăng thêm), rẻ hơn cái mũ len; nay xếp ba bậc theo quan hệ mở được: 165–220 xu (khoảng một ngày), 265–330 (ngày rưỡi), 440–570 (hai ngày công, ngang nhẫn vàng 24K). Một cặp mua một lần cho hai người.
+- 7 cặp mới, mỗi cặp một chỗ riêng trên nhân vật (vẽ ở v4/look.js paintPlayer / paintPairs, chibi 2.5D ở isometric/character-art.js): 🧶 Chỉ đỏ (vòng tay, 165 xu), ⭐ Đồng đội (huy hiệu ngực, 175), 🧸 Gấu bông (ngồi trên vai, 220), 🎈 Bay cao (bóng bay trái tim buộc cổ tay, 285), 🪭 Tri âm (quạt giấy cầm tay, 310), 💞 Nửa trái tim (dây chuyền, 440), 🟢 Kết nghĩa (ngọc bội đeo hông, 570). Giá sau chỉ số giá.
+- Mỗi cặp có `step` 1–3 (mức thân), dùng để mở quan hệ.
+
+## 💞 Quan hệ
+- 6 nhãn, không phân biệt giới: 💛 Bạn thân, 🤜 Cạ cứng (mọi cặp), 🔥 Chí cốt (cặp mức 2 trở lên hoặc Chí cốt), 💐 Tri kỉ (Tri kỉ, Nửa trái tim, Kết nghĩa), 🐉 Anh em kết nghĩa, 🌸 Chị em kết nghĩa (Nửa trái tim, Kết nghĩa). Mặc định 🤝 Bạn bè.
+- Mở khi hai bạn cùng có một cặp `paired` hợp nhãn. Một người hỏi (charm_bond), người kia đồng ý (charm_bond_answer); cả hai cùng hỏi một nhãn là thành luôn. Mỗi hai người một nhãn, đổi được (nhãn cũ giữ tới khi bạn kia đồng ý nhãn mới), một bên bỏ về Bạn bè được (charm_bond_off). Hủy kết bạn hoặc chặn thì xóa luôn.
+- Hiện ở: danh sách bạn bè (marriage.js), "Đang có" ở Tiệm phụ kiện và thẻ Phụ kiện đôi (charms.js, nút đặt / đổi / bỏ, lời mời đang chờ), thẻ người chơi trên phố cũ (walk.js) và bản đồ 2.5D (isometric-social.js, live/town_social.py, live/street.py `rel`).
+- Bảng friend_bonds(lo, hi, label, charm, at, ask, ask_by, ask_charm, ask_at), schema 90.
+
+## 🪽 Cánh
+- game/wings.py, game/wings_content.py: 6 kiểu (chỉ là dáng): 🦋 bướm 8.800, 🧚 tiên 13.200, 🦇 dơi 16.500, 🪽 thiên thần 24.000, 🐉 rồng 36.000, 🔥 phượng hoàng 54.000 xu. 8 hạng D, C, B, A, S, SS, SSS, Huyền thoại; hạng quyết định mọi thứ.
+- Mua: server quay hạng D (70%) hoặc C (30%); `rid` của yêu cầu: gửi lại trả đúng cánh đã ra, không trừ tiền lần hai. Đôi đầu tiên tự đeo. Có màn mở hộp nhỏ.
+- Ghép: y hệt thú (game/pet_tiers.py): ba đôi bất kỳ, đôi chính giữ kiểu; phí theo hạng thấp nhất 500 / 2.000 / 10.000 / 50.000 / 300.000 / 5 triệu / 10 triệu; tỉ lệ 60 / 45 / 30 / 15 / 6 / 3% (+3% mỗi bậc chênh), ba SSS ra Huyền thoại 5%; trượt dưới S giữ cả ba, từ S mất hai đôi phụ. Không hiện tỉ lệ.
+- Tiền kiếm được: +1 / 2 / 3 / 4 / 5 / 6 / 8 / 10% tiền làm việc của chính mình (cùng gốc với phần của thú: việc xong, lương ngày, TT99, hoa hồng; không tính đơn nhân viên, quầy, quà), tối đa 5k / 10k / 20k / 40k / 80k / 150k / 300k / 500k xu một ngày, chỉ chế độ câu chuyện. Dòng riêng "🪽 Cánh …" (other_income), không tính vào gốc 🔥 x3, 📈 income_boost nhân dòng đó đúng một lần như mọi dòng thưởng: các khoản thưởng cộng nhau, không nhân chồng.
+- Đấu thú: +1 / 1 / 2 / 2 / 3 / 4 / 5 / 6% máu và sức đánh cho thú của người đeo (snapshot `wg`, game/pet_battle.py derive). Mô phỏng 3.000 trận mỗi mức: +6% thắng ~62% cùng hạng, thú hơn một hạng thắng 74–78%, và vẫn thắng ~58–66% trước thú kém một hạng đeo cánh Huyền thoại: cánh không bao giờ hơn một hạng thú. ENGINE 1 không đổi; trận có cánh lưu engine 2 (2.5.3 chỉ hiện kết quả đã lưu, không phát lại).
+- Hình: public/js/v4/wings-art.js, lông vũ / màng cánh nhiều lớp, gradient, viền tối, vỗ nhẹ ở cảnh nơi làm việc; từ C viền màu hạng, từ S hào quang, từ SS lấp lánh, SSS cầu vồng, Huyền thoại vàng rực. Vẽ ở cả giao diện cũ (gương tủ đồ, phố cũ, cảnh làm việc, chân dung) và 2.5D (chibi: sau lưng khi quay mặt, trên lưng khi quay đi; người khác thấy qua live/wings.py `wg`, bảng wing_worn schema 90). Đã build lại public/js/isometric/phaser-world.js.
+- Tiệm phụ kiện có tab 🪽 Cánh: thử trước gương, mua, tủ cánh có huy hiệu hạng, chọn ba đôi để ghép, bảng hạng được gì. Tủ đồ có thẻ cánh đang đeo.
+
+## Kiểm thử
+- tests/test_wings.py (mới), tests/test_wings_live.py (mới), tests/wings-art.mjs (mới); tests/test_friend_charms.py thêm Bonds (quan hệ), giá và danh sách mới; tests/friend-charms.mjs.
+- RollbackTo253: save có cánh qua 2.5.3 (git archive afb38304) validate / migrate / qua ngày rồi về lại nguyên vẹn; trận không cánh phát lại giống hệt 2.5.3.
+
 # 2.5.3.1 — 23/10/2026
 
 Hotfix: 🚗 Đại lý xe không nhập được Xe mui trần cổ (người chơi trên Cả phố: "xe mui trần 1 chiếc không nhập được", "10 chiếc cũng hong nhập dc"). game/inventory.py validate giữ trần 10.000 xu một đơn vị cho đơn nhập và lô hàng, thấp hơn giá hãng của mui trần (~12.936 xu, qua Bãi xe gần phố ~17.464 xu): đơn bị từ chối "Số lượng không hợp lệ.". Trần giờ là giá đơn vị cao nhất mà nhà cung cấp nào cũng có thể tính (không dưới 10.000). tests/test_career_car_dealer.py DearCars.

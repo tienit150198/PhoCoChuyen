@@ -101,7 +101,7 @@ function pairShelf(env,st){
 const WC=api=>api.content.journey?.wardrobe?.wings;
 const wingsOf=api=>api.state.journey?.wings||null;
 const tierName=r=>WING_TIERS[r]||'D';
-const badge=r=>`<i class="wg-tier" style="--wt:${WING_TIER_COLOR[r]||WING_TIER_COLOR[0]}">${esc(tierName(r))}</i>`;
+const badge=r=>`<i class="wg-tier${r===WING_TIERS.length-1?' top':''}" style="--wt:${WING_TIER_COLOR[r]||WING_TIER_COLOR[0]}" title="Hạng ${esc(tierName(r))}">${r===WING_TIERS.length-1?'🌟 HT':esc(tierName(r))}</i>`;   // 🌟 Huyền thoại: short on the badge
 const styleOf=(api,k)=>WC(api)?.styles?.find(x=>x.id===k)||null;
 const wName=(api,x)=>`${styleOf(api,x.k)?.name||'Cánh'} ${tierName(x.r)}`;
 function wingPerks(api,r){const c=WC(api);if(!c)return '';
@@ -113,7 +113,7 @@ function fusePanel(api,st,own){
   const to=low===top-1?top:Math.max(m.r,low+1),fee=c.fee[Math.min(low,c.fee.length-1)],lose=low>=c.lose_from;
   const why=xs.length<3?`Chọn thêm ${3-xs.length} đôi nữa.`:m.r>=top?'Cánh chính đã là huyền thoại.':'';
   return `<section class="jr-card wg-fuse" aria-live="polite"><div class="wg-fuse-row">${xs.map((x,i)=>`<span class="wg-fuse-slot${i?'':' main'}">${wingIcon(x,48)}${badge(x.r)}</span>`).join('<b aria-hidden="true">+</b>')}</div>
-    <p class="small">${why?esc(why):`Thành công: <b>${esc(styleOf(api,m.k)?.name||'Cánh')}</b> lên hạng <b>${esc(tierName(to))}</b>, hai đôi kia dùng hết. Trượt: ${lose?'⚠️ hai đôi kia sẽ mất, cánh chính ở lại':'ba đôi vẫn còn'}, mất phí.`}</p>
+    <p class="small">${why?esc(why):`Thành công: <b>${esc(styleOf(api,m.k)?.name||'Cánh')}</b> ${to>m.r?'lên':'giữ'} hạng <b>${esc(tierName(to))}</b>${to>m.r?'':' (ghép ba đôi cùng hạng mới lên được)'}, hai đôi kia dùng hết. Trượt: ${lose?'⚠️ hai đôi kia sẽ mất, cánh chính ở lại':'ba đôi vẫn còn'}, mất phí.`}</p>
     <div class="as-row-btns">${btn(`🧬 Ghép · ${fmt(fee)} xu`,'jrAsWingFuse',{},'primary small',busy||!!why)}${btn('Bỏ chọn','jrAsWingPick',{id:''},'ghost small')}</div></section>`;
 }
 function wingShelf(env,st){
