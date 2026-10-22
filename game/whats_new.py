@@ -32,6 +32,22 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.3", date="2026-10-22", items=(
+        dict(emoji='💰', text="ECON_INCOME"),
+        dict(emoji='🍱', text="Nghề mới Căn tin trường: bán đồ ăn sáng kịp trống vào lớp, giờ ra chơi đông nghẹt, chia cơm phần trưa cho các lớp. Mở cho mọi người."),
+        dict(emoji='✏️', text="Nghề mới Tiệm văn phòng phẩm: soạn đồ theo danh sách lớp, bọc vở dán nhãn, photo đề cương. Mọi món bày hết lên quầy, chạm là bỏ vào khay."),
+        dict(emoji='💍', text="Nghề mới Tiệm vàng Ngọc Mây: treo bảng giá vàng mỗi sáng, cân bán nữ trang, mua lại vàng cũ, kiểm định kim cương."),
+        dict(emoji='🚗', text="Nghề mới Đại lý xe Phố Mây: tư vấn bán xe máy, ô tô, trả góp qua ngân hàng, thu xe cũ, bảo dưỡng ô tô người chơi."),
+        dict(emoji='🤝', text="Phụ kiện đôi: mua một cặp Chí cốt 🏎️, Bạn thân 👜 hay Tri kỉ 💐, tặng một chiếc cho bạn, nhận là hai bạn cùng đeo, thấy tên nhau. Đeo bao nhiêu cặp cũng được."),
+        dict(emoji='🛍️', text="Tiệm phụ kiện Hạt Cườm mở cửa: phụ kiện giờ mua ở đây, Tủ đồ để phối đồ và đổi màu. Phụ kiện hiện rõ hơn trên nhân vật ở cả hai giao diện."),
+        dict(emoji='📦', text="Thiếu tiền nhập hàng? Quẹt thẻ tín dụng hoặc vay nhập hàng ngay lúc nhập, trả sau 7 ngày. Sống ở phố từ 7 ngày là được vay và mở thẻ."),
+        dict(emoji='🐷', text="Tiết kiệm có hạng: Phổ thông gửi tới 10 triệu, nâng lên Bạc, Vàng, 💎 Kim cương (10 tỷ) hay 👑 Thượng hạng (100 tỷ). Hạng càng cao lãi càng nhích thêm một chút."),
+        dict(emoji='👮', text="Lỡ bị khai trừ khỏi Công an, Hải quan? Làm tốt 15 ngày ở nghề khác là được xóa kỷ luật và xin lại từ cấp đầu."),
+        dict(emoji='🚔', text="Báo công an: đánh giá thấp hơn mức xứng đáng từ 2 sao, hay dọa bóc phốt, đòi hoàn tiền, giờ luôn được xử lý. Đánh giá cũ bị \"chưa đủ cơ sở\" báo lại được một lần."),
+        dict(emoji='🏍️', text="Biển số có 179 lên sàn đấu giá: Mây-0179, 61A-179.68, 36A-001.79, 51A-179.79, 29A-179.17."),
+        dict(emoji='🕶️', text="ECON_BM"),
+        dict(emoji='⌨️', text="Chạm vào ô nhập là hiện bàn phím ngay, không bị tắt giữa chừng. Dán \"1.000.000\" vào ô số xu ngân hàng là ra đúng số."),
+    )),
     dict(version="2.5.2", date="2026-10-22", items=(
         dict(emoji='📲', text="Máy quản lý từ xa ở Mây Mobile: khép ca các tiệm từ xa, kể cả lúc làm ở nước ngoài. Tiền ca tính y như khép ở tiệm.", go=dict(action='gadgets', data={'tab': 'tool'})),
         dict(emoji='♿', text="Bày trí phòng không cần kéo thả: chạm chọn món đồ rồi chạm chỗ muốn đặt, có nút dời từng ô, đọc được bằng trình đọc màn hình."),
