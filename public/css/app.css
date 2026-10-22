@@ -248,7 +248,7 @@ img,canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:pan-x pan-y}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 /* 22/10 (iPhone players: "không hiện bàn phím", "không dán được"): typing fields win over any user-select:none around them
- * and take a plain tap (app.js typingTap). */
+ * and take a plain tap (typing-tap.js). */
 input,textarea,select,[contenteditable]:not([contenteditable="false"]){-webkit-user-select:auto!important;user-select:auto!important;-webkit-touch-callout:default;touch-action:manipulation}
 img{touch-action:manipulation}
 [data-drag-card] img{-webkit-user-drag:auto}

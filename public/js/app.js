@@ -38,6 +38,7 @@ import {workplaceAway,awayFresh,awayToast} from './away-report.js';   // B4: �
 import {keepRow} from './keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox} from './qty-input.js';
+import {installTyping} from './typing-tap.js';
 import {shiftAllPlan,runAll} from './v4/select-all.js';   // "Tất cả" (F#290): Sổ tiệm › Cả đội vào ca
 import {accountSubmit,accountNudge,accountAction,accountBoot} from './v4/account.js';
 import {registerWorker,listenWorker} from './v4/push.js';
@@ -1945,17 +1946,10 @@ let fontsLate=0;document.fonts?.addEventListener?.('loadingdone',()=>{clearTimeo
  * request was still out (the minute money), it looked ready but its next tap was swallowed without a word. */
 const tap={el:null,at:0,pending:new Set()};
 document.addEventListener('touchstart',()=>{},{passive:true});  // iOS Safari shows :active only with a touch listener
-// 22/10 (iPhone players: "không hiện bàn phím", paste does nothing, the bank's typed amounts): a tapped typing field
-// could end up without focus, or focused with no keyboard (a tap then only offers Dán / Tự động điền). iOS opens the
-// keyboard only for a focus made inside the touch itself, so a tap that ends on a field without its keyboard focuses
-// it here. Phones only for the "focused, no keyboard" case (html.kb-open, shell.js); a field already typing is left alone.
-const typingField=t=>t?.closest?.('input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]):not([type=reset]):not([type=color]),textarea,[contenteditable]:not([contenteditable="false"])');
-document.addEventListener('touchend',e=>{
-  const f=typingField(e.target);if(!f||f.disabled||f.readOnly||e.touches?.length)return;
-  const root=document.documentElement;
-  if(document.activeElement!==f){try{f.focus({preventScroll:true});}catch{/* detached */}return;}
-  if(root.dataset.layout==='phone'&&!root.classList.contains('kb-open')){try{f.blur();f.focus({preventScroll:true});}catch{/* detached */}}
-},{passive:true,capture:true});
+// 22/10 (owner: "nhiều người than k hiển thị bàn phím của game đó"): a tap on a typing field focuses it inside the
+// touch (iOS opens the keyboard only then), without the blur() of 2.5.2.4; whole-number fields take a pasted
+// "1.000.000" (typing-tap.js).
+installTyping(document);
 document.addEventListener('click',e=>{
   const el=e.target.closest?.('button,[data-action],[data-command]');
   if(el?.classList.contains('is-pending')){e.preventDefault();e.stopImmediatePropagation();return;}

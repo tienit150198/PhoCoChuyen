@@ -8,6 +8,7 @@
  * Design: docs/superpowers/specs/2026-09-29-life-design.md */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
+import {typingNow} from '../typing-tap.js';
 import {portrait} from './look.js';
 import {needBars,snackStrip} from './needs.js';   // 🍚 No bụng · 😴 Tỉnh táo next to tinh thần
 import {chuaSection} from './chua.js';             // 🛕 Đi chùa (optional: an older server sends no state.chua)
@@ -123,6 +124,7 @@ function putOff(){
 function calm(){
   const api=E?.api,S=api?.state;if(!S)return false;
   if(['jrScene','stScene','confirmDialog','lfScene'].some(id=>document.getElementById(id)?.open))return false;
+  if(typingNow())return false;   // 22/10: not over a field being typed in (the phone keyboard closed); the next state asks again
   if(S.journey?.story&&!S.journey.intro)return false;
   if(quiet(S))return false;   // a brand-new player's first 3 customers: nothing pops up
   if(document.getElementById('sheet')?.open&&E.ui?.view!=='home')return false;
