@@ -1,5 +1,6 @@
 import {sitePresence} from '../public/js/v4/site-presence.js';
 import assert from 'node:assert/strict';
+import {withPairs,cleanPairs} from '../public/js/v4/look.js';   // 🤝 the walkers' pairs (isometric-town.js)
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
@@ -15,7 +16,7 @@ function harness(){
   const document={visibilityState:'visible',...target};
   const world={at:{x:6,y:6,direction:'se'},getPresence(){return this.at;},setRemotePlayers(peers){drawn.push(peers);}};
   const source=readFileSync(new URL('../public/js/isometric-town.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
-  const context=vm.createContext({sitePresence,live:socket,leisurePresence:leisure,publicActivity,lookOf:()=>({}),withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',setInterval(fn){timers.set(++id,fn);return id;},clearInterval(i){timers.delete(i);},Date:{now:()=>now}});
+  const context=vm.createContext({sitePresence,live:socket,leisurePresence:leisure,publicActivity,lookOf:()=>({}),withPairs,cleanPairs,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',setInterval(fn){timers.set(++id,fn);return id;},clearInterval(i){timers.delete(i);},Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
   const bridge=context.factory({world,api:{state:{}}},{transport:socket,leisure,document,events:target,now:()=>now,status:()=>{}}).start();
   return {bridge,leisure,socket,sent,drawn,document,world,emit:(t,f)=>listeners.get(t)?.(f),

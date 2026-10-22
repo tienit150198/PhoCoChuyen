@@ -14,7 +14,7 @@
  * parked beside the door and the player walks the last steps; the next walk starts by hopping back on. The small
  * "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it (each vehicle owned in turn, then walking; remembered here). */
 import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
-import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
+import {figure,paintPlayer,CANVAS,lookOf,myPairs} from './look.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
@@ -441,7 +441,7 @@ function backdrop(){
 }
 /** The player as one small bitmap, made again only when the look or the zoom changes. */
 function sprite(){
-  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S())]);   // 📱 the phone in hand · 👶 the baby in your arms
+  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S()),myPairs()]);   // 📱 the phone in hand · 👶 the baby in your arms · 🤝 the pairs worn
   if(W.sprite&&W.spriteKey===key)return W.sprite;
   const cv=W.sprite||document.createElement('canvas'),w=Math.ceil(110*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;
   const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,w/2,h-12*sc);

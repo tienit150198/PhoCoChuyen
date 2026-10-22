@@ -1292,10 +1292,10 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
 
 
 # ---------------------------------------------------------------- actions
-def _require(store, token: str) -> tuple:
+def _require(store, token: str, guest: str = 'Tạo tài khoản để kết hôn nhé.') -> tuple:
     sid, display = whoami(store, token)
     need(sid, 'Tải lại trang để bắt đầu phiên chơi.', 'session_missing', 401)
-    need(display, 'Tạo tài khoản để kết hôn nhé.', 'account_required', 403)
+    need(display, guest, 'account_required', 403)
     ensure_person(store, sid)
     return sid, display
 
@@ -1341,18 +1341,19 @@ def _act(store, token: str, op: str, d: dict) -> dict:
                     need(type(mine) is int and 0 <= mine <= 100, 'Tỉ lệ góp không hợp lệ.', 'bad_plan')
                     pct = mine if _side(c, sid) == 'a' else 100 - mine
         return dict(message='', quote=quote(d.get('plan'), pool, pct), quiet=True)
-    sid, display = _require(store, token)
+    # 🤝 Phụ kiện đôi (game/friend_charms.py): a guest is told what it is about, not marriage
+    sid, display = _require(store, token, *(('Tạo tài khoản để tặng phụ kiện đôi cho bạn bè nhé.',) if op.startswith('charm_') else ()))
     handler = ACTIONS.get(op) or _more_actions().get(op)
     need(handler, 'Không có thao tác này.', 'not_found', 404)
     return handler(store, sid, display, d)
 
 
 def _more_actions() -> dict:
-    from . import friends as fr, couple as cp, family as fam, jail, cand_ops, hq_ops, wedding_life as wlf
+    from . import friends as fr, couple as cp, family as fam, jail, cand_ops, hq_ops, wedding_life as wlf, friend_charms as fc
     # 🚔 jail_ask, jail_bail (game/jail.py); 👮 cand_* (game/cand_ops.py: the patrol at Chợ đen, the commanders);
     # 🛃 hq_* (game/hq_ops.py: the warehouse inspections of players' shops); 💍 wl_* (game/wedding_life.py: lễ rước dâu,
-    # đi chơi cùng nhau, sống chung)
-    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS, **cand_ops.ACTIONS, **hq_ops.ACTIONS, **wlf.ACTIONS}
+    # đi chơi cùng nhau, sống chung); 🤝 charm_* (game/friend_charms.py: phụ kiện đôi bạn bè, owner 22/10)
+    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS, **jail.ACTIONS, **cand_ops.ACTIONS, **hq_ops.ACTIONS, **wlf.ACTIONS, **fc.ACTIONS}
 
 
 def _ring_buy(store, sid: str, display: str, d: dict) -> dict:
@@ -1875,6 +1876,8 @@ def forget(store, token: str) -> None:
         cp.forget(db, sid)
         from . import family as fam
         fam.forget(db, sid)
+        from . import friend_charms as fc   # 🤝 phụ kiện đôi: the friend keeps a pair they shared
+        fc.forget(db, sid)
         db.execute('DELETE FROM marriage_effects WHERE sid=?', (sid,))
         db.execute('DELETE FROM marriage_people WHERE sid=?', (sid,))
         if db.execute('DELETE FROM news WHERE a=? OR b=?', (sid, sid)).rowcount:

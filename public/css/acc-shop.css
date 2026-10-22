@@ -1,0 +1,45 @@
+/* ==========================================================================
+   🛍️ Tiệm phụ kiện (v4/acc-shop.js) and 🤝 phụ kiện đôi (v4/charms.js: the profile's and the wardrobe's list).
+   Loaded with the shop or the wardrobe (journey.js), on top of wardrobe.css. Theme tokens only (app.css).
+   ========================================================================== */
+.as-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.as-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:4px;padding:0 6px;border-radius:var(--radius-pill);
+  background:var(--second);color:var(--surface);font-style:normal;font-size:.75rem;font-weight:800}
+.as-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.as-kind{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start;padding:14px}
+.as-kind-art{display:grid;place-items:center;width:96px;height:96px;border-radius:22px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.as-kind-art svg{display:block}
+.as-kind-text{display:grid;gap:4px;min-width:0}
+.as-kind-text h3{margin:0;font-size:1.05rem}
+.as-kind-text p{margin:0;line-height:1.45}
+.as-kind-text .btn{justify-self:start;margin-top:4px}
+.as-item{font-weight:700;color:var(--ink-2);font-size:.9rem}
+.as-hint{font-size:.8rem;color:var(--muted)}
+.as-chi_cot .as-kind-art{background:color-mix(in srgb,#e3352b 12%,var(--surface-2))}
+.as-ban_than .as-kind-art{background:color-mix(in srgb,#f58db1 16%,var(--surface-2))}
+.as-tri_ki .as-kind-art{background:color-mix(in srgb,#cf2a4b 10%,var(--surface-2))}
+.as-incoming,.as-box,.as-sent,.as-mine{display:grid;gap:8px;padding:12px 14px}
+.as-incoming{box-shadow:inset 0 0 0 2px var(--second)}
+.as-incoming h3,.as-box h3,.as-sent h3{margin:0;font-size:1rem}
+.as-list,.as-pairs{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.as-list li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.as-list li:last-child{border-bottom:0}
+.as-list .grow{display:grid;gap:4px;min-width:0;flex:1 1 160px}
+.as-list small{color:var(--muted);line-height:1.4}
+.as-pair-art{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:16px;background:var(--surface-2)}
+.as-pair .switch-row{min-height:60px;padding:6px 0}
+.as-pair .switch-row .grow{display:grid;gap:2px;min-width:0}
+.as-pair:not(.on) .as-pair-art{opacity:.6}
+.as-row-btns{display:flex;gap:6px;flex-wrap:wrap}
+.as-give{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.as-give select{flex:1 1 140px;min-height:40px;min-width:0}
+.as-mine-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.as-mine-foot{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.as-chips{display:flex;flex-wrap:wrap;gap:6px}
+.as-chip{padding:4px 10px;border-radius:var(--radius-pill);background:var(--surface-2);font-size:.833rem;font-weight:700}
+.as-for{display:flex;align-items:center;gap:10px;margin:0;padding:10px 14px;background:var(--second-soft)}
+html[data-layout="phone"] .as-shelf{grid-template-columns:1fr;gap:10px}
+html[data-layout="phone"] .as-kind{grid-template-columns:84px minmax(0,1fr);padding:12px}
+html[data-layout="phone"] .as-kind-art{width:84px;height:84px}
+html[data-layout="phone"] .as-kind-art svg{width:76px;height:76px}
+.as .wd-tab{display:inline-flex;flex-direction:row;white-space:nowrap}

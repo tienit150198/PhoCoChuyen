@@ -117,6 +117,8 @@ export function publicTownPlayers(peers:unknown,nav?:Navigation):RemotePlayer[]{
     const look:Record<string,any>={},source=peer.look&&typeof peer.look==='object'&&!Array.isArray(peer.look)?peer.look:{};
     for(const slot of ['hair','shade','skin','top','bottom','shoes','acc'])if(typeof source[slot]==='string')look[slot]=source[slot].slice(0,48);
     if(typeof source.uniform==='boolean')look.uniform=source.uniform;
+    // 🤝 phụ kiện đôi worn {kind: count} (live/charms.py); character-art.js keeps the kinds it knows
+    if(source.pr&&typeof source.pr==='object'&&!Array.isArray(source.pr)){const pr:Record<string,number>={};for(const [kind,n] of Object.entries(source.pr).slice(0,8))if(kind.length<=16&&Number.isInteger(n)&&(n as number)>0)pr[kind]=Math.min(99,n as number);if(Object.keys(pr).length)look.pr=pr;}
     if(source.tint&&typeof source.tint==='object'&&!Array.isArray(source.tint)){look.tint=Object.create(null);for(const [item,color] of Object.entries(source.tint))if(typeof color==='string'&&item.length<=48)look.tint[item]=color.slice(0,48);}
     seen.add(peer.pid);result.push({pid:peer.pid,name:typeof peer.name==='string'?peer.name.slice(0,64):'Người chơi',look,gender:peer.gender==='male'||peer.gender==='female'?peer.gender:'none',...at,direction:['se','sw','ne','nw'].includes(peer.direction)?peer.direction:'se'});
     const r=publicRide(peer.r);if(r)result[result.length-1].r=r;

@@ -62,6 +62,11 @@ SHOP = 'clothing'                 # Tiệm Áo Chỉ Mây
 SHOP_NAME = 'Tiệm Áo Chỉ Mây'
 STAFF_OFF = 20                    # % off for someone who has worked there
 LABEL = 'Mua sắm quần áo'         # wallet row: "Mua sắm quần áo · Áo len mùa đông"
+# 🛍️ Tiệm phụ kiện (owner 22/10 "chuyển chỗ mua linh kiện từ avatar ra 1 nơi khác"): the accessories (slot 'acc') are bought
+# there now (public/js/v4/acc-shop.js, the same jr_wd_buy), with 🤝 the friends' pairs (game/friend_charms.py); Tủ đồ keeps
+# wearing and arranging what you own.
+ACC_SHOP_NAME = 'Tiệm phụ kiện'
+ACC_SHOP_TITLE = 'Tiệm phụ kiện Hạt Cườm'
 KIND = 'life'                     # journey.HISTORY_KINDS (an existing kind: older builds still validate the row)
 
 
@@ -740,9 +745,10 @@ def locked(s: dict, iid: str) -> str | None:
     elif need == 'married' and not _married(s):
         return f'{it["name"]} dành cho người đã về chung một nhà.'
     if it['price'] and iid not in _box_owned(s):
+        acc = it['slot'] == 'acc'   # 🛍️ accessories are sold at Tiệm phụ kiện (owner 22/10)
         if need == OPEN_SHOP and not shop_open(s):
-            return f'{it["name"]} bán ở {SHOP_NAME}, tiệm mở cửa từ chương 3 của hành trình.'
-        return f'Bạn chưa có {it["name"]}. Mua ở tủ đồ trước nhé.'
+            return f'{it["name"]} bán ở {ACC_SHOP_NAME if acc else SHOP_NAME}, {"có hàng" if acc else "tiệm mở cửa"} từ chương 3 của hành trình.'
+        return f'Bạn chưa có {it["name"]}. Mua ở {ACC_SHOP_NAME if acc else "tủ đồ"} trước nhé.'
     return None
 
 
@@ -896,7 +902,8 @@ def action(s: dict, name: str, p: dict) -> dict:
         if it['need'] == 'shop':
             need(staff(s), f'{it["name"]} chỉ bán cho người làm ở {SHOP_NAME}. Vào làm ở đó một ngày là mua được.')
         if it['need'] == OPEN_SHOP:
-            need(shop_open(s), f'{it["name"]} bán ở {SHOP_NAME}, tiệm mở cửa từ chương 3 của hành trình.')
+            need(shop_open(s), f'{it["name"]} bán ở {ACC_SHOP_NAME}, có hàng từ chương 3 của hành trình.' if it['slot'] == 'acc'
+                 else f'{it["name"]} bán ở {SHOP_NAME}, tiệm mở cửa từ chương 3 của hành trình.')
         cost = price(s, iid)
         from . import bank as bk
         paid = bk.pay(s, cost, f'{LABEL} · {it["name"]}', method=p.get('pay', 'auto'), kind=KIND,
@@ -913,8 +920,9 @@ def action(s: dict, name: str, p: dict) -> dict:
 # ---------------------------------------------------------------- client
 def content() -> dict:
     """Static list for the client (bootstrap content, cached): names, prices and unlocks by id."""
-    from . import avatar
+    from . import avatar, friend_charms
     return dict(slots=[dict(id=k, name=SLOT_NAMES[k]) for k in SLOTS], items=[dict(x) for x in ITEMS],
                 defaults={k or 'none': v for k, v in DEFAULTS.items()}, staff_off=STAFF_OFF, shop=SHOP, shop_name=SHOP_NAME,
                 colors=[dict(x) for x in COLORS], tintable=list(TINTABLE), clothes=list(CLOTHES),
-                match={k: list(v) for k, v in MATCH.items()}, avatar_presets=avatar.presets())
+                match={k: list(v) for k, v in MATCH.items()}, avatar_presets=avatar.presets(),
+                acc_shop=dict(name=ACC_SHOP_NAME, title=ACC_SHOP_TITLE), pairs=friend_charms.catalog())   # 🛍️ 🤝 owner 22/10

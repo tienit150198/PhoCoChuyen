@@ -243,6 +243,7 @@ async function onClick(mr,data,el){
     case'homeGuests':case'nav:guests':S.dlg.close();env.act('homeGuests',{code:data.code});return;
     case'workvisit':S.dlg.close();env.act('workVisit',{code:data.code});return;
     case'workdiscover':S.dlg.close();env.act('workVisit',{scope:'public'});return;
+    case'charmgift':S.dlg.close();env.act('jrAccShop',{tab:'pair',code:data.code});return;   // 🤝 Tiệm phụ kiện, this friend picked (v4/acc-shop.js)
     case'tab':S.tab=data.tab;S.flash=null;S.recolor=null;render();S.dlg.scrollTop=0;
       if(data.tab==='love'&&(S.view?.home?.moments||[]).some(m=>m.new))post('moments_seen',{},{quiet:true});return;
     case'retry':load();return;
@@ -516,7 +517,7 @@ function friendsTab(){
   const incoming=F.incoming.length?`<section class="mr-card mr-accent"><h3>Lời mời kết bạn</h3><ul class="mr-list">${F.incoming.map(x=>`<li class="mr-li-wrap"><span><b>${esc(x.name)}</b> muốn kết bạn</span><span class="mr-actions tight">${btn('Chấp nhận','frespond',{id:x.id,answer:'accept'},'primary small')}${btn('Từ chối','frespond',{id:x.id,answer:'decline'},'cream small')}${btn('Chặn','frespond',{id:x.id,answer:'block'},'ghost small')}</span></li>`).join('')}</ul></section>`:'';
   const list=F.list.length?F.list.map(x=>`<article class="mr-card mr-friend"><div class="mr-person"><span class="mr-av" aria-hidden="true">${esc(([...x.name][0]||'').toUpperCase())}</span><div class="grow"><b>${esc(x.name)}${x.spouse?' <span class="tag">Người thương</span>':x.dating?' <span class="tag">Đang tìm hiểu 💕</span>':''}</b>
       <small>${x.career?`${esc(x.career.career)} · cấp ${x.career.level}`:'Mới vào phố'} · ${esc(STATUS[x.status]||'')}${x.close?` · 🤝 ${x.close}`:''}</small>${x.wed?`<small>${esc(x.wed)}</small>`:''}</div></div>
-      <div class="mr-actions tight">${btn('🏪 Ghé chỗ làm','workvisit',{code:x.code},'primary small')}${btn('🏡 Mời về nhà','homeGuests',{code:x.code},'small')}${single&&x.status==='single'?btn('💍 Cầu hôn','fpropose',{code:x.code},'primary small'):''}${x.spouse?'':btn('Hủy kết bạn','fremove',{code:x.code,name:x.name},'ghost small')+btn('Chặn','fblock',{code:x.code,name:x.name},'ghost small')}</div></article>`).join('')
+      <div class="mr-actions tight">${btn('🏪 Ghé chỗ làm','workvisit',{code:x.code},'primary small')}${btn('🏡 Mời về nhà','homeGuests',{code:x.code},'small')}${btn('🤝 Tặng phụ kiện đôi','charmgift',{code:x.code},'small')}${single&&x.status==='single'?btn('💍 Cầu hôn','fpropose',{code:x.code},'primary small'):''}${x.spouse?'':btn('Hủy kết bạn','fremove',{code:x.code,name:x.name},'ghost small')+btn('Chặn','fblock',{code:x.code,name:x.name},'ghost small')}</div></article>`).join('')
     :`<section class="mr-card"><p>Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.</p></section>`;
   const outgoing=F.outgoing.length?`<section class="mr-card"><h3>Đang chờ trả lời</h3><ul class="mr-list">${F.outgoing.map(x=>`<li><span>${esc(x.name)}</span>${btn('Rút lại','fcancel',{id:x.id},'ghost small')}</li>`).join('')}</ul></section>`:'';
   // 🚔 Friends in the trại tạm giữ who asked for bail (game/jail.py requests): a friend pays, they are out at once.

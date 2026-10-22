@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {lookOf} from '../public/js/v4/look.js';
+import {lookOf,withPairs,cleanPairs} from '../public/js/v4/look.js';
 import {createLeisurePresence,publicActivity} from '../public/js/isometric/leisure-presence.js';
 
 const source=readFileSync(new URL('../public/js/isometric-town.js',import.meta.url),'utf8')
@@ -18,7 +18,7 @@ function harness(){
   const state={journey:{gender:'female'},wardrobe:{look:{top:'ao_thun_kem'}}};
   const world={at:{x:6,y:6,direction:'se'},getPresence(){return this.at;},setRemotePlayers(peers){drawn.push(structuredClone(peers));}};
   const env={world,api:{state,live:{url:'/live'}}};
-  const context=vm.createContext({sitePresence,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',publicActivity,leisurePresence:leisure,live:socket,
+  const context=vm.createContext({sitePresence,lookOf,withPairs,cleanPairs,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',publicActivity,leisurePresence:leisure,live:socket,
     setInterval(fn){timers.set(++id,fn);return id;},clearInterval(key){timers.delete(key);},Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.create=createTownPresence;',context);
   const bridge=context.create(()=>env,{transport:socket,document:doc,events:target,leisure,now:()=>now,status(){}}).start();
