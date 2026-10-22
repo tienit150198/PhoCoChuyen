@@ -10,8 +10,8 @@
   and 👑 Thượng hạng 100 tỷ (same ×10 cap / ×10 price). Every bound of the bank is 1 tỷ (BAL_MAX, an older build's
   validator), so from Kim cương the sổ không kỳ hạn spills above BAL_MAX into j[KEY]['vip'] (shown as ONE sổ không kỳ
   hạn: deposits fill bank.demand first, withdrawals empty vip first; the same daily interest). The fee may be paid from
-  the savings (src 'sav': vip, then demand), as 2 tỷ fits no account. Each tier adds RATE_BONUS % of the interest
-  (relative: Bạc earns 1,02 × the rate) on the sổ không kỳ hạn, on every sổ có kỳ hạn paid out (at maturity, tái tục,
+  the savings (src 'sav': vip, then demand), as 2 tỷ fits no account. Each tier adds RATE_BONUS ‰ of the interest
+  (relative: Bạc earns 1,015 × the rate) on the sổ không kỳ hạn, on every sổ có kỳ hạn paid out (at maturity, tái tục,
   early close) and on vip; the passbook rates themselves (t['rate'], validated against TERM_RATE) do not change.
 * 💳 Hạn mức thẻ (owner 22/10, feedback #481 "cho phép thêm cái cho vay nhé ... hoặc thẻ tín dụng nhé"): the card's
   limit follows the same rule as before (income × CARD_CYCLE × the score factor) with a cap of CARD_LIMIT_MAX instead
@@ -59,8 +59,9 @@ CREDIT_DAYS = 7                 # owner 22/10: credit from 7 full life days
 # owner 22/10 (later): "thêm bậc trên 1 tỷ được": 💎 Kim cương 10 tỷ, 👑 Thượng hạng 100 tỷ, same ×10 / ×10 steps
 TIERS = ((10_000_000, 0), (100_000_000, 2_000_000), (1_000_000_000, 20_000_000), (10_000_000_000, 200_000_000),
          (100_000_000_000, 2_000_000_000))
-# owner 22/10: "lãi suất gửi nhiều thì tăng nhẹ nhé, tăng ít thôi": % ADDED to the interest per tier (relative, not points)
-RATE_BONUS = (0, 2, 4, 6, 8)
+# owner 22/10: "lãi suất gửi nhiều thì tăng nhẹ nhé, tăng ít thôi", then "8% cao quá, giảm nhẹ xíu đi": per mille ADDED to
+# the interest per tier (relative, not points): +0 / 1,5 / 3 / 4 / 5 %
+RATE_BONUS = (0, 15, 30, 40, 50)
 VIP_TIER = 3                    # 💎 from Kim cương the sổ không kỳ hạn goes past bank.BAL_MAX (into vip)
 VIP_MAX = TIERS[-1][0] - bk.BAL_MAX
 CARD_LIMIT_MAX = 5_000_000      # the card limit's cap (was bank.LIMIT_MAX = 5.000 for every card)
@@ -154,12 +155,18 @@ def saved(s: dict, b: dict) -> int:
 
 
 def bonus(s: dict) -> int:
+    """The tier's interest bonus, per mille."""
     return RATE_BONUS[tier(s)]
 
 
+def bonus_text(pm: int) -> str:
+    """15 -> '1,5%'."""
+    return f'{pm / 10:g}'.replace('.', ',') + '%'
+
+
 def boost(s: dict, gain: int) -> int:
-    """Interest `gain` with the tier's small bonus (RATE_BONUS %, rounded down)."""
-    return gain * (100 + bonus(s)) // 100
+    """Interest `gain` with the tier's small bonus (RATE_BONUS ‰, rounded down)."""
+    return gain * (1000 + bonus(s)) // 1000
 
 
 def save_room(s: dict, b: dict) -> int:
@@ -446,7 +453,7 @@ def apply(s: dict, b: dict, name: str, p: dict) -> dict:
         b['stats']['fees'] = min(10**9, b['stats']['fees'] + price)
         bk._inbox(b, day, 'sms', K.TIER_SMS.format(bank=K.BANK_NAME, name=K.TIER_NAMES[n], cap=bk._fmt(TIERS[n][0])))
         return dict(message=f'{K.TIER_EMOJI[n]} Đã lên hạng {K.TIER_NAMES[n]}: gửi tiết kiệm tới {bk._fmt(TIERS[n][0])} xu, '
-                            f'lãi tiết kiệm thêm {RATE_BONUS[n]}%. Phí {bk._fmt(price)} xu.')
+                            f'lãi tiết kiệm thêm {bonus_text(RATE_BONUS[n])}. Phí {bk._fmt(price)} xu.')
     if name == 'jr_bk_card_review':
         c = b['card']
         need(c, 'Bạn chưa có thẻ tín dụng.')
@@ -501,7 +508,7 @@ def public(s: dict, b: dict, inc: dict) -> dict:
     t = x['tier']
     have = saved(s, b)
     tiers = [dict(n=k, name=K.TIER_NAMES[k], emoji=K.TIER_EMOJI[k], cap=cp, price=pr, cost=tier_cost(s, k) if k > t else 0, own=k <= t,
-                  bonus=RATE_BONUS[k]) for k, (cp, pr) in enumerate(TIERS)]
+                  bonus_pm=RATE_BONUS[k]) for k, (cp, pr) in enumerate(TIERS)]
     offer = stock_offer(s, b, inc)
     loans = [dict(ln, owed=owed(ln), days_left=ln['due'] - day, late=ln['nfee'] > 0) for ln in x['loans']]
     c = b['card']
@@ -513,7 +520,7 @@ def public(s: dict, b: dict, inc: dict) -> dict:
         nxt = max(x['review'], c['open_day']) + REVIEW_DAYS
         review = dict(ok=nxt <= day, day=nxt)
     return dict(tier=t, name=K.TIER_NAMES[t], emoji=K.TIER_EMOJI[t], cap=TIERS[t][0], saved=have, room=max(0, TIERS[t][0] - have),
-                over=have > TIERS[t][0], tiers=tiers, bonus=RATE_BONUS[t], vip=x.get('vip', 0), young=young(s), stock=offer, stock_loans=loans, owed=sum(v['owed'] for v in loans),
+                over=have > TIERS[t][0], tiers=tiers, bonus_pm=RATE_BONUS[t], vip=x.get('vip', 0), young=young(s), stock=offer, stock_loans=loans, owed=sum(v['owed'] for v in loans),
                 card_limit=lim, review=review, rules=rules(),
                 cover=dict(card=dict(ok=bool(c) and why is None and avail > 0, available=avail, why=why or ('' if avail else 'Thẻ đã hết hạn mức.')),
                            loan=dict(ok=offer['ok'], room=offer['room'], why=offer['text'])))

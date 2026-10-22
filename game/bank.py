@@ -908,7 +908,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             _log(b, day, 'sav', 'Gửi tiết kiệm không kỳ hạn', amount)
             more = _plus().bonus(s)
             return dict(message=f'Đã gửi {_fmt(amount)} xu không kỳ hạn, lãi {year_text(DEMAND_BP * YEAR_DAYS)}'
-                                f'{f" (hạng của bạn cộng thêm {more}% tiền lãi)" if more else ""}, cộng mỗi ngày.')
+                                f'{f" (hạng của bạn cộng thêm {_plus().bonus_text(more)} tiền lãi)" if more else ""}, cộng mỗi ngày.')
         t = dict(id=_seq(b, 't'), amount=amount, term=term, rate=TERM_RATE[term], start=day, due=day + term, renew=renew)
         b['terms'].append(t)
         _log(b, day, 'sav', f'Mở sổ {K.TERMS[term].lower()}', amount)
@@ -1152,7 +1152,7 @@ def public(s: dict) -> dict:
                           next=nxt, overdue=sum(r['amount'] - r['paid'] for r in ln['rows'] if r['due'] <= day and r['paid'] < r['amount']),
                           payoff=_payoff(ln, day), place=_jr()._place(ln['career']) if ln['career'] else None))
     return dict(base, no=b['no'], balance=b['balance'], open_day=b['open_day'],
-                savings=dict(demand=b['demand'] + _plus().vip(s), total=_plus().saved(s, b), bonus=_plus().bonus(s),   # 💎🐷 22/10
+                savings=dict(demand=b['demand'] + _plus().vip(s), total=_plus().saved(s, b), bonus_pm=_plus().bonus(s),   # 💎🐷 22/10 (per mille)
                              daily_milli=_plus().boost(s, (b['demand'] + _plus().vip(s)) * DEMAND_BP) // 10, terms=terms),
                 card=card, card_offer=None if c else card_offer(s, b, inc),
                 loans=loans, loan_offers={k: loan_offer(s, b, k, inc) for k in K.LOANS},

@@ -193,12 +193,12 @@ class HighTiers(unittest.TestCase):
         self.assertEqual(wealth.sheet(s)[1], net)
         refused(self, s, 'jr_bk_tier', 'no_money', tier=4, src='sav', confirm=True)  # 2 tỷ: not there yet
         days(s)
-        # 1 tỷ × 0,05 % × 1,06 = 530.000 (spills into vip: the bank's pot is full), then 278,53 triệu × 0,053 % = 147.620
-        self.assertEqual((B(s)['demand'], P(s)['vip']), (bk.BAL_MAX, 278_000_000 + 530_000 + 147_620))
+        # 1 tỷ × 0,05 % × 1,04 = 520.000 (spills into vip: the bank's pot is full), then 278,52 triệu × 0,052 % = 144.830
+        self.assertEqual((B(s)['demand'], P(s)['vip']), (bk.BAL_MAX, 278_000_000 + 520_000 + 144_830))
         validate_state(s)
-        s, _ = act(s, 'jr_bk_unsave', id='demand', amount=500_000_000)              # 278,68 triệu from vip, then the rest
+        s, _ = act(s, 'jr_bk_unsave', id='demand', amount=500_000_000)              # 278,66 triệu from vip, then the rest
         self.assertEqual(P(s)['vip'], 0)
-        self.assertEqual(B(s)['demand'], bk.BAL_MAX - 500_000_000 + 278_677_620)
+        self.assertEqual(B(s)['demand'], bk.BAL_MAX - 500_000_000 + 278_664_830)
         validate_state(s)
 
     def test_vip_only_from_kim_cuong(self):
@@ -218,7 +218,7 @@ class HighTiers(unittest.TestCase):
         validate_state(s)
         s, r = act(s, 'jr_bk_tier', tier=4, src='sav', confirm=True)
         self.assertIn('Thượng hạng', r['message'])
-        self.assertIn('8%', r['message'])
+        self.assertIn('thêm 5%', r['message'])
         self.assertEqual((P(s)['tier'], P(s)['vip'], B(s)['demand']), (4, 10**9, bk.BAL_MAX))
         self.assertEqual([g['amt'] for g in B(s)['log'][-2:]], [-10**9, -10**9])   # one row holds at most 1 tỷ
         self.assertEqual(V(s)['plus']['cap'], 10**11)
@@ -243,13 +243,17 @@ class HighTiers(unittest.TestCase):
         base_d, base_t, _ = self.gains(0)
         self.assertEqual(base_d, 50_000)                                           # 100 triệu × 0,05 %/ngày
         self.assertGreater(base_t, 0)
-        for tier, pct in enumerate(bp.RATE_BONUS):
+        for tier, pm in enumerate(bp.RATE_BONUS):
             with self.subTest(tier=tier):
                 d, t, promised = self.gains(tier)
-                self.assertEqual(d, 50_000 * (100 + pct) // 100)
-                self.assertEqual(t, base_t * (100 + pct) // 100)
-                self.assertEqual(promised, bk.term_interest(10_000_000, bk.TERM_RATE[7], 7) * (100 + pct) // 100)
-        self.assertEqual(bp.RATE_BONUS, (0, 2, 4, 6, 8))
+                self.assertEqual(d, 50_000 * (1000 + pm) // 1000)
+                self.assertEqual(t, base_t * (1000 + pm) // 1000)
+                self.assertEqual(promised, bk.term_interest(10_000_000, bk.TERM_RATE[7], 7) * (1000 + pm) // 1000)
+        # owner 22/10: "8% cao quá, giảm nhẹ xíu đi": +0 / 1,5 / 3 / 4 / 5 % of the interest
+        self.assertEqual(bp.RATE_BONUS, (0, 15, 30, 40, 50))
+        self.assertEqual([self.gains(t)[0] for t in (1, 4)], [50_750, 52_500])
+        s, r = act(opened(wallet=3_000_000), 'jr_bk_tier', tier=1, src='cash', confirm=True)
+        self.assertIn('thêm 1,5%', r['message'])
 
     def test_early_close_gets_the_bonus_on_the_demand_rate(self):
         s = opened(wallet=10**9)
@@ -261,7 +265,7 @@ class HighTiers(unittest.TestCase):
         before = B(s)['balance']
         s, _ = act(s, 'jr_bk_unsave', id=B(s)['terms'][0]['id'], confirm=True)
         self.assertEqual(B(s)['balance'] - before, 10_000_000 + early)
-        self.assertEqual(early, 10_000_000 * bk.DEMAND_BP * 2 * 108 // 100 // 10000)
+        self.assertEqual(early, 10_000_000 * bk.DEMAND_BP * 2 * 1050 // 1000 // 10000)
 
 
 class QuayRestock(unittest.TestCase):
