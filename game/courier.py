@@ -101,7 +101,7 @@ def action(s, name, p):
     h['history'] = (h['history'] + [dict(seq=a['seq'], kind=a['kind'], day=j['life_day'], fee=x['fee'],
                                       deduction=deduction, bonus=amount, cost=x['cost'])])[-12:]
     h['active'] = None
-    more = f' (+{paid - amount} xu thu nhập +{income_boost.INCOME_PCT - 100}%)' if paid > amount else ''
+    more = f' (+{paid - amount} xu thu nhập tăng thêm)' if paid > amount else ''
     return dict(message=f'Hoàn tất {x["name"]}: thưởng {x["fee"]} − khấu trừ {deduction} = {amount} xu{more} vào ví. Phí giao từng đơn vẫn tính riêng trong nghề.')
 
 

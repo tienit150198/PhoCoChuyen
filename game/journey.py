@@ -745,9 +745,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         notes.append(f'Lương {pay} xu đã về ví của bạn.' if times <= 1 else
                      f'Lương kế toán x{times}{" ngày lễ" if times == aj.X5 else ""}: {pay} xu đã về ví của bạn.')
     notes.extend(ab.day_lines(job_note))   # 🌏 a day at the branch abroad: the city, a letter from home, coming home
-    # 📈 Thu nhập +50% (owner 22/10): the multipliers below count on the shift's base net × ib.INCOME_PCT / 100 (its own
+    # 📈 Thu nhập tăng thêm (owner 22/10): the multipliers below count on the shift's base net × ib.pct(s) / 100 (its own
     # 📈 rows are out of _base_net), so an x3 day pays 1.5 × 3 under x3.CAP, the plate and the tool 1.5 × their %.
-    base_net = ib.scale(_base_net(result, job_note), f'shift|{career}|{c["day"]}')
+    base_net = ib.scale(_base_net(result, job_note), f'shift|{career}|{c["day"]}', s)
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
     extra = 0
     if x3.on(career):

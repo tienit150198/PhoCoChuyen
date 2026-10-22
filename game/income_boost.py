@@ -1,25 +1,29 @@
-"""📈 Thu nhập +50 % for everyone.
+"""📈 Thu nhập tăng thêm, up to +50 %, the most for those with the least.
 
-Owner 22/10: "tăng 50% thu nhập tất cả mọi người nữa nhé", then "tăng cả tiền quầy,.. mọi thứ luôn mn kiếm được nhé".
-Everything a player EARNS from the game is worth INCOME_PCT % of what it paid before; prices, costs and every other
-flow stay as they were. One constant, a few hooks where earnings enter a player's pockets:
+Owner 22/10: "tăng 50% thu nhập tất cả mọi người nữa nhé", then "tăng cả tiền quầy,.. mọi thứ luôn mn kiếm được nhé",
+then "1.5 đó ưu tiên cho user thấp, cao thì sẽ giảm dần còn 20%" / "dưới 50m và trên 50m đi, hoặc là các mốc".
+Everything a player EARNS from the game is worth pct(s) % of what it paid before: INCOME_PCT (150) while the save's net
+worth (game/wealth.worth, the 💰 Tài phú board's figure) is under 50 triệu, then 140 / 130 / 120 past the BRACKETS'
+marks (50 triệu, 200 triệu, 1 tỷ), read at the moment of each earning. Prices, costs and every other flow stay as they
+were. A few hooks where earnings enter a player's pockets:
 
 * Finished jobs (engine.task_done → on_job): the share of what the job earned, a shop's margin (`bonus_base`, as the
   🔧 gear counts it) or else the whole pay; the "Hoàn thành:" row itself is not counted again.
 * Workplace funds (engine.money → on_money): a positive row of an EARN category (the jobs' other payments, tips,
   wages and salaries, story / quest / skill / event rewards, the team's and the manager's bonuses, and the % bonuses
   other modules book on an earning: 🔧 gear, 🧩 Phúc lợi, 🐾 pets, 💰 Tiền công, ⏱️ tăng ca, 💛 khách quen …) adds
-  INCOME_PCT − 100 % of it to ONE row a day of that workplace, LABEL, ref REF, category 'other_income' (no period tax,
+  pct(s) − 100 % of it to ONE row a day of that workplace, LABEL, ref REF, category 'other_income' (no period tax,
   never another row per job: the save's ledger stays small). Every bonus is computed by its own module on the
-  un-boosted figure and gets its own share here, so a day's earnings are × INCOME_PCT / 100 exactly, never twice.
+  un-boosted figure and gets its own share here, so each earning is × pct(s) / 100 exactly, never twice.
   Its rows are summed by day_total for the day's summary ('incomeboost') and kept out of the 🔥 x3 base net.
 * Staff orders (workplace_business._finish, rows booked directly): on_staff, the share of the order's positive margin
   and its 40 % bonus (not of the revenue: the goods' cost is not earned).
-* Quầy (quay_business.sale): take_percent, the owner's take on the margin, (100 + percent) × INCOME_PCT / 100 − 100,
+* Quầy (quay_business.sale): take_percent, the owner's take on the margin, (100 + percent) × pct / 100 − 100 (the
+  owner's pct, held once per counter catch-up by quay_business.chain_scope),
   exactly as owner 15/10's ×1.6 was built (staff sales, the owner's own sales and online ones; never a player visitor).
 * Contract settlements (career_scale_contracts, career_specialism_jobs): the share of the receipt's positive net.
 * The shift's wallet extras (journey._end_of_day): 🔥 x3, 🔨 Biển đẹp and 🧰 Đồ nghề độc bản count on the shift's base
-  net × INCOME_PCT / 100 (scale), under their own caps.
+  net × pct(s) / 100 (scale), under their own caps.
 * Wallet / bank earnings outside a fund (earned): a tenant's rent (game/housing.py), a delivery contract's bonus
   (game/courier.py), a 🧰 chest in the street (game/town_treasure.py).
 
@@ -38,8 +42,10 @@ import contextvars
 import hashlib
 import os
 
-INCOME_PCT = 150                 # owner 22/10: +50 % on everything earned
-LABEL = f'📈 Thu nhập +{INCOME_PCT - 100}%'
+INCOME_PCT = 150                 # owner 22/10: +50 % on everything earned, under the first mark
+BRACKETS = ((50_000_000, 150), (200_000_000, 140), (1_000_000_000, 130))   # net worth below the mark: that pct
+TOP_PCT = 120                    # from 1 tỷ: +20 % (owner 22/10 "giảm dần còn 20%")
+LABEL = '📈 Thu nhập tăng thêm'   # one row a day of a workplace, whatever bracket each earning was in
 REF = 'income-boost'
 CATEGORY = 'other_income'
 LOOK = 60                        # today's row is looked for among the last rows only
@@ -54,6 +60,7 @@ EARN = frozenset((
 ))
 
 _SKIP = contextvars.ContextVar('income_boost_skip', default=False)
+_HELD = contextvars.ContextVar('income_boost_held', default=None)   # (save, pct) of scope(): read once for a loop
 
 
 def off() -> bool:
@@ -70,33 +77,65 @@ def on(s=None) -> bool:
     return not off() and (s is None or _story(s))
 
 
-def part(amount: int, key: str = '') -> int:
-    """The extra on an earning of `amount` xu: amount × (INCOME_PCT − 100) / 100, its fraction rounded up or down by a
+def for_worth(net) -> int:
+    """The pct for a net worth in xu (None, no wallet: the first bracket)."""
+    if type(net) is not int:
+        return INCOME_PCT
+    for mark, pct_ in BRACKETS:
+        if net < mark:
+            return pct_
+    return TOP_PCT
+
+
+def pct(s=None) -> int:
+    """This save's pct now (its net worth, game/wealth.worth); no save: the one scope() holds, else INCOME_PCT."""
+    held = _HELD.get()
+    if s is None:
+        return INCOME_PCT if held is None else held[1]
+    if held is not None and held[0] is s:
+        return held[1]
+    from .wealth import worth
+    w = worth(s)
+    return for_worth(w[0] if w else None)
+
+
+@contextlib.contextmanager
+def scope(s):
+    """Hold the save's pct for a loop of earnings (a counter's catch-up books thousands of sales): read once."""
+    token = _HELD.set((s, pct(s)) if isinstance(s, dict) else None)
+    try:
+        yield
+    finally:
+        _HELD.reset(token)
+
+
+def part(amount: int, key: str = '', s=None) -> int:
+    """The extra on an earning of `amount` xu: amount × (pct(s) − 100) / 100, its fraction rounded up or down by a
     hash of `key` (deterministic for a retried command, fair on average, no state). 0 when off or not positive."""
     if off() or type(amount) is not int or amount <= 0:
         return 0
-    whole, frac = divmod(amount * (INCOME_PCT - 100), 100)
+    whole, frac = divmod(amount * (pct(s) - 100), 100)
     if frac and int(hashlib.sha256(f'ib|{key}|{amount}'.encode()).hexdigest()[:8], 16) % 100 < frac:
         whole += 1
     return whole
 
 
-def scale(amount: int, key: str = '') -> int:
+def scale(amount: int, key: str = '', s=None) -> int:
     """`amount` with the boost (a base a multiplier counts on, or an earning paid in place)."""
-    return amount + part(amount, key) if type(amount) is int and amount > 0 else amount
+    return amount + part(amount, key, s) if type(amount) is int and amount > 0 else amount
 
 
 def earned(s, amount: int, key: str = '') -> int:
     """An earning paid straight to the wallet or the bank (rent, a contract bonus, a chest): `amount` boosted for a story
     save while on."""
-    return scale(amount, key) if on(s) else amount
+    return scale(amount, key, s) if on(s) else amount
 
 
-def take_percent(percent: int) -> int:
-    """A quầy's profit bonus percent so that the owner's take, margin × (100 + percent) / 100, is × INCOME_PCT / 100."""
+def take_percent(percent: int, s=None) -> int:
+    """A quầy's profit bonus percent so that the owner's take, margin × (100 + percent) / 100, is × pct(s) / 100."""
     if off() or type(percent) is not int:
         return percent
-    return (100 + percent) * INCOME_PCT // 100 - 100
+    return (100 + percent) * pct(s) // 100 - 100
 
 
 @contextlib.contextmanager
@@ -136,7 +175,7 @@ def on_money(s: dict, c: dict, amount: int, reason: str, ref, category) -> int:
     from .operations import classify_money
     if classify_money(amount, reason, category) not in EARN:
         return 0
-    return book(c, part(amount, f'{ref}|{reason}|{c.get("day")}'))
+    return book(c, part(amount, f'{ref}|{reason}|{c.get("day")}', s))
 
 
 def on_job(s: dict, c: dict, base: int, ref) -> int:
@@ -144,24 +183,24 @@ def on_job(s: dict, c: dict, base: int, ref) -> int:
     bonus; else the whole pay). Its "Hoàn thành:" row itself is booked under skip()."""
     if not on(s) or _SKIP.get():
         return 0
-    return book(c, part(max(0, base), f'job|{ref}|{c.get("day")}'))
+    return book(c, part(max(0, base), f'job|{ref}|{c.get("day")}', s))
 
 
 def on_staff(s: dict, c: dict, base: int, ref: str) -> int:
     """A staff order's positive margin and its 40 % bonus (workplace_business._finish, after both are booked)."""
     if not on(s) or _SKIP.get():
         return 0
-    return book(c, part(max(0, base), f'staff|{ref}|{c.get("day")}'))
+    return book(c, part(max(0, base), f'staff|{ref}|{c.get("day")}', s))
 
 
 def settle_part(s: dict, net: int, ref: str) -> int:
     """A management / specialist contract's share of its positive net (booked by the caller as a scale_ row)."""
-    return part(max(0, net), f'settle|{ref}') if on(s) else 0
+    return part(max(0, net), f'settle|{ref}', s) if on(s) else 0
 
 
 def day_total(c: dict, day: int) -> int:
     """This module's rows of a workplace's day (journey._base_net keeps them out of the 🔥 x3 base: x3 counts on the
-    base × INCOME_PCT / 100 itself, never on these rows as well)."""
+    base × pct / 100 itself, never on these rows as well)."""
     rows = ((c.get('ops') or {}).get('finance') or {}).get('ledger') or ()
     return sum(r['amount'] for r in rows if isinstance(r, dict) and r.get('day') == day and r.get('ref') == REF
                and r.get('category') == CATEGORY and type(r.get('amount')) is int and r['amount'] > 0)

@@ -39,7 +39,8 @@ TIME_COSTS = ('wages', 'rent', 'power', 'environment', 'protection')   # billed 
 BONUS_PERCENT = 124
 STAFF_BONUS_PERCENT = 236
 # 📈 Owner 22/10 ("tăng 50% thu nhập … tăng cả tiền quầy"): every sale's percent goes through take(), the owner's take
-# × game/income_boost.INCOME_PCT / 100 (124 → 236, 236 → 404 while on); the estimate and the page's percents too.
+# × game/income_boost.pct / 100 (124 → 236, 236 → 404 at +50 %, the owner's wealth bracket: chain_scope holds it);
+# the estimate and the page's percents too.
 # 🏬 Chuỗi quầy (owner 18/10: "làm sao cho người giàu tốn tiền nhiều hơn… tăng càng nhiều thì phí nhiều đi", the gentle
 # ladder): an owner of more than N counters pays +P points of income tax on every counter's margin (the profit bonus is
 # counted after tax, so it shrinks with it), and above RENT_FREE counters each counter's rent grows × n / RENT_FREE.
@@ -72,8 +73,10 @@ def chain_of(s):
 def chain_scope(s):
     from .wealth_fee import START_TS   # from 20/10 (owner 19/10: announced first, then charged)
     token = _CHAIN.set(max(1, chain_of(s)) if time.time() >= START_TS else 1)
+    from .income_boost import scope   # 📈 the owner's bracket, read once for every sale of the catch-up
     try:
-        yield
+        with scope(s):
+            yield
     finally:
         _CHAIN.reset(token)
 
@@ -436,7 +439,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
     if owner is not None:   # 📺 ⏰ Giờ vàng riêng (game/ads.py): the owner's take ×1,5 more at the sale's own time
         from . import ads
         percent = ads.scale_take(owner, percent, at / 1000)
-    percent = take(percent)   # 📈 Thu nhập +50% (owner 22/10 "tăng cả tiền quầy"): the owner's take × 1.5, as 15/10's ×1.6
+    percent = take(percent, owner)   # 📈 Thu nhập tăng thêm (owner 22/10 "tăng cả tiền quầy"): the owner's take × pct / 100, as 15/10's ×1.6
     bonus = reward_margin(st, amount, costs, percent, owner)
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1

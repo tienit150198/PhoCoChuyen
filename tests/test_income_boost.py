@@ -1,5 +1,6 @@
-"""📈 Thu nhập +50 % (game/income_boost.py, owner 22/10: "tăng 50% thu nhập tất cả mọi người", "tăng cả tiền quầy,..
-mọi thứ luôn mn kiếm được nhé"): every earning × INCOME_PCT / 100, once; costs, refunds, transfers and money between
+"""📈 Thu nhập tăng thêm (game/income_boost.py, owner 22/10: "tăng 50% thu nhập tất cả mọi người", "tăng cả tiền quầy,..
+mọi thứ luôn mn kiếm được nhé", "ưu tiên cho user thấp, cao thì sẽ giảm dần còn 20%"): every earning × pct / 100, once
+(150 under 50 triệu of net worth, 140 / 130 / 120 past 50 triệu / 200 triệu / 1 tỷ); costs, refunds, transfers and money between
 players unchanged. tests/__init__.py turns it off for the older tests; this file turns it on."""
 import copy
 import json
@@ -47,7 +48,24 @@ class Arithmetic(unittest.TestCase):
         got = sum(ib.part(1, f'k{i}') for i in range(2000))
         self.assertTrue(900 < got < 1100, got)               # 0.5 xu on average
         self.assertEqual((ib.take_percent(124), ib.take_percent(236), ib.take_percent(0)), (236, 404, 50))
-        self.assertEqual(ib.LABEL, '📈 Thu nhập +50%')
+        self.assertEqual(ib.LABEL, '📈 Thu nhập tăng thêm')
+
+    @mock.patch.dict(os.environ, ON)
+    def test_the_brackets_by_net_worth(self):
+        self.assertEqual([ib.for_worth(n) for n in (None, -5, 0, 49_999_999, 50_000_000, 199_999_999, 200_000_000,
+                                                    999_999_999, 10**9, 10**11)],
+                         [150, 150, 150, 150, 140, 140, 130, 130, 120, 120])
+        s = story()
+        self.assertEqual(ib.pct(s), 150)
+        s['journey']['wallet'] = 60_000_000
+        self.assertEqual(ib.pct(s), 140)
+        s['journey']['wallet'] = 2 * 10**9
+        self.assertEqual(ib.pct(s), 120)
+        self.assertEqual((ib.part(100, s=s), ib.scale(100, s=s), ib.take_percent(124, s)), (20, 120, 168))
+        with ib.scope(s):   # held once for a loop: no save given reads it too
+            s['journey']['wallet'] = 60_000_000
+            self.assertEqual((ib.pct(), ib.pct(s), ib.pct(story())), (120, 120, 150))
+        self.assertEqual((ib.pct(), ib.pct(s)), (150, 140))
 
     @mock.patch.dict(os.environ, OFF)
     def test_the_switch(self):
@@ -104,6 +122,14 @@ class Fund(unittest.TestCase):
         E.money(s, c, 10, 'Hoàn thành: b', 'b')
         self.assertEqual([r['amount'] for r in rows(c)], [5, 5])
         self.assertEqual(ib.day_total(c, c['day']), 5)
+
+    def test_a_rich_save_gets_less(self):
+        s, c = opened()
+        s['journey']['wallet'] = 300_000_000   # 200 triệu – 1 tỷ: +30 %
+        E.money(s, c, 100, 'Hoàn thành: a', 'a')
+        s['journey']['wallet'] = 2 * 10**9     # from 1 tỷ: +20 %, same day's row
+        E.money(s, c, 100, 'Hoàn thành: b', 'b')
+        self.assertEqual([r['amount'] for r in rows(c)], [50])
 
 
 @mock.patch.dict(os.environ, ON)
@@ -181,6 +207,15 @@ class Quay(unittest.TestCase):
         self.assertEqual((view_off['bonus_percent'], view_on['bonus_percent']), (124, 236))
         self.assertEqual((view_off['staff_bonus_percent'], view_on['staff_bonus_percent']), (236, 404))
 
+    def test_a_rich_owner_takes_plus_20(self):
+        from tests.test_quay_business import fixture
+        s, st = fixture(staff=False)
+        qb.settle(s, now=1000)
+        s['journey']['wallet'] = 2 * 10**9
+        with qb.chain_scope(s):
+            self.assertEqual((qb.take(124), qb.public(st)['bonus_percent']), (168, 168))
+        self.assertEqual(qb.take(124, s), 168)
+
 
 @mock.patch.dict(os.environ, ON)
 class Wallet(unittest.TestCase):
@@ -189,7 +224,10 @@ class Wallet(unittest.TestCase):
         s = story()
         self.assertEqual(housing._earned(s, 300, 'k'), 450)
         self.assertEqual(housing._earned(new_state(), 300, 'k'), 300)
-        self.assertEqual(town_treasure.reward(), 15000)
+        self.assertEqual((town_treasure.reward(), town_treasure.reward(s)), (15000, 15000))
+        s['journey']['wallet'] = 2 * 10**9
+        self.assertEqual((housing._earned(s, 300, 'k'), town_treasure.reward(s)), (360, 12000))
+        s['journey']['wallet'] = 0
         with mock.patch.dict(os.environ, OFF):
             self.assertEqual((housing._earned(s, 300, 'k'), town_treasure.reward()), (300, 10000))
 

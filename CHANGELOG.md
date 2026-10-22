@@ -1,6 +1,6 @@
 # 2.5.3 — 22/10/2026
 
-Gộp feat/careers-253 (💍 jewelry, 🚗 car_dealer, 🍱 canteen, ✏️ stationery: 72 nghề), feat/friend-accessories (🤝 phụ kiện đôi + 🛍️ Tiệm phụ kiện Hạt Cườm, schema 86 friend_charms), feat/bank-loan-tiers (💳 vay / thẻ khi nhập hàng thiếu tiền, 🐷 hạng tiết kiệm tới 100 tỷ, lãi +0 / 1,5 / 3 / 4 / 5 %), feat/gov-redeem-cop-179 (👮 xóa kỷ luật sau 15 ngày tốt, 🚔 báo công an sửa, biển 179), feat/econ-1022 (📈 thu nhập ×1,5 game/income_boost.py, Chợ đen +3 điểm thắng), fix/ios-keyboard (public/js/typing-tap.js, popup chờ khi đang gõ), feat/archive-pack (🗄️ schema 89 archive_packed + scripts/archive_pack.py). Schema 84 → 89 (85, 87, 88 không dùng). Có gì mới 2.5.3.
+Gộp feat/careers-253 (💍 jewelry, 🚗 car_dealer, 🍱 canteen, ✏️ stationery: 72 nghề), feat/friend-accessories (🤝 phụ kiện đôi + 🛍️ Tiệm phụ kiện Hạt Cườm, schema 86 friend_charms), feat/bank-loan-tiers (💳 vay / thẻ khi nhập hàng thiếu tiền, 🐷 hạng tiết kiệm tới 100 tỷ, lãi +0 / 1,5 / 3 / 4 / 5 %), feat/gov-redeem-cop-179 (👮 xóa kỷ luật sau 15 ngày tốt, 🚔 báo công an sửa, biển 179), feat/econ-1022 (📈 thu nhập tăng thêm theo tài sản game/income_boost.py: dưới 50 triệu +50%, 50–200 triệu +40%, 200 triệu–1 tỷ +30%, từ 1 tỷ +20%, Chợ đen +3 điểm thắng), fix/ios-keyboard (public/js/typing-tap.js, popup chờ khi đang gõ), feat/archive-pack (🗄️ schema 89 archive_packed + scripts/archive_pack.py). Schema 84 → 89 (85, 87, 88 không dùng). Có gì mới 2.5.3.
 
 ## feat/careers-253
 

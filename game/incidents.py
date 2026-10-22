@@ -295,7 +295,7 @@ def _pay(s: dict, c: dict, career: str, lines: list, title: str, ref: str) -> li
             continue
         if where == 'wallet' and story:
             if amount > 0 and cat in ib.EARN:   # 📈 Thu nhập +50% (owner 22/10), as the fund's rows get in engine.money
-                amount = ib.scale(amount, f'{ref}|{title}')
+                amount = ib.scale(amount, f'{ref}|{title}', s)
             jr._wallet(j, amount, 'incident', title, career)
             done.append(dict(where='wallet', amount=amount, cat=cat))
             continue

@@ -2,7 +2,7 @@
  * Release notes for the "Có gì mới" card (whatsnew.js), newest first. Loaded only after the game is up. */
 export default [
  {"version":"2.5.3","date":"2026-10-22","items":[
-  {"emoji":"💰","text":"Thu nhập tăng 50% cho mọi người: tiền làm nghề, lương, doanh thu tiệm, tiền quầy, tiền nhà cho thuê… đều nhiều hơn."},
+  {"emoji":"💰","text":"Thu nhập tăng thêm: dưới 50 triệu +50%, tới 200 triệu +40%, tới 1 tỷ +30%, từ 1 tỷ +20%. Tiền nghề, lương, quầy, nhà thuê…"},
   {"emoji":"🍱","text":"Nghề mới Căn tin trường: đồ ăn sáng kịp trống vào lớp, giờ ra chơi đông nghẹt, cơm phần trưa. Mở cho mọi người."},
   {"emoji":"✏️","text":"Nghề mới Tiệm văn phòng phẩm: soạn đồ theo danh sách lớp, bọc vở dán nhãn, photo. Hàng bày hết lên quầy, chạm là chọn."},
   {"emoji":"💍","text":"Nghề mới Tiệm vàng Ngọc Mây: treo bảng giá vàng mỗi sáng, cân bán nữ trang, mua lại vàng cũ, kiểm định kim cương."},
