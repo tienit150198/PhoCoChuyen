@@ -30,6 +30,7 @@ from . import situations as sit
 from . import inventory as inv
 from . import auto_stock  # 🤖 Tự nhận hàng (Bộ đếm kho · Bậc 5): crates at the door counted and shelved
 from . import pay_boost  # 💰 Tiền công +%, 🎉 Tuần lễ tay nghề, 🧰 Bộ đồ nghề / 📒 Sổ khách quen / ⏩ Làm nhanh
+from . import income_boost as ib  # 📈 Thu nhập +50% (owner 22/10): every earning of a fund, one row a day
 from . import career_gadgets as cgad  # 🧰 Phụ kiện nghề (paid accessories: 🧊 Tủ trữ sữa riêng, 📏 Máy kiểm tra độ tuổi)
 from . import auto_order as ao  # 🔁 Tự đặt hàng (paid unlock): the stock room orders again when an item runs low
 from . import employment as emp
@@ -335,6 +336,7 @@ def money(s:dict,c:dict,amount:int,reason:str,ref:str|None=None,category:str|Non
     c["earnings"]+=max(amount,0)
     c["costs"]+=max(-amount,0)
     log(s,c,"money",f'{"+" if amount>=0 else ""}{amount} xu · {reason}',ref=ref)
+    if amount>0:ib.on_money(s,c,amount,reason,ref,category)  # 📈 an earning's +50% (owner 22/10), into today's row
 
 MORE_ACTIVE=4  # at most this many customers in hand (unfinished, deferred included)
 MORE_DAY=12  # at most this many customers dealt per day
@@ -890,6 +892,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if tile:summary["tile"]=tile
         paid=pay_boost.day_total(c,oldday)  # 💰 the day's Tiền công +% rows (journey: not in the x3 net either)
         if paid:summary["payboost"]=paid
+        boosted=ib.day_total(c,oldday)  # 📈 the day's Thu nhập +50% rows (journey: the x3 net counts the base × 1.5 itself)
+        if boosted:summary["incomeboost"]=boosted
         # The day's figures once everything has closed: the salary and the career's own closing are in, and
         # owner transfers are not (journey._transfer keeps them out of earnings/costs). The fund's change since the
         # morning is not used: a withdrawal larger than the morning fund clamps day_start_money at 0 and lost the

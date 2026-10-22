@@ -637,7 +637,7 @@ def _rent_due(L: dict, n: int) -> int:
 def _settle(s: dict, h: dict, x: dict, day: int) -> int:
     """The tenant leaves: the rent up to `day` and anything they asked to pay later, into the account (else the wallet)."""
     L = x['let']
-    got = _rent_due(L, day) + L['owed']
+    got = _earned(s, _rent_due(L, day) + L['owed'], f'rent|{x["id"]}|{day}')
     x['let'] = None
     if got:
         _receive(s, got, f'Tiền thuê {lname(HOMES[x["kind"]]["name"])}', day)
@@ -652,7 +652,7 @@ def _tick_let(s: dict, h: dict, x: dict, n: int, notes: list) -> None:
     name = lname(HOMES[x['kind']]['name'])
     who = tenant(L)[1]
     if L['owed'] and n >= L['od']:
-        got = L['owed']
+        got = _earned(s, L['owed'], f'rent|{x["id"]}|{n}|owed')
         L.update(owed=0, od=0)
         _receive(s, got, f'Tiền thuê {name}', n)
         h['stats']['rent_in'] += got
@@ -682,6 +682,7 @@ def _tick_let(s: dict, h: dict, x: dict, n: int, notes: list) -> None:
             what = rng.choice(REPAIRS)
             _log(h, n, f'Sửa {what} ở {name}: {_fmt(cost)} xu, trừ vào tiền thuê.')
             notes.append(f'🔧 {who} báo {what} ở {name}: thợ sửa hết {_fmt(cost)} xu, trừ vào tiền thuê tháng này.')
+    amount = _earned(s, amount, f'rent|{x["id"]}|{n}')   # 📈 after the repair, like the rent the tenant hands over
     if amount:
         _receive(s, amount, f'Tiền thuê {name}', n)
         h['stats']['rent_in'] += amount
@@ -813,6 +814,12 @@ def _take(s: dict, amount: int, label: str, day: int) -> None:
         bk._log(b, day, 'acc', label, -from_acc)
     if amount > from_acc:
         _jr()._wallet(s['journey'], -(amount - from_acc), KIND, label)
+
+
+def _earned(s: dict, amount: int, key: str) -> int:
+    """📈 A tenant's rent is an earning: + game/income_boost.py's 50 % (owner 22/10) before it is received."""
+    from . import income_boost
+    return income_boost.earned(s, amount, key)
 
 
 def _receive(s: dict, amount: int, label: str, day: int) -> str:

@@ -62,6 +62,7 @@ from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (
 from . import leisure as ls   # 🏝️ 2.5D town: private, free pixel fishing/boat/community-pool rounds (game/leisure.py)
 from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói thì ăn (game/fridge.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
+from . import income_boost as ib   # 📈 Thu nhập +50% (game/income_boost.py, owner 22/10)
 from . import gov_rules as gvr   # 🛃 Hải quan opens after 3 chapters (game/gov_rules.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
 from . import history_course as hcourse   # 📜 Học lịch sử Việt Nam: its title (game/history_course.py)
@@ -740,10 +741,13 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         notes.append(f'Lương {pay} xu đã về ví của bạn.' if times <= 1 else
                      f'Lương kế toán x{times}{" ngày lễ" if times == aj.X5 else ""}: {pay} xu đã về ví của bạn.')
     notes.extend(ab.day_lines(job_note))   # 🌏 a day at the branch abroad: the city, a letter from home, coming home
+    # 📈 Thu nhập +50% (owner 22/10): the multipliers below count on the shift's base net × ib.INCOME_PCT / 100 (its own
+    # 📈 rows are out of _base_net), so an x3 day pays 1.5 × 3 under x3.CAP, the plate and the tool 1.5 × their %.
+    base_net = ib.scale(_base_net(result, job_note), f'shift|{career}|{c["day"]}')
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
     extra = 0
     if x3.on(career):
-        extra = x3.bonus(_base_net(result, job_note))
+        extra = x3.bonus(base_net)
         if extra > 0 and not icl.day_paid(s):   # ⏱️ beyond the real-time allowance (1 real hour = 1 paid day): no bonus
             extra = 0
             notes.append(f'⏱️ Hôm nay quá số ngày có thưởng theo giờ thật (1 giờ = 1 ngày): không có thưởng x{x3.X}.')
@@ -754,7 +758,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     # net as x3 (never on the x3 bonus, overtime, a boost or itself), so an x3 day pays net × (1 + 2 + x %).
     plate, pct, plated = 0, *gr.shift_pct(s, career)
     if pct > 0:
-        plate = min(AC.BONUS_CAP, max(0, _base_net(result, job_note)) * pct // 100)
+        plate = min(AC.BONUS_CAP, max(0, base_net) * pct // 100)
         if plate > 0 and icl.day_paid(s):
             V = gr.VEHICLES[plated['id']]
             _wallet(j, plate, 'salary', f'{V["emoji"]} Biển đẹp +{pct}% · {_place(career)}', career)
@@ -766,7 +770,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     tool, tpct, tit = 0, *auc.tool_pct(s, career)
     tpct = max(0, min(tpct, AC.PCT_CAP - pct))
     if tpct > 0:
-        tool = min(AC.BONUS_CAP - plate, max(0, _base_net(result, job_note)) * tpct // 100)
+        tool = min(AC.BONUS_CAP - plate, max(0, base_net) * tpct // 100)
         if tool > 0 and icl.day_paid(s):
             _wallet(j, tool, 'salary', f'{tit["emoji"]} {tit["name"]} +{tpct}% · {_place(career)}', career)
             notes.append(f'{tit["emoji"]} {tit["name"]} +{tpct}%: +{tool} xu.')
@@ -811,8 +815,9 @@ def _base_net(result: dict, job_note: dict) -> int:
     competition_bonus = (summary.get('competition') or {}).get('bonus') or 0
     tile_bonus = summary.get('tile') or 0
     pay_bonus = summary.get('payboost') or 0   # 💰 game/pay_boost.py rows: on the base only, never multiplied by x3
+    income_bonus = summary.get('incomeboost') or 0   # 📈 game/income_boost.py rows: the caller scales the base itself
     return (int(summary.get('net') or 0) - int(ot) - boost - int(mastery_bonus) - int(competition_bonus) - int(tile_bonus)
-            - int(pay_bonus))
+            - int(pay_bonus) - int(income_bonus))
 
 
 def _news(j: dict, kind: str, ref: str, items: list | None = None) -> None:

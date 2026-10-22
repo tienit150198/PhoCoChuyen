@@ -48,3 +48,6 @@ os.environ.setdefault("MNL_HALLOWEEN_OFF", "1")
 # 💰 Tiền công +% / 🎉 Tuần lễ tay nghề / 🧰 Bộ đồ nghề (game/pay_boost.py): off, so the older tests keep their exact pay
 # (each earning would get its own +8–20 % row); tests/test_pay_boost.py turns it on where it checks it.
 os.environ.setdefault("MNL_PAYBOOST_OFF", "1")
+# 📈 Thu nhập +50% (game/income_boost.py, owner 22/10): off, so the older tests keep their exact pay (every earning would
+# get its +50 % share); tests/test_income_boost.py turns it on where it checks it.
+os.environ.setdefault("MNL_INCOME_BOOST_OFF", "1")

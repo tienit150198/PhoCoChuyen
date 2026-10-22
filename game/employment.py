@@ -812,13 +812,16 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     away = abroad.pay_pct(s, c, career)
     base = round(_lifted(job['salary'], lift + deg, away) * (.85 if job['probation'] else 1))
     pay = boosted(base, multiplier)
+    before = c['money']
     e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else '') + (f' · +{lift}% chức vụ' if lift else '')
             + (f' · +{deg}% bằng du học' if deg else '') + (f' · 🌏 +{away}% ở nước ngoài' if away else ''),
             f'salary-{c["day"]}', category='salary')
     from .tile_match import fund_bonus   # 🧩 Phúc lợi on the day's salary: its own row, moved to the wallet with it
     tile = fund_bonus(s, c, pay, 'Lương ngày ' + str(c['day']), f'salary-{c["day"]}')
     job['days_worked'] += 1
-    note = dict(salary=pay + tile, probation=job['probation'])
+    # The salary moved to the wallet at the day's end: what these rows added to the fund (the pay, 🧩 Phúc lợi, 🐾, 💰
+    # and 📈 Thu nhập +50% of game/income_boost.py), so a boost never stays behind in the fund nor counts twice.
+    note = dict(salary=c['money'] - before, probation=job['probation'])
     if tile:
         note['tile'] = tile
     if lift:

@@ -231,6 +231,9 @@ def action(s,c,cid,name,p,now=None):
     from . import tile_match   # 🧩 Phúc lợi on the contract's profit: its own row; the receipt keeps its own sums
     tile=tile_match.extra(s,max(0,receipt['net']),f"scale|{o['id']}")
     if tile:move(s,c,tile,tile_match.label(s,'Nghiệm thu ca quản lý' if kind=='business' else 'Phụ cấp điều phối'),o['id'],category='scale_settlement')
+    from . import income_boost as ib   # 📈 Thu nhập +50% (owner 22/10) on the profit and its Phúc lợi: its own row
+    boost=ib.settle_part(s,max(0,receipt['net'])+tile,o['id'])
+    if boost:move(s,c,boost,ib.LABEL+' · '+('Nghiệm thu ca quản lý' if kind=='business' else 'Phụ cấp điều phối'),o['id'],category='scale_settlement')
     for resource in c['scale']['resources']:
         if resource['busy']==o['id']:resource['condition']=max(0,resource['condition']-1)
     resources.release(c,cid,o['id'])
