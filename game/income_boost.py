@@ -4,7 +4,9 @@ Owner 22/10: "tăng 50% thu nhập tất cả mọi người nữa nhé", then "
 Everything a player EARNS from the game is worth INCOME_PCT % of what it paid before; prices, costs and every other
 flow stay as they were. One constant, a few hooks where earnings enter a player's pockets:
 
-* Workplace funds (engine.money → on_money): a positive row of an EARN category (the job's "Hoàn thành:" pay, tips,
+* Finished jobs (engine.task_done → on_job): the share of what the job earned, a shop's margin (`bonus_base`, as the
+  🔧 gear counts it) or else the whole pay; the "Hoàn thành:" row itself is not counted again.
+* Workplace funds (engine.money → on_money): a positive row of an EARN category (the jobs' other payments, tips,
   wages and salaries, story / quest / skill / event rewards, the team's and the manager's bonuses, and the % bonuses
   other modules book on an earning: 🔧 gear, 🧩 Phúc lợi, 🐾 pets, 💰 Tiền công, ⏱️ tăng ca, 💛 khách quen …) adds
   INCOME_PCT − 100 % of it to ONE row a day of that workplace, LABEL, ref REF, category 'other_income' (no period tax,
@@ -135,6 +137,14 @@ def on_money(s: dict, c: dict, amount: int, reason: str, ref, category) -> int:
     if classify_money(amount, reason, category) not in EARN:
         return 0
     return book(c, part(amount, f'{ref}|{reason}|{c.get("day")}'))
+
+
+def on_job(s: dict, c: dict, base: int, ref) -> int:
+    """engine.task_done: a finished job's share, on what it earned (a shop's margin, `bonus_base`, like the 🔧 gear's
+    bonus; else the whole pay). Its "Hoàn thành:" row itself is booked under skip()."""
+    if not on(s) or _SKIP.get():
+        return 0
+    return book(c, part(max(0, base), f'job|{ref}|{c.get("day")}'))
 
 
 def on_staff(s: dict, c: dict, base: int, ref: str) -> int:

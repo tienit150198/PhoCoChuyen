@@ -150,6 +150,16 @@ class Jobs(unittest.TestCase):
         self.assertEqual(on, off + boost)
         self.assertLessEqual(abs(boost - off / 2), 3)     # one fraction per earning row at most
 
+    def test_a_shop_job_counts_its_margin_and_its_pay_row_once(self):
+        s, c = opened('grocery')   # any career: task_done's bonus_base is a shop's margin (clothing passes it)
+        t = E.make_task('grocery', c['day'], 0, c['turn'])
+        c['tasks'].append(t)
+        with mock.patch.object(ib, 'on_job', wraps=ib.on_job) as job, mock.patch.object(ib, 'book', wraps=ib.book) as book:
+            E.task_done(s, c, t, 100, 'Đã bán.', bonus_base=40)
+        self.assertEqual(job.call_args.args[2:], (40, t['id']))   # the margin, as the gear counts it
+        self.assertEqual(book.call_args_list[0].args[1], 20)      # 50 % of 40, and nothing on the 100-xu pay row itself
+        self.assertNotIn(50, [x.args[1] for x in book.call_args_list])
+
 
 @mock.patch.dict(os.environ, ON)
 class Quay(unittest.TestCase):

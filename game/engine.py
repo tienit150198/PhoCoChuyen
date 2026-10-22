@@ -421,7 +421,9 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
         scale.completed(c,t["career"],t)
         cm.completed(c,t["career"],t)
     if reward:
-        money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
+        with ib.skip():money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
+        # 📈 Thu nhập +50% (owner 22/10) on what the job earned: a shop's margin (bonus_base) like the gear, else the pay
+        ib.on_job(s,c,reward if bonus_base is None else max(0,min(reward,bonus_base)),t["id"])
         if status=='completed':
             from .income_gear import completion_bonus
             completion_bonus(s,c,reward if bonus_base is None else max(0,min(reward,bonus_base)),t['title'],t['id'])
