@@ -23,7 +23,8 @@ TOP = len(TIERS) - 1                  # 🌟 Huyền thoại: three SSS
 SSS = TOP - 1
 # Owner 22/10 (after the first table, +1…+10 %, 5k…500k a day): "thu nhập trần/ngày sẽ tăng lên nữa", "SSS được 20% đi"
 EARN = (2, 4, 6, 8, 11, 15, 20, 25)   # % of the work earnings (the pets give 2…30 %)
-CAP = (20_000, 50_000, 150_000, 400_000, 1_000_000, 3_000_000, 8_000_000, 15_000_000)   # xu a Vietnam day
+# then "tăng nữa nhé, tối đa đó gấp đôi đi": the daily caps ×2
+CAP = (40_000, 100_000, 300_000, 800_000, 2_000_000, 6_000_000, 16_000_000, 30_000_000)   # xu a Vietnam day
 BATTLE = (1, 1, 2, 2, 3, 4, 5, 6)     # % HP and attack in pet battles
 
 
