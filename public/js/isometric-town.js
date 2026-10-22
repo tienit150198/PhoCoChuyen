@@ -9,11 +9,13 @@
  * (bang-tag.js withBang), so everyone sees it.
  * 🤝 `pr` (live/charms.py): the friendship pairs a walker wears, {kind: count}, read by the service from the game's table and
  * kept beside the look (`look.pr`, v4/look.js withPairs) so the scene draws them; never sent by this client.
+ * 🪽 `wg` (live/wings.py): the wing a walker wears {k, r}, likewise from the game's table, kept beside the look
+ * (`look.wg`, v4/look.js withWings); a change comes as a `mv` with `wg`.
  */
 import {live} from './v4/live.js';
 import {sitePresence} from './v4/site-presence.js';
 import {createTownSocial} from './isometric-social.js';
-import {lookOf,withPairs,cleanPairs} from './v4/look.js';
+import {lookOf,withPairs,cleanPairs,withWings,cleanWing} from './v4/look.js';
 import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
 import {withBang,tagLine,tagInk,badge} from './v4/bang-tag.js';
 
@@ -45,7 +47,7 @@ function publicPeer(value){
   const activity=publicActivity(value.activity);
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
-    look:withPairs(value.lk&&typeof value.lk==='object'?value.lk:{},value.pr),pr:cleanPairs(value.pr),
+    look:withWings(withPairs(value.lk&&typeof value.lk==='object'?value.lk:{},value.pr),value.wg),pr:cleanPairs(value.pr),wg:cleanWing(value.wg),
     gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...bangOf(value.bg)};
 }
 /** ⚔️ {tag, ink, badge} for the name tag, or {} without a bang. */
@@ -181,8 +183,9 @@ export function createTownPresence(envGetter,options={}){
             if(at&&(e.activity==null||activity)){
               const peer=peers.get(e.pid);Object.assign(peer,at);
               if(Object.hasOwn(e,'pr'))peer.pr=cleanPairs(e.pr);
+              if(Object.hasOwn(e,'wg'))peer.wg=cleanWing(e.wg);   // 🪽 (live/wings.py)
               if(Object.hasOwn(e,'lk')){peer.look=e.lk&&typeof e.lk==='object'?e.lk:{};peer.gender=e.g==='female'||e.g==='male'?e.g:null;}
-              if(Object.hasOwn(e,'lk')||Object.hasOwn(e,'pr')){const {pr:_,...lk}=peer.look||{};peer.look=withPairs(lk,peer.pr);}
+              if(Object.hasOwn(e,'lk')||Object.hasOwn(e,'pr')||Object.hasOwn(e,'wg')){const {pr:_,wg:__,...lk}=peer.look||{};peer.look=withWings(withPairs(lk,peer.pr),peer.wg);}
               if(Object.hasOwn(e,'activity')){if(activity)peer.activity=activity;else delete peer.activity;}
               if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
               if(Object.hasOwn(e,'pt')){const pt=publicPet(e.pt);if(pt)peer.pt=pt;else delete peer.pt;}

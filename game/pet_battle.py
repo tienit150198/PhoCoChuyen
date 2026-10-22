@@ -25,12 +25,21 @@ faster): ☄️ Cầu lửa (big hit through defence), 🪨 Khiên đá (a shiel
 (🐶 Trung thành), cats dodge a little more (🐱 Nhanh nhẹn); legendaries and thần thú hit a little harder (🌟 Thần uy).
 `ENGINE` names this rule set: a stored match keeps it, a later change of numbers bumps it (an old replay then shows
 its stored result only).
+
+🪽 Cánh (game/wings.py, owner 22/10 "cánh sẽ buff cho người chơi khi đánh pet"): the wing its owner wears adds `wg` % (1…6,
+WG_MAX) to the HP and the attack of each of their fighters, written into the snapshot (game/pet_arena.py fighter), so a
+replay plays the same numbers. A snapshot without `wg` (every match stored before 2.5.4) derives exactly as before, so
+ENGINE stays 1 for them; a match where some fighter has wings is stored as WING_ENGINE (engine_of): this build replays
+both (REPLAYS), 2.5.3 and older show such a match's stored result only instead of replaying it without the wings.
 """
 from __future__ import annotations
 
 import hashlib
 
 ENGINE = 1
+WING_ENGINE = 2           # 🪽 a match where a fighter wears wings (`wg`): older builds do not replay it
+REPLAYS = frozenset((ENGINE, WING_ENGINE))
+WG_MAX = 10              # % at most (game/wings.py gives 1…6)
 MASK = (1 << 64) - 1
 
 # ---------------------------------------------------------------- numbers (tests/test_pet_arena.py Balance)
@@ -110,6 +119,18 @@ def element_of(breed: str, lean=None) -> str:
     return LEAN_ELEMENT[STAT_IDS[best]]
 
 
+def wing_pct(f: dict) -> int:
+    """🪽 The wing bonus % of a fighter snapshot (0 without wings; an odd value is clamped, never refused)."""
+    v = f.get('wg') if isinstance(f, dict) else None
+    return max(0, min(WG_MAX, v)) if type(v) is int else 0
+
+
+def engine_of(*lineups) -> int:
+    """The rule set a match of these lineups (lists of snapshots) is stored under: ENGINE, or WING_ENGINE when a fighter
+    wears wings (an older build then shows its stored result only, never a replay that ignores the wings)."""
+    return WING_ENGINE if any(wing_pct(f) for side in lineups for f in (side or ())) else ENGINE
+
+
 def derive(f: dict) -> dict:
     """Battle numbers of a fighter snapshot: {hp, atk, df, sp, crit, dodge, charm, gain} (integers)."""
     st = [max(1, int(v)) for v in (list(f.get('s') or [])[:5] + [1] * 5)[:5]]
@@ -118,7 +139,11 @@ def derive(f: dict) -> dict:
         st = [v + v * bonus // 100 for v in st]
     spd, sta, intl, cute, luck = st
     dodge = DODGE_BP + DODGE_LUCK * luck + (CAT_DODGE if f.get('k') == 'cat' else 0)
-    return dict(hp=HP0 + (HP_STA * sta + HP_CUTE * cute) // 100, atk=ATK0 + (ATK_INT * intl + ATK_SPD * spd + ATK_STA * sta) // 100,
+    hp, atk = HP0 + (HP_STA * sta + HP_CUTE * cute) // 100, ATK0 + (ATK_INT * intl + ATK_SPD * spd + ATK_STA * sta) // 100
+    wg = wing_pct(f)
+    if wg:   # 🪽 the owner's wings: +wg % HP and attack (absent: the numbers of ENGINE 1, unchanged)
+        hp, atk = hp + hp * wg // 100, atk + atk * wg // 100
+    return dict(hp=hp, atk=atk,
                 df=DEF0 + (DEF_STA * sta + DEF_INT * intl) // 100, sp=SPD0 + SPD_SPD * spd // 100,
                 crit=min(CRIT_MAX, CRIT_BP + CRIT_LUCK * luck), dodge=dodge, spd=spd,
                 charm=min(CHARM_MAX, CHARM_BP + CHARM_CUTE * cute), gain=ENERGY0 + intl // 12)
@@ -293,7 +318,10 @@ def preview(f: dict) -> dict:
     d = derive(f)
     el = f['e']
     passive = 'legend' if f.get('L') else f['k']
-    return dict(hp=d['hp'], atk=d['atk'], df=d['df'], sp=d['sp'], e=el, sk=list(SKILLS[el]), ps=list(PASSIVES[passive]))
+    out = dict(hp=d['hp'], atk=d['atk'], df=d['df'], sp=d['sp'], e=el, sk=list(SKILLS[el]), ps=list(PASSIVES[passive]))
+    if wing_pct(f):
+        out['wg'] = wing_pct(f)   # 🪽 shown beside the numbers
+    return out
 
 
 def catalogue() -> dict:

@@ -121,6 +121,10 @@ def fighter(s: dict, p: dict) -> dict:
     if legend or br.get('fuse') == 'myth':
         f['L'] = 1              # 🌟 Thần uy
     f.update(pw.walk_look(s, p))
+    from . import wings
+    wg = wings.battle_pct(s)
+    if wg:
+        f['wg'] = wg            # 🪽 the owner's worn wings: +wg % HP and attack (game/pet_battle.py derive)
     return f
 
 
@@ -289,7 +293,7 @@ def _payload(row: dict, viewer: str | None = None) -> dict:
                sides=[dict(name=row['a_name'] or 'Người chơi', pets=[pet_view(f) for f in a]),
                       dict(name=row['b_name'] or NPC_OWNER, pets=[pet_view(f) for f in b])],
                me=0 if viewer and row['a'] == viewer else 1 if viewer and row['b'] == viewer else None)
-    if row['engine'] == B.ENGINE:
+    if row['engine'] in B.REPLAYS:   # 🪽 WING_ENGINE: a fighter wore wings (2.5.3 shows the stored result only)
         res = B.battle(a, b, B.seed_of(row['id']))
         out.update(ev=res['ev'], hp=res['hp'], max=res['max'])
     return out
@@ -313,7 +317,7 @@ def _summary(row: dict, viewer: str) -> dict:
 def record(db, kind: str, mid: str, a: dict, b: dict, a_snap: list, b_snap: list, res: dict, t: float, ra=0, rb=0, da=0, dbb=0, rd=0) -> dict:
     """Store one match (the replay data: both snapshots, the seed is the id)."""
     row = dict(id=mid, kind=kind, day=vn_day(t), week=vn_week(t), a=a.get('sid') or '', b=b.get('sid') or '', a_name=(a.get('name') or '')[:24],
-               b_name=(b.get('name') or '')[:24], win=res['w'], ra=ra, rb=rb, da=da, db=dbb, rd=rd, engine=B.ENGINE,
+               b_name=(b.get('name') or '')[:24], win=res['w'], ra=ra, rb=rb, da=da, db=dbb, rd=rd, engine=B.engine_of(a_snap, b_snap),
                data=_dump(dict(a=a_snap, b=b_snap)), at=t)
     db.execute('INSERT INTO pet_arena_matches(id, kind, day, week, a, b, a_name, b_name, win, ra, rb, da, db, rd, engine, data, at) '
                'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', tuple(row[k] for k in ('id', 'kind', 'day', 'week', 'a', 'b', 'a_name', 'b_name', 'win', 'ra', 'rb', 'da', 'db', 'rd', 'engine', 'data', 'at')))

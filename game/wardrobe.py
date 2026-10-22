@@ -920,9 +920,10 @@ def action(s: dict, name: str, p: dict) -> dict:
 # ---------------------------------------------------------------- client
 def content() -> dict:
     """Static list for the client (bootstrap content, cached): names, prices and unlocks by id."""
-    from . import avatar, friend_charms
+    from . import avatar, friend_charms, wings
     return dict(slots=[dict(id=k, name=SLOT_NAMES[k]) for k in SLOTS], items=[dict(x) for x in ITEMS],
                 defaults={k or 'none': v for k, v in DEFAULTS.items()}, staff_off=STAFF_OFF, shop=SHOP, shop_name=SHOP_NAME,
                 colors=[dict(x) for x in COLORS], tintable=list(TINTABLE), clothes=list(CLOTHES),
                 match={k: list(v) for k, v in MATCH.items()}, avatar_presets=avatar.presets(),
-                acc_shop=dict(name=ACC_SHOP_NAME, title=ACC_SHOP_TITLE), pairs=friend_charms.catalog())   # 🛍️ 🤝 owner 22/10
+                acc_shop=dict(name=ACC_SHOP_NAME, title=ACC_SHOP_TITLE), pairs=friend_charms.catalog(),   # 🛍️ 🤝 owner 22/10
+                wings=wings.catalogue())   # 🪽 Cánh (game/wings.py, owner 22/10)

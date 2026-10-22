@@ -22,6 +22,7 @@ from __future__ import annotations
 import re
 
 from . import marriage as mr
+from . import friend_charms as fc   # 💞 the relationship shown on a friend's card
 
 SEARCH_PER_MIN, SEARCH_PER_DAY = 20, 100
 REQUESTS_PER_DAY, PENDING_MAX = 10, 20
@@ -90,7 +91,8 @@ def _card(db, me: str, other: str) -> dict:
     from .live_dating import bonded   # 💕 "Đang tìm hiểu": both tapped ❤️ after an in-game date (live/dating.py)
     from . import wedding_live as wl   # 💍 "Cưới ngày 04/10/2026 · 20:30" and closeness from weddings (game/wedding_live.py)
     return dict(name=mr._display(db, other), code=(p or {}).get('code'), status=status, spouse=spouse, career=_career(db, other),
-                dating=not spouse and bonded(db, me, other), wed=wl.label_of(db, mr._bond(db, other)), close=wl.close_points(db, me, other))
+                dating=not spouse and bonded(db, me, other), wed=wl.label_of(db, mr._bond(db, other)), close=wl.close_points(db, me, other),
+                rel=fc.rel_between(db, me, other))   # 💞 the relationship the two set (game/friend_charms.py), None: 🤝 Bạn bè
 
 
 def _count_search(db, sid: str) -> None:
@@ -241,6 +243,7 @@ def unfriend(store, sid: str, display: str, d: dict) -> dict:
         c = mr._bond(db, sid)
         mr.need(not (c and other in (c['a'], c['b'])), 'Hai bạn đang là một đôi. Muốn dừng lại thì dùng mục Hôn nhân nhé.', 'spouse', 409)
         db.execute('DELETE FROM friends WHERE (sid=? AND friend=?) OR (sid=? AND friend=?)', (sid, other, other, sid))
+        fc.clear_bond(db, sid, other)   # 💞 no relationship without the friendship
         home_guests.invalidate(db,sid)
         return mr._display(db, other)
     name = store.transaction(run)
@@ -253,6 +256,7 @@ def _block_db(db, sid: str, other: str) -> None:
     t = mr.now()
     db.execute('INSERT INTO marriage_blocks(sid,target,at) VALUES(?,?,?) ON CONFLICT DO NOTHING', (sid, other, t))
     db.execute('DELETE FROM friends WHERE (sid=? AND friend=?) OR (sid=? AND friend=?)', (sid, other, other, sid))
+    fc.clear_bond(db, sid, other)   # 💞 no relationship without the friendship
     home_guests.invalidate(db,sid)
     db.execute("UPDATE friend_requests SET status='declined',decided=? WHERE status='pending' AND ((from_sid=? AND to_sid=?) OR (from_sid=? AND to_sid=?))",
                (t, sid, other, other, sid))

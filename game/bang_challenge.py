@@ -310,7 +310,8 @@ def _resolve(db, ch: dict, locked: dict, t: float, ans_sid: str, auto: bool) -> 
     data = dict(duels=duels, tb=[teams[0]['tb'], teams[1]['tb']], hp=res['hp'], tie=w == 2, n=[len(teams[0]['members']), len(teams[1]['members'])])
     n = db.execute("UPDATE bang_chal SET status='done', answered=?, ans_sid=?, auto=?, win=?, wa=?, wb=?, ra=?, rb=?, da=?, db=?, sa=?, sb=?, "
                    "week=?, done_day=?, engine=?, data=? WHERE id=? AND status='open'",
-                   (t, ans_sid, 1 if auto else 0, w, res['wa'], res['wb'], ta['rating'], tb['rating'], da, dbb, sa, sb, week, day, B.ENGINE,
+                   (t, ans_sid, 1 if auto else 0, w, res['wa'], res['wb'], ta['rating'], tb['rating'], da, dbb, sa, sb, week, day,
+                    B.engine_of(*([d['f']] for dd in duels for d in (dd['a'], dd['b']) if d)),
                     A._dump(data), ch['id'])).rowcount
     need(n == 1, 'Trận này vừa được trả lời. Mở lại nhé.', 'retry', 409)      # exactly once (the row is locked: cannot happen)
     for side, tm, d in ((0, ta, da), (1, tb, dbb)):
@@ -749,7 +750,7 @@ def match_view(store, token, data) -> dict:
         def side(s):
             return dict(name=s['name'], me=s.get('pid') == my_pid, pets=[A.pet_view(s['f'])]) if s else dict(name='Vắng mặt', pets=[])
         one = dict(i=x['i'], w=x['w'], sides=[side(x.get('a')), side(x.get('b'))])
-        if x.get('a') and x.get('b') and int(ch['engine']) == B.ENGINE:
+        if x.get('a') and x.get('b') and int(ch['engine']) in B.REPLAYS:   # 🪽 2: a fighter wore wings
             res = B.battle([dict(x['a']['f'], tb=tb[0])], [dict(x['b']['f'], tb=tb[1])], B.seed_of(ch['id'], f'duel{x["i"]}'))
             one.update(ev=res['ev'], hp=res['hp'], max=res['max'])
         duels.append(one)

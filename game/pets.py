@@ -421,6 +421,9 @@ def action(s: dict, name: str, p: dict) -> dict:
     need = e.need
     j = s['journey']
     need(j.get('story'), 'Nuôi thú cưng chỉ có trong hành trình.', 'locked')
+    from . import wings as wg
+    if name in wg.COMMANDS:   # 🪽 Cánh (game/wings.py): jr_pet_* so command_commit refreshes the battle snapshots
+        return wg.action(s, name, p)
     need(name in COMMANDS or name in px.COMMANDS or name in pw.COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     day = j['life_day']
     b0 = get(s)
@@ -771,6 +774,9 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
     if not action.startswith('jr_pet_'):
         return
     _power_row(db, sid, after)
+    if action.startswith('jr_pet_wing_'):
+        from . import wings
+        wings.commit(db, sid, after)   # 🪽 the worn wing others see (wing_worn, live/wings.py)
     from . import pet_arena
     pet_arena.on_pet_commit(db, sid, after)   # ⚔️ the arena lineup's snapshot follows the pets (a player who set one)
     if action == 'jr_pet_fuse':

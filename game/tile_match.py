@@ -961,6 +961,8 @@ def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None, *, direc
         pet = pet_tiers.fund_bonus(s, c, base, what, ref)
         from . import pay_boost   # 💰 Tiền công +% (raise, 🎉 Tuần lễ tay nghề, 🧰 Bộ đồ nghề): its own row, in the total
         pet += pay_boost.on_earning(s, c, base, what, ref)
+        from . import wings   # 🪽 the worn wing's +% (game/wings.py): its own row, in the total, on the same base
+        pet += wings.fund_bonus(s, c, base, what, ref)
     bonus = extra(s, base, f'{ref}|{what}|{c.get("day")}')
     if not bonus:
         return pet
@@ -976,8 +978,10 @@ def fund_bonus(s: dict, c: dict, base: int, what: str, ref: str | None, *, direc
 
 
 def day_total(c: dict, day: int) -> int:
-    """The buff rows of a workplace's day (kept out of the 🔥 x3 day's net: it never multiplies twice), the 🐾 pet's too."""
+    """The buff rows of a workplace's day (kept out of the 🔥 x3 day's net: it never multiplies twice), the 🐾 pet's and
+    the 🪽 wing's too."""
     from .pet_tiers import PREFIX as PET
+    from .wings import PREFIX as WING
     rows = c.get('ops', {}).get('finance', {}).get('ledger', [])
     return sum(r['amount'] for r in rows if r.get('day') == day and r.get('amount', 0) > 0
-               and r.get('category') == 'other_income' and str(r.get('reason', '')).startswith((PREFIX, PET)))
+               and r.get('category') == 'other_income' and str(r.get('reason', '')).startswith((PREFIX, PET, WING)))

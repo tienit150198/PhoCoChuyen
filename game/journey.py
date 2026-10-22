@@ -1221,7 +1221,13 @@ def public(s: dict) -> dict:
         **({'remote': rm} if (rm := _remote_public(s)) else {}),   # 📲 khép ca từ xa: open shifts, the device (game/remote_close.py)
         **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
         **({'tile': _tile_public(s)} if j['story'] else {}),
+        **({'wings': wpub} if (wpub := _wings_public(s)) else {}),   # 🪽 only once a wing was bought (game/wings.py)
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+
+
+def _wings_public(s: dict) -> dict | None:
+    from . import wings
+    return wings.public(s)
 
 
 def _remote_public(s: dict) -> dict | None:
@@ -1389,6 +1395,8 @@ def validate(s: dict) -> None:
     pt.validate(s)   # 🐾 journey['pets'] (optional)
     pt.px.validate(s)   # 🏅 journey['petx'] (optional)
     pt.pw.validate(s)   # 👗 journey['petw'] (optional)
+    from . import wings
+    wings.validate(s)   # 🪽 journey['wings'] (optional: game/wings.py)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     isl.validate(s)   # 🏝️ journey['island'] (optional)
     from . import island_build

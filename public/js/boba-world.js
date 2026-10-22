@@ -18,7 +18,7 @@ import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
 import {watch,CHECK} from './scenes/room-watch.js';   // what the room read of the game: a new state keeps its backdrop unless that changed
-import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc,paintPairs,CANVAS} from './v4/look.js';  // Tủ đồ: the player's look
+import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc,paintPairs,paintWings,CANVAS} from './v4/look.js';  // Tủ đồ: the player's look
 import {paintRank,paintCap} from './v4/insignia.js';  // 🎖️ an org ladder's uniform, boards and cap (game/org.py)
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
@@ -323,6 +323,7 @@ export class BobaWorld extends World {
    const outfit=officer?'#719c95':employee?.color|| (player?F.topC||(F.L.uniform?pal.primary:F.classic):['#aacabb','#c8b7da','#dfb6a2','#94b7c8'][n%4]);const blink=!this.reduced&&Math.sin(this.time*1.1+n)>.992;const bob=this.reduced?0:Math.sin(this.time*(moving?7:1.8)+n)*(moving?2:1);
    c.save();c.translate(p.x,p.y+bob);c.scale(1.08,1.08);E(c,0,0,26,8,'#81644823');
    const step=moving&&!this.reduced?Math.sin(this.time*8)*3:0;const sk=F?.skin;
+   if(F?.L?.wg)paintWings(c,F,CANVAS,{flap:this.reduced?0:Math.sin(this.time*2.4)*.55});   // 🪽 behind everything, a gentle idle flap (v4/wings-art.js)
    if(F){paintLegs(c,F,step);paintHairBack(c,F);}
    else{R(c,-19,-20,15,20,'#f0d3b8',5);R(c,4,-20,15,20,'#f0d3b8',5);R(c,-21,-7+step,19,10,'#785c51',5);R(c,3,-7-step,19,10,'#785c51',5);if(long)R(c,-28,-92,56,64,hair,22);}
    R(c,-23,-52,46,36,outfit,15);E(c,-25,-36,8,14,sk?.hand||'#f5d5ba');E(c,25,-36,8,14,sk?.hand||'#f5d5ba');

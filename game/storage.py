@@ -930,6 +930,8 @@ class Store:
             from . import pets
             pets.forget(db,sid)  # 🐾 their pets leave the weekly board
             from . import pet_arena
+            from . import wings
+            wings.forget(db,sid)  # 🪽 the worn wing others see (wing_worn)
             pet_arena.forget(db,sid)  # ⚔️ their arena row, season rows, open cup entry and war pick (past matches keep the names shown)
             from . import lux
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous

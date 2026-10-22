@@ -157,6 +157,11 @@ class TownSocial:
                    friend=friend, account=other.player.account, code=code)
         if getattr(other, 'bg', None):   # ⚔️ the bang tag (live/bangs.py)
             out['bg'] = dict(other.bg)
+        if friend:   # 💞 the relationship the two set (game/friend_charms.py)
+            from . import charms
+            rel = await charms.bond(self.app, conn.player, other.player)
+            if rel:
+                out['rel'] = rel
         return self._social_reply(out, f)
 
     async def prune_social_messages(self, now=None, batch=200):

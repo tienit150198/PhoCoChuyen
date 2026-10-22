@@ -13,6 +13,20 @@
 * The character draws what is worn by KIND, counted: {chi_cot: 2, tri_ki: 1} (public/js/v4/look.js paintPairs: two cars on
   the keyring, one rose). That count, never a partner's name, is all other players see (live/charms.py `pr` on walkers).
 
+* 2.5.4 (owner 22/10 "thêm nhiều món nữa đi, với giá như này rẻ quá, tăng nhẹ tí nữa. rồi tính toán thêm vài món nữa"):
+  ten kinds, +50 % on the three first ones (the reasoning: game/friend_charms_content.py). A pair bought before keeps the
+  price it was paid (`price`, what a sale from the box gives back 80 % of).
+* 💞 Quan hệ (owner 22/10 "set mối quan hệ trong game được, kiểu bạn bè, tri kỉ,... và muốn set thì phải mua mấy cái
+  này"): two friends who share a pair (status 'paired') may set ONE relationship label between them (RELS: Bạn thân, Cạ
+  cứng, Chí cốt, Tri kỉ, Anh em / Chị em kết nghĩa), each label opened by the kinds listed under it (dearer pairs, closer
+  labels). The same offer / accept flow as a pair: charm_bond {id: a pair shared with that friend, label} asks (or accepts
+  at once when the friend already asked that very label); the friend answers with charm_bond_answer {id, answer}; either
+  side may put it back to 🤝 Bạn bè alone (charm_bond_off). A label shows (the friend list, the pairs in "Đang có", the
+  street's player card) only while the two are friends and still share a pair of a kind that opens it: a partner's
+  account deleted, an unfriend or a block take it away by itself (unfriend and block also clear the row). A pair once
+  given cannot be sold, so a label never outlives its pair otherwise. Table friend_bonds (SCHEMA_VERSION 90), one row per
+  two players.
+
 Where things live: the table friend_charms (game/pg_schema.py, SCHEMA_VERSION 86). No save key: money moves through the
 journey wallet / bank.pay inside the save's own transaction (marriage._mutate_retry, an effect row with a fixed id, like a
 ring), so an old save loads unchanged and a rollback simply never reads the table.
@@ -23,7 +37,7 @@ from __future__ import annotations
 import secrets
 
 from . import marriage as mr
-from .friend_charms_content import INDEX, KINDS, ORDER   # the catalogue (live/charms.py reads it without the engine)
+from .friend_charms_content import DEFAULT_REL, INDEX, KINDS, ORDER, REL_INDEX, RELS   # the catalogue (live/charms.py reads it without the engine)
 
 BOX_MAX = 10            # pairs bought and not given yet (box + offered)
 OFFER_DAYS = 7          # an offer nobody answered goes back to the box
@@ -36,7 +50,8 @@ PREFIX = 'charm_'
 
 def catalog() -> dict:
     """Static list for the client (content.journey.wardrobe.pairs)."""
-    return dict(kinds=[dict(k) for k in KINDS], box_max=BOX_MAX, offer_days=OFFER_DAYS, sell_pct=SELL_PCT)
+    return dict(kinds=[dict(k) for k in KINDS], box_max=BOX_MAX, offer_days=OFFER_DAYS, sell_pct=SELL_PCT,
+                rels=[dict(r, kinds=list(r['kinds'])) for r in RELS], rel_default=dict(DEFAULT_REL))
 
 
 # ---------------------------------------------------------------- reading
@@ -79,9 +94,74 @@ def _friends(db, sid: str) -> list:
     return out
 
 
+# ---------------------------------------------------------------- 💞 relationships (friend_bonds, SCHEMA_VERSION 90)
+def _key(a: str, b: str) -> tuple:
+    return (a, b) if a < b else (b, a)
+
+
+def shared(db, a: str, b: str) -> set:
+    """The kinds of the pairs these two share now (status 'paired', both still there)."""
+    if not a or not b or a == b:
+        return set()
+    return {r['kind'] for r in db.execute("SELECT kind FROM friend_charms WHERE status='paired' AND ((a=? AND b=?) OR (a=? AND b=?))",
+                                          (a, b, b, a)).fetchall()}
+
+
+def opens(kinds) -> list:
+    """The labels these kinds open (catalogue order)."""
+    have = set(kinds)
+    return [r['id'] for r in RELS if have & set(r['kinds'])]
+
+
+def _friends_now(db, a: str, b: str) -> bool:
+    return bool(db.execute('SELECT 1 FROM friends WHERE sid=? AND friend=?', (a, b)).fetchone())
+
+
+def _bond_row(db, a: str, b: str, lock: bool = False):
+    lo, hi = _key(a, b)
+    return mr._row(db, 'SELECT * FROM friend_bonds WHERE lo=? AND hi=?' + (' FOR UPDATE' if lock else ''), (lo, hi))
+
+
+def _valid(label: str, can) -> str:
+    return label if label in REL_INDEX and label in can else ''
+
+
+def rel_between(db, me: str, other: str) -> dict | None:
+    """The relationship shown between two players ({id, emoji, name}), None for plain 🤝 Bạn bè (game/friends.py card)."""
+    r = _bond_row(db, me, other)
+    if not r or not r['label'] or not _friends_now(db, me, other):
+        return None
+    lab = _valid(r['label'], opens(shared(db, me, other)))
+    return {k: REL_INDEX[lab][k] for k in ('id', 'emoji', 'name')} if lab else None
+
+
+def _bonds(db, sid: str) -> dict:
+    """{other sid: friend_bonds row} of this player."""
+    return {(r['hi'] if r['lo'] == sid else r['lo']): r
+            for r in mr._rows(db, 'SELECT * FROM friend_bonds WHERE lo=? OR hi=? LIMIT ?', (sid, sid, LIST_MAX))}
+
+
 def view_db(db, sid: str) -> dict:
     rows = mr._rows(db, "SELECT * FROM friend_charms WHERE (a=? AND status IN ('box','offered','paired')) OR (b=? AND status IN ('offered','paired')) "
                         'ORDER BY at DESC LIMIT ?', (sid, sid, LIST_MAX))
+    bonds = _bonds(db, sid)
+    friends_set = {r['friend'] for r in mr._rows(db, 'SELECT friend FROM friends WHERE sid=? LIMIT 500', (sid,))}
+    kinds_with = {}
+    for r in rows:
+        if r['status'] == 'paired' and r['a'] and r['b']:
+            kinds_with.setdefault(_other(r, sid), set()).add(r['kind'])
+
+    def rel_of(other: str) -> dict:
+        """The pair's 💞 part: the label set, the labels the two may set, an open ask."""
+        can = opens(kinds_with.get(other, ())) if other in friends_set else []
+        b = bonds.get(other)
+        out = dict(rel=_valid(b['label'], can) if b else '', can=can)
+        if b and b['ask'] and _valid(b['ask'], can):
+            out['ask'] = dict(label=b['ask'], mine=b['ask_by'] == sid, id=b['ask_charm'])
+        return out
+    bond_in = [dict(id=b['ask_charm'], label=b['ask'], name=mr._display(db, other), at=int(b['ask_at']))
+               for other, b in bonds.items()
+               if b['ask'] and b['ask_by'] != sid and other in friends_set and _valid(b['ask'], opens(kinds_with.get(other, ())))]
     box, sent, incoming, pairs = [], [], [], []
     for r in rows:
         if r['kind'] not in INDEX:
@@ -93,10 +173,11 @@ def view_db(db, sid: str) -> dict:
             (sent if r['a'] == sid else incoming).append(dict(base, name=_name(db, r, sid), at=int(r['offered'])))
         else:
             side = _side(r, sid)
-            pairs.append(dict(base, name=_name(db, r, sid), on=bool(r['wear_' + side]), since=int(r['paired'] or r['at']), mine=side == 'a'))
+            pairs.append(dict(base, name=_name(db, r, sid), on=bool(r['wear_' + side]), since=int(r['paired'] or r['at']), mine=side == 'a',
+                              **rel_of(_other(r, sid))))
     pairs.sort(key=lambda p: (ORDER.index(p['kind']), -p['since']))
     return dict(box=box, sent=sent, incoming=incoming, pairs=pairs, worn=worn_db(db, sid), friends=_friends(db, sid),
-                box_max=BOX_MAX, can_buy=len(box) + len(sent) < BOX_MAX)
+                box_max=BOX_MAX, can_buy=len(box) + len(sent) < BOX_MAX, bond_in=bond_in)
 
 
 def boot(store, token: str | None) -> dict | None:
@@ -290,14 +371,113 @@ def _list(store, sid: str, display: str, d: dict) -> dict:
     return dict(message='', quiet=True, charms=_view(store, sid))
 
 
+def _bond(store, sid: str, display: str, d: dict) -> dict:
+    """💞 Ask a friend to set `label` between you (accepted at once when they already asked that very one)."""
+    cid, label = _cid(d), d.get('label')
+    mr.need(label in REL_INDEX, 'Chọn một mối quan hệ nhé.', 'bad_rel')
+    rel = REL_INDEX[label]
+
+    def run(db):
+        r = mr._row(db, "SELECT * FROM friend_charms WHERE id=? AND status='paired' AND (a=? OR b=?)", (cid, sid, sid))
+        mr.need(r and _other(r, sid), 'Không tìm thấy phụ kiện đôi này.', 'bad_charm', 404)
+        other = _other(r, sid)
+        mr.need(_friends_now(db, sid, other) and not mr._blocked(db, sid, other), 'Chỉ đặt quan hệ được với bạn bè.', 'not_friends', 409)
+        kinds = shared(db, sid, other)
+        mr.need(kinds & set(rel['kinds']), f'“{rel["name"]}” cần hai bạn cùng có một cặp: '
+                + ', '.join(INDEX[k]['name'] for k in rel['kinds']) + '.', 'need_pair', 409)
+        if r['kind'] in rel['kinds']:
+            unlock = cid
+        else:   # the pair tapped does not open it: another one the two share does
+            marks = ','.join('?' * len(rel['kinds']))
+            unlock = mr._row(db, f"SELECT id FROM friend_charms WHERE status='paired' AND ((a=? AND b=?) OR (a=? AND b=?)) AND kind IN ({marks}) "
+                                 'ORDER BY id LIMIT 1', (sid, other, other, sid, *rel['kinds']))['id']
+        lo, hi = _key(sid, other)
+        db.execute('INSERT INTO friend_bonds(lo,hi) VALUES(?,?) ON CONFLICT DO NOTHING', (lo, hi))
+        b = _bond_row(db, sid, other, lock=True)
+        name, t = mr._display(db, other), mr.now()
+        if _valid(b['label'], opens(kinds)) == label:
+            return 'same', name
+        if b['ask'] == label and b['ask_by'] == other:   # they asked for this very label: both agree
+            db.execute("UPDATE friend_bonds SET label=?,charm=?,at=?,ask='',ask_by='',ask_charm='',ask_at=0 WHERE lo=? AND hi=?",
+                       (label, unlock, t, lo, hi))
+            mr._notice(db, other, f'{rel["emoji"]} {display} đã đồng ý: giờ hai bạn là “{rel["name"]}”.')
+            return 'set', name
+        if (b['ask'], b['ask_by']) != (label, sid):
+            mr._notice(db, other, f'{rel["emoji"]} {display} muốn hai bạn thành “{rel["name"]}”. Ghé 🛍️ Tiệm phụ kiện để trả lời nhé.')
+        db.execute('UPDATE friend_bonds SET ask=?,ask_by=?,ask_charm=?,ask_at=? WHERE lo=? AND hi=?', (label, sid, unlock, t, lo, hi))
+        return 'asked', name
+    how, name = store.transaction(run)
+    if how == 'same':
+        return _done(store, sid, f'Bạn và {name} đã là “{rel["name"]}” rồi.')
+    if how == 'set':
+        return _done(store, sid, f'{rel["emoji"]} Bạn và {name} giờ là “{rel["name"]}”!')
+    return _done(store, sid, f'Đã gửi lời mời “{rel["name"]}” tới {name}. Bạn ấy đồng ý là xong.')
+
+
+def _bond_answer(store, sid: str, display: str, d: dict) -> dict:
+    cid, answer = _cid(d), d.get('answer')
+    mr.need(answer in ('accept', 'decline'), 'Trả lời không hợp lệ.')
+
+    def run(db):
+        b = mr._row(db, "SELECT * FROM friend_bonds WHERE ask_charm=? AND ask<>'' AND ask_by<>? AND (lo=? OR hi=?) FOR UPDATE",
+                    (cid, sid, sid, sid))
+        mr.need(b, 'Lời mời này không còn chờ bạn nữa.', 'gone', 409)
+        other, rel = b['ask_by'], REL_INDEX.get(b['ask'])
+        if answer == 'decline' or not rel:
+            db.execute("UPDATE friend_bonds SET ask='',ask_by='',ask_charm='',ask_at=0 WHERE lo=? AND hi=?", (b['lo'], b['hi']))
+            if rel:
+                mr._notice(db, other, f'{display} chưa nhận lời “{rel["name"]}” lần này. Hai bạn vẫn là bạn bè nhé.')
+            return None, mr._display(db, other)
+        mr.need(_friends_now(db, sid, other) and not mr._blocked(db, sid, other), 'Chỉ đặt quan hệ được với bạn bè.', 'not_friends', 409)
+        mr.need(rel['id'] in opens(shared(db, sid, other)), f'Hai bạn không còn cặp phụ kiện nào mở “{rel["name"]}”.', 'need_pair', 409)
+        db.execute("UPDATE friend_bonds SET label=ask,charm=ask_charm,at=?,ask='',ask_by='',ask_charm='',ask_at=0 WHERE lo=? AND hi=?",
+                   (mr.now(), b['lo'], b['hi']))
+        mr._notice(db, other, f'{rel["emoji"]} {display} đã đồng ý: giờ hai bạn là “{rel["name"]}”.')
+        return rel, mr._display(db, other)
+    rel, name = store.transaction(run)
+    if rel is None:
+        return _done(store, sid, 'Đã từ chối nhẹ nhàng. Hai bạn vẫn là bạn bè.')
+    return _done(store, sid, f'{rel["emoji"]} Bạn và {name} giờ là “{rel["name"]}”!')
+
+
+def _bond_off(store, sid: str, display: str, d: dict) -> dict:
+    """Back to 🤝 Bạn bè (either side alone), this player's own open ask withdrawn too."""
+    cid = _cid(d)
+
+    def run(db):
+        r = mr._row(db, "SELECT * FROM friend_charms WHERE id=? AND (a=? OR b=?) AND status='paired'", (cid, sid, sid))
+        mr.need(r and _other(r, sid), 'Không tìm thấy phụ kiện đôi này.', 'bad_charm', 404)
+        other = _other(r, sid)
+        b = _bond_row(db, sid, other, lock=True)
+        mr.need(b and (b['label'] or (b['ask'] and b['ask_by'] == sid)), 'Hai bạn đang là bạn bè rồi.', 'none', 409)
+        lo, hi = _key(sid, other)
+        if b['label']:
+            db.execute("UPDATE friend_bonds SET label='',charm='',at=? WHERE lo=? AND hi=?", (mr.now(), lo, hi))
+            rel = REL_INDEX.get(b['label'])
+            if rel:
+                mr._notice(db, other, f'{display} đã đổi quan hệ “{rel["name"]}” về bạn bè.')
+        if b['ask'] and b['ask_by'] == sid:
+            db.execute("UPDATE friend_bonds SET ask='',ask_by='',ask_charm='',ask_at=0 WHERE lo=? AND hi=?", (lo, hi))
+        return mr._display(db, other)
+    name = store.transaction(run)
+    return _done(store, sid, f'Bạn và {name} giờ là {DEFAULT_REL["emoji"]} {DEFAULT_REL["name"]}.')
+
+
+def clear_bond(db, a: str, b: str) -> None:
+    """An unfriend or a block (game/friends.py): the label and any ask between the two go."""
+    lo, hi = _key(a, b)
+    db.execute('DELETE FROM friend_bonds WHERE lo=? AND hi=?', (lo, hi))
+
+
 def forget(db, sid: str) -> None:
     """An account deleted (marriage.forget): its box goes; an offer it received goes back to the buyer's box; a pair it
     shared stays with the friend under the name kept when the pair was made, worn on nobody's side but theirs."""
     db.execute("DELETE FROM friend_charms WHERE a=? AND status IN ('box','offered','sold')", (sid,))
+    db.execute('DELETE FROM friend_bonds WHERE lo=? OR hi=?', (sid, sid))   # 💞 their relationships
     db.execute("UPDATE friend_charms SET status='box',b='',offered=0 WHERE b=? AND status='offered'", (sid,))
     db.execute("UPDATE friend_charms SET a='',wear_a=0 WHERE a=? AND status='paired'", (sid,))
     db.execute("UPDATE friend_charms SET b='',wear_b=0 WHERE b=? AND status='paired'", (sid,))
 
 
 ACTIONS = dict(charm_view=_list, charm_buy=_buy, charm_offer=_offer, charm_respond=_respond, charm_cancel=_cancel,
-               charm_wear=_wear, charm_sell=_sell)
+               charm_wear=_wear, charm_sell=_sell, charm_bond=_bond, charm_bond_answer=_bond_answer, charm_bond_off=_bond_off)

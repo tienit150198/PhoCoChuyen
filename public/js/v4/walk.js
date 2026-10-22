@@ -44,7 +44,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
-import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs} from './look.js';
+import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing} from './look.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
@@ -223,6 +223,7 @@ function bind(){
       else if(e.k==='bg'){const p=S.people.get(e.pid);if(!p)continue;p.bg=e.bg&&typeof e.bg==='object'?e.bg:null;   // ⚔️ joined, left, a new role
         p.name=bgName({name:p.nm,bg:p.bg});p.ti=tagTitle({ti:p.ti0,tt:p.tt,bg:p.bg});co=true;}
       else if(e.k==='pr'){const p=S.people.get(e.pid);if(!p)continue;p.pr=cleanPairs(e.pr);p.sp=null;p.fig=undefined;}   // 🤝 a pair put on or taken off (live/charms.py)
+      else if(e.k==='wg'){const p=S.people.get(e.pid);if(!p)continue;p.wg=cleanWing(e.wg);p.sp=null;p.fig=undefined;}   // 🪽 wings put on or taken off (live/wings.py)
       else if(e.k==='rd'){const p=S.people.get(e.pid);if(!p)continue;const q=riding(e);p.r=q.r;p.v=q.v;p.ride=undefined;   // 🛵 on or off the vehicle
         if(Array.isArray(e.p)&&e.p.length){p.p=e.p;p.at=e.at;p.pred=null;}co=true;}
     }
@@ -303,7 +304,7 @@ function tagTitle(p){
   return with_(more?`${lead} ${more}`:lead);
 }
 const bgName=p=>bgBadge(p.bg)?`${bgBadge(p.bg)} ${p.name}`:p.name;   // 🎖️ the bang badge worn before the name
-function person(p){const q={pid:p.pid,name:bgName(p),nm:p.name,ti0:p.ti??null,bg:p.bg&&typeof p.bg==='object'?p.bg:null,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,pr:cleanPairs(p.pr),rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+function person(p){const q={pid:p.pid,name:bgName(p),nm:p.name,ti0:p.ti??null,bg:p.bg&&typeof p.bg==='object'?p.bg:null,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,pr:cleanPairs(p.pr),wg:cleanWing(p.wg),rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
@@ -713,9 +714,10 @@ function background(){
 }
 function sprite(p){
   const key=`${S.k}|${S.dpr}`;if(p.sp&&p.spk===key)return p.sp;
-  const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(110*s);cv.height=Math.ceil(160*s);
-  const c=cv.getContext('2d');c.setTransform(s,0,0,s,55*s,150*s);
-  try{const F=figureOf(withPairs(p.lk,p.pr),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
+  const hw=p.wg?72:55;p.hw=hw;   // 🪽 wings reach past the shoulders: a wider sprite
+  const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(2*hw*s);cv.height=Math.ceil(160*s);
+  const c=cv.getContext('2d');c.setTransform(s,0,0,s,hw*s,150*s);
+  try{const F=figureOf(withWings(withPairs(p.lk,p.pr),p.wg),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
   p.sp=cv;p.spk=key;return cv;
 }
 /* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop; on a vehicle it rides along
@@ -780,9 +782,9 @@ function draw(ts,t){
       c.save();c.translate(p.x,p.y);
       if(!calm)c.rotate(side*Math.sin(ph*Math.PI)*.11);
       if(spin<1.3)c.scale(Math.cos(spin/1.3*Math.PI*4),1);
-      c.drawImage(sp,-55*AV,-150*AV-Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6),110*AV,160*AV);c.restore();continue;}
+      c.drawImage(sp,-(p.hw||55)*AV,-150*AV-Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6),2*(p.hw||55)*AV,160*AV);c.restore();continue;}
     const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
-    c.drawImage(sp,p.x-55*AV,p.y-150*AV+bob,110*AV,160*AV);
+    c.drawImage(sp,p.x-(p.hw||55)*AV,p.y-150*AV+bob,2*(p.hw||55)*AV,160*AV);
     if(p.pt)drawPet(c,p,ct?.journey?.pets);
   }
   const h=S.hap;

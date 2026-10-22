@@ -537,7 +537,8 @@ def play(db, week: str, t: float) -> bool:
             db.execute('INSERT INTO pet_war_matches(week, rd, slot, a_kind, a_id, a_name, b_kind, b_id, b_name, win, wa, wb, start, data) '
                        'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                        (week, rd, slot, a['kind'], a['id'], a['name'], b['kind'], b['id'], b['name'], w, res['wa'], res['wb'], at,
-                        A._dump(dict(duels=duels, tb=[a['tb'], b['tb']], hp=res['hp'], tie=res['w'] == 2, engine=B.ENGINE))))
+                        A._dump(dict(duels=duels, tb=[a['tb'], b['tb']], hp=res['hp'], tie=res['w'] == 2,
+                                     engine=B.engine_of(*([d['f']] for dd in duels for d in (dd['a'], dd['b']) if d))))))
             played.append((rd, a, b, w))
             for tm, me in ((a, w == 0), (b, w == 1)):
                 tm['w'] = tm.get('w', 0) + me
@@ -808,7 +809,7 @@ def match_view(store, token, data) -> dict:
             break
         side = lambda s: dict(name=s['name'], pets=[A.pet_view(s['f'])]) if s else dict(name='Vắng mặt', pets=[])
         one = dict(i=x['i'], w=x['w'], sides=[side(x.get('a')), side(x.get('b'))])
-        if x.get('a') and x.get('b') and d.get('engine') == B.ENGINE:
+        if x.get('a') and x.get('b') and d.get('engine') in B.REPLAYS:   # 🪽 2: a fighter wore wings
             tb = d.get('tb') or [0, 0]
             res = B.battle([dict(x['a']['f'], tb=tb[0])], [dict(x['b']['f'], tb=tb[1])], B.seed_of(x['seed'], f'duel{x["i"]}'))
             one.update(ev=res['ev'], hp=res['hp'], max=res['max'])

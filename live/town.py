@@ -22,6 +22,7 @@ never from a frame); a change comes as a `mv` with `bg` (null: no bang). Older c
 street (live/street.py clean_pet; its rank only up to one they have, live/pet_rank.py). Same rules as `r`.
 🤝 A walker's public entry may carry `pr` (live/charms.py: the phụ kiện đôi worn, {kind: count}, read at town_in from the
 game's table, never from a frame); a change comes as a `mv` with `pr` (null: none). Older clients ignore it.
+🪽 Likewise `wg` (live/wings.py: the wing worn {k, r}, from the game's table wing_worn), a change as a `mv` with `wg`.
 """
 from __future__ import annotations
 
@@ -33,7 +34,7 @@ from pathlib import Path
 
 from game.content import CAREERS
 from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
-from . import bangs, charms, faces
+from . import bangs, charms, faces, wings
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
 from .street import clean_look, clean_pet
@@ -174,6 +175,7 @@ class Walker:
         self.activity_last, self.activity_credit = self.last, ACTIVITY_JITTER
         self.bg = None   # ⚔️ the bang tag (live/bangs.py)
         self.pr = None   # 🤝 the phụ kiện đôi worn {kind: count} (live/charms.py)
+        self.wg = None   # 🪽 the wing worn {k, r} (live/wings.py)
 
     def public(self):
         out = dict(pid=self.pid, name=self.player.name or 'Mây', lk=self.look, g=self.gender,
@@ -188,6 +190,8 @@ class Walker:
             out['bg'] = dict(self.bg)
         if self.pr:
             out['pr'] = dict(self.pr)
+        if self.wg:
+            out['wg'] = dict(self.wg)
         return out
 
 
@@ -329,6 +333,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         w = Walker(conn.player, look, gender, point, clean_direction(f.get('direction')), activity, ride, pet)
         w.bg = await bangs.of_app(self.app).one(w.pid)   # ⚔️ once per entry, never per move
         w.pr = await charms.of_app(self.app).one(conn.player)   # 🤝 likewise
+        w.wg = await wings.of_app(self.app).one(conn.player)   # 🪽 likewise
         room.data['people'][w.pid] = w
         conn.ext['town'] = conn.player.ext['town'] = room.id
         self._queue(room, w.pid, dict(k='in', **w.public()))

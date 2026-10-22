@@ -1,5 +1,6 @@
 /** Reference-matched chibi atlas: four views × idle/two walking poses, cached by saved wardrobe. */
-import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,CANVAS,topColour,hairColour} from '../v4/look.js';
+import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,cleanWing,CANVAS,topColour,hairColour} from '../v4/look.js';
+import {drawWings,wingSparkles} from '../v4/wings-art.js';
 
 const WIDTH=120,HEIGHT=160,FOOT=156;
 const atlases=new Map(),stamps=new Map(),MAX_STAMPS=160;
@@ -27,6 +28,7 @@ const normalise=options=>{
   const gender=options.gender==='female'?'female':'male';
   const look={...defaultLook(gender),...options.look};
   const pr=cleanPairs(look.pr);if(pr)look.pr=pr;else delete look.pr;   // 🤝 phụ kiện đôi: known kinds only (part of the stamp's key)
+  const wg=cleanWing(look.wg);if(wg)look.wg=wg;else delete look.wg;   // 🪽 the wing worn, likewise
   const walkFrame=options.walkFrame??(options.step===1?1:options.step===3?2:0);
   return {gender,look,direction:Object.hasOwn(cells,options.direction)?options.direction:'se',walkFrame:atlasCell('se',walkFrame).y,uniformColor:options.uniformColor||''};
 };
@@ -176,7 +178,9 @@ function clothingDetails(c,o,box){
     const side=o.direction==='sw'||o.direction==='nw'?-1:1,back=o.direction==='nw'||o.direction==='ne';
     const top=Number.isFinite(box.topY)?box.topY:bodyY-box.h*.25,hem=Number.isFinite(box.hemY)?box.hemY:bodyY,half=Math.max(12,box.w*.27);
     const ps=Math.max(.7,s*1.22);   // a little larger than the classic pieces: the chibi is seen at ≈0.42 on a phone
-    paintPairs(c,F,CANVAS,{s:ps,side,back,at:{bag:[cx-side*half*1.08,hem-4*ps],car:[cx+side*half*.5,hem-2*ps],rose:[cx-side*half*.4,top+(hem-top)*.3]}});
+    paintPairs(c,F,CANVAS,{s:ps,side,back,at:{bag:[cx-side*half*1.08,hem-4*ps],car:[cx+side*half*.5,hem-2*ps],rose:[cx-side*half*.4,top+(hem-top)*.3],
+      wrist:[cx+side*half*1.02,hem-9*ps],badge:[cx+side*half*.42,top+(hem-top)*.34],shoulder:[cx-side*half*.95,top+3*ps],balloon:[cx+side*half*1.45,top-46*ps],
+      fan:[cx-side*half*1.1,hem-12*ps],neck:[cx,top+(hem-top)*.16],jade:[cx-side*half*.2,hem+1*ps]}});
   });
 }
 /** Shared saved-wardrobe silhouettes. Optional pose anchors move head items separately from the torso. */
@@ -186,6 +190,16 @@ export function paintWardrobeOverlay(c,options={},box,alignment={}){
   for(const key of ['bodyX','bodyY','faceX','eyesY','footY','headX','headY','topY','hemY'])if(Number.isFinite(alignment?.[key]))geometry[key]=alignment[key];
   if(Array.isArray(alignment?.eyes)&&alignment.eyes.length===2&&alignment.eyes.every(point=>Array.isArray(point)&&point.length===2&&point.every(Number.isFinite)))geometry.eyes=alignment.eyes;
   clothingDetails(c,normalise(options||{}),geometry);return true;
+}
+/** 🪽 Cánh (game/wings.py, owner 22/10 "có cả mode cũ và mode mới đều hiển thị được nhé"): rooted at the top of the chibi's
+ * back, leaning out past its big head so both wings show. Facing us (se, sw) they go behind it (destination-over, the
+ * sparkles then over it); seen from the back (nw, ne) they lie over the back. Inside the 120×160 stamp: every consumer
+ * keeps its size and feet. */
+function paintStampWings(c,o,[tx,ty]){
+  const back=o.direction==='nw'||o.direction==='ne',[x,y]=[tx,ty+(back?6:22)],opts={s:back?.86:.9,gap:back?6:8,tall:back?1.1:1.3,spread:back?.5:.5,sparkle:false};
+  c.save();c.globalCompositeOperation='destination-over';drawWings(c,CANVAS,o.look.wg,x,y,{...opts,body:!back});c.restore();   // the glow always behind
+  if(back)drawWings(c,CANVAS,o.look.wg,x,y,{...opts,aura:false});
+  wingSparkles(c,CANVAS,o.look.wg,x,y,{s:opts.s});
 }
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */
 export function getCharacterStamp(options={}){
@@ -204,6 +218,7 @@ export function getCharacterStamp(options={}){
   const pixels=c.getImageData(x,y,w,h),palette={hair:hairColour(o.look),skin:art(o.look,'skin').c,top:o.look.uniform&&o.uniformColor?o.uniformColor:topColour(o.look,o.gender),bottom:art(o.look,'bottom').c,shoes:art(o.look,'shoes').c};
   recolourPixels(pixels.data,w,h,palette,{x,y,topX:top[0],topY:top[1],hemY:hem[1],halfWidth:32*w/view.w});
   c.putImageData(pixels,x,y);
+  if(o.look.wg)paintStampWings(c,o,top);
   paintWardrobeOverlay(c,o,{x,y,w,h},alignment);
   return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:true});
 }

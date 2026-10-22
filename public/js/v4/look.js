@@ -10,8 +10,13 @@
  * draws the wardrobe top and accessory with art(), topDetail() and accBust().
  *   look.pr                  🤝 phụ kiện đôi worn {kind: count} (game/friend_charms.py, owner 22/10): a LOCAL key, never in
  *                            lookOf (live/street.py clean_look refuses unknown keys): figure() adds the player's own (setPairs),
- *                            a walker's comes beside its look as `pr` (live/charms.py); paintPairs / pairsBust draw them. */
+ *                            a walker's comes beside its look as `pr` (live/charms.py); paintPairs / pairsBust draw them.
+ *   look.wg                  🪽 the wing worn {k: style, r: tier} (game/wings.py, owner 22/10): a LOCAL key too, never in
+ *                            lookOf: figure() adds the player's own (state.journey.wings), a walker's comes beside its look
+ *                            as `wg` (live/wings.py); v4/wings-art.js draws it behind the character in both modes. */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
+import {cleanWing,wingOfState,paintWings,wingsBust,wingIcon as wingArt,WING_STYLES,WING_TIERS,WING_TIER_COLOR} from './wings-art.js';
+export {cleanWing,wingOfState,paintWings,WING_STYLES,WING_TIERS,WING_TIER_COLOR};
 import {paintRank} from './insignia.js';
 // 👶 F.bb: the baby in the character's arms (v4/baby.js)
 import {paintCarried} from './baby-art.js';
@@ -228,6 +233,7 @@ function cozyMark(Lk,gender,mode,facing='se'){
   for(const slot of TINT_SLOTS){const id=look[slot],colour=Lk?.tint?.[id];if(!(dress&&slot==='bottom')&&typeof colour==='string'&&Object.hasOwn(ACC_COLORS,colour))tint[id]=colour;}
   if(Object.keys(tint).length)look.tint=tint;
   const pr=cleanPairs(Lk?.pr);if(pr)look.pr=pr;   // 🤝 the island portrait draws the pairs worn too
+  const wg=cleanWing(Lk?.wg);if(wg)look.wg=wg;   // 🪽 and the wings
   const direction=mode==='figure'?{facing:['se','sw','nw','ne'].includes(facing)?facing:'se'}:{};
   return ` data-cozy-portrait="${encodeURIComponent(JSON.stringify({v:1,mode,gender:g,look,...direction}))}"`;
 }
@@ -237,14 +243,15 @@ export function portrait(look,gender,size=56,label){
   const f=gender==='female',m=gender==='male';
   label??=f?'Nhân vật nữ':m?'Nhân vật nam':'Nhân vật của bạn';
   const eyes=Lk.acc==='kinh_ram'?'':`<ellipse cx="33" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><ellipse cx="47" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><circle cx="32.3" cy="38.8" r="1" fill="#fff"/><circle cx="46.3" cy="38.8" r="1" fill="#fff"/>`;
+  const wings=[];if(Lk.wg)wingsBust(wings,SVG,Lk.wg);   // 🪽 the tips behind the bust
   return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${cozyOn?labelHTML(label):label}"${cozyMark(Lk,gender,'face')}><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
-    hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top,sk.c)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
+    wings.join('')+hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top,sk.c)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
     `<rect x="34" y="50" width="12" height="12" rx="5" fill="${sk.neck}"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${sk.c}"/>${hairFront(Lk.hair,hair)}`+eyes+
     `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/>`+
     (Lk.acc==='tui_cheo'?'':accBust(Lk.acc,ak))+pairsBust(Lk.pr)+`</svg>`;
 }
 /** The player's own portrait from the state (board, ranking, marriage, stories…). */
-export const myPortrait=(state,size=40,label='Bạn')=>portrait(PAIRS?{...lookOf(state),pr:{...PAIRS}}:lookOf(state),state?.journey?.gender,size,label);
+export const myPortrait=(state,size=40,label='Bạn')=>{const L=lookOf(state),wg=wingOfState(state);if(PAIRS)L.pr={...PAIRS};if(wg)L.wg=wg;return portrait(L,state?.journey?.gender,size,label);};
 
 /* ---- the full character (origin at the feet, up is negative) ----
  * The same painters draw the walking character on the scene canvas (BobaWorld.character, pen CANVAS)
@@ -252,7 +259,11 @@ export const myPortrait=(state,size=40,label='Bạn')=>portrait(PAIRS?{...lookOf
 export const CANVAS={R,E,L,P,heart,bloom,
   ring:(c,x,y,r,col,w)=>{c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.strokeStyle=col;c.lineWidth=w;c.stroke();},
   path:(c,d,fill)=>{c.fillStyle=fill;c.fill(new Path2D(d));},
-  stroke:(c,d,col,w)=>{c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.stroke(new Path2D(d));}};
+  stroke:(c,d,col,w)=>{c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.stroke(new Path2D(d));},
+  // 🪽 a path filled with a gradient from (x1, y1) to (x2, y2); a soft radial glow (v4/wings-art.js)
+  pathG:(c,d,c1,c2,x1,y1,x2,y2)=>{const g=c.createLinearGradient(x1,y1,x2,y2);g.addColorStop(0,c1);g.addColorStop(1,c2);c.fillStyle=g;c.fill(new Path2D(d));},
+  glow:(c,x,y,rx,ry,col,a=.4)=>{c.save();c.translate(x,y);c.scale(1,ry/rx);const g=c.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,col+Math.round(a*255).toString(16).padStart(2,'0'));g.addColorStop(1,col+'00');c.fillStyle=g;c.beginPath();c.arc(0,0,rx,0,Math.PI*2);c.fill();c.restore();}};
+let GID=0;   // SVG gradient ids, unique in the page
 const n1=v=>Math.round(v*10)/10;
 /** SVG pen: `c` is an array of markup strings. */
 export const SVG={
@@ -265,6 +276,8 @@ export const SVG={
   ring:(c,x,y,r,col,w)=>c.push(`<circle cx="${n1(x)}" cy="${n1(y)}" r="${r}" fill="none" stroke="${col}" stroke-width="${w}"/>`),
   path:(c,d,fill)=>c.push(`<path d="${d}" fill="${fill}"/>`),
   stroke:(c,d,col,w)=>c.push(`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`),
+  pathG:(c,d,c1,c2,x1,y1,x2,y2)=>{const id=`wg${++GID}`;c.push(`<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${n1(x1)}" y1="${n1(y1)}" x2="${n1(x2)}" y2="${n1(y2)}"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient><path d="${d}" fill="url(#${id})"/>`);},
+  glow:(c,x,y,rx,ry,col,a=.4)=>{const id=`wg${++GID}`;c.push(`<radialGradient id="${id}"><stop offset="0" stop-color="${col}" stop-opacity="${a}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient><ellipse cx="${n1(x)}" cy="${n1(y)}" rx="${n1(rx)}" ry="${n1(ry)}" fill="url(#${id})"/>`);},
 };
 export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92 -18 -97Q-26 -92 -31 -80Z',
   soft:'M-30 -88C-33 -119 19 -120 31 -90Q19 -93 7 -105Q5 -88 -12 -84Q-17 -91 -16 -101Q-21 -89 -30 -88Z'};
@@ -273,7 +286,7 @@ export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92
  * and lookOf stay the save's own. */
 let OVER=null;
 export function setLookOver(fn){OVER=typeof fn==='function'?fn:null;}
-export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;if(PAIRS)L.pr={...PAIRS};const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
+export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color,wg=wingOfState(state);if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;if(PAIRS)L.pr={...PAIRS};if(wg)L.wg=wg;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
 /** 🎖️ The rank the character wears (game/org.py, v4/insignia.js): the current career's org grade, while "Mặc đồ làm việc"
  * is on. {o: org id, g: grade id}; never in lookOf (live frames carry it apart, as `rk`). */
 export function rankRef(state){
@@ -293,11 +306,19 @@ export function figureOf(Lk,g){
  * Each kind has its own place, so every pair worn shows at once (no limit: "đừng giới hạn số lượng đeo"): 🏎️ Chí cốt a red
  * supercar model on a keyring at the right hip, 👜 Bạn thân a pink handbag in the left hand, 💐 Tri kỉ an eternal rose pinned
  * on the chest. More of one kind stack: up to three cars on the ring, heart charms on the bag, a corsage of roses.
+ * 2.5.4 (owner 22/10 "thêm nhiều món nữa đi"): 🧶 Chỉ đỏ a red string on the right wrist, ⭐ Đồng đội a star badge on the
+ * right of the chest, 🧸 Gấu bông a teddy sitting on the left shoulder, 🎈 Bay cao a heart balloon tied to the right wrist,
+ * 🪭 Tri âm a paper fan open in the left hand, 💞 Nửa trái tim half a silver heart on a chain, 🟢 Kết nghĩa a jade disc with
+ * a red tassel at the left hip.
  * Bold shapes with a dark outline, so a worn piece reads at a phone's normal zoom on both maps. */
-export const PAIR_KINDS=Object.freeze(['chi_cot','ban_than','tri_ki']);
+export const PAIR_KINDS=Object.freeze(['chi_cot','ban_than','tri_ki','chi_do','huy_hieu','gau_bong','bong_bay','quat','day_chuyen','ngoc_boi']);
 const INK='#2b1d1a';
 export const PAIR_ART=Object.freeze({chi_cot:{c:'#e3352b',d:'#8f1a12',l:'#ff8a6b',w:'#bfe6ff',k:'#262022',m:'#e8b83f'},
-  ban_than:{c:'#f58db1',d:'#b33f69',l:'#ffd1e0',m:'#f2c14e'},tri_ki:{c:'#cf2a4b',d:'#7d1027',l:'#ff8aa1',g:'#3f9150',gd:'#22612f'}});
+  ban_than:{c:'#f58db1',d:'#b33f69',l:'#ffd1e0',m:'#f2c14e'},tri_ki:{c:'#cf2a4b',d:'#7d1027',l:'#ff8aa1',g:'#3f9150',gd:'#22612f'},
+  chi_do:{c:'#d8242b',d:'#8e1016',m:'#f2c14e'},huy_hieu:{c:'#f5c542',d:'#2f6fb3',l:'#fff1a8'},
+  gau_bong:{c:'#b07a4f',d:'#7a4f2e',l:'#f0d2b0',m:'#f27da0'},bong_bay:{c:'#ff5d8f',d:'#c22e5d',l:'#ffd1e0'},
+  quat:{c:'#f7ecd4',d:'#b98a52',l:'#f29bb3',m:'#6aa86f'},day_chuyen:{c:'#dfe3ea',d:'#8f99a8',l:'#ffffff',m:'#ff6f9a'},
+  ngoc_boi:{c:'#3fae7a',d:'#1f6b47',l:'#a8e6c4',m:'#d8242b'}});
 let PAIRS=null;
 /** {kind: count} with known kinds only (1–99 each), or null. Anything else (a newer build's kind, a bad frame) is left out. */
 export function cleanPairs(pr){
@@ -337,11 +358,62 @@ function rose(c,K,x,y,s,side,a){
   K.stroke(c,tf('M-2.6 -0.4Q0 -3.4 2.6 -0.4Q0 2.6 -1.4 0.4',x,y,s,side),a.l,1.2*s);
   K.E(c,x+side*1.5*s,y-1.8*s,1*s,1*s,'#ffffffb0');
 }
-/** Every pair worn, at its own place. `at`: where each kind sits ({car: [x, y] the ring, bag: [x, y] its top, rose: [x, y]}),
- * `s` the scale, `side` -1 to mirror (facing left), `back` the chest is out of sight. The defaults fit paintPlayer. */
+/** 🧶 A red string with a gold bead (local origin: the wrist). */
+function bracelet(c,K,x,y,s,side,a){
+  const d=tf('M-6 -1.6Q0 3 6 -1.6',x,y,s,side);K.stroke(c,d,INK,3.8*s);K.stroke(c,d,a.c,2.3*s);
+  K.stroke(c,tf('M5 -1L7.5 3',x,y,s,side),a.d,1.2*s);K.E(c,x,y+1.2*s,2*s,2*s,INK);K.E(c,x,y+1.2*s,1.35*s,1.35*s,a.m);
+}
+/** ⭐ A star badge on a blue round (local origin: its centre). */
+function badge(c,K,x,y,s,a){
+  K.E(c,x,y,6.6*s,6.6*s,INK);K.E(c,x,y,5.6*s,5.6*s,a.d);
+  const pts=[];for(let i=0;i<10;i++){const r=(i%2?2.1:4.6)*s,t=-Math.PI/2+i*Math.PI/5;pts.push([x+Math.cos(t)*r,y+Math.sin(t)*r]);}
+  K.P(c,pts,a.c);K.E(c,x-1.2*s,y-1.4*s,.9*s,.9*s,a.l);
+}
+/** 🧸 A teddy sitting (local origin: its body). */
+function teddy(c,K,x,y,s,side,a){
+  for(const ex of [-3.8,3.8]){K.E(c,x+side*ex*s,y-9*s,2.6*s,2.6*s,INK);K.E(c,x+side*ex*s,y-9*s,1.9*s,1.9*s,a.c);}
+  K.E(c,x,y,4.8*s,4.4*s,INK);K.E(c,x,y,4*s,3.6*s,a.c);K.E(c,x,y+.6*s,2.2*s,2*s,a.l);
+  K.E(c,x,y-5.4*s,5*s,4.6*s,INK);K.E(c,x,y-5.4*s,4.2*s,3.8*s,a.c);K.E(c,x+side*.4*s,y-4.4*s,2*s,1.5*s,a.l);
+  K.E(c,x-1.7*s,y-6.4*s,.65*s,.65*s,INK);K.E(c,x+1.7*s,y-6.4*s,.65*s,.65*s,INK);K.E(c,x+side*.4*s,y-4.9*s,.6*s,.45*s,INK);
+  K.P(c,[[x-3*s,y-2.4*s],[x,y-1.4*s],[x-3*s,y-.4*s]],a.m);K.P(c,[[x+3*s,y-2.4*s],[x,y-1.4*s],[x+3*s,y-.4*s]],a.m);
+}
+/** 🎈 A heart balloon at (x, y), its string down to (wx, wy). */
+function balloon(c,K,x,y,wx,wy,s,a){
+  K.stroke(c,`M${n1(wx)} ${n1(wy)}Q${n1(x+(wx-x)*.2+3*s)} ${n1(y+(wy-y)*.5)} ${n1(x)} ${n1(y+2*s)}`,INK,1*s);
+  K.heart(c,x,y-.4*s,.44*s,INK);K.heart(c,x,y,.36*s,a.c);K.E(c,x-2.6*s,y-5.4*s,1.3*s,1.8*s,a.l);
+  K.P(c,[[x-1.4*s,y+2.6*s],[x+1.4*s,y+2.6*s],[x,y+1*s]],a.d);
+}
+/** 🪭 A paper fan open, its pivot at (x, y), opening up and away from the body. */
+function fan(c,K,x,y,s,side,a){
+  const R=13*s,pt=deg=>[x+side*Math.cos(deg*Math.PI/180)*R,y+Math.sin(deg*Math.PI/180)*R];
+  const [x1,y1]=pt(-160),[x2,y2]=pt(-70),cm=R/Math.cos(45*Math.PI/180),cx=x+side*Math.cos(-115*Math.PI/180)*cm,cy=y+Math.sin(-115*Math.PI/180)*cm;
+  const d=`M${n1(x)} ${n1(y)}L${n1(x1)} ${n1(y1)}Q${n1(cx)} ${n1(cy)} ${n1(x2)} ${n1(y2)}Z`;
+  K.stroke(c,d,INK,2.4*s);K.path(c,d,a.c);
+  for(const deg of [-148,-130,-112,-94,-80]){const [ex,ey]=pt(deg);K.L(c,x,y,ex,ey,a.d,.7*s);}
+  const [lx,ly]=pt(-118);K.bloom(c,x+(lx-x)*.62,y+(ly-y)*.62,3.4*s,a.l);K.E(c,x+(lx-x)*.4,y+(ly-y)*.4,1.1*s,1.1*s,a.m);
+  K.L(c,x,y,x-side*1.5*s,y+4*s,INK,2.4*s);K.E(c,x,y,1.2*s,1.2*s,a.d);
+}
+/** 💞 Half a silver heart on a chain (local origin: the pendant). */
+function halfHeart(c,K,x,y,s,a){
+  K.stroke(c,`M${n1(x-8*s)} ${n1(y-9*s)}Q${n1(x)} ${n1(y-1*s)} ${n1(x+8*s)} ${n1(y-9*s)}`,a.d,1*s);
+  const d=`M${n1(x)} ${n1(y+5*s)}C${n1(x-6.5*s)} ${n1(y+1*s)} ${n1(x-6.5*s)} ${n1(y-5*s)} ${n1(x-2.6*s)} ${n1(y-5*s)}C${n1(x-1*s)} ${n1(y-5*s)} ${n1(x)} ${n1(y-3.8*s)} ${n1(x)} ${n1(y-2.6*s)}L${n1(x+.9*s)} ${n1(y-.6*s)}L${n1(x-.6*s)} ${n1(y+1.2*s)}L${n1(x+.6*s)} ${n1(y+3*s)}Z`;
+  K.stroke(c,d,INK,2*s);K.path(c,d,a.c);K.E(c,x-2.8*s,y-1.2*s,1.2*s,1.2*s,a.m);K.E(c,x-3.6*s,y-3.2*s,.6*s,.6*s,a.l);
+}
+/** 🟢 A jade disc with a red tassel, hung from the belt (local origin: the disc). */
+function jade(c,K,x,y,s,a){
+  K.L(c,x,y-9*s,x,y-4*s,a.m,1.2*s);K.E(c,x,y-9*s,1.3*s,1.3*s,a.m);
+  K.E(c,x,y,5*s,5*s,INK);K.E(c,x,y,4.2*s,4.2*s,a.c);K.E(c,x-1.2*s,y-1.4*s,1.6*s,1.2*s,a.l);K.E(c,x,y,1.4*s,1.4*s,a.d);
+  for(const dx of [-1.6,0,1.6])K.L(c,x,y+4.6*s,x+dx*s,y+12*s,a.m,1.1*s);K.E(c,x,y+5.2*s,1.4*s,1.2*s,a.m);
+}
+/** Every pair worn, at its own place. `at`: where each kind sits ({car: [x, y] the ring, bag: [x, y] its top, rose: [x, y],
+ * wrist, badge, shoulder, balloon, fan, neck, jade}), `s` the scale, `side` -1 to mirror (facing left), `back` the chest is
+ * out of sight. The defaults fit paintPlayer. */
 export function paintPairs(c,F,K=CANVAS,{at=null,s=1,side=1,back=false}={}){
   const pr=cleanPairs(F?.L?.pr);if(!pr)return;
-  const A={car:[17,-19],bag:[-31,-24],rose:[-12,-45],...(at||{})};
+  const A={car:[17,-19],bag:[-31,-24],rose:[-12,-45],wrist:[25,-30],badge:[12,-44],shoulder:[-25,-55],balloon:[40,-104],fan:[-26,-40],neck:[0,-45],jade:[-14,-14],...(at||{})};
+  if(pr.bong_bay){const [x,y]=A.balloon,[wx,wy]=A.wrist,n=Math.min(pr.bong_bay,3);
+    for(let i=n-1;i>=0;i--)balloon(c,K,x+side*[0,-9,8][i]*s,y+[0,6,9][i]*s,wx,wy,s*(i?.85:1),PAIR_ART.bong_bay);}
+  if(pr.ngoc_boi){const [x,y]=A.jade;for(let i=Math.min(pr.ngoc_boi,2)-1;i>=0;i--)jade(c,K,x-side*i*6*s,y+i*2*s,s,PAIR_ART.ngoc_boi);}
   if(pr.ban_than){const [x,y]=A.bag;bag(c,K,x,y,s,side,PAIR_ART.ban_than,pr.ban_than);}
   if(pr.chi_cot){
     const a=PAIR_ART.chi_cot,[x,y]=A.car,n=Math.min(pr.chi_cot,3);
@@ -350,6 +422,11 @@ export function paintPairs(c,F,K=CANVAS,{at=null,s=1,side=1,back=false}={}){
   }
   if(pr.tri_ki&&!back){const [x,y]=A.rose,n=Math.min(pr.tri_ki,3),spots=[[0,0],[-6,4],[6,4]];
     for(let i=n-1;i>=0;i--)rose(c,K,x+side*spots[i][0]*s,y+spots[i][1]*s,s*(n>1?.86:1),side,PAIR_ART.tri_ki);}
+  if(pr.day_chuyen&&!back){const [x,y]=A.neck;halfHeart(c,K,x,y,s,PAIR_ART.day_chuyen);}
+  if(pr.huy_hieu&&!back){const [x,y]=A.badge,n=Math.min(pr.huy_hieu,2);for(let i=n-1;i>=0;i--)badge(c,K,x+side*i*5*s,y+i*5*s,s*(n>1?.85:1),PAIR_ART.huy_hieu);}
+  if(pr.chi_do){const [x,y]=A.wrist,n=Math.min(pr.chi_do,3);for(let i=n-1;i>=0;i--)bracelet(c,K,x,y+i*2.6*s,s,side,PAIR_ART.chi_do);}
+  if(pr.quat){const [x,y]=A.fan;fan(c,K,x,y,s,-side,PAIR_ART.quat);}
+  if(pr.gau_bong){const [x,y]=A.shoulder;teddy(c,K,x,y,s,side,PAIR_ART.gau_bong);}
 }
 /** The pairs on the round bust (80×80): the rose on the chest, the bag and the car small along the bottom edge. */
 export function pairsBust(pr){
@@ -358,6 +435,11 @@ export function pairsBust(pr){
   if(p.ban_than)bag(out,SVG,14,66,.62,1,PAIR_ART.ban_than,1);
   if(p.chi_cot)car(out,SVG,64,74,.55,1,PAIR_ART.chi_cot);
   if(p.tri_ki)rose(out,SVG,29,66,.62,1,PAIR_ART.tri_ki);
+  if(p.day_chuyen)halfHeart(out,SVG,40,66,.6,PAIR_ART.day_chuyen);
+  if(p.huy_hieu)badge(out,SVG,51,67,.62,PAIR_ART.huy_hieu);
+  if(p.gau_bong&&!p.ban_than)teddy(out,SVG,13,66,.62,1,PAIR_ART.gau_bong);
+  if(p.bong_bay)balloon(out,SVG,70,20,70,46,.5,PAIR_ART.bong_bay);
+  if(p.ngoc_boi&&!p.chi_cot)jade(out,SVG,64,70,.55,PAIR_ART.ngoc_boi);
   return out.join('');
 }
 /** The two pieces of a pair side by side, large (Tiệm phụ kiện, the wardrobe, the profile). '' for a kind this build lacks. */
@@ -366,7 +448,14 @@ export function pairIcon(kind,size=56,label=''){
   const out=[];
   if(kind==='chi_cot'){car(out,SVG,-7,-6,1.3,1,a);car(out,SVG,7,9,1.3,-1,a);}
   else if(kind==='ban_than'){bag(out,SVG,-10,-9,1.1,1,a,1);bag(out,SVG,10,-3,1.1,-1,a,1);}
-  else{rose(out,SVG,-8,-4,1.6,1,a);rose(out,SVG,8,5,1.6,-1,a);}
+  else if(kind==='tri_ki'){rose(out,SVG,-8,-4,1.6,1,a);rose(out,SVG,8,5,1.6,-1,a);}
+  else if(kind==='chi_do'){bracelet(out,SVG,-8,-3,2.2,1,a);bracelet(out,SVG,8,7,2.2,-1,a);}
+  else if(kind==='huy_hieu'){badge(out,SVG,-9,-5,1.7,a);badge(out,SVG,9,6,1.7,a);}
+  else if(kind==='gau_bong'){teddy(out,SVG,-10,4,1.55,1,a);teddy(out,SVG,10,8,1.55,-1,a);}
+  else if(kind==='bong_bay'){balloon(out,SVG,-8,-6,-3,20,1.25,a);balloon(out,SVG,9,-1,3,20,1.25,a);}
+  else if(kind==='quat'){fan(out,SVG,-2,14,1.45,-1,a);fan(out,SVG,2,16,1.45,1,a);}
+  else if(kind==='day_chuyen'){halfHeart(out,SVG,-1.5,2,2.3,a);const m=[];halfHeart(m,SVG,0,0,2.3,a);out.push(`<g transform="translate(1.5 2) scale(-1 1)">${m.join('')}</g>`);}
+  else{jade(out,SVG,-8,-3,1.7,a);jade(out,SVG,8,1,1.7,a);}
   const aria=label?`role="img" aria-label="${label.replace(/[&<>"]/g,ch=>`&#${ch.charCodeAt(0)};`)}"`:'aria-hidden="true"';
   return `<svg class="pair-icon" width="${size}" height="${size}" viewBox="-25 -25 50 50" ${aria}>${out.join('')}</svg>`;
 }
@@ -545,6 +634,7 @@ function paintAccessoryShape(c,id,k,K,direction='se'){
 export function paintPlayer(c,F,K=SVG,arms=null){
   const sk=F.skin,male=F.g==='male',bb=!arms&&F.bb&&typeof F.bb==='object'?F.bb:null;   // 👶 carrying: the arms hold the baby
   K.E(c,0,0,26,8,'#81644823');
+  if(F.L?.wg)paintWings(c,F,K);   // 🪽 behind everything (v4/wings-art.js)
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
   K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l&&!bb)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r&&!bb)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
@@ -561,6 +651,15 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   if(bb)paintCarried(c,bb,K,F);   // 👶 in front of everything: held to the chest
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
+/** 🪽 A wing large, both sides (🛍️ Tiệm phụ kiện, the wardrobe): '' for a style this build lacks. */
+export function wingIcon(wg,size=56,label=''){
+  const w=cleanWing(wg);if(!w)return '';
+  const out=[];wingArt(out,SVG,w);
+  const aria=label?`role="img" aria-label="${label.replace(/[&<>"]/g,ch=>`&#${ch.charCodeAt(0)};`)}"`:'aria-hidden="true"';
+  return `<svg class="wing-icon" width="${size}" height="${size}" viewBox="-30 -30 60 60" ${aria}>${out.join('')}</svg>`;
+}
+/** A look with a walker's wing (`wg` beside its look on the street and the 2.5D map). */
+export const withWings=(L,wg)=>{const w=cleanWing(wg);if(w)return {...L,wg:w};if(L&&'wg' in L){const {wg:_,...rest}=L;return rest;}return L;};
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */
 export function figureSVG(Lk,gender,{w=120,h=170,label='',box='-50 -146 100 154',facing='se'}={}){
   const out=[];paintPlayer(out,figureOf(Lk,gender),SVG);

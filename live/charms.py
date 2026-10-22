@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import time
 
-from game.friend_charms_content import ORDER
+from game.friend_charms_content import ORDER, REL_INDEX
 
 from .db import Error as DbError, log
 from .limits import LRU
@@ -89,6 +89,27 @@ class Charms:
 
     async def one(self, player) -> dict | None:
         return (await self.of([player])).get(player.pid)
+
+
+async def bond(app, p, o) -> dict | None:
+    """💞 The relationship two friends set ({id, emoji, name}, game/friend_charms.py rel_between): shown only while they
+    still share a pair of a kind that opens it; None for plain friends, a database without friend_bonds (SCHEMA_VERSION 90)
+    or any error (a card never fails for it)."""
+    a, b = getattr(p, 'sid', None), getattr(o, 'sid', None)
+    if app.db is None or not (isinstance(a, str) and a and isinstance(b, str) and b) or a == b:
+        return None
+    lo, hi = (a, b) if a < b else (b, a)
+    try:
+        row = await app.db.fetchrow('SELECT label FROM friend_bonds WHERE lo=? AND hi=?', (lo, hi))
+        rel = REL_INDEX.get(row['label']) if row else None
+        if not rel:
+            return None
+        kinds = {r['kind'] for r in await app.db.fetch(
+            "SELECT kind FROM friend_charms WHERE status='paired' AND ((a=? AND b=?) OR (a=? AND b=?))", (a, b, b, a))}
+    except DbError as e:
+        log('charms bond:', type(e).__name__)
+        return None
+    return {k: rel[k] for k in ('id', 'emoji', 'name')} if kinds & set(rel['kinds']) else None
 
 
 def of_app(app) -> Charms:

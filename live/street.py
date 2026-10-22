@@ -34,7 +34,10 @@ Moving (memory only, never the database)
 * 🏅 Every honour title held now (live/honours.py: weekly leaderboard tops, fair titles, the wedding race) goes out as
   `tt` [ids] on a public entry and a `card`; `ti` keeps its text for older clients.
 * 🤝 Phụ kiện đôi (live/charms.py: read from the game's table, never from a frame): a public entry may carry `pr`
-  {kind: count}; a change comes as a `pr` event {pid, pr} (null: none worn). Older clients ignore both.
+  {kind: count}; a change comes as a `pr` event {pid, pr} (null: none worn). Older clients ignore both. A friend's `card`
+  may carry `rel` {id, emoji, name}: the 💞 relationship the two set (game/friend_charms.py), read from friend_bonds.
+* 🪽 Cánh (live/wings.py: read from the game's table wing_worn, never from a frame): a public entry may carry `wg`
+  {k: style, r: tier}; a change comes as a `wg` event {pid, wg} (null: none worn). Older clients ignore both.
 * 👶 Bế bé đi chơi (live/babies.py): `walk_in` / `wed_in` may carry `bb` {n, g, o, sh?}, the baby in the player's
   arms; their public entry has `bb` while set. The shared child is carried by one spouse at a time (`bb_taken` in
   walk_room). Optional: an older client ignores it.
@@ -77,7 +80,7 @@ import re
 import secrets
 import time
 
-from . import babies, bangs, charms, coride, effects, honours, plates, styles
+from . import babies, bangs, charms, coride, effects, honours, plates, styles, wings
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX, PET_SETS
@@ -329,7 +332,7 @@ def clean_pet(pt) -> dict | None:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg', 'pr')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg', 'pr', 'wg')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None,
                  pt: dict | None = None, bb: dict | None = None):
@@ -344,6 +347,7 @@ class Walker:
         self.tt = None                 # 🏅 every honour title held now (live/honours.py): ids, best first
         self.bg = None                 # ⚔️ the bang tag (live/bangs.py)
         self.pr = None                 # 🤝 the phụ kiện đôi worn {kind: count} (live/charms.py), outside the look
+        self.wg = None                 # 🪽 the wing worn {k, r} (live/wings.py), outside the look
 
     @property
     def speed(self) -> float:
@@ -373,6 +377,8 @@ class Walker:
             d['bg'] = self.bg
         if self.pr:
             d['pr'] = self.pr
+        if self.wg:
+            d['wg'] = self.wg
         return d
 
 
@@ -668,6 +674,7 @@ class StreetFeature(Feature):
         w.tt = tt or None
         w.bg = await bangs.of_app(self.app).one(p.pid)   # ⚔️ once per entry (live/bangs.py)
         w.pr = await charms.of_app(self.app).one(p)   # 🤝 the pairs worn, once per entry (live/charms.py)
+        w.wg = await wings.of_app(self.app).one(p)   # 🪽 the wing worn, likewise (live/wings.py)
         self._enter(room, conn, w)
         out = self._snapshot(room, p, now)
         if by:
@@ -898,9 +905,11 @@ class StreetFeature(Feature):
                 code = await self._code(o.sid)
             except DbError as e:
                 log('card code:', type(e).__name__)
+        rel = await charms.bond(self.app, p, o) if friend else None   # 💞 the relationship the two set
         return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account,
                     code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private, **({'st': w.st} if w.st else {}),
-                    **({'tt': w.tt} if w.tt else {}), **({'bg': w.bg} if w.bg else {}))
+                    **({'tt': w.tt} if w.tt else {}), **({'bg': w.bg} if w.bg else {}), **({'rel': rel} if rel else {}),
+                    **({'pr': w.pr} if w.pr else {}), **({'wg': w.wg} if w.wg else {}))
 
     @on('invite', rate=(4, 60))
     async def invite(self, conn, f):
@@ -949,7 +958,7 @@ class StreetFeature(Feature):
         for k, (p, conns, old) in enumerate(moving):
             sx, sy = g.spots['spawn']
             w = Walker(p, old.look, old.g, old.title, g.clamp(sx + (50 if k == 0 else -50), sy), now, rk=old.rk)   # seat 0 is on the right
-            w.st, w.tt, w.bg, w.pr = old.st, old.tt, old.bg, old.pr
+            w.st, w.tt, w.bg, w.pr, w.wg = old.st, old.tt, old.bg, old.pr, old.wg
             for c in conns:
                 self._enter(cafe, c, w)
             tb = cafe.data['tables'][0]
