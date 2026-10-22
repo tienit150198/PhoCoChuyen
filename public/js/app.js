@@ -1978,7 +1978,14 @@ function ensureCareerUI(){
     if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}
   });
 }
-api.addEventListener('offline',()=>renderMain());
+// 22/10 (owner: "mất kết nối toàn bộ"): an offline save used to wait for the player's tap on Thử lại; it now tries
+// again by itself (3 s, doubling to 30 s) and as soon as the tab is back in front.
+let reconnectTimer=0,reconnectWait=3000;
+const reconnectNow=()=>{clearTimeout(reconnectTimer);reconnectTimer=0;if(api.connected||!api.state)return;
+  api.refresh().then(()=>{reconnectWait=3000;renderMain();}).catch(()=>{reconnectWait=Math.min(30000,reconnectWait*2);autoReconnect();});};
+function autoReconnect(){if(!reconnectTimer&&!api.connected)reconnectTimer=setTimeout(reconnectNow,reconnectWait);}
+api.addEventListener('offline',()=>{renderMain();autoReconnect();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!api.connected)reconnectNow();});
 // While the always-on features load one by one after start-up (lazyBoot), only a module the screen is waiting
 // for re-renders it; the rest get one re-render at the end (seven full re-renders there used to land on the
 // player's first taps).
