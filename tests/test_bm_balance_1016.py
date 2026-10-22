@@ -26,36 +26,36 @@ class Bands(unittest.TestCase):
         return fh.luck_p({}, today(net) if f is None else f, game, T, stake=stake)
 
     def test_each_band(self):
-        for net, stake, want in ((0, 1000, .57), (30_000, 1000, .57), (30_001, 1000, .52), (99_999, 1000, .52),
-                                 (100_000, 1000, .45), (10**6, 10, .45), (-1, 1, .60), (0, 1, .57)):
+        for net, stake, want in ((0, 1000, .60), (30_000, 1000, .60), (30_001, 1000, .55), (99_999, 1000, .55),
+                                 (100_000, 1000, .48), (10**6, 10, .48), (-1, 1, .63), (0, 1, .60)):
             for game in fh.DRAWN:
                 with self.subTest(net=net, stake=stake, game=game):
                     self.assertEqual(self.p(net, stake, game), want)
 
     def test_winning_back_is_for_small_stakes_only(self):
         """A stake of at most min(−net, 5,000): losing a little then betting big gains nothing."""
-        for net, stake, want in ((-3000, 3000, .60), (-3000, 3001, .57), (-10_000, 5000, .60), (-10_000, 5001, .57),
-                                 (-10**6, 5000, .60), (-10**6, 45_000, .57), (-10**6, 49_999, .57), (-10, 45_000, .57)):
+        for net, stake, want in ((-3000, 3000, .63), (-3000, 3001, .60), (-10_000, 5000, .63), (-10_000, 5001, .60),
+                                 (-10**6, 5000, .63), (-10**6, 45_000, .60), (-10**6, 49_999, .60), (-10, 45_000, .60)):
             with self.subTest(net=net, stake=stake):
                 self.assertEqual(self.p(net, stake), want)
 
     def test_yesterday_and_no_state_count_as_zero(self):
         old = dict(fh.initial(), date=fh.vn_date(T - 86400), net=10**6)
-        self.assertEqual(self.p(0, 1000, f=old), .57)
-        self.assertEqual(fh.luck_p({}, None, 'xd', T, stake=1000), .57)
+        self.assertEqual(self.p(0, 1000, f=old), .60)
+        self.assertEqual(fh.luck_p({}, None, 'xd', T, stake=1000), .60)
 
     def test_big_stakes_stay_at_40(self):
         for net in (-10**6, 0, 50_000, 10**6):
             for game in fh.DRAWN:
                 self.assertEqual(self.p(net, 50_000, game), fh.BIG_WIN_P)
-        self.assertEqual(self.p(0, 49_999), .57)
+        self.assertEqual(self.p(0, 49_999), .60)
 
     def test_never_below_40(self):
         j, f = {}, today(10**6)
         ps = [fh.luck_p(j, f, 'xd', T + i, stake=10) for i in range(30)]
-        self.assertEqual(ps[:10], [.45] * 10)
-        self.assertEqual(ps[10:15], [.40] * 5)   # .45 − .05
-        self.assertEqual(ps[15:], [.40] * 15)    # .45 − .12 = .33 → the floor
+        self.assertEqual(ps[:10], [.48] * 10)
+        self.assertEqual(ps[10:15], [.43] * 5)   # .48 − .05
+        self.assertEqual(ps[15:], [.40] * 15)    # .48 − .12 = .36 → the floor
         self.assertEqual(min(ps), fh.P_MIN)
 
     def test_ring_is_unchanged(self):
@@ -72,7 +72,7 @@ class Bands(unittest.TestCase):
         with mock.patch.object(fh, '_rng', Dice(draws=[.45])):
             self.assertFalse(fh._draw_luck(j, 'xd', fh.P_BACK))
         j = {}
-        with mock.patch.object(fh, '_rng', Dice(draws=[.5999])):
+        with mock.patch.object(fh, '_rng', Dice(draws=[.6299])):
             self.assertTrue(fh._draw_luck(j, 'xd', fh.P_BACK))
         self.assertEqual(j['fair_balance']['xd'], 1)
 
@@ -81,9 +81,9 @@ class Pace(unittest.TestCase):
     def test_10_11_16_rounds_in_a_minute(self):
         j, f = {}, today(0)
         ps = [fh.luck_p(j, f, 'xd', T + 3 * i, stake=1000) for i in range(20)]
-        self.assertEqual(ps[:10], [.57] * 10)
-        self.assertEqual(ps[10:15], [.52] * 5)
-        self.assertEqual(ps[15:], [.45] * 5)
+        self.assertEqual(ps[:10], [.60] * 10)
+        self.assertEqual(ps[10:15], [.55] * 5)
+        self.assertEqual(ps[15:], [.48] * 5)
         self.assertEqual(fh.pace_cut(10), 0)
         self.assertEqual(fh.pace_cut(11), .05)
         self.assertEqual(fh.pace_cut(15), .05)
@@ -93,9 +93,9 @@ class Pace(unittest.TestCase):
         j, f = {}, today(0)
         for i in range(15):
             fh.luck_p(j, f, 'xd', T + i, stake=100)
-        self.assertEqual(fh.luck_p(j, f, 'lt', T + 15, stake=100), .57)
-        self.assertEqual(fh.luck_p(j, f, 'xs', T + 15, stake=100), .57)
-        self.assertEqual(fh.luck_p(j, f, 'xd', T + 15, stake=100), .45)   # the xd's 16th
+        self.assertEqual(fh.luck_p(j, f, 'lt', T + 15, stake=100), .60)
+        self.assertEqual(fh.luck_p(j, f, 'xs', T + 15, stake=100), .60)
+        self.assertEqual(fh.luck_p(j, f, 'xd', T + 15, stake=100), .48)   # the xd's 16th
 
     def test_a_minute_away_warms_it_up_and_old_times_are_pruned(self):
         j, f = {}, today(0)
@@ -104,7 +104,7 @@ class Pace(unittest.TestCase):
         self.assertEqual(len(j[fh.PACE_KEY]['xd']), fh.PACE_KEEP)
         self.assertEqual(fh.pace_now(j, 'xd', T + 24), 20)
         self.assertEqual(fh.pace_now(j, 'xd', T + 24 + 60), 0)
-        self.assertEqual(fh.luck_p(j, f, 'xd', T + 84, stake=100), .57)
+        self.assertEqual(fh.luck_p(j, f, 'xd', T + 84, stake=100), .60)
         self.assertEqual(j[fh.PACE_KEY]['xd'], [T + 84])
         fh.luck_p(j, f, 'lt', T + 200, stake=100)   # the other stalls' stale times go
         self.assertEqual(j[fh.PACE_KEY], {'lt': [T + 200]})
@@ -113,9 +113,9 @@ class Pace(unittest.TestCase):
         j, f = {}, today(0)
         for i in range(10):
             fh.luck_p(j, f, 'xs', T + i, stake=10)
-        self.assertEqual(fh.luck_p(j, f, 'xs', T + 59, stake=10), .52)    # T+0 is 59 s old: still inside
+        self.assertEqual(fh.luck_p(j, f, 'xs', T + 59, stake=10), .55)    # T+0 is 59 s old: still inside
         j2 = {fh.PACE_KEY: {'xs': [T + i for i in range(10)]}}
-        self.assertEqual(fh.luck_p(j2, f, 'xs', T + 60, stake=10), .57)   # T+0 is 60 s old: gone
+        self.assertEqual(fh.luck_p(j2, f, 'xs', T + 60, stake=10), .60)   # T+0 is 60 s old: gone
 
     def test_bao_and_dog_prices_slow_down_from_11(self):
         f = today(0)
@@ -257,7 +257,7 @@ class Payouts(unittest.TestCase):
             with mock.patch.dict('os.environ', {'MNL_BM_BOOST_OFF': ''}):
                 self.assertIsNone(fh.boost.rate({}, game, T, 10, fh.BIG_WIN_FROM, 0))
         j = {}
-        self.assertEqual(fh.luck_p(j, today(0), 'xd', T, stake=10), .57)   # the day's first round: no 65%
+        self.assertEqual(fh.luck_p(j, today(0), 'xd', T, stake=10), .60)   # the day's first round: no 65%
         self.assertNotIn(fh.boost.KEY, j)
 
 
@@ -286,9 +286,9 @@ class Commands(FairBase):
         self.assertEqual(r['fair']['net'], 8)
 
     def test_xd_draw_follows_the_ledger(self):
-        for net, stake, draw, won in ((0, 100, .5699, True), (0, 100, .57, False), (-200, 100, .5999, True),
-                                      (-200, 300, .5999, False), (40_000, 100, .5199, True), (40_000, 100, .52, False),
-                                      (100_000, 100, .4499, True), (100_000, 100, .45, False)):
+        for net, stake, draw, won in ((0, 100, .5999, True), (0, 100, .60, False), (-200, 100, .6299, True),
+                                      (-200, 300, .6299, False), (40_000, 100, .5499, True), (40_000, 100, .55, False),
+                                      (100_000, 100, .4799, True), (100_000, 100, .48, False)):
             with self.subTest(net=net, stake=stake, draw=draw):
                 s = self.net(story(10_000), net)
                 self.dice(Dice(draws=[draw]))
@@ -297,16 +297,16 @@ class Commands(FairBase):
                 validate_state(s)
 
     def test_xd_pace_in_the_command(self):
-        s = self.net(story(10**6), 1000)   # today a little up: the .57 band all along
+        s = self.net(story(10**6), 1000)   # today a little up: the .60 band all along
         for i in range(10):
             self.dice(Dice(draws=[.1 if i % 2 else .99]))
             s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertEqual(len(s['journey'][fh.PACE_KEY]['xd']), 10)
         self.assertEqual(public_state(s)['fair']['cool'], dict(game='xd', pace=True, n=10, gap=1))
-        self.dice(Dice(draws=[.52]))   # the 11th in a minute: .57 − .05
+        self.dice(Dice(draws=[.55]))   # the 11th in a minute: .60 − .05
         s2, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertLess(r['fair']['net'], 0)
-        self.dice(Dice(draws=[.5199]))
+        self.dice(Dice(draws=[.5499]))
         s2, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertGreater(r['fair']['net'], 0)
         validate_state(s2)
@@ -368,7 +368,7 @@ class Commands(FairBase):
         s = story(10_000)
         with mock.patch.object(fh, '_draw_luck', return_value=True) as dl:
             s, _ = self.act(s, 'fair_loto_buy', tier='tram', n=1)
-        self.assertEqual(dl.call_args.args[1:], ('lt', .57))
+        self.assertEqual(dl.call_args.args[1:], ('lt', .60))
         g = public_state(s)['fair']['ganh']
         self.assertEqual({v['pay'] for v in g['modes_rule'].values()}, {1.8})
         lt = public_state(s)['fair']['loto']
@@ -380,7 +380,7 @@ class Commands(FairBase):
         fair = public_state(s)['fair']
         self.assertEqual((fair['rules']['bao'], fair['rules']['bao_low'], fair['rules']['xd_pay']), (20, 10, 75))
         view = json.dumps(fair)
-        for word in ('0.57', '0.52', '0.45', '0.6,', 'fair_pace', 'P_BACK', 'HOT_FROM'):
+        for word in ('0.6,', '0.55', '0.48', '0.63', '0.57', '0.52', 'fair_pace', 'P_BACK', 'HOT_FROM'):
             self.assertNotIn(word, view)
 
 

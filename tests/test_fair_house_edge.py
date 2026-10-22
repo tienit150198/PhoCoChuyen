@@ -1,7 +1,7 @@
 """Historical edition rules and current 16/10 returns. Owner 08/10: the fair opens again (the edition from 09/10) and the house always wins (game/fair.py BASES, LOC_P,
 SIDE_OPEN; game/fair_scratch.py PRIZES; scripts/sim_fair_odds.py; docs/FAIR_HOUSE_EDGE.md).
 
-* Exact before-police returns follow the 16/10 draw (.57 at net 0) and payouts (chiếu trong 0.75×, lô tô 1.8×,
+* Exact before-police returns follow the 16/10 draw, +3 points on 22/10 (.60 at net 0) and payouts (chiếu trong 0.75×, lô tô 1.8×,
   vé cào 1.775×, bão 20, đua chó +5%). Monte-Carlo checks use real draws, streak caps and the pace; fast play loses.
 * The new edition: its dates, the entry ("sắp mở" before, "đã tàn" after), a save from the last edition starting afresh
   (money, days, gift, the police's mark; its loan collected), the last edition's titles settled once even by a server
@@ -36,19 +36,19 @@ class HouseEdge(unittest.TestCase):
     def test_gentler_fresh_draws_win_between_old_and_new_cutoffs(self):
         for game, old in (('xd', .49), ('lt', .46), ('xs', .51)):
             with self.subTest(game=game):
-                self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=10), .57)
-                draw = (old + .57) / 2
+                self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=10), .60)
+                draw = (old + .60) / 2
                 with mock.patch.object(fh._rng, 'random', return_value=draw):
                     self.assertFalse(fh._draw_luck({}, game, old))
                     self.assertTrue(fh._draw_luck({}, game, fh.luck_p({}, None, game, OPEN, stake=10)))
-        self.assertEqual((xs.P_HI, xs.P_LO), (.57, .57))
+        self.assertEqual((xs.P_HI, xs.P_LO), (.60, .60))
 
     def test_exact_fresh_returns_follow_unchanged_payouts(self):
         ex = sim.exact()
-        for g, expected, back in (('xd', .9975, 1.05), ('lt', 1.026, 1.08), ('xs', 1.01175, 1.065)):
+        for g, expected, back in (('xd', 1.05, 1.1025), ('lt', 1.08, 1.134), ('xs', 1.065, 1.11825)):
             with self.subTest(game=g):
                 self.assertAlmostEqual(ex[g]['rtp'], expected)
-                self.assertAlmostEqual(ex[g]['back'], back)      # winning back (.60), small stakes only
+                self.assertAlmostEqual(ex[g]['back'], back)      # winning back (.63 since 22/10), small stakes only
                 self.assertGreater(ex[g]['loc'], ex[g]['rtp'])
         self.assertAlmostEqual(ex['bc']['rtp'], 216 / 216)      # bão 20: even
         self.assertAlmostEqual(ex['bc']['low'], 206 / 216)      # bão 10 when fast or >= 100k up
@@ -57,7 +57,7 @@ class HouseEdge(unittest.TestCase):
             self.assertLessEqual(ex[g]['rtp'], 1)
             self.assertGreaterEqual(ex[g]['loc'], ex[g]['rtp'])
         self.assertTrue(.9 < ex['dg']['low'] <= ex['dg']['fresh'] < ex['dg']['rtp'])
-        self.assertAlmostEqual(ex['lt']['low'], .855)           # the 2-xu tờ
+        self.assertAlmostEqual(ex['lt']['low'], .90)           # the 2-xu tờ
         doc = fh.__doc__
         for g in PAID:
             self.assertTrue(any(f'{ex[g]["rtp"]:.{k}%}' in doc for k in (1, 2)), g)
@@ -81,7 +81,8 @@ class HouseEdge(unittest.TestCase):
                         fh._draw_luck(j, game, p)
 
     def test_monte_carlo_on_the_real_draws(self):
-        """The pace lowers spam returns below the stake; fresh and press stay close to even (owner 16/10)."""
+        """The pace lowers spam returns below the stake; fresh and press stay close to even (owner 16/10), a little over it
+        at the .60 band since 22/10."""
         ex = sim.exact()
         p, q = fh.BASES['xd'], fh.WIN_P_LOW
         capped_share = p**4 / ((1 - q) * sum(p**i for i in range(4)) + p**4)
@@ -94,7 +95,8 @@ class HouseEdge(unittest.TestCase):
                     if how == 'spam':
                         self.assertLess(back, .96, back)
                     else:
-                        self.assertLess(abs(back - 1), .09 if g == 'dg' else .04, back)   # đua chó: 5% under (16/10 night)
+                        # đua chó: 5% under (16/10 night); xd/lt/xs: up to ~8% over at the .60 band (owner 22/10 +3 points)
+                        self.assertLess(abs(back - 1), .09 if g in ('dg', 'xd', 'lt', 'xs') else .04, back)
                     if how == 'fresh':
                         self.assertAlmostEqual(back, ex[g].get('fresh', ex[g]['rtp']) * factor,
                                                delta=.035 if g == 'xs' else .05 if g == 'dg' else .02)
