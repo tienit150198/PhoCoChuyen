@@ -44,9 +44,12 @@ BLOCK_KEYS = frozenset({'v', 'own', 'on', 'seq', 'day', 'rq'})
 WING_KEYS = frozenset({'id', 'k', 'r', 'z'})
 COMMANDS = ('jr_pet_wing_buy', 'jr_pet_wing_wear', 'jr_pet_wing_fuse', 'jr_pet_wing_drop')
 ODDS_BUY = (7000, 3000)                                                   # per 10 000: D, C
-FUSE_BP = (6000, 4500, 3000, 1500, 600, 300)                              # tier t ×3 → t+1 (game/pet_tiers.py FUSE_BP)
-FUSE_FEE = (500, 2_000, 10_000, 50_000, 300_000, 5_000_000, 10_000_000)   # by the lowest tier; [6] = three SSS
-LEGEND_BP = 500
+# tier t ×3 → t+1: game/pet_tiers.py FUSE_BP up to A; from S easier than the pets' 6 / 3 / 5 % and dearer in fees (owner
+# 22/10: Huyền thoại "5-10 tỷ là hợp lý", not the pets' ~109 tỷ on average): from the cheapest style S ≈ 1 triệu,
+# SS ≈ 25 triệu, SSS ≈ 450 triệu, Huyền thoại ≈ 7 tỷ on average (tests/test_wings.py Tables).
+FUSE_BP = (6000, 4500, 3000, 1500, 1000, 1500)
+FUSE_FEE = (500, 2_000, 10_000, 50_000, 300_000, 20_000_000, 200_000_000)   # by the lowest tier; [6] = three SSS
+LEGEND_BP = 1500
 MIX_BP = 300
 LOSE_FROM = 4                                                             # S
 OWN_MAX = 60

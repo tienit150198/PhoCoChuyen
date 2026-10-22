@@ -165,7 +165,7 @@ class Fuse(unittest.TestCase):
         self.assertEqual([(x['id'], x['r']) for x in Wg(s)['own']], [(ids[2], 5)])
 
     def test_three_sss_make_a_legend_and_a_legend_is_the_top(self):
-        s, ids = owned(story(wallet=10**8), 6, 6, 6)
+        s, ids = owned(story(wallet=5 * 10**8), 6, 6, 6)
         with rolls(W.LEGEND_BP - 1):
             s, out = act(s, 'jr_pet_wing_fuse', wings=ids, confirm=True)
         self.assertEqual(out['fuse']['tier'], WC.TOP)
