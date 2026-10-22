@@ -14,6 +14,7 @@ from pathlib import Path
 
 from game import bank as bk
 from game import bank_plus as bp
+from game import fair_bm, wealth
 from game import quay_business as qb
 from game.engine import GameError, apply_action, migrate_state, public_state, validate_state
 from tests.test_bank import B, act, days, next_statement, opened, story, with_card
@@ -136,7 +137,7 @@ class Tiers(unittest.TestCase):
 
     def test_two_tiers_at_once_pay_both(self):
         s = self.rich()
-        self.assertEqual([t['cost'] for t in V(s)['plus']['tiers']], [0, 2_000_000, 22_000_000])
+        self.assertEqual([t['cost'] for t in V(s)['plus']['tiers']], [0, 2_000_000, 22_000_000, 222_000_000, 2_222_000_000])
         s, _ = act(s, 'jr_bk_tier', tier=2, src='acc', confirm=True)
         self.assertEqual(B(s)['balance'], 250_000_000 - 22_000_000)
         self.assertEqual(V(s)['plus']['cap'], 10**9)
@@ -160,6 +161,107 @@ class Tiers(unittest.TestCase):
         s['journey']['wallet'] = 3_000_000
         s, _ = act(s, 'jr_bk_tier', tier=1, src='cash', confirm=True)
         self.assertEqual((s['journey']['wallet'], P(s)['tier']), (1_000_000, 1))
+
+
+class HighTiers(unittest.TestCase):
+    """Owner 22/10 (later): 💎 Kim cương 10 tỷ and 👑 Thượng hạng 100 tỷ; a higher tier earns a little more interest."""
+
+    def kim_cuong(self):
+        s = opened(wallet=10**9)
+        s, _ = act(s, 'jr_bk_deposit', amount=10**9)
+        s, _ = act(s, 'jr_bk_tier', tier=2, src='acc', confirm=True)
+        s, _ = act(s, 'jr_bk_save', amount=B(s)['balance'], term=0)                  # 978.000.000
+        refused(self, s, 'jr_bk_tier', 'not_enough', tier=3, src='acc', confirm=True)
+        s, r = act(s, 'jr_bk_tier', tier=3, src='sav', confirm=True)                # the fee from the savings
+        self.assertIn('Kim cương', r['message'])
+        self.assertEqual(B(s)['demand'], 778_000_000)
+        s['journey']['wallet'] = 10**9
+        s, _ = act(s, 'jr_bk_save', amount=10**9, term=0, src='cash')
+        return s
+
+    def test_kim_cuong_saves_past_one_ty_as_one_book(self):
+        s = self.kim_cuong()
+        self.assertEqual((B(s)['demand'], P(s)['vip']), (bk.BAL_MAX, 778_000_000))
+        v = V(s)
+        self.assertEqual((v['savings']['demand'], v['savings']['total'], v['plus']['saved']), (1_778_000_000,) * 3)
+        self.assertEqual(v['plus']['room'], 10**10 - 1_778_000_000)
+        validate_state(s)
+        net = wealth.sheet(s)[1]
+        self.assertEqual(fair_bm.total_money(s['journey']), 1_778_000_000)          # a fine counts it too
+        s, _ = act(s, 'jr_bk_unsave', id='demand', amount=500_000_000)              # vip leaves first
+        self.assertEqual((B(s)['demand'], P(s)['vip'], B(s)['balance']), (bk.BAL_MAX, 278_000_000, 500_000_000))
+        self.assertEqual(wealth.sheet(s)[1], net)
+        refused(self, s, 'jr_bk_tier', 'no_money', tier=4, src='sav', confirm=True)  # 2 tỷ: not there yet
+        days(s)
+        # 1 tỷ × 0,05 % × 1,06 = 530.000 (spills into vip: the bank's pot is full), then 278,53 triệu × 0,053 % = 147.620
+        self.assertEqual((B(s)['demand'], P(s)['vip']), (bk.BAL_MAX, 278_000_000 + 530_000 + 147_620))
+        validate_state(s)
+        s, _ = act(s, 'jr_bk_unsave', id='demand', amount=500_000_000)              # 278,68 triệu from vip, then the rest
+        self.assertEqual(P(s)['vip'], 0)
+        self.assertEqual(B(s)['demand'], bk.BAL_MAX - 500_000_000 + 278_677_620)
+        validate_state(s)
+
+    def test_vip_only_from_kim_cuong(self):
+        s = opened(wallet=10**9)
+        s, _ = act(s, 'jr_bk_deposit', amount=10**9)
+        P(s) or bp.ensure(s)
+        P(s)['tier'] = 2
+        B(s)['demand'] = bk.BAL_MAX - 10                                             # grandfathered at Vàng
+        msg = refused(self, s, 'jr_bk_save', amount=11, term=0)
+        self.assertIn('10 xu', msg)
+        days(s)
+        self.assertEqual((B(s)['demand'], bp.vip(s)), (bk.BAL_MAX, 0))               # what does not fit is not paid
+
+    def test_thuong_hang_from_the_savings(self):
+        s = self.kim_cuong()
+        P(s)['vip'] = 3 * 10**9                                                     # saved over time
+        validate_state(s)
+        s, r = act(s, 'jr_bk_tier', tier=4, src='sav', confirm=True)
+        self.assertIn('Thượng hạng', r['message'])
+        self.assertIn('8%', r['message'])
+        self.assertEqual((P(s)['tier'], P(s)['vip'], B(s)['demand']), (4, 10**9, bk.BAL_MAX))
+        self.assertEqual([g['amt'] for g in B(s)['log'][-2:]], [-10**9, -10**9])   # one row holds at most 1 tỷ
+        self.assertEqual(V(s)['plus']['cap'], 10**11)
+        refused(self, s, 'jr_bk_tier', tier=5, src='sav', confirm=True)
+        validate_state(s)
+
+    def gains(self, tier):
+        """One day of the sổ không kỳ hạn and a 7-day sổ, at `tier`."""
+        s = opened(wallet=10**9)
+        s, _ = act(s, 'jr_bk_deposit', amount=200_000_000)
+        s, _ = act(s, 'jr_bk_save', amount=10_000_000, term=7)
+        bp.ensure(s)['tier'] = tier
+        B(s)['demand'] = 100_000_000
+        promised = V(s)['savings']['terms'][0]['interest']
+        before = B(s)['balance']
+        days(s)
+        demand = B(s)['demand'] - 100_000_000
+        days(s, 6)
+        return demand, B(s)['balance'] - before - 10_000_000, promised
+
+    def test_a_higher_tier_earns_a_little_more(self):
+        base_d, base_t, _ = self.gains(0)
+        self.assertEqual(base_d, 50_000)                                           # 100 triệu × 0,05 %/ngày
+        self.assertGreater(base_t, 0)
+        for tier, pct in enumerate(bp.RATE_BONUS):
+            with self.subTest(tier=tier):
+                d, t, promised = self.gains(tier)
+                self.assertEqual(d, 50_000 * (100 + pct) // 100)
+                self.assertEqual(t, base_t * (100 + pct) // 100)
+                self.assertEqual(promised, bk.term_interest(10_000_000, bk.TERM_RATE[7], 7) * (100 + pct) // 100)
+        self.assertEqual(bp.RATE_BONUS, (0, 2, 4, 6, 8))
+
+    def test_early_close_gets_the_bonus_on_the_demand_rate(self):
+        s = opened(wallet=10**9)
+        s, _ = act(s, 'jr_bk_deposit', amount=200_000_000)
+        bp.ensure(s)['tier'] = 4
+        s, _ = act(s, 'jr_bk_save', amount=10_000_000, term=30)
+        days(s, 2)
+        early = V(s)['savings']['terms'][0]['early']
+        before = B(s)['balance']
+        s, _ = act(s, 'jr_bk_unsave', id=B(s)['terms'][0]['id'], confirm=True)
+        self.assertEqual(B(s)['balance'] - before, 10_000_000 + early)
+        self.assertEqual(early, 10_000_000 * bk.DEMAND_BP * 2 * 108 // 100 // 10000)
 
 
 class QuayRestock(unittest.TestCase):
@@ -360,7 +462,7 @@ class Validation(unittest.TestCase):
         s = QuayRestock().shop()
         s, _ = act(s, 'jr_quay_restock', stall=ST(s)['id'], items={DISH: 40}, credit='loan')
         validate_state(s)
-        for path, value in ((('tier',), 3), (('card',), dict(no='12', limit=10)), (('loans', 0, 'due'), 1),
+        for path, value in ((('tier',), 5), (('vip',), bp.VIP_MAX + 1), (('vip',), -1), (('vpend',), 10**4), (('card',), dict(no='12', limit=10)), (('loans', 0, 'due'), 1),
                             (('loans', 0, 'at', 'k'), 'shop'), (('loans', 0, 'paid'), 10**9), (('extra',), 1), (('v',), 2)):
             with self.subTest(path=path):
                 x = copy.deepcopy(s)
@@ -418,6 +520,9 @@ class RollbackTo2524(unittest.TestCase):
         days(s, bp.STOCK_DAYS)                                       # one restock loan late
         self.assertEqual(P(s)['loans'][0]['nfee'], 1)
         out.append(copy.deepcopy(s))
+        k = HighTiers().kim_cuong()                                  # 💎 1 tỷ in the bank's pot, the rest in vip
+        validate_state(k)
+        out.append(copy.deepcopy(k))
         return json.loads(json.dumps(out))
 
     def test_saves_cross_2524_both_ways(self):

@@ -40,7 +40,7 @@ try{
   await page.goto(`http://127.0.0.1:${server.address().port}`);
   await page.evaluate(()=>fixture.open('save'));await page.waitForSelector('.bk-sheet[open] .bk-tiers');
   const tiers=await page.locator('.bk-tiers').textContent();
-  assert.match(tiers,new RegExp(`Hạng ${plus.name}`));assert.match(tiers,/còn gửi thêm được/);
+  assert.match(tiers,new RegExp(`Hạng ${plus.name}`));assert.match(tiers,/còn gửi thêm được/);assert.match(tiers,/Kim cương · tới 10\.000\.000\.000 xu/);assert.match(tiers,/lãi thêm 8%/);   // 💎👑 + the interest bonus
   await noSideways();await page.screenshot({path:resolve(out,'save-390.png'),fullPage:true});
   const up=plus.tiers.find(t=>!t.own);
   if(up){

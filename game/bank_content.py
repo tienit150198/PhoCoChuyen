@@ -116,8 +116,8 @@ DECLINE = {
 }
 
 # 🐷 Hạng tiết kiệm (owner 22/10, game/bank_plus.py TIERS): each tier is a deposit insurance package that lifts the cap.
-TIER_NAMES = ('Phổ thông', 'Bạc', 'Vàng')
-TIER_EMOJI = ('🐷', '🥈', '🥇')
+TIER_NAMES = ('Phổ thông', 'Bạc', 'Vàng', 'Kim cương', 'Thượng hạng')
+TIER_EMOJI = ('🐷', '🥈', '🥇', '💎', '👑')
 TIER_SMS = '{bank}: Tài khoản tiết kiệm đã lên hạng {name}, được bảo hiểm tiền gửi tới {cap} xu. Cảm ơn quý khách.'
 SAVE_CAP = ('Hạng {name} nhận tiền gửi tiết kiệm tới {cap} xu. Bạn đang gửi {have} xu, còn gửi thêm được {room} xu. '
             'Nâng hạng ở mục Tiết kiệm để gửi nhiều hơn nhé.')
