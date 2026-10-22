@@ -273,15 +273,13 @@ def public(s: dict) -> dict | None:
     w = get(s)
     if not w:
         return None
-    x = worn(s)
     d = vn_day()
-    return dict(own=[dict(x) for x in w['own']], on=w['on'], got=w['day']['got'] if w['day']['d'] == d else 0,
-                cap=CAP[x['r']] if x else 0)
+    return dict(own=[dict(x) for x in w['own']], on=w['on'], got=w['day']['got'] if w['day']['d'] == d else 0)   # CAP never sent (owner 22/10: "giá đó k public")
 
 
 def catalogue() -> dict:
     """Static lists for the client (content.journey.wardrobe.wings)."""
-    return dict(styles=[dict(x) for x in STYLES], tiers=list(TIERS), tier_names=list(TIER_NAME), earn=list(EARN), cap=list(CAP),
+    return dict(styles=[dict(x) for x in STYLES], tiers=list(TIERS), tier_names=list(TIER_NAME), earn=list(EARN),
                 battle=list(BATTLE), fee=list(FUSE_FEE), own_max=OWN_MAX, qty_max=QTY_MAX, lose_from=LOSE_FROM)
 
 

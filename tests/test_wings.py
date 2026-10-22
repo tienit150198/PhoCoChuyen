@@ -313,7 +313,8 @@ class Save(unittest.TestCase):
         s, ids = owned(story(wallet=10**6), 5)
         pub = public_state(s)['journey']['wings']
         self.assertEqual(pub['on'], ids[0])
-        self.assertEqual(pub['cap'], WC.CAP[5])
+        self.assertNotIn('cap', pub)   # owner 22/10: the daily cap is never public
+        self.assertNotIn('cap', W.catalogue())
         self.assertNotIn('rq', pub)
 
 

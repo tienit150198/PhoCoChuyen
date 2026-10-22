@@ -105,7 +105,7 @@ const badge=r=>`<i class="wg-tier${r===WING_TIERS.length-1?' top':''}" style="--
 const styleOf=(api,k)=>WC(api)?.styles?.find(x=>x.id===k)||null;
 const wName=(api,x)=>`${styleOf(api,x.k)?.name||'Cánh'} ${tierName(x.r)}`;
 function wingPerks(api,r){const c=WC(api);if(!c)return '';
-  return `<ul class="wg-perks"><li>💰 +${c.earn[r]}% tiền kiếm được khi làm việc <small>(tối đa ${fmt(c.cap[r])} xu/ngày)</small></li><li>⚔️ +${c.battle[r]}% máu và sức đánh cho thú khi đấu</li></ul>`;}
+  return `<ul class="wg-perks"><li>💰 +${c.earn[r]}% tiền kiếm được khi làm việc</li><li>⚔️ +${c.battle[r]}% máu và sức đánh cho thú khi đấu</li></ul>`;}
 function fusePanel(api,st,own){
   const c=WC(api),xs=st.wfz.map(id=>own.find(x=>x.id===id)).filter(Boolean);
   if(!xs.length)return own.length>=3?`<p class="wd-hint">🧬 Chọn ba đôi để ghép lên hạng: đôi chọn đầu tiên là cánh chính, giữ nguyên kiểu.</p>`:'';
@@ -135,7 +135,7 @@ function wingShelf(env,st){
   const shelf=c.styles.map(x=>`<article class="jr-card as-kind wg-style"><button type="button" class="as-kind-art" data-action="jrAsWingTry" data-k="${esc(x.id)}" aria-label="Thử ${esc(x.name)} trước gương">${wingIcon({k:x.id,r:0},84)}</button>
       <div class="as-kind-text"><h3>${esc(x.emoji)} ${esc(x.name)}</h3><p class="small">${esc(x.desc)}</p><p class="as-hint">Ra hạng D hoặc C ngẫu nhiên</p>
       ${btn(`Mua · ${fmt(x.price)} xu`,'jrAsWingBuy',{k:x.id},'primary small',busy||own.length>=c.own_max)}</div></article>`).join('');
-  const table=`<details class="jr-card wg-table"><summary>📈 Hạng cánh được gì</summary><table><thead><tr><th>Hạng</th><th>Tiền kiếm được</th><th>Thú khi đấu</th></tr></thead><tbody>${c.earn.map((e,r)=>`<tr><td>${badge(r)}</td><td>+${e}% <small class="muted">≤ ${fmt(c.cap[r])}/ngày</small></td><td>+${c.battle[r]}%</td></tr>`).join('')}</tbody></table></details>`;
+  const table=`<details class="jr-card wg-table"><summary>📈 Hạng cánh được gì</summary><table><thead><tr><th>Hạng</th><th>Tiền kiếm được</th><th>Thú khi đấu</th></tr></thead><tbody>${c.earn.map((e,r)=>`<tr><td>${badge(r)}</td><td>+${e}%</td><td>+${c.battle[r]}%</td></tr>`).join('')}</tbody></table></details>`;
   return `${rv}<section class="jr-card wd-stage"><div class="wd-mirror">${mirror}</div><div class="wd-side">${side}</div></section>${fusePanel(api,st,own)}${tiles}<div class="as-shelf">${shelf}</div>${table}`;
 }
 
