@@ -24,6 +24,7 @@ import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
 import {fundMoveHTML,shortNum} from './wealth.js';
 import {chooser as hfChooser} from './honour-frames.js';   // 🖼️ Khung danh hiệu: which frame to wear (owner 18/10)
+import {typingNow} from '../typing-tap.js';
 import {ev2010Open} from '../isometric/town-utilities.js';   // 💐 Thiệp 20/10 (game/event2010.py)   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
@@ -596,6 +597,9 @@ function maybeScene(){
   if(!E?.api.state?.journey||!E.api.content?.journey)return;
   const J=E.api.state.journey,d=document.getElementById('jrScene');
   if(d?.open||document.getElementById('stScene')?.open||J.story&&!J.intro)return;
+  // 22/10 (owner: "k hiển thị bàn phím"): a title / chapter card waits while the player types (it took the focus: the
+  // phone keyboard closed mid-word, e.g. a staff refresh's new title over Chuyển khoản).
+  if(typingNow()){clearTimeout(maybeScene.t);maybeScene.t=setTimeout(maybeScene,1500);return;}
   if(document.querySelector('dialog.fh-sheet[open]')){setTimeout(maybeScene,1500);return;}   // 🏮 not over a dice roll: after the fair's dialog closes
   if(!J.story){maybeStory();return;}
   if(document.getElementById('confirmDialog')?.open){setTimeout(maybeScene,400);return;}

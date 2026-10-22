@@ -24,10 +24,10 @@ assert.equal(seenVersion(st(undefined)),'','no key in the save and no storage: n
 
 // What keeps it waiting.
 // `sheet`: the open sheet's classes and what it holds ('cozy-job', 'cozy-summary', '.done-body'…).
-function doc({hidden=false,tour=false,decision=false,menu=false,dialogs=[],sheet=null}={}){
+function doc({hidden=false,tour=false,decision=false,menu=false,dialogs=[],sheet=null,active=null}={}){
   const sh=sheet&&{id:'sheet',open:true,classList:{contains:c=>sheet.includes(c)},querySelector:q=>sheet.includes(q)?{}:null};
   if(sh)dialogs=[sh,...dialogs];
-  return {hidden,
+  return {hidden,activeElement:active,body:{},
     getElementById:id=>id==='tutLayer'&&tour?{isConnected:true}:id==='sheet'?sh:null,
     querySelectorAll:sel=>sel==='dialog[open]'?dialogs:sel==='.hap-choices'&&decision?[{offsetParent:{}},{offsetParent:null}]:[],
     documentElement:{classList:{contains:c=>c==='menu-open'&&menu}}};
@@ -45,6 +45,10 @@ assert.equal(blocker(env(back),doc({dialogs:[{id:'confirmDialog'}]})),'confirmDi
 assert.equal(blocker(env(back),doc({dialogs:[{id:'stScene'}]})),'stScene','not over another card');
 assert.equal(blocker(env(back),doc({decision:true})),'','over a live decision in the scene it may');
 assert.equal(blocker(env(back),doc({menu:true})),'menu');
+// 22/10 (owner: "k hiển thị bàn phím"): never over a field being typed in (it took the focus: the phone keyboard closed).
+const field=typing=>({matches:()=>typing});
+assert.equal(blocker(env(back,'gopy'),doc({sheet:['fb-dialog'],active:field(true)})),'typing','not over Góp ý being typed');
+assert.equal(blocker(env(back,'gopy'),doc({sheet:['fb-dialog'],active:field(false)})),'','a focused button is no typing');
 want('gift');
 assert.equal(blocker(env(back),doc()),'turn','a gift card comes first');
 want('gift',false);

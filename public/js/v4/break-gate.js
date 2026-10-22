@@ -2,7 +2,7 @@
  * wait here for a break point instead of each keeping its own rule, so the day summary, a customer on the
  * work screen and the first-time cards are never covered, and two cards never open together.
  *
- * - quiet(): a calm screen. No other dialog is open, the sheet is closed or shows a calm page (not the day
+ * - quiet(): a calm screen. Nobody is typing, no other dialog is open, the sheet is closed or shows a calm page (not the day
  *   summary, not the evening, not the work screen), the phone menu is shut and the tutorial tour is not up.
  * - free(): what a one-time notice (gift, Có gì mới) needs: the same, except that the work screen may show
  *   its "task done" card (no customer waiting on it).
@@ -11,6 +11,7 @@
  * - whenQuiet(fn): run fn at the next quiet moment: when the sheet closes, else checked every 1.5 s, for
  *   2 minutes at most (then the next scene or state change asks again, as before).
  * DOM only (no game rule); safe to import from any module. */
+import {TYPING} from '../typing-tap.js';
 const RANK={gift:0,whatsnew:1,wedinvite:1.5,ev2010:1.8,hween:1.9,x3:2,story:3,rui:4};   // 🎃 v4/halloween.js: the season's start card   // 💌 v4/wedinvite.js: a couple's card, after Có gì mới; 💐 v4/ev2010.js: Thiệp 20/10
 const waiting=new Set();
 export function want(name,on=true){if(on)waiting.add(name);else waiting.delete(name);}
@@ -32,6 +33,10 @@ export function why(self=null,{strict=true}={},doc=document){
   for(const d of doc.querySelectorAll('dialog[open]'))if(d!==self&&d.id!=='sheet')return d.id||'dialog';
   const s=sheetBusy(doc);
   if(s&&(strict||s!=='done'))return s;
+  // 22/10 (owner: "nhiều người than k hiển thị bàn phím"): never over a player typing in a calm sheet (Góp ý, Tìm nghề,
+  // Tài khoản…): the card took the focus and the phone keyboard closed mid-word. It waits for the field to be left.
+  const a=doc.activeElement;
+  if(a&&a!==doc.body&&a.matches?.(TYPING)&&!self?.contains?.(a))return 'typing';
   return '';
 }
 export const quiet=(self=null)=>!why(self);
