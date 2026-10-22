@@ -14,7 +14,6 @@ export default [
   {"emoji":"👮","text":"Lỡ bị khai trừ khỏi Công an, Hải quan? Làm tốt 15 ngày ở nghề khác là được xóa kỷ luật và xin lại từ cấp đầu."},
   {"emoji":"🚔","text":"Báo công an: đánh giá thấp hơn xứng đáng từ 2 sao, dọa bóc phốt, đòi hoàn tiền giờ luôn được xử lý; đánh giá cũ báo lại được."},
   {"emoji":"🏍️","text":"Biển số có 179 lên sàn đấu giá: Mây-0179, 61A-179.68, 36A-001.79, 51A-179.79, 29A-179.17."},
-  {"emoji":"🕶️","text":"Chợ đen dễ thắng hơn một chút ở mọi mức tiền."},
   {"emoji":"⌨️","text":"Chạm vào ô nhập là hiện bàn phím ngay, không tắt giữa chừng; dán số tiền có dấu chấm vào ngân hàng là ra đúng số."}
  ]},
  {"version":"2.5.2","date":"2026-10-22","items":[
