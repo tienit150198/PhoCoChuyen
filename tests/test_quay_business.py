@@ -24,6 +24,31 @@ class ContinuousBusiness(unittest.TestCase):
         self.assertEqual(s, other)
         self.assertFalse(b.settle(s, now=4600))
 
+    def test_long_catch_up_in_budgeted_steps_equals_one_settle(self):
+        """22/10 lag: a long absence is booked in steps within CATCHUP_BUDGET per request; requests at the same time
+        keep booking until done, and the result is what one uninterrupted settle books."""
+        from game import quay_business as b
+        s, st = fixture('sap')
+        b.settle(s, now=1000)
+        for d in b.qs.menu(st)['on']:
+            st['business']['stock'][d] = 3000
+        st['fund'] = 10**6
+        b._schedule(st, st['business']['cursor'])
+        whole, steps = copy.deepcopy(s), copy.deepcopy(s)
+        old = b.CATCHUP_BUDGET
+        try:
+            b.CATCHUP_BUDGET = 0   # one uninterrupted _settle
+            b.settle(whole, now=1000 + 6 * 3600)
+            b.CATCHUP_BUDGET = 1e-9
+            n = 0
+            while b.settle(steps, now=1000 + 6 * 3600) and n < 500:
+                n += 1
+        finally:
+            b.CATCHUP_BUDGET = old
+        self.assertGreater(n, 1)
+        self.assertEqual(steps['journey']['quay']['stalls'][0]['business']['cursor'], (1000 + 6 * 3600) * 1000)
+        self.assertEqual(steps, whole)
+
     def test_no_staff_no_auto_sales(self):
         from game import quay_business as b
         s, st = fixture(staff=False)

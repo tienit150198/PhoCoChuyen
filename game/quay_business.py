@@ -468,16 +468,38 @@ def due(s, now=None):
                for st in (qy.get(s) or {}).get('stalls', []))
 
 
+CATCHUP_STEP_MS = 10 * 60 * 1000   # 22/10 lag: a long catch-up is booked in steps from the oldest cursor (doubling while cheap)
+CATCHUP_BUDGET = 1.5               # seconds one request may spend on it; the rest waits for the next request (due() stays true)
+
+
 def settle(s, now=None, *, _policy=True, _exclusive=False):
     with chain_scope(s):
-        return _settle(s, now, _policy=_policy, _exclusive=_exclusive)
+        at = _ms(now)
+        start = min((st['business']['cursor'] for st in (qy.get(s) or {}).get('stalls', [])
+                     if isinstance(st.get('business'), dict) and isinstance(st['business'].get('cursor'), int)), default=at)
+        if not _policy or _exclusive or not CATCHUP_BUDGET or at - start <= CATCHUP_STEP_MS:
+            return _settle(s, now, _policy=_policy, _exclusive=_exclusive)
+        # 22/10 (owner: lag, "mất kết nối"): a big chain coming back after an hour books ~67 000 staff sales one by
+        # one (16–28 s), holding a worker and every request queued on it. Book it as polling would have: up to
+        # successive past times, each a complete settle, stopping after CATCHUP_BUDGET; polling equals offline
+        # (test_polling_equals_offline_and_idempotent), so the rest booked by the next requests sums to the same.
+        t0, changed, t, step = time.monotonic(), False, start, CATCHUP_STEP_MS
+        while t < at:
+            t = min(at, t + step)
+            t1 = time.monotonic()
+            changed = _settle(s, None, _at=t) or changed
+            if t < at and time.monotonic() - t0 > CATCHUP_BUDGET:
+                break
+            if time.monotonic() - t1 < .05:
+                step *= 2
+        return changed
 
 
-def _settle(s, now=None, *, _policy=True, _exclusive=False):
+def _settle(s, now=None, *, _policy=True, _exclusive=False, _at=None):
     from .player_service_tasks import settle_visits
     from .shop_events import tick_quay
     from .staff_life import tick_quay as tick_staff
-    at, changed = _ms(now), False
+    at, changed = (_ms(now) if _at is None else _at), False
     if _policy:
         policy = bp.evaluate(s, at / 1000)
         deadline = int(policy['deadline'] * 1000) if policy['deadline'] is not None else None
