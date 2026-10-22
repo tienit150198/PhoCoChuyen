@@ -79,7 +79,9 @@ export function setCleanServer(on){cleanServer=on!==false;try{localStorage.setIt
  * 260px tall, or clearly shorter than the window/screen (iOS shrinks only the visual viewport, Android with
  * interactive-widget=resizes-content shrinks the window). css/compact.css then folds the sheet header, caps the
  * chat box at two lines and lets the action bar scroll away; the focused field is scrolled into view.
- * --vvh is the visual viewport's height, for panes that must fit above the keyboard. */
+ * --vvh is the visual viewport's height, for panes that must fit above the keyboard; --vvt / --vvb its distance from
+ * the window's top / bottom (iOS leaves the window as tall as before and scrolls the visible part over it), so an open
+ * sheet sits in the part the keyboard leaves (css/compact.css C). */
 const fullH={};
 function syncViewport(){
   const root=document.documentElement,vv=window.visualViewport,h=vv?vv.height:window.innerHeight;
@@ -89,13 +91,14 @@ function syncViewport(){
   const full=fullH[key];
   const kb=root.dataset.layout==='phone'&&typed&&(h<260||full-h>Math.max(120,full*.28));
   if(root.classList.contains('kb-open')!==kb)root.classList.toggle('kb-open',kb);
-  const v=`${Math.round(h)}px`;if(root.style.getPropertyValue('--vvh')!==v)root.style.setProperty('--vvh',v);
+  const top=vv?Math.max(0,vv.offsetTop):0,set=(k,n)=>{const v=`${Math.round(n)}px`;if(root.style.getPropertyValue(k)!==v)root.style.setProperty(k,v);};
+  set('--vvh',h);set('--vvt',top);set('--vvb',vv?Math.max(0,root.clientHeight-top-h):0);
   if(kb){const a=document.activeElement;clearTimeout(syncViewport.t);syncViewport.t=setTimeout(()=>a?.isConnected&&a.scrollIntoView?.({block:'nearest'}),60);}
 }
 function watchViewport(){
   const vv=window.visualViewport;let q=0;
   const later=()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;syncViewport();});};
-  vv?.addEventListener('resize',later);window.addEventListener('resize',later);
+  vv?.addEventListener('resize',later);vv?.addEventListener('scroll',later);window.addEventListener('resize',later);
   document.addEventListener('focusin',later);document.addEventListener('focusout',()=>setTimeout(later,80));
   syncViewport();
 }

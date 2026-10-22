@@ -316,6 +316,11 @@ html.kb-open[data-layout="phone"] .toasts{display:none}
    keyboard); the tabs and the place picker come back when the keyboard goes. */
 html.kb-open[data-layout="phone"][data-orientation="landscape"] :is(.ch-head,.ch-tabs,.wk-head,.wk-places){display:none}
 html.kb-open[data-layout="phone"][data-orientation="landscape"] .sheet{height:var(--vvh,100dvh);max-height:var(--vvh,100dvh)}
+/* Portrait too (owner 22/10, iPhone: "nhắn tin mà che tin nhắn"): iOS shrinks only the visual viewport, so a sheet held
+   to the window's bottom (or its middle: the 2.5D chat) kept its input under the keyboard. With the keyboard up an open
+   sheet is inset to the visible part (v4/shell.js --vvt / --vvb) and never taller; the chat fills it, input at the bottom. */
+html.kb-open[data-layout="phone"] dialog.sheet[open]{inset:var(--vvt,0px) 0 var(--vvb,0px) 0;max-height:var(--vvh,100dvh)}
+html.kb-open[data-layout="phone"] dialog.sheet.chat-sheet[open]{height:var(--vvh,100dvh);margin:0 auto}
 
 /* ---------- D. Mobile sweep (15/10, owner: "nhiều cái UI bị đè nhau ở màn mobile") ------------------------------ */
 /* D1. Sheet header, narrow phones (≤ 400 px): the money chip, ⋯, ❔ and ✕ left the title ~110 px, so a work title
