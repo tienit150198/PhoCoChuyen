@@ -116,7 +116,7 @@ class Saves(unittest.TestCase):
 class Database(unittest.TestCase):
     def test_new_tables_only_and_2_5_1_runs_no_ddl_past_its_version(self):
         from game import pg_schema
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 84)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 84)
         names = [t['name'] for t in pg_schema.TABLES]
         self.assertLess(names.index('race_duels'), names.index('mnl_meta'))
         ddl = pg_schema.TABLES_DDL

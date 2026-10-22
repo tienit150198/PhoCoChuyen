@@ -28,6 +28,7 @@ from pathlib import Path
 from .engine import GameError,new_state,apply_action,public_state,validate_state,validate_career,migrate_state,needs_migration,tree_copy,stamped,BUILD,DORMANT,wake,idle_digest
 from .journey import enable_story
 from . import archive as ar
+from . import archive_pack as arp
 from . import leaderboard as lb
 from . import marriage as mr
 from . import retention as rt
@@ -171,7 +172,7 @@ def _write_archive(db,sid:str,rows:list)->None:
     for career,kind,day,row in rows:
         if kind.startswith(ar.FORGET):  # erased by the player: nothing of it is kept
             flush()  # preserve append/delete order, including a forget inside this batch
-            kind=kind[len(ar.FORGET):];db.execute("DELETE FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind));nxt.pop((career,kind),None);continue
+            kind=kind[len(ar.FORGET):];db.execute("DELETE FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind));arp.forget(db,[sid],career,kind);nxt.pop((career,kind),None);continue
         k=(career,kind)
         if k not in nxt:
             nxt[k]=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]
@@ -946,7 +947,7 @@ class Store:
             dog_bark.forget(db,sid)  # 🐕 their tug-of-war tickets (the escrow went with the save)
             from . import fair_loss
             fair_loss.forget(db,sid)
-            db.execute("DELETE FROM archive WHERE sid=?",(sid,))
+            db.execute("DELETE FROM archive WHERE sid=?",(sid,));arp.forget(db,[sid])
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])
             db.execute("DELETE FROM logins WHERE sid=?",(sid,))
@@ -984,7 +985,7 @@ class Store:
                 gone=[r[0] for r in db.execute(f"SELECT sid FROM sessions WHERE sid IN ({marks}) AND {idle}"+dbm.for_update(db),(*part,*age))]
                 if not gone:return 0
                 marks2=",".join("?"*len(gone))
-                db.execute(f"DELETE FROM archive WHERE sid IN ({marks2})",gone)
+                db.execute(f"DELETE FROM archive WHERE sid IN ({marks2})",gone);arp.forget(db,gone)
                 db.execute(f"DELETE FROM receipts WHERE sid IN ({marks2})",gone)
                 lb.forget(db,gone)
                 return db.execute(f"DELETE FROM sessions WHERE sid IN ({marks2})",gone).rowcount
@@ -1030,7 +1031,7 @@ class Store:
                     n=0
                     for sid in doomed:  # re-checked under the lock: it may have been played meanwhile
                         if not db.execute(f"SELECT 1 FROM sessions WHERE sid=? AND {cond}"+dbm.for_update(db),(sid,age)).fetchone():continue
-                        db.execute("DELETE FROM archive WHERE sid=?",(sid,))
+                        db.execute("DELETE FROM archive WHERE sid=?",(sid,));arp.forget(db,[sid])
                         db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
                         lb.forget(db,[sid])
                         n+=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount
@@ -1042,8 +1043,7 @@ class Store:
         """Every archived row of this save, for the backup download (see /api/save/export)."""
         sid=self.key(token)
         with self.connect() as db:
-            return [dict(career=r["career"],kind=r["kind"],seq=r["seq"],day=r["day"],row=fj.loads(r["row"]))
-                    for r in db.execute("SELECT career,kind,seq,day,row FROM archive WHERE sid=? ORDER BY career,kind,seq",(sid,))]
+            return [dict(career=career,kind=kind,seq=seq,day=day,row=fj.loads(row)) for career,kind,seq,day,row in arp.every_row(db,sid)]
 
     def archive_page(self,token:str,career:str,kind:str,before:int|None=None,skip:int=0,limit:int=50)->dict:
         """One page of a (career, kind) history, newest first: the archived rows, then (for
@@ -1061,8 +1061,7 @@ class Store:
             total=stored+len(live)
             end=min(total,max(0,before)) if before is not None else max(0,total-skip)
             start=max(0,end-limit)
-            rows=[dict(pos=r["seq"],day=r["day"],row=fj.loads(r["row"])) for r in
-                  db.execute("SELECT seq,day,row FROM archive WHERE sid=? AND career=? AND kind=? AND seq>=? AND seq<? ORDER BY seq",(sid,career,kind,start,min(end,stored)))]
+            rows=[dict(pos=seq,day=day,row=fj.loads(row)) for seq,day,row in arp.rows_between(db,sid,career,kind,start,min(end,stored))]
         for pos in range(max(start,stored),end):
             row=live[pos-stored];day=row.get("day") if isinstance(row,dict) else None
             rows.append(dict(pos=pos,day=day if type(day) is int else None,row=row))
@@ -1079,6 +1078,5 @@ class Store:
             end=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]
             if before is not None:end=min(end,max(0,int(before)))
             start=max(0,end-limit)
-            rows=[dict(pos=r["seq"],day=r["day"],row=json.loads(r["row"])) for r in
-                  db.execute("SELECT seq,day,row FROM archive WHERE sid=? AND career=? AND kind=? AND seq>=? AND seq<? ORDER BY seq DESC",(sid,career,kind,start,end))]
+            rows=[dict(pos=seq,day=day,row=json.loads(row)) for seq,day,row in reversed(arp.rows_between(db,sid,career,kind,start,end))]
         return dict(rows=rows,before=start if start>0 else None)
