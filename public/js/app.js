@@ -677,8 +677,8 @@ function renderMain(){
   const away=workplaceAway(c,career(),api.state.name);if(away&&awayFresh(away.key))toast(awayToast(away),'good');
   setHTML($('#dock'),dockHTML(c));
   setHTML($('#sceneHint'),c.day<=1&&layout()!=='phone'?`${icon('move',12)} Chạm sàn để đi · Chạm đồ vật để làm · WASD / mũi tên · E tương tác`:'');
-  $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);
-  setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:`<i class="saved-dot"></i>Mất kết nối <button type="button" class="linkish" data-action="reconnect">Thử lại</button>`);
+  // Offline: no pill up top any more (owner 22/10); the full offline page says it (offlinePage).
+  $('#ambientCaption').textContent='';setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:'');
   hudFeedback(c);stepHint(c);
   sound.configure(api.state.settings);world.update(api.state,api.content);if(iso?.booted())iso.updateIsometricShell(env());
 }
@@ -1984,7 +1984,27 @@ let reconnectTimer=0,reconnectWait=3000;
 const reconnectNow=()=>{clearTimeout(reconnectTimer);reconnectTimer=0;if(api.connected||!api.state)return;
   api.refresh().then(()=>{reconnectWait=3000;renderMain();}).catch(()=>{reconnectWait=Math.min(30000,reconnectWait*2);autoReconnect();});};
 function autoReconnect(){if(!reconnectTimer&&!api.connected)reconnectTimer=setTimeout(reconnectNow,reconnectWait);}
-api.addEventListener('offline',()=>{renderMain();autoReconnect();});
+// Owner 22/10: a save that lost the server shows a full offline page whose "Thử lại" starts over like a fresh
+// private tab (freshReload); it goes away by itself when the auto reconnect gets through.
+async function freshReload(){
+  try{const regs=await navigator.serviceWorker?.getRegistrations?.();await Promise.all((regs||[]).map(r=>r.unregister()));}catch{/* none */}
+  try{const keys=await globalThis.caches?.keys?.();await Promise.all((keys||[]).map(k=>caches.delete(k)));}catch{/* none */}
+  try{sessionStorage.clear();}catch{/* private mode */}
+  const u=new URL(location.href);u.searchParams.set('_r',Date.now().toString(36));location.replace(u.href);
+}
+function offlinePage(on){
+  let el=document.getElementById('offlinePage');
+  if(!on){if(el){try{el.hidePopover?.();}catch{/* not shown */}el.remove();}return;}
+  if(el)return;
+  el=document.createElement('div');el.id='offlinePage';el.className='offline-page';el.setAttribute('role','alertdialog');el.setAttribute('aria-labelledby','offlineTitle');
+  el.innerHTML=`<div class="offline-card"><div class="offline-icon">🏮</div><h1 id="offlineTitle">Mất kết nối</h1><p>Kiểm tra mạng rồi bấm Thử lại nhé.<br>Tiến trình đã xác nhận vẫn được lưu trên máy chủ.</p><button type="button" class="btn primary big">Thử lại</button></div>`;
+  el.querySelector('button').onclick=e=>{e.currentTarget.disabled=true;e.currentTarget.textContent='Đang tải lại…';freshReload();};
+  document.body.append(el);
+  // Popover = top layer: above an open sheet (<dialog>), like update.js.
+  if(typeof el.showPopover==='function'){try{el.popover='manual';el.showPopover();}catch{/* fixed z-index */}}
+}
+api.addEventListener('offline',()=>{renderMain();if(api.state)offlinePage(true);autoReconnect();});
+api.addEventListener('state',()=>offlinePage(false));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!api.connected)reconnectNow();});
 // While the always-on features load one by one after start-up (lazyBoot), only a module the screen is waiting
 // for re-renders it; the rest get one re-render at the end (seven full re-renders there used to land on the
@@ -2068,4 +2088,4 @@ try{
     sheet.addEventListener('close',resumeBoot);
   }else bootAutomatic();
   import('./v4/ticker.js').then(m=>m.tickerBoot(()=>env())).catch(e=>console.warn('ticker:',e));  // Bảng tin cả phố (tin cưới): lazy
-}catch(error){$('#loading').innerHTML=`<div class="loading-leaf">${icon('leaf',45)}</div><h1>Khu phố đang đợi mở cửa</h1><p>Chưa kết nối được. Kiểm tra mạng rồi thử lại nhé.</p><button class="btn primary big" id="reload-btn">Thử kết nối lại</button>`;console.warn(error);$('#reload-btn').onclick=()=>location.reload();}
+}catch(error){$('#loading').innerHTML=`<div class="loading-leaf">${icon('leaf',45)}</div><h1>Khu phố đang đợi mở cửa</h1><p>Chưa kết nối được. Kiểm tra mạng rồi thử lại nhé.</p><button class="btn primary big" id="reload-btn">Thử kết nối lại</button>`;console.warn(error);$('#reload-btn').onclick=()=>freshReload();}
