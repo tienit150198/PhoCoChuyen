@@ -637,17 +637,17 @@ class LotoShow(FairBase):
                     if mode == 'thuong':
                         cl += fh.side_back({'cl': ['chan', 2]}, rv['chot_n'])['cl'] / 2
                         cot += sum(fh.side_back({'cot': [c, 2]}, rv['chot_n'])['cot'] for c in range(9)) / 2 / 9
-                probability = fh.BASES['lt']   # today's net 0: the .57 band
+                probability = fh.BASES['lt']   # today's net 0: the .60 band (owner 22/10; .57 before)
                 self.assertAlmostEqual(wins / N, probability, delta=.08, msg=(mode, n))
                 ev = gain / (N * n * 5)
                 expected = probability * fh.prize_of(mode, 5, n) / (n * 5) - 1
                 self.assertAlmostEqual(ev, expected, delta=.20, msg=(mode, n, ev))
         p = fh.BASES['lt']
-        for k in fh.LOTO_MODES:   # 57% draw at today's net 0; 1.8x payout rounded down on small tiers (owner 16/10)
+        for k in fh.LOTO_MODES:   # 60% draw at today's net 0 (22/10); 1.8x payout rounded down on small tiers (owner 16/10)
             for tier, price in fh.LOTO_TIERS.items():
                 for n in range(1, fh.LOTO_CARDS + 1):
                     self.assertAlmostEqual(p * fh.prize_of(k, price, n) / (n * price),
-                                           .57 * ((price * n * 18) // 10) / (price * n), msg=(k, tier, n))
+                                           .60 * ((price * n * 18) // 10) / (price * n), msg=(k, tier, n))
         self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)   # blind side bets (closed since 08/10: SIDE_OPEN)
         self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 

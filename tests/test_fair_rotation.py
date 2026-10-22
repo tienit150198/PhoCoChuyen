@@ -48,7 +48,7 @@ class Rotation(unittest.TestCase):
                 j = {}
                 rates = [fh.luck_p(j, None, 'xd', OPEN + i, stake=stake) for i in range(80)]
                 self.assertEqual(rates[:4], [x] * 4)
-                self.assertEqual(rates[10:16], [.52] * 5 + [.45])
+                self.assertEqual(rates[10:16], [.55] * 5 + [.48])   # owner 22/10: .60 − .05, − .12
                 self.assertAlmostEqual(rates[-1], round(x - .12, 3))
                 self.assertGreaterEqual(min(rates), fh.P_MIN)
                 self.assertEqual(rates, sorted(rates, reverse=True))
@@ -57,13 +57,13 @@ class Rotation(unittest.TestCase):
         mean = sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
         with mock.patch.object(fh, 'featured_game', return_value='xs'):
             returns = [fh.luck_p({}, None, 'xs', OPEN, stake=p) * mean for p in xs.TIERS]
-        # Owner 16/10: 57% at net 0, a won ticket averages 1.775 (no refund prize): 101.175% before the cool-off.
+        # Owner 16/10: a won ticket averages 1.775 (no refund prize); 22/10: 60% at net 0, 106.5% before the cool-off.
         self.assertAlmostEqual(mean, 1.775)
         self.assertAlmostEqual(returns[0], fh.BASES['xs'] * 1.775)
         self.assertTrue(all(abs(r - returns[0]) < 1e-9 for r in returns))
-        self.assertAlmostEqual(returns[0], 1.01175)
-        self.assertLess(fh.P_UP * mean, 1)                         # a day more than 30k up: 92.3%
-        self.assertLess(fh.P_HOT * mean, .8)                       # 100k up: 79.9%
+        self.assertAlmostEqual(returns[0], 1.065)
+        self.assertLess(fh.P_UP * mean, 1)                         # a day more than 30k up: 97.6% (22/10)
+        self.assertLess(fh.P_HOT * mean, .86)                      # 100k up: 85.2% (22/10)
 
 
 class RotationCommands(FairBase):
