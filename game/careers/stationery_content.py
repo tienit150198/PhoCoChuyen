@@ -50,7 +50,7 @@ GOODS = {
     'vp_compa': dict(name='Com-pa', emoji='📐', group='dung_cu', price=15, cost=9, unit='cái', start=12),
     'vp_bang': dict(name='Bảng con kèm phấn', emoji='🪧', group='dung_cu', price=15, cost=9, unit='bộ', start=12),
     'vp_hop_but': dict(name='Hộp bút', emoji='👝', group='cap', price=25, cost=15, unit='cái', start=10),
-    'vp_cap': dict(name='Cặp chống gù', emoji='🎒', group='cap', price=150, cost=100, unit='cái', start=4),
+    'vp_cap': dict(name='Cặp chống gù', emoji='🎒', group='cap', price=150, cost=100, unit='cái', start=10),
     'vp_giay_boc': dict(name='Giấy bọc vở', emoji='🧻', group='dich_vu', price=2, cost=1, unit='tờ', start=60),
     'vp_nhan': dict(name='Nhãn vở', emoji='🏷️', group='dich_vu', price=2, cost=1, unit='cái', start=60),
     'vp_a4': dict(name='Giấy A4 (xấp 10 tờ)', emoji='📄', group='dich_vu', price=2, cost=1, unit='xấp', start=60),
