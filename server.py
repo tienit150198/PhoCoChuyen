@@ -55,6 +55,7 @@ from game import home_guests
 from game import island_trips  # 🏝️ Đảo riêng: trips with friends
 from game import bang_island  # ⚔️ Đảo bang (MNL_BANG_ISLAND, dark by default): the island side of the bangs
 from game import push
+from game import archive_pack  # 🗄️ the archive's old rows packed at night
 from game import jail  # 🚔 jailed: the POST routes that stay open (game/jail.py route_open)
 from game import accounts
 from game import tiktok_auth
@@ -1971,6 +1972,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("hween",lambda:halloween.run_housekeeping(store))  # 🎃 Lễ hội Ma Phố: after 01/11 00:00 the board's top 10 get their titles and the ticker its line (exactly once)
         step("townfair",lambda:town_fair.run_housekeeping(store))  # 🎪 Hội chợ việc làm: its ticker line once, then settle, archive and grant a fair's titles (status-guarded: exactly once)
         step("photo",lambda:photo_studio.run_housekeeping(store))  # 📸 photo orders past their time: expired, the price back to the buyer (row locks: exactly once)
+        archive_pack.run(store)  # 🗄️ the archive's old rows packed, a few seconds at a time, at night only (never raises)
 
 
 def tune_gc()->None:
