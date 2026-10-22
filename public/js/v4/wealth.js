@@ -61,7 +61,9 @@ export function pockets(state,{joint=null,current=null}={}){
   const bank=!story?null:!b?.open?{open:false}:{
     open:true,balance:num(b.balance),demand:num(b.savings?.demand),
     terms:(b.savings?.terms||[]).map(t=>({id:t.id,name:t.name,amount:num(t.amount),value:num(t.value),due:t.due,days_left:num(t.days_left)})),
-    loans:(b.loans||[]).filter(l=>num(l.left)>0).map(l=>({id:l.id,name:l.name,emoji:l.emoji||'📝',left:num(l.left),overdue:num(l.overdue)})),
+    loans:[...(b.loans||[]).filter(l=>num(l.left)>0).map(l=>({id:l.id,name:l.name,emoji:l.emoji||'📝',left:num(l.left),overdue:num(l.overdue)})),
+      // 📦 vay nhập hàng (game/bank_plus.py, 22/10): one repayment, overdue from its due day
+      ...(b.plus?.stock_loans||[]).filter(l=>num(l.owed)>0).map(l=>({id:l.id,name:`Vay nhập hàng · ${l.label}`,emoji:'📦',left:num(l.owed),overdue:num(l.days_left)<=0?num(l.owed):0}))],
     card:num(b.card?.bal)};
   const places=Object.entries(j?.places||{}).map(([cid,p])=>({cid,fund:num(p.fund),max:story?Math.max(0,num(p.withdraw_max)):0,
     employed:Boolean(p.employed),paused:Boolean(p.paused)}))

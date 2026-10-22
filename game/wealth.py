@@ -114,6 +114,10 @@ def _sheet(state, j) -> tuple[int, int]:
         assets += sum(_n(t.get('amount')) for t in _l(b.get('terms')) if type(t) is dict)
         debt += sum(left for ln in _l(b.get('loans')) if (left := _rows_left(ln)) > 0)
         debt += _n(_d(b.get('card')).get('bal'))
+        bp = j.get('bank_plus')   # 📦 vay nhập hàng (game/bank_plus.py, 22/10)
+        if type(bp) is dict:
+            debt += sum(max(0, _n(ln.get('principal')) + _n(ln.get('interest')) + _n(ln.get('fees')) - _n(ln.get('paid')))
+                        for ln in _l(bp.get('loans')) if type(ln) is dict)
     h = j.get('home')
     if type(h) is dict:
         owned = [x for x in [h.get('own')] + _l(h.get('props')) if type(x) is dict]

@@ -46,6 +46,7 @@ from . import incidents as incs
 from . import happenings as haps
 from . import archive as ar
 from . import bank_speaker
+from . import bank_plus as bplus  # 📦 22/10: a restock the fund cannot pay, covered by the wallet, the card or a vay nhập hàng
 from . import income_gear
 from . import tile_match  # 🧩 Ghép ba Phố Mây: the day's Phúc lợi rows at the shift's close
 from . import whats_new as wn
@@ -329,6 +330,7 @@ def remember(s:dict,c:dict,npc:str,text:str,ref:str|None=None) -> None:
 def money(s:dict,c:dict,amount:int,reason:str,ref:str|None=None,category:str|None=None) -> None:
     need(type(amount) is int,"Giao dịch không hợp lệ.")
     if player_services.suppress_money(c,amount,ref):return
+    if amount<0 and c["money"]+amount<0:bplus.short(s,c,-(c["money"]+amount))  # 📦 only inside bplus.armed (a restock with `cover`)
     need(c["money"]+amount>=0,"Chưa đủ xu. Chọn phương án không tốn xu hoặc hoàn thành thêm một việc nhé.")
     c["money"]+=amount
     ops.record_money(c,amount,reason,ref,category)
@@ -774,7 +776,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     elif action.startswith("desk_"):
         result.update(dk.handle(s,c,career,action,p))
     elif action.startswith("inv_"):
-        result.update(inv.action(s,c,career,action,p))
+        # 📦 owner 22/10 (F#481): inv_order / inv_order_cart with `cover` ('wallet'|'card'|'loan') top up what the fund lacks
+        with bplus.armed(s,career,p if action in ("inv_order","inv_order_cart") else {}) as q:
+            result.update(inv.action(s,c,career,action,q if action in ("inv_order","inv_order_cart") else p));paid=bplus.notes()
+        if paid:result["message"]=" ".join([str(result.get("message") or ""),*paid]).strip()
         if mod and hasattr(mod,"on_stock"):mod.on_stock(s,c,action)  # e.g. a rush queue sees the goods just shelved
     elif action==auto_stock.ACTION:  # 🤖 Tự nhận hàng: Bật/Tắt (Kho)
         result.update(auto_stock.toggle(c,career,p))
@@ -1007,7 +1012,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         t["basket"]={};task_done(s,c,t,25,"Bạn đã chuyển yêu cầu cho cô Thu, không đoán ngoài phạm vi.","referred")
         result.update(message="Cô Thu đã tiếp nhận. Quầy vẫn làm việc bình thường.",celebrate=True)
     elif action=="order_stock":
-        result.update(order_stock(s,c,career,p))
+        with bplus.armed(s,career,p) as q:result.update(order_stock(s,c,career,q));paid=bplus.notes()  # 📦 22/10: `cover`, as inv_order
+        if paid:result["message"]=" ".join([str(result.get("message") or ""),*paid]).strip()
     elif action=="receive_stock":
         shipment=next((x for x in c["shipments"] if x["id"]==p.get("shipment")),None)
         need(shipment and shipment["status"]!="received","Kiện đã nhận hoặc không tồn tại.")

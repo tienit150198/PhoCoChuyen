@@ -147,6 +147,7 @@ async function onClick(op,data){
       if(await ask(`Rút ${xu(a)} tiền mặt?`,fee?`Cây ATM khác ngân hàng thu phí ${xu(fee)}. Tài khoản bị trừ ${xu(a+fee)}.`:'Rút tại cây ATM Ngân hàng Phố, không mất phí.',`Rút · ${xu(a)}`))send('jr_bk_withdraw',{amount:a,atm});return;}
     case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc',renew=!!S.dlg.querySelector('#bk-renew')?.checked&&term>0;if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}if(tooBig(a))return;
       {const m=Number(R.term_max)||10000000;if(term>0&&a>m){S.flash={text:`Sổ có kỳ hạn tối đa ${fmt(m)} xu mỗi sổ.`,kind:'warn'};render();return;}}
+      {const P=b.plus;if(P&&a>P.room){S.flash={text:`Hạng ${P.name} gửi tiết kiệm tới ${xu(P.cap)}: còn gửi thêm được ${xu(P.room)}. Nâng hạng ngay bên dưới để gửi nhiều hơn.`,kind:'warn'};render();return;}}   // 🐷 22/10
       const rate=term?R.term_rate[String(term)]:R.demand_rate,gain=term?termGain(a,rate,term,R):0,name=b.term_names[String(term)].toLowerCase();
       const msg=term?`${b.term_names[String(term)]} (${term} ngày sống), lãi ${pct(rate)}/năm. Đáo hạn ${onDay(J().life_day+term)}, nhận ${xu(a+gain)} (lãi ${gain?xu(gain):'dưới 1 xu'}).${renew?` Tới hạn tự tái tục: gốc gửi tiếp kỳ mới (tối đa ${xu(R.renew_max||10000000)}), lãi về tài khoản.`:''} Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_rate)}/năm.`:`Lãi ${pct(rate)}/năm, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
       if(await ask(`Gửi ${xu(a)} tiết kiệm ${name}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`,{cost:a,pocket:src==='cash'?'wallet':'account'}))send('jr_bk_save',{amount:a,term,src,...(renew?{renew:true}:{})});return;}
@@ -155,6 +156,12 @@ async function onClick(op,data){
     case'unsaveTerm':{const t=(b.savings?.terms||[]).find(x=>x.id===data.id);if(!t)return;
       if(await ask('Tất toán sổ trước hạn?',`Sổ đáo hạn ${onDay(t.due)}. Rút bây giờ chỉ nhận lãi không kỳ hạn ${xu(t.early)} thay vì ${xu(t.interest)} khi giữ đến hạn.`,`Tất toán · ${xu(t.amount+t.early)}`))send('jr_bk_unsave',{id:t.id,confirm:true});return;}
     case'house':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
+    /* 🐷 Hạng tiết kiệm · 💳 xét lại hạn mức · 📦 vay nhập hàng (owner 22/10, game/bank_plus.py) */
+    case'tier':{const P=b.plus,t=P?.tiers?.find(x=>x.n===Number(data.n));if(!t)return;const src=val('bk-tier-src')||'acc';
+      if(await ask(`Nâng hạng ${t.name}?`,`Gói bảo hiểm tiền gửi ${t.name}: gửi tiết kiệm tới ${xu(t.cap)}. Trả một lần ${xu(t.cost)} từ ${src==='cash'?'tiền mặt':'tài khoản thanh toán'}${t.cost>t.price?' (gồm cả hạng bên dưới)':''}. Không có phí duy trì.`,`Nâng hạng · ${xu(t.cost)}`,{cost:t.cost,pocket:src==='cash'?'wallet':'account'}))send('jr_bk_tier',{tier:t.n,src,confirm:true});return;}
+    case'cardReview':if(await ask('Xét lại hạn mức thẻ?',`Ngân hàng tra cứu hồ sơ tín dụng (điểm giảm nhẹ) và xét theo thu nhập ${b.income?.window||14} ngày gần nhất. Mỗi ${b.plus?.rules?.review_days||7} ngày xét một lần.`,'Xét lại'))send('jr_bk_card_review',{confirm:true});return;
+    case'stockPay':{const ln=(b.plus?.stock_loans||[]).find(x=>x.id===data.id);if(!ln)return;const src=val('bk-stock-src-'+ln.id)||'acc';
+      if(await ask(`Trả ${xu(ln.owed)} vay nhập hàng?`,`Tất toán khoản vay cho ${ln.label}. Trừ từ ${src==='acc'?'tài khoản thanh toán':'tiền mặt'}.`,`Trả · ${xu(ln.owed)}`,{cost:ln.owed,pocket:src==='cash'?'wallet':'account'}))send('jr_bk_stock_pay',{id:ln.id,src});return;}
     case'cardApply':{const o=b.card_offer||{};
       if(await ask('Nộp hồ sơ mở thẻ tín dụng?',`Ngân hàng tra cứu hồ sơ tín dụng (điểm giảm nhẹ).${o.ok?` Dự kiến hạn mức ${xu(o.limit)}.`:` Lưu ý: ${o.text}`} Sao kê mỗi ${R.card_cycle} ngày, trả hết trước hạn thì không mất lãi.`,'Nộp hồ sơ'))send('jr_bk_card_apply',{confirm:true});return;}
     case'cardPay':{const c=b.card;if(!c)return;const src=val('bk-card-src')||'acc';let payload={src},amount=0;
@@ -242,7 +249,7 @@ function page(){
   if(!b.story)return head('Tài khoản, tiết kiệm, thẻ và khoản vay của riêng bạn.')+`<div class="sheet-body bk bk-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏦</div><h3>Ngân hàng chỉ có trong chế độ hành trình</h3><p>Ở chế độ chơi tự do, mỗi nơi làm việc có quỹ riêng. Vào hành trình để có ví, tài khoản ngân hàng, thẻ và khoản vay của một nhân vật.</p></section></div>`;
   if(!b.open)return head('')+`<div class="sheet-body bk bk-body">${flash()}${welcome(b)}</div>`;
   const tabs=[['home','Tổng quan','📊'],['tx','Giao dịch','🧾'],['save','Tiết kiệm','🐷'],['card','Thẻ','💳'],['loan','Vay','📝']],slim=clean();
-  const bar=`<div class="segmented bk-tabs" role="tablist" aria-label="Mục ngân hàng">${tabs.map(([id,l,ic])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-bk="tab" data-tab="${id}"${slim?` aria-label="${l}"`:''}>${slim?(S.tab===id?`${ic} ${l}`:ic):l}${id==='card'&&b.card?.past_due||id==='loan'&&(b.loans||[]).some(x=>x.overdue)?'<i class="dot" aria-hidden="true"></i>':''}</button>`).join('')}</div>`;
+  const bar=`<div class="segmented bk-tabs" role="tablist" aria-label="Mục ngân hàng">${tabs.map(([id,l,ic])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-bk="tab" data-tab="${id}"${slim?` aria-label="${l}"`:''}>${slim?(S.tab===id?`${ic} ${l}`:ic):l}${id==='card'&&b.card?.past_due||id==='loan'&&((b.loans||[]).some(x=>x.overdue)||(b.plus?.stock_loans||[]).some(x=>x.days_left<=0))?'<i class="dot" aria-hidden="true"></i>':''}</button>`).join('')}</div>`;
   const body={home,tx,save,card,loan,xfer:xferPage}[S.tab]||home;
   return head(clean()?`STK ${acctNo(b.no)}`:`Số tài khoản ${acctNo(b.no)} · Ngày sống ${b.life_day}`)+`<div class="sheet-body bk bk-body">${bar}${flash()}${alerts(b)}${body(b)}</div>`;
 }
@@ -288,7 +295,7 @@ function scoreGauge(sc,R){
 }
 
 function home(b){
-  const c=b.card,sv=b.savings,loanLeft=(b.loans||[]).reduce((x,l)=>x+l.left,0);
+  const c=b.card,sv=b.savings,loanLeft=(b.loans||[]).reduce((x,l)=>x+l.left,0)+(b.plus?.owed||0);   // 📦 + vay nhập hàng
   const slim=clean();
   const hero=`<section class="bk-hero"><small${slim?' aria-label="Tài khoản thanh toán"':''}>${slim?'Thanh toán':'Tài khoản thanh toán'}</small><strong class="bk-balance">${xu(b.balance)}</strong>
     <div class="bk-move"><label class="bk-field"><span${clean()?' class="sr-only"':''}>Số xu</span><input id="bk-amt" type="number" inputmode="numeric" min="1" placeholder="${clean()?'Số xu, ví dụ 50':'Ví dụ 50'}"></label>
@@ -299,7 +306,7 @@ function home(b){
   const tile=(tab,emoji,label,value,sub)=>(sub=clean()&&quiet.has(sub)?'':sub,`<button type="button" class="bk-tile" data-bk="tab" data-tab="${tab}"${S.busy?' disabled':''}><span class="bk-tile-emoji" aria-hidden="true">${emoji}</span><span class="bk-tile-label">${label}</span><strong>${value}</strong>${sub?`<small>${sub}</small>`:''}</button>`);
   const tiles=`<div class="bk-tiles">${tile('save','🐷','Tiết kiệm',xu(sv.total),sv.terms.length?`${sv.terms.length} sổ có kỳ hạn`:'Chưa có sổ kỳ hạn')}
     ${tile('card','💳',slim?'Thẻ':'Thẻ tín dụng',c?xu(c.bal):slim?'—':'Chưa có',c?`Dư nợ · hạn mức ${xu(c.limit)}`:'Mở thẻ ở mục Thẻ')}
-    ${tile('loan','📝',slim?'Vay':'Khoản vay',loanLeft?xu(loanLeft):slim?'0':'Không nợ',loanLeft?`${b.loans.length} khoản đang trả`:'Xem hạn mức vay')}</div>`;
+    ${tile('loan','📝',slim?'Vay':'Khoản vay',loanLeft?xu(loanLeft):slim?'0':'Không nợ',loanLeft?`${b.loans.length+(b.plus?.stock_loans?.length||0)} khoản đang trả`:'Xem hạn mức vay')}</div>`;
   const inbox=(b.inbox||[]).slice(0,6).map(m=>`<li class="${m.read?'':'new'}"><span class="bk-ib-ic" aria-hidden="true">${m.kind==='call'?'📞':'💬'}</span><div><small>Ngày sống ${m.day}</small><p>${esc(m.text)}</p></div></li>`).join('');
   const sc=b.score;
   const scoreBox=`<section class="bk-card"><h3>Điểm tín dụng</h3>${scoreGauge(sc,b.rules)}
@@ -356,7 +363,7 @@ function save(b){
   const terms=sv.terms.map(t=>{const p=Math.round(Math.min(t.term,t.term-t.days_left)*100/t.term);return `<li class="bk-term"><div><b>${esc(t.name)} · ${xu(t.amount)}</b><small>Gửi Ngày ${t.start}, đáo hạn ${onDay(t.due)} · lãi ${esc(t.rate_text)}${t.renew?' · tự tái tục':''}</small>
     <div class="bk-bar good" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Đã gửi ${p}% kỳ hạn"><i style="width:${p}%"></i></div>
     <small>Lãi đã tích lũy <b>${xu(t.accrued)}</b> · đến hạn nhận <b>${xu(t.value)}</b>. Rút trước hạn hôm nay chỉ được lãi ${xu(t.early)}.</small></div>${btn('Tất toán sớm','unsaveTerm',{id:t.id},'ghost small')}</li>`;}).join('');
-  return `<section class="bk-hero soft"><small>Tổng tiết kiệm</small><strong class="bk-balance">${xu(sv.total)}</strong></section>
+  return `<section class="bk-hero soft"><small>Tổng tiết kiệm</small><strong class="bk-balance">${xu(sv.total)}</strong></section>${tierCard(b)}
     <section class="bk-card"><h3>Gửi tiết kiệm</h3><div class="bk-move">
       <label class="bk-field"><span>Số xu</span><input id="bk-save-amt" type="number" inputmode="numeric" min="1" placeholder="Ít nhất ${R.save_min} xu nếu có kỳ hạn"></label>
       <label class="bk-field"><span>Kỳ hạn</span><select id="bk-term">${opts}</select></label>
@@ -370,6 +377,17 @@ function save(b){
     <section class="bk-card"><h3>Sổ có kỳ hạn</h3>${terms?`<ul class="bk-list">${terms}</ul>`:'<p class="bk-hint">Chưa có sổ nào.</p>'}</section>`;
 }
 
+/** 🐷 Hạng tiết kiệm (owner 22/10, feedback #480; game/bank_plus.py TIERS): the cap on savings, what is left under it, and
+ * each higher tier with its one-off price. Money saved before the tiers stays and keeps its interest. */
+function tierCard(b){
+  const P=b.plus;if(!P)return '';
+  const used=Math.min(100,P.cap?Math.round(P.saved*100/P.cap):0),up=P.tiers.filter(t=>!t.own);
+  const rows=up.map(t=>`<li class="bk-term bk-tier"><div><b>${t.emoji} ${esc(t.name)} · tới ${xu(t.cap)}</b><small>Phí một lần ${xu(t.cost)}${t.cost>t.price?' (gồm hạng bên dưới)':''}</small></div>${btn(`Nâng hạng`,'tier',{n:t.n},'ghost small')}</li>`).join('');
+  return `<section class="bk-card bk-tiers"><h3>${P.emoji} Hạng ${esc(P.name)} · gửi tới ${xu(P.cap)}</h3>
+    <div class="bk-bar ${used>=100?'bad':used>80?'warn':'good'}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${used}" aria-label="Đã gửi ${used}% hạn mức tiết kiệm"><i style="width:${used}%"></i></div>
+    <p class="bk-hint">Đang gửi ${xu(P.saved)} · còn gửi thêm được <b>${xu(P.room)}</b>.${P.over?' Tiền gửi từ trước vượt hạn mức vẫn giữ nguyên và vẫn có lãi; muốn gửi thêm thì nâng hạng nhé.':''}</p>
+    ${rows?`<div class="bk-move"><label class="bk-field"><span>Trả phí nâng hạng từ</span><select id="bk-tier-src"><option value="acc">Tài khoản (${xu(b.balance)})</option><option value="cash">Tiền mặt (${xu(b.wallet)})</option></select></label></div><ul class="bk-list">${rows}</ul>`:'<p class="bk-hint">Bạn đang ở hạng cao nhất. 🥇</p>'}</section>`;
+}
 function paymentSettings(b){
   if(clean())return `<details class="bk-card bk-pref-fold"${S.prefOpen?' open':''}><summary><b>💳 Khi mua sắm</b><small title="${esc(b.prefs?.[b.pref]||'')}">${esc(String(b.prefs?.[b.pref]||'').split(/[:(,]/)[0])}</small></summary>${paymentBody(b)}</details>`;
   return `<section class="bk-card"><h3>Khi mua sắm cá nhân</h3>${paymentBody(b)}</section>`;
@@ -404,7 +422,8 @@ function card(b){
       <div><dt>Hạn thanh toán</dt><dd>${st.done?`Ngày ${st.due}`:onDay(st.due)}</dd></div></dl>
       ${c.past_due?`<p class="bk-alert bad">Quá hạn ${xu(c.past_due)}. Thẻ tạm khóa tới khi trả khoản này.</p>`:st.left&&!st.done?`<p class="bk-hint">Trả hết ${xu(st.left)} trước hạn để không mất lãi. Chỉ trả tối thiểu thì phần còn lại chịu lãi ${pct(R.card_bp)}/ngày.</p>`:st.amount?'<p class="bk-hint">Kỳ này đã xong. 👍</p>':''}</div>`
     :`<p class="bk-hint">Sao kê đầu tiên vào ${onDay(c.next_stmt)}.</p>`;
-  return `<section class="bk-card">${cardVisual(c,b.holder)}${limitBar(c)}${c.locked?`<p class="bk-alert bad">${esc(c.locked)}</p>`:''}
+  const rv=b.plus?.review,review=rv?`<div class="bk-actions">${btn('Xét lại hạn mức','cardReview',{},'ghost small',rv.ok?'':' disabled')}</div>${rv.ok?'':`<p class="bk-hint">Xét lại hạn mức từ ${onDay(rv.day)}.</p>`}`:'';   // 💳 22/10
+  return `<section class="bk-card">${cardVisual(c,b.holder)}${limitBar(c)}${review}${c.locked?`<p class="bk-alert bad">${esc(c.locked)}</p>`:''}
       ${st?`<p class="bk-hint">Sao kê tiếp theo: ${onDay(c.next_stmt)}.</p>`:''}${stmt}</section>
     <section class="bk-card"><h3>Thanh toán thẻ</h3><div class="bk-move">
       <label class="bk-field"><span>Trả từ</span><select id="bk-card-src"><option value="acc">Tài khoản (${xu(b.balance)})</option><option value="cash">Tiền mặt (${xu(b.wallet)})</option></select></label>
@@ -425,6 +444,23 @@ function previewHTML(){
     <tbody>${L.rows.map(r=>`<tr><td>${r.k}</td><td>${r.due}</td><td>${fmt(r.principal)}</td><td>${fmt(r.interest)}</td><td><b>${fmt(r.amount)}</b></td></tr>`).join('')}</tbody>
     <tfoot><tr><th scope="row" colspan="3">Tổng</th><td>${fmt(L.interest)}</td><td><b>${fmt(L.total)}</b></td></tr></tfoot></table>
     <p class="bk-sum">Tổng tiền lãi: <b>${xu(L.interest)}</b> · lãi ${pct(b.rules.loan_bp[S.loan.kind])}/kỳ ${b.rules.loan_period} ngày</p>`;
+}
+/** 📦 Vay nhập hàng (owner 22/10, feedback #481; game/bank_plus.py): the line, its rule, and every loan with its due day. */
+function stockCard(b){
+  const P=b.plus;if(!P)return '';
+  const R=P.rules,o=P.stock,day=b.life_day;
+  const loans=P.stock_loans.map(ln=>`<li class="bk-term ${ln.days_left<=0?'bk-late':''}"><div><b>📦 ${esc(ln.label)} · ${xu(ln.principal)}</b>
+    <small>Vay Ngày ${ln.start} · phải trả <b>${xu(ln.owed)}</b> ${ln.days_left<=0?`· quá hạn từ Ngày ${ln.due}${ln.fees?` (đã gồm phạt ${xu(ln.fees)})`:''}`:`vào ${onDay(ln.due)}`}</small>
+    <div class="bk-move"><label class="bk-field"><span>Trả từ</span><select id="bk-stock-src-${esc(ln.id)}"><option value="acc">Tài khoản (${xu(b.balance)})</option><option value="cash">Tiền mặt (${xu(b.wallet)})</option></select></label></div></div>
+    ${btn(ln.days_left<=0?'Trả ngay':'Trả sớm','stockPay',{id:ln.id},ln.days_left<=0?'primary small':'ghost small')}</li>`).join('');
+  const line=o.ok?`Hạn mức còn <b>${xu(o.room)}</b> (tổng ${xu(o.limit)}).`:esc(o.text);
+  return `<section class="bk-card${P.stock_loans.some(x=>x.days_left<=0)?' bk-late':''}"><h3>📦 Vay nhập hàng</h3>
+    <p class="bk-hint">Tiệm thiếu tiền nhập hàng: chọn “Vay nhập hàng” lúc nhập. Trả một lần sau ${R.stock_days} ngày, lãi ${pct(R.stock_bp)}.</p>
+    <p class="${o.ok?'bk-hint':'bk-alert warn'}">${line}</p>
+    ${loans?`<ul class="bk-list">${loans}</ul>`:''}
+    <details class="bk-tips"><summary>Xem thêm</summary><ul class="bk-bullets"><li>Tới hạn ngân hàng tự trích tài khoản, rồi tiền của tiệm đã nhận vốn, rồi ví (ví không bao giờ bị âm).</li>
+    <li>Hạn mức theo thu nhập ${b.income?.window||14} ngày gần nhất, điểm tín dụng và ${R.savings_share}% tiền tiết kiệm.</li>
+    <li>Trễ hạn phạt ${R.stock_late_pct}% và giảm điểm tín dụng; trễ nhiều lần bị ghi nợ xấu, tạm khóa thẻ và vay mới.</li></ul></details></section>`;
 }
 function loan(b){
   const R=b.rules,o=b.loan_offers[S.loan.kind]||{};
@@ -453,5 +489,5 @@ function loan(b){
   const house=HLS.length?HLS.map(x=>{const HL=x.loan,nm=x.live===false?`Vay mua ${esc(x.name.slice(0,1).toLowerCase()+x.name.slice(1))}`:'Vay mua nhà';
     return `<section class="bk-card ${HL.overdue?'bk-late':''}"><h3>🏠 ${nm} · ${xu(HL.principal)}</h3><p class="bk-hint">Lãi ${esc(HL.rate_text)} · đã trả ${HL.paid_rows}/${HL.rows.length} kỳ · còn phải trả <b>${xu(HL.left)}</b>${HL.next?` · kỳ tới ${onDay(HL.next.due)}`:''}</p>${HL.overdue?`<p class="bk-alert warn">Chậm ${xu(HL.overdue)}.</p>`:''}<div class="bk-actions">${btn('Xem ở Nhà của bạn','house',{},'ghost')}</div></section>`;}).join('')
     :`<section class="bk-card"><h3>🏠 Vay mua nhà</h3><p class="bk-hint">Trả trước ít nhất 30% giá nhà, phần còn lại vay tới 3 năm, trả góp mỗi tháng trong game.</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>`;
-  return (active||(HLS.length?'':`<section class="bk-card"><p class="bk-hint">Bạn không có khoản vay nào. 🎈</p></section>`))+house+form;
+  return (active||(HLS.length||b.plus?.stock_loans?.length?'':`<section class="bk-card"><p class="bk-hint">Bạn không có khoản vay nào. 🎈</p></section>`))+stockCard(b)+house+form;
 }

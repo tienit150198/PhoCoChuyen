@@ -15,7 +15,9 @@ The journey wallet stays the cash in hand ("Tiền mặt"). The bank adds, under
   fund, an amortization schedule auto-debited on due days, early repayment with
   a small fee, late penalties, collector reminders and a "nợ xấu" flag that
   blocks new credit for a while;
-* a credit score (300–850) that moves with how the player handles all of this.
+* a credit score (300–850) that moves with how the player handles all of this;
+* 22/10 (owner, feedback #480/#481, game/bank_plus.py): savings tiers with a cap on new deposits, the card's limit
+  raised past LIMIT_MAX, "vay nhập hàng" at the restock point, and credit only after 7 full life days.
 
 Rules resolve on the life-day tick (`on_life_day`, called from journey.after):
 the bank remembers the last life day it closed, so interest, statements,
@@ -105,7 +107,8 @@ AUTOPAYS = tuple(K.AUTOPAY)
 STATS = ('interest_in', 'interest_out', 'fees', 'ontime', 'late', 'swipes', 'loans_closed')
 COMMANDS = ('jr_bk_open', 'jr_bk_deposit', 'jr_bk_withdraw', 'jr_bk_save', 'jr_bk_unsave', 'jr_bk_card_apply',
             'jr_bk_card_pay', 'jr_bk_card_cash', 'jr_bk_card_autopay', 'jr_bk_card_close', 'jr_bk_loan_apply',
-            'jr_bk_loan_pay', 'jr_bk_loan_close', 'jr_bk_settings', 'jr_bk_read')
+            'jr_bk_loan_pay', 'jr_bk_loan_close', 'jr_bk_settings', 'jr_bk_read',
+            'jr_bk_tier', 'jr_bk_card_review', 'jr_bk_stock_pay')   # 22/10: game/bank_plus.py COMMANDS
 
 
 # ---------------------------------------------------------------- helpers
@@ -117,6 +120,11 @@ def _core():
 def _jr():
     from . import journey
     return journey
+
+
+def _plus():
+    from . import bank_plus   # 🐷 tiers, 💳 the full card limit, 📦 vay nhập hàng (22/10)
+    return bank_plus
 
 
 def _ceil_div(a: int, b: int) -> int:
@@ -305,7 +313,10 @@ def _screen(s: dict, b: dict, need_score: int, inc: dict | None = None) -> tuple
     """(reason code, text) when the bank would say no before looking at amounts.
     `inc`: income(s) when the caller already has it."""
     day = s['journey']['life_day']
-    why = _blocked(b, day)
+    young = _plus().young(s)   # owner 22/10: "vay thì 7 ngày trở lên mới được vay, hoặc thẻ tín dụng"
+    if young:
+        return 'young', young
+    why = _blocked(b, day) or ('overdue' if _plus().overdue(s, day) else None)
     if why:
         return why, K.DECLINE[why].format(until=dy.on_day(s, b['bad_until']))
     if _inq_recent(b, day) >= INQ_MANY:
@@ -322,9 +333,8 @@ def _screen(s: dict, b: dict, need_score: int, inc: dict | None = None) -> tuple
 def card_offer(s: dict, b: dict, inc: dict | None = None) -> dict:
     inc = income(s) if inc is None else inc
     why, text = _screen(s, b, CARD_MIN_SCORE, inc)
-    num, den = _factor(b['score'])
-    limit = max(LIMIT_MIN, min(LIMIT_MAX, _floor10(inc['avg'] * CARD_CYCLE * num // den)))
-    return dict(ok=why is None, why=why, text=text, limit=limit if why is None else 0)
+    full = _plus().full_limit(inc, b['score'])   # 22/10: up to bank_plus.CARD_LIMIT_MAX; the card keeps at most LIMIT_MAX
+    return dict(ok=why is None, why=why, text=text, limit=min(full, LIMIT_MAX) if why is None else 0, full=full if why is None else 0)
 
 
 def _weekly_due(b: dict) -> int:
@@ -417,9 +427,12 @@ def card_usable(s: dict, b: dict | None = None) -> str | None:
     return None
 
 
-def available(b: dict) -> int:
+def available(b: dict, s: dict | None = None) -> int:
+    """What the card may still be swiped for. With the save `s`: against the full limit (bank_plus.card_limit, 22/10)."""
     c = b['card']
-    return max(0, c['limit'] - c['bal']) if c else 0
+    if not c:
+        return 0
+    return max(0, (_plus().card_limit(s, b) if s is not None else c['limit']) - c['bal'])
 
 
 def _couple():
@@ -450,8 +463,9 @@ def pay_options(s: dict, amount: int, with_joint: bool = False, no_joint: bool =
     if b is not None:
         out.update(account=b['balance'] >= amount, account_available=b['balance'],
                    account_why='' if b['balance'] >= amount else f'Tài khoản chỉ còn {_fmt(b["balance"])} xu, cần {_fmt(amount)} xu.')
-        out.update(card=why is None and available(b) >= amount, card_why=why or ('' if available(b) >= amount else 'Vượt hạn mức còn lại của thẻ.'),
-                   pref=b['pref'], available=available(b))
+        room = available(b, s)
+        out.update(card=why is None and room >= amount, card_why=why or ('' if room >= amount else 'Vượt hạn mức còn lại của thẻ.'),
+                   pref=b['pref'], available=room)
     if no_joint:
         out['joint_why'] = 'Thẻ chung không dùng được cho khoản này.'
     elif with_joint or out['pref'] == 'joint':
@@ -653,7 +667,8 @@ def _tick_card(s: dict, b: dict, n: int, notes: list) -> None:
             b['stats']['interest_out'] += charge
             _log(b, n, 'card', 'Lãi thẻ tín dụng kỳ này', -charge)
         bal = c['bal']
-        util = bal * 100 // c['limit'] if c['limit'] else 0
+        lim = _plus().card_limit(s, b)
+        util = bal * 100 // lim if lim else 0
         if bal > 0 or (st and st['amount'] > 0):
             _score(b, n, 'util_high' if util > 70 else 'util_mid' if util > 30 else 'util_low')
         low = min(bal, max(_pct_of(bal, CARD_MIN_PCT), CARD_MIN_FLOOR) + c['past_due']) if bal > 0 else 0
@@ -713,6 +728,7 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
                                                                   amount=_fmt(t['amount']), total=_fmt(t['amount'] + gain))))
     _tick_loans(s, b, n, notes)
     _tick_card(s, b, n, notes)
+    _plus().tick(s, b, n, notes)   # 📦 vay nhập hàng due this morning (22/10)
     # Weekly review: steady income, account age.
     if n > b['open_day'] and (n - b['open_day']) % REVIEW == 0:
         if income(s, n, REVIEW)['days'] >= 4:
@@ -726,7 +742,7 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
         _score(b, n, 'bad')
         notes.append('⚠️ ' + _inbox(b, n, 'sms', K.BAD_DEBT_SMS.format(bank=K.BANK_NAME, until=b['bad_until'])))
     elif b['bad_until'] and b['bad_until'] <= n:
-        if _overdue(b, n):
+        if _overdue(b, n) or _plus().overdue(s, n):
             b['bad_until'] = n + REVIEW
         else:
             b['bad_until'] = 0
@@ -834,6 +850,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need(j['story'], 'Ngân hàng chỉ có trong chế độ hành trình.', 'story_only')
     day = j['life_day']
     b = get(s)
+    if name in _plus().COMMANDS:
+        need(b is not None, 'Mở tài khoản Ngân hàng Phố trước nhé.', 'no_account')
+        return _plus().apply(s, b, name, p)
     if name == 'jr_bk_open':
         need(b is None, 'Bạn đã có tài khoản ở Ngân hàng Phố rồi.')
         j['bank'] = b = initial(int(j.get('seed', 0)), day)
@@ -870,6 +889,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         amount = _amount(p, low=1 if term == 0 else SAVE_MIN, most=TX_MAX)
         need(not term or amount <= TERM_MAX, f'Sổ có kỳ hạn tối đa {_fmt(TERM_MAX)} xu mỗi sổ.')
         need(term or b['demand'] + amount <= BAL_MAX, f'Sổ không kỳ hạn chỉ nhận thêm được {_fmt(max(0, BAL_MAX - b["demand"]))} xu.')
+        _plus().check_save(s, b, amount)   # 🐷 owner 22/10: new savings up to the tier's cap (bank_plus.TIERS)
         src = _src(p)
         renew = p.get('renew', False)
         need(type(renew) is bool, 'Chọn có tái tục hay không nhé.')
@@ -918,17 +938,18 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(c is None, 'Bạn đã có thẻ tín dụng rồi.')
         need(p.get('confirm') is True, 'Xác nhận nộp hồ sơ mở thẻ.')
         offer = card_offer(s, b)
-        if offer['why'] != 'many':
+        if offer['why'] not in ('many', 'young'):   # 22/10: a refusal before day 8 leaves no inquiry
             b['inq'] = (b['inq'] + [day])[-INQ_MAX:]
             _score(b, day, 'inquiry')
         if not offer['ok']:
             return dict(message=f'Hồ sơ mở thẻ chưa được duyệt. {offer["text"]}', approved=False)
         b['card'] = dict(no=_digits(j.get('seed', 0), f'card|{b["stats"]["loans_closed"]}|{b["seq"]}', 4), limit=offer['limit'], bal=0,
                          open_day=day, cycle=day, stmt=None, stmt_n=0, cash=0, cash_day=day, past_due=0, late_day=0, autopay='off')
-        _log(b, day, 'card', f'Mở thẻ, hạn mức {_fmt(offer["limit"])} xu', 0)
-        _inbox(b, day, 'sms', f'{K.BANK_NAME}: Thẻ tín dụng •••• {b["card"]["no"]} đã được kích hoạt, hạn mức {_fmt(offer["limit"])} xu. '
+        _plus().on_card_open(s, b, offer['full'])
+        _log(b, day, 'card', f'Mở thẻ, hạn mức {_fmt(offer["full"])} xu', 0)
+        _inbox(b, day, 'sms', f'{K.BANK_NAME}: Thẻ tín dụng •••• {b["card"]["no"]} đã được kích hoạt, hạn mức {_fmt(offer["full"])} xu. '
                               f'Sao kê mỗi {CARD_CYCLE} ngày, kỳ đầu vào Ngày {day + CARD_CYCLE}, hạn thanh toán sau sao kê {CARD_GRACE} ngày.')
-        return dict(message=f'Chúc mừng! Thẻ tín dụng được duyệt, hạn mức {_fmt(offer["limit"])} xu.', approved=True)
+        return dict(message=f'Chúc mừng! Thẻ tín dụng được duyệt, hạn mức {_fmt(offer["full"])} xu.', approved=True)
     if name == 'jr_bk_card_pay':
         need(c, 'Bạn chưa có thẻ tín dụng.')
         need(c['bal'] > 0, 'Thẻ không còn dư nợ.')
@@ -961,7 +982,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         fee = max(CASH_FEE_MIN, _pct_of(amount, CASH_FEE_PCT))
         cap = c['limit'] * CASH_SHARE // 100
         need(c['cash'] + amount <= cap, f'Ứng tiền mặt tối đa {CASH_SHARE}% hạn mức: còn ứng được {_fmt(max(0, cap - c["cash"]))} xu.')
-        need(amount + fee <= available(b), f'Hạn mức còn {_fmt(available(b))} xu, chưa đủ cho {_fmt(amount)} xu cộng phí {_fmt(fee)} xu.')
+        need(amount + fee <= available(b, s), f'Hạn mức còn {_fmt(available(b, s))} xu, chưa đủ cho {_fmt(amount)} xu cộng phí {_fmt(fee)} xu.')
         if c['cash'] == 0:
             c['cash_day'] = day
         c['cash'] += amount
@@ -998,7 +1019,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             place = p.get('career')
             need(place in owned_places(s), 'Chọn một tiệm bạn làm chủ để nhận vốn vay.')
         offer = loan_offer(s, b, kind)
-        if offer['why'] not in ('many', 'count', 'same', 'place'):
+        if offer['why'] not in ('many', 'count', 'same', 'place', 'young'):
             b['inq'] = (b['inq'] + [day])[-INQ_MAX:]
             _score(b, day, 'inquiry')
         if not offer['ok']:
@@ -1098,10 +1119,11 @@ def public(s: dict) -> dict:
     card = None
     if c:
         st = c['stmt']
-        card = dict(no=c['no'], limit=c['limit'], bal=c['bal'], available=available(b), util=c['bal'] * 100 // c['limit'] if c['limit'] else 0,
+        lim = _plus().card_limit(s, b)   # 22/10: the full limit (bank_plus), c['limit'] is at most LIMIT_MAX
+        card = dict(no=c['no'], limit=lim, bal=c['bal'], available=available(b, s), util=c['bal'] * 100 // lim if lim else 0,
                     stmt=dict(st, left=max(0, st['amount'] - st['paid']), min_left=max(0, st['min'] - st['paid']), days_left=st['due'] - day) if st else None,
                     next_stmt=c['cycle'] + CARD_CYCLE * ((day - c['cycle']) // CARD_CYCLE + 1), autopay=c['autopay'],
-                    past_due=c['past_due'], cash=c['cash'], cash_room=max(0, c['limit'] * CASH_SHARE // 100 - c['cash']),
+                    past_due=c['past_due'], cash=c['cash'], cash_room=max(0, c['limit'] * CASH_SHARE // 100 - c['cash']),   # ứng tiền mặt: c['limit']
                     locked=card_usable(s, b), open_day=c['open_day'])
     terms = []
     for t in b['terms']:
@@ -1127,7 +1149,8 @@ def public(s: dict) -> dict:
                 places={cid: _jr()._place(cid) for cid in owned_places(s)},
                 score=dict(value=b['score'], band=band, tone=tone, log=list(reversed(b['score_log'])), tips=list(K.SCORE_TIPS),
                            inquiries=_inq_recent(b, day)),
-                bad_until=b['bad_until'] if b['bad_until'] > day else 0, overdue=_overdue(b, day), misses=b['misses'],
+                bad_until=b['bad_until'] if b['bad_until'] > day else 0, overdue=_overdue(b, day) or _plus().overdue(s, day), misses=b['misses'],
+                plus=_plus().public(s, b, inc),   # 🐷 💳 📦 22/10 (game/bank_plus.py)
                 log=list(reversed(b['log'])), inbox=list(reversed(b['inbox'])), unread=sum(1 for m in b['inbox'] if not m['read']),
                 pref=b['pref'], sweep=b['sweep'], stats=dict(b['stats']), income=inc,
                 prefs=dict(K.PAY_PREF), autopays=dict(K.AUTOPAY), atms=dict(K.ATM), term_names={str(k): v for k, v in K.TERMS.items()})
@@ -1138,6 +1161,7 @@ def validate(s: dict) -> None:
     e = _core()
     need, integer, txt = e.need, e.integer, e.clean_text
     j = s.get('journey')
+    _plus().validate(s)   # j['bank_plus'] (22/10): its own key, absent on older saves
     if not isinstance(j, dict) or j.get('bank') is None:
         return
     b = j['bank']

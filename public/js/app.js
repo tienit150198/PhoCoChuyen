@@ -31,6 +31,7 @@ import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/1
 import {seedFair,fairNow} from './v4/town-fair-data.js';   // 🎪 Hội chợ việc làm: on or soon (ui.tfair, then the ticker's poll)
 import {seedHween,hwNow,hwShown} from './v4/halloween-data.js';   // 🎃 Lễ hội Ma Phố 26/10 → 01/11 (ui.hween, then the ticker's poll)
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
+import {coverOptions,askCover} from './v4/stock-cover.js';   // 📦 22/10 (F#481): a short fund offers ví / thẻ / vay nhập hàng
 import {tvButton} from './v4/bonus-button.js';   // 📺 📦 hàng về ngay at the stock desk (game/ads.py)
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell,setCleanCareer,careerCleanPref} from './v4/shell.js';
@@ -1253,7 +1254,7 @@ function stockDesk(cap){
     const typed=ui.whQty?.[id]?.[p.id],qty=Math.min(Math.max(1,max),typed||(state?Math.min(4,Math.max(1,max)):1)),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
     return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp} · ${leftWord(first.days_left)}`:''}${first&&flagged?' · ':''}${flagged?`<b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span>${keepRow(c,p.id,p.name)}</div>`+
-      `<span class="inv-row-act">${whQty(p,max,qty)}${can?`<label class="wh-pick"><input type="checkbox" data-wh-pick="${esc(p.id)}"${picks[p.id]?' checked':''}> Gộp</label>`:''}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
+      `<span class="inv-row-act">${whQty(p,max,qty)}${can?`<label class="wh-pick"><input type="checkbox" data-wh-pick="${esc(p.id)}"${picks[p.id]?' checked':''}> Gộp</label>`:''}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&(cost<=c.money||whCover(cost-c.money))?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
   // Đơn gộp (F#194): tick “Gộp” on several rows, then one order, one payment, one van (engine order_stock `lines`).
   const n=list.filter(p=>picks[p.id]).length;
   const merge=c.open?`<div class="wh-merge"><button type="button" class="btn small${n?' primary':''}" data-wh-merge="1"${n&&!vansFull?'':' disabled'}>🛒 Đặt đơn gộp · <span data-wh-merge-n>${n}</span> mã</button><small class="muted">Tick “Gộp” ở các mã cần nhập, chỉnh số rồi đặt một lần: một chuyến xe, trả một lần (tối đa ${MERGE_CAP} mã).</small></div>`:'';
@@ -1276,25 +1277,31 @@ async function whMerge(){
   for(const item of items){const qty=Number(document.getElementById('qty-'+item)?.value);if(!Number.isInteger(qty)||qty<1||qty>(c.warehouse?.line_max??6)){toast(`Mỗi mã từ 1 đến ${c.warehouse?.line_max??6} món.`,true);return;}lines.push({item,qty});}
   const cost=lines.reduce((n,l)=>n+Math.max(1,Math.ceil(product(l.item).cost*l.qty*sup.factor)),0);
   const what=lines.map(l=>`${l.qty} × ${product(l.item).name}`).join(', ');
-  if(cost>c.money){toast(`Quỹ còn ${fmt(c.money)} xu, đơn gộp cần ${fmt(cost)} xu.`,true);return;}
-  if(await confirmAction(`Đặt đơn gộp ${lines.length} mã?`,`${what} từ ${sup.name}: trả ${fmt(cost)} xu một lần. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}, cả đơn một chuyến. Hàng chỉ cộng kho sau khi bạn đếm nhận từng kiện.`,'Đặt đơn gộp')&&await cmd('order_stock',{lines,supplier:supId})){(ui.whPick??={})[id]={};for(const l of lines)delete ui.whQty?.[id]?.[l.item];}
+  if(cost>c.money&&!whCover(cost-c.money)){toast(`Quỹ còn ${fmt(c.money)} xu, đơn gộp cần ${fmt(cost)} xu.`,true);return;}
+  const title=`Đặt đơn gộp ${lines.length} mã?`,msg=`${what} từ ${sup.name}: trả ${fmt(cost)} xu một lần. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}, cả đơn một chuyến. Hàng chỉ cộng kho sau khi bạn đếm nhận từng kiện.`;
+  const cover=cost>c.money?await askCover(confirmAction,api.state,{title,msg,label:'Đặt đơn gộp',short:cost-c.money,career:id}):'';
+  if(cover!==null&&(cover||await confirmAction(title,msg,'Đặt đơn gộp'))&&await cmd('order_stock',{lines,supplier:supId,...(cover?{cover}:{})})){(ui.whPick??={})[id]={};for(const l of lines)delete ui.whQty?.[id]?.[l.item];}
 }
 /** Quantity with − / + (44 px) around the number for a stock-desk row; disabled when the shelf is full. */
 const whQty=(p,max,qty)=>`<span class="wh-qty"><button type="button" class="btn ghost" data-wh-step="-1" aria-label="Bớt một"${max>1?'':' disabled'}>−</button>${qtyBox({value:qty,min:1,max:Math.max(1,max),label:`Số nhập ${p.name}`,cls:'input',attrs:`id="qty-${p.id}"${max?'':' disabled'}`})}<button type="button" class="btn ghost" data-wh-step="1" aria-label="Thêm một"${max>1?'':' disabled'}>+</button><button type="button" class="btn ghost wh-max" data-wh-step="max" aria-label="Tối đa ${max} món"${max>1?'':' disabled'}>Tối đa</button></span>`;
-const whLabel=(q,cost,money)=>cost>money?`Thiếu ${fmt(cost-money)} xu`:`Đặt ${q} · ${fmt(cost)} xu`;
+const whLabel=(q,cost,money)=>cost>money&&!whCover(cost-money)?`Thiếu ${fmt(cost-money)} xu`:`Đặt ${q} · ${fmt(cost)} xu`;
+/** 📦 22/10 (F#481): the fund lacks `short` xu but the confirm can offer ví / quẹt thẻ / vay nhập hàng (game/bank_plus.py). */
+const whCover=short=>short>0&&!!coverOptions(api.state,short,{career:career()});
 /** The order button of a stock-desk row as the number changes: what the parcel costs, or the shortfall (disabled). */
 function whBill(input){
   if(input?.id?.startsWith('qty-')){const n=Math.floor(Number(input.value)),box=(ui.whQty??={})[career()]??={},item=input.id.slice(4);if(input.value!==''&&n>=1)box[item]=n;else delete box[item];}   // kept for the redraws (stockDesk)
   const b=input?.closest('.inv-row')?.querySelector('[data-wh-order][data-cost]');if(!b)return;
   const q=Math.max(1,Math.min(Number(input.max)||1,Math.floor(Number(input.value))||1)),cost=Math.max(1,Math.ceil(Number(b.dataset.cost)*q*Number(b.dataset.factor))),money=Number(b.dataset.money)||0;
-  b.disabled=cost>money;b.textContent=whLabel(q,cost,money);
+  b.disabled=cost>money&&!whCover(cost-money);b.textContent=whLabel(q,cost,money);
 }
 async function whOrder(item){
   const c=room(),id=career(),desk=c.stock_desk||{},sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId)||{factor:1,name:'nhà cung cấp',quote:{}};
   const qty=Number(document.getElementById('qty-'+item)?.value);
   if(!Number.isInteger(qty)||qty<1||qty>(c.warehouse?.line_max??6)){toast(`Mỗi lần đặt từ 1 đến ${c.warehouse?.line_max??6} món.`,true);return;}
   const p=product(item),cost=Math.max(1,Math.ceil(p.cost*qty*sup.factor));
-  if(await confirmAction('Đặt một kiện hàng?',`${qty} × ${p.name} từ ${sup.name}: trả ${fmt(cost)} xu ngay. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}. Chỉ cộng kho sau khi kiện tới và bạn đếm nhận.`,'Đặt hàng')&&await cmd('order_stock',{item,qty,supplier:supId}))delete ui.whQty?.[id]?.[item];
+  const msg=`${qty} × ${p.name} từ ${sup.name}: trả ${fmt(cost)} xu ngay. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}. Chỉ cộng kho sau khi kiện tới và bạn đếm nhận.`;
+  const cover=cost>c.money&&whCover(cost-c.money)?await askCover(confirmAction,api.state,{title:'Đặt một kiện hàng?',msg,label:'Đặt hàng',short:cost-c.money,career:id}):'';
+  if(cover!==null&&(cover||await confirmAction('Đặt một kiện hàng?',msg,'Đặt hàng'))&&await cmd('order_stock',{item,qty,supplier:supId,...(cover?{cover}:{})}))delete ui.whQty?.[id]?.[item];
 }
 function phLotBook(){
   const care=careData();if(!care)return empty('Sổ lô mở khi quầy mở ca','','box');
