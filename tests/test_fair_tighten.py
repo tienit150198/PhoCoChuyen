@@ -35,11 +35,11 @@ class Decay(FairBase):
         self.assertEqual(s['journey']['fair_run']['n'], 40)
         self.assertEqual(s['journey'][fh.COOL_KEY]['xd']['n'], 40)   # still counted for older servers
         self.assertEqual(len(s['journey'][fh.PACE_KEY]['xd']), fh.PACE_KEEP)
-        # Lost today and a small stake: .60 (winning back) − .12 (16+ rounds in a minute) = .48.
-        self.dice(Dice(draws=[.479]))
+        # Lost today and a small stake: .63 (winning back, owner 22/10: +3 points) − .12 (16+ rounds in a minute) = .51.
+        self.dice(Dice(draws=[.509]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertGreater(r['fair']['net'], 0)
-        self.dice(Dice(draws=[.481]))
+        self.dice(Dice(draws=[.511]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertLess(r['fair']['net'], 0)
         # The free ném vòng keeps its own decay.
@@ -63,9 +63,9 @@ class Decay(FairBase):
         self.assertEqual((cool['game'], cool['pace']), ('xd', True))
         self.assertNotIn('pct', cool)                                # owner 08/10: no rate reaches the client
         self.clock.t = last + 30
-        self.assertEqual(self.xd_p(s), .45)                          # 15 rounds in the last minute, +1
+        self.assertEqual(self.xd_p(s), .48)                          # owner 22/10 .60 − .12: 15 rounds in the last minute, +1
         self.clock.t = last + 40
-        self.assertEqual(self.xd_p(s), .52)                          # 10, +1
+        self.assertEqual(self.xd_p(s), .55)                          # .60 − .05: 10, +1
         self.clock.t = last + 59
         self.assertEqual(self.xd_p(s), fh.XD_BASE)                   # only the last one, +1
         self.clock.t = last + 60

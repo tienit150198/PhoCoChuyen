@@ -97,6 +97,9 @@ def action(s,c,cid,name,p,now):
     from . import tile_match   # 🧩 Phúc lợi on the job's profit: its own row; the receipt keeps its own sums
     tile=tile_match.extra(s,max(0,receipt['net']),f"special|{o['id']}")
     if tile:move(s,c,tile,tile_match.label(s,'Nghiệm thu đơn chuyên môn' if k=='business' else 'Phụ cấp chuyên môn'),o['id'],category='scale_special_settlement')
+    from . import income_boost as ib   # 📈 Thu nhập +50% (owner 22/10) on the profit and its Phúc lợi: its own row
+    boost=ib.settle_part(s,max(0,receipt['net'])+tile,o['id'])
+    if boost:move(s,c,boost,ib.LABEL+' · '+('Nghiệm thu đơn chuyên môn' if k=='business' else 'Phụ cấp chuyên môn'),o['id'],category='scale_special_settlement')
     if quality>=80:
         from . import career_scale,needs
         career_scale.accepted(c,cid,now)

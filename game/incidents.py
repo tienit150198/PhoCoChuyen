@@ -288,11 +288,14 @@ def _pay(s: dict, c: dict, career: str, lines: list, title: str, ref: str) -> li
     j = s.get('journey') or {}
     story = _story(s)
     from . import journey as jr
+    from . import income_boost as ib
     done = []
     for where, amount, cat in _limited_lines(s, c, lines):
         if not amount:
             continue
         if where == 'wallet' and story:
+            if amount > 0 and cat in ib.EARN:   # 📈 Thu nhập +50% (owner 22/10), as the fund's rows get in engine.money
+                amount = ib.scale(amount, f'{ref}|{title}')
             jr._wallet(j, amount, 'incident', title, career)
             done.append(dict(where='wallet', amount=amount, cat=cat))
             continue

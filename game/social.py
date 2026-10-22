@@ -393,7 +393,9 @@ def apply_internal(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         return dict(message=f'Đã mua {qty} {spec["name"]}. Hàng đã vào kho.')
     if name == 'soc_payout':
         amount = e.integer(p.get('amount'), 0, 10 ** 6)
-        e.money(s, c, amount, f'Bán ở chợ Phố nghề cho {who}', category='revenue')
+        from . import income_boost
+        with income_boost.skip():   # 📈 another player's money: no +50%
+            e.money(s, c, amount, f'Bán ở chợ Phố nghề cho {who}', category='revenue')
         return dict(message=f'+{amount} xu từ chợ Phố nghề.')
     raise e.GameError('Thao tác Phố nghề không hợp lệ.')
 

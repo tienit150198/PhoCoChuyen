@@ -761,16 +761,18 @@ def _pay_provider(s: dict, spec: dict | None, order: dict, paid: int, label: str
     c = (s.get('careers') or {}).get(order['career'])
     started = isinstance(c, dict) and bool(c.get('started'))
     if spec and spec['pay_to'] == 'career' and started:
-        from . import engine
-        engine.money(s, c, paid, label, order['id'], 'revenue')
+        from . import engine, income_boost
+        with income_boost.skip():   # 📈 money from another player, not earned from the game: no +50%
+            engine.money(s, c, paid, label, order['id'], 'revenue')
         return
     try:
         credit(s, paid, label, IN_KIND, order['career'] if order['career'] in (s.get('careers') or {}) else None)
     except ServiceError as e:
         if e.code != 'full' or not started:
             raise
-        from . import engine   # the wallet and the bank account are full: the career's fund takes it (never lost, never stuck)
-        engine.money(s, c, paid, label, order['id'], 'revenue')
+        from . import engine, income_boost   # the wallet and the bank account are full: the career's fund takes it (never lost, never stuck)
+        with income_boost.skip():   # 📈 another player's money: no +50%
+            engine.money(s, c, paid, label, order['id'], 'revenue')
 
 
 def _requires_why(spec: dict, state: dict, db=None, buyer: str = '') -> str:

@@ -1,5 +1,5 @@
 """Ordinary draws since 16/10 (owner: "tỷ lệ là 55 - 60% thôi"): no more one 55% round then decay (14/10); the round
-draws today's band (.57 at net 0) less its pace; the old run counts are still kept, existing limits survive."""
+draws today's band (.60 at net 0 since 22/10) less its pace; the old run counts are still kept, existing limits survive."""
 import copy
 import unittest
 from unittest import mock
@@ -17,12 +17,12 @@ class Rates(unittest.TestCase):
             with self.subTest(game=game):
                 j = {}
                 rates = [fh.luck_p(j, None, game, OPEN + i, stake=20) for i in range(20)]
-                self.assertEqual(rates[:10], [.57] * 10)
-                self.assertEqual(rates[10:15], [.52] * 5)
-                self.assertEqual(rates[15:], [.45] * 5)
+                self.assertEqual(rates[:10], [.60] * 10)
+                self.assertEqual(rates[10:15], [.55] * 5)
+                self.assertEqual(rates[15:], [.48] * 5)
                 j = {}
                 rates = [fh.luck_p(j, None, game, OPEN + 6 * i, stake=20) for i in range(40)]   # 10 a minute
-                self.assertEqual(rates, [.57] * 40)
+                self.assertEqual(rates, [.60] * 40)
 
     def test_ring_retains_ten_initial_rounds(self):
         j = {}
@@ -35,10 +35,10 @@ class Rates(unittest.TestCase):
         for game in ('xd', 'lt', 'xs'):
             saved = {fh.COOL_KEY: {game: dict(n=30, at=int(OPEN), sw=0, st=20)}}
             j = copy.deepcopy(saved)
-            self.assertEqual(fh.luck_p(j, None, game, OPEN + 600, stake=20), .57)
+            self.assertEqual(fh.luck_p(j, None, game, OPEN + 600, stake=20), .60)
             self.assertEqual(j[fh.COOL_KEY][game]['n'], 31)   # still counted (an older server reads it)
             fresh = copy.deepcopy(saved)
-            self.assertEqual(fh.luck_p(fresh, None, game, OPEN + 601, stake=20), .57)
+            self.assertEqual(fh.luck_p(fresh, None, game, OPEN + 601, stake=20), .60)
             self.assertEqual(fresh[fh.COOL_KEY][game]['n'], 1)   # past RUN_GAP: a new run, as before
 
     def test_three_qualifying_switches_still_clear_the_kept_counts(self):
@@ -50,18 +50,18 @@ class Rates(unittest.TestCase):
             for i in range(2):
                 fh.luck_p(j, None, 'bc', OPEN + 3 + i, stake=25)
             self.assertEqual(j[fh.COOL_KEY][game]['sw'], 2)
-            self.assertEqual(fh.luck_p(copy.deepcopy(j), None, game, OPEN + 5, stake=20), .57)
+            self.assertEqual(fh.luck_p(copy.deepcopy(j), None, game, OPEN + 5, stake=20), .60)
             fh.luck_p(j, None, 'bc', OPEN + 6, stake=25)
             self.assertNotIn(game, j.get(fh.COOL_KEY, {}))
-            self.assertEqual(fh.luck_p(j, None, game, OPEN + 7, stake=20), .57)
+            self.assertEqual(fh.luck_p(j, None, game, OPEN + 7, stake=20), .60)
 
     def test_large_stake_and_streak_caps_still_apply(self):
         for game in ('xd', 'lt', 'xs'):
-            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=49_999), .57)
+            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=49_999), .60)
             for stake in (50_000, 300_000, 1_000_000):
-                self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=stake), .40)
+                self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=stake), .43)
             for draw, won in ((.449999, True), (.45, False)):
-                for p in (.57, fh.P_BACK):
+                for p in (.60, fh.P_BACK):
                     j = {'fair_balance': {game: 4}}
                     with mock.patch.object(fh._rng, 'random', return_value=draw):
                         self.assertEqual(fh._draw_luck(j, game, p), won)
@@ -70,7 +70,7 @@ class Rates(unittest.TestCase):
 class Commands(FairBase):
     def test_real_commands_obey_each_band_cutoff(self):
         for game in ('xd', 'lt', 'xs'):
-            for net, p in ((0, .57), (-1000, .60), (40_000, .52), (100_000, .45)):
+            for net, p in ((0, .60), (-1000, .63), (40_000, .55), (100_000, .48)):
                 for draw, won in ((p - .000001, True), (p, False)):
                     with self.subTest(game=game, net=net, draw=draw):
                         s = story(10_000)

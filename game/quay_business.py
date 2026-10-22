@@ -19,6 +19,7 @@ from . import quay_market as market
 from . import quay_auto
 from . import wealth_pricing
 from . import income_gear
+from .income_boost import take_percent as take   # 📈 Thu nhập +50% (owner 22/10): the owner's take × 1.5
 from . import business_progression as bp
 from .loss_limits import bounded_loss
 
@@ -37,6 +38,8 @@ TIME_COSTS = ('wages', 'rent', 'power', 'environment', 'protection')   # billed 
 # No save checks the percent (profit_boost holds only carry/total/costs), so older builds read what these write.
 BONUS_PERCENT = 124
 STAFF_BONUS_PERCENT = 236
+# 📈 Owner 22/10 ("tăng 50% thu nhập … tăng cả tiền quầy"): every sale's percent goes through take(), the owner's take
+# × game/income_boost.INCOME_PCT / 100 (124 → 236, 236 → 404 while on); the estimate and the page's percents too.
 # 🏬 Chuỗi quầy (owner 18/10: "làm sao cho người giàu tốn tiền nhiều hơn… tăng càng nhiều thì phí nhiều đi", the gentle
 # ladder): an owner of more than N counters pays +P points of income tax on every counter's margin (the profit bonus is
 # counted after tax, so it shrinks with it), and above RENT_FREE counters each counter's rent grows × n / RENT_FREE.
@@ -433,6 +436,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
     if owner is not None:   # 📺 ⏰ Giờ vàng riêng (game/ads.py): the owner's take ×1,5 more at the sale's own time
         from . import ads
         percent = ads.scale_take(owner, percent, at / 1000)
+    percent = take(percent)   # 📈 Thu nhập +50% (owner 22/10 "tăng cả tiền quầy"): the owner's take × 1.5, as 15/10's ×1.6
     bonus = reward_margin(st, amount, costs, percent, owner)
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1
@@ -692,7 +696,7 @@ def income(st, at):
         chain = (sum(rates.values()) - sum(base.values())) * ms / DEN   # 🌸 paid, but neither taxed off nor taken off the bonus
         taxed = max(0, margin + chain)
         tax = taxed * tax_percent() / 100
-        bonus = max(0, taxed - taxed * market.INCOME_TAX_PERCENT / 100) * income_gear.profit_percent(st,STAFF_BONUS_PERCENT) / 100
+        bonus = max(0, taxed - taxed * market.INCOME_TAX_PERCENT / 100) * take(income_gear.profit_percent(st,STAFF_BONUS_PERCENT)) / 100
         return dict(sold=round(sum(sold.values()), 1), revenue=round(revenue), costs=round(costs + tax),
                     bonus=round(bonus), net=round(margin - tax + bonus))
     hour_ms = 3600 * 1000
@@ -749,7 +753,7 @@ def public(st):
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
         rates=rates, income_tax_percent=tax_percent(), chain=_CHAIN.get(), chain_tax=chain_tax(_CHAIN.get()),
         rent_x=round(rent_x(_CHAIN.get()) / RENT_FREE, 1), power_x=round(power_x(_CHAIN.get()) / POWER_FREE, 1),
-        bonus_percent=income_gear.profit_percent(st,BONUS_PERCENT), staff_bonus_percent=income_gear.profit_percent(st,STAFF_BONUS_PERCENT),
+        bonus_percent=take(income_gear.profit_percent(st,BONUS_PERCENT)), staff_bonus_percent=take(income_gear.profit_percent(st,STAFF_BONUS_PERCENT)),
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],
         kept=held, again=[dict(id=d, qty=n) for d, n in (b.get('again') or {}).items() if d in rows],

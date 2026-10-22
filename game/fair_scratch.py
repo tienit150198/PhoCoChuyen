@@ -15,6 +15,7 @@ once the day is well up or tickets are bought too fast; never below .40) and a w
 2× 140, 3× 40, 5× 15, 20× 5 per 1000 won tickets, a mean of 1.775× (no 1× "refund" prize any more), the prize
 rounded down to whole xu (amount(): the 2-xu vé's 1.5× pays 3). A .57 ticket returns 101.2% before streak cooling,
 police or Lộc. Four consecutive wins still cap the next draw at 45%, a 50k+ stake (none on this menu) at 40%.
+Owner 22/10 ("tăng nhẹ tỷ lệ thắng"): every band +3 points, .60 a ticket (106.5%), .63 winning back, a 50k+ stake .43.
 Already purchased tickets retain their layout and payment.
 The temporary golden-days event uses only PRIZES multipliers above one for its winning draw (now all of them).
 """
@@ -30,7 +31,7 @@ MATCH = 3                       # 3 boxes of the same amount: that amount is won
 PRIZES = ((1.5, 800), (2, 140), (3, 40), (5, 15), (20, 5))
 MULTS = tuple(m for m, _ in PRIZES)
 # Historical API retained at the current base probability.
-P_HI, P_LO = .57, .57   # game.fair.BASES['xs']
+P_HI, P_LO = .60, .60   # game.fair.BASES['xs'] (owner 22/10: .57 → .60)
 RUN_STEP = 0
 
 

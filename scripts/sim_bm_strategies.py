@@ -1,4 +1,4 @@
-"""Chợ đen strategies per Vietnam day under the 16/10 rebalance (game/fair.py luck_p), before the police.
+"""Chợ đen strategies per Vietnam day under the 16/10 rebalance and the 22/10 +3 points (game/fair.py luck_p), before the police.
 
     python scripts/sim_bm_strategies.py [days, default 4000] [--seed N]
 

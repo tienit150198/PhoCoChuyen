@@ -28,6 +28,8 @@ from . import archive, journey, leaderboard
 PERIOD = 600
 WAVE_MIN, WAVE_CHESTS = 10, 15   # owner 16/10 night: "10p thì sẽ từ 10 - 15 rương random" (15/10: 10 a wave; before 3–5)
 REWARD = 10000
+# 📈 Owner 22/10 ("tăng 50% … mọi thứ luôn mn kiếm được"): a chest pays reward() = REWARD × income_boost.INCOME_PCT / 100
+# while the boost is on (15.000 xu); REWARD stays the base.
 RADIUS = 1.6
 PROOF_TTL = 5.0
 POSITION_TTL = 12.0
@@ -118,6 +120,15 @@ def locations():
     return tuple(sorted(candidates))
 
 
+def reward() -> int:
+    from . import income_boost
+    return income_boost.scale(REWARD, 'treasure')
+
+
+def _xu(n: int) -> str:
+    return f'{n:,}'.replace(',', '.')
+
+
 def spawn_rows(bucket):
     rng = secrets.SystemRandom()
     points = rng.sample(locations(), rng.randint(WAVE_MIN, WAVE_CHESTS))
@@ -131,7 +142,7 @@ def view(rows, at, on=True, added=0):
     return dict(enabled=on, server_time=at,
                 wave=dict(id=str(bucket), starts_at=bucket * PERIOD, expires_at=(bucket + 1) * PERIOD,
                           next_at=(bucket + 1) * PERIOD, added=added, per_wave=WAVE_MAX, per_day=DAY_MAX,
-                          reward=REWARD, notice=f'{added} rương kho báu vừa xuất hiện trong phố! Mỗi rương có 10.000 xu, ai tới trước nhặt trước.') if on else None,
+                          reward=reward(), notice=f'{added} rương kho báu vừa xuất hiện trong phố! Mỗi rương có {_xu(reward())} xu, ai tới trước nhặt trước.') if on else None,
                 chests=chests, total_unclaimed=sum(c['count'] for c in chests))
 
 
@@ -218,12 +229,13 @@ def claim(store, token, data):
             need(not jail.jailed(raw), 'Bạn chưa thể nhặt kho báu lúc này.', 'jailed', 409)
             j = raw['journey']
             need(j.get('story'), 'Kho báu dành cho ví hành trình.', 'treasure_story', 409)
-            need(j['wallet'] + REWARD <= 10**9, 'Ví đã đầy, hãy dùng bớt xu rồi nhặt rương.', 'wallet_full', 409)
-            journey._wallet(j, REWARD, 'life', '🧰 Kho báu trong phố')
+            coins = reward()
+            need(j['wallet'] + coins <= 10**9, 'Ví đã đầy, hãy dùng bớt xu rồi nhặt rương.', 'wallet_full', 409)
+            journey._wallet(j, coins, 'life', '🧰 Kho báu trong phố')
             serialized = serialize(raw, full=True)
             cut = _archive_rows(box, before, raw, '')
-        result = dict(message='Bạn nhặt được 10.000 xu vào ví hành trình!',
-                      treasure=dict(chest_id=chest_id, coins=REWARD, wave_id=str(chest['bucket'])))
+        result = dict(message=f'Bạn nhặt được {_xu(coins)} xu vào ví hành trình!',
+                      treasure=dict(chest_id=chest_id, coins=coins, wave_id=str(chest['bucket'])))
         db.execute('UPDATE sessions SET state=?,revision=revision+1,updated_at=CURRENT_TIMESTAMP WHERE sid=?', (serialized,sid))
         db.execute('UPDATE town_treasure_chests SET winner=?,won_at=?,request_id=?,result=? WHERE id=?',
                    (sid,at,request_id,json.dumps(result,ensure_ascii=False),chest_id))

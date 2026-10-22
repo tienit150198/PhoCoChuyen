@@ -32,9 +32,9 @@ class Table(unittest.TestCase):
         return p * sum(m * w for m, w in xs.PRIZES) / total
 
     def test_rebalanced_prize_table_prefers_small_prizes(self):
-        self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'],) * 2)    # owner 16/10: 57% of tickets win at net 0
-        self.assertAlmostEqual(self.ev(xs.P_HI), .57 * 1.775)            # 16/10: 101.175% back before cool-off
-        self.assertAlmostEqual(self.ev(xs.P_LO), .57 * 1.775)
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.BASES['xs'],) * 2)    # owner 16/10: 57% of tickets win at net 0, 60% since 22/10
+        self.assertAlmostEqual(self.ev(xs.P_HI), .60 * 1.775)            # 22/10: 106.5% back before cool-off (16/10: .57, 101.175%)
+        self.assertAlmostEqual(self.ev(xs.P_LO), .60 * 1.775)
         weights = dict(xs.PRIZES)
         self.assertGreater(weights[1.5], sum(weights.values()) / 2)      # mostly the smallest profit
         self.assertEqual(sorted(weights.values(), reverse=True), [weights[m] for m in xs.MULTS])   # rarer as they grow
@@ -119,8 +119,8 @@ class Scratch(FairBase):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
-        # owner 16/10: the draw follows today's Chợ đen net (a small ticket wins back a loss at .60)
-        for net, p in ((3500, .57), (30_000, .57), (30_001, .52), (99_999, .52), (100_000, .45), (-400, .60), (-1, .57)):
+        # owner 16/10: the draw follows today's Chợ đen net (a small ticket wins back a loss at .63 since 22/10)
+        for net, p in ((3500, .60), (30_000, .60), (30_001, .55), (99_999, .55), (100_000, .48), (-400, .63), (-1, .60)):
             s['journey']['fair']['net'] = net
             self.clock.t += fh.RUN_GAP + 1  # compare fresh draws, without the pace
             s, r = self.buy(s, 2, [p + .001])
@@ -132,11 +132,11 @@ class Scratch(FairBase):
 
     @mock.patch.object(fh, 'featured_game', return_value='xs')
     def test_a_long_run_of_tickets_slows_by_its_pace(self, _featured):
-        """Owner 16/10: no round-by-round decay; 12 tickets a minute (5 s apart) draw .57 − .05 from the 11th on."""
+        """Owner 16/10: no round-by-round decay; 12 tickets a minute (5 s apart) draw .60 − .05 from the 11th on."""
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))
         ps = [fh.luck_p(j, f, 'xs', OPEN + 5 * i, stake=2) for i in range(40)]
         self.assertEqual(ps[:10], [fh.BASES['xs']] * 10)
-        self.assertEqual(ps[10:], [.52] * 30)
+        self.assertEqual(ps[10:], [.55] * 30)
         self.assertGreaterEqual(min(ps), fh.P_MIN)
         self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY, fh.PACE_KEY})
         fh.luck_p(j, f, 'bc', OPEN + 300, stake=20)                 # another stall: one older run key at a time

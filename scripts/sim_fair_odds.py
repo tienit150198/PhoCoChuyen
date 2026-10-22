@@ -2,9 +2,9 @@
 
     python scripts/sim_fair_odds.py [rounds per stall, default 1000000] [--side]
 
-exact(): one ordinary round at today's net 0 (fair.BASES, .57) before streak cooling, enforcement or fines, with and
+exact(): one ordinary round at today's net 0 (fair.BASES, .60 since 22/10) before streak cooling, enforcement or fines, with and
 without Lộc as if its hourly server gate were always open; `back` the same round winning back a small loss
-(fair.P_BACK, .60). Owner 16/10: chiếu trong pays 0.75× on a win, lô tô 1.8×, vé cào's won tickets 1.775×, bầu cua's
+(fair.P_BACK, .63 since 22/10). Owner 16/10: chiếu trong pays 0.75× on a win, lô tô 1.8×, vé cào's won tickets 1.775×, bầu cua's
 bão 20:1. No police enforcement is simulated: actual xd raids require bm.arrest_p(f, stake) > 0, so adding an
 unconditional raid to these small-stake rounds would misstate their before-police returns.
 scripts/sim_bm_strategies.py plays whole Vietnam days (net bands, pace, strategies).
@@ -190,7 +190,7 @@ def main() -> None:
         mc = [play(g, how, n) for how in ('fresh', 'spam', 'press')] + [play(g, 'fresh', n, loc=True)]
         print(f'{name:16} {ex[g]["rtp"]:7.2%} {ex[g]["loc"]:7.2%} | {"":>{len(f"{n:,}") + 15}}'
               + ' '.join(f'{v:7.2%}' for v in mc[:3]) + f' {mc[3]:9.2%}')
-    print(f'winning back a small loss (.60): chiếu trong {ex["xd"]["back"]:.2%}, lô tô {ex["lt"]["back"]:.2%}, '
+    print(f'winning back a small loss ({fh.P_BACK:.2f}): chiếu trong {ex["xd"]["back"]:.2%}, lô tô {ex["lt"]["back"]:.2%}, '
           f'vé cào {ex["xs"]["back"]:.2%}; bầu cua with the bão at {fh.BAO_LOW}: {ex["bc"]["low"]:.2%}')
     print(f'lô tô 2-xu tờ (pays 3): {ex["lt"]["low"]:.2%}')
     print(f'đua chó: the favourite {ex["dg"]["low"]:.2%}, a dog picked at random {ex["dg"]["fresh"]:.2%}')

@@ -11,14 +11,15 @@ thay vì đó là mình cho spam 1 game nhanh quá thì thua cao hơn"). Superse
 stays). Chiếu trong / xóc đĩa, lô tô and vé cào (DRAWN) draw, in luck_p:
 
 * By today's Chợ đen net (all paid stalls, Vietnam day, _today(f, t)['net'], before this round): net ≥ HOT_FROM
-  (100,000) P_HOT .45; net > UP_FROM (30,000) P_UP .52; net < 0 and a stake ≤ min(−net, BACK_MAX 5,000) P_BACK .60
-  (winning back what was lost, small stakes only, so losing a little then betting big gains nothing); else BASES .57.
+  (100,000) P_HOT .48; net > UP_FROM (30,000) P_UP .55; net < 0 and a stake ≤ min(−net, BACK_MAX 5,000) P_BACK .63
+  (winning back what was lost, small stakes only, so losing a little then betting big gains nothing); else BASES .60.
+  Owner 22/10 "tăng nhẹ tỷ lệ thắng của chợ đen luôn nhé": each band +3 points (16/10: .45 / .52 / .60 / .57).
 * Pace (spam one stall too fast): this player's rounds at THAT stall in the last PACE_S (60) seconds, this one
   included (journey[PACE_KEY], _pace): up to 10 nothing, 11–15 −.05, 16 or more −.12 (PACE_STEPS). Never below P_MIN
   (.40). The same pace (11+) and net (≥ HOT_FROM) also lower bầu cua's bão (BAO 20 → BAO_LOW 10, bc_bao) and đua
   chó's payouts (fair_dog.CLASSES → the 15/10 OLD prices). cold() tells the stall "chơi dồn dập quá" (no number).
 * Unchanged: four wins in a row cool the next draws to WIN_P_LOW (45%); a stake of BIG_WIN_FROM (50,000) or more
-  draws at most BIG_WIN_P (40%); the police (game/fair_bm.py); 🍀 Lộc; the free ném vòng's own draw and decay.
+  draws at most BIG_WIN_P (43%, 40% before 22/10); the police (game/fair_bm.py); 🍀 Lộc; the free ném vòng's own draw and decay.
 * Payouts: chiếu trong pays XD_PAY_PCT (75) % of the stake on a win (the house keeps 25%, xâu); lô tô LOTO_PAY 1.8×
   the tờ; vé cào's won tickets average 1.775× (fair_scratch.PRIZES, no refund prizes); bầu cua bão BAO:1.
   No daily round cap (owner 16/10).
@@ -26,15 +27,17 @@ stays). Chiếu trong / xóc đĩa, lô tô and vé cào (DRAWN) draw, in luck_p
 Single ordinary round before police, streak cooling and Lộc (docs/FAIR_HOUSE_EDGE.md; scripts/sim_bm_strategies.py
 plays the real luck_p/_draw_luck and payouts per Vietnam day):
 
-  stall        how                                      .57 draw  winning back (.60)  net > 30k (.52)  net ≥ 100k (.45)
+  stall        how                                      .60 draw  winning back (.63)  net > 30k (.55)  net ≥ 100k (.48)
   bầu cua      three honest dice, 1:1 a die, bão 20:1   100.0%    (bão 10:1 when fast or ≥ 100k up: 95.4%)
-  chiếu trong  a win pays 0.75× the stake               99.75%    105.0%              91.0%            78.75%
-  lô tô        timely Kinh at 1.8× the tờ               102.6%    108.0%              93.6%            81.0%
-  vé cào       won tickets average 1.775×               101.2%    106.5%              92.3%            79.9%
+  chiếu trong  a win pays 0.75× the stake               105.0%    110.25%             96.25%           84.0%
+  lô tô        timely Kinh at 1.8× the tờ               108.0%    113.4%              99.0%            86.4%
+  vé cào       won tickets average 1.775×               106.5%    111.8%              97.6%            85.2%
   đua chó      fixed odds, +5% (old prices when fast)   96–100%   (old: 92.8–95.0%)
 
-With 🍀 Lộc's gate always open, at the .57 draw: bầu cua 101.1%, chiếu trong 101.3%, lô tô 104.2%, vé cào 102.8%,
-đua chó (the best dog) 100.0%. Four wins in a row cool the next draws (above), so a steady player gets about 98%.
+The .60 band (today's net 0..30k) returns a little more than the stake since 22/10; the house keeps its edge from 30k up
+today (.55, .48), so a day's expected gain stays bounded by that band (docs/FAIR_HOUSE_EDGE.md, 22/10). A 50k+ stake
+draws .43 at most: 75–77%. With 🍀 Lộc's gate always open, at the .60 draw: bầu cua 101.1%, chiếu trong 106.7%, lô tô
+109.7%, vé cào 108.2%, đua chó (the best dog) 95.0%. Four wins in a row cool the next draws (above).
 
 Ordinary draw reductions remain: the cool-off after STREAK wins (WIN_P_LOW), the pace penalty (above),
 a Kinh called late, the police (raids, the asset check). The lô tô side bets are closed (SIDE_OPEN: the minute's
@@ -131,13 +134,15 @@ ROUNDS_DAY = 400
 # xóc đĩa: a win pays XD_PAY_PCT % of the stake, its raids (RAID_PCT) come first; lô tô: a Kinh pays LOTO_PAY tenths of
 # the tờ; vé cào: a won ticket pays scratch.PRIZES; ném vòng takes no stake (3 decimals: a ring round keeps its draw as
 # p/1000). Skill games, honest dice and the free ring draw stay unchanged.
-BASES = dict(xd=.57, lt=.57, xs=.57, ring=.503)
+# Owner 22/10 "tăng nhẹ tỷ lệ thắng của chợ đen luôn nhé": every band +3 points (BASES .57 → .60, P_UP .52 → .55,
+# P_HOT .45 → .48, P_BACK .60 → .63, the 50k+ cap BIG_WIN_P .40 → .43); the bands, the pace cut and P_MIN unchanged.
+BASES = dict(xd=.60, lt=.60, xs=.60, ring=.503)
 DRAWN = ('xd', 'lt', 'xs')     # the stalls whose rounds are drawn at a rate (luck_p's bands and pace)
 # Today's Chợ đen net (before the round): ≥ HOT_FROM draws P_HOT, > UP_FROM P_UP; below 0 a stake of at most
 # min(−net, BACK_MAX) draws P_BACK (winning back, small stakes only). Never below P_MIN. Server only, never shown.
-HOT_FROM, P_HOT = 100_000, .45
-UP_FROM, P_UP = 30_000, .52
-BACK_MAX, P_BACK = 5_000, .60
+HOT_FROM, P_HOT = 100_000, .48
+UP_FROM, P_UP = 30_000, .55
+BACK_MAX, P_BACK = 5_000, .63
 P_MIN = .40
 # The pace (owner 16/10 "cho spam 1 game nhanh quá thì thua cao hơn", no round cap): a player's rounds at one stall in
 # the last PACE_S seconds, this one included; PACE_STEPS (from, cut) the largest first. PACE_SLOW: from that many
@@ -213,7 +218,7 @@ AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Nộp phạt'
 WALLET_CHECKS = False          # owner 11/10: _wealth_raid / _asset_audit off, fines are per round only
 # Owner 11/10 (evening): "người ta spam chơi 50k nhiều quá thì giảm tỷ lệ thắng xuống 40%, mức 50–300k cũng áp dụng":
 # a luck round staking BIG_WIN_FROM or more draws at most BIG_WIN_P (golden days included). Never shown.
-BIG_WIN_FROM, BIG_WIN_P, BIG_WIN_GAMES = 50_000, .40, ('xd', 'lt', 'xs')
+BIG_WIN_FROM, BIG_WIN_P, BIG_WIN_GAMES = 50_000, .43, ('xd', 'lt', 'xs')   # owner 22/10: .40 → .43
 POLICE_SAY = 'Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).

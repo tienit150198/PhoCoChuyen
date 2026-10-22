@@ -49,14 +49,14 @@ class Gone(On):
     def test_a_legacy_first_round_mark_changes_nothing(self):
         for mark in ({}, dict(d=fh.vn_date(OPEN)), dict(d='2026-10-15', xd=1)):
             j = {boost.KEY: dict(mark)}
-            self.assertEqual(fh.luck_p(j, None, 'xd', OPEN, stake=20), .57)
+            self.assertEqual(fh.luck_p(j, None, 'xd', OPEN, stake=20), .60)
             self.assertEqual(j[boost.KEY], mark)
 
     def test_50k_or_more_stays_capped(self):
         for game in GAMES:
-            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=50_000), .40)
-            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=10**6), .40)
-            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=49_999), .57)
+            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=50_000), .43)
+            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=10**6), .43)
+            self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=49_999), .60)
 
     def test_golden_days_event_is_not_lowered(self):
         fh.golden._starts.set(int(OPEN))
@@ -70,7 +70,7 @@ class Gone(On):
             for _ in range(n):
                 j = {}
                 won += fh._draw_luck(j, 'xd', fh.luck_p(j, None, 'xd', OPEN, stake=20))
-        self.assertAlmostEqual(won / n, .57, delta=.012)
+        self.assertAlmostEqual(won / n, .60, delta=.012)
 
 
 class Commands(On, FairBase):
@@ -90,7 +90,7 @@ class Commands(On, FairBase):
         return s, r['fair']['net'] > 0
 
     def test_xd_first_round_draws_57(self):
-        for draw, won in ((.5699, True), (.57, False)):
+        for draw, won in ((.5999, True), (.60, False)):
             with self.subTest(draw=draw):
                 s, w = self.xd(story(10_000), draw)
                 self.assertEqual(w, won)
@@ -107,7 +107,7 @@ class Commands(On, FairBase):
         s2 = story(10_000)
         with mock.patch.object(fh, '_draw_luck', return_value=True) as dl:
             self.act(s2, 'fair_loto_buy', tier='lon', n=1)
-        self.assertEqual(dl.call_args.args[1:], ('lt', .57))
+        self.assertEqual(dl.call_args.args[1:], ('lt', .60))
 
     @mock.patch.object(boost, 'XD_GAP_MS', 3000)   # FairBase's 2 s clock steps run with no gap
     def test_xd_three_second_gap(self):

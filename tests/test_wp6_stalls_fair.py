@@ -177,7 +177,7 @@ class KnifeAndRing(unittest.TestCase):
 
 class FairWinRate(FairBase):
     """Owner 07/10: every luck stall is won at its own rate in normal play (a long winning streak cools off to
-    WIN_P_LOW); since 16/10 chiếu trong, lô tô and vé cào draw .57 (.60 winning back a small loss) and cool by their pace,
+    WIN_P_LOW); since 16/10 chiếu trong, lô tô and vé cào draw by today's net (.60 at 0, .63 winning back a small loss since 22/10) and cool by their pace,
     the free ném vòng's long run cools to 40%. Real commands, a seeded source standing in for the OS one."""
     N = 1500
 
@@ -230,8 +230,8 @@ class FairWinRate(FairBase):
                     self.assertTrue(want * .98 - .03 <= rate <= fh.P_BACK + .03, (game, rate))
                 else:
                     self.assertAlmostEqual(rate, want, delta=.03, msg=(game, rate))
-                if game == 'xd':
-                    self.assertLess(want * (1 + fh.XD_PAY_PCT / 100), 1)   # chiếu trong pays 0.75×: the house keeps a bit
+                if game == 'xd':   # chiếu trong pays 0.75×: the house keeps a bit once a player is 30k up today (owner 22/10:
+                    self.assertLess(fh.P_UP * (1 + fh.XD_PAY_PCT / 100), 1)   # the .60 band gives a little, .55 takes it back)
 
     def test_spamming_one_stall_cools(self):
         """The free ném vòng's long run cools to 40%; since 16/10 chiếu trong and vé cào cool by their pace instead
@@ -259,8 +259,8 @@ class FairWinRate(FairBase):
             p, q = base, fh.WIN_P_LOW   # the stall's own rate (fair.BASES) less the share of draws after 4 wins in a row
             capped = p**4 / ((1 - q) * sum(p**i for i in range(4)) + p**4)
             self.assertAlmostEqual(rate, p - (p - q) * capped, delta=.01, msg=game)
-            if game == 'xd':
-                self.assertLess(base * (1 - fh.RAID_PCT / 100) * (1 + fh.XD_PAY_PCT / 100), 1)
+            if game == 'xd':   # owner 22/10: the .60 band returns a little over the stake, from 30k up the house wins
+                self.assertLess(fh.P_UP * (1 - fh.RAID_PCT / 100) * (1 + fh.XD_PAY_PCT / 100), 1)
             windows = [sum(results[i:i + 1000]) / 1000 for i in range(0, 60000, 1000)]
             self.assertGreaterEqual(min(windows), fh.WIN_P_LOW - .02, game)   # 1000 draws at .485: some noise
             streak = 0   # after four wins in a row the next draw is never worse than WIN_P_LOW

@@ -1,10 +1,60 @@
-# 🕶️ Chợ đen (was Hội chợ): ordinary odds, returns and free entry (updated 16/10/2026)
+# 🕶️ Chợ đen (was Hội chợ): ordinary odds, returns and free entry (updated 22/10/2026)
 
 Owner 08/10: "mở hội chợ nhé, tỷ lệ chỉnh lại làm sao cho phù hợp, đảm bảo nhà cái luôn thắng", then "chợ đen để
 luôn ở ngoài nhé". This edition opened on 09/10 (`FAIR_START` 2026-10-09, edition `fair20261009`). Its entry stays in
 sight: a 🏮 Hội chợ chip in the town's top bar and a main menu entry. The 🏮 gate on Phố hàng rong is still there too.
 
-## Current ordinary odds — 16/10/2026
+## Current ordinary odds — 22/10/2026 (+3 points)
+
+Owner 22/10: "tăng nhẹ tỷ lệ thắng của chợ đen luôn nhé". Every band of the 16/10 draw below gains 3 points; the bands
+themselves (`HOT_FROM` 100,000, `UP_FROM` 30,000, `BACK_MAX` 5,000), the pace cut (−5 / −12 points), `P_MIN` 40%, the
+four-win cool-off (`WIN_P_LOW` 45%), the payouts, bầu cua's honest dice, đua chó's prices and the police are unchanged.
+
+| Today's net | 16/10 draw | 22/10 draw | Chiếu trong (0.75×) | Lô tô (1.8×) | Vé cào (1.775×) |
+|---|---:|---:|---:|---:|---:|
+| ≥ 100,000 xu (`P_HOT`) | 45% | **48%** | 78.75% → 84.0% | 81.0% → 86.4% | 79.9% → 85.2% |
+| > 30,000 xu (`P_UP`) | 52% | **55%** | 91.0% → 96.25% | 93.6% → 99.0% | 92.3% → 97.6% |
+| otherwise (`BASES`) | 57% | **60%** | 99.75% → 105.0% | 102.6% → 108.0% | 101.2% → 106.5% |
+| winning back, stake ≤ min(−net, 5,000) (`P_BACK`) | 60% | **63%** | 105.0% → 110.25% | 108.0% → 113.4% | 106.5% → 111.8% |
+| a stake ≥ 50,000 xu, any net (`BIG_WIN_P`, a cap) | 40% | **43%** | 70.0% → 75.25% | 72.0% → 77.4% | 71.0% → 76.3% |
+
+Expected money back per xu staked, one ordinary round, before the streak cool-off, Lộc and the police. With the pace
+cut a fast player draws 55% / 48% at net 0 (96.25% / 84.0% on chiếu trong).
+
+**The house edge.** Above 30,000 xu up today every stall keeps its edge (96–99%, then 84–86%), and a 50k+ stake stays
+far below even. The 0–30,000 band now returns 105–108% (lô tô and vé cào were already 102.6% / 101.2% there on 16/10),
+so a day's expected gain is bounded by that band: a player who stops once 30,000 up today keeps at most about that
+plus one win's overshoot; one who plays on draws 55% and gives it back. Normal play is now slightly in the player's
+favour (owner 16/10: "đừng cho lỗ nhưng đừng cho lãi nhiều"; 22/10: a little more). If the owner wants the edge back at
+the base band with the higher win rate, the payouts would have to drop (chiếu trong 0.66×, lô tô 1.6×, vé cào ~1.65×).
+
+`python scripts/sim_fair_odds.py` (1,000,000 rounds a pattern, seed 1), before police:
+
+| Stall | Exact .60 | +Lộc | Fresh | Spam (1 s) | Press | Fresh + Lộc |
+|---|---:|---:|---:|---:|---:|---:|
+| Bầu cua | 100.00% | 101.10% | 99.81% | 95.47% | 99.90% | 101.39% |
+| Chiếu trong | 105.00% | 106.67% | 102.44% | 83.71% | 105.00% | 104.10% |
+| Lô tô | 108.00% | 109.66% | 105.32% | 86.13% | 107.89% | 106.95% |
+| Vé cào | 106.50% | 108.17% | 103.91% | 84.95% | 106.42% | 105.70% |
+
+Lô tô's 2-xu tờ (pays 3): 90.0%. 300 lô tô card rounds: drawn for the player 60.21%, cards agree 100%.
+
+`python scripts/sim_bm_strategies.py` (4,000 Vietnam days a strategy, seed 1; no police, no Lộc), 16/10 → 22/10:
+
+| Strategy | Rounds/day | Won | Mean day net | RTP | P(day > 0) |
+|---|---:|---:|---:|---:|---:|
+| Chiếu trong normal (1,000 xu, 8 s apart) | 200 | 57.14% → 59.18% | −8 → 7,132 | 100.00% → 103.57% | 47.25% → 75.92% |
+| Chiếu trong martingale (≤ 49,000) | 200 | 55.89% → 57.86% | −5,796 → 15,690 | 98.95% → 103.13% | 66.47% → 77.85% |
+| Chiếu trong lose small then 45,000 | 200 | 53.43% → 56.02% | −13,400 → 15,933 | 98.31% → 103.28% | 94.45% → 97.82% |
+| Chiếu trong bot (5,000 xu every 3 s) | 3,000 | 47.87% → 50.66% | −2,434,388 → −1,701,553 | 83.77% → 88.66% | 0% → 0% |
+| Chiếu trong probe (10 xu, then 49,000) | 400 | 55.02% → 56.63% | −101,012 → −38,115 | 94.22% → 97.96% | 36.23% → 49.80% |
+| Vé cào normal / fast | 200 / 3,000 | 59.42% / 50.56% | 1,084 / −30,691 | 105.42% / 89.77% | 70.40% / 0% |
+| Lô tô normal / fast | 200 / 3,000 | 59.02% / 50.69% | 1,247 / −26,247 | 106.23% / 91.25% | 87.45% / 0% |
+| Bầu cua, đua chó | unchanged | | | | |
+
+Fast play, bots and big stakes still lose. The 16/10 section below is the shape these numbers come from.
+
+## Ordinary odds — 16/10/2026 (bands +3 points since 22/10, above)
 
 Owner 16/10: "tỷ lệ là 55 - 60% thôi … đừng cho lỗ nhưng đừng cho lãi nhiều", "phải tính cả trường hợp người ta
 cheat, hoặc chơi kiểu ít tiền thua sau đó chơi tiền lớn, hoặc cheat spam ăn nhiều", "đừng giới hạn 600 ván, thay vì đó

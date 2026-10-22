@@ -335,9 +335,10 @@ def _settle_one(store, order):
             else:
                 sm.credit(state, paid, 'Thanh toán đơn đã phục vụ tại quầy đã đóng', 'salary', data.get('career'))
         elif status == 'ready':
-            from . import engine
+            from . import engine, income_boost
             c = state['careers'][data['career']]
-            engine.money(state, c, paid, 'Thanh toán đơn khách thật', order['id'], 'revenue')
+            with income_boost.skip():   # 📈 a real player's money: no +50% (owner 22/10: only what the game pays)
+                engine.money(state, c, paid, 'Thanh toán đơn khách thật', order['id'], 'revenue')
             credit_bonus = getattr(_bridge(), 'credit_staff_bonus', None)
             if credit_bonus: credit_bonus(state, data['career'], order['id'], order['price'], **(dict(extra, base=data.get('base', order['price'])) if fee else {}))
         else:   # 🛎️ a refund: the wallet up to its maximum, then the bank account (the escrow came from both: sm.debit)

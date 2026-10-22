@@ -93,14 +93,16 @@ def action(s, name, p):
     x = CONTRACTS[a['kind']]
     e.need(a['done'] >= x['target'], 'Chưa giao đủ đơn mới theo hợp đồng.')
     deduction = min(x['fee'], _deduction(h, a)); amount = x['fee'] - deduction
-    from . import journey
-    if amount:
-        journey._wallet(j, amount, 'salary', 'Thưởng hợp đồng · ' + x['name'], 'delivery')
-    h['completed'] += 1; h['earned'] += amount
+    from . import journey, income_boost   # 📈 Thu nhập +50% (owner 22/10): the contract's bonus is earned
+    paid = income_boost.earned(s, amount, f'ship|{a["seq"]}')
+    if paid:
+        journey._wallet(j, paid, 'salary', 'Thưởng hợp đồng · ' + x['name'], 'delivery')
+    h['completed'] += 1; h['earned'] += amount   # the quoted bonus (validate bounds it by the fees); the wallet got `paid`
     h['history'] = (h['history'] + [dict(seq=a['seq'], kind=a['kind'], day=j['life_day'], fee=x['fee'],
                                       deduction=deduction, bonus=amount, cost=x['cost'])])[-12:]
     h['active'] = None
-    return dict(message=f'Hoàn tất {x["name"]}: thưởng {x["fee"]} − khấu trừ {deduction} = {amount} xu vào ví. Phí giao từng đơn vẫn tính riêng trong nghề.')
+    more = f' (+{paid - amount} xu thu nhập +{income_boost.INCOME_PCT - 100}%)' if paid > amount else ''
+    return dict(message=f'Hoàn tất {x["name"]}: thưởng {x["fee"]} − khấu trừ {deduction} = {amount} xu{more} vào ví. Phí giao từng đơn vẫn tính riêng trong nghề.')
 
 
 def on_action(s, career, action_name, p, result):
