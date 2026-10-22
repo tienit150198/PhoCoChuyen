@@ -767,7 +767,7 @@ function renderSheet(preserve=true){
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
   applyGuide(dialog);watchHead(dialog);if(iso?.booted())iso.updateIsometricShell(env());
-  if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
+  if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{el.setSelectionRange(selection,selection);}catch{/* not a text input */}}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
 }
@@ -1945,6 +1945,17 @@ let fontsLate=0;document.fonts?.addEventListener?.('loadingdone',()=>{clearTimeo
  * request was still out (the minute money), it looked ready but its next tap was swallowed without a word. */
 const tap={el:null,at:0,pending:new Set()};
 document.addEventListener('touchstart',()=>{},{passive:true});  // iOS Safari shows :active only with a touch listener
+// 22/10 (iPhone players: "không hiện bàn phím", paste does nothing, the bank's typed amounts): a tapped typing field
+// could end up without focus, or focused with no keyboard (a tap then only offers Dán / Tự động điền). iOS opens the
+// keyboard only for a focus made inside the touch itself, so a tap that ends on a field without its keyboard focuses
+// it here. Phones only for the "focused, no keyboard" case (html.kb-open, shell.js); a field already typing is left alone.
+const typingField=t=>t?.closest?.('input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]):not([type=reset]):not([type=color]),textarea,[contenteditable]:not([contenteditable="false"])');
+document.addEventListener('touchend',e=>{
+  const f=typingField(e.target);if(!f||f.disabled||f.readOnly||e.touches?.length)return;
+  const root=document.documentElement;
+  if(document.activeElement!==f){try{f.focus({preventScroll:true});}catch{/* detached */}return;}
+  if(root.dataset.layout==='phone'&&!root.classList.contains('kb-open')){try{f.blur();f.focus({preventScroll:true});}catch{/* detached */}}
+},{passive:true,capture:true});
 document.addEventListener('click',e=>{
   const el=e.target.closest?.('button,[data-action],[data-command]');
   if(el?.classList.contains('is-pending')){e.preventDefault();e.stopImmediatePropagation();return;}
