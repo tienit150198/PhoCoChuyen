@@ -199,7 +199,8 @@ def total_money(j: dict) -> int:
     """The wallet and the bank (current account, demand pot, term deposits): what a heavy fine counts."""
     b = j.get('bank') if isinstance(j.get('bank'), dict) else None
     bank = (max(0, b['balance']) + b['demand'] + sum(t['amount'] for t in b['terms'])) if b else 0
-    return max(0, j['wallet']) + bank
+    bp = j.get('bank_plus') if b else None   # 💎 the sổ không kỳ hạn above 1 tỷ (game/bank_plus.py vip, 22/10)
+    return max(0, j['wallet']) + bank + (bp.get('vip', 0) if isinstance(bp, dict) else 0)
 
 
 def take_total(j: dict, f: dict, amount: int, label: str) -> int:
@@ -218,6 +219,14 @@ def take_total(j: dict, f: dict, amount: int, label: str) -> int:
             b['balance'] -= x
             left -= x
             bk._log(b, day, 'acc', label, -x)
+        bp = j.get('bank_plus')   # 💎 the part of the sổ không kỳ hạn above 1 tỷ goes first (game/bank_plus.py vip, 22/10)
+        x = min(left, bp.get('vip', 0)) if isinstance(bp, dict) else 0
+        if x:
+            bp['vip'] -= x
+            if not bp['vip']:
+                bp['vpend'] = 0
+            left -= x
+            bk._log(b, day, 'sav', label + ' (sổ không kỳ hạn)', -x)
         x = min(left, b['demand'])
         if x:
             b['demand'] -= x

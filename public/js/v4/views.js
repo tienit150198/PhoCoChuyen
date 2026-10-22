@@ -11,6 +11,7 @@ import {lockChip} from '../careers/stage_fold.js';
 import {wordsFor} from '../scenes/vocabulary.js';
 import {fundLabel} from './money.js';
 import {T,isShop,offersOf} from './terms.js';
+import {coverOptions,askCover} from './stock-cover.js';   // 📦 22/10 (F#481): a short fund offers ví / thẻ / vay nhập hàng
 import {confirmPurchase} from './payment.js';
 import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
 import {Sound} from '../audio.js';
@@ -411,7 +412,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const afford=Math.floor(c.money/Math.max(1e-9,pick.cost*sup.factor)),qty=Math.max(1,Math.min(max||1,ui.orderQty||Math.min(10,max||1,Math.max(1,afford))));
   const q=orderQuote(pick,qty,sup),cost=q.total;
   const fn=fundName(api.state.current),eta=sup.quote?.eta_label||sup.window||'';
-  const can=orderCan({max,inv:c.inventory,cost,money:c.money,fund:fn,qty,typed:qty,pick,sup});
+  const can=orderCan({max,inv:c.inventory,cost,money:c.money,fund:fn,qty,typed:qty,pick,sup,state:api.state,career:api.state.current});
   const chips=[5,10,20,40].filter(n=>n<max).map(n=>`<button type="button" class="chip ${n===qty?'selected':''}" data-action="v4Qty" data-set="${n}">${n}</button>`).join('')+(max?`<button type="button" class="chip ${qty===max?'selected':''}" data-action="v4Qty" data-set="${max}">${space<=lineMax?'Đầy kệ':'Tối đa'} · ${max}</button>`:'');
   // Suppliers: one line each (short name · when · ×price), the chosen one highlighted; the full name is the label.
   const supplier=x=>{const ok=sells(x,pick.id),on=ok&&x.id===sup.id,k=carts.find(k=>k.supplier===x.id),when=ok?shortWhen(x.quote?.eta_label||x.window||''):'không bán',f='×'+String(x.factor).replace('.',',');
@@ -452,10 +453,11 @@ function billLine(q,{max,eta}){
   return `<strong id="order-total" aria-label="Tổng ${fmt(q.total)} xu">${fmt(q.total)} xu</strong>${tier}${q.ship?`<span class="tag amber" title="Hàng ${fmt(q.cost)} xu + ship">ship ${fmt(q.ship)} xu</span>`:''}${when?`<span class="inv-eta">nhận <b>${esc(when)}</b></span>`:''}`;
 }
 /** Can this order go? true, or {why, fix}: the shelf, the vans on the road, the typed number, the fund. */
-function orderCan({max,inv,cost,money,fund,typed,pick,sup}){
+function orderCan({max,inv,cost,money,fund,typed,pick,sup,state=null,career=null}){
   if(!max)return {why:'Kệ đã đầy (tính cả hàng đang giao và đơn đang soạn).'};
   if(vans(inv).full)return {why:`${vansLine(inv)}: nhận bớt thùng rồi đặt tiếp.`,fix:{act:'v4InvTab',data:{tab:'orders'},label:'📦 Thùng hàng'}};
   if(typed>max)return {why:`Chỉ còn chỗ cho ${max}.`,fix:{act:'v4Qty',data:{set:max},label:`Lấy ${max}`}};
+  if(cost>money&&coverOptions(state,cost-money,{career}))return true;   // 📦 the confirm offers how to pay the rest
   if(cost>money){let n=Math.min(max,typed-1,Math.floor(money/Math.max(1e-9,pick.cost*sup.factor)));
     while(n>=1&&orderQuote(pick,n,sup).total>money)n--;   // the fix's number fits with wholesale and ship too
     return {why:`${fund} còn ${fmt(money)} xu, thiếu ${fmt(cost-money)} xu.`,...(n>=1&&n<typed?{fix:{act:'v4Qty',data:{set:n},label:`Lấy ${n}`}}:{})};}
@@ -502,7 +504,7 @@ function cartCard(env,k,{byId,unit}){
     :k.can_haggle?`<div class="inv-haggle" role="group" aria-label="Xin bớt"><span>💬 Xin bớt</span>${k.asks.map(p=>cmdBtn(`${p}%`,'inv_haggle',{supplier:sid,pct:p},'chip')).join('')}</div>`
     :!k.asked&&k.n?`<small class="muted block">💬 Đơn từ ${fmt(k.haggle_from)} xu được xin bớt</small>`
     :k.asked&&k.n?`<small class="muted block">💬 Hôm nay đã xin bớt ${esc(s.name)} rồi, mai hỏi lại nhé.</small>`:'';
-  const why=!k.n?'Cả đơn đang hết hàng hôm nay.':k.below_min?`${s.name} nhận đơn gộp từ ${fmt(k.min_order)} xu (còn thiếu ${fmt(k.below_min)} xu hàng).`:k.short?`${fn} thiếu ${fmt(k.short)} xu.`:vans(api.state.careers[api.state.current]?.inventory).full?`Đủ ${vans(api.state.careers[api.state.current]?.inventory).cap} đơn đang về: nhận bớt thùng rồi đặt tiếp.`:'';
+  const why=!k.n?'Cả đơn đang hết hàng hôm nay.':k.below_min?`${s.name} nhận đơn gộp từ ${fmt(k.min_order)} xu (còn thiếu ${fmt(k.below_min)} xu hàng).`:k.short&&!coverOptions(api.state,k.short,{career:api.state.current})?`${fn} thiếu ${fmt(k.short)} xu.`:vans(api.state.careers[api.state.current]?.inventory).full?`Đủ ${vans(api.state.careers[api.state.current]?.inventory).cap} đơn đang về: nhận bớt thùng rồi đặt tiếp.`:'';
   return `<section class="card inv-cart" aria-label="Đơn gộp ${esc(s.name)}"><div class="row spread"><h3>🛒 Đơn gộp · ${esc(s.emoji||'')} ${esc(s.name)}</h3>${button(icon('x',14),'v4Cart',{supplier:''},'ghost small')}</div>`+
     `<ul class="inv-cart-lines">${k.lines.map(line).join('')}</ul>${sum}`+
     `${k.to_free?`<small class="muted block">Thêm ${fmt(k.to_free)} xu hàng: miễn ship</small>`:''}${talk}`+
@@ -1039,8 +1041,12 @@ export async function v4Action(action,data,el,env){
     case'v4CartGo':{
       const k=(api.state.careers[api.state.current]?.inventory?.carts||[]).find(x=>x.supplier===data.supplier);if(!k)return true;
       const s=supplierList(env).find(x=>x.id===k.supplier)||{name:k.supplier};
-      if(!await confirmAction('Đặt đơn gộp?',`${k.n} món từ ${s.name}: trả ${fmt(k.total)} xu ngay${k.ship?` (ship ${fmt(k.ship)} xu)`:' (miễn ship)'}. Dự kiến: ${k.quote?.label||''}. Một chuyến, một thùng.`,'Đặt đơn',{cost:k.total,pocket:'fund'}))return true;
-      if(await cmd('inv_order_cart',{supplier:k.supplier,confirm:true})){ui.invCart=null;ui.invTab='orders';renderSheet(false);}
+      const msg=`${k.n} món từ ${s.name}: trả ${fmt(k.total)} xu ngay${k.ship?` (ship ${fmt(k.ship)} xu)`:' (miễn ship)'}. Dự kiến: ${k.quote?.label||''}. Một chuyến, một thùng.`;
+      const short=Math.max(0,k.total-(Number(api.state.careers[api.state.current]?.money)||0));
+      // 📦 22/10 (F#481): the fund cannot pay it all: ví / thẻ / vay nhập hàng for the rest, in the same command (`cover`)
+      const cover=short&&coverOptions(api.state,short,{career:api.state.current})?await askCover(confirmAction,api.state,{title:'Đặt đơn gộp?',msg,label:'Đặt đơn',short,career:api.state.current}):'';
+      if(cover===null||!cover&&!await confirmAction('Đặt đơn gộp?',msg,'Đặt đơn',{cost:k.total,pocket:'fund'}))return true;
+      if(await cmd('inv_order_cart',{supplier:k.supplier,confirm:true,...(cover?{cover}:{})})){ui.invCart=null;ui.invTab='orders';renderSheet(false);}
       return true;}
     case'v4ReceiveGroup':{
       const inv=api.state.careers[api.state.current]?.inventory,gid=data.box?'box-'+data.box:data.group;
@@ -1072,8 +1078,11 @@ export async function v4Action(action,data,el,env){
       const sup=pickSupplier(env,item.id);
       const q=orderQuote(item,qty,sup),cost=q.total,eta=sup.quote?.eta_label||sup.window||'';
       const size=orderSize(env,item.id);
-      if(!await confirmAction('Đặt hàng?',`${qty} ${item.unit||'phần'} ${item.name}${size?` · size ${size}`:''} từ ${sup.name}: trả ${cost} xu ngay${q.ship?` (ship ${q.ship} xu)`:''}.${eta?` Dự kiến nhận: ${eta}.`:''} Hàng chỉ vào kho sau khi bạn đếm nhận.`,'Đặt hàng',{cost,pocket:'fund'}))return true;
-      const r=await cmd('inv_order',{item:item.id,qty,size,supplier:sup.id,confirm:true});if(r){ui.orderItem=null;ui.orderQty=0;ui.invTab='orders';renderSheet(false);}
+      const msg=`${qty} ${item.unit||'phần'} ${item.name}${size?` · size ${size}`:''} từ ${sup.name}: trả ${cost} xu ngay${q.ship?` (ship ${q.ship} xu)`:''}.${eta?` Dự kiến nhận: ${eta}.`:''} Hàng chỉ vào kho sau khi bạn đếm nhận.`;
+      const short=Math.max(0,cost-(Number(api.state.careers[api.state.current]?.money)||0));
+      const cover=short&&coverOptions(api.state,short,{career:api.state.current})?await askCover(confirmAction,api.state,{title:'Đặt hàng?',msg,label:'Đặt hàng',short,career:api.state.current}):'';   // 📦 22/10
+      if(cover===null||!cover&&!await confirmAction('Đặt hàng?',msg,'Đặt hàng',{cost,pocket:'fund'}))return true;
+      const r=await cmd('inv_order',{item:item.id,qty,size,supplier:sup.id,confirm:true,...(cover?{cover}:{})});if(r){ui.orderItem=null;ui.orderQty=0;ui.invTab='orders';renderSheet(false);}
       return true;}
     case'v4FbFilter':ui.fbFilter=data.tab;ui.fbStars=0;ui.fbPost=null;renderSheet(false);return true;
     case'v4FbStars':{const s=Number(data.stars)||0;ui.fbStars=ui.fbStars===s?0:s;ui.fbFilter='all';ui.fbPost=null;renderSheet(false);return true;}
@@ -1170,7 +1179,7 @@ export function v4Input(el,env){
       bill.innerHTML=billLine(oq,{max,eta:d.eta||''});
       for(const ch of bill.closest('.inv-order')?.querySelectorAll('.inv-qty .chip[data-set]')||[])ch.classList.toggle('selected',Number(ch.dataset.set)===q);
       const inv=env.api.state.careers[env.api.state.current]?.inventory;
-      const can=typed<1?{why:'Nhập số lượng, ít nhất 1.'}:orderCan({max,inv,cost:oq.total,money,fund:d.fund||'Quỹ tiệm',typed,pick,sup});
+      const can=typed<1?{why:'Nhập số lượng, ít nhất 1.'}:orderCan({max,inv,cost:oq.total,money,fund:d.fund||'Quỹ tiệm',typed,pick,sup,state:env.api.state,career:env.api.state.current});
       const w=document.getElementById('order-why');if(w)w.textContent=typed<1||can===true?'':can.why;
       const go=document.getElementById('order-go');if(go)setWhy(go,can);
       const add=document.getElementById('cart-add'),left=Number(d.lineCap)-Number(d.draft);

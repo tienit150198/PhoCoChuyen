@@ -111,4 +111,18 @@ DECLINE = {
     'income': 'Ngân hàng cần thấy thu nhập đều: ít nhất {days} ngày có lương hoặc tiền lời rút về ví trong {window} ngày gần nhất.',
     'many': 'Bạn đã nộp nhiều hồ sơ tín dụng trong {window} ngày gần đây. Nộp lại được {when}.',
     'dti': 'Tiền trả góp mỗi tuần sẽ vượt {pct}% thu nhập của bạn. Chọn số tiền nhỏ hơn hoặc kỳ hạn dài hơn nhé.',
+    # owner 22/10: "vay thì 7 ngày trở lên mới được vay, hoặc thẻ tín dụng" (game/bank_plus.py CREDIT_DAYS)
+    'young': 'Ngân hàng chỉ cho vay và mở thẻ tín dụng khi bạn đã sống ở phố đủ {days} ngày. Hôm nay mới là Ngày {day}, quay lại từ Ngày {open} nhé.',
 }
+
+# 🐷 Hạng tiết kiệm (owner 22/10, game/bank_plus.py TIERS): each tier is a deposit insurance package that lifts the cap.
+TIER_NAMES = ('Phổ thông', 'Bạc', 'Vàng', 'Kim cương', 'Thượng hạng')
+TIER_EMOJI = ('🐷', '🥈', '🥇', '💎', '👑')
+TIER_SMS = '{bank}: Tài khoản tiết kiệm đã lên hạng {name}, được bảo hiểm tiền gửi tới {cap} xu. Cảm ơn quý khách.'
+SAVE_CAP = ('Hạng {name} nhận tiền gửi tiết kiệm tới {cap} xu. Bạn đang gửi {have} xu, còn gửi thêm được {room} xu. '
+            'Nâng hạng ở mục Tiết kiệm để gửi nhiều hơn nhé.')
+
+# 📦 Vay nhập hàng (owner 22/10, feedback #481): a short loan paid straight into the shop at the restock point.
+STOCK_LOAN = 'Vay nhập hàng'
+STOCK_DUE_SMS = '{bank}: Đã trích {amount} xu tất toán khoản vay nhập hàng cho {where}. Cảm ơn quý khách.'
+STOCK_PART_SMS = '{bank}: Khoản vay nhập hàng cho {where} đến hạn. Đã trích được {amount} xu, còn thiếu {left} xu. Quý khách nộp thêm vào tài khoản giúp nhé.'

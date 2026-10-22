@@ -30,7 +30,7 @@ api.command=async(action,p)=>{calls.push([action,JSON.parse(JSON.stringify(p))])
   if(action==='jr_quay_pause'){st.business.paused=p.on;st.business.status=p.on?'paused':'running';}
   if(action==='jr_quay_upgrade'){st.place=p.place;st.grow=st.grow.filter(g=>g.place!=='sap'&&g.place!==p.place);}
   api.dispatchEvent(new Event('state'));return {message:'OK'};};
-window.fixture={api,open:()=>openQuay({api,ui:{},closeSheet(){},confirmAction:async(title,msg,label,money)=>{asks.push({title,msg,label,money});return true;}})};await fixture.open();
+window.fixture={api,open:()=>openQuay({api,ui:{},closeSheet(){},confirmAction:async(title,msg,label,money)=>{asks.push({title,msg,label,money});return money?.payment?money.payment.selected:true;}})};await fixture.open();
 </script>`;
 const server=createServer(async(req,res)=>{try{if(req.url==='/'){res.setHeader('Content-Type','text/html');res.end(html);return;}const path=resolve(root,'public','.'+decodeURIComponent(req.url.split('?')[0]));if(!path.startsWith(resolve(root,'public')))throw Error('path');res.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.statusCode=404;res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(out,{recursive:true});
@@ -48,7 +48,8 @@ try{
   await noSideways();await page.screenshot({path:resolve(out,'again-390.png')});
   await again.click();await page.waitForFunction(()=>window.calls.length>=1);await settle();
   let asks=await page.evaluate(()=>window.asks);
-  assert.equal(asks.length,1);assert.equal(asks[0].label,'Nhập hàng · 40 xu');assert.equal(asks[0].money.cost,30);assert.match(asks[0].msg,/thiếu 30 xu, lấy từ ví/);
+  assert.equal(asks.length,1);assert.equal(asks[0].label,'Nhập hàng · 40 xu');assert.equal(asks[0].money.payment.cost,30);assert.match(asks[0].msg,/còn thiếu 30 xu/);
+  assert.deepEqual(asks[0].money.payment.options.map(o=>[o.id,o.ok]),[['wallet',true],['card',false],['loan',false]],'📦 22/10: ví, thẻ, vay nhập hàng');
   let calls=await page.evaluate(()=>window.calls);
   assert.deepEqual(calls[0],['jr_quay_restock',{stall:'q1',items:{tea:10,milk:2},wallet:true}],'One command: the order and the wallet flag');
   // the second counter has enough in its till: no wallet flag

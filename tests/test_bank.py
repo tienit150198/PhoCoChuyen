@@ -115,6 +115,7 @@ class Account(unittest.TestCase):
     def test_big_moves_up_to_a_billion(self):
         # F#462 (21/10): more than 10 triệu answered "Số tiền cần là số xu nguyên, ít nhất 1 xu." and took several tries.
         s = opened(wallet=900_000_000)
+        s['journey']['bank_plus'] = dict(v=1, tier=2, card=None, review=0, seq=0, loans=[])   # 🐷 hạng Vàng: 1 tỷ (22/10)
         rows0 = len(s['journey']['history'])
         s, r = act(s, 'jr_bk_deposit', amount=850_000_000)
         self.assertEqual((B(s)['balance'], s['journey']['wallet']), (850_000_000, 50_000_000))
@@ -218,10 +219,13 @@ class Savings(unittest.TestCase):
 class Card(unittest.TestCase):
     def test_no_income_is_declined_but_the_inquiry_counts(self):
         s = opened()
+        days(s, 7)                       # owner 22/10: no credit before 7 full life days (tests/test_bank_plus.py)
+        score = B(s)['score']
         s, r = act(s, 'jr_bk_card_apply', confirm=True)
         self.assertFalse(r['approved'])
         self.assertIsNone(B(s)['card'])
-        self.assertEqual(B(s)['score'], bk.SCORE_START + bk.DELTA['inquiry'])
+        self.assertIn('thu nhập', r['message'])
+        self.assertEqual(B(s)['score'], score + bk.DELTA['inquiry'])
 
     def test_limit_follows_income_and_score(self):
         low = with_card(income_days=14, salary=60)           # 60/ngày × 7 × 0,6 (score < 670)

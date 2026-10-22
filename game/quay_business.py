@@ -615,7 +615,8 @@ def action(s, st, name, p):
         need(set(p) <= {'stall', 'level'} and isinstance(p.get('level'), str) and p['level'] in market.PLANS, 'Gói bảo vệ không hợp lệ.')
         b['protection']['level'] = p['level']
         return dict(message='Đã chọn ' + market.PLANS[p['level']]['label'].lower() + '.')
-    need(set(p) <= {'stall', 'items', 'wallet'} and type(p.get('wallet', False)) is bool, 'Thông tin nhập hàng không hợp lệ.')
+    need(set(p) <= {'stall', 'items', 'wallet', 'credit'} and type(p.get('wallet', False)) is bool
+         and p.get('credit') in (None, 'card', 'loan'), 'Thông tin nhập hàng không hợp lệ.')
     items = p.get('items')
     rows = qs.DISH[st['trade']]
     need(isinstance(items, dict) and items and all(d in rows and type(n) is int and 1 <= n <= STOCK_MAX for d, n in items.items()), 'Chọn số lượng hàng cần nhập.')
@@ -630,7 +631,14 @@ def action(s, st, name, p):
     # Never into debt; without the flag a short counter is refused exactly as before.
     j = s['journey']
     short = max(0, cost - st['till'] - st['fund'])
-    if short:
+    paid = f' Lấy {short} xu từ ví.' if short else ''
+    if short and p.get('credit'):
+        # 📦 owner 22/10 (F#481 "nhập hàng khi ví không đủ tiền"): `credit` 'card' | 'loan' pays the whole shortfall by a card
+        # swipe or a vay nhập hàng (game/bank_plus.py cover), the wallet untouched; the bank says no -> nothing happens.
+        from .bank_plus import cover
+        paid = ' ' + cover(s, short, p['credit'], f'Nhập hàng {st["name"]}', dict(k='quay', id=st['id']))
+        st['fund'] += short   # fund + short = cost - till <= cost: within MONEY_MAX
+    elif short:
         need(p.get('wallet') is True, f'Cần {cost} xu trong két hoặc vốn quầy.', 'no_money')
         need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi nhập hàng nhé.', 'in_debt')
         need(qy._have(s) >= short, f'Thiếu {short} xu: ví và tài khoản chưa đủ.', 'no_money')
@@ -644,7 +652,6 @@ def action(s, st, name, p):
     # whose walk-ins come from the board as it was at the start; the 📦 tab then shows "Chưa bật ở Menu").
     added = [] if qs.board_locked(st, int(s['journey']['life_day'])) else qs.turn_on(st, items)
     tail = f' Đã bật ở Menu: {", ".join(rows[d]["name"] for d in added)}.' if added else ''
-    paid = f' Lấy {short} xu từ ví.' if short else ''
     return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.{paid}{tail}')
 
 

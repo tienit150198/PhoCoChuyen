@@ -1417,6 +1417,9 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
         said = (f'Đơn dưới {sup["min_order"]} xu chị không chạy xe đâu em.' if _casual(sup)
                 else f'Bên em chỉ nhận đơn gộp từ {sup["min_order"]} xu ạ.')
         need(False, f'{sup["name"]}: “{said}” Thêm hàng hoặc đặt lẻ từng món nhé.')
+    if c['money'] < q['total']:   # 📦 22/10: an order sent with `cover` is topped up here (game/bank_plus.py short)
+        from .bank_plus import short
+        short(s, c, q['total'] - c['money'])
     need(c['money'] >= q['total'], f'Thiếu {q["total"] - c["money"]} xu để đặt đơn này (quỹ nghề còn {c["money"]} xu). '
          'Tiền nhập hàng trừ vào quỹ của nghề đang làm, không lấy từ ví hay vốn quầy.')
     x['seq'] += 1
