@@ -1,0 +1,244 @@
+{
+  "car_dealer": [
+    {
+      "tier": 1,
+      "title": "Lập bảng chọn xe theo nhu cầu",
+      "output_unit": "bảng chọn xe",
+      "inputs": [
+        {
+          "name": "Xấp thẻ nhu cầu giả lập",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chia cột: quãng đường, chở ai, bằng lái, ngân sách.",
+        "Ghi xe hợp từng dòng: xe đạp điện, xe số, tay ga, ô tô.",
+        "Thêm dòng: chưa có bằng thì không bán xe cần bằng."
+      ],
+      "check": {
+        "prompt": "Bảng nào được duyệt?",
+        "good": "Đủ bốn cột, xe hợp từng dòng và dòng bằng lái.",
+        "bad": "Gợi ý xe đắt nhất trước cho dễ đạt chỉ tiêu.",
+        "why": "Bán đúng xe thì khách quay lại."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn quy trình kiểm xe mới năm bước",
+      "output_unit": "quy trình kiểm xe mới",
+      "inputs": [
+        {
+          "name": "Bộ phiếu kiểm xe giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đối số khung, số máy với phiếu xuất xưởng.",
+        "Kiểm nước làm mát, dầu, lốp, đèn, phanh.",
+        "Ký phiếu rồi mới đưa ra trưng bày."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Đối số trước, đủ năm bước và có chữ ký.",
+        "bad": "Xe mới thì khỏi kiểm, rửa sạch là trưng.",
+        "why": "Lỗi xưởng phát hiện sớm thì hãng chịu."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Lập bảng giá lăn bánh mẫu",
+      "output_unit": "bảng giá lăn bánh",
+      "inputs": [
+        {
+          "name": "Bảng giá treo giả lập",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Ghi giá niêm yết đã gồm VAT.",
+        "Cộng trước bạ xe máy 2%, ô tô 10%, bỏ phần lẻ.",
+        "Cộng biển số xe máy 5 xu, ô tô 20 xu."
+      ],
+      "check": {
+        "prompt": "Bảng nào treo được?",
+        "good": "Đủ ba phần, tách rõ tiền nộp hộ.",
+        "bad": "Chỉ ghi giá xe, phí nói sau.",
+        "why": "Khách cần biết trả tất cả bao nhiêu trước khi chọn."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Soạn quy định lái thử",
+      "output_unit": "quy định lái thử",
+      "inputs": [
+        {
+          "name": "Xấp phiếu lái thử giả lập",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Xem bằng đúng hạng, chụp lại.",
+        "Nhân viên đi cùng, cung đường cố định.",
+        "Ghi giờ đi, giờ về, số km trên phiếu."
+      ],
+      "check": {
+        "prompt": "Quy định nào được duyệt?",
+        "good": "Có bằng, người đi cùng, cung đường và phiếu giờ.",
+        "bad": "Khách quen thì cho mượn xe về nhà thử.",
+        "why": "Xe chưa đăng ký mà gặp chuyện thì đại lý chịu."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập phiếu tính trả góp qua ngân hàng",
+      "output_unit": "phiếu trả góp",
+      "inputs": [
+        {
+          "name": "Xấp phiếu trả góp giả lập",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Ghi trả trước ít nhất 30%, làm tròn lên.",
+        "Ghi số vay tối đa 5.000 xu, khoản góp mỗi tuần.",
+        "So khoản góp với 40% thu nhập, quá thì chưa duyệt."
+      ],
+      "check": {
+        "prompt": "Phiếu nào đạt?",
+        "good": "Đủ trả trước, số vay, khoản góp và dòng 40%.",
+        "bad": "Khuyên khách khai thu nhập cao lên cho dễ duyệt.",
+        "why": "Góp quá sức là khách mất xe, ngân hàng mất tiền."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soạn danh mục hồ sơ đăng ký",
+      "output_unit": "danh mục hồ sơ",
+      "inputs": [
+        {
+          "name": "Bìa hồ sơ giả lập",
+          "unit": "bìa",
+          "quantity": 3,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Ghi giấy tờ cần: hóa đơn, CCCD, tờ khai, phiếu xuất xưởng.",
+        "Ghi chữ ký cần có ở từng tờ.",
+        "Thêm ô ngày nộp và ngày nhận biển."
+      ],
+      "check": {
+        "prompt": "Danh mục nào được dùng?",
+        "good": "Đủ giấy, đủ chữ ký và ô ngày.",
+        "bad": "Giao xe trước, giấy tờ bổ sung sau.",
+        "why": "Giao xe thiếu hồ sơ là khách chạy xe không giấy."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập bảng định giá xe cũ",
+      "output_unit": "bảng định giá xe cũ",
+      "inputs": [
+        {
+          "name": "Xấp thẻ xe cũ giả lập",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 3500
+        }
+      ],
+      "procedure": [
+        "Trừ 10% giá mới mỗi năm, thấp nhất còn 30%.",
+        "Trừ tiếp tiền sửa theo bảng của xưởng.",
+        "Ghi giá thu và giá bãi xe cũ mua lại trong ngày."
+      ],
+      "check": {
+        "prompt": "Bảng nào được duyệt?",
+        "good": "Đúng mức trừ theo tuổi, có tiền sửa và giá bãi.",
+        "bad": "Thấy xe đẹp thì cộng thêm cho khách vui.",
+        "why": "Định giá theo bảng thì ai bán cũng như ai."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Soạn quy trình kiểm giấy xe cũ",
+      "output_unit": "quy trình kiểm giấy",
+      "inputs": [
+        {
+          "name": "Kính lúp soi số khung mẫu",
+          "unit": "cái",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Đối tên trên giấy với CCCD, có giấy ủy quyền nếu khác tên.",
+        "Soi số khung, số máy khớp giấy, không có vết đục.",
+        "Không khớp thì không thu, ghi đặc điểm, báo công an."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Đối tên, soi số và cách xử lý khi không khớp.",
+        "bad": "Xe rẻ thì mua trước, giấy tính sau.",
+        "why": "Thu xe gian là cả đại lý mang tiếng."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Lập lịch bảo dưỡng và bảo hành",
+      "output_unit": "lịch bảo dưỡng",
+      "inputs": [
+        {
+          "name": "Sổ bảo hành giả lập",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi mốc bảo dưỡng 1.000 km rồi mỗi 4.000 km.",
+        "Ghi bảo hành 3 năm hoặc 30.000 km.",
+        "Ghi rõ không bảo hành hư do va chạm, độ chế."
+      ],
+      "check": {
+        "prompt": "Lịch nào được phát?",
+        "good": "Đúng mốc, đúng hạn bảo hành và dòng loại trừ.",
+        "bad": "Hứa bảo hành mọi thứ cho dễ bán.",
+        "why": "Hứa quá chính sách thì hãng không trả."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Lập sổ tay showroom cho người mới",
+      "output_unit": "sổ tay showroom",
+      "inputs": [
+        {
+          "name": "Bộ sổ tay in giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Gom bảng chọn xe, giá lăn bánh, lái thử, trả góp.",
+        "Thêm hồ sơ, xe cũ, bảo dưỡng, phụ kiện.",
+        "Cho người mới tư vấn kèm một buổi rồi mới đứng riêng."
+      ],
+      "check": {
+        "prompt": "Sổ tay nào được phát?",
+        "good": "Đủ các quy trình, có buổi kèm.",
+        "bad": "Đưa sổ rồi cho chốt khách một mình ngay.",
+        "why": "Người mới cần kèm một buổi mới quen việc."
+      }
+    }
+  ]
+}

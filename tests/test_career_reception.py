@@ -115,7 +115,7 @@ class Registration(unittest.TestCase):
     def test_registered_last_dormant_salaried_late_unlock(self):
         from game import operations
         from game.career_voice import salaried_set
-        self.assertEqual(tuple(ORDER[ORDER.index('reception'):ORDER.index('reception') + 7]), ('reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet'))   # 🏦 teller, 🧰 restore, 🔬 research, 📻 radio, 🏍️ moto and 🩺 vet registered after it (📱 kol, 🎤 singer, 🎬 actor, 🔧 tuning next)
+        self.assertEqual(tuple(ORDER[ORDER.index('reception'):ORDER.index('reception') + 7]), ('reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet'))   # 🏦 teller, 🧰 restore, 🔬 research, 📻 radio, 🏍️ moto and 🩺 vet registered after it (📱 kol, 🎤 singer, 🎬 actor, 🔧 tuning, 💍 jewelry, 🚗 car_dealer next)
         self.assertIn('reception', DORMANT)
         self.assertIn('reception', salaried_set())
         self.assertIn('reception', operations.SALARIED)

@@ -16,11 +16,11 @@ def catalogue():
     return importlib.import_module('game.career_scale_content')
 
 
-def test_catalogue_covers_all_68_careers_with_544_immutable_stages():
+def test_catalogue_covers_all_72_careers_with_576_immutable_stages():
     c = catalogue()
     assert set(c.PROFILES) == set(CAREERS)
-    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 38, 'agency': 29, 'community': 1}   # 🔑 reception, 🏦 teller, 🔬 research, 📻 radio, 🩺 vet, 🎤 singer and 🎬 actor +1 agency each, 🧰 restore, 🏍️ moto, 📱 kol and 🔧 tuning +1 business
-    assert sum(len(p.stages) for p in c.PROFILES.values()) == 544
+    assert Counter(p.kind for p in c.PROFILES.values()) == {'business': 42, 'agency': 29, 'community': 1}   # 🔑 reception, 🏦 teller, 🔬 research, 📻 radio, 🩺 vet, 🎤 singer and 🎬 actor +1 agency each, 🧰 restore, 🏍️ moto, 📱 kol, 🔧 tuning, 💍 jewelry, 🚗 car_dealer, 🍱 canteen and ✏️ stationery +1 business
+    assert sum(len(p.stages) for p in c.PROFILES.values()) == 576
     for cid, p in c.PROFILES.items():
         assert c.profile(cid) is p
         assert [s.tier for s in p.stages] == list(range(1, 9))
@@ -38,7 +38,7 @@ def test_catalogue_covers_all_68_careers_with_544_immutable_stages():
 
 def test_prices_and_group_counts_match_approved_design():
     c = catalogue()
-    factors = {'retail': (8, 10), 'food': (8, 8), 'service': (11, 7),   # + moto, + tuning
+    factors = {'retail': (12, 10), 'food': (8, 8), 'service': (11, 7),   # + moto, + tuning; retail + jewelry, car_dealer, canteen, stationery
                'technical': (2, 12), 'farm': (1, 12), 'hospitality': (1, 15),
                'professional': (3, 6), 'arts': (3, 8),   # + kol 'logistics': (1, 12),
                'agency': (29, 0), 'community': (1, 0)}   # + reception, teller, research, radio, vet, singer, actor

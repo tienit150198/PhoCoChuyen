@@ -201,7 +201,7 @@ TITLES = {
     'g_places8': '🌈 Đa năng', 'g_places_all': '🗺️ Thuộc từng ngõ nghề', 'g_mature5': '🌿 Vững vàng', 'g_mature10': '🌳 Trưởng thành',
     'g_days30': '📅 Một tháng ở phố', 'g_days100': '🗓️ Trăm ngày thương',
     'c_milk_tea': '🧋 Thợ pha trà sữa', 'c_grocery': '🛒 Chủ quầy tạp hóa', 'c_delivery': '🛵 Shipper thuộc đường',
-    'c_customs': '🛃 Người gác cửa khẩu', 'c_hotel': '🛎️ Người giữ chìa khóa Sông Mây', 'c_banquet': '👨‍🍳 Chiếc mũ trắng Hồng Mây', 'c_reception': '🔑 Người giữ bảng móc chìa', 'c_teller': '🏦 Người đếm tiền hai lần', 'c_restore': '🧰 Người giữ hồn đồ xưa', 'c_research': '🔬 Cuốn sổ thí nghiệm bìa xanh', 'c_radio': '📻 Giọng nói của Sóng Mây', 'c_moto': '🏍️ Tay cờ lê đầu hẻm', 'c_vet': '🩺 Bác sĩ của các bé', 'c_kol': '📱 Người kể chuyện thật', 'c_singer': '🎤 Giọng ca Mây Chiều', 'c_actor': '🎬 Gương mặt Bến Mây', 'c_tuning': '🔧 Bàn tay chỉnh dyno', 'c_cafe_bakery': '☕ Barista buổi sớm', 'c_florist': '💐 Người cắm hoa', 'c_mother_baby': '🎁 Người gói quà khéo',
+    'c_customs': '🛃 Người gác cửa khẩu', 'c_hotel': '🛎️ Người giữ chìa khóa Sông Mây', 'c_banquet': '👨‍🍳 Chiếc mũ trắng Hồng Mây', 'c_reception': '🔑 Người giữ bảng móc chìa', 'c_teller': '🏦 Người đếm tiền hai lần', 'c_restore': '🧰 Người giữ hồn đồ xưa', 'c_research': '🔬 Cuốn sổ thí nghiệm bìa xanh', 'c_radio': '📻 Giọng nói của Sóng Mây', 'c_moto': '🏍️ Tay cờ lê đầu hẻm', 'c_vet': '🩺 Bác sĩ của các bé', 'c_kol': '📱 Người kể chuyện thật', 'c_singer': '🎤 Giọng ca Mây Chiều', 'c_actor': '🎬 Gương mặt Bến Mây', 'c_tuning': '🔧 Bàn tay chỉnh dyno', 'c_jewelry': '💍 Người giữ cân tiểu ly', 'c_car_dealer': '🚗 Người giữ chìa khóa showroom', 'c_canteen': '🍱 Người canh tiếng trống', 'c_stationery': '✏️ Người thuộc danh sách lớp', 'c_cafe_bakery': '☕ Barista buổi sớm', 'c_florist': '💐 Người cắm hoa', 'c_mother_baby': '🎁 Người gói quà khéo',
     'c_restaurant': '🍜 Đầu bếp mì cay', 'c_pet_care': '🐾 Bạn của chó mèo', 'c_salon': '💇 Thợ tóc có nghề',
     'c_repair': '🔧 Thợ sửa đồ tin cậy', 'c_farm': '🌾 Nông dân đồi gió', 'c_homestay': '🏡 Chủ nhà hiếu khách',
     'c_customer_care': '🎧 Người lắng nghe', 'c_pharmacy': '💊 Người đọc nhãn kỹ', 'c_tour_guide': '🧭 Người kể chuyện đường xa',
@@ -247,6 +247,10 @@ CERTS = {
     'cert:singer_basics': '🎤 Chứng chỉ Biểu diễn thanh nhạc cơ bản',
     'cert:actor_basics': '🎬 Chứng chỉ Diễn xuất trước máy quay cơ bản',
     'cert:tuning_basics': '🔧 Chứng chỉ Độ xe đúng luật cơ bản',
+    'cert:jewelry_basics': '💍 Chứng chỉ Kiểm định vàng bạc đá quý cơ bản',
+    'cert:car_dealer_basics': '🚗 Chứng chỉ Tư vấn bán xe cơ bản',
+    'cert:canteen_basics': '🍱 Chứng chỉ An toàn thực phẩm bếp ăn trường học',
+    'cert:stationery_basics': '✏️ Chứng chỉ Bán hàng văn phòng phẩm cơ bản',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

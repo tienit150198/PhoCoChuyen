@@ -81,6 +81,10 @@ CAREER_IDS = (
     "singer",
     "actor",
     "tuning",
+    "jewelry",
+    "car_dealer",
+    "canteen",
+    "stationery",
 )
 _FILES = (
     "career_specialisms.json",
@@ -100,6 +104,10 @@ _FILES = (
     "career_specialisms_singer.json",
     "career_specialisms_actor.json",
     "career_specialisms_tuning.json",
+    "career_specialisms_jewelry.json",
+    "career_specialisms_car_dealer.json",
+    "career_specialisms_canteen.json",
+    "career_specialisms_stationery.json",
 )
 _PACK_KEYS = {"tier", "title", "output_unit", "inputs", "procedure", "check"}
 _INPUT_KEYS = {"name", "unit", "quantity", "unit_cost"}
@@ -175,6 +183,10 @@ _TITLE_DIGESTS = {
     "singer": "6a9bccf61b779789fc4f41efde87eeb5ba16bce47336e7f2c920c97d94edc08d",
     "actor": "26eb877a7de8e4c371ab4ca25240df8230bd50ae2b04b30036708f90d5ec5fd6",
     "tuning": "7aa5bb240a032acbab94a498a73d1e6d479d82cfc267070bd1509e15c96119df",
+    "jewelry": "313beb4ff64a8516ec3920d83b17a78ef246897270d2ba7bae0dcb4b1fff3bd8",
+    "car_dealer": "01ce87e173e8f62e57f5c69b638c80f82f7c2ae0c9c953e45ce1f75b12f2b2dc",
+    "canteen": "72682567b0284f5485eb34c85398e1eef06e1b2fa763a4f257b8dd564290abde",
+    "stationery": "a44473a3c746da353eac05184d3825f8d5a030db9bd1fb99feb057adde035a3f",
 }
 
 

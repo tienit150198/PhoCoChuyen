@@ -18,7 +18,7 @@ class CompetitionContentTests(unittest.TestCase):
 
     def test_every_career_has_three_named_peers_and_three_complete_cases(self):
         profiles = self.profiles()
-        self.assertEqual(68, len(CAREERS))   # 🔑 reception the 58th, 🏦 teller the 59th, 🧰 restore the 60th, 🔬 research the 61st, 📻 radio the 62nd, 🏍️ moto, 🩺 vet, 📱 kol, 🎤 singer, 🎬 actor the 67th, 🔧 tuning the 68th (other branches add theirs: add each one here)
+        self.assertEqual(72, len(CAREERS))   # 🔑 reception the 58th, 🏦 teller the 59th, 🧰 restore the 60th, 🔬 research the 61st, 📻 radio the 62nd, 🏍️ moto, 🩺 vet, 📱 kol, 🎤 singer, 🎬 actor the 67th, 🔧 tuning the 68th, 💍 jewelry, 🚗 car_dealer the 70th, 🍱 canteen, ✏️ stationery the 72nd (other branches add theirs: add each one here)
         self.assertEqual(set(CAREERS), set(profiles))
         ids, narratives = set(), set()
         for career, profile in profiles.items():

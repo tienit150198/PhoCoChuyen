@@ -37,7 +37,7 @@ Usage
   # before the row is updated.
   python scripts/strip_new_careers.py strip --careers zpop --db --archive removed.jsonl [--write]
   # a rollback to 2.4.68 (the default --careers): docs/SERVICE_MARKET.md "Rollback runbook", scripts/svc_drain.py first
-  python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet,kol,singer,actor,tuning --db --archive removed.jsonl [--write]
+  python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet,kol,singer,actor,tuning,jewelry,car_dealer,canteen,stationery --db --archive removed.jsonl [--write]
   python scripts/strip_new_careers.py restore --db --archive removed.jsonl [--write]
 
 Restoring puts a career back only when the save has no record for it, or the record is still the fresh one a newer
@@ -59,9 +59,11 @@ import sys
 
 # Certificate groups added together with a career (an older build validates journey.certificates, journey.study and
 # the worn 'cert:<group>' against its own groups): taken out with that career and put back by restore.
-DEFAULT_CAREERS = 'reception,teller,restore,research,radio,moto,vet,kol,singer,actor,tuning'   # tests/helpers.py NEWER_THAN_LIVE: a rollback to 2.4.68 (docs/SERVICE_MARKET.md)
+DEFAULT_CAREERS = 'reception,teller,restore,research,radio,moto,vet,kol,singer,actor,tuning,jewelry,car_dealer,canteen,stationery'   # tests/helpers.py NEWER_THAN_LIVE: a rollback to 2.4.68 (docs/SERVICE_MARKET.md)
 CERTS = {'reception': ('reception_service',), 'teller': ('teller_service',), 'research': ('research_basics',), 'radio': ('radio_basics',), 'moto': ('moto_basics',), 'vet': ('vet_basics',),
-         'kol': ('kol_basics',), 'singer': ('singer_basics',), 'actor': ('actor_basics',), 'tuning': ('tuning_basics',)}
+         'kol': ('kol_basics',), 'singer': ('singer_basics',), 'actor': ('actor_basics',), 'tuning': ('tuning_basics',),
+         'jewelry': ('jewelry_basics',), 'car_dealer': ('car_dealer_basics',),
+         'canteen': ('canteen_basics',), 'stationery': ('stationery_basics',)}
 # Lists outside the careers that name career ids and that older validators check against their own CAREERS.
 ID_LISTS = (('journey', 'unlocked'), ('journey', 'board', 'touched'))
 # Rolling logs: rows naming the career are archived; restore does not put them back (the log moved on meanwhile).

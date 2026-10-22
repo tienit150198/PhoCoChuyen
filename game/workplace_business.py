@@ -106,6 +106,10 @@ ORDERS = {
     'singer': ('Việc riêng: hát mừng đám cưới nhà khách quen', 16, 3, {}),
     'actor': ('Việc riêng: đóng vai trong video ngắn cho trường của phố', 16, 3, {}),
     'tuning': ('Đơn riêng: thay lốp, chỉnh phuộc cho chiếc xe của nhà khách quen', 18, 4, {}),
+    'jewelry': ('Đơn riêng: một chiếc lắc bạc cho khách quen', 46, 1, {'vg_lac_bac': 1}),
+    'car_dealer': ('Đơn riêng: một chiếc mũ bảo hiểm cho khách quen', 14, 1, {'dx_mu': 1}),
+    'canteen': ('Đơn riêng: mười hộp xôi cho buổi họp phụ huynh', 120, 2, {'ct_xoi': 10}),
+    'stationery': ('Đơn riêng: một xấp vở ô li cho lớp học tình thương', 80, 2, {'vp_vo_oli': 10}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

@@ -51,6 +51,10 @@ ORDER = (
     'singer',                      # ca sĩ phòng trà: Phòng trà Mây Chiều, salaried, step-graded sets (chọn bài, khởi động, thử âm, sự cố, lời chúc)
     'actor',                       # diễn viên: Hãng phim Bến Mây, salaried, step-graded scenes (thoại, vị trí, nối cảnh, đạo diễn, hành động an toàn, họp báo)
     'tuning',                      # độ xe: Xưởng độ xe Tư Pít-tông, step-graded build tickets (bảng độ trong ngân sách, đồ đúng luật, dyno, đo tiếng ồn, thẻ thông số); players' vehicles tuned via Phố dịch vụ
+    'jewelry',                     # tiệm vàng: Tiệm vàng Ngọc Mây, the player's gold, silver and diamond shop (daily board, buy-backs, 4C appraisals)
+    'car_dealer',                  # đại lý xe: Đại lý xe Phố Mây, the player's motorbike and car showroom (trade-ins, trả góp, papers, PDI); players' cars serviced via Phố dịch vụ
+    'canteen',                     # căn tin trường: Căn tin trường Tiểu học Phố Mây, a selling counter (sáng, ra chơi, cơm phần trưa; the school bell, allergies, pocket money, lưu mẫu)
+    'stationery',                  # văn phòng phẩm: Tiệm văn phòng phẩm Bút Mây, a selling counter (vở theo lớp, danh sách đồ dùng, bọc vở, dán nhãn, photo)
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

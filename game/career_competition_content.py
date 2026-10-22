@@ -583,6 +583,50 @@ _profile('actor', 'Hoài An | Trọng Nhân | Kim Ngân',
     'đã tập an toàn trước khi quay, giữ giờ cho diễn viên nhí và giữ kín kịch bản // rehearsed safely before rolling, kept the child actor\'s hours, and kept the script secret',
     'sổ ảnh nối cảnh và bảng lượt quay đạt // the continuity book and the good-takes sheet')
 
+_profile('jewelry', 'Kim Ngân | Bảo Châu | Minh Trí',
+    'Cô Ba Ngọc · chủ tiệm vàng Ngọc Mây // Ba Ngọc · owner of the Ngọc Mây gold shop',
+    'cân trước mặt khách, đúng tuổi vàng, giá theo bảng hôm nay và không mua đồ không rõ nguồn gốc // weighing in front of the customer, the right purity, today\'s board, and nothing of unknown origin bought',
+    'cân và tính tiền vàng | kiểm định kim cương | mua lại vàng cũ // weighing and pricing gold | appraising diamonds | buying old gold back',
+    'Sáng rằm tháng Giêng, khách xếp hàng mua vàng lấy may, máy quét tuổi vàng báo lỗi và một người lạ mang túi nhẫn cưới tới bán gấp. // The full-moon morning of the first lunar month: a queue for lucky gold, the purity scanner throws an error, and a stranger brings a bag of wedding rings to sell fast.',
+    'Giao {a} phát số và bán đúng bảng niêm yết, {b} thử tuổi vàng bằng đá thử khi máy hỏng, {c} xem giấy tờ người bán và ghi sổ mua hàng. // Have {a} hand out numbers and sell at the posted board, {b} test purity on the touchstone while the scanner is down, and {c} check the seller\'s papers and keep the purchase ledger.',
+    'Một chiếc nhẫn mua lại được ghi tuổi 14K dù máy quét báo 18K, khách đã ký sổ. // A bought-back ring was written down as 14K though the scanner said 18K, and the customer has signed the ledger.',
+    'Gọi khách quay lại, ghi đúng 18K, trả thêm phần chênh, ghi chú ngày sửa vào sổ và báo chủ tiệm. // Call the customer back, write 18K, pay the difference, note the correction date in the ledger, and tell the owner.',
+    'đã bán đúng giá niêm yết, thử tuổi vàng đúng cách và từ chối đồ không rõ nguồn gốc // sold at the posted board, tested purity properly, and refused goods of unknown origin',
+    'sổ mua hàng có CCCD người bán và hóa đơn từng món // the purchase ledger with sellers\' IDs and an invoice for every piece')
+
+_profile('car_dealer', 'Hoàng Long | Thanh Hà | Gia Huy',
+    'Anh Quân · chủ đại lý xe Phố Mây // Quân · owner of the Phố Mây dealership',
+    'xe đúng nhu cầu khách, thông số theo hãng, đủ giấy tờ và không tự cho nợ // the right vehicle for each customer, the maker\'s specs, complete papers, and no in-house credit',
+    'tư vấn bán xe | kiểm xe mới | hồ sơ đăng ký // sales advice | new-vehicle checks | registration papers',
+    'Cuối tháng có chương trình khuyến mãi, mười khách tới cùng lúc, một lô xe mới chưa kiểm và bộ hồ sơ đăng ký của ba khách còn thiếu chữ ký. // A month-end promotion brings ten customers at once, a new batch is still unchecked, and three customers\' registration files are missing signatures.',
+    'Giao {a} tư vấn theo nhu cầu từng khách, {b} kiểm năm bước lô xe mới trước khi trưng bày, {c} gọi khách ký bổ sung hồ sơ. // Have {a} advise each customer by their needs, {b} run the five-step check on the new batch before display, and {c} call customers to sign their files.',
+    'Một chiếc xe đã giao cho khách với biển tạm của xe khác vì hồ sơ chưa xong. // A vehicle was handed over with another vehicle\'s temporary plate because its papers were not done.',
+    'Gọi khách đổi lại biển, giữ xe ở đại lý tới khi có biển đúng, xin lỗi khách và ghi sổ hồ sơ chờ. // Call the customer to swap the plate back, keep the vehicle at the dealer until its own plate comes, apologise, and log it in the pending-papers book.',
+    'đã tư vấn đúng nhu cầu, kiểm đủ xe mới và giao xe khi hồ sơ đủ // advised by real needs, checked every new vehicle, and handed over only with complete papers',
+    'biên bản giao xe có số khung và sổ hồ sơ chờ bổ sung // the hand-over record with the frame number and the pending-papers book')
+
+_profile('canteen', 'Thu Hà | Minh Khang | Bảo Ngọc',
+    'Cô Sáu Mận · bếp chính căn tin trường Tiểu học Phố Mây // Sáu Mận · head cook of the Phố Mây primary school canteen',
+    'đúng món, kịp giờ trống, hỏi dị ứng trước khi đưa và lưu mẫu thức ăn trưa // the right food before the bell, allergies asked before handing anything over, and the lunch sample kept',
+    'bán đồ ăn sáng | chia cơm phần trưa | an toàn thực phẩm // breakfast sales | lunch trays | food safety',
+    'Sáng thứ Hai chào cờ, học trò tới sớm xếp hàng dài, xe bánh mì giao trễ và ba lớp cùng đặt cơm trưa cho các bạn ở lại. // A Monday flag-raising morning: students queue early, the bread van is late, and three classes order lunch for the children staying at school.',
+    'Giao {a} bán đồ ăn sáng và hỏi dị ứng từng bé, {b} chia cơm phần đủ cơm, mặn, rau, canh theo số bạn mỗi lớp, {c} lưu mẫu từng món và ghi sổ trước khi phát phần đầu tiên. // Have {a} sell breakfast and ask each child about allergies, {b} portion the lunch trays with rice, a main, greens and soup for each class, and {c} keep a sample of every dish and log it before the first tray goes out.',
+    'Một khay cơm trưa đã phát cho lớp 2A trước khi lưu mẫu, sổ lưu mẫu bỏ trống. // A lunch tray went out to class 2A before the sample was kept, and the sample log is blank.',
+    'Lấy mẫu từ nồi còn lại ngay, ghi rõ giờ lấy muộn vào sổ, báo cô Sáu và cô chủ nhiệm lớp 2A. // Take the sample from the remaining pot at once, write the late time in the log, and tell Sáu Mận and the 2A class teacher.',
+    'đã giao kịp trước trống, không đưa nhầm món cho bé dị ứng và lưu mẫu đủ món // served before the bell, gave no allergic child the wrong food, and kept a sample of every dish',
+    'sổ lưu mẫu có giờ lấy, tên món và chữ ký người chia cơm // the sample log with the time, the dish and the signature of whoever portioned the lunch')
+
+_profile('stationery', 'Gia Bảo | Khánh Linh | Đức Anh',
+    'Chú Hai Bút · chủ tiệm văn phòng phẩm Bút Mây // Hai Bút · owner of the Bút Mây stationery shop',
+    'đúng loại vở theo lớp, đủ từng dòng danh sách, đếm trước mặt khách và bán đúng giá bìa // the right notebook for the grade, every line of the list, counted in front of the customer, at the cover price',
+    'soạn danh sách lớp | bọc vở, dán nhãn | photo đề cương // class lists | covering and labelling | photocopying revision sheets',
+    'Tuần tựu trường, phụ huynh cầm danh sách xếp hàng, máy photo kẹt giấy đúng lúc cô Thu cần bốn mươi bộ đề và kho giấy bọc sắp hết. // Back-to-school week: parents queue with class lists, the photocopier jams just as Thu needs forty sets of exams, and the cover paper is running out.',
+    'Giao {a} soạn đồ theo danh sách và đưa đúng loại vở, {b} bọc vở, dán nhãn ghi tên đủ số quyển, {c} gỡ kẹt máy photo và in đủ số bộ đề. // Have {a} pick each class list with the right notebooks, {b} cover and label every notebook, and {c} clear the photocopier and print every set.',
+    'Một phụ huynh lớp Một đã mang về mười quyển vở kẻ ngang thay vì vở ô li. // A first-grade parent went home with ten lined notebooks instead of squared ones.',
+    'Gọi phụ huynh mang vở còn nguyên tới đổi, đổi đúng vở ô li, chỉ cách nhận biết và ghi lại vào sổ bán hàng. // Call the parent to bring the unused notebooks back, swap them for squared ones, show how to tell them apart, and note it in the sales book.',
+    'đã đưa đúng loại vở cho từng lớp, bọc dán đủ số quyển và photo đủ bộ // gave every grade the right notebooks, covered and labelled every one, and printed every set',
+    'sổ bán hàng ghi lớp của từng danh sách và số lượt photo // the sales book with each list\'s grade and the number of photocopy runs')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

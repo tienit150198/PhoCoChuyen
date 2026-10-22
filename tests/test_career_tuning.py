@@ -51,7 +51,7 @@ def work(j, tid=None, wrong_at=None, illegal=False):
 @unittest.skipIf(T is None, 'tuning filtered out by MNL_CAREERS')
 class Registration(unittest.TestCase):
     def test_registered_last_dormant_late_unlock_owner_shop(self):
-        self.assertEqual(ORDER[-1], 'tuning')
+        self.assertEqual(ORDER[ORDER.index('tuning') - 1], 'actor')   # then 💍 jewelry, 🚗 car_dealer, 🍱 canteen, ✏️ stationery
         self.assertIn('tuning', DORMANT)
         self.assertEqual(jr.LATE_UNLOCKS['tuning'], 2)
         self.assertEqual(T.SPEC['category'], 'shop')

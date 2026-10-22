@@ -98,7 +98,7 @@ test('all 67 documented utilities dispatch existing actions and reject stale una
   }
 });
 
-test('the guide lists all 68 real careers while retaining story locks and omitting unplayable entries',()=>{
+test('the guide lists all 72 real careers while retaining story locks and omitting unplayable entries',()=>{
   const inventory=JSON.parse(readFileSync(new URL('../docs/qa/isometric-feature-parity.json',import.meta.url),'utf8'));
   const x=harness(false,({env})=>{
     env.api.content.catalogue=[...inventory.careers.map(c=>({id:c.id,name:c.name,playable:true})),{id:'future-career',name:'Coming later',playable:false}];
@@ -106,7 +106,7 @@ test('the guide lists all 68 real careers while retaining story locks and omitti
     env.api.state.careers=Object.fromEntries(inventory.careers.map(c=>[c.id,{started:false}]));
   });
   const before=JSON.stringify(x.env.api.state),rows=x.h.destinations(x.env).filter(d=>d.dest.startsWith('career:'));
-  assert.equal(rows.length,68);assert.equal(rows.filter(d=>d.hint.includes('🔒')).length,67);
+  assert.equal(rows.length,72);assert.equal(rows.filter(d=>d.hint.includes('🔒')).length,71);
   assert.equal(rows.some(d=>d.dest==='career:future-career'),false);
   assert.equal(JSON.stringify(x.env.api.state),before);
   x.env.api.state.journey.story=false;

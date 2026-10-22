@@ -1,6 +1,6 @@
 """🧭 Coach steps of the service trades (see game/coach/__init__.py): the airline crew (pilot, flight attendant), the
 offshore rig, the album shop, the laundry, the painting studio, the restoration workshop, the radio station, the motorbike
-repair shop, the vet clinic, the content studio, the tea room, the film studio and the tuning shop. Each opens on its intro card where it has one,
+repair shop, the vet clinic, the content studio, the tea room, the film studio, the tuning shop, the gold shop, the car dealership, the school canteen and the stationery shop. Each opens on its intro card where it has one,
 then walks the first day's own loop; the album shop ends with its stock round."""
 from . import S, V, stock  # noqa: F401
 
@@ -278,6 +278,60 @@ STEPS: dict[str, list[dict]] = {
         S('🔔', 'Có chuyện ở xưởng: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
         S('🛎️', 'Xe của người chơi: nhận đơn, làm từng bước rồi bấm Giao.', (), ['[data-coach="tuning-orders"]'], o=True),
     ],
+    # 💍 Tiệm vàng Ngọc Mây: the morning slip first, then one step of each customer's slip at a time (careers/slip_kit.js).
+    'jewelry': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="vg_intro"]'], o=True),
+        S('🔐', 'Sáng: đếm két, kiểm cân, treo bảng giá rồi mới đón khách.', (), ['.vg-open', '.sl-step'], g=0),
+        S('💍', 'Bấm Nghe khách cần gì để đón khách.', ['Nghe khách cần gì'], ['.sk-ask', '[data-command="ask"]'], g=1,
+          w='Nút hiện khi có khách bước vào tiệm.'),
+        S('⚖️', 'Cân, tra bảng giá hôm nay, tính rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=1),
+        S('🌀', 'Khách dặn điều oái oăm: chọn cách trả lời thật thà.', (), ['.sl-step .sl-options'], o=True, g=1),
+        S('☑️', 'Chọn mọi dòng đúng, bỏ dòng sai.', (), ['.sl-step .sl-picks[data-pick="multi"]'], o=True, g=1),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=1,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=1),
+        S('📦', 'Tủ hết món khách cần: nhập thêm ở Kho, hoặc bấm Hết hàng.', (), ['[data-command="vg_out"]'], o=True),
+        S('🔔', 'Có chuyện ở tiệm: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+    ],
+    # 🚗 Đại lý xe Phố Mây: the same slips; the morning batch check, then sales, trade-ins, after-sales and accessories.
+    'car_dealer': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="dx_intro"]'], o=True),
+        S('🔐', 'Sáng: đối số khung, kiểm xe mới, treo bảng giá rồi mới đón khách.', (), ['.dx-open', '.sl-step'], g=0),
+        S('🚗', 'Bấm Nghe khách cần gì để đón khách.', ['Nghe khách cần gì'], ['.sk-ask', '[data-command="ask"]'], g=1,
+          w='Nút hiện khi có khách bước vào showroom.'),
+        S('🔎', 'Nghe nhu cầu, bằng lái, ngân sách rồi chọn đúng xe.', (), ['.sl-step .sl-options'], g=1),
+        S('🧾', 'Tra sổ tay, tính trước bạ, biển số rồi bấm Ghi vào phiếu.', ['Ghi vào phiếu'], ['.sl-step .sk-amt-go'], o=True, g=1),
+        S('🔢', 'Việc có thứ tự: bấm lần lượt từng việc.', (), ['.sl-step .sl-picks[data-pick="order"]'], o=True, g=1),
+        S('☑️', 'Chọn mọi dòng đúng, bỏ dòng sai.', (), ['.sl-step .sl-picks[data-pick="multi"]'], o=True, g=1),
+        S('✅', 'Bấm Xác nhận để chốt bước này.', ['Xác nhận thứ tự', 'Xác nhận lựa chọn'], [RD_READY.format('.sl-step .sl-send')], o=True, g=1,
+          v=V('Chọn đủ, đúng thứ tự trước.', (), ['.sl-step .sl-picks'])),
+        S('🔁', 'Sai thì sửa ngay tại bước đó; chất lượng giảm.', x=True, g=1),
+        S('🔔', 'Có chuyện ở showroom: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+        S('🛎️', 'Xe của người chơi: nhận đơn, làm từng bước rồi bấm Giao.', (), ['[data-coach="car_dealer-orders"]'], o=True),
+    ],
+    # 🍱 Căn tin trường: the whole counter on one screen (careers/counter_kit.js): hear the order, tap the goods, Giao.
+    'canteen': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="ct_intro"]'], o=True),
+        S('🔔', 'Bấm Mời bạn tiếp theo để đón học trò.', ['Mời bạn tiếp theo'], ['.ck-call', '[data-command="more_work"]'], o=True),
+        S('👂', 'Bấm Hỏi khách cần gì để nghe bé đặt món.', ['Hỏi khách cần gì'], ['.ck-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có bạn nhỏ tới quầy.'),
+        S('🍙', 'Chạm từng món trên quầy để bỏ vào khay.', (), ['.ck-tile'], g=1),
+        S('🧪', 'Trưa: bấm Lưu mẫu trước khi chia cơm.', ['Lưu mẫu'], ['[data-command="ct_sample"]'], o=True, g=3),
+        S('✅', 'Đủ món rồi bấm Giao.', ['Giao cho bé', 'Giao cơm cho lớp'], [RD_READY.format('[data-command="ct_serve"]')], g=2),
+        S('🔁', 'Sai thì bé nói ngay: sửa khay rồi giao lại.', x=True, g=2),
+        S('🔔', 'Có chuyện ở căn tin: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+    ],
+    # ✏️ Tiệm văn phòng phẩm: the same counter; notebooks by grade, covering, labels and photocopies as services.
+    'stationery': [
+        S('👋', 'Bấm Vào việc thôi! để vào việc.', ['Vào việc thôi!'], ['[data-command="vp_intro"]'], o=True),
+        S('🔔', 'Bấm Mời khách vào tiệm để đón khách.', ['Mời khách vào tiệm'], ['.ck-call', '[data-command="more_work"]'], o=True),
+        S('👂', 'Bấm Hỏi khách cần gì để nghe khách dặn.', ['Hỏi khách cần gì'], ['.ck-ask', '[data-command="ask"]'], g=0,
+          w='Nút hiện khi có khách bước vào tiệm.'),
+        S('📒', 'Chạm từng món, từng dịch vụ để bỏ vào giỏ.', (), ['.ck-tile'], g=1),
+        S('✅', 'Đủ món rồi bấm Giao cho khách.', ['Giao cho khách'], [RD_READY.format('[data-command="vp_serve"]')], g=2),
+        S('🔁', 'Sai thì khách nói ngay: sửa giỏ rồi giao lại.', x=True, g=2),
+        S('🔔', 'Có chuyện ở tiệm: chọn cách xử lý rồi làm tiếp.', (), ['.sk-event'], o=True),
+    ],
 }
 
 EN: dict[str, str] = {
@@ -452,4 +506,30 @@ EN: dict[str, str] = {
     'Đọc biểu đồ dyno, tính rồi bấm Ghi vào phiếu.': 'Read the dyno chart, work it out, then tap Write on the ticket.',
     'Chọn đồ trái luật thì xưởng bị nhắc nhở và phải làm lại.': 'Pick an illegal part and the shop is warned, and the step must be redone.',
     'Có chuyện ở xưởng: chọn cách xử lý rồi làm tiếp.': 'Something came up at the shop: choose what to do, then carry on.',
+    # gold shop and car dealership
+    'Sáng: đếm két, kiểm cân, treo bảng giá rồi mới đón khách.': 'Morning: count the safe, check the scale and post the board before any customer.',
+    'Bấm Nghe khách cần gì để đón khách.': 'Tap Hear what the customer needs to serve them.',
+    'Nút hiện khi có khách bước vào tiệm.': 'The button shows when a customer walks into the shop.',
+    'Cân, tra bảng giá hôm nay, tính rồi bấm Ghi vào phiếu.': "Weigh, check today's board, work it out, then tap Write on the ticket.",
+    'Tủ hết món khách cần: nhập thêm ở Kho, hoặc bấm Hết hàng.': 'The case is out of what the customer wants: restock in Stock, or tap Out of stock.',
+    'Có chuyện ở tiệm: chọn cách xử lý rồi làm tiếp.': 'Something came up at the shop: choose what to do, then carry on.',
+    'Sáng: đối số khung, kiểm xe mới, treo bảng giá rồi mới đón khách.': 'Morning: match the frame numbers, check the new vehicles and post the prices before any customer.',
+    'Nút hiện khi có khách bước vào showroom.': 'The button shows when a customer walks into the showroom.',
+    'Nghe nhu cầu, bằng lái, ngân sách rồi chọn đúng xe.': 'Hear the need, licence and budget, then pick the right vehicle.',
+    'Tra sổ tay, tính trước bạ, biển số rồi bấm Ghi vào phiếu.': 'Look it up in the notebook, add the registration tax and plate fee, then tap Write on the ticket.',
+    'Có chuyện ở showroom: chọn cách xử lý rồi làm tiếp.': 'Something came up at the showroom: choose what to do, then carry on.',
+    # school canteen and stationery shop
+    'Bấm Mời bạn tiếp theo để đón học trò.': 'Tap Next, please to call the next student.',
+    'Bấm Hỏi khách cần gì để nghe bé đặt món.': 'Tap Ask what they need to hear the order.',
+    'Nút hiện khi có bạn nhỏ tới quầy.': 'The button shows when a child comes to the counter.',
+    'Chạm từng món trên quầy để bỏ vào khay.': 'Tap each item on the counter to put it on the tray.',
+    'Trưa: bấm Lưu mẫu trước khi chia cơm.': 'Lunch: tap Keep a sample before serving the trays.',
+    'Đủ món rồi bấm Giao.': 'Once everything is there, tap Hand over.',
+    'Sai thì bé nói ngay: sửa khay rồi giao lại.': 'If it is wrong the child says so at once: fix the tray and hand it over again.',
+    'Có chuyện ở căn tin: chọn cách xử lý rồi làm tiếp.': 'Something came up at the canteen: choose what to do, then carry on.',
+    'Bấm Mời khách vào tiệm để đón khách.': 'Tap Invite a customer in to serve the next customer.',
+    'Bấm Hỏi khách cần gì để nghe khách dặn.': 'Tap Ask what they need to hear what the customer wants.',
+    'Chạm từng món, từng dịch vụ để bỏ vào giỏ.': 'Tap each item and each service to put it in the basket.',
+    'Đủ món rồi bấm Giao cho khách.': 'Once everything is there, tap Hand to the customer.',
+    'Sai thì khách nói ngay: sửa giỏ rồi giao lại.': 'If it is wrong the customer says so at once: fix the basket and hand it over again.',
 }

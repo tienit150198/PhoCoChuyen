@@ -14,13 +14,13 @@ export const LEGACY_BUILDING_ART:Record<string,string>={
   library:'school',nurse:'pharmacy',oil:'garage',railway:'airport',
   lighthouse:'lighthouse',rescue:'office',lifeguard:'market',police:'office',
   zpop:'grocery',
-  art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',customs:'office',hotel:'office',banquet:'pho',reception:'home',teller:'office',restore:'garage',research:'office',radio:'office',moto:'garage',vet:'home',kol:'home',singer:'pho',actor:'office',tuning:'garage',
+  art_studio:'office',lawyer:'office',laundry:'home',post_office:'garage',customs:'office',hotel:'office',banquet:'pho',reception:'home',teller:'office',restore:'garage',research:'office',radio:'office',moto:'garage',vet:'home',kol:'home',singer:'pho',actor:'office',tuning:'garage',jewelry:'pharmacy',car_dealer:'garage',canteen:'school',stationery:'grocery',
 };
 /** The original 50 paintings stay intact; newer careers use real shared art. */
 export const BUILDING_ART:Record<string,string>={...LEGACY_BUILDING_ART,...Object.fromEntries(Object.values(CAREER_ART).map(a=>[a.career,a.key]))};
 const PREVIEW_FALLBACKS:Readonly<Record<string,string>>={
   art_studio:'/icons/cozy-v3/office.webp',lawyer:'/icons/cozy-v3/office.webp',
-  laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',customs:'/icons/cozy-v3/office.webp',hotel:'/icons/cozy-v3/office.webp',banquet:'/icons/cozy-v2/pho.webp',reception:'/icons/isometric/home.webp',teller:'/icons/cozy-v3/office.webp',restore:'/icons/cozy-v2/garage.webp',research:'/icons/cozy-v3/office.webp',radio:'/icons/cozy-v3/office.webp',moto:'/icons/cozy-v2/garage.webp',vet:'/icons/isometric/home.webp',kol:'/icons/isometric/home.webp',singer:'/icons/cozy-v2/pho.webp',actor:'/icons/cozy-v3/office.webp',tuning:'/icons/cozy-v2/garage.webp',
+  laundry:'/icons/isometric/home.webp',post_office:'/icons/cozy-v2/garage.webp',customs:'/icons/cozy-v3/office.webp',hotel:'/icons/cozy-v3/office.webp',banquet:'/icons/cozy-v2/pho.webp',reception:'/icons/isometric/home.webp',teller:'/icons/cozy-v3/office.webp',restore:'/icons/cozy-v2/garage.webp',research:'/icons/cozy-v3/office.webp',radio:'/icons/cozy-v3/office.webp',moto:'/icons/cozy-v2/garage.webp',vet:'/icons/isometric/home.webp',kol:'/icons/isometric/home.webp',singer:'/icons/cozy-v2/pho.webp',actor:'/icons/cozy-v3/office.webp',tuning:'/icons/cozy-v2/garage.webp',jewelry:'/icons/cozy-v2/pharmacy.webp',car_dealer:'/icons/cozy-v2/garage.webp',canteen:'/icons/cozy-v3/school.webp',stationery:'/icons/isometric/grocery.webp',
 };
 /** Gallery URLs must point to shipped assets; a shared illustration is labelled honestly. */
 export function careerPreview(career:string):{src:string;dedicated:boolean}|null{

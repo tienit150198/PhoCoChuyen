@@ -1021,3 +1021,63 @@ Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phươ
 8. Lập sổ đọc biểu đồ dyno
 9. Diễn tập kiểm an toàn trước khi giao
 10. Chuẩn hóa thẻ thông số giao xe
+
+## 65. Tiệm vàng (`jewelry`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng quy đổi chỉ, phân, gam
+2. Soạn quy trình kiểm cân mỗi sáng
+3. Lập bảng tuổi vàng và màu thường gặp
+4. Soạn cách treo bảng giá mua vào bán ra
+5. Lập mẫu hóa đơn nữ trang
+6. Soạn quy trình mua lại vàng cũ
+7. Lập bảng nhận biết đồ mạ, đồ giả
+8. Soạn phiếu kiểm định kim cương 4C
+9. Soạn quy trình đóng két cuối ngày
+10. Lập sổ tay quầy vàng cho người mới
+
+## 66. Đại lý xe (`car_dealer`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng chọn xe theo nhu cầu
+2. Soạn quy trình kiểm xe mới năm bước
+3. Lập bảng giá lăn bánh mẫu
+4. Soạn quy định lái thử
+5. Lập phiếu tính trả góp qua ngân hàng
+6. Soạn danh mục hồ sơ đăng ký
+7. Lập bảng định giá xe cũ
+8. Soạn quy trình kiểm giấy xe cũ
+9. Lập lịch bảo dưỡng và bảo hành
+10. Lập sổ tay showroom cho người mới
+
+## 67. Căn tin trường (`canteen`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng giá căn tin theo bảng nhà trường
+2. Soạn danh sách dị ứng của từng lớp
+3. Sắp quầy ăn sáng trước giờ vào lớp
+4. Soạn quy trình chia cơm phần bán trú
+5. Lập sổ lưu mẫu thức ăn
+6. Soạn thực đơn tuần có phần chay
+7. Lập sổ nhập hàng có hạn dùng
+8. Soạn quy định vệ sinh người chia cơm
+9. Lập kế hoạch giờ ra chơi đông khách
+10. Biên soạn sổ tay căn tin cho người mới
+
+## 68. Tiệm văn phòng phẩm (`stationery`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng giá bìa và bảng giá dịch vụ
+2. Soạn bảng vở theo từng lớp
+3. Gom danh sách đồ dùng các lớp đầu năm
+4. Soạn quy trình bọc vở, dán nhãn
+5. Lập bảng tính lượt photo
+6. Soạn quy định không photo lậu sách
+7. Lập sổ đổi trả hàng còn nguyên
+8. Soạn quy trình nhập hàng có hóa đơn
+9. Lập kế hoạch mùa tựu trường
+10. Biên soạn sổ tay tiệm cho người mới

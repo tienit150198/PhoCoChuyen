@@ -11,8 +11,8 @@ class CapacityCatalogue(unittest.TestCase):
         from game.career_scale_content import PROFILES
         eligible={c for c in CAREERS if inventory.catalogue(c)} | {'milk_tea'} | {c for c,p in PROFILES.items() if p.kind=='business'}
         rows=[u for u in UPGRADES if u.get('gear_group')=='warehouse_storage']
-        self.assertEqual(len(eligible),36)
-        self.assertEqual(len(rows),360)
+        self.assertEqual(len(eligible),44)   # + restore, moto, kol, tuning, jewelry, car_dealer, canteen, stationery
+        self.assertEqual(len(rows),440)
         self.assertEqual({u['careers'][0] for u in rows},eligible)
         for cid in eligible:
             group=[u for u in rows if u['careers']==[cid]]
