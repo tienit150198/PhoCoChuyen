@@ -40,13 +40,34 @@ export function refreshCharms(env,fresh=30000){
     .then(d=>{adopt(api,d,null);return api.charmView;}).catch(()=>null).finally(()=>{loading=null;});
 }
 
-/** A pair's row: the two pieces, the kind, the friend, and its own wear switch (actions jrAs*, v4/acc-shop.js). */
-export function pairRow(api,p){
-  const k=kindOf(api,p.kind);if(!k)return '';
-  return `<li class="as-pair${p.on?' on':''}"><label class="switch-row"><span class="as-pair-art">${pairIcon(p.kind,44)}</span>
-    <span class="grow"><b>${esc(k.emoji)} ${esc(k.name)}</b><small class="block">với ${esc(p.name||'một người bạn')}</small></span>
-    <input type="checkbox" role="switch" data-action="jrAsWear" data-id="${esc(p.id)}" ${p.on?'checked':''} aria-label="Đeo cặp ${esc(k.name)} với ${esc(p.name||'bạn')}"><i aria-hidden="true"></i></label></li>`;
+/* 💞 Quan hệ (game/friend_charms.py RELS, owner 22/10): a label two friends agree on, opened by a pair they share. */
+export const rels=api=>api.content?.journey?.wardrobe?.pairs?.rels||[];
+export const relOf=(api,id)=>rels(api).find(r=>r.id===id)||null;
+const relDefault=api=>api.content?.journey?.wardrobe?.pairs?.rel_default||{emoji:'🤝',name:'Bạn bè'};
+/** The label as a chip: "💛 Bạn thân", "🤝 Bạn bè" for none. */
+export function relChip(api,id){const r=relOf(api,id)||relDefault(api);return `<span class="as-rel${id?' on':''}">${esc(r.emoji)} ${esc(r.name)}</span>`;}
+/** Under a pair: the open ask (theirs: answer it; mine: withdraw it), else the labels this pair's friend and you may set. */
+function relControls(api,p){
+  const name=esc(p.name||'bạn ấy'),a=p.ask,ra=a&&relOf(api,a.label);
+  const b=(label,action,data,style)=>`<button type="button" class="btn ${style} small" data-action="${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}>${label}</button>`;
+  if(ra&&!a.mine)return `<div class="as-rel-ask"><small>${name} muốn hai bạn thành <b>${esc(ra.emoji)} ${esc(ra.name)}</b></small><span class="as-row-btns">${b('Đồng ý','jrAsBondAnswer',{id:a.id,answer:'accept'},'primary')}${b('Để sau','jrAsBondAnswer',{id:a.id,answer:'decline'},'ghost')}</span></div>`;
+  if(ra)return `<div class="as-rel-ask"><small>Đang chờ ${name} đồng ý <b>${esc(ra.emoji)} ${esc(ra.name)}</b></small>${b('Rút lại','jrAsBondOff',{id:p.id},'ghost')}</div>`;
+  const can=(p.can||[]).map(id=>relOf(api,id)).filter(r=>r&&r.id!==p.rel);
+  if(!can.length&&!p.rel)return '';
+  return `<details class="as-rel-pick"><summary>💞 ${p.rel?'Đổi quan hệ':'Đặt quan hệ'}</summary><div class="as-rel-opts">${can.map(r=>b(`${esc(r.emoji)} ${esc(r.name)}`,'jrAsBond',{id:p.id,label:r.id},'')).join('')}${p.rel?b(`${esc(relDefault(api).emoji)} Về ${esc(relDefault(api).name.toLowerCase())}`,'jrAsBondOff',{id:p.id},'ghost'):''}</div>
+    <small class="muted">Hai bạn cùng đồng ý thì quan hệ mới hiện lên.</small></details>`;
 }
+/** A pair's row: the two pieces, the kind, the friend, the 💞 relationship, its own wear switch (actions jrAs*,
+ * v4/acc-shop.js). `controls` false: only the label (a friend's later pairs repeat it without the buttons). */
+export function pairRow(api,p,controls=true){
+  const k=kindOf(api,p.kind);if(!k)return '';
+  const rel='can' in p||p.rel?`<span class="as-pair-rel">${relChip(api,p.rel)}</span>`:'';
+  return `<li class="as-pair${p.on?' on':''}"><label class="switch-row"><span class="as-pair-art">${pairIcon(p.kind,44)}</span>
+    <span class="grow"><b>${esc(k.emoji)} ${esc(k.name)}</b><small class="block">với ${esc(p.name||'một người bạn')}</small>${rel}</span>
+    <input type="checkbox" role="switch" data-action="jrAsWear" data-id="${esc(p.id)}" ${p.on?'checked':''} aria-label="Đeo cặp ${esc(k.name)} với ${esc(p.name||'bạn')}"><i aria-hidden="true"></i></label>${controls?relControls(api,p):''}</li>`;
+}
+/** Every pair's row, the relationship's buttons once per friend (the first of their pairs). */
+export function pairRows(api,pairs){const seen=new Set();return pairs.map(p=>{const key=p.ask?.id||p.name||p.id,first=!seen.has(key);seen.add(key);return pairRow(api,p,first);}).join('');}
 
 /** What is worn by kind, as chips: "🏎️ Chí cốt ×2". */
 export function wornChips(api,worn=myPairs()){
@@ -59,7 +80,7 @@ export function pairsCard(env,{title='🤝 Phụ kiện đôi'}={}){
   refreshCharms(env)?.then(x=>{if(x)env.renderSheet?.(false);});
   const pairs=v?.pairs||[],on=pairs.filter(p=>p.on).length;
   const offer=n?`<button type="button" class="btn primary small" data-action="jrAccShop" data-tab="pair">🎁 ${n} món quà đang chờ bạn nhận</button>`:'';
-  const list=pairs.length?`<ul class="as-pairs">${pairs.map(p=>pairRow(api,p)).join('')}</ul>`
+  const list=pairs.length?`<ul class="as-pairs">${pairRows(api,pairs)}</ul>`
     :v?`<p class="muted small">Chưa có cặp nào. Mua một cặp ở ${esc(shopName(api))} rồi tặng một chiếc cho bạn thân nhé.</p>`
     :`<div class="as-chips">${wornChips(api)||'<span class="muted small">Đang xem…</span>'}</div>`;
   const all=pairs.length>1?`<button type="button" class="btn ghost small" data-action="jrAsWearAll" data-on="${on?'0':'1'}">${on?'Cất hết':'Đeo hết'}</button>`:'';

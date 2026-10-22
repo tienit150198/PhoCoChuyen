@@ -10,7 +10,7 @@
  * there. Worn ones, their colours and the 🤝 phụ kiện đôi switches (v4/charms.js) stay on the Phụ kiện tab. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {confirmPurchase} from './payment.js';
-import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf,cozyActive} from './look.js';
+import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf,cozyActive,wingOfState,wingIcon,WING_TIERS,WING_TIER_COLOR} from './look.js';
 import {GOC,colorList,haveColors,hasColor,priceOf as colorPrice,nameOf as colorName,swatch,unlockColor,openPalette} from './palette.js';
 import {pairsCard} from './charms.js';
 
@@ -143,6 +143,15 @@ function tryLook(api,st){
   return {saved,look:withTint(api,st,look)};
 }
 
+/** 🪽 The wing worn (game/wings.py): its tier's badge and what it adds, the way to the shop's Cánh shelf. */
+function wingsCard(api){
+  const c=api.content.journey?.wardrobe?.wings,w=api.state.journey?.wings,on=wingOfState(api.state);if(!c)return '';
+  const n=Array.isArray(w?.own)?w.own.length:0,st=on&&c.styles.find(x=>x.id===on.k);
+  const body=on?`<span class="wg-pick" style="--wt:${WING_TIER_COLOR[on.r]}">${wingIcon(on,60)}<i class="wg-tier" style="--wt:${WING_TIER_COLOR[on.r]}">${esc(WING_TIERS[on.r])}</i></span>
+      <span class="grow"><b>${esc(st?.name||'Cánh')} ${esc(WING_TIERS[on.r])}</b><small class="block muted">+${c.earn[on.r]}% tiền kiếm được · +${c.battle[on.r]}% sức thú khi đấu</small></span>`
+    :`<span class="grow"><b>🪽 Cánh</b><small class="block muted">${n?`Có ${n} đôi trong tủ, chưa đeo đôi nào.`:'Đeo cánh cho đẹp, còn được thêm tiền khi làm việc.'}</small></span>`;
+  return `<section class="jr-card as-mine wd-wings"><div class="as-row-btns wd-wings-row">${body}${btn(n?'🪽 Tủ cánh':'🛍️ Xem cánh','jrAccShop',{tab:'wing'},'ghost small')}</div></section>`;
+}
 export function wardrobeView(env){
   const {api,ui}=env,c=C(api),J=api.state.journey,st=S(ui),g=J.gender;
   const top=`<header class="sheet-head jr-head"><button type="button" class="btn ghost small jr-back" data-action="jrView" data-view="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">NHÂN VẬT</span><h2>Tủ đồ</h2></div><span class="wd-face-slot"><button type="button" class="btn ghost small wd-face" data-action="jrAvatar" aria-label="Gương mặt và biểu cảm (ảnh đại diện khi chat)">🙂 Gương mặt</button></span></header>`;
@@ -159,12 +168,12 @@ export function wardrobeView(env){
   globalThis.requestAnimationFrame?.(stick);
   return top+`<div class="sheet-body jr-body wd">
     <section class="jr-card wd-stage">
-      <div class="wd-mirror">${figureSVG(look,g,{w:150,h:212,label:'Nhân vật của bạn trong bộ đồ đang thử',facing})}${turn}</div>
+      <div class="wd-mirror">${figureSVG(wingOfState(api.state)?{...look,wg:wingOfState(api.state)}:look,g,{w:150,h:212,label:'Nhân vật của bạn trong bộ đồ đang thử',facing})}${turn}</div>
       <div class="wd-side"><h3>${esc(api.state.name)}</h3>${shop}<div class="wd-actions" aria-live="polite">${actions(api,st,look,saved)}</div></div>
     </section>
     <nav class="wd-tabs" role="tablist" aria-label="Loại đồ">${tabs}</nav>
     ${paint}<div class="wd-grid">${grid}</div>
-    ${st.tab==='acc'?`<p class="wd-note as-foot">🛍️ Mua thêm phụ kiện: ${btn(esc(c.acc_shop?.name||'Tiệm phụ kiện'),'jrAccShop',{},'ghost small')}</p>${pairsCard(env)}`:''}
+    ${st.tab==='acc'?`<p class="wd-note as-foot">🛍️ Mua thêm phụ kiện: ${btn(esc(c.acc_shop?.name||'Tiệm phụ kiện'),'jrAccShop',{},'ghost small')}</p>${wingsCard(api)}${pairsCard(env)}`:''}
     <section class="jr-card wd-work"><label class="switch-row"><span class="grow"><b>Mặc đồ làm việc khi vào ca</b><small class="muted block">Tạp dề, áo blouse, yếm… theo nơi làm.</small></span><input type="checkbox" role="switch" data-action="jrWdUniform" ${saved.uniform?'checked':''}><i aria-hidden="true"></i></label></section>
     <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAccShop">🛍️ ${esc(c.acc_shop?.name||'Tiệm phụ kiện')}</button><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
   </div>`;

@@ -659,7 +659,7 @@ export async function journeyAction(action,data,el,env){
   if(action.startsWith('jrWd'))return (await WD.get()).wardrobeAction(action,data,el,env);
   // 🛍️ Tiệm phụ kiện: `tab` 'pair' opens the 🤝 shelf, `code` a friend to give to (v4/marriage.js friend card), `item` an accessory to try
   if(action==='jrAccShop'){AS.use();const st=env.ui.as??={tab:'acc',draft:null,to:''};
-    if(data.tab==='pair'||data.code)st.tab='pair';else if(data.item||data.tab==='acc')st.tab='acc';
+    if(data.tab==='pair'||data.code)st.tab='pair';else if(data.tab==='wing')st.tab='wing';else if(data.item||data.tab==='acc')st.tab='acc';
     if(typeof data.code==='string'&&data.code)st.to=data.code;if(typeof data.item==='string'&&data.item)st.draft=data.item;
     const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
     if(open){env.ui.jrView='accshop';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'accshop'});return true;}

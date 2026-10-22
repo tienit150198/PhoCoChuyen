@@ -43,3 +43,49 @@ html[data-layout="phone"] .as-kind{grid-template-columns:84px minmax(0,1fr);padd
 html[data-layout="phone"] .as-kind-art{width:84px;height:84px}
 html[data-layout="phone"] .as-kind-art svg{width:76px;height:76px}
 .as .wd-tab{display:inline-flex;flex-direction:row;white-space:nowrap}
+/* 💞 Quan hệ (v4/charms.js relChip, relControls) */
+.as-pair-rel{display:flex;margin-top:2px}
+.as-rel{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-pill);background:var(--surface-2);font-size:.78rem;font-weight:700;color:var(--muted)}
+.as-rel.on{background:var(--second-soft);color:var(--ink)}
+.as-rel-ask{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;padding:6px 10px;border-radius:12px;background:var(--second-soft)}
+.as-rel-pick{padding:2px 0 6px}
+.as-rel-pick summary{cursor:pointer;font-weight:700;font-size:.875rem;color:var(--ink-2);min-height:36px;display:flex;align-items:center}
+.as-rel-opts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.as-rel-emoji{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:14px;background:var(--surface-2);font-size:1.4rem}
+/* 🪽 Cánh (v4/acc-shop.js wingShelf): the tier's colour comes in --wt (the pets' rank colours, v4/wings-art.js) */
+.wg-tier{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 6px;border-radius:var(--radius-pill);font-style:normal;font-size:.72rem;font-weight:900;
+  background:var(--wt);color:var(--accent-ink);box-shadow:0 0 0 1.5px var(--surface),0 1px 4px color-mix(in srgb,var(--wt) 60%,transparent);vertical-align:middle}
+.wg-perks{display:grid;gap:4px;margin:6px 0 0;padding:0;list-style:none;font-size:.875rem}
+.wg-perks small{color:var(--muted)}
+.wg-own{display:grid;gap:8px;padding:12px 14px}
+.wg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.wg-tile{display:grid;justify-items:center;gap:4px;padding:8px 6px;border-radius:16px;background:var(--surface-2);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--wt) 45%,transparent)}
+.wg-tile.on{box-shadow:inset 0 0 0 2.5px var(--wt);background:color-mix(in srgb,var(--wt) 12%,var(--surface-2))}
+.wg-tile.picked{outline:3px solid var(--accent);outline-offset:1px}
+.wg-tile small{font-size:.75rem;color:var(--ink-2);text-align:center}
+.wg-tile .as-row-btns{justify-content:center}
+.wg-pick{position:relative;display:grid;place-items:center;width:76px;height:72px;padding:0;border:0;border-radius:14px;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--wt) 22%,transparent),transparent 70%);cursor:pointer}
+.wg-pick .wg-tier{position:absolute;right:0;bottom:0}
+.wg-num{position:absolute;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-style:normal;font-weight:900;font-size:.75rem}
+.wg-fuse{display:grid;gap:8px;padding:12px 14px;box-shadow:inset 0 0 0 2px var(--accent)}
+.wg-fuse p{margin:0}
+.wg-fuse-row{display:flex;align-items:center;justify-content:center;gap:8px}
+.wg-fuse-slot{position:relative;display:grid;place-items:center;width:60px;height:56px;border-radius:14px;background:var(--surface-2)}
+.wg-fuse-slot.main{box-shadow:inset 0 0 0 2px var(--accent)}
+.wg-fuse-slot .wg-tier{position:absolute;right:-4px;bottom:-4px}
+.wg-reveal{display:grid;justify-items:center;gap:8px;padding:14px;text-align:center;background:radial-gradient(circle at 50% 30%,var(--second-soft),var(--surface) 70%)}
+.wg-reveal h3{margin:0}
+.wg-reveal-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.wg-reveal-item{position:relative;display:grid;place-items:center;width:84px;height:80px;animation:wg-pop .55s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(var(--i)*.12s)}
+.wg-reveal-item .wg-tier{position:absolute;right:2px;bottom:2px;font-size:.85rem;height:24px;min-width:28px}
+@keyframes wg-pop{0%{transform:scale(.3) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.wg-reveal-item{animation:none}}
+.wg-style .as-kind-art{border:0;cursor:pointer}
+.wg-table{padding:10px 14px}
+.wg-table summary{cursor:pointer;font-weight:800;min-height:36px;display:flex;align-items:center}
+.wg-table table{width:100%;border-collapse:collapse;font-size:.875rem}
+.wg-table th,.wg-table td{padding:6px 4px;text-align:left;border-bottom:1px solid var(--line)}
+.wing-icon{display:block;overflow:visible}
+.wd-wings-row{align-items:center;flex-wrap:nowrap}
+.wd-wings-row .grow{min-width:0;flex:1}
+html[data-layout="phone"] .wg-grid{grid-template-columns:repeat(3,minmax(0,1fr))}

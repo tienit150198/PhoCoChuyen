@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {defaultLook,lookOf,figure,figureOf,paintPlayer,SVG,portrait,myPortrait,cleanPairs,setPairs,myPairs,withPairs,paintPairs,pairsBust,pairIcon,PAIR_KINDS} from '../public/js/v4/look.js';
+import {defaultLook,lookOf,figure,figureOf,paintPlayer,SVG,portrait,myPortrait,cleanPairs,setPairs,myPairs,withPairs,paintPairs,pairsBust,pairIcon,PAIR_KINDS,withWings,cleanWing} from '../public/js/v4/look.js';
 import {characterKey} from '../public/js/isometric/character-art.js';
 import {decodeCozyPortrait} from '../public/js/isometric/portraits.js';
 import {accShopView} from '../public/js/v4/acc-shop.js';
@@ -18,7 +18,7 @@ test('only known kinds, 1 to 99 each',()=>{
   assert.deepEqual(cleanPairs({tri_ki:2,chi_cot:'3',ban_than:0,nhan_cuoi:4}),{chi_cot:3,tri_ki:2});
   assert.deepEqual(cleanPairs({ban_than:500}),{ban_than:99});
   for(const bad of [null,[],'tri_ki',{x:1},{tri_ki:-1}])assert.equal(cleanPairs(bad),null);
-  assert.deepEqual(PAIR_KINDS,['chi_cot','ban_than','tri_ki'],'the same ids as game/friend_charms_content.py');
+  assert.deepEqual(PAIR_KINDS,['chi_cot','ban_than','tri_ki','chi_do','huy_hieu','gau_bong','bong_bay','quat','day_chuyen','ngoc_boi'],'the same ids as game/friend_charms_content.py');
   const py=readFileSync(new URL('../game/friend_charms_content.py',import.meta.url),'utf8');
   for(const k of PAIR_KINDS)assert.match(py,new RegExp(`_k\\('${k}'`));
 });
@@ -59,7 +59,7 @@ test('the 2.5D chibi: its stamp key carries the pairs, the cozy portrait marker 
 
 test('a peer on the 2.5D map: pr beside the look, a later switch, and an outfit change keeps it',()=>{
   const src=readFileSync(new URL('../public/js/isometric-town.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
-  const ctx=vm.createContext({withPairs,cleanPairs,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',publicActivity:()=>null,sitePresence:{},live:{},leisurePresence:{}});
+  const ctx=vm.createContext({withPairs,cleanPairs,withWings,cleanWing,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',publicActivity:()=>null,sitePresence:{},live:{},leisurePresence:{}});
   vm.runInContext(src+'\nglobalThis.peer=publicPeer;',ctx);
   const p=ctx.peer({pid:'p1',x:1,y:2,lk:{top:'ao_quen'},pr:{chi_cot:1,x:1}});
   assert.deepEqual(JSON.parse(JSON.stringify(p.look)),{top:'ao_quen',pr:{chi_cot:1}});
@@ -74,7 +74,7 @@ test('the classic street draws a walker with its pairs and hears the switch',()=
   assert.match(walk,/pr:cleanPairs\(p\.pr\)/);
   assert.match(walk,/e\.k==='pr'/);
   assert.match(walk,/figureOf\(withPairs\(p\.lk,p\.pr\),p\.g\)/);
-  assert.match(readFileSync(new URL('../public/js/v4/town-walk.js',import.meta.url),'utf8'),/myPairs\(\)\]\)/,'the town map sprite key changes with the pairs');
+  assert.match(readFileSync(new URL('../public/js/v4/town-walk.js',import.meta.url),'utf8'),/myPairs\(\),wingOfState\(S\(\)\)\]\)/,'the town map sprite key changes with the pairs and the wings');
   assert.match(readFileSync(new URL('../public/js/boba-world.js',import.meta.url),'utf8'),/paintPairs\(c,F\)/,'the workplace character wears them');
 });
 

@@ -104,7 +104,9 @@ export function createTownSocial(envGetter,options={}){
   }
   function renderCard(){
     if(!card||card.pid!==selected)return;cardNode.replaceChildren();cardNode.hidden=false;
-    cardNode.append(el('strong',null,card.name||'Người chơi'),button('greet','👋 Chào',()=>transmit('town_emote',{e:'👋',target:selected})));
+    cardNode.append(el('strong',null,card.name||'Người chơi'));
+    if(card.friend&&typeof card.rel?.name==='string')cardNode.append(el('small','rel',`${typeof card.rel.emoji==='string'?card.rel.emoji:'💞'} ${card.rel.name}`.slice(0,40)));   // 💞 the relationship the two set (game/friend_charms.py)
+    cardNode.append(button('greet','👋 Chào',()=>transmit('town_emote',{e:'👋',target:selected})));
     const emotes=el('div',null);emotes.className='town-social-emotes';
     for(const e of EMOTES.slice(1)){const b=button(null,e,()=>transmit('town_emote',{e,target:selected}));b.setAttribute('aria-label','Gửi '+e+' cho '+card.name);emotes.append(b);}cardNode.append(emotes);
     if(card.friend)cardNode.append(button('dm','Nhắn riêng',async()=>{const pid=selected;try{const chat=await import('./v4/chat.js');if(!available()||selected!==pid||!card?.friend)return;expand(false);await chat.openChat(env(),{ch:`dm:${[snapshot.me,pid].sort().join(':')}`});}catch{notice('Chưa mở được tin nhắn. Thử lại nhé.');}}));

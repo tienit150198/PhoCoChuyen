@@ -29,7 +29,7 @@ class Charms(Base):
     def test_buy_takes_the_price_once_and_fills_the_box(self):
         a = self.user('fc_buy', wallet=1000)
         price = fc.INDEX['chi_cot']['price']
-        self.assertEqual(price, 220, 'base 200, +10 % price index')
+        self.assertEqual(price, 330, '2.5.4: base 300 (was 200), +10 % price index')
         out, cid = self.charm(a, 'chi_cot', rid='same-rid-0001')
         self.assertEqual(self.wallet(a), 1000 - price)
         self.assertEqual(out['revision'], self.store.read(a)[1], 'the answer carries the save the client adopts')
@@ -164,11 +164,92 @@ class Charms(Base):
         validate_state(migrate_state(json.loads(json.dumps(st))))
 
 
+class Bonds(Charms):
+    """💞 Quan hệ (owner 22/10): a label two friends agree on, opened by a 'paired' pair of a matching kind, one per two
+    friends, changed or put back to 🤝 Bạn bè, shown on the friend list, the pairs and the street card."""
+
+    def bond_view(self, tok, cid):
+        return next(p for p in self.mine(tok)['pairs'] if p['id'] == cid)
+
+    def test_catalogue(self):
+        self.assertTrue(5 <= len(fc.RELS) <= 7)
+        names = [r['name'] for r in fc.RELS]
+        self.assertEqual(len(set(names)), len(names))
+        for r in fc.RELS:
+            self.assertTrue(r['kinds'] and set(r['kinds']) <= set(fc.INDEX), r['id'])
+        self.assertNotIn(fc.DEFAULT_REL['id'], fc.REL_INDEX)
+        every = set().union(*(r['kinds'] for r in fc.RELS))
+        self.assertEqual(every, set(fc.INDEX), 'every pair opens at least one label')
+
+    def test_ask_then_agree_and_it_shows_everywhere(self):
+        a, b = self.user('fb_lan'), self.user('fb_mai')
+        cid = self.pair(a, b, 'tri_ki')
+        p = self.bond_view(a, cid)
+        self.assertEqual(p['rel'], '')
+        self.assertIn('tri_ki', p['can'])
+        self.assertNotIn('anh_em', p['can'], 'a tri kỉ rose does not open kết nghĩa')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'charm_bond', id=cid, label='anh_em')
+        self.assertEqual(e.exception.code, 'need_pair')
+        out = self.act(a, 'charm_bond', id=cid, label='tri_ki')
+        self.assertIn('Bạn ấy đồng ý', out['message'])
+        self.assertEqual(self.bond_view(a, cid)['ask'], dict(label='tri_ki', mine=True, id=cid))
+        self.assertEqual(self.bond_view(a, cid)['rel'], '', 'nothing shows before both agree')
+        inbox = self.mine(b)['bond_in']
+        self.assertEqual([(x['id'], x['label']) for x in inbox], [(cid, 'tri_ki')])
+        self.act(b, 'charm_bond_answer', id=cid, answer='accept')
+        for tok in (a, b):
+            v = self.bond_view(tok, cid)
+            self.assertEqual((v['rel'], 'ask' in v), ('tri_ki', False))
+        self.assertEqual(self.mine(b)['bond_in'], [])
+        with self.store.connect() as db:
+            self.assertEqual(fc.rel_between(db, self.sid(a), self.sid(b))['name'], fc.REL_INDEX['tri_ki']['name'])
+            from game import friends
+            card = next(f for f in friends.view(db, self.sid(b))['list'])
+            self.assertEqual(card['rel']['id'], 'tri_ki')
+
+    def test_both_asking_the_same_label_agree_at_once_and_one_label_per_two(self):
+        a, b = self.user('fb_a'), self.user('fb_b')
+        c1 = self.pair(a, b, 'ngoc_boi')
+        c2 = self.pair(b, a, 'chi_cot')
+        self.act(a, 'charm_bond', id=c1, label='anh_em')
+        out = self.act(b, 'charm_bond', id=c2, label='anh_em')   # c2 does not open it, but c1 they share does
+        self.assertIn('giờ là', out['message'])
+        self.assertEqual({self.bond_view(a, c)['rel'] for c in (c1, c2)}, {'anh_em'}, 'one label for the two friends')
+        self.act(b, 'charm_bond', id=c2, label='chi_cot')        # a change: asked again, the old label stays meanwhile
+        self.assertEqual(self.bond_view(a, c1)['rel'], 'anh_em')
+        self.act(a, 'charm_bond_answer', id=c2, answer='decline')
+        self.assertEqual(self.bond_view(b, c2)['rel'], 'anh_em')
+        self.act(a, 'charm_bond_off', id=c1)
+        self.assertEqual(self.bond_view(b, c1)['rel'], '', 'either side alone puts it back to bạn bè')
+        with self.assertRaises(mr.MarriageError):
+            self.act(a, 'charm_bond_off', id=c1)
+
+    def test_strangers_unfriend_and_a_lost_pair(self):
+        a, b, c = self.user('fb_x'), self.user('fb_y'), self.user('fb_z')
+        cid = self.pair(a, b, 'day_chuyen')
+        with self.assertRaises(mr.MarriageError):
+            self.act(c, 'charm_bond', id=cid, label='chi_em')
+        with self.assertRaises(mr.MarriageError):
+            self.act(a, 'charm_bond', id=cid, label='nope')
+        self.act(a, 'charm_bond', id=cid, label='chi_em')
+        self.act(b, 'charm_bond_answer', id=cid, answer='accept')
+        self.act(a, 'friend_remove', code=self.code(b))
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM friend_bonds').fetchone()[0], 0)
+            self.assertIsNone(fc.rel_between(db, self.sid(a), self.sid(b)))
+        self.assertEqual(self.bond_view(a, cid)['can'], [], 'not friends: nothing to set')
+
+
 class Shop(Base):
     def test_accessories_point_to_the_new_shop(self):
         c = wd.content()
         self.assertEqual(c['acc_shop']['name'], 'Tiệm phụ kiện')
-        self.assertEqual([k['id'] for k in c['pairs']['kinds']], ['chi_cot', 'ban_than', 'tri_ki'])
+        self.assertEqual([k['id'] for k in c['pairs']['kinds']], ['chi_cot', 'ban_than', 'tri_ki', 'chi_do', 'huy_hieu', 'gau_bong',
+                                                                  'bong_bay', 'quat', 'day_chuyen', 'ngoc_boi'])
+        self.assertEqual([r['id'] for r in c['pairs']['rels']], [r['id'] for r in fc.RELS])
+        self.assertEqual(c['pairs']['rel_default']['name'], 'Bạn bè')
+        self.assertIn('wings', c)
         s = new_state()
         s['journey']['gender'] = 'female'
         wd.migrate(s)
@@ -201,6 +282,10 @@ class Database(Base):
         self.assertFalse(re.search(r'\b(ALTER|DROP|UPDATE|INSERT)\b', part), 'a new table and indexes only, no backfill')
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM friend_charms').fetchone()[0], 0)
+            for t in ('friend_bonds', 'wing_worn'):   # 💞 🪽 SCHEMA_VERSION 90: new tables only
+                self.assertEqual(db.execute(f'SELECT COUNT(*) FROM {t}').fetchone()[0], 0)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 90)
+        self.assertLess(names.index('wing_worn'), names.index('mnl_meta'))
         root = Path(__file__).resolve().parents[1]
         old = subprocess.run(['git', 'show', 'd4eb098b:game/pg_schema.py'], cwd=root, capture_output=True, text=True, encoding='utf-8')
         if old.returncode:
