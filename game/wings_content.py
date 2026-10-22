@@ -21,8 +21,9 @@ TIERS = ('D', 'C', 'B', 'A', 'S', 'SS', 'SSS', 'HT')
 TIER_NAME = ('Thường', 'Khá', 'Tốt', 'Hiếm', 'Quý', 'Siêu quý', 'Thần thoại', 'Huyền thoại')
 TOP = len(TIERS) - 1                  # 🌟 Huyền thoại: three SSS
 SSS = TOP - 1
-EARN = (1, 2, 3, 4, 5, 6, 8, 10)      # % of the work earnings (the pets give 2…30 %)
-CAP = (5_000, 10_000, 20_000, 40_000, 80_000, 150_000, 300_000, 500_000)   # xu a Vietnam day (half a pet's of that rank)
+# Owner 22/10 (after the first table, +1…+10 %, 5k…500k a day): "thu nhập trần/ngày sẽ tăng lên nữa", "SSS được 20% đi"
+EARN = (2, 4, 6, 8, 11, 15, 20, 25)   # % of the work earnings (the pets give 2…30 %)
+CAP = (20_000, 50_000, 150_000, 400_000, 1_000_000, 3_000_000, 8_000_000, 15_000_000)   # xu a Vietnam day
 BATTLE = (1, 1, 2, 2, 3, 4, 5, 6)     # % HP and attack in pet battles
 
 

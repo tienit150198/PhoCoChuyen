@@ -19,7 +19,7 @@ hoặc C ngẫu nhiên, xong nâng lên như cơ chế hiện tại nhé", "cho 
   quầy, gifts or transfers), at most CAP[tier] xu a Vietnam day, story mode only. Its own 'other_income' row "🪽 Cánh …"
   (PREFIX): kept out of the 🔥 x3 day's base net (tile_match.day_total), and 📈 game/income_boost.py scales that row once
   like every bonus row, so each bonus is computed on the un-boosted figure and nothing compounds. Together with the pet
-  (2…30 %, capped a day) and 💰 Tiền công (≤ 50 %), a Huyền thoại adds at most 10 %: the bonuses are added, never multiplied.
+  (2…30 %, capped a day) and 💰 Tiền công (≤ 50 %), a Huyền thoại adds at most 25 % (SSS 20 %): the bonuses are added, never multiplied.
 * ⚔️ The worn wing adds BATTLE[tier] % to the HP and attack of the player's pets in every battle (game/pet_arena.py fighter
   writes `wg` into the snapshot; game/pet_battle.py derive). The jr_pet_* commands refresh the arena / war / challenge
   snapshots (game/pets.py command_commit), so a wing bought or worn counts from the next fight.

@@ -35,7 +35,7 @@ ENTRIES = (
     dict(version="2.5.4", date="2026-10-23", items=(
         dict(emoji='🪽', text="Cánh mới ở Tiệm phụ kiện: bướm, tiên, dơi, thiên thần, rồng, phượng hoàng. Đeo vào là hiện ở cả hai giao diện."),
         dict(emoji='🧬', text="Mua cánh ra hạng D hoặc C, ghép ba đôi để lên hạng như thú, tới SSS rồi Huyền thoại. Hạng càng cao cánh càng lộng lẫy."),
-        dict(emoji='💰', text="Đeo cánh được thêm tiền khi làm việc: +1% hạng D tới +10% Huyền thoại, có mức tối đa mỗi ngày. Thú cưng đấu cũng khỏe hơn chút."),
+        dict(emoji='💰', text="Đeo cánh được thêm tiền khi làm việc: +2% hạng D, +20% SSS, +25% Huyền thoại (có mức tối đa mỗi ngày). Đấu thú khỏe hơn."),
         dict(emoji='🤝', text="Thêm 7 phụ kiện đôi: Chỉ đỏ, Đồng đội, Gấu bông, Bay cao, Tri âm, Nửa trái tim, Kết nghĩa. Giá phụ kiện đôi tăng khoảng 50%."),
         dict(emoji='💞', text="Đặt quan hệ với bạn: Bạn thân, Cạ cứng, Chí cốt, Tri kỉ, Anh em, Chị em kết nghĩa. Cần một cặp phụ kiện hợp, hai bạn cùng đồng ý."),
     )),

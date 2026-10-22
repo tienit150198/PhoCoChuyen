@@ -76,7 +76,7 @@ class Tables(unittest.TestCase):
         for t in (WC.EARN, WC.CAP, WC.BATTLE):
             self.assertEqual(len(t), len(WC.TIERS))
             self.assertEqual(list(t), sorted(t), 'never lower at a higher tier')
-        self.assertEqual((WC.EARN[0], WC.EARN[-1]), (1, 10), 'owner: about +1 % at D to +10 % at Huyền thoại')
+        self.assertEqual((WC.EARN[0], WC.EARN[WC.SSS], WC.EARN[-1]), (2, 20, 25), 'owner 22/10: "SSS được 20% đi"')
         self.assertLessEqual(max(WC.BATTLE), 6)
         self.assertLessEqual(max(WC.BATTLE), B.WG_MAX)
         self.assertEqual(sum(W.ODDS_BUY), 10000)
@@ -196,9 +196,9 @@ class Earnings(unittest.TestCase):
     def test_own_row_capped_and_out_of_the_x3_net(self):
         s, c = self.s, self.c
         money = c['money']
-        self.assertEqual(tm.fund_bonus(s, c, 10000, 'Đơn', 'r1'), 500)
-        self.assertEqual(c['money'], money + 500)
-        self.assertEqual(tm.day_total(c, c['day']), 500, 'kept out of the 🔥 x3 day net like the pet row')
+        self.assertEqual(tm.fund_bonus(s, c, 10000, 'Đơn', 'r1'), 1100)   # S: +11 %
+        self.assertEqual(c['money'], money + 1100)
+        self.assertEqual(tm.day_total(c, c['day']), 1100, 'kept out of the 🔥 x3 day net like the pet row')
         self.assertEqual(tm.fund_bonus(s, c, 10000, 'Đơn', 'r2', direct=True), 0, 'never on staff orders')
         Wg(s)['day']['got'] = WC.CAP[4] - 30
         self.assertEqual(tm.fund_bonus(s, c, 10**6, 'Lương', 'r3'), 30)
@@ -210,8 +210,8 @@ class Earnings(unittest.TestCase):
         s, _ = owned(s, 4)
         Wg(s)['on'] = Wg(s)['own'][0]['id']
         c = s['careers']['mother_baby']
-        self.assertEqual(tm.fund_bonus(s, c, 1000, 'Đơn', 'r1'), 120 + 50, 'added, never multiplied')
-        self.assertEqual(W.fund_bonus(s, c, 1000, 'Đơn', 'r2'), 50, 'its own share of the same base')
+        self.assertEqual(tm.fund_bonus(s, c, 1000, 'Đơn', 'r1'), 120 + 110, 'added, never multiplied')
+        self.assertEqual(W.fund_bonus(s, c, 1000, 'Đơn', 'r2'), 110, 'its own share of the same base')
 
     def test_none_unworn_or_outside_story(self):
         s, c = self.s, self.c
