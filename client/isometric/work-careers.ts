@@ -70,6 +70,8 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   singer:identity('Nhìn khán phòng · khởi động, thử âm · hát thật, đúng giờ','Sân khấu nhỏ','Giá micro & sổ hợp âm','Bàn trà & giấy xin bài'),
   actor:identity('Đọc kịch bản · đứng đúng dấu · an toàn trước khi quay','Trường quay','Giá trang phục & đạo cụ','Phòng hóa trang'),
   tuning:identity('Nghe mục tiêu · lên bảng độ trong ngân sách · chạy dyno, đo ồn rồi mới giao','Băng thử dyno','Tủ đồ độ & cầu nâng','Quầy nhận xe & thẻ thông số'),
+  jewelry:identity('Đếm két, kiểm cân, treo bảng giá · cân trước mặt khách','Quầy cân vàng','Tủ kính nữ trang & két','Bảng giá vàng hôm nay'),
+  car_dealer:identity('Đối số khung, kiểm xe mới · nghe nhu cầu rồi mới tư vấn','Bàn tư vấn','Xe trưng bày & phụ kiện','Bảng giá lăn bánh'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
@@ -175,6 +177,20 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
     f('console',r(2.85,.55,3.95,1.45),82,0x2f3238);f('crate',r(4.35,.7,5.25,1.5),50,0xd2a86e);f('desk',r(5.5,.6,6.5,1.45),52,cream);f('sofa',r(5.95,3.35,6.5,4.15),42,0xe6c48f);
     z(r(2.6,.3,6.7,1.85),'plank',0xe9d6b5);z(r(2.85,2.95,6.7,4.45),'mat',0xd5d9de);
+  }else if(career==='jewelry'){
+    // The weighing counter in front, a stepped display of rings on the left, glass cases and the safe behind, today's board on the wall.
+    clear(false,'tile');s('shelf','display',r(.55,1.85,1.45,3.95),1.95,2.9,96,0xf1d58a);
+    s('workbench','counter',r(3.1,3.25,5.7,4.15),4.4,4.75,58,0xb8860b);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,108,cream);
+    f('display',r(2.85,.6,4.05,1.45),70,0xf6e7b8);f('display',r(4.45,.6,5.65,1.45),70,0xf6e7b8);f('console',r(6,.65,6.55,1.4),64,0x6f6a62);
+    z(r(2.6,.3,6.7,1.85),'carpet',0xc9b48a);z(r(2.85,2.95,6.75,4.45),'checker',0xf0e6d0);
+  }else if(career==='car_dealer'){
+    // The advice desk in front, the accessory wall on the left, a red car on its podium, the waiting sofa and a palm behind.
+    clear(false,'tile');s('shelf','tools',r(.55,1.8,1.5,4.05),2,2.9,110,0x9aa7b8);
+    s('workbench','desk',r(3.15,3.3,5.6,4.2),4.4,4.8,56,0x1f5f8b);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
+    f('display',r(2.85,.55,5,1.6),40,0xd84a3a);f('sofa',r(5.35,.7,6.55,1.45),42,mint);f('planter',r(6.05,3.4,6.5,4.1),70,0x9fb98f);
+    z(r(2.6,.3,6.7,1.9),'tile',0xdfe6ec);z(r(2.8,3,6.6,4.5),'carpet',0xbfd0de);
   }else if(career==='banquet'){
     // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
     clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);

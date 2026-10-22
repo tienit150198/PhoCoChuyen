@@ -42,11 +42,12 @@ def need(cond, message: str, code: str = 'moto_error', status: int = 400):
         raise sm.ServiceError(message, code, status)
 
 
-def bikes(state: dict) -> list:
-    """The buyer's motorbikes that can break (rui._motor, group 'bike'): [vehicle id]."""
+def bikes(state: dict, group: str | None = 'bike') -> list:
+    """The buyer's motorbikes that can break (rui._motor, group 'bike'): [vehicle id]. 🚗 game/dealer_service.py asks for
+    group 'car'; None: every vehicle that can break."""
     from . import rui
     try:
-        return [vid for vid, _car, V in rui._motor(state) if V.get('group') == 'bike']
+        return [vid for vid, _car, V in rui._motor(state) if group is None or V.get('group') == group]
     except Exception:  # noqa: BLE001  (a save without a garage)
         return []
 
@@ -57,9 +58,10 @@ def care_until(state: dict, vid: str) -> int:
     return rui.care_until(state, vid)
 
 
-def apply(state: dict, qty: int) -> list:
+def apply(state: dict, qty: int, group: str = 'bike', line: str = 'Phòng trước: thợ sửa xe bảo dưỡng') -> list:
     """Service up to `qty` motorbikes of the buyer: [vehicle ids]. The ones with a pending 🎲 warning first, then the
-    ones whose calmer days end soonest. The market runs it once per order (ready → done)."""
+    ones whose calmer days end soonest. The market runs it once per order (ready → done). 🚗 game/dealer_service.py
+    services cars the same way (group 'car'); the calmer days of the other group are kept."""
     j = state.get('journey')
     if not isinstance(j, dict):
         return []
@@ -71,17 +73,18 @@ def apply(state: dict, qty: int) -> list:
     r = rui.get(state)
     warn = r.get('warn') if r else None
     warned = warn.get('ref') if isinstance(warn, dict) and warn.get('kind') == 'xe' else None
-    own = bikes(state)
+    own = bikes(state, group)
     own.sort(key=lambda v: (v != warned, care_until(state, v)))
     done = own[:max(1, min(int(qty or 1), len(own)))] if own else []
     for vid in done:
         x['cars'][vid] = day + CARE_DAYS   # today's draw already ran: CARE_DAYS draws to come
-    cars = {k: v for k, v in x['cars'].items() if k in own and type(v) is int}
+    motor = set(bikes(state, None))
+    cars = {k: v for k, v in x['cars'].items() if k in motor and type(v) is int}
     j[KEY] = dict(v=VERSION, cars=dict(sorted(cars.items(), key=lambda kv: -kv[1])[:CARS_MAX]))
     if warned and warned in done:
         r['warn'] = None
         rui._stat(r, 'prevented')
-        rui._log(r, day, 'Phòng trước: thợ sửa xe bảo dưỡng')
+        rui._log(r, day, line)
     return done
 
 

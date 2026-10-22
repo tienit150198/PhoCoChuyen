@@ -6,7 +6,7 @@ import * as legacy from '../public/js/scenes/index.js';
 assert.ok(existsSync(new URL('../public/js/scenes/vocabulary.js',import.meta.url)),
   'career words must be importable without the legacy scene loader');
 const vocabulary=await import('../public/js/scenes/vocabulary.js');
-assert.equal(Object.keys(vocabulary.KIND_OF).length,68,'all current careers keep their scene family');
+assert.equal(Object.keys(vocabulary.KIND_OF).length,70,'all current careers keep their scene family');
 for(const symbol of ['KIND_OF','kindOf','wordsFor'])assert.equal(legacy[symbol],vocabulary[symbol],`${symbol} keeps the legacy API`);
 for(const career of Object.keys(vocabulary.KIND_OF)){
   const words=vocabulary.wordsFor(career);
@@ -40,4 +40,4 @@ assert.equal(vocabulary.wordsFor('unknown').confirm_title,'Xác nhận mới','v
 termsSource(()=>null);
 assert.equal(vocabulary.wordsFor('unknown').confirm_title,'Xác nhận việc của tiệm','fallback is restored when catalogue disappears');
 assert.equal(typeof legacy.sceneFor,'function');assert.equal(typeof legacy.loadAllScenes,'function');
-console.log('career-vocabulary: all 68 careers, terms, fallback and legacy exports passed');
+console.log('career-vocabulary: all 70 careers, terms, fallback and legacy exports passed');

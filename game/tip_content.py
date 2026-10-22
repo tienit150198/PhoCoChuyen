@@ -98,6 +98,10 @@ NORMS = {
     'actor': dict(rate=.03, cash=0, lo=0, hi=0, bill=10),
     # 🔧 Xưởng độ xe Tư Pít-tông: a happy rider rounds the bill up for Mi Lốp now and then
     'tuning': dict(rate=.10, cash=.70, lo=1, hi=4, bill=30),
+    # 💍 Tiệm vàng Ngọc Mây: a bride's family leaves a little for the smith who engraved the rings now and then
+    'jewelry': dict(rate=.06, cash=.60, lo=1, hi=3, bill=20),
+    # 🚗 Đại lý xe Phố Mây: a happy buyer leaves a little for the technician who polished the bike now and then
+    'car_dealer': dict(rate=.06, cash=.50, lo=1, hi=4, bill=20),
     # 💿 Tiệm album Mây Pop: fans round the bill up now and then; a parent leaves the small change
     'zpop': dict(rate=.10, cash=.60, lo=1, hi=4, bill=30),
 }
@@ -285,6 +289,8 @@ CAREER_LINES = {
     'kol': ('Video ghi rõ quảng cáo, xem mà tin.', 'Trả lời bình luận tử tế, không né.', 'Báo cáo số thật, nhãn hàng yên tâm.'),
     'singer': ('Hát thật, nghe mà nổi da gà.', 'Đọc lời chúc đúng tên, cả bàn cảm động.', 'Micro không hú lần nào, nghe êm tai.'),
     'actor': ('Diễn thật, xem mà rưng rưng.', 'Thuộc thoại, đứng đúng dấu, đoàn quay nhanh.', 'Tập cảnh hành động kỹ, ai cũng an toàn.'),
+    'jewelry': ('Cân trước mặt, tính từng phân, yên tâm ghê.', 'Nói thật vàng tây hay vàng ta.', 'Khắc chữ lên nhẫn cưới đẹp quá.'),
+    'car_dealer': ('Tư vấn đúng nhu cầu, không ép mua xe đắt.', 'Thông số nói theo hãng, rõ ràng.', 'Giấy tờ làm gọn, có biển đúng hẹn.'),
     'radio': ('Đài đọc đúng tên bà cụ nhà tôi, cả nhà vui.', 'Mất điện mà đài xin lỗi đàng hoàng, nghe dễ chịu.', 'Mở đúng bài tôi xin, hay ghê.'),
     'banquet': ('Món ra nóng hổi, bày đẹp như hình.', 'Sảnh trang trí đúng màu nhà mình chọn.', 'Bé dị ứng mà bếp nhớ đổi món, yên tâm ghê.'),
     'research': ('Có khay đối chứng hẳn hoi, nhìn là tin.', 'Nói thật kết quả, không hứa hão.', 'Sổ thí nghiệm ghi kỹ từng lần, phục ghê.'),
@@ -349,6 +355,8 @@ GIFTS = {
     'teller': (('🍵', 'ly trà đá bà Lựu mang sang'), ('💌', 'tấm thiệp cảm ơn kẹp ở Quầy số 3'), ('🍱', 'hộp cơm sườn dì Bảy để phần')),
     'moto': (('🥤', 'ly nước mía bà Chín mua cho cả tiệm'), ('🍌', 'nải chuối chú Hai Lúa mang từ quê'), ('💌', 'mảnh giấy cảm ơn kẹp ở yên xe')),
     'tuning': (('🥤', 'thùng nước tăng lực cậu Khoa mua cho cả xưởng'), ('🏆', 'tấm ảnh cúp đua kẹp ở băng dyno'), ('💌', 'mảnh giấy cảm ơn dán trên mũ bảo hiểm')),
+    'jewelry': (('🍬', 'hộp mứt gừng nhà cô dâu gửi biếu'), ('💌', 'tấm thiệp cưới mời cả tiệm'), ('🍊', 'túi quýt bà Năm Chợ mang qua')),
+    'car_dealer': (('🍌', 'nải chuối anh Dũng mua cho cả showroom'), ('💌', 'tấm ảnh cả nhà chị Vy bên xe mới'), ('🥤', 'thùng nước ngọt chú Bảy gửi')),
     'vet': (('🍊', 'túi quýt cô Ba Mập gửi cả phòng khám'), ('🖍️', 'bức vẽ bé Na tặng con hamster được chữa'), ('💌', 'tấm thiệp ông Sáu viết tay')),
     'kol': (('🍢', 'bịch bánh tráng chị Hồng gửi cả studio'), ('🖍️', 'bức vẽ bé Thư tặng kênh'), ('💌', 'tấm thiệp cảm ơn của homestay Đồi Gió')),
     'singer': (('💐', 'bó hồng cô Mỹ mang tới bàn đầu'), ('🍵', 'gói trà sen ông bà Tư gửi'), ('💌', 'tờ giấy xin bài viết lời cảm ơn')),

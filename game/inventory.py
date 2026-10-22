@@ -353,6 +353,26 @@ SUPPLIERS = {
                     'dev_40', 'bleach', 'toner_silver', 'toner_beige', 'keratin'],
              note='Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 1–2 ngày. Đặt trước khi hết tuýp.'),
     ],
+    # 💍 Tiệm vàng Ngọc Mây and 🚗 Đại lý xe Phố Mây: the official source at its list price, plus its own rush run (1.35×).
+    # No wholesale tiers, nothing short-delivered and no bargaining (`firm`): a gold piece or a vehicle bought cheaper than its list price
+    # would mint money on resale, so the margin stays the shop's own spread and labour (game/careers/jewelry.py, car_dealer.py).
+    'jewelry': [
+        _s(PARTNER, id='partner', name='Công ty vàng bạc Kim Mây', emoji='🏦', factor=1.0, short=0, bulk=(), oos=0, firm=True,
+           voice=dict(V_PARTNER, good='Kim Mây ghi nhận, cảm ơn tiệm Ngọc Mây.', late='Xe chở hàng của Kim Mây có bảo vệ đi kèm, tới trễ chừng nửa tiếng ạ.'),
+           note='Nữ trang theo giá niêm yết của công ty, có tem và hóa đơn từng món. Xe chạy bốn chuyến: đặt trước 09:00, 12:00, '
+                '15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.'),
+        _s(EXPRESS, name='Xe áp tải Kim Mây', emoji='🛡️', bulk=(), oos=0, firm=True,
+           note='Kim Mây cho xe áp tải mang hàng tới trong 15–30 phút, tính thêm phí gấp. Dùng khi khách đang chờ món đã hết.'),
+    ],
+    'car_dealer': [
+        dict(id='partner', name='Kho hãng xe Mây Motor', emoji='🏭', kind='next', cutoff=None, at=(-60, -30),
+             day_run=(11 * 60, 14 * 60, 15 * 60 + 30), factor=1.0, short=0, late=8, bulk=(), oos=0, firm=True, voice=V_FAR,
+             note='Xe mới nguyên đai nguyên kiện, giá hãng, có phiếu xuất xưởng. Đặt trước 11:00, xe tới chiều nay; đặt sau, '
+                  'sáng mai trước giờ mở cửa.'),
+        _s(EXPRESS, name='Bãi xe Mây Motor gần phố', emoji='⚡', bulk=(), oos=0, firm=True,
+           note='Bãi xe của hãng ngay đầu phố: tài xế chạy xe sang trong 15–30 phút, tính thêm phí gấp. '
+                'Dùng khi khách đang chờ mẫu đã hết.'),
+    ],
     # 💿 Tiệm album Mây Pop: albums and lightsticks only through the distributor (stamped, official); the wholesale
     # market has the small things (batteries, toploaders, binders, poster tubes), never an album.
     'zpop': [
@@ -625,6 +645,8 @@ def haggle(career: str, sup: dict, day: int, ask: int, goods: int) -> dict:
     t = _traits(career, sup)
     mood = _h(f'mood:{career}:{sup["id"]}:{day}') % 5 - 2
     room = max(0, t['room'] + mood + (2 if goods >= 2 * sup.get('free_from', 0) else 0))
+    if sup.get('firm'):   # list price only (jewelry, car_dealer): never a discount, at most free shipping
+        room = 0
     talk = HAGGLE_TALK[_casual(sup)]
     deal = dict(day=day, ask=ask, sub=goods, pct=0, free_ship=False)
     if ask <= room:

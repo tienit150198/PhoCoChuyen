@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor', 'tuning')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor', 'tuning', 'jewelry', 'car_dealer')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -7134,6 +7134,38 @@ CAREERS.update({
                   dict(bad='Ghi thẻ thông số tròn lên cho đẹp.', result='Phải làm lại; chất lượng và tiền công giảm.')],
         prep=['Mở từ chương 2. Phụ tùng xưởng ứng theo phiếu, trừ một lần khi giao xe.'],
         surprises=['Xưởng hay có chuyện oái oăm: khách rủ đua ngoài đường, turbo giá rẻ không hóa đơn, xăng rò trên băng dyno, đoàn kiểm tra ghé… chọn cách xử lý cho khéo.'], buttons=[]),
+    'jewelry': dict(emoji='💍', name='Tiệm vàng', place='Tiệm vàng Ngọc Mây',
+        intro='Bạn làm chủ tiệm vàng bạc đá quý đầu chợ cùng cô Ba Ngọc: mỗi sáng treo bảng giá, rồi bán nữ trang, mua lại vàng cũ, kiểm định kim cương.',
+        jobs=[dict(emoji='📈', name='Bảng giá mỗi sáng', how='Đếm két so với sổ giao ca, kiểm cân bằng quả cân chuẩn, treo giá mua vào và bán ra: cao hơn, thấp hơn giá công ty 1,2%.'),
+              dict(emoji='💍', name='Bán nữ trang', how='Lấy đúng món trong tủ, cân trước mặt khách ra phân, tiền vàng = số phân × giá bán ra ÷ 10, cộng tiền công, xuất hóa đơn đủ dòng.'),
+              dict(emoji='♻️', name='Mua lại vàng cũ', how='Xem CCCD, quét tuổi vàng, cân trừ đá, tính theo giá mua vào; hàng tiệm khác hoặc không hóa đơn trừ 3%. Đồ mạ hay đồ không rõ nguồn gốc thì từ chối.'),
+              dict(emoji='💎', name='Kiểm định kim cương', how='Cân carat, so màu với đá mẫu, soi độ sạch, chấm giác cắt, đối số giấy với số khắc laser.'),
+              dict(emoji='📦', name='Nhập hàng', how='Tủ hết món thì nhập ở Kho từ công ty vàng Kim Mây, giá niêm yết, không mặc cả. Khách hỏi món đã hết thì bấm Hết hàng.')],
+        steps=['Sáng: đếm két, kiểm cân, treo bảng giá. Chưa xong thì chưa đón khách.',
+               'Nghe khách cần gì, chốt những điều oái oăm thật thà.',
+               'Cân, tra bảng hôm nay, tính tiền theo sổ tay rồi ghi vào phiếu.',
+               'Hóa đơn, sổ mua hàng, phiếu kiểm định ghi đủ dòng.'],
+        stars=['Không sai bước nào: chất lượng 100%, tiền công đủ.', 'Mỗi bước phải làm lại bớt chất lượng; tiền công, tiền lời giảm theo.'],
+        mistakes=[dict(bad='Cân sai phân, tính sai giá, ghi sai tuổi vàng.', result='Phải làm lại bước đó; chất lượng và tiền công giảm.'),
+                  dict(bad='Mua đồ mạ, đồ không rõ nguồn gốc; nhận cầm đồ.', result='Có thể bị phạt và bị khách chê ở những ngày sau.')],
+        prep=['Mở từ chương 2. Tủ có sẵn ít nữ trang; hết thì nhập ở Kho. Nhẫn cưới mở ở cấp 2, nhẫn kim cương ở cấp 3.'],
+        surprises=['Tiệm hay có chuyện: cúp điện tắt cân, khách đông vây quầy, tờ tiền nghi giả, hàng xóm xin cầm nhẫn… chọn cách xử lý cho khéo.'], buttons=[]),
+    'car_dealer': dict(emoji='🚗', name='Đại lý xe', place='Đại lý xe Phố Mây',
+        intro='Bạn làm chủ showroom xe máy và ô tô cùng anh Quân: nhận lô xe, tư vấn đúng nhu cầu, làm giấy tờ, thu xe cũ, bảo dưỡng.',
+        jobs=[dict(emoji='🔐', name='Nhận lô xe mỗi sáng', how='Đối số khung với phiếu xuất xưởng, kiểm xe mới năm bước, treo bảng giá ghi rõ phí trước bạ và biển số.'),
+              dict(emoji='🚗', name='Bán xe', how='Chọn xe hợp nhu cầu, bằng lái, ngân sách; nói thật thông số; lái thử đúng quy định; tính giá xe + trước bạ + biển số; trả góp qua Ngân hàng Phố; hồ sơ đăng ký; giao xe.'),
+              dict(emoji='🔁', name='Thu xe cũ', how='Xem giấy và số khung; giá theo tuổi trừ 10% mỗi năm (thấp nhất 30%), trừ tiền sửa; bãi xe cũ mua lại trong ngày.'),
+              dict(emoji='🔧', name='Hậu mãi, phụ kiện', how='Xét bảo hành đúng chính sách, bảo dưỡng đúng thứ tự, hẹn mốc kế tiếp; bán mũ đúng cỡ có tem, khóa, thảm, camera.'),
+              dict(emoji='🛎️', name='Xe của người chơi', how='Ở Phố dịch vụ, người chơi đặt 🚗 Bảo dưỡng ô tô. Nhận đơn, làm ba bước ở thẻ Xe của người chơi rồi bấm Giao: ô tô họ bớt hỏng vặt mười ngày.')],
+        steps=['Sáng: đối số khung, kiểm xe mới, treo bảng giá. Chưa xong thì chưa đón khách.',
+               'Nghe nhu cầu, chốt những điều oái oăm thật thà.',
+               'Tính đủ phí theo sổ tay, làm đủ hồ sơ.',
+               'Giao xe, hẹn bảo dưỡng; xe cho mình thì mua ở Xe & phương tiện.'],
+        stars=['Không sai bước nào: chất lượng 100%, phí dịch vụ đủ.', 'Mỗi bước phải làm lại bớt chất lượng; phí và tiền lời giảm theo.'],
+        mistakes=[dict(bad='Chọn xe không hợp bằng lái, tính sai trước bạ, duyệt trả góp vượt 40% thu nhập.', result='Phải làm lại bước đó; chất lượng giảm.'),
+                  dict(bad='Thu xe đục số khung, lùi đồng hồ km, ghi hóa đơn thấp.', result='Có thể bị phạt và bị khách chê ở những ngày sau.')],
+        prep=['Mở từ chương 2. Showroom có sẵn ba xe máy; hết thì nhập ở Kho. Ô tô mini mở ở cấp 2, SUV cấp 3, mui trần cấp 4.'],
+        surprises=['Showroom hay có chuyện: mưa ngập bãi xe, khách lái thử xin chạy về nhà, chìa khóa cắm quên, người lạ nhờ lùi km… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

@@ -685,7 +685,9 @@
     "kol",
     "singer",
     "actor",
-    "tuning"
+    "tuning",
+    "jewelry",
+    "car_dealer"
   ],
   "lots": [
     {
@@ -1910,6 +1912,42 @@
         "y0": 23.3,
         "x1": -18.1,
         "y1": 27.5
+      }
+    },
+    {
+      "career": "jewelry",
+      "district": "homes-villa",
+      "at": {
+        "x": 37.8,
+        "y": -2.8
+      },
+      "door": {
+        "x": 38.2,
+        "y": -0.85
+      },
+      "footprint": {
+        "x0": 36.0,
+        "y0": -6.0,
+        "x1": 40.2,
+        "y1": -1.8
+      }
+    },
+    {
+      "career": "car_dealer",
+      "district": "homes-villa",
+      "at": {
+        "x": 55.8,
+        "y": -2.8
+      },
+      "door": {
+        "x": 56.2,
+        "y": -0.85
+      },
+      "footprint": {
+        "x0": 54.0,
+        "y0": -6.0,
+        "x1": 58.2,
+        "y1": -1.8
       }
     }
   ],

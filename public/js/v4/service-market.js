@@ -25,7 +25,7 @@ const MAIN=new Set(['accept','take','done','confirm']);
 /** 🏨 a room of a homestay / hotel player (game/hotel_stay.py): its stay is run in 🏨 Sổ phòng, not by "Xong việc" */
 const isStay=o=>['homestay','hotel'].includes(o.career)&&/^stay_/.test(o.service);
 const WED=new Set(['tiec_cuoi','hoa_cuoi','vay_cuoi','trang_diem_cuoi']);   // 💒 game/wed_services.py: done step by step in Đơn cưới
-const BENCH={moto:'🏍️ Làm ở tiệm sửa xe',vet:'🩺 Khám ở phòng khám',tuning:'🔧 Làm ở xưởng độ'};   // worked step by step in the career's own card (careers/slip_kit.js)
+const BENCH={moto:'🏍️ Làm ở tiệm sửa xe',vet:'🩺 Khám ở phòng khám',tuning:'🔧 Làm ở xưởng độ',car_dealer:'🚗 Làm ở đại lý xe'};   // worked step by step in the career's own card (careers/slip_kit.js)
 /** the module sheets an own-flow listing may open (app.js handleAction): 🏥 Nhà & Gia đình, 📸 Tiệm ảnh */
 const OWN=new Set(['marriage','photoStudio']);
 const itemKey=x=>`${x.pid}.${x.career}.${x.service}`;

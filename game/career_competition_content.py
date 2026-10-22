@@ -583,6 +583,28 @@ _profile('actor', 'Hoài An | Trọng Nhân | Kim Ngân',
     'đã tập an toàn trước khi quay, giữ giờ cho diễn viên nhí và giữ kín kịch bản // rehearsed safely before rolling, kept the child actor\'s hours, and kept the script secret',
     'sổ ảnh nối cảnh và bảng lượt quay đạt // the continuity book and the good-takes sheet')
 
+_profile('jewelry', 'Kim Ngân | Bảo Châu | Minh Trí',
+    'Cô Ba Ngọc · chủ tiệm vàng Ngọc Mây // Ba Ngọc · owner of the Ngọc Mây gold shop',
+    'cân trước mặt khách, đúng tuổi vàng, giá theo bảng hôm nay và không mua đồ không rõ nguồn gốc // weighing in front of the customer, the right purity, today\'s board, and nothing of unknown origin bought',
+    'cân và tính tiền vàng | kiểm định kim cương | mua lại vàng cũ // weighing and pricing gold | appraising diamonds | buying old gold back',
+    'Sáng rằm tháng Giêng, khách xếp hàng mua vàng lấy may, máy quét tuổi vàng báo lỗi và một người lạ mang túi nhẫn cưới tới bán gấp. // The full-moon morning of the first lunar month: a queue for lucky gold, the purity scanner throws an error, and a stranger brings a bag of wedding rings to sell fast.',
+    'Giao {a} phát số và bán đúng bảng niêm yết, {b} thử tuổi vàng bằng đá thử khi máy hỏng, {c} xem giấy tờ người bán và ghi sổ mua hàng. // Have {a} hand out numbers and sell at the posted board, {b} test purity on the touchstone while the scanner is down, and {c} check the seller\'s papers and keep the purchase ledger.',
+    'Một chiếc nhẫn mua lại được ghi tuổi 14K dù máy quét báo 18K, khách đã ký sổ. // A bought-back ring was written down as 14K though the scanner said 18K, and the customer has signed the ledger.',
+    'Gọi khách quay lại, ghi đúng 18K, trả thêm phần chênh, ghi chú ngày sửa vào sổ và báo chủ tiệm. // Call the customer back, write 18K, pay the difference, note the correction date in the ledger, and tell the owner.',
+    'đã bán đúng giá niêm yết, thử tuổi vàng đúng cách và từ chối đồ không rõ nguồn gốc // sold at the posted board, tested purity properly, and refused goods of unknown origin',
+    'sổ mua hàng có CCCD người bán và hóa đơn từng món // the purchase ledger with sellers\' IDs and an invoice for every piece')
+
+_profile('car_dealer', 'Hoàng Long | Thanh Hà | Gia Huy',
+    'Anh Quân · chủ đại lý xe Phố Mây // Quân · owner of the Phố Mây dealership',
+    'xe đúng nhu cầu khách, thông số theo hãng, đủ giấy tờ và không tự cho nợ // the right vehicle for each customer, the maker\'s specs, complete papers, and no in-house credit',
+    'tư vấn bán xe | kiểm xe mới | hồ sơ đăng ký // sales advice | new-vehicle checks | registration papers',
+    'Cuối tháng có chương trình khuyến mãi, mười khách tới cùng lúc, một lô xe mới chưa kiểm và bộ hồ sơ đăng ký của ba khách còn thiếu chữ ký. // A month-end promotion brings ten customers at once, a new batch is still unchecked, and three customers\' registration files are missing signatures.',
+    'Giao {a} tư vấn theo nhu cầu từng khách, {b} kiểm năm bước lô xe mới trước khi trưng bày, {c} gọi khách ký bổ sung hồ sơ. // Have {a} advise each customer by their needs, {b} run the five-step check on the new batch before display, and {c} call customers to sign their files.',
+    'Một chiếc xe đã giao cho khách với biển tạm của xe khác vì hồ sơ chưa xong. // A vehicle was handed over with another vehicle\'s temporary plate because its papers were not done.',
+    'Gọi khách đổi lại biển, giữ xe ở đại lý tới khi có biển đúng, xin lỗi khách và ghi sổ hồ sơ chờ. // Call the customer to swap the plate back, keep the vehicle at the dealer until its own plate comes, apologise, and log it in the pending-papers book.',
+    'đã tư vấn đúng nhu cầu, kiểm đủ xe mới và giao xe khi hồ sơ đủ // advised by real needs, checked every new vehicle, and handed over only with complete papers',
+    'biên bản giao xe có số khung và sổ hồ sơ chờ bổ sung // the hand-over record with the frame number and the pending-papers book')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

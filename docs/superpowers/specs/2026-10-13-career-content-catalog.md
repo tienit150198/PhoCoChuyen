@@ -1021,3 +1021,33 @@ Nhóm dự toán: Dịch vụ. Giá mở/điều kiện xem bảng chung; phươ
 8. Lập sổ đọc biểu đồ dyno
 9. Diễn tập kiểm an toàn trước khi giao
 10. Chuẩn hóa thẻ thông số giao xe
+
+## 65. Tiệm vàng (`jewelry`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng quy đổi chỉ, phân, gam
+2. Soạn quy trình kiểm cân mỗi sáng
+3. Lập bảng tuổi vàng và màu thường gặp
+4. Soạn cách treo bảng giá mua vào bán ra
+5. Lập mẫu hóa đơn nữ trang
+6. Soạn quy trình mua lại vàng cũ
+7. Lập bảng nhận biết đồ mạ, đồ giả
+8. Soạn phiếu kiểm định kim cương 4C
+9. Soạn quy trình đóng két cuối ngày
+10. Lập sổ tay quầy vàng cho người mới
+
+## 66. Đại lý xe (`car_dealer`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng chọn xe theo nhu cầu
+2. Soạn quy trình kiểm xe mới năm bước
+3. Lập bảng giá lăn bánh mẫu
+4. Soạn quy định lái thử
+5. Lập phiếu tính trả góp qua ngân hàng
+6. Soạn danh mục hồ sơ đăng ký
+7. Lập bảng định giá xe cũ
+8. Soạn quy trình kiểm giấy xe cũ
+9. Lập lịch bảo dưỡng và bảo hành
+10. Lập sổ tay showroom cho người mới

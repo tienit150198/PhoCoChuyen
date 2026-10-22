@@ -2390,6 +2390,84 @@ ARCS = {
                 ('me', 'Em sẽ giữ như anh dạy: độ đúng luật, đo thật, giao xe an toàn.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 💍 Tiệm vàng Ngọc Mây (từ chương 2)
+    'jewelry': dict(
+        title='Chiếc cân tiểu ly', emoji='⚖️',
+        keepsake=dict(emoji='⚖️', name='Chiếc cân tiểu ly của cô Ba Ngọc', desc='Chiếc cân đồng đã mòn mặt, ba mươi năm cân vàng cho cả chợ. Cô Ba dặn: cân trước mặt khách, sai một ly là mất khách cả đời.'),
+        cast={'ngoc': _p('Cô Ba Ngọc', '💍', 'Chủ tiệm', 'jewelry_npc_01'),
+              'tu': _p('Chú Tư Bạc', '🔨', 'Thợ kim hoàn', 'jewelry_npc_02'),
+              'nam': _p('Bà Năm Chợ', '🐟', 'Khách quen', 'jewelry_npc_04'),
+              'hang': _p('Chị Hằng', '👰', 'Cô dâu sắp cưới', 'jewelry_npc_03')},
+        beats=[
+            _b('Cân trước mặt khách', '⚖️', 'Ngày đầu đứng quầy, cô Ba Ngọc xoay màn hình cân ra phía khách.', [
+                ('ngoc', 'Món nào cũng cân trước mặt khách, đọc to số phân. Khách thấy thì khách tin.'),
+                ('me', 'Dạ, ba phân bảy… à, ba phân rưỡi. Con đọc lại cho chắc.'),
+                ('ngoc', 'Ừ, đọc sai thì sửa liền, đừng ngại. Ngại sai mới là sai.')]),
+            _b('Sợi dây chuyền sáng quá', '✨', 'Một người lạ mang sợi dây chuyền “18K” sáng bóng tới bán gấp.', [
+                ('tu', 'Màu này sáng như đồ mới mạ. Bắn máy thử đi con.'),
+                ('me', 'Máy báo lớp vàng mỏng ngoài, ruột đồng thau. Mình không mua được anh ơi.'),
+                ('ngoc', 'Nói thật với khách, nhẹ nhàng thôi. Có khi người ta cũng bị lừa.')],
+                _c('Người lạ năn nỉ “mua đỡ giá nào cũng được”. Bạn làm gì?',
+                   _o('a', 'Trả món, nói rõ kết quả máy quét, chỉ chỗ báo nếu bị lừa', [('ngoc', 'Đúng. Tiệm vàng mua đồ giả một lần là mất tiếng cả đời.')], rel='ngoc'),
+                   _o('b', 'Mua giá rẻ cho khách đỡ thiệt', [('tu', 'Rồi mình bán lại cho ai, con?')], rel='tu'))),
+            _b('Chỉ vàng của bà Năm', '🐟', 'Bà Năm Chợ dành dụm cả năm, ghé mua một chỉ vàng ta.', [
+                ('nam', 'Tiền bán cá cả năm đó con. Cân cho bà coi tận mắt nghe.'),
+                ('me', 'Dạ, mười phân tròn, bà coi màn hình nè. Hóa đơn con ghi đủ, bà cất kỹ.'),
+                ('ngoc', 'Khách nhỏ hay lớn cũng một cái cân, một cái bảng giá.')],
+                days=4, served=10, gap=1),
+            _b('Cặp nhẫn cưới', '💞', 'Chị Hằng và mẹ chồng tương lai chọn nhẫn cưới, hai người hai ý.', [
+                ('hang', 'Con thích nhẫn trơn, mẹ lại muốn có hột cho sang.'),
+                ('me', 'Chị thử cả hai, con tính tiền rõ từng món. Nhẫn trơn khắc tên vẫn sang mà.'),
+                ('tu', 'Chú khắc tên hai đứa lên lòng nhẫn, chiều nay lấy được.')],
+                _c('Mẹ chồng hỏi nhỏ “bán lại có được nguyên giá không”. Bạn nói sao?',
+                   _o('a', 'Nói thật: bán lại theo giá mua vào hôm đó, tiệm mình có hóa đơn thì không trừ hao', [('hang', 'Nói thật vậy con mới yên tâm mua.')], rel='hang'),
+                   _o('b', 'Hứa bán lại nguyên giá cho dễ chốt', [('ngoc', 'Hứa điều không làm được là bán chữ tín đó con.')], rel='ngoc')),
+                days=6, served=14, gap=1),
+            _b('Chiếc cân tiểu ly', '⚖️', 'Cô Ba Ngọc về quê dưỡng già, trao lại chiếc cân đồng cũ.', [
+                ('ngoc', 'Cân này theo cô từ hồi mới mở tiệm. Giữ nó chuẩn như giữ lời hứa.'),
+                ('tu', 'Từ mai chú làm thợ cho con nghe.'),
+                ('me', 'Con sẽ giữ như cô dạy: cân trước mặt khách, giấy tờ rõ ràng, không mua đồ gian.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ 🚗 Đại lý xe Phố Mây (từ chương 2)
+    'car_dealer': dict(
+        title='Chiếc Cub đầu tiên', emoji='🏍️',
+        keepsake=dict(emoji='🏍️', name='Tấm ảnh chiếc Cub đầu tiên', desc='Tấm ảnh anh Quân giao chiếc Cub đầu tiên mười lăm năm trước, treo cạnh bàn tư vấn. Dưới ảnh anh ghi: bán chiếc xe, giữ người khách.'),
+        cast={'quan': _p('Anh Quân', '🚗', 'Chủ đại lý', 'car_dealer_npc_01'),
+              'mai': _p('Chị Mai', '📂', 'Lo giấy tờ', 'car_dealer_npc_02'),
+              'dung': _p('Anh Dũng', '📦', 'Shipper', 'car_dealer_npc_05'),
+              'bay': _p('Chú Bảy', '👴', 'Khách khó tính', 'car_dealer_npc_07')},
+        beats=[
+            _b('Nghe nhu cầu trước', '👂', 'Khách đầu tiên chỉ ngay chiếc xe đắt nhất showroom.', [
+                ('quan', 'Khách chỉ xe đắt chưa chắc cần xe đắt. Hỏi đi đâu, chở ai, có bằng gì đã.'),
+                ('me', 'Dạ, chị đi chợ gần nhà, chưa có bằng. Vậy xe đạp điện hợp hơn.'),
+                ('quan', 'Ừ. Bán đúng xe thì khách quay lại mua chiếc thứ hai.')]),
+            _b('Chiếc xe không giấy', '🕵️', 'Một người mặc áo khoác dày dắt xe tới bán gấp, số khung bị đục.', [
+                ('mai', 'Số khung không khớp giấy em ơi.'),
+                ('me', 'Mình không thu chiếc này anh ạ. Em ghi lại đặc điểm xe theo quy định.'),
+                ('quan', 'Thu xe gian một lần, cả đại lý mang tiếng.')],
+                _c('Người kia đề nghị bán nửa giá “khỏi giấy tờ”. Bạn làm gì?',
+                   _o('a', 'Từ chối, ghi đặc điểm, báo công an khu vực', [('quan', 'Đúng. Rẻ tới đâu cũng không mua cái mình không dám ký tên.')], rel='quan'),
+                   _o('b', 'Mua rẻ rồi làm giấy sau', [('mai', 'Giấy nào làm được cho xe đục số hả em?')], rel='mai'))),
+            _b('Xe của anh Dũng', '📦', 'Anh Dũng chạy giao hàng, muốn trả góp chiếc xe số mới.', [
+                ('dung', 'Anh làm ngày nào ăn ngày đó, trả góp được không em?'),
+                ('me', 'Được anh, qua Ngân hàng Phố. Mình tính khoản góp không quá bốn phần mười thu nhập cho anh nhẹ đầu.'),
+                ('mai', 'Giấy tờ thu nhập anh có thì chị làm hồ sơ liền.')],
+                days=4, served=10, gap=1),
+            _b('Chú Bảy khó tính', '👴', 'Chú Bảy hỏi đi hỏi lại từng thông số chiếc ô tô nhỏ.', [
+                ('bay', 'Túi khí mấy cái? Hàng sau có không? Nói thật nghe, chú đọc sách rồi đó.'),
+                ('me', 'Dạ hai túi khí phía trước, hàng sau không có. Con nói theo sách của hãng.'),
+                ('quan', 'Khách hỏi kỹ là khách muốn tin mình. Đừng vẽ thêm.')],
+                _c('Chú Bảy đòi bớt mười phần trăm mới mua. Bạn nói sao?',
+                   _o('a', 'Giữ giá niêm yết, tặng bộ thảm theo chương trình, giải thích rõ', [('bay', 'Ờ, giá ai cũng như ai thì chú yên tâm.')], rel='bay'),
+                   _o('b', 'Bớt luôn mười phần trăm cho kịp chốt', [('quan', 'Bớt cho người này thì người trước mua giá nào?')], rel='quan')),
+                days=6, served=14, gap=1),
+            _b('Chiếc Cub đầu tiên', '🏍️', 'Anh Quân mở thêm showroom bên kia sông, giao lại đại lý Phố Mây.', [
+                ('quan', 'Chiếc Cub đầu tiên anh bán, khách đó giờ mua chiếc thứ ba. Nói thật một lần, người ta nhớ cả đời.'),
+                ('mai', 'Hồ sơ đăng ký từ mai chị gửi em ký nha.'),
+                ('me', 'Em sẽ giữ như anh dạy: nghe nhu cầu trước, nói thật thông số, giấy tờ đủ rồi mới giao xe.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',
