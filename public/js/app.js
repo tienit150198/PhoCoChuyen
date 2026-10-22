@@ -27,6 +27,7 @@ import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from
 import {quickOpen,firstDay,EASY_DAYS} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf,townOn} from './v4/journey.js';
+import {charmsBoot,waiting as charmsWaiting} from './v4/charms.js';   // 🤝 phụ kiện đôi worn from the first frame (game/friend_charms.py)
 import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/10: while writing is open
 import {seedFair,fairNow} from './v4/town-fair-data.js';   // 🎪 Hội chợ việc làm: on or soon (ui.tfair, then the ticker's poll)
 import {seedHween,hwNow,hwShown} from './v4/halloween-data.js';   // 🎃 Lễ hội Ma Phố 26/10 → 01/11 (ui.hween, then the ticker's poll)
@@ -370,6 +371,7 @@ function navItems(c){
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['rank','award','Xếp hạng']);
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
+  if(api.state?.journey?.gender)items.push(['jrAccShop','bag','Tiệm phụ kiện',charmsWaiting(api)]);  // 🛍️ accessories and 🤝 phụ kiện đôi (v4/acc-shop.js); the badge: gifts waiting
   if(!newInterface(api.state))items.push(['sharedIsland','map','Ra đảo nhặt rương']);
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
@@ -446,7 +448,7 @@ const RAIL_GROUPS=[
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse','abroad']],
+  ['minh','gift','Của mình',['jrWardrobe','jrAccShop','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse','abroad']],
 ];
 /** ☕ v4/spend.js (game/spend.py): the menu entries and the town map's doors (each opens its tab). */
 const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
@@ -2025,7 +2027,7 @@ document.addEventListener('mnl:lazy',e=>{if(lazyFrame||(lazyBoot&&e.detail?.want
 window.addEventListener('online',()=>{if(api.state)api.refresh().then(()=>renderMain()).catch(()=>{});});
 window.addEventListener('error',e=>{console.error('Game UI:',e.error||e.message);});
 try{
-  await api.init();
+  await api.init();charmsBoot(api);
   const renderer=await loadInterface(api.state);iso=renderer.iso;
   if(renderer.World)world.adopt(new renderer.World($('#world'),interact));
   // Only the current workplace's workbench and data/styles gate the first frame. Phaser follows that frame.

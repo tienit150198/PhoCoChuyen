@@ -5,11 +5,14 @@
  * Bảng màu (1.3.1 accessories, góp ý #70; now clothes and shoes too): on the Áo, Quần · váy, Giày dép and Phụ kiện
  * tabs a row of colours to try on what is worn there (ui.wd.tint, per item). Màu gốc is free; another colour is
  * unlocked once for every item (v4/palette.js, jr_wd_unlock), then switching is free. A recoloured item is named
- * without its colour word: "Áo hoodie · Xanh navy". */
+ * without its colour word: "Áo hoodie · Xanh navy".
+ * 🛍️ Owner 22/10: accessories are bought at Tiệm phụ kiện (v4/acc-shop.js), no longer here; a missing one tried on points
+ * there. Worn ones, their colours and the 🤝 phụ kiện đôi switches (v4/charms.js) stay on the Phụ kiện tab. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {confirmPurchase} from './payment.js';
 import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf,cozyActive} from './look.js';
 import {GOC,colorList,haveColors,hasColor,priceOf as colorPrice,nameOf as colorName,swatch,unlockColor,openPalette} from './palette.js';
+import {pairsCard} from './charms.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const C=api=>api.content.journey?.wardrobe;
@@ -58,7 +61,7 @@ function status(api,it){
   else if(need==='married'&&api.state.marriage?.spouse?.status!=='married')return {lock:'Mở sau đám cưới'};
   if(it.price&&!owned(api).includes(it.id)){
     if(need==='shop'&&!staff(api))return {lock:`Chỉ bán cho người làm ở ${C(api).shop_name}`};
-    if(need.startsWith('open:')&&!shopOpen(api))return {lock:`Bán ở ${C(api).shop_name}, mở từ chương 3`};
+    if(need.startsWith('open:')&&!shopOpen(api))return {lock:it.slot==='acc'?`Bán ở ${C(api).acc_shop?.name||C(api).shop_name}, có hàng từ chương 3`:`Bán ở ${C(api).shop_name}, mở từ chương 3`};
     return {buy:true,price:priceOf(api,it)};
   }
   return null;
@@ -119,7 +122,8 @@ function actions(api,st,look,saved){
   const changed=SLOTS.filter(k=>look[k]!==saved[k]),recolor=recolored(api,st,look);
   if(!changed.length&&!recolor.length)return `<p class="wd-hint">👇 Chạm một món để mặc thử.</p>`;
   const rows=changed.map(k=>{const it=itemOf(api,look[k]);return {it,st:status(api,it)};});
-  const buys=rows.filter(r=>r.st?.buy).map(r=>btn(`Mua ${esc(r.it.name)} · ${fmt(r.st.price)} xu`,'jrWdBuy',{item:r.it.id},'primary full'));
+  const buys=rows.filter(r=>r.st?.buy).map(r=>r.it.slot==='acc'?btn(`🛍️ Mua ${esc(r.it.name)} ở ${esc(C(api).acc_shop?.name||'Tiệm phụ kiện')}`,'jrAccShop',{item:r.it.id},'primary full')
+    :btn(`Mua ${esc(r.it.name)} · ${fmt(r.st.price)} xu`,'jrWdBuy',{item:r.it.id},'primary full'));
   const locks=rows.filter(r=>r.st?.lock).map(r=>`<p class="wd-lock">🔒 ${esc(r.it.name)}: ${esc(r.st.lock.charAt(0).toLowerCase()+r.st.lock.slice(1))}.</p>`);
   const need=[...new Set(recolor.map(k=>tryColor(api,st,look[k])).filter(c=>!hasColor(api,c)))];
   const paint=need.map(c=>btn(`Mở khóa màu ${esc(colorName(api,c))} · ${fmt(colorPrice(api,c))} xu`,'jrWdColorBuy',{color:c},'primary full')).join('');
@@ -160,8 +164,9 @@ export function wardrobeView(env){
     </section>
     <nav class="wd-tabs" role="tablist" aria-label="Loại đồ">${tabs}</nav>
     ${paint}<div class="wd-grid">${grid}</div>
+    ${st.tab==='acc'?`<p class="wd-note as-foot">🛍️ Mua thêm phụ kiện: ${btn(esc(c.acc_shop?.name||'Tiệm phụ kiện'),'jrAccShop',{},'ghost small')}</p>${pairsCard(env)}`:''}
     <section class="jr-card wd-work"><label class="switch-row"><span class="grow"><b>Mặc đồ làm việc khi vào ca</b><small class="muted block">Tạp dề, áo blouse, yếm… theo nơi làm.</small></span><input type="checkbox" role="switch" data-action="jrWdUniform" ${saved.uniform?'checked':''}><i aria-hidden="true"></i></label></section>
-    <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
+    <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAccShop">🛍️ ${esc(c.acc_shop?.name||'Tiệm phụ kiện')}</button><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
   </div>`;
 }
 
@@ -208,3 +213,4 @@ export async function wardrobeAction(action,data,el,env){
   }
   return false;
 }
+export {status as wdStatus,itemOf as wdItem};   // 🛍️ Tiệm phụ kiện (v4/acc-shop.js) sells the same accessories

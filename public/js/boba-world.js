@@ -18,7 +18,7 @@ import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
 import {watch,CHECK} from './scenes/room-watch.js';   // what the room read of the game: a new state keeps its backdrop unless that changed
-import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc,CANVAS} from './v4/look.js';  // Tủ đồ: the player's look
+import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc,paintPairs,CANVAS} from './v4/look.js';  // Tủ đồ: the player's look
 import {paintRank,paintCap} from './v4/insignia.js';  // 🎖️ an org ladder's uniform, boards and cap (game/org.py)
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
@@ -345,6 +345,7 @@ export class BobaWorld extends World {
    if(old){for(const ex of [-11,11]){c.beginPath();c.arc(ex,-78,9,0,Math.PI*2);c.strokeStyle='#89736a';c.lineWidth=1.6;c.stroke();}L(c,-2,-78,2,-78,'#89736a',1);}
    if(officer){R(c,-34,-109,68,14,'#69938c',8);R(c,-25,-119,50,18,'#82aca0',7);T(c,'★',0,-110,10,'#f7dd93');R(c,9,-39,10,9,'#f0d995',2);}
    if(F)paintAcc(c,F);
+   if(F?.L?.pr)paintPairs(c,F);   // 🤝 phụ kiện đôi worn (v4/look.js)
    if(F?.rk)paintCap(c,F,CANVAS);
    if(this.career==='customer_care'&&player){c.beginPath();c.arc(0,-84,32,Math.PI,0);c.strokeStyle=pal.dark;c.lineWidth=5;c.stroke();R(c,27,-82,9,17,pal.primary,4);L(c,32,-69,17,-64,pal.dark,2);}
    c.restore();

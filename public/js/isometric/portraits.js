@@ -1,7 +1,7 @@
 /** Decorate explicitly tagged SVG portraits with the same saved-wardrobe chibi used in the world.
  * Keep the semantic SVG root and all wardrobe handlers on their existing parent buttons. */
 import {getCharacterStamp} from './character-art.js';
-import {ART,SLOTS,TINT_SLOTS,ACC_COLORS,defaultLook} from '../v4/look.js';
+import {ART,SLOTS,TINT_SLOTS,ACC_COLORS,defaultLook,cleanPairs} from '../v4/look.js';
 
 const SELECTOR='svg[data-cozy-portrait]',NS='http://www.w3.org/2000/svg',MAX_THUMBNAILS=64;
 const active=new WeakMap();
@@ -18,6 +18,7 @@ export function decodeCozyPortrait(value){
     const tint={};
     for(const slot of TINT_SLOTS){const id=look[slot],colour=data.look.tint?.[id];if(typeof colour==='string'&&Object.hasOwn(ACC_COLORS,colour))tint[id]=colour;}
     if(Object.keys(tint).length)look.tint=tint;
+    const pr=cleanPairs(data.look.pr);if(pr)look.pr=pr;   // 🤝 phụ kiện đôi worn
     const facing=data.mode==='figure'&&['se','sw','nw','ne'].includes(data.facing)?data.facing:'se';
     return {mode:data.mode,gender:data.gender,look,facing};
   }catch{return null;}

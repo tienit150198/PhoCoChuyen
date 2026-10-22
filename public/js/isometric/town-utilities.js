@@ -39,6 +39,7 @@ export function townServiceAvailable(action,state={},content={},social={},action
     return !feature||Boolean(state.fair[feature]);
   }
   if(action==='jrEnterHome')return Boolean(story&&journey.deco);
+  if(action==='jrAccShop')return Boolean(journey.gender);   // 🛍️ Tiệm phụ kiện (v4/acc-shop.js): a character to dress
   if(action==='homeGuests')return story;
   if(action==='stView')return Boolean(story&&actionData?.view==='household'&&journey.household);
   if(action==='marriage'&&actionData?.tab==='family')return story;
@@ -68,7 +69,7 @@ export function townUtilityGroups(state={},content={},social={}){
       
       ['stView','home','👶','Chăm con riêng & thú cưng',{view:'household'},'household'],
       ['spendQuan','coffee','☕','Cà phê & quán ăn'],['spendSpa','sparkle','🪷','Spa'],['spendRap','camera','🎬','Rạp phim'],['spendChua','home','🙏','Công đức'],
-      ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],['island','globe','🌍','Đảo mở cửa',{tab:'inv'},'island-open'],
+      ['spendStyle','sparkle','🎨','Phong cách'],['jrAccShop','bag','🎀','Tiệm phụ kiện'],['jrAccShop','gift','🤝','Phụ kiện đôi',{tab:'pair'},'acc-pairs'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],['island','globe','🌍','Đảo mở cửa',{tab:'inv'},'island-open'],
       ['luxTrip','pilot','✈️','Du lịch'],['luxSuu','award','🏺','Sưu tầm'],['luxNha','home','🏰','Dinh thự'],['luxBay','pilot','🛩️','Bay riêng'],
       ['luxTiec','people','🎉','Mở tiệc'],['luxHoc','book','📚','Khóa học'],['luxMtq','heart','💝','Mạnh Thường Quân'],
     ])},

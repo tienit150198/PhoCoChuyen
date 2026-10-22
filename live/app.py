@@ -47,6 +47,7 @@ from .lixi import LixiFeature
 from .wedinvite import WedInviteFeature
 from .cand import CandFeature
 from .bangs import BangFeature   # ⚔️ bang tags and chat groups (live/bangs.py)
+from .charms import CharmFeature   # 🤝 phụ kiện đôi worn by walkers (live/charms.py)
 
 try:
     import websockets
@@ -56,7 +57,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature, TownTreasureFeature, KaraokeFeature, AuctionFeature, FireworksFeature, LixiFeature, WedInviteFeature, CandFeature, IslandFeature, BangFeature, BangIslandFeature]
+FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature, TownTreasureFeature, KaraokeFeature, AuctionFeature, FireworksFeature, LixiFeature, WedInviteFeature, CandFeature, IslandFeature, BangFeature, BangIslandFeature, CharmFeature]
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 

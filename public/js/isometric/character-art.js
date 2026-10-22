@@ -1,5 +1,5 @@
 /** Reference-matched chibi atlas: four views × idle/two walking poses, cached by saved wardrobe. */
-import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,CANVAS,topColour,hairColour} from '../v4/look.js';
+import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,CANVAS,topColour,hairColour} from '../v4/look.js';
 
 const WIDTH=120,HEIGHT=160,FOOT=156;
 const atlases=new Map(),stamps=new Map(),MAX_STAMPS=160;
@@ -26,6 +26,7 @@ export function characterPose(gender,direction,walkFrame=0){const cell=atlasCell
 const normalise=options=>{
   const gender=options.gender==='female'?'female':'male';
   const look={...defaultLook(gender),...options.look};
+  const pr=cleanPairs(look.pr);if(pr)look.pr=pr;else delete look.pr;   // 🤝 phụ kiện đôi: known kinds only (part of the stamp's key)
   const walkFrame=options.walkFrame??(options.step===1?1:options.step===3?2:0);
   return {gender,look,direction:Object.hasOwn(cells,options.direction)?options.direction:'se',walkFrame:atlasCell('se',walkFrame).y,uniformColor:options.uniformColor||''};
 };
@@ -125,6 +126,23 @@ const GLASSES=new Set(['kinh_tron','kinh_ram','kinh_mat_meo','kinh_can']);
 const BODY_ITEMS=new Set(['tui_cheo','tui_xach','khan_lua','vong_co','dong_ho','balo_mini','khan_choang']);
 const COVERING_HATS=new Set(['non_la','mu_len','mu_bucket','mu_luoi_trai','mu_beret','mu_cao_boi']);
 const REAR_ITEMS=new Set(['non_la','mu_len','no_toc','no_lua','kep_toc','mu_bucket','mu_luoi_trai','khan_bandana',...BODY_ITEMS]);
+const HALO='rgba(43,29,26,.88)',HALO_R=1.6;
+/** Owner 22/10 ("mặc vào thì thấy tốt hơn, nhìn rõ"): what is worn over the illustrated chibi gets a thin dark outline, so
+ * a cap, a bag or a pair's charm stays readable over any shirt at a phone's normal zoom (≈0.42 of the stamp). Drawn on a
+ * scratch layer of the stamp's size, its silhouette stamped around it, then the layer on top. No DOM: drawn as it is. */
+function haloed(c,draw){
+  const doc=globalThis.document,cv=c.canvas;
+  if(!doc?.createElement||!cv?.width||typeof c.getTransform!=='function'){draw(c);return;}
+  const layer=doc.createElement('canvas');layer.width=cv.width;layer.height=cv.height;
+  const q=layer.getContext('2d');if(!q){draw(c);return;}
+  q.setTransform(c.getTransform());draw(q);
+  const sil=doc.createElement('canvas');sil.width=cv.width;sil.height=cv.height;
+  const k=sil.getContext('2d');if(!k){c.save();c.setTransform(1,0,0,1,0,0);c.drawImage(layer,0,0);c.restore();return;}
+  k.drawImage(layer,0,0);k.globalCompositeOperation='source-in';k.fillStyle=HALO;k.fillRect(0,0,sil.width,sil.height);
+  c.save();c.setTransform(1,0,0,1,0,0);
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;c.drawImage(sil,Math.round(Math.cos(a)*HALO_R*10)/10,Math.round(Math.sin(a)*HALO_R*10)/10);}
+  c.drawImage(layer,0,0);c.restore();
+}
 function clothingDetails(c,o,box){
   const F=figureOf(o.look,o.gender),front=o.direction==='sw'||o.direction==='se';
   // Match the existing wardrobe item shapes while the illustrated base keeps its fabric shading.
@@ -138,20 +156,28 @@ function clothingDetails(c,o,box){
     c.save();if(Number.isFinite(box.topY)){const sy=(box.hemY-box.topY)/34;c.translate(cx,box.topY+52*sy);c.scale(s*.74,sy);}else{c.translate(cx,bodyY+box.h*.07);c.scale(s*.64,s*.67);}paintTop(c,F,CANVAS);c.restore();
   }
   const accessory=art(o.look,'acc');
-  if(o.look.acc!=='pk_khong'&&(front||accessory.back||REAR_ITEMS.has(o.look.acc))){
+  if(o.look.acc!=='pk_khong'&&(front||accessory.back||REAR_ITEMS.has(o.look.acc)))haloed(c,c=>{
     c.save();
     if(GLASSES.has(o.look.acc)&&box.eyes?.length===2){
       const [left,right]=box.eyes,sy=s*.88,centreY=(left[1]+right[1])/2;
       c.transform((right[0]-left[0])/22,(right[1]-left[1])/22,0,sy,(left[0]+right[0])/2,centreY+78*sy);
     }else if(Number.isFinite(box.headX)){
-      const body=accessory.anchor==='body'||BODY_ITEMS.has(o.look.acc),sx=body?s*.8:Math.min(s*1.22,1.18),sy=body?s*.85:s*(COVERING_HATS.has(o.look.acc)?1.35:1.04);
+      // owner 22/10: a bag, scarf or watch a little larger than before (.8/.85), still on the chibi's torso
+      const body=accessory.anchor==='body'||BODY_ITEMS.has(o.look.acc),sx=body?s*.92:Math.min(s*1.22,1.18),sy=body?s*.95:s*(COVERING_HATS.has(o.look.acc)?1.35:1.04);
       c.translate(body?cx:box.headX,body?(box.topY??bodyY)+52*sy:box.headY+103*sy);c.scale(sx,sy);
     }else{
       const body=accessory.anchor==='body'||BODY_ITEMS.has(o.look.acc),accessoryX=body?cx:box.faceX??cx,accessoryY=!body&&box.eyesY!==undefined?box.eyesY+78*s:foot;
       c.translate(accessoryX+(o.direction==='sw'||o.direction==='nw'?-3:3),accessoryY);c.scale(s*.82,s);
     }
     paintAcc(c,F,CANVAS,o.direction);c.restore();
-  }
+  });
+  // 🤝 Phụ kiện đôi (game/friend_charms.py): the bag at the hand, the car at the hip, the rose on the chest, every kind at once.
+  if(o.look.pr)haloed(c,c=>{
+    const side=o.direction==='sw'||o.direction==='nw'?-1:1,back=o.direction==='nw'||o.direction==='ne';
+    const top=Number.isFinite(box.topY)?box.topY:bodyY-box.h*.25,hem=Number.isFinite(box.hemY)?box.hemY:bodyY,half=Math.max(12,box.w*.27);
+    const ps=Math.max(.7,s*1.22);   // a little larger than the classic pieces: the chibi is seen at ≈0.42 on a phone
+    paintPairs(c,F,CANVAS,{s:ps,side,back,at:{bag:[cx-side*half*1.08,hem-4*ps],car:[cx+side*half*.5,hem-2*ps],rose:[cx-side*half*.4,top+(hem-top)*.3]}});
+  });
 }
 /** Shared saved-wardrobe silhouettes. Optional pose anchors move head items separately from the torso. */
 export function paintWardrobeOverlay(c,options={},box,alignment={}){

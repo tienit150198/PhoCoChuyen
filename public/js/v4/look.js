@@ -7,7 +7,10 @@
  *                            state.wardrobe_colors, clothes and shoes from state.colors): every painter above reads
  *                            it (accPaint, art), so portraits, the street, the wedding and its photos all match
  * Small and always loaded; the wardrobe sheet itself (v4/wardrobe.js) loads on first use. The chat face (v4/face.js)
- * draws the wardrobe top and accessory with art(), topDetail() and accBust(). */
+ * draws the wardrobe top and accessory with art(), topDetail() and accBust().
+ *   look.pr                  🤝 phụ kiện đôi worn {kind: count} (game/friend_charms.py, owner 22/10): a LOCAL key, never in
+ *                            lookOf (live/street.py clean_look refuses unknown keys): figure() adds the player's own (setPairs),
+ *                            a walker's comes beside its look as `pr` (live/charms.py); paintPairs / pairsBust draw them. */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
 import {paintRank} from './insignia.js';
 // 👶 F.bb: the baby in the character's arms (v4/baby.js)
@@ -224,6 +227,7 @@ function cozyMark(Lk,gender,mode,facing='se'){
   const tint={};
   for(const slot of TINT_SLOTS){const id=look[slot],colour=Lk?.tint?.[id];if(!(dress&&slot==='bottom')&&typeof colour==='string'&&Object.hasOwn(ACC_COLORS,colour))tint[id]=colour;}
   if(Object.keys(tint).length)look.tint=tint;
+  const pr=cleanPairs(Lk?.pr);if(pr)look.pr=pr;   // 🤝 the island portrait draws the pairs worn too
   const direction=mode==='figure'?{facing:['se','sw','nw','ne'].includes(facing)?facing:'se'}:{};
   return ` data-cozy-portrait="${encodeURIComponent(JSON.stringify({v:1,mode,gender:g,look,...direction}))}"`;
 }
@@ -237,10 +241,10 @@ export function portrait(look,gender,size=56,label){
     hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top,sk.c)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
     `<rect x="34" y="50" width="12" height="12" rx="5" fill="${sk.neck}"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${sk.c}"/>${hairFront(Lk.hair,hair)}`+eyes+
     `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/>`+
-    (Lk.acc==='tui_cheo'?'':accBust(Lk.acc,ak))+`</svg>`;
+    (Lk.acc==='tui_cheo'?'':accBust(Lk.acc,ak))+pairsBust(Lk.pr)+`</svg>`;
 }
 /** The player's own portrait from the state (board, ranking, marriage, stories…). */
-export const myPortrait=(state,size=40,label='Bạn')=>portrait(lookOf(state),state?.journey?.gender,size,label);
+export const myPortrait=(state,size=40,label='Bạn')=>portrait(PAIRS?{...lookOf(state),pr:{...PAIRS}}:lookOf(state),state?.journey?.gender,size,label);
 
 /* ---- the full character (origin at the feet, up is negative) ----
  * The same painters draw the walking character on the scene canvas (BobaWorld.character, pen CANVAS)
@@ -269,7 +273,7 @@ export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92
  * and lookOf stay the save's own. */
 let OVER=null;
 export function setLookOver(fn){OVER=typeof fn==='function'?fn:null;}
-export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
+export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;if(PAIRS)L.pr={...PAIRS};const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
 /** 🎖️ The rank the character wears (game/org.py, v4/insignia.js): the current career's org grade, while "Mặc đồ làm việc"
  * is on. {o: org id, g: grade id}; never in lookOf (live frames carry it apart, as `rk`). */
 export function rankRef(state){
@@ -284,6 +288,87 @@ export function figureOf(Lk,g){
   const hair=Lk.shade==='mau_nau'?(Lk.hair==='toc_ngan'&&g==='male'?'#4f3a30':'#74503f'):hairColour(Lk);
   const bottom=top.dress?{c:top.c,skirt:top.dress==='gala'||top.dress==='slip'||top.dress==='maxi'?'long':'flare',dress:top.dress,x:top.x}:art(Lk,'bottom');
   return {g,L:Lk,hair,skin:art(Lk,'skin'),top,topC:top.c,classic:topColour(Lk,g),bottom,shoes:art(Lk,'shoes'),long:!!art(Lk,'hair').long,short:SHORT_HAIR.has(Lk.hair)};
+}
+/* ---- 🤝 Phụ kiện đôi (game/friend_charms.py; góp ý #484, owner 22/10 "mặc vào thì thấy tốt hơn, nhìn rõ ở cả 2 giao diện") ----
+ * Each kind has its own place, so every pair worn shows at once (no limit: "đừng giới hạn số lượng đeo"): 🏎️ Chí cốt a red
+ * supercar model on a keyring at the right hip, 👜 Bạn thân a pink handbag in the left hand, 💐 Tri kỉ an eternal rose pinned
+ * on the chest. More of one kind stack: up to three cars on the ring, heart charms on the bag, a corsage of roses.
+ * Bold shapes with a dark outline, so a worn piece reads at a phone's normal zoom on both maps. */
+export const PAIR_KINDS=Object.freeze(['chi_cot','ban_than','tri_ki']);
+const INK='#2b1d1a';
+export const PAIR_ART=Object.freeze({chi_cot:{c:'#e3352b',d:'#8f1a12',l:'#ff8a6b',w:'#bfe6ff',k:'#262022',m:'#e8b83f'},
+  ban_than:{c:'#f58db1',d:'#b33f69',l:'#ffd1e0',m:'#f2c14e'},tri_ki:{c:'#cf2a4b',d:'#7d1027',l:'#ff8aa1',g:'#3f9150',gd:'#22612f'}});
+let PAIRS=null;
+/** {kind: count} with known kinds only (1–99 each), or null. Anything else (a newer build's kind, a bad frame) is left out. */
+export function cleanPairs(pr){
+  if(!pr||typeof pr!=='object'||Array.isArray(pr))return null;
+  const out={};for(const k of PAIR_KINDS){const n=Math.trunc(Number(pr[k]));if(n>=1)out[k]=Math.min(99,n);}
+  return Object.keys(out).length?out:null;
+}
+/** The pairs the player wears (the bootstrap's `charms.worn`, every charm_* answer): figure(state) draws them. */
+export function setPairs(pr){PAIRS=cleanPairs(pr);}
+export const myPairs=()=>PAIRS?{...PAIRS}:null;
+/** A look with a walker's pairs (`pr` beside its look on the street and the 2.5D map). */
+export const withPairs=(L,pr)=>{const p=cleanPairs(pr);return p?{...L,pr:p}:L;};
+/** A path in local units, placed at (ox, oy), scaled by s, mirrored by side (-1). Only absolute M L Q C Z commands. */
+const tf=(d,ox,oy,s,side=1)=>{let i=0;return d.replace(/-?\d*\.?\d+/g,m=>{const v=Number(m),o=i++%2?oy+v*s:ox+side*v*s;return String(Math.round(o*10)/10);});};
+function outlined(c,K,d,fill,w){K.stroke(c,d,INK,w);K.path(c,d,fill);}
+/** 🏎️ One supercar (local units: about 24 wide, 10 tall, the roof up). */
+function car(c,K,x,y,s,side,a){
+  const body='M-12 2L-12 -1Q-11 -3 -7 -3.5L-3 -7Q1 -8.5 6 -7L9 -3.5Q12 -3.2 12.5 -1L12.5 2Z';
+  outlined(c,K,tf(body,x,y,s,side),a.c,2.6*s);
+  K.path(c,tf('M-2 -3.6L0 -6.4Q2 -7.2 5 -6.3L7 -3.6Z',x,y,s,side),a.w);
+  K.stroke(c,tf('M-10 -1.2L10 -1.2',x,y,s,side),a.l,1.1*s);
+  for(const wx of [-7,7.5]){K.E(c,x+side*wx*s,y+2*s,3*s,3*s,INK);K.E(c,x+side*wx*s,y+2*s,1.3*s,1.3*s,'#c9ced6');}
+}
+/** 👜 The handbag (local origin: the top of the bag, the handle above). */
+function bag(c,K,x,y,s,side,a,n){
+  K.stroke(c,tf('M-6 0Q-5 -10 0 -10Q5 -10 6 0',x,y,s,side),INK,3.4*s);K.stroke(c,tf('M-6 0Q-5 -10 0 -10Q5 -10 6 0',x,y,s,side),a.d,1.8*s);
+  outlined(c,K,tf('M-9 0L9 0L11 13Q11 15 9 15L-9 15Q-11 15 -11 13Z',x,y,s,side),a.c,2.6*s);
+  K.path(c,tf('M-9 0L9 0L7.5 5.5L-7.5 5.5Z',x,y,s,side),a.d);
+  K.heart(c,x,y+6.8*s,.17*s,a.m);
+  for(let i=1;i<Math.min(n,3);i++){const hx=side*(12.5+i*.5)*s,hy=(3+i*5)*s;K.L(c,x+side*10*s,y+(1+i*4)*s,x+hx,y+hy-1.5*s,a.d,1*s);K.heart(c,x+hx,y+hy+1.5*s,.12*s,i===1?'#fff6f9':a.m);}
+}
+/** 💐 One eternal rose with its leaves (local origin: the bloom's centre). */
+function rose(c,K,x,y,s,side,a){
+  outlined(c,K,tf('M0 1Q-7 0 -10 5Q-5 7 0 2Z',x,y,s,side),a.g,2*s);
+  outlined(c,K,tf('M0 1Q6 1 9 6Q4 8 0 2Z',x,y,s,side),a.gd,2*s);
+  K.E(c,x,y,5.6*s,5.6*s,INK);K.E(c,x,y,4.6*s,4.6*s,a.c);
+  K.stroke(c,tf('M-2.6 -0.4Q0 -3.4 2.6 -0.4Q0 2.6 -1.4 0.4',x,y,s,side),a.l,1.2*s);
+  K.E(c,x+side*1.5*s,y-1.8*s,1*s,1*s,'#ffffffb0');
+}
+/** Every pair worn, at its own place. `at`: where each kind sits ({car: [x, y] the ring, bag: [x, y] its top, rose: [x, y]}),
+ * `s` the scale, `side` -1 to mirror (facing left), `back` the chest is out of sight. The defaults fit paintPlayer. */
+export function paintPairs(c,F,K=CANVAS,{at=null,s=1,side=1,back=false}={}){
+  const pr=cleanPairs(F?.L?.pr);if(!pr)return;
+  const A={car:[17,-19],bag:[-31,-24],rose:[-12,-45],...(at||{})};
+  if(pr.ban_than){const [x,y]=A.bag;bag(c,K,x,y,s,side,PAIR_ART.ban_than,pr.ban_than);}
+  if(pr.chi_cot){
+    const a=PAIR_ART.chi_cot,[x,y]=A.car,n=Math.min(pr.chi_cot,3);
+    K.ring(c,x,y,2.6*s,INK,2.4*s);K.ring(c,x,y,2.6*s,a.m,1.3*s);
+    for(let i=n-1;i>=0;i--){const dx=side*[0,-5,5][i]*s,dy=[0,4,7][i]*s;K.L(c,x,y+2*s,x+dx,y+(7+dy/s)*s,INK,1.2*s);car(c,K,x+dx,y+(12*s)+dy,s*(i?.82:1),side,a);}
+  }
+  if(pr.tri_ki&&!back){const [x,y]=A.rose,n=Math.min(pr.tri_ki,3),spots=[[0,0],[-6,4],[6,4]];
+    for(let i=n-1;i>=0;i--)rose(c,K,x+side*spots[i][0]*s,y+spots[i][1]*s,s*(n>1?.86:1),side,PAIR_ART.tri_ki);}
+}
+/** The pairs on the round bust (80×80): the rose on the chest, the bag and the car small along the bottom edge. */
+export function pairsBust(pr){
+  const p=cleanPairs(pr);if(!p)return '';
+  const out=[];
+  if(p.ban_than)bag(out,SVG,14,66,.62,1,PAIR_ART.ban_than,1);
+  if(p.chi_cot)car(out,SVG,64,74,.55,1,PAIR_ART.chi_cot);
+  if(p.tri_ki)rose(out,SVG,29,66,.62,1,PAIR_ART.tri_ki);
+  return out.join('');
+}
+/** The two pieces of a pair side by side, large (Tiệm phụ kiện, the wardrobe, the profile). '' for a kind this build lacks. */
+export function pairIcon(kind,size=56,label=''){
+  const a=PAIR_ART[kind];if(!a)return '';
+  const out=[];
+  if(kind==='chi_cot'){car(out,SVG,-7,-6,1.3,1,a);car(out,SVG,7,9,1.3,-1,a);}
+  else if(kind==='ban_than'){bag(out,SVG,-10,-9,1.1,1,a,1);bag(out,SVG,10,-3,1.1,-1,a,1);}
+  else{rose(out,SVG,-8,-4,1.6,1,a);rose(out,SVG,8,5,1.6,-1,a);}
+  const aria=label?`role="img" aria-label="${label.replace(/[&<>"]/g,ch=>`&#${ch.charCodeAt(0)};`)}"`:'aria-hidden="true"';
+  return `<svg class="pair-icon" width="${size}" height="${size}" viewBox="-25 -25 50 50" ${aria}>${out.join('')}</svg>`;
 }
 /** Dress hems share the top's palette and cover the stored bottom in every pose. */
 export function paintDress(c,F,K=CANVAS){
@@ -471,6 +556,7 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   if(male){K.L(c,-16,-89,-6,-90,F.hair,2.4);K.L(c,6,-90,16,-89,F.hair,2.4);}
   K.stroke(c,'M4 -66A4 4 0 0 1 -4 -66','#b17c69',1.6);
   paintHairFront(c,F,K);paintAcc(c,F,K);
+  if(F.L?.pr)paintPairs(c,F,K);   // 🤝 phụ kiện đôi
   if(F.rk)paintRank(c,F,K);   // 🎖️ cấp hiệu and huy hiệu over the top
   if(bb)paintCarried(c,bb,K,F);   // 👶 in front of everything: held to the chest
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
