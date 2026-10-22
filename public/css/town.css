@@ -11,6 +11,19 @@ html[data-layout="phone"] .sheet.home.tw-sheet{height:calc(100dvh - max(10px,var
 .tw-goals .jr-ch-art{width:36px;height:36px;font-size:1.3rem}
 .tw-goals .jr-goals-title{margin-top:6px}
 .tw-goals .jr-recommend{margin-bottom:4px}
+/* owner 22/10 ("cái chương xx kia che"): on the map the chapter is one short strip: the title, the next goal with its button
+   in one row, "Xem tất cả mục tiêu" in the corner; the heading and the why-line stay on the journey page. */
+.tw-goals{max-height:min(30%,230px);padding:6px 12px}
+.tw-goals .jr-chapter{padding:8px 12px}
+.tw-goals .jr-ch-top{margin-bottom:4px;padding-right:150px;align-items:center}
+.tw-goals .jr-ch-art{width:30px;height:30px;font-size:1.1rem}
+.tw-goals .jr-chapter h2{font-size:1rem}
+.tw-goals .jr-goals-title,.tw-goals .jr-recommend-reason{display:none}
+.tw-goals .jr-goals li{min-height:0;padding:4px 10px}
+.tw-goals .jr-goals li>.grow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.tw-goals .jr-goals li>.grow .btn{min-height:36px;padding:6px 14px;font-size:.9rem}
+.tw-goals .jr-chapter>[data-action="jrGoals"]{position:absolute;top:8px;right:12px;margin:0;max-width:140px;white-space:normal;line-height:1.2}
+.tw-goals .jr-cta{min-height:40px;padding:8px 16px;font-size:.95rem}
 .tw-top{position:relative;display:flex;align-items:center;gap:8px;padding:12px 14px 10px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
 html[data-layout="phone"] .tw-top{padding:18px max(12px,var(--safe-r)) 8px max(14px,var(--safe-l))}
 .tw-title{flex:1 1 auto;min-width:0;display:flex;align-items:baseline;gap:8px}

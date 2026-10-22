@@ -376,7 +376,7 @@ function placeChip(){
   chip.classList.toggle('in-sheet',inSheet);
   // The 2.5D town: coach.css puts it above the main button, where the scene's notes go (nothing to measure).
   if(!inSheet&&document.documentElement.dataset.game==='isometric'){chip.style.top='';return;}
-  const head=inSheet?chip.parentElement.querySelector('.sheet-head')?.getBoundingClientRect():null;
+  const head=inSheet?chip.parentElement.querySelector('.sheet-head,.tw-top')?.getBoundingClientRect():null;
   const top=head&&head.bottom>0?head.bottom+6:(document.getElementById('topbar')?.getBoundingClientRect().bottom||0)+8;
   chip.style.top=Math.round(top)+'px';
 }

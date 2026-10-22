@@ -73,7 +73,9 @@ function inboxView(){if(!S.inbox)return '<p role="status">Đang mở sổ khách
 const O={env:null,box:null,place:null,people:[],messages:[],activity:null,me:null,incoming:[],joined:false,expanded:false,chat:'',lastPlaces:0,nextOrders:0,current:null,account:null,off:[],live:null};
 function ownerMount(){
  if(!O.box)return;
- const sheet=document.getElementById('sheet'),compact=['phone','tablet'].includes(document.documentElement.dataset.layout);
+ // 🧭 The isometric game lays #side out as display:contents: a presence panel left there would sit over the top bar on a
+ // desktop, so it joins the task HUD's column there too (isometric.css places .wv-work-hud; the town hides it).
+ const root=document.documentElement,sheet=document.getElementById('sheet'),compact=['phone','tablet'].includes(root.dataset.layout)||root.dataset.game==='isometric';
  const hud=document.getElementById('taskHUD');
  // Keep the task HUD's children untouched: app.js owns and morphs those cards.
  // A shared compact container gives presence its own row below the task scroller.
@@ -130,7 +132,7 @@ export function workVisitsBoot(env){if(O.env)return;O.env=env;O.settlementSync=c
  const sheet=document.getElementById('sheet'),hud=document.getElementById('taskHUD');
  if(sheet)O.mountObserver.observe(sheet,{attributes:true,attributeFilter:['open']});
  if(hud)O.mountObserver.observe(hud,{childList:true});
- O.mountObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-layout']});
+ O.mountObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-layout','data-game']});
  ownerMount();
  O.poller=createQuayPoller({active:()=>!document.hidden&&!S.dlg?.open,refresh,failed:()=>{}});O.poller.start();refresh().catch(()=>{});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(O.joined&&!S.dlg?.open)env.live?.()?.send({t:'visit_out'});O.joined=false;}else{O.nextOrders=0;refresh().catch(()=>{});}});
