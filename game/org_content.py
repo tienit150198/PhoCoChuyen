@@ -241,7 +241,7 @@ ORGS['hq'] = dict(
     # Who takes a seat a demotion leaves, who signs while no player holds the top seat, the expulsion's line.
     seat_npc=('Kiểm tra viên chính Lương Hữu Đạt', 'Kiểm tra viên Tạ Minh Châu', 'Kiểm tra viên Kiều Phương', 'Kiểm tra viên chính Âu Gia Bảo'),
     boss='Tổng cục trưởng Nghiêm Quốc Trung (Tổng cục Hải quan)',
-    expel_line='🚨 Quyết định khai trừ khỏi ngành Hải quan. Không được xét tuyển vào bất kỳ ngành nghề chính quyền nào.',
+    expel_line='🚨 Quyết định khai trừ khỏi ngành Hải quan. Không được xét tuyển vào bất kỳ ngành nghề chính quyền nào cho đến khi được xóa kỷ luật.',
 )
 # Career → (org, the postings that wear it). A part-time posting (Hỗ trợ tiếp dân) keeps the plain ladder.
 CAREER_ORG = {'police': ('cand', ('cap-kv',)), 'customs': ('hq', ('hq-ktv',))}

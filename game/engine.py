@@ -901,6 +901,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         log(s,c,"day",f"Khép ngày {oldday}; {summary['completed']} việc xong, {summary['carried']} việc được giữ lại.")
         out_lines=pm.after_close(s,c,career)  # 👮 an expulsion set during the day (owner 11/10): jail, contract ended, ban
         if out_lines:summary["promo"]=dict(summary.get("promo") or {},org=list((summary.get("promo") or {}).get("org") or [])+out_lines)
+        redo=pm.redeem_close(s,c,career,summary)  # ⚖️ owner 22/10: a good day outside the state counts towards lifting the gov_ban
+        if redo:summary["promo"]=dict(summary["promo"],org=list(summary["promo"].get("org") or [])+redo)
         result.update(message="Một ngày nữa đã có câu chuyện để nhớ.",summary=summary)
     elif action=="more_work":
         need(not pm.managing(s,c,career),"Hôm nay bạn làm quản lý: giao việc cho đội nhé.","manager_shift")

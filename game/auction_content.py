@@ -264,6 +264,10 @@ ITEMS = (
     _p('pl_may2468', 1, 'Mây-2468'),
     _reg('rg_vna999', 3, 'VN-A999'), _reg('rg_vna386', 2, 'VN-A386'), _reg('rg_vna520', 1, 'VN-A520'),
     _hull('hn_rong_bien', 3, 'RỒNG BIỂN'), _hull('hn_trang_ram', 2, 'TRĂNG RẰM'), _hull('hn_bien_ngoc', 1, 'BIỂN NGỌC 07'),
+    # 🚗 biển 179 (owner 22/10, player feedback #476 "ok để biển số xe, thêm vào luôn nha"): road plates with 179 in them,
+    # priced by tier like the other nice numbers; they go up first in their tier's slot until FEATURE_TO (FEATURED)
+    _p('pl_may0179', 1, 'Mây-0179'), _p('pl_61a17968', 1, '61A-179.68'), _p('pl_36a00179', 1, '36A-001.79'),
+    _p('pl_51a17979', 2, '51A-179.79'), _p('pl_29a17917', 2, '29A-179.17'),
     # 👑 titles: worn from Phong cách, beside the name in chat with the one-of-a-kind frame
     _title('dh_phuong_hoang', 3, '🔥', 'Phượng Hoàng Phố Mây', 'Phượng Hoàng'),
     _title('dh_ngan_ha', 3, '🌌', 'Chủ Nhân Dải Ngân Hà', 'Ngân Hà'),
@@ -373,6 +377,10 @@ for _it in ITEMS:
     else:
         _it['story'] = KIND_STORY[_it['kind']]
 ITEM = {it['id']: it for it in ITEMS}
+# 🚗 biển 179 (owner 22/10, #476): until FEATURE_TO (a Vietnam date, inclusive) a free one of these is picked first for
+# its tier's daily slot (game/auction.py pick), so one is on the block most evenings; after that they are ordinary lots.
+FEATURED = ('pl_may0179', 'pl_61a17968', 'pl_36a00179', 'pl_51a17979', 'pl_29a17917')
+FEATURE_TO = '2026-11-12'
 LIMITED = tuple(it for it in ITEMS if it['kind'] == 'vehicle')   # game/garage.py adds them to its catalogue
 
 # 👑 the titles, as game/spend_content.py style items (worn from Phong cách for good, never sold)

@@ -19,12 +19,13 @@ a part-time helper at the ward desk is not an officer. Nothing here is in the sa
 journey's hồ sơ công tác count).
 
 🛃 Hải quan (owner spec 14/10, I.): who may apply (ENTRY: at least 3 chapters of the story done, served in Công an up to
-Hạ sĩ or above, at most 3 violations in the hồ sơ công tác, never expelled from a state career; entry_rows shows each
-one), and the kỷ luật of an officer's own wrongdoing (HQ, rolled by hq_found when the act is chosen and applied at the
-shift's close as "thanh tra phát hiện", hq_apply):
+Hạ sĩ or above, at most 3 violations in the hồ sơ công tác, not under a gov_ban (owner 22/10: lifted by good days in
+another career, promotion.redeem_close); entry_rows shows each one), and the kỷ luật of an officer's own wrongdoing
+(HQ, rolled by hq_found when the act is chosen and applied at the shift's close as "thanh tra phát hiện", hq_apply):
 * thông đồng, bao che doanh nghiệp (trục lợi hoàn thuế included): giáng 1 bậc + kỷ luật 10 ngày (COLLUDE_P found);
 * cố ý làm sai lệch hồ sơ, kết quả kiểm tra: kỷ luật 15 ngày (FALSIFY_P);
-* lợi dụng chức vụ (phong bì, giữ hàng tạm giữ không biên lai, chiếm đoạt tiền thuế): khai trừ + gov_ban (ABUSE_P);
+* lợi dụng chức vụ (phong bì, giữ hàng tạm giữ không biên lai, chiếm đoạt tiền thuế): khai trừ + gov_ban (ABUSE_P; lifted
+  only by good days in another career, promotion.redeem_close);
   what was taken is confiscated.
 Inspections of players' shops (game/hq_ops.py) use WRONG_CASE (giáng 1 bậc + giam hàm 15 ngày) and expel the hostile.
 """
@@ -56,7 +57,8 @@ RULES = {
         dict(id='collude', icon='🤝', text='Thông đồng, bao che doanh nghiệp gian lận, trốn thuế, trục lợi hoàn thuế: giáng 1 bậc, kỷ luật 10 ngày.'),
         dict(id='falsify', icon='📝', text='Cố ý làm sai lệch hồ sơ, kết quả kiểm tra, hồ sơ xử lý vi phạm về thuế: kỷ luật 15 ngày.'),
         dict(id='abuse', icon='🚫', text=('Lợi dụng chức vụ giữ lại, chiếm đoạt tiền thuế, nhận hối lộ, tuồn hàng không biên lai, chứng từ: '
-                                         'khai trừ, không được xét tuyển vào bất kỳ ngành nghề chính quyền nào.')),
+                                         'khai trừ, không được xét tuyển vào bất kỳ ngành nghề chính quyền nào cho đến khi làm việc tốt '
+                                         'ở nghề khác đủ ngày để được xóa kỷ luật.')),
         dict(id='inspect', icon='🏪', text=('Kiểm tra kho cửa hàng: chỉ đề xuất khi hồ sơ có căn cứ, qua cấp có thẩm quyền duyệt. Xử lý sai, chèn ép: '
                                            'giáng 1 bậc, giam hàm 15 ngày; nghiêm trọng: khai trừ.')),
         dict(id='svc', icon='📁', text='Mỗi lần vi phạm đều ghi vào hồ sơ công tác, theo bạn qua mọi đơn vị nhà nước.'),
@@ -185,7 +187,10 @@ def entry_rows(s) -> list[dict]:
                         f'({"cao nhất: " + grades[top]["name"] if top >= 0 else "chưa từng làm Công an"})')),
             dict(id='viol', met=nv <= ENTRY['viol'], label=f'Hồ sơ công tác không quá {ENTRY["viol"]} lần vi phạm (đang có {nv})'),
             dict(id='ban', met=not isinstance((s.get('journey') or {}).get(pm.BAN_KEY), dict),
-                 label='Chưa từng bị khai trừ khỏi ngành nghề chính quyền')]
+                 label='Không đang chịu kỷ luật khai trừ khỏi ngành nghề chính quyền')]
+    v = pm.redeem_view(s)
+    if v:   # owner 22/10: good days in another career lift the ban (promotion.redeem_close)
+        rows[-1]['label'] += f' (còn {v["left"]} ngày làm việc tốt ở nghề khác để xóa kỷ luật)'
     return rows
 
 

@@ -7,18 +7,23 @@ not cause the drop (no reviewer 'revise_down' after a reply). Fakes, wrong shops
 demands, a perfect job remembered wrong, a bad-day reviewer shaving a star, an ungrounded gripe: all vô lý. A review
 whose stars match the facts (mistakes included) is reasonable: the police say so and nothing changes, at no cost.
 
-For a vô lý review the police confirm with a hidden chance (CONFIRM_PCT): the stars go up to the true grade (the
-rating and day averages read the feed, so they follow at once), and sometimes (PAY_PCT of those) a small bồi thường
-lands in the wallet (a Sổ ví row). Otherwise "chưa đủ cơ sở": nothing changes. Odds are never shown or sent.
+A vô lý review the facts plainly contradict is always confirmed (owner 22/10, player feedback #478: 1★ for a job
+worth 5★ with a "bài bóc phốt viết sẵn… hoàn tiền" text came back "chưa đủ cơ sở"): the stars are SURE_GAP or more
+below the true grade, or the review is a threat or a demand (twist kinds SURE_KINDS, or the money-for-silence text
+feedback.can_police reads). Only a one-star gap keeps the hidden chance (CONFIRM_PCT). Confirmed: the stars go up to
+the true grade (the rating and day averages read the feed, so they follow at once), and sometimes (PAY_PCT of those) a
+small bồi thường lands in the wallet (a Sổ ví row). Otherwise "chưa đủ cơ sở": nothing changes. Odds are never shown
+or sent. A review left "chưa đủ cơ sở" before 22/10 that is now a sure one may be reported once more (again_ok: any
+day, the daily limit still counts it); it is then confirmed and its stored outcome becomes 'raised'.
 
 🚔 Tố cáo sai sự thật (owner 09/10: "tố cáo sai thì bị bắt tù 1 ngày trong game"): a report on a review the police
 find reasonable (verdict 'fair') sends the reporter to the trại tạm giữ for JAIL_DAYS jail day JAIL_PCT of the time
 (jail_roll, seeded from the review like the other rolls; game/jail.py). A vô lý review that is only "chưa đủ cơ sở"
 never does. Nothing about the chance is shown or sent.
 
-Once per review, only NPC reviews with a thread, written in the last COP_DAYS days, at most COP_PER_DAY a day. The
-rolls are seeded from the review and the outcome is stored in `fb['cop']` = {day, verdict, before, after, pay}, so a
-retry never rolls again. Rollback: 1.9.27 (4533ee17) ignores unknown keys of a review's feedback and accepts the
+Once per review (but the re-report above), only NPC reviews with a thread, written in the last COP_DAYS days, at most
+COP_PER_DAY a day. The rolls are seeded from the review and the outcome is stored in `fb['cop']` = {day, verdict,
+before, after, pay}, so a retry never rolls again (a re-report rewrites it with the day it was made). Rollback: 1.9.27 (4533ee17) ignores unknown keys of a review's feedback and accepts the
 'incident' Sổ ví kind, so these saves still load there (tests/test_review_police.py OldServer).
 """
 from __future__ import annotations
@@ -26,7 +31,9 @@ from __future__ import annotations
 # Tunables (never shown to players).
 COP_DAYS = 3            # a review written today or in the two days before
 COP_PER_DAY = 3         # reports a day at one workplace (its own day counter)
-CONFIRM_PCT = 60        # a vô lý review: the police confirm it this often
+CONFIRM_PCT = 60        # a vô lý review one star off (and no threat): the police confirm it this often
+SURE_GAP = 2            # owner 22/10: this many stars or more below the true grade: always confirmed
+SURE_KINDS = ('bocphot', 'demand')   # owner 22/10: a threat (dọa bóc phốt đòi hoàn tiền) or a demand: always confirmed
 PAY_PCT = 30            # of the confirmed ones: a bồi thường too
 PAY_BASE = 20           # bồi thường: PAY_BASE + PAY_PER_STAR per star given back + 0..PAY_SPREAD×5, at most PAY_MAX
 PAY_PER_STAR = 15
@@ -55,13 +62,31 @@ def target(post: dict) -> int | None:
     return fair
 
 
+def sure(post: dict) -> bool:
+    """Owner 22/10: a vô lý review the police always confirm (SURE_GAP stars or more off, or a threat / a demand)."""
+    fair = target(post)
+    if fair is None:
+        return False
+    F = _fb()
+    fb = post['feedback']
+    return (fair - post['stars'] >= SURE_GAP or F._kind(fb) in SURE_KINDS
+            or F.can_police(dict(post, feedback=dict(fb, police=None))))   # the money-for-silence text, reported or not
+
+
+def again_ok(post: dict) -> bool:
+    """A review left 'unproven' (before 22/10) that the rule now confirms: it may be reported once more."""
+    cop = (post.get('feedback') or {}).get('cop')
+    return isinstance(cop, dict) and cop.get('verdict') == 'unproven' and sure(post)
+
+
 def why_not(post: dict, career: str | None, day: int | None) -> str | None:
     """Why this review cannot be reported to the police (None: it can). The daily limit is checked by the action."""
     F = _fb()
     fb = post.get('feedback')
     if not fb or post.get('kind') != 'review' or post.get('npc') == 'player':
         return 'Chỉ báo công an được đánh giá của người khác viết cho bạn.'
-    if fb.get('cop'):
+    again = bool(fb.get('cop'))   # owner 22/10: an 'unproven' one the rule now confirms, once more (any day)
+    if again and not again_ok(post):
         return 'Bạn đã báo công an về đánh giá này rồi.'
     if career in NOT_HERE or fb.get('own') or F._kind(fb) == 'pile_on':
         return 'Đánh giá này không báo công an được.'
@@ -73,7 +98,7 @@ def why_not(post: dict, career: str | None, day: int | None) -> str | None:
         return 'Chờ người viết trả lời trước đã.'
     if F.can_police(post):
         return 'Lời đe dọa đòi tiền: lưu bằng chứng và trình báo trước đã.'
-    if type(day) is int and type(post.get('day')) is int and post['day'] < day - (COP_DAYS - 1):
+    if not again and type(day) is int and type(post.get('day')) is int and post['day'] < day - (COP_DAYS - 1):
         return f'Chỉ báo công an được đánh giá trong {COP_DAYS} ngày gần đây.'
     return None
 
@@ -96,7 +121,7 @@ def verdict(post: dict) -> tuple[str, int, int]:
     stars, fair = post['stars'], target(post)
     if fair is None:
         return 'fair', stars, 0
-    if _roll(post, 'confirm') >= CONFIRM_PCT:
+    if not sure(post) and _roll(post, 'confirm') >= CONFIRM_PCT:   # only a one-star gap keeps the hidden chance
         return 'unproven', stars, 0
     pay = 0
     if _roll(post, 'pay') < PAY_PCT:
@@ -120,7 +145,7 @@ def action(s: dict, c: dict, career: str, p: dict) -> dict:
     post = next((f for f in c['feed'] if f.get('id') == p.get('post')), None)
     need(post is not None, 'Không thấy đánh giá này.')
     fb = post.get('feedback') or {}
-    need(not fb.get('cop'), 'Bạn đã báo công an về đánh giá này rồi.')
+    need(not fb.get('cop') or again_ok(post), 'Bạn đã báo công an về đánh giá này rồi.')
     need(today(c) < COP_PER_DAY, f'Hôm nay bạn đã báo công an đủ {COP_PER_DAY} lần rồi. Để mai nhé.')
     why = why_not(post, career, c['day'])
     need(why is None, why or '')

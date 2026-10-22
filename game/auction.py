@@ -756,6 +756,8 @@ def pick(d: datetime.date, slot: int, tier_n: int, taken: set) -> dict | None:
         return C.ITEM[low[_h('pick', d.isoformat(), slot) % len(low)]]
     for t in range(tier_n, 0, -1):
         free = sorted(it['id'] for it in C.ITEMS if it['tier'] == t and it['kind'] != 'petgear' and it['id'] not in taken)
+        if d.isoformat() <= C.FEATURE_TO:   # 🚗 biển 179 (owner 22/10, #476): its tier's slot takes one of them first
+            free = [i for i in free if i in C.FEATURED] or free
         if free:
             return C.ITEM[free[_h('pick', d.isoformat(), slot) % len(free)]]
     return None

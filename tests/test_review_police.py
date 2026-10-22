@@ -105,7 +105,7 @@ class Verdicts(Base):
         seen = {'raised': 0, 'unproven': 0, 'pay': 0}
         pays = set()
         for i in range(400):
-            p = dict(id=f'post-{i}', day=15, stars=2, kind='review', npc='milk_tea_npc_01',
+            p = dict(id=f'post-{i}', day=15, stars=3, kind='review', npc='milk_tea_npc_01',   # one star off: the roll
                      feedback=dict(fair=4, thread=[], task=f'task-{i}'))
             v, after, pay = R.verdict(p)
             self.assertEqual(R.verdict(p), (v, after, pay))      # seeded: a retry never rolls again
@@ -120,7 +120,7 @@ class Verdicts(Base):
         self.assertTrue(all(R.PAY_BASE <= x <= R.PAY_MAX for x in pays))
 
     def test_unproven_changes_nothing(self):
-        p = self.post(2, 5)
+        p = self.post(4, 5)
         w, stars = self.wallet(), p['stars']
         with mock.patch.object(R, 'CONFIRM_PCT', 0):
             r = self.cop(p['id'])
@@ -158,9 +158,108 @@ class Verdicts(Base):
         self.assertIsNone(R.target(p))
 
 
+class Sure(Base):
+    """Owner 22/10 (player feedback #478): two stars or more below the true grade, or a threat / a demand, is always
+    confirmed; a review left "chưa đủ cơ sở" that the rule now confirms may be reported once more."""
+
+    def test_two_stars_off_is_always_confirmed(self):
+        for stars, fair in ((3, 5), (1, 5), (2, 4), (1, 3)):
+            self.j.c['day'] += 1                                         # one report a day here: the daily limit stays
+            p = self.post(stars, fair, day=self.j.c['day'])
+            self.assertTrue(R.sure(p))
+            with mock.patch.object(R, 'CONFIRM_PCT', 0), mock.patch.object(R, 'PAY_PCT', 0):
+                self.assertEqual(self.cop(p['id'])['cop'], 'raised')
+            self.assertEqual(self.get(p['id'])['stars'], fair)
+        self.j.c['day'] += 1
+        p = self.post(4, 5, day=self.j.c['day'])
+        self.assertFalse(R.sure(p))
+        with mock.patch.object(R, 'CONFIRM_PCT', 0):
+            self.assertEqual(self.cop(p['id'])['cop'], 'unproven')     # one star off: the hidden roll stays
+        for i in range(300):
+            q = dict(id=f'p-{i}', day=15, stars=1, kind='review', npc='milk_tea_npc_01', feedback=dict(fair=5, thread=[], task=f't-{i}'))
+            self.assertEqual(R.verdict(q)[0], 'raised')
+
+    def test_a_threat_or_a_demand_one_star_off_is_always_confirmed(self):
+        for kind in ('bocphot', 'demand'):
+            p = self.post(4, 5)
+            p['feedback']['twist'] = dict(kind=kind, reportable=False)
+            self.assertTrue(R.sure(p))
+            if kind == 'bocphot':
+                self.j.act('fb_police', post=p['id'], confirm=True)
+            with mock.patch.object(R, 'CONFIRM_PCT', 0):
+                self.assertEqual(self.cop(p['id'])['cop'], 'raised', kind)
+
+    def test_the_extortion_text_alone_is_a_threat(self):
+        p = self.post(4, 5)
+        p['feedback']['persona'] = 'drama'
+        p['text'] = 'Đã chụp màn hình, tối nay lên group bóc phốt. Muốn yên thì hoàn tiền.'
+        self.assertTrue(R.sure(p))
+        self.j.act('fb_police', post=p['id'], confirm=True)
+        self.assertTrue(R.sure(self.get(p['id'])))                     # filed or not, still a threat
+        with mock.patch.object(R, 'CONFIRM_PCT', 0):
+            self.assertEqual(self.cop(p['id'])['cop'], 'raised')
+
+    def old_unproven(self, stars, fair, kind=None, day=10):
+        """A review reported before 22/10 and left "chưa đủ cơ sở" (an older save)."""
+        p = self.post(stars, fair, day=day)
+        if kind:
+            p['feedback']['twist'] = dict(kind=kind, reportable=False)
+            self.j.act('fb_police', post=p['id'], confirm=True)      # the threat filed first, as the page asks
+            p = self.get(p['id'])
+        p['feedback']['cop'] = dict(day=day, verdict='unproven', before=stars, after=stars, pay=0)
+        validate_state(self.j.state)
+        return p
+
+    def test_an_old_unproven_sure_review_is_reported_once_more(self):
+        p = self.old_unproven(1, 5, 'bocphot')                          # mber's case: 1★, worth 5★, a "bóc phốt"
+        q = self.old_unproven(1, 5)
+        self.assertTrue(self.public(p['id'])['can_cop'])                 # any day: not only the last COP_DAYS
+        self.assertEqual(self.public(p['id'])['cop']['verdict'], 'unproven')
+        with mock.patch.object(R, 'CONFIRM_PCT', 0), mock.patch.object(R, 'PAY_PCT', 0):
+            r = self.cop(p['id'])
+            self.assertEqual((r['cop'], r['stars']), ('raised', 5))
+            self.assertEqual(self.cop(q['id'])['cop'], 'raised')
+        self.assertEqual(self.get(p['id'])['feedback']['cop'], dict(day=15, verdict='raised', before=1, after=5, pay=0))
+        self.assertFalse(self.public(p['id'])['can_cop'])
+        with self.assertRaisesRegex(GameError, 'đã báo công an'):
+            self.cop(p['id'])
+        validate_state(json.loads(json.dumps(self.j.state)))
+
+    def test_an_old_unproven_one_star_off_stays_closed(self):
+        p = self.old_unproven(4, 5, day=15)
+        self.assertFalse(self.public(p['id'])['can_cop'])
+        with self.assertRaisesRegex(GameError, 'đã báo công an'):
+            self.cop(p['id'])
+
+    def test_a_report_again_crosses_the_build_before(self):
+        """MNL_LIVE_TREE (2.5.2.x): a review re-reported here keeps the stored outcome's shape, so it loads there."""
+        old = os.environ.get('MNL_LIVE_TREE')
+        if not old or not (Path(old) / 'game' / 'engine.py').is_file():
+            self.skipTest('no live tree (MNL_LIVE_TREE)')
+        p = self.old_unproven(1, 5, 'bocphot')
+        self.cop(p['id'])
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state,public_state;'
+                's=migrate_state(json.load(sys.stdin),True);validate_state(s);public_state(s);'
+                f'print(json.dumps([[p["stars"],p["feedback"]["cop"]["verdict"]] for p in s["careers"]["{self.career}"]["feed"] '
+                'if (p.get("feedback") or {}).get("cop")]))')
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(self.j.state), capture_output=True, text=True, cwd=old,
+                             env=dict(os.environ, PYTHONPATH=old, PYTHONUTF8='1'), encoding='utf-8', timeout=300)
+        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+        self.assertEqual(json.loads(out.stdout), [[5, 'raised']])
+
+    def test_a_report_again_counts_in_the_daily_limit(self):
+        p = self.old_unproven(1, 5)
+        for x in [self.post(3, 3) for _ in range(R.COP_PER_DAY)]:
+            self.cop(x['id'])
+        with self.assertRaisesRegex(GameError, 'đủ 3 lần'):
+            self.cop(p['id'])
+        self.j.c['day'] += 1
+        self.assertEqual(self.cop(p['id'])['cop'], 'raised')
+
+
 class Limits(Base):
     def test_once_per_review(self):
-        p = self.post(2, 5)
+        p = self.post(4, 5)
         with mock.patch.object(R, 'CONFIRM_PCT', 0):
             self.cop(p['id'])
         before = copy.deepcopy(self.j.state)
@@ -297,7 +396,7 @@ class CareCard(Base):
         prog = ('import json,sys;from game.engine import validate_state,migrate_state;'
                 's=json.load(sys.stdin);validate_state(s);s=migrate_state(s);validate_state(s);'
                 'print(json.dumps([x["stars"] for x in s["careers"]["customer_care"]["ext"]["data"]["care"]["people"]'
-                f'["{p['npc']}"]["last"]]))')
+                f'["{p["npc"]}"]["last"]]))')   # no nested same quotes: the file imports on Python 3.10 too
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(x for x in (str(old), os.environ.get('PYTHONPATH', '')) if x))
         out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(self.j.state), capture_output=True,
                              text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
@@ -328,7 +427,7 @@ class OldServer(Base):
         return Path(tmp)
 
     def test_new_saves_validate_on_1_9_27(self):
-        a, b, c = self.post(1, 5), self.post(2, 4), self.post(3, 3)
+        a, b, c = self.post(1, 5), self.post(3, 4), self.post(3, 3)   # b one star off: it may stay unproven (owner 22/10)
         with mock.patch.object(R, 'CONFIRM_PCT', 100), mock.patch.object(R, 'PAY_PCT', 100):
             self.assertTrue(self.cop(a['id'])['paid'])
         with mock.patch.object(R, 'CONFIRM_PCT', 0):
@@ -345,7 +444,7 @@ class OldServer(Base):
         out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True,
                              text=True, cwd=old, env=env, encoding='utf-8', timeout=300)
         self.assertEqual(out.returncode, 0, out.stderr[-3000:])
-        self.assertEqual(sorted(json.loads(out.stdout)), [[2, 'unproven'], [3, 'fair'], [5, 'raised']])
+        self.assertEqual(sorted(json.loads(out.stdout)), [[3, 'fair'], [3, 'unproven'], [5, 'raised']])
 
 
 if __name__ == '__main__':
