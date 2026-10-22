@@ -605,6 +605,28 @@ _profile('car_dealer', 'Hoàng Long | Thanh Hà | Gia Huy',
     'đã tư vấn đúng nhu cầu, kiểm đủ xe mới và giao xe khi hồ sơ đủ // advised by real needs, checked every new vehicle, and handed over only with complete papers',
     'biên bản giao xe có số khung và sổ hồ sơ chờ bổ sung // the hand-over record with the frame number and the pending-papers book')
 
+_profile('canteen', 'Thu Hà | Minh Khang | Bảo Ngọc',
+    'Cô Sáu Mận · bếp chính căn tin trường Tiểu học Phố Mây // Sáu Mận · head cook of the Phố Mây primary school canteen',
+    'đúng món, kịp giờ trống, hỏi dị ứng trước khi đưa và lưu mẫu thức ăn trưa // the right food before the bell, allergies asked before handing anything over, and the lunch sample kept',
+    'bán đồ ăn sáng | chia cơm phần trưa | an toàn thực phẩm // breakfast sales | lunch trays | food safety',
+    'Sáng thứ Hai chào cờ, học trò tới sớm xếp hàng dài, xe bánh mì giao trễ và ba lớp cùng đặt cơm trưa cho các bạn ở lại. // A Monday flag-raising morning: students queue early, the bread van is late, and three classes order lunch for the children staying at school.',
+    'Giao {a} bán đồ ăn sáng và hỏi dị ứng từng bé, {b} chia cơm phần đủ cơm, mặn, rau, canh theo số bạn mỗi lớp, {c} lưu mẫu từng món và ghi sổ trước khi phát phần đầu tiên. // Have {a} sell breakfast and ask each child about allergies, {b} portion the lunch trays with rice, a main, greens and soup for each class, and {c} keep a sample of every dish and log it before the first tray goes out.',
+    'Một khay cơm trưa đã phát cho lớp 2A trước khi lưu mẫu, sổ lưu mẫu bỏ trống. // A lunch tray went out to class 2A before the sample was kept, and the sample log is blank.',
+    'Lấy mẫu từ nồi còn lại ngay, ghi rõ giờ lấy muộn vào sổ, báo cô Sáu và cô chủ nhiệm lớp 2A. // Take the sample from the remaining pot at once, write the late time in the log, and tell Sáu Mận and the 2A class teacher.',
+    'đã giao kịp trước trống, không đưa nhầm món cho bé dị ứng và lưu mẫu đủ món // served before the bell, gave no allergic child the wrong food, and kept a sample of every dish',
+    'sổ lưu mẫu có giờ lấy, tên món và chữ ký người chia cơm // the sample log with the time, the dish and the signature of whoever portioned the lunch')
+
+_profile('stationery', 'Gia Bảo | Khánh Linh | Đức Anh',
+    'Chú Hai Bút · chủ tiệm văn phòng phẩm Bút Mây // Hai Bút · owner of the Bút Mây stationery shop',
+    'đúng loại vở theo lớp, đủ từng dòng danh sách, đếm trước mặt khách và bán đúng giá bìa // the right notebook for the grade, every line of the list, counted in front of the customer, at the cover price',
+    'soạn danh sách lớp | bọc vở, dán nhãn | photo đề cương // class lists | covering and labelling | photocopying revision sheets',
+    'Tuần tựu trường, phụ huynh cầm danh sách xếp hàng, máy photo kẹt giấy đúng lúc cô Thu cần bốn mươi bộ đề và kho giấy bọc sắp hết. // Back-to-school week: parents queue with class lists, the photocopier jams just as Thu needs forty sets of exams, and the cover paper is running out.',
+    'Giao {a} soạn đồ theo danh sách và đưa đúng loại vở, {b} bọc vở, dán nhãn ghi tên đủ số quyển, {c} gỡ kẹt máy photo và in đủ số bộ đề. // Have {a} pick each class list with the right notebooks, {b} cover and label every notebook, and {c} clear the photocopier and print every set.',
+    'Một phụ huynh lớp Một đã mang về mười quyển vở kẻ ngang thay vì vở ô li. // A first-grade parent went home with ten lined notebooks instead of squared ones.',
+    'Gọi phụ huynh mang vở còn nguyên tới đổi, đổi đúng vở ô li, chỉ cách nhận biết và ghi lại vào sổ bán hàng. // Call the parent to bring the unused notebooks back, swap them for squared ones, show how to tell them apart, and note it in the sales book.',
+    'đã đưa đúng loại vở cho từng lớp, bọc dán đủ số quyển và photo đủ bộ // gave every grade the right notebooks, covered and labelled every one, and printed every set',
+    'sổ bán hàng ghi lớp của từng danh sách và số lượt photo // the sales book with each list\'s grade and the number of photocopy runs')
+
 _profile('drain', 'Hoàng Hải | Quốc Dũng | Thảo Chi',
     'Trưởng đội thoát nước // Drainage team supervisor',
     'nhận diện nguy cơ, xử lý đúng phạm vi và nghiệm thu dòng chảy // hazard recognition, work within scope, and verified drainage',

@@ -238,7 +238,7 @@ Steps, in order, on this build:
    prints the counts again: everything should be 0 (exit code 1 otherwise, with the rows that refused in `log`; run
    it again, a busy save just retries).
 4. Strip the new careers from the saves (an older build refuses a save with a career it does not know):
-   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet,jewelry,car_dealer --db --archive removed.jsonl`
+   `python scripts/strip_new_careers.py strip --careers reception,teller,restore,research,radio,moto,vet,kol,singer,actor,tuning,jewelry,car_dealer,canteen,stationery --db --archive removed.jsonl`
    (counts), then the same with `--write` (that list is the script's default). Keep `removed.jsonl`: `restore` puts it
    back after rolling forward.
 5. Deploy 2.4.68.

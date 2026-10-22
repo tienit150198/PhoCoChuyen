@@ -1,0 +1,6 @@
+/* 🍱 Căn tin trường: a warm school-canteen orange, cream speech bubbles and lunch trays. */
+.career-job.canteen{--sk-accent:#e07a2e;--sk-accent-2:#3f8f7a;--ck-accent:#b85a17;--ck-soft:#fff1e2;--ck-ink:#3a2a21}
+.canteen .ck-tray{background:#fffaf4}
+.canteen .ck-shelf[data-shelf="trua"] .ck-tile:not(.on){background:#fffaf4}
+html[data-theme="dem"] .career-job.canteen{--sk-accent:#f3a066;--ck-accent:#f3a066;--ck-soft:#3a2a1f;--ck-ink:var(--ink,#f3ede5)}
+html[data-theme="dem"] .canteen .ck-tray,html[data-theme="dem"] .canteen .ck-shelf[data-shelf="trua"] .ck-tile:not(.on){background:var(--surface,#201e28)}

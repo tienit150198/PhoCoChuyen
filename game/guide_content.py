@@ -92,7 +92,7 @@ ORDER = ('milk_tea',
  'lifeguard',
  'police',
  'zpop',
- 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor', 'tuning', 'jewelry', 'car_dealer')
+ 'laundry', 'art_studio', 'post_office', 'lawyer', 'customs', 'hotel', 'banquet', 'reception', 'teller', 'restore', 'research', 'radio', 'moto', 'vet', 'kol', 'singer', 'actor', 'tuning', 'jewelry', 'car_dealer', 'canteen', 'stationery')
 # Careers still being built: their entry may be a stub until someone writes it.
 PENDING = ()
 SECTIONS = ('jobs', 'steps', 'stars', 'mistakes', 'prep', 'surprises')
@@ -7166,6 +7166,33 @@ CAREERS.update({
                   dict(bad='Thu xe đục số khung, lùi đồng hồ km, ghi hóa đơn thấp.', result='Có thể bị phạt và bị khách chê ở những ngày sau.')],
         prep=['Mở từ chương 2. Showroom có sẵn ba xe máy; hết thì nhập ở Kho. Ô tô mini mở ở cấp 2, SUV cấp 3, mui trần cấp 4.'],
         surprises=['Showroom hay có chuyện: mưa ngập bãi xe, khách lái thử xin chạy về nhà, chìa khóa cắm quên, người lạ nhờ lùi km… chọn cách xử lý cho khéo.'], buttons=[]),
+    'canteen': dict(emoji='🍱', name='Căn tin trường', place='Căn tin trường Tiểu học Phố Mây',
+        intro='Bạn đứng quầy căn tin trường tiểu học cùng cô Sáu Mận: sáng bán đồ ăn sáng trước giờ vào lớp, giờ ra chơi bán nước, đồ ăn vặt, trưa chia cơm phần cho các lớp bán trú.',
+        jobs=[dict(emoji='🍙', name='Bán đồ ăn sáng', how='Xôi, bánh mì, mì ly chay, cơm nắm, sữa, nước. Chạm từng món trên quầy vào khay rồi bấm Giao, kịp trước khi trống vào lớp.'),
+              dict(emoji='🔔', name='Giờ ra chơi', how='Nước, snack, trái cây cho cả nhóm bạn. Ra chơi chỉ hai mươi phút: trống đánh là học trò phải về lớp.'),
+              dict(emoji='🍱', name='Cơm phần trưa', how='Cô chủ nhiệm đặt cơm cho các bạn ở lại: mỗi phần có cơm, món mặn (hoặc đậu hũ chay), rau, canh. Bấm 🧪 Lưu mẫu trước khi phát phần đầu tiên.'),
+              dict(emoji='🥛', name='Dị ứng, ngày chay, tiền tiêu vặt', how='Bé dị ứng sữa, đậu phộng, ngày ăn chay thì chọn món không có thứ đó. Bé chỉ có ít tiền thì cộng giá cho vừa.'),
+              dict(emoji='📦', name='Nhập hàng', how='Hết món thì nhập ở Kho: chợ sáng cho đồ nấu, trái cây; đại lý cho sữa, nước, bánh kẹo.')],
+        steps=['Hỏi bạn nhỏ muốn mua gì.', 'Chạm từng món trên quầy cho đủ số lượng, coi dị ứng và số tiền bé có.',
+               'Bấm Giao. Sai thì bé nói ngay, sửa khay rồi giao lại.', 'Trưa: lưu mẫu rồi mới chia cơm.'],
+        stars=['Khay đúng ngay lần đầu, kịp giờ: đánh giá cao.', 'Mỗi lần sửa khay bớt chất lượng; đưa nhầm món bé dị ứng bị chê nặng.'],
+        mistakes=[dict(bad='Đưa sữa cho bé dị ứng sữa, xôi gà cho bạn ăn chay, chia cơm khi chưa lưu mẫu.', result='Phải sửa khay; đánh giá về an toàn thực phẩm giảm mạnh.'),
+                  dict(bad='Chậm quá, trống đánh mà bé chưa mua được.', result='Bé phải về lớp, không có tiền, đánh giá thấp.')],
+        prep=['Mở ngay từ đầu cho mọi người chơi. Quầy có sẵn hàng; hết thì nhập ở Kho. Giá theo bảng nhà trường duyệt, không đổi giá.'],
+        surprises=['Căn tin hay có chuyện: ly nước đổ trơn sàn, đoàn kiểm tra an toàn thực phẩm, bé quên tiền, phụ huynh lo con ăn nhiều đồ ngọt… chọn cách xử lý cho khéo.'], buttons=[]),
+    'stationery': dict(emoji='✏️', name='Văn phòng phẩm', place='Tiệm văn phòng phẩm Bút Mây',
+        intro='Bạn bán ở tiệm văn phòng phẩm đối diện cổng trường cùng chú Hai Bút: vở, bút, thước, cặp, bọc vở, dán nhãn, photo đề cương.',
+        jobs=[dict(emoji='📒', name='Bán lẻ cho học trò', how='Nghe khách cần gì, chạm từng món trên kệ vào giỏ rồi bấm Giao. Bé có ít tiền thì chọn món cho vừa.'),
+              dict(emoji='📋', name='Danh sách đồ dùng của lớp', how='Phụ huynh đọc danh sách cô giáo phát. Lớp 1 đến lớp 5 viết vở ô li, từ lớp 6 vở kẻ ngang: danh sách ghi “vở” thì đưa đúng loại.'),
+              dict(emoji='📔', name='Bọc vở, dán nhãn', how='Mỗi quyển một tờ giấy bọc, một cái nhãn ghi tên. Đếm đủ số quyển khách đưa.'),
+              dict(emoji='🖨️', name='Photo', how='Photo tính theo lượt 10 trang: số lượt = số bộ × số trang mỗi bộ ÷ 10. Mỗi lượt dùng một xấp giấy A4.'),
+              dict(emoji='📦', name='Nhập hàng', how='Hết vở, bút, giấy thì nhập ở Kho: nhà sách sỉ có hóa đơn, chợ sỉ giấy rẻ hơn mà hay thiếu.')],
+        steps=['Hỏi khách cần gì.', 'Chạm từng món, từng dịch vụ cho đủ số lượng.', 'Bấm Giao. Sai thì khách nói ngay, sửa giỏ rồi giao lại.'],
+        stars=['Giỏ đúng ngay lần đầu: đánh giá cao.', 'Mỗi lần sửa giỏ bớt chất lượng.'],
+        mistakes=[dict(bad='Đưa vở kẻ ngang cho học sinh lớp Một, thiếu lượt photo, quên dán nhãn.', result='Phải sửa giỏ; chất lượng giảm.'),
+                  dict(bad='Tổng giỏ lố tiền bé mang theo.', result='Bé không đủ tiền, phải bớt món.')],
+        prep=['Mở ngay từ đầu cho mọi người chơi. Kệ có sẵn hàng; hết thì nhập ở Kho. Giá in trên bao bì, không đổi giá.'],
+        surprises=['Tiệm hay có chuyện: máy photo kẹt giấy, khách nhờ photo nguyên cuốn sách, phụ huynh đổi vở mua nhầm, bé làm đổ mực… chọn cách xử lý cho khéo.'], buttons=[]),
 })
 
 

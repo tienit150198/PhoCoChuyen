@@ -79,6 +79,8 @@ export const CAREER_FACADES:Readonly<Record<string,CareerFacadeStyle>>={
   tuning:style('dyno','workshop','toolbox','#b8322a','#fde4df'),
   jewelry:style('ring','scallop','flowers','#b8860b','#f6e7b8'),
   car_dealer:style('car','banner','planter','#1f5f8b','#dcebf5'),
+  canteen:style('lunchbox','awning','stools','#e07a2e','#fff1e2'),
+  stationery:style('pencil','scallop','books','#2f6fb3','#e6f0fb'),
 };
 
 type ArtSource=(HTMLImageElement|HTMLCanvasElement);
@@ -358,6 +360,13 @@ function drawMotif(c:CanvasRenderingContext2D,s:CareerFacadeStyle){
       poly([[-19,-2],[-11,-16],[-1,-16],[-1,-2]],'#cfe3ef');poly([[4,-2],[4,-16],[13,-16],[22,-2]],'#cfe3ef');
       ellipse(-22,24,10,10,ink);ellipse(-22,24,4,4,cream);ellipse(24,24,10,10,ink);ellipse(24,24,4,4,cream);ellipse(37,8,3,3,'#f2cf74');
       round(-12,-38,24,10,3,cream);line([[0,-28],[0,-20]],ink,2);break;
+    case 'lunchbox':  // a school lunch tray (rice, greens, the main, an egg) with chopsticks across: the school canteen
+      round(-42,-10,84,46,8,body);round(-36,-4,40,34,5,cream);ellipse(-16,12,9,9,'#f4e3bc');ellipse(-16,12,4,4,'#e9b54a');
+      round(8,-4,28,15,4,'#9cae71');round(8,15,28,15,4,'#d9a35a');line([[-30,-40],[20,-16]],'#b99a70',4);line([[-22,-44],[28,-20]],'#b99a70',4);break;
+    case 'pencil':  // a yellow pencil over an open ruled notebook: the stationery shop
+      poly([[-42,10],[0,18],[0,40],[-42,32]],cream);poly([[0,18],[42,10],[42,32],[0,40]],s.light);line([[0,18],[0,40]],ink,2);
+      for(const y of [22,28])line([[-36,y-2],[-6,y+3]],'#9fb3c8',1.5);for(const y of [22,28])line([[6,y+3],[36,y-2]],'#9fb3c8',1.5);
+      poly([[-30,-6],[20,-40],[28,-30],[-22,4]],'#f2cf74');poly([[20,-40],[26,-44],[34,-34],[28,-30]],'#e58f8f');poly([[-30,-6],[-22,4],[-38,8]],'#e9c9a0');ellipse(-36,7,2.5,2.5,ink);break;
     case 'cloche':  // a banquet dome cover on its platter, a tall chef's hat beside it
       round(-44,26,88,10,4,s.main);c.beginPath();c.arc(0,24,34,Math.PI,Math.PI*2);finish(body);line([[-30,21],[30,21]],cream,3);
       ellipse(0,-12,6,5,ink);ellipse(-14,6,5,10,s.light);round(26,-30,18,22,4,cream);ellipse(35,-34,12,9,cream);line([[26,-10],[44,-10]],ink,2);break;

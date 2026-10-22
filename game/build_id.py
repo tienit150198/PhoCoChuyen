@@ -61,6 +61,8 @@ _SPECIALISM_DATA_FILES = (
     'career_specialisms_tuning.json',
     'career_specialisms_jewelry.json',
     'career_specialisms_car_dealer.json',
+    'career_specialisms_canteen.json',
+    'career_specialisms_stationery.json',
 )
 
 # `from . import a, b as c`, `from .x import y`, `from ..x import y`, `from game.x import y`,

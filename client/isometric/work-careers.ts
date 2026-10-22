@@ -72,6 +72,8 @@ const IDENTITIES:Record<string,CareerRoomIdentity>={
   tuning:identity('Nghe mục tiêu · lên bảng độ trong ngân sách · chạy dyno, đo ồn rồi mới giao','Băng thử dyno','Tủ đồ độ & cầu nâng','Quầy nhận xe & thẻ thông số'),
   jewelry:identity('Đếm két, kiểm cân, treo bảng giá · cân trước mặt khách','Quầy cân vàng','Tủ kính nữ trang & két','Bảng giá vàng hôm nay'),
   car_dealer:identity('Đối số khung, kiểm xe mới · nghe nhu cầu rồi mới tư vấn','Bàn tư vấn','Xe trưng bày & phụ kiện','Bảng giá lăn bánh'),
+  canteen:identity('Kịp trống, đúng món · hỏi dị ứng, lưu mẫu','Quầy căn tin','Kệ đồ ăn & tủ nước','Bảng giá nhà trường'),
+  stationery:identity('Đọc danh sách lớp · đúng loại vở, đếm trước mặt khách','Quầy tính tiền','Kệ vở & bút','Máy photo & bàn bọc vở'),
   banquet:identity('Sát khuẩn đầu ca · nấu, bày tiệc và tắt điện cuối ca','Bếp tiệc','Sơ chế & bếp nóng','Sảnh tiệc & quầy ra món'),
   reception:identity('Đón khách · giao chìa và ghi sổ giao ca','Quầy lễ tân','Sảnh chờ & hành lý','Bảng móc chìa & sổ phòng'),
   teller:identity('Đếm hai lần · đối chiếu người nhận · bàn giao quỹ','Quầy giao dịch','Két tiền & máy đếm','Quầy số 3 & ghế chờ'),
@@ -191,6 +193,20 @@ export function applyCareerPlan(layout:WorkLayout,career:string):void{
     s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,106,cream);
     f('display',r(2.85,.55,5,1.6),40,0xd84a3a);f('sofa',r(5.35,.7,6.55,1.45),42,mint);f('planter',r(6.05,3.4,6.5,4.1),70,0x9fb98f);
     z(r(2.6,.3,6.7,1.9),'tile',0xdfe6ec);z(r(2.8,3,6.6,4.5),'carpet',0xbfd0de);
+  }else if(career==='canteen'){
+    // Căn tin trường: the serving counter in front, food shelves on the left wall, the drinks fridge, the steamer and the long lunch bench behind.
+    clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,114,0xf3c99a);
+    s('workbench','counter',r(3.05,3.25,5.75,4.2),4.4,4.8,60,0xe07a2e);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,104,cream);
+    f('coldcabinet',r(2.85,.55,3.75,1.5),112,0x9fd1e0);f('stove',r(4.1,.6,5.1,1.45),62,0xc9b8a0);f('bench',r(5.4,.7,6.55,1.4),44,0xf0b46a);f('crate',r(6,3.4,6.5,4.1),46,0xd9c8a5);
+    z(r(2.6,.3,6.7,1.85),'tile',0xf2dcc4);z(r(2.85,2.95,6.75,4.5),'checker',0xf7ecdc);
+  }else if(career==='stationery'){
+    // Tiệm Bút Mây: the till counter in front, notebook shelves on the left wall, the photocopier, the covering table and the pen rack behind.
+    clear(false,'plank');s('shelf','bookcase',r(.55,1.85,1.45,3.95),1.95,2.9,120,0x8fb0d6);
+    s('workbench','counter',r(3.15,3.3,5.65,4.2),4.4,4.8,58,0x2f6fb3);
+    s('evidence','board',r(6.9,.6,8.2,1.3),7.55,1.95,110,cream);
+    f('console',r(2.85,.6,3.9,1.5),84,0x6f7680);f('desk',r(4.3,.65,5.45,1.45),50,0xe6d2a8);f('rack',r(5.8,.6,6.5,1.5),106,0xc96f4a);f('crate',r(5.95,3.45,6.5,4.1),40,0xc7a576);
+    z(r(2.6,.3,6.7,1.85),'plank',0xe3d6bd);z(r(2.85,2.95,6.7,4.5),'carpet',0xcfdcec);
   }else if(career==='banquet'){
     // The hot line against the back wall, the colour-board prep table in front, the pass to the hall and a set banquet table.
     clear(false,'tile');s('shelf','shelf',r(.55,1.9,1.45,3.9),1.95,2.9,116,cream);

@@ -687,7 +687,9 @@
     "actor",
     "tuning",
     "jewelry",
-    "car_dealer"
+    "car_dealer",
+    "canteen",
+    "stationery"
   ],
   "lots": [
     {
@@ -1948,6 +1950,42 @@
         "y0": -6.0,
         "x1": 58.2,
         "y1": -1.8
+      }
+    },
+    {
+      "career": "canteen",
+      "district": "homes-apartment",
+      "at": {
+        "x": 3.3,
+        "y": -1.8
+      },
+      "door": {
+        "x": 3.7,
+        "y": 0.15
+      },
+      "footprint": {
+        "x0": 1.5,
+        "y0": -5.0,
+        "x1": 5.7,
+        "y1": -0.8
+      }
+    },
+    {
+      "career": "stationery",
+      "district": "homes-townhouse",
+      "at": {
+        "x": -25.7,
+        "y": 44.2
+      },
+      "door": {
+        "x": -25.3,
+        "y": 46.15
+      },
+      "footprint": {
+        "x0": -27.5,
+        "y0": 41.0,
+        "x1": -23.3,
+        "y1": 45.2
       }
     }
   ],

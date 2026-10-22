@@ -1,0 +1,244 @@
+{
+  "canteen": [
+    {
+      "tier": 1,
+      "title": "Lập bảng giá căn tin theo bảng nhà trường",
+      "output_unit": "bảng giá căn tin",
+      "inputs": [
+        {
+          "name": "Bảng giá in giả lập",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chép đúng giá từng món theo bảng nhà trường đã duyệt.",
+        "Ghi đơn vị từng món: hộp, ổ, ly, chai, gói.",
+        "Dán bảng ngang tầm mắt học trò và cho hiệu trưởng ký."
+      ],
+      "check": {
+        "prompt": "Bảng giá nào được dán?",
+        "good": "Đúng giá nhà trường duyệt, đủ đơn vị và có chữ ký hiệu trưởng.",
+        "bad": "Tăng một xu mỗi món giờ ra chơi cho kịp hàng.",
+        "why": "Học trò trả bằng tiền tiêu vặt, giá phải rõ và cố định."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn danh sách dị ứng của từng lớp",
+      "output_unit": "danh sách dị ứng",
+      "inputs": [
+        {
+          "name": "Sổ dị ứng giả lập",
+          "unit": "cuốn",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Xin danh sách học trò dị ứng từ cô chủ nhiệm từng lớp.",
+        "Ghi rõ tên, lớp và món không được ăn: sữa, đậu phộng, trứng, cá.",
+        "Dán bản sao cạnh quầy và bàn chia cơm."
+      ],
+      "check": {
+        "prompt": "Danh sách nào dùng được?",
+        "good": "Có tên, lớp, món cấm của từng bé và dán ở cả quầy lẫn bàn chia cơm.",
+        "bad": "Nhớ trong đầu là đủ, khỏi ghi.",
+        "why": "Một lần đưa nhầm có thể phải đưa bé đi cấp cứu."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Sắp quầy ăn sáng trước giờ vào lớp",
+      "output_unit": "sơ đồ quầy sáng",
+      "inputs": [
+        {
+          "name": "Bộ khay trưng bày giả lập",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 8000
+        }
+      ],
+      "procedure": [
+        "Bày món hay bán gần tay người đứng quầy.",
+        "Để nước, sữa ở tủ mát ngay bên phải quầy.",
+        "Chừa lối xếp hàng một chiều cho học trò."
+      ],
+      "check": {
+        "prompt": "Sơ đồ nào giúp bán kịp trống?",
+        "good": "Món hay bán gần tay, tủ nước sát quầy, lối xếp hàng một chiều.",
+        "bad": "Bày theo màu cho đẹp, nước để trong kho.",
+        "why": "Mỗi bước thừa là một bé trễ giờ vào lớp."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Soạn quy trình chia cơm phần bán trú",
+      "output_unit": "quy trình chia cơm",
+      "inputs": [
+        {
+          "name": "Bộ khay cơm mẫu giả lập",
+          "unit": "bộ",
+          "quantity": 2,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Đếm số suất theo phiếu đặt của từng lớp.",
+        "Mỗi khay đủ cơm, một món mặn hoặc phần chay, rau, canh.",
+        "Ghi tên lớp lên xe đẩy, giao tận tay cô chủ nhiệm."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Đếm theo phiếu đặt, khay đủ bốn thứ, giao đúng lớp có tên.",
+        "bad": "Múc đại mỗi khay một ít, thiếu thì lớp tự chia.",
+        "why": "Bé nào cũng phải có phần cơm đủ chất như bạn."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập sổ lưu mẫu thức ăn",
+      "output_unit": "sổ lưu mẫu",
+      "inputs": [
+        {
+          "name": "Hộp lưu mẫu có nhãn giả lập",
+          "unit": "hộp",
+          "quantity": 6,
+          "unit_cost": 1500
+        }
+      ],
+      "procedure": [
+        "Lấy mỗi món một hộp mẫu trước khi chia phần đầu tiên.",
+        "Dán nhãn tên món, ngày, giờ lấy mẫu và người lấy.",
+        "Cất tủ mát đủ hai mươi bốn giờ rồi mới bỏ."
+      ],
+      "check": {
+        "prompt": "Sổ nào được đoàn kiểm tra chấp nhận?",
+        "good": "Mỗi món một hộp có nhãn đủ giờ, người lấy, cất đủ 24 giờ.",
+        "bad": "Lấy mẫu sau khi chia xong cho đỡ tốn.",
+        "why": "Có mẫu mới truy được nguyên nhân khi có bé đau bụng."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soạn thực đơn tuần có phần chay",
+      "output_unit": "thực đơn tuần",
+      "inputs": [
+        {
+          "name": "Bảng thực đơn giả lập",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Lên năm ngày, mỗi ngày một món mặn và một phần chay.",
+        "Đổi món cá, món gà xen kẽ để học trò không ngán.",
+        "Gửi phụ huynh xem trước vào sáng thứ Hai."
+      ],
+      "check": {
+        "prompt": "Thực đơn nào được duyệt?",
+        "good": "Đủ năm ngày, ngày nào cũng có phần chay, món mặn xen kẽ, gửi phụ huynh trước.",
+        "bad": "Cả tuần một món cho dễ nấu, ai ăn chay thì ăn cơm trắng.",
+        "why": "Bạn ăn chay cũng cần một phần cơm đủ chất."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập sổ nhập hàng có hạn dùng",
+      "output_unit": "sổ nhập hàng",
+      "inputs": [
+        {
+          "name": "Sổ nhập hàng giả lập",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Ghi ngày nhập, nhà cung cấp, số lượng và hạn dùng từng lô.",
+        "Xếp lô hạn gần ra trước, lô mới vào trong.",
+        "Mỗi sáng gạch lô hết hạn, bỏ riêng, không bán."
+      ],
+      "check": {
+        "prompt": "Sổ nào giữ được an toàn thực phẩm?",
+        "good": "Có hạn dùng từng lô, xếp hạn gần ra trước, lô hết hạn bỏ riêng.",
+        "bad": "Bán giảm giá đồ sắp hết hạn cho nhanh hết.",
+        "why": "Đồ hết hạn bán cho trẻ con là chuyện không được phép."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Soạn quy định vệ sinh người chia cơm",
+      "output_unit": "bảng quy định vệ sinh",
+      "inputs": [
+        {
+          "name": "Bộ găng, mũ, khẩu trang giả lập",
+          "unit": "bộ",
+          "quantity": 3,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Rửa tay xà phòng trước khi vào bàn chia cơm.",
+        "Đeo găng, mũ, khẩu trang; găng rách thì thay ngay.",
+        "Lau bàn, khay bằng nước sạch sau mỗi lớp."
+      ],
+      "check": {
+        "prompt": "Quy định nào được dán ở bếp?",
+        "good": "Có rửa tay, đủ găng mũ khẩu trang, thay găng rách và lau khay sau mỗi lớp.",
+        "bad": "Găng rách chút xíu thì chia nốt rồi thay.",
+        "why": "Tay người chia cơm chạm vào bữa ăn của cả trường."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Lập kế hoạch giờ ra chơi đông khách",
+      "output_unit": "kế hoạch giờ ra chơi",
+      "inputs": [
+        {
+          "name": "Bảng phân công giả lập",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Chia một người bán nước, một người bán ăn vặt.",
+        "Gói sẵn combo nước và bánh theo giá tròn.",
+        "Còn năm phút thì mời các bạn chưa mua về lớp, hẹn giờ trưa."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào giữ được giờ học?",
+        "good": "Hai quầy riêng, combo giá tròn sẵn, nhắc học trò về lớp đúng giờ.",
+        "bad": "Giữ học trò lại mua cho xong rồi mới về lớp.",
+        "why": "Căn tin phục vụ giờ học, không được làm học trò trễ lớp."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Biên soạn sổ tay căn tin cho người mới",
+      "output_unit": "sổ tay căn tin",
+      "inputs": [
+        {
+          "name": "Bộ sổ tay in giả lập",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Gom bảng giá, danh sách dị ứng, thực đơn và quy định vệ sinh.",
+        "Thêm các tình huống thường gặp: bé quên tiền, nước đổ, đoàn kiểm tra.",
+        "Cho cô bếp chính đọc duyệt rồi in phát."
+      ],
+      "check": {
+        "prompt": "Sổ tay nào được phát?",
+        "good": "Đủ giá, dị ứng, thực đơn, vệ sinh, có tình huống thường gặp và chữ ký bếp chính.",
+        "bad": "Chỉ ghi giá món, còn lại người mới tự hỏi.",
+        "why": "Người mới đứng quầy sáng phải biết đủ trước khi trống đánh."
+      }
+    }
+  ]
+}

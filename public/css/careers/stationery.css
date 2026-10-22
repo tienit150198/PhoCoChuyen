@@ -1,0 +1,6 @@
+/* ✏️ Tiệm văn phòng phẩm: notebook blue, paper-blue speech bubbles; the basket is a ruled sheet. */
+.career-job.stationery{--sk-accent:#2f6fb3;--sk-accent-2:#c9793a;--ck-accent:#2f6fb3;--ck-soft:#e6f0fb;--ck-ink:#132d46}
+.stationery .ck-tray{background:repeating-linear-gradient(#fbfdff 0 23px,#e6f0fb 23px 24px)}
+.stationery .ck-shelf[data-shelf="dich_vu"] .ck-tile.svc:not(.on){background:#f4f8fd}
+html[data-theme="dem"] .career-job.stationery{--sk-accent:#8cbcff;--ck-accent:#8cbcff;--ck-soft:#1f2c44;--ck-ink:var(--ink,#f3ede5)}
+html[data-theme="dem"] .stationery .ck-tray,html[data-theme="dem"] .stationery .ck-shelf[data-shelf="dich_vu"] .ck-tile.svc:not(.on){background:var(--surface,#201e28)}

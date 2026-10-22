@@ -47,6 +47,8 @@ NAMES = {
  'tuning':'Máy đọc ECU, đồng hồ đo ồn và băng thử dyno',
  'jewelry':'Cân tiểu ly, máy quét tuổi vàng và kính lúp 10x',
  'car_dealer':'Máy đọc lỗi, đồng hồ áp suất lốp và cờ lê lực',
+ 'canteen':'Tủ mát lưu mẫu, khay inox và bộ găng tay chia cơm',
+ 'stationery':'Máy photo, bàn bọc vở và máy in nhãn',
  'radio':'Micro thu âm và bàn trộn âm dự phòng',
 }
 RATES=(100,115,135,160)

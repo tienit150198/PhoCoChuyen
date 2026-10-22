@@ -1051,3 +1051,33 @@ Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương
 8. Soạn quy trình kiểm giấy xe cũ
 9. Lập lịch bảo dưỡng và bảo hành
 10. Lập sổ tay showroom cho người mới
+
+## 67. Căn tin trường (`canteen`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng giá căn tin theo bảng nhà trường
+2. Soạn danh sách dị ứng của từng lớp
+3. Sắp quầy ăn sáng trước giờ vào lớp
+4. Soạn quy trình chia cơm phần bán trú
+5. Lập sổ lưu mẫu thức ăn
+6. Soạn thực đơn tuần có phần chay
+7. Lập sổ nhập hàng có hạn dùng
+8. Soạn quy định vệ sinh người chia cơm
+9. Lập kế hoạch giờ ra chơi đông khách
+10. Biên soạn sổ tay căn tin cho người mới
+
+## 68. Tiệm văn phòng phẩm (`stationery`)
+
+Nhóm dự toán: Bán lẻ. Giá mở/điều kiện xem bảng chung; phương thức trả tiền phải theo nghề hiện tại.
+
+1. Lập bảng giá bìa và bảng giá dịch vụ
+2. Soạn bảng vở theo từng lớp
+3. Gom danh sách đồ dùng các lớp đầu năm
+4. Soạn quy trình bọc vở, dán nhãn
+5. Lập bảng tính lượt photo
+6. Soạn quy định không photo lậu sách
+7. Lập sổ đổi trả hàng còn nguyên
+8. Soạn quy trình nhập hàng có hóa đơn
+9. Lập kế hoạch mùa tựu trường
+10. Biên soạn sổ tay tiệm cho người mới

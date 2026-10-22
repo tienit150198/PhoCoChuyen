@@ -373,6 +373,24 @@ SUPPLIERS = {
            note='Bãi xe của hãng ngay đầu phố: tài xế chạy xe sang trong 15–30 phút, tính thêm phí gấp. '
                 'Dùng khi khách đang chờ mẫu đã hết.'),
     ],
+    # 🍱 Căn tin trường: the morning market for the cooked food and fruit, the dairy and drinks distributor, the rush run.
+    'canteen': [
+        _s(MARKET, name='Chợ sáng Mây', emoji='🧺',
+           items=['ct_xoi', 'ct_banh_mi', 'ct_com_nam', 'ct_trai_cay', 'ct_com', 'ct_ga_kho', 'ct_ca_chien', 'ct_dau_hu', 'ct_rau', 'ct_canh'],
+           note='Gạo, thịt gà, cá, đậu hũ, rau, trái cây giá chợ cho bếp căn tin. Đặt trước 13:00, chiều nay có; đặt sau, '
+                'sáng mai có trước giờ học sinh tới. Thỉnh thoảng thiếu, đếm kỹ.'),
+        _s(PARTNER, name='Đại lý sữa và nước Hạt Nắng', note='Sữa, nước, bánh kẹo có hóa đơn, hạn dùng rõ ràng. Xe chạy bốn chuyến: '
+                                                         'đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.'),
+        EXPRESS,
+    ],
+    # ✏️ Tiệm văn phòng phẩm: the publisher's wholesale counter, the paper market, the rush run.
+    'stationery': [
+        _s(PARTNER, name='Nhà sách sỉ Phố Mây', emoji='📚', note='Vở, bút, dụng cụ học tập, cặp chính hãng, có hóa đơn. Xe chạy bốn chuyến: '
+                                                               'đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.'),
+        _s(MARKET, name='Chợ sỉ giấy Mây', emoji='📄', items=['vp_a4', 'vp_giay_boc', 'vp_nhan', 'vp_vo_oli', 'vp_vo_ke', 'vp_but_bi', 'vp_but_chi'],
+           note='Giấy A4, giấy bọc, nhãn vở, vở, bút giá sỉ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Hay thiếu vài món.'),
+        EXPRESS,
+    ],
     # 💿 Tiệm album Mây Pop: albums and lightsticks only through the distributor (stamped, official); the wholesale
     # market has the small things (batteries, toploaders, binders, poster tubes), never an album.
     'zpop': [

@@ -2468,6 +2468,85 @@ ARCS = {
                 ('me', 'Em sẽ giữ như anh dạy: nghe nhu cầu trước, nói thật thông số, giấy tờ đủ rồi mới giao xe.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 🍱 Căn tin trường Tiểu học Phố Mây (mở từ đầu)
+    'canteen': dict(
+        title='Cái trống trường', emoji='🥁',
+        keepsake=dict(emoji='🥁', name='Dùi trống của chú Tư Gác', desc='Chiếc dùi trống gỗ mòn tay, chú Tư đánh trống trường hơn hai mươi năm. Chú dặn: trống đúng giờ thì học trò đúng giờ, căn tin cũng phải đúng giờ.'),
+        cast={'sau': _p('Cô Sáu Mận', '👩‍🍳', 'Bếp chính căn tin', 'canteen_npc_01'),
+              'tu': _p('Chú Tư Gác', '🥁', 'Bảo vệ, người đánh trống', 'canteen_npc_02'),
+              'na': _p('Bé Na', '🎒', 'Học sinh lớp 2A', 'canteen_npc_03'),
+              'bong': _p('Bé Bông', '🍼', 'Học sinh lớp 1C', 'canteen_npc_06'),
+              'hanh': _p('Cô Hạnh', '👩‍🏫', 'Chủ nhiệm lớp 2A', 'canteen_npc_08')},
+        beats=[
+            _b('Bảy giờ kém năm', '⏰', 'Sáng đầu tiên, hàng học trò đã dài trước quầy.', [
+                ('sau', 'Bày sẵn xôi, bánh mì, nước lên quầy. Bé nào tới cũng hỏi bé muốn gì trước, đừng đoán.'),
+                ('me', 'Dạ, một ổ bánh mì với một hộp sữa… con tính tiền liền nè.'),
+                ('tu', 'Còn năm phút nữa là chú đánh trống đó nghe. Lẹ tay mà đừng lộn.')]),
+            _b('Hộp sữa của bé Bông', '🥛', 'Bé Bông với tay lấy hộp sữa trên quầy.', [
+                ('bong', 'Cô ơi con lấy hộp sữa này nha.'),
+                ('me', 'Khoan đã con. Mẹ con dặn con dị ứng sữa mà, đúng không?'),
+                ('sau', 'Hỏi lại là đúng. Một hộp sữa đưa nhầm là bé phải vô bệnh viện đó con.')],
+                _c('Bé Bông mếu vì bạn nào cũng uống sữa. Bạn làm gì?',
+                   _o('a', 'Đưa bé bịch sữa đậu nành, dặn đây là sữa riêng của Bông', [('bong', 'Sữa riêng của con hả cô? Thích quá!')], rel='bong'),
+                   _o('b', 'Cho bé uống thử một ngụm sữa thôi', [('sau', 'Không có ngụm nào là “thử” với bé dị ứng đâu con.')], rel='sau'))),
+            _b('Hộp mẫu thức ăn', '🧪', 'Trưa đầu tiên chia cơm phần, cô Sáu đưa xấp hộp nhỏ có nhãn.', [
+                ('sau', 'Món nào cũng giữ một hộp, ghi ngày giờ, cất tủ mát đủ hai mươi bốn tiếng.'),
+                ('me', 'Lỡ có bé nào đau bụng thì còn mẫu để kiểm tra, phải không cô?'),
+                ('hanh', 'Đúng rồi em. Có sổ lưu mẫu, phụ huynh mới yên tâm cho con ăn bán trú.')],
+                days=3, served=10, gap=1),
+            _b('Tiền ăn sáng của bé Na', '🪙', 'Bé Na làm rơi tiền, đứng khóc trước quầy.', [
+                ('na', 'Con làm mất tiền rồi… mà con đói bụng quá.'),
+                ('me', 'Con lấy hộp xôi này ăn đi. Cô ghi sổ, nhờ cô Hạnh nhắn mẹ con.'),
+                ('hanh', 'Cảm ơn em. Ở trường mình, không bé nào phải ôm bụng đói vào lớp.')],
+                _c('Mẹ bé Na ghé gửi tiền, còn muốn gửi thêm cho cả tuần. Bạn nói sao?',
+                   _o('a', 'Nhận, ghi sổ rõ ràng từng ngày bé ăn gì', [('na', 'Mẹ con nói căn tin ghi sổ kỹ như ngân hàng!')], rel='na'),
+                   _o('b', 'Nhận luôn, khỏi ghi cho nhanh', [('sau', 'Tiền của phụ huynh thì phải có sổ, con à.')], rel='sau')),
+                days=5, served=14, gap=1),
+            _b('Cái trống trường', '🥁', 'Chú Tư Gác sắp nghỉ hưu, gọi bạn ra cạnh cái trống.', [
+                ('tu', 'Hai mươi mấy năm chú đánh trống, chưa trễ một phút. Chú giao dùi trống này cho con giữ làm kỷ niệm.'),
+                ('sau', 'Từ mai cô giao quầy sáng cho con. Cô yên tâm rồi.'),
+                ('me', 'Con sẽ giữ như cô chú dạy: kịp giờ, hỏi dị ứng, bán đúng giá, lưu mẫu đủ ngày.')],
+                days=8, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ ✏️ Tiệm văn phòng phẩm Bút Mây (mở từ đầu)
+    'stationery': dict(
+        title='Tờ danh sách đầu năm', emoji='📋',
+        keepsake=dict(emoji='📋', name='Xấp danh sách đồ dùng của chú Hai', desc='Xấp danh sách đồ dùng các lớp chú Hai giữ mấy chục năm, kẹp trong bìa cứng. Bìa ghi: đúng loại vở, đủ từng món, đếm trước mặt khách.'),
+        cast={'hai': _p('Chú Hai Bút', '🧔', 'Chủ tiệm', 'stationery_npc_01'),
+              'mai': _p('Chị Mai', '👩', 'Phụ huynh lớp Một', 'stationery_npc_02'),
+              'thu': _p('Cô Thu', '👩‍🏫', 'Giáo viên Toán', 'stationery_npc_04'),
+              'bay': _p('Bà Bảy', '👵', 'Bà ngoại đi mua đồ cho cháu', 'stationery_npc_07')},
+        beats=[
+            _b('Vở ô li hay vở kẻ ngang', '📒', 'Ngày đầu đứng quầy, chú Hai đặt hai quyển vở cạnh nhau.', [
+                ('hai', 'Lớp Một tới lớp Năm viết vở ô li, lên lớp Sáu mới vở kẻ ngang. Danh sách ghi “vở” thì mình phải biết.'),
+                ('me', 'Dạ, ô li là có ô vuông nhỏ để tập viết chữ cho đều, phải không chú?'),
+                ('hai', 'Đúng rồi. Đưa đúng vở một lần, phụ huynh nhớ mình cả năm.')]),
+            _b('Danh sách của chị Mai', '📋', 'Chị Mai cầm tờ danh sách lớp Một, tay run run.', [
+                ('mai', 'Lần đầu chị sắm đồ cho con đi học, chị sợ thiếu quá em ơi.'),
+                ('me', 'Chị đọc từng dòng, em gom từng món ra đây, đếm lại trước mặt chị.'),
+                ('hai', 'Thiếu món nào thì ghi giấy cho chị, đừng bán thêm món không có trong danh sách.')],
+                _c('Chị Mai hỏi có nên mua thêm cặp xịn cho con không. Bạn nói sao?',
+                   _o('a', 'Nói thật: danh sách không có, cặp cũ còn tốt thì dùng tiếp', [('mai', 'Em nói thật vậy chị càng tin tiệm.')], rel='mai'),
+                   _o('b', 'Khuyên mua luôn cái đắt nhất cho con đẹp', [('hai', 'Bán được cái cặp, mất một người khách đó con.')], rel='hai'))),
+            _b('Bốn mươi bộ đề', '🖨️', 'Cô Thu chạy vào lúc chiều, ôm xấp đề cương.', [
+                ('thu', 'Mai lớp cô kiểm tra rồi, photo giùm cô mỗi bạn một bộ nha em.'),
+                ('me', 'Dạ, mỗi bộ hai mươi trang, bốn mươi bộ là tám mươi lượt. Em coi giấy trong kho đủ không đã.'),
+                ('hai', 'Hứa giờ nào thì giao giờ đó. Thiếu giấy thì gọi nhập liền, đừng hứa đại.')],
+                days=3, served=10, gap=1),
+            _b('Bà Bảy quên kính', '👓', 'Bà Bảy đưa tờ danh sách nhòe chữ, nhờ bạn đọc giùm.', [
+                ('bay', 'Cháu bà lên lớp Ba, con coi giùm bà cô giáo dặn mua gì.'),
+                ('me', 'Dạ, tám quyển vở ô li, một cây bút máy, một cây thước, một hộp màu. Con bọc vở, dán nhãn tên cháu luôn cho bà.'),
+                ('hai', 'Ghi giá từng món ra giấy cho bà cầm về, để con bà khỏi lo.')],
+                _c('Bà Bảy dúi thêm tiền “cho con uống nước”. Bạn làm gì?',
+                   _o('a', 'Cảm ơn bà, không nhận; mời bà ghé tiệm lần sau', [('bay', 'Con ngoan quá, bà sẽ dặn cả xóm ghé tiệm.')], rel='bay'),
+                   _o('b', 'Nhận cho bà vui', [('hai', 'Tiệm mình bán đúng giá, không lấy thêm của ai con à.')], rel='hai')),
+                days=5, served=14, gap=1),
+            _b('Tờ danh sách đầu năm', '📋', 'Chú Hai về quê phụ con trai, trao lại tiệm và xấp danh sách cũ.', [
+                ('hai', 'Năm nào cô giáo cũng dặn gần giống nhau, mà năm nào cũng có phụ huynh lần đầu. Con giữ xấp này nghe.'),
+                ('thu', 'Từ nay đề cương lớp cô vẫn gửi tiệm mình nha em.'),
+                ('me', 'Con sẽ giữ như chú dạy: đúng loại vở, đủ từng món, đếm trước mặt khách, bán đúng giá.')],
+                days=8, served=22, gap=2, level=4),
+        ]),
     # ------------------------------------------------------------ Công an phường Mây (chương 4)
     'police': dict(
         title='Cuốn sổ hẻm của anh Định', emoji='📓',

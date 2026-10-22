@@ -60,7 +60,7 @@ def work(j, tid=None, wrong_at=None):
 @unittest.skipIf(M is None, 'jewelry filtered out by MNL_CAREERS')
 class Registration(unittest.TestCase):
     def test_registered_after_the_vet_dormant_late_unlock_owner_shop(self):
-        self.assertEqual(tuple(ORDER[ORDER.index('vet'):ORDER.index('vet') + 3]), ('vet', 'jewelry', 'car_dealer'))
+        self.assertEqual(tuple(ORDER[ORDER.index('tuning'):ORDER.index('tuning') + 3]), ('tuning', 'jewelry', 'car_dealer'))
         self.assertIn('jewelry', DORMANT)
         self.assertEqual(jr.LATE_UNLOCKS['jewelry'], 2)
         self.assertEqual((M.SPEC['category'], M.SPEC['prefix']), ('shop', 'vg_'))

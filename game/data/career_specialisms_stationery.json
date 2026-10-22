@@ -1,0 +1,244 @@
+{
+  "stationery": [
+    {
+      "tier": 1,
+      "title": "Lập bảng giá bìa và bảng giá dịch vụ",
+      "output_unit": "bảng giá tiệm",
+      "inputs": [
+        {
+          "name": "Bảng giá in giả lập",
+          "unit": "tấm",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Chép giá in trên bao bì từng loại vở, bút, dụng cụ.",
+        "Ghi giá bọc vở, dán nhãn, photo theo lượt 10 trang.",
+        "Dán bảng cạnh quầy, chủ tiệm ký ngày cập nhật."
+      ],
+      "check": {
+        "prompt": "Bảng giá nào được dán?",
+        "good": "Đúng giá bìa, có giá từng dịch vụ và ngày cập nhật có chữ ký.",
+        "bad": "Mùa tựu trường cộng thêm vài xu mỗi món.",
+        "why": "Phụ huynh so giá, giá rõ thì tin tiệm."
+      }
+    },
+    {
+      "tier": 2,
+      "title": "Soạn bảng vở theo từng lớp",
+      "output_unit": "bảng vở theo lớp",
+      "inputs": [
+        {
+          "name": "Bộ vở mẫu giả lập",
+          "unit": "bộ",
+          "quantity": 1,
+          "unit_cost": 7000
+        }
+      ],
+      "procedure": [
+        "Ghi lớp 1 đến lớp 5 dùng vở ô li, từ lớp 6 dùng vở kẻ ngang.",
+        "Kẹp mẫu từng loại vở cạnh bảng.",
+        "Đặt bảng ngay chỗ phụ huynh đứng đọc danh sách."
+      ],
+      "check": {
+        "prompt": "Bảng nào giúp khỏi đưa nhầm vở?",
+        "good": "Ghi rõ loại vở từng khối, có vở mẫu kẹp kèm, đặt chỗ phụ huynh nhìn thấy.",
+        "bad": "Đưa vở nào cũng được, cô giáo không để ý.",
+        "why": "Bé lớp Một tập viết cần ô li để chữ đều."
+      }
+    },
+    {
+      "tier": 3,
+      "title": "Gom danh sách đồ dùng các lớp đầu năm",
+      "output_unit": "xấp danh sách lớp",
+      "inputs": [
+        {
+          "name": "Bìa kẹp danh sách giả lập",
+          "unit": "cái",
+          "quantity": 2,
+          "unit_cost": 2500
+        }
+      ],
+      "procedure": [
+        "Xin danh sách đồ dùng của từng lớp ở trường.",
+        "Xếp theo khối, đánh dấu món riêng của từng lớp.",
+        "Soạn sẵn túi đồ cho các lớp đông phụ huynh."
+      ],
+      "check": {
+        "prompt": "Xấp nào dùng được mùa tựu trường?",
+        "good": "Đủ danh sách từng lớp, xếp theo khối, có túi soạn sẵn cho lớp đông.",
+        "bad": "Một danh sách chung cho cả trường.",
+        "why": "Mỗi lớp cô giáo dặn một khác."
+      }
+    },
+    {
+      "tier": 4,
+      "title": "Soạn quy trình bọc vở, dán nhãn",
+      "output_unit": "quy trình bọc vở",
+      "inputs": [
+        {
+          "name": "Cuộn giấy bọc mẫu giả lập",
+          "unit": "cuộn",
+          "quantity": 2,
+          "unit_cost": 3000
+        }
+      ],
+      "procedure": [
+        "Đếm số quyển trước mặt khách.",
+        "Mỗi quyển một tờ giấy bọc, gấp mép thẳng, không nhăn.",
+        "Dán nhãn, ghi tên và lớp của bé bằng chữ rõ."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Đếm trước mặt khách, mỗi quyển một tờ bọc thẳng, nhãn ghi đủ tên và lớp.",
+        "bad": "Bọc đại cho nhanh, nhãn để bé tự ghi.",
+        "why": "Vở bọc kỹ dùng được hết năm học."
+      }
+    },
+    {
+      "tier": 5,
+      "title": "Lập bảng tính lượt photo",
+      "output_unit": "bảng tính lượt photo",
+      "inputs": [
+        {
+          "name": "Thẻ tính lượt giả lập",
+          "unit": "xấp",
+          "quantity": 2,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Ghi công thức: số lượt bằng số bộ nhân số trang chia mười.",
+        "Kèm ví dụ 5 bộ × 20 trang = 10 lượt.",
+        "Dán cạnh máy photo, ghi số xấp giấy cần."
+      ],
+      "check": {
+        "prompt": "Bảng nào tính đúng?",
+        "good": "Có công thức bộ nhân trang chia mười, ví dụ đúng và số xấp giấy cần.",
+        "bad": "Ước chừng bằng mắt theo độ dày xấp.",
+        "why": "Tính sai lượt là thiếu đề hoặc tốn giấy."
+      }
+    },
+    {
+      "tier": 6,
+      "title": "Soạn quy định không photo lậu sách",
+      "output_unit": "quy định bản quyền",
+      "inputs": [
+        {
+          "name": "Biển nhắc bản quyền giả lập",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 4000
+        }
+      ],
+      "procedure": [
+        "Ghi rõ: không photo nguyên cuốn sách đang bán.",
+        "Gợi ý khách mượn thư viện hoặc chép phần cần học.",
+        "Dán biển nhắc ngay trên máy photo."
+      ],
+      "check": {
+        "prompt": "Quy định nào được dán?",
+        "good": "Không photo nguyên cuốn, có gợi ý mượn thư viện, dán ngay trên máy.",
+        "bad": "Photo được nếu khách trả gấp đôi.",
+        "why": "Tôn trọng công sức của tác giả."
+      }
+    },
+    {
+      "tier": 7,
+      "title": "Lập sổ đổi trả hàng còn nguyên",
+      "output_unit": "sổ đổi trả",
+      "inputs": [
+        {
+          "name": "Sổ đổi trả giả lập",
+          "unit": "cuốn",
+          "quantity": 1,
+          "unit_cost": 5000
+        }
+      ],
+      "procedure": [
+        "Nhận đổi vở, bút còn nguyên, chưa dùng.",
+        "Ghi ngày, món đổi, món nhận và lý do.",
+        "Chỉ cho khách cách nhận biết để lần sau khỏi nhầm."
+      ],
+      "check": {
+        "prompt": "Sổ nào giữ được khách?",
+        "good": "Đổi hàng còn nguyên, ghi đủ món và lý do, có chỉ cách nhận biết.",
+        "bad": "Hàng bán rồi miễn đổi trả.",
+        "why": "Đổi đúng một lần, khách quay lại cả năm."
+      }
+    },
+    {
+      "tier": 8,
+      "title": "Soạn quy trình nhập hàng có hóa đơn",
+      "output_unit": "quy trình nhập hàng",
+      "inputs": [
+        {
+          "name": "Xấp hóa đơn mẫu giả lập",
+          "unit": "xấp",
+          "quantity": 3,
+          "unit_cost": 2000
+        }
+      ],
+      "procedure": [
+        "Chỉ nhập từ nhà sách sỉ, chợ sỉ có hóa đơn.",
+        "Đếm lại từng thùng khi xe tới, ghi thiếu vào phiếu.",
+        "Từ chối hàng nhãn mờ, giá rẻ bất thường."
+      ],
+      "check": {
+        "prompt": "Quy trình nào đạt?",
+        "good": "Nhập nơi có hóa đơn, đếm từng thùng, từ chối hàng nhái.",
+        "bad": "Nhập hàng rẻ không hóa đơn cho lời nhiều.",
+        "why": "Bút nhái viết hai ngày là hết mực."
+      }
+    },
+    {
+      "tier": 9,
+      "title": "Lập kế hoạch mùa tựu trường",
+      "output_unit": "kế hoạch mùa tựu trường",
+      "inputs": [
+        {
+          "name": "Bảng kế hoạch giả lập",
+          "unit": "tấm",
+          "quantity": 1,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Nhập đủ vở ô li, vở kẻ ngang, giấy bọc trước hai tuần.",
+        "Chia quầy bán lẻ, bàn soạn danh sách và bàn bọc vở.",
+        "Mở cửa sớm một giờ trong tuần đầu năm học."
+      ],
+      "check": {
+        "prompt": "Kế hoạch nào lo đủ mùa tựu trường?",
+        "good": "Nhập trước hai tuần, chia ba quầy, mở cửa sớm tuần đầu.",
+        "bad": "Hết hàng thì hẹn khách tuần sau.",
+        "why": "Tuần đầu năm học là tuần đông khách nhất."
+      }
+    },
+    {
+      "tier": 10,
+      "title": "Biên soạn sổ tay tiệm cho người mới",
+      "output_unit": "sổ tay tiệm",
+      "inputs": [
+        {
+          "name": "Bộ sổ tay in giả lập",
+          "unit": "cuốn",
+          "quantity": 2,
+          "unit_cost": 6000
+        }
+      ],
+      "procedure": [
+        "Gom bảng giá, bảng vở theo lớp, cách bọc vở và tính lượt photo.",
+        "Thêm tình huống: kẹt giấy, khách đổi vở, photo lậu sách.",
+        "Cho chủ tiệm đọc duyệt rồi in phát."
+      ],
+      "check": {
+        "prompt": "Sổ tay nào được phát?",
+        "good": "Đủ giá, vở theo lớp, bọc vở, lượt photo, có tình huống và chữ ký chủ tiệm.",
+        "bad": "Chỉ ghi giá, còn lại người mới tự học.",
+        "why": "Người mới đứng quầy mùa tựu trường phải biết đủ."
+      }
+    }
+  ]
+}
