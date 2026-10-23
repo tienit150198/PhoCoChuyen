@@ -25,7 +25,7 @@ SSS = TOP - 1
 EARN = (2, 4, 6, 8, 11, 15, 20, 25)   # % of the work earnings (the pets give 2…30 %)
 # then "tăng nữa nhé, tối đa đó gấp đôi đi": the daily caps ×2
 CAP = (40_000, 100_000, 300_000, 800_000, 2_000_000, 6_000_000, 16_000_000, 30_000_000)   # xu a Vietnam day
-BATTLE = (1, 1, 2, 2, 3, 4, 5, 6)     # % HP and attack in pet battles
+BATTLE = (2, 3, 4, 6, 8, 10, 12, 14)   # % on every stat of the owner's pets, so 💪 lực chiến itself (owner 23/10 "tăng trực tiếp luôn")
 
 
 def _s(sid, emoji, name, price, desc):

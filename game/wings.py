@@ -26,9 +26,11 @@ hoặc C ngẫu nhiên, xong nâng lên như cơ chế hiện tại nhé", "cho 
   (PREFIX): kept out of the 🔥 x3 day's base net (tile_match.day_total), and 📈 game/income_boost.py scales that row once
   like every bonus row, so each bonus is computed on the un-boosted figure and nothing compounds. Together with the pet
   (2…30 %, capped a day) and 💰 Tiền công (≤ 50 %), a Huyền thoại adds at most 25 % (SSS 20 %): the bonuses are added, never multiplied.
-* ⚔️ The worn wing adds BATTLE[tier] % to the HP and attack of the player's pets in every battle (game/pet_arena.py fighter
-  writes `wg` into the snapshot; game/pet_battle.py derive). The jr_pet_* commands refresh the arena / war / challenge
-  snapshots (game/pets.py command_commit), so a wing bought or worn counts from the next fight.
+* ⚔️ The worn wing adds BATTLE[tier] % (2…14) to every stat of the player's pets, so to their 💪 lực chiến itself (owner 23/10
+  "phải tăng lực chiến pet, tăng trực tiếp luôn"; game/pet_tiers.py stats). Battles read those stats, so 2.5.7 no longer
+  writes `wg` into the snapshot (2.5.4–2.5.6 did: +1…6 % HP and attack; game/pet_battle.py still derives such stored
+  matches). The jr_pet_* commands refresh the boards and the arena / war / challenge snapshots (game/pets.py
+  command_commit), so a wing bought or worn counts at once.
 
 Save: journey['wings'] (absent until the first wing; journey.validate allows extra keys and older builds keep an unknown
 journey key untouched, so 2.5.3 and older load, play and save a save that owns or wears wings: tests/test_wings.py Rollback)

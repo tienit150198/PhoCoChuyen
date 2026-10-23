@@ -121,11 +121,7 @@ def fighter(s: dict, p: dict) -> dict:
     if legend or br.get('fuse') == 'myth':
         f['L'] = 1              # 🌟 Thần uy
     f.update(pw.walk_look(s, p))
-    from . import wings
-    wg = wings.battle_pct(s)
-    if wg:
-        f['wg'] = wg            # 🪽 the owner's worn wings: +wg % HP and attack (game/pet_battle.py derive)
-    return f
+    return f                    # 🪽 the worn wing is in the stats already (pet_tiers.stats, 2.5.7): no `wg`, so ENGINE 1 replays it
 
 
 def candidates(s: dict) -> list:

@@ -305,7 +305,9 @@ def stats(s: dict, p: dict, rec: dict | None = None) -> list:
             if g and dict((a[0], a[3]) for a in GSLOTS)[slot] == sid:
                 v += gear_value(g, s)
         out.append(max(1, v))
-    return out
+    from . import wings
+    w = wings.battle_pct(s)   # 🪽 the worn wing: +w % on every stat, so 💪 lực chiến shows it (owner 23/10 "tăng trực tiếp luôn")
+    return [v + v * w // 100 for v in out] if w else out
 
 
 def power(s: dict, p: dict) -> int:
