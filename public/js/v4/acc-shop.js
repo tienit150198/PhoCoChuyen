@@ -90,7 +90,9 @@ function accTile(api,st,it,saved,look,g){
   return `<button type="button" class="wd-item${on?' on':''}${cart?' in-cart':''}${stt?.lock?' locked':''}" data-action="jrAsTry" data-item="${esc(it.id)}" aria-pressed="${st.multi?cart:on}">
     <span class="wd-thumb" aria-hidden="true">${portrait({...look,acc:it.id},g,64,'')}</span><b>${esc(it.name)}</b>${tag}${cart?'<i class="as-incart" aria-label="trong giỏ">🧺</i>':''}</button>`;
 }
+const CART_HINT=`<p class="wd-hint">🧺 Đang chọn nhiều món: chạm để thêm / bỏ khỏi giỏ, gương mặc thử cả giỏ, mua ở giỏ bên dưới.</p>`;
 function accActions(api,st,saved,look){
+  if(st.multi)return CART_HINT;
   if(!st.draft||st.draft===saved.acc)return `<p class="wd-hint">👇 Chạm một món để đeo thử trước gương.</p>`;
   const it=wdItem(api,st.draft),stt=it&&wdStatus(api,it);if(!it)return '';
   const main=stt?.lock?`<p class="wd-lock">🔒 ${esc(it.name)}: ${esc(stt.lock.charAt(0).toLowerCase()+stt.lock.slice(1))}.</p>`
@@ -116,6 +118,7 @@ function accShelf(env,st){
 const CL=['top','bottom','shoes','hair'];
 const CL_EMOJI={top:'👕',bottom:'👖',shoes:'👟',hair:'💇'};
 function clActions(api,st,saved){
+  if(st.multi)return CART_HINT;
   const it=st.cdraft&&wdItem(api,st.cdraft);
   if(!it||saved[it.slot]===it.id)return `<p class="wd-hint">👇 Chạm một món để mặc thử trước gương.</p>`;
   const stt=wdStatus(api,it);
