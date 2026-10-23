@@ -230,7 +230,7 @@ async function onClick(op,data,el){
       send('jr_quay_prepare',{stall:data.id,kind:data.kind,enabled});return;}
     case'incident':send('jr_quay_incident',{stall:data.id,choice:data.choice});return;
     case'new':{const can=V()?.can||[];S.view='open';S.pick={trade:can[0]||'',place:'xe',name:''};S.flash=null;render();toTop();return;}
-    case'trade':if(S.pick){S.pick.trade=data.id;render();}return;
+    case'trade':if(S.pick){if(V()?.can?.includes(data.id)){S.pick.trade=data.id;S.why=null;}else S.why=S.why===data.id?null:data.id;render();}return;
     case'place':if(S.pick){S.pick.place=data.id;render();}return;
     case'open':{const p=S.pick,P=place(p?.place);if(!p?.trade||!P.id)return;
       const total=P.price+P.fund;
@@ -649,11 +649,14 @@ function slotsPart(v){const p=v.slots;if(!p)return '';return `<section class="bk
 function openView(v){
   const p=S.pick||{},cat=CAT(),P=place(p.place);
   const requirement=v.open_requirements?.[p.place],cost=(P.price||0)+(P.fund||0);
+  // owner 23/10 (Cả phố: "mở quầy quần áo k đc… nó bị xám"): a locked trade says how far along, and a tap says how to open it
+  const done=id=>Math.min(Number(S.env?.api?.state?.careers?.[id]?.metrics?.served)||0,cat.served);
   const trades=Object.keys(cat.trades).map(id=>{const T=cat.trades[id],ok=v.can.includes(id);
-    return `<button type="button" class="qy-chip${p.trade===id?' on':''}" data-qy="trade" data-id="${id}"${ok&&!S.busy?'':' disabled'}${ok?'':` title="${esc(`Cần làm ${cat.served} việc ở nghề ${T.emoji} ${T.name} để mở`)}"`}>${T.emoji} ${esc(T.name)}</button>`;}).join('');
+    return `<button type="button" class="qy-chip${p.trade===id?' on':''}${ok?'':' qy-locked'}" data-qy="trade" data-id="${id}"${S.busy?' disabled':''}${ok?'':' aria-disabled="true"'}>${ok?'':'🔒 '}${T.emoji} ${esc(T.name)}${ok?'':` <small>${fmt(done(id))}/${fmt(cat.served)} việc</small>`}</button>`;}).join('');
+  const W=S.why&&!v.can.includes(S.why)&&cat.trades[S.why],why=W?`<div class="qy-why" role="status"><p>🔒 Bán ${W.emoji} ${esc(W.name)} cần làm xong <b>${fmt(cat.served)} việc</b> ở nghề ${esc(W.name)} (bạn đã làm ${fmt(done(S.why))}/${fmt(cat.served)}). Mỗi đơn khách làm xong là một việc.</p>${unlockBtn({career:S.why,served:done(S.why),need:cat.served})}</div>`:'';
   const places=cat.places.map(x=>`<button type="button" class="qy-place${p.place===x.id?' on':''}" data-qy="place" data-id="${x.id}"><span class="qy-up-emoji" aria-hidden="true">${x.emoji}</span>
     <span class="grow"><b>${esc(x.name)}</b><small>${xu(x.price)} · ${x.slots} người · thuê ${xu(x.rent)}/tháng</small></span></button>`).join('');
-  return `${slotsPart(v)}<section class="bk-card"><h3>Bán gì?</h3><div class="qy-chips">${trades}</div></section>
+  return `${slotsPart(v)}<section class="bk-card"><h3>Bán gì?</h3><div class="qy-chips">${trades}</div>${why}</section>
     <section class="bk-card"><h3>Ở đâu? ${helpBtn('place')}</h3>${helpText('place','Chỗ to thì đông khách, nhiều người đứng, nhưng tiền thuê cao hơn.')}<div class="qy-places">${places}</div></section>
     <section class="bk-card"><label class="bk-field"><span>Tên quầy</span><input name="qy-name" maxlength="24" value="${esc(p.name||'')}" placeholder="${esc(`${trade(p.trade).name||''} ${S.env.api.state?.name||''}`.trim())}"></label>
       ${licenseRequirement(requirement,v.business_license)}<p>Vốn mở quầy: ${xu(cost)} · ${quayHave(J())>=cost?'✅ Đủ tiền':'Còn thiếu '+xu(cost-quayHave(J()))}.</p>

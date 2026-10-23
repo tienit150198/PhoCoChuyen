@@ -1,3 +1,7 @@
+# 2.5.5.1 — 23/10/2026
+
+Hotfix: 🛍️ Cửa hàng / ⚒️ Cường hóa: chọn số lượng, chọn món, mua, ghép vẽ lại tại chỗ (renderSheet giữ cuộn; chỉ đổi tab mới về đầu), cả các quầy thú cưng nhúng trong sheet (pets.js render). 🏪 Mở quầy (Cả phố 23/10 "mở quầy quần áo k đc… nó bị xám", góp ý #499): món chưa mở hiện 🔒 + "N/10 việc" ngay trên chip (trước chỉ có title, điện thoại không thấy), bấm vào giải thích và có nút vào nghề đó.
+
 # 2.5.5 — 23/10/2026
 
 🛍️ Cửa hàng và ⚒️ Cường hóa (chủ game 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi, xong thú cưng hay người gì trong đó cả", "cửa hàng hoặc shop đều là 1 đó nhé, mua gì nằm đó hết cho dễ"). Thêm (chủ game 23/10): "mua thì cho mua nhiều cái 1 lần", "ghép thì đưa vào mục riêng, hiện tại khó ghép quá". Không đổi giá, tỉ lệ, phí, schema hay save; server chỉ nhận thêm số lượng ở ba lệnh mua cũ (rollback về 2.5.4.1 an toàn: dữ liệu không đổi dạng). Mọi lệnh ghép là lệnh cũ (jr_pet_wing_fuse, jr_pet_fuse, jr_pet_wfuse, jr_pet_gear_*). Có gì mới 2.5.5 (4 dòng).

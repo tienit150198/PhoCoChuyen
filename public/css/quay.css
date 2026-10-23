@@ -67,6 +67,8 @@
 .qy-chips{display:flex;flex-wrap:wrap;gap:8px}
 .qy-chip{min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
 .qy-chip.on{border-color:var(--accent,var(--good));background:var(--accent-soft,var(--good-soft))}
+.qy-chip.qy-locked{opacity:.78;border-style:dashed}.qy-chip small{font-weight:600;opacity:.8}
+.qy-why{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2,var(--surface));border:1px solid var(--line)}.qy-why p{margin:0 0 8px}
 .qy-chip:disabled{opacity:.45;cursor:not-allowed}
 .qy-places{display:grid;gap:8px}
 .qy-place{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
