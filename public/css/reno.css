@@ -339,3 +339,5 @@
 .dc-roomwrap-3d{min-width:0;background:#eee2cd;border:1px solid #d3b99b;border-radius:18px;overflow:hidden}
 .dc-roomwrap-3d .hw-say{z-index:2;max-width:80%;left:50%!important;top:auto!important;bottom:12px;transform:translateX(-50%);pointer-events:none}
 @media(max-width:600px){.home3d-viewport{height:360px;max-height:54vh;min-height:280px}.home3d-controls .btn{min-height:36px}}
+.rn-inc{margin:6px 0 0;font-size:.88rem;font-weight:700;color:var(--good)}   /* 🛡️ a sự cố on this part, insured (game/rui.py home_incident) */
+.rn-ins{color:var(--ink-2)}
