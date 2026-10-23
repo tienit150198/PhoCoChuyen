@@ -20,6 +20,8 @@ export {cleanWing,wingOfState,paintWings,WING_STYLES,WING_TIERS,WING_TIER_COLOR}
 import {paintRank} from './insignia.js';
 // 👶 F.bb: the baby in the character's arms (v4/baby.js)
 import {paintCarried} from './baby-art.js';
+// 🎣 F.L.fh: the fish carried on the walk maps (journey.fish.wear here, `fh` beside a walker's look; live/fish_carry.py)
+import {drawFish,fishSvg,carrySize} from './fish-art.js';
 
 export const SLOTS=['hair','shade','skin','top','bottom','shoes','acc'];
 // Same as game/wardrobe.py DEFAULTS (tests/test_wardrobe.py compares them).
@@ -319,7 +321,7 @@ export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92
  * and lookOf stay the save's own. */
 let OVER=null;
 export function setLookOver(fn){OVER=typeof fn==='function'?fn:null;}
-export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color,wg=wingOfState(state);if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;if(PAIRS)L.pr={...PAIRS};if(wg)L.wg=wg;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
+export const figure=state=>{const L=OVER?OVER(lookOf(state)):lookOf(state),h=state?.journey?.gadgets?.hand?.color,wg=wingOfState(state);if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;if(PAIRS)L.pr={...PAIRS};if(wg)L.wg=wg;const fh=cleanFish(state?.journey?.fish?.wear);if(fh)L.fh=fh;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
 /** 🎖️ The rank the character wears (game/org.py, v4/insignia.js): the current career's org grade, while "Mặc đồ làm việc"
  * is on. {o: org id, g: grade id}; never in lookOf (live frames carry it apart, as `rk`). */
 export function rankRef(state){
@@ -696,12 +698,13 @@ function paintAccessoryShape(c,id,k,K,direction='se'){
  * hand resting at the side (drawn last, over the face and hair). */
 export function paintPlayer(c,F,K=SVG,arms=null){
   const sk=F.skin,male=F.g==='male',bb=!arms&&F.bb&&typeof F.bb==='object'?F.bb:null;   // 👶 carrying: the arms hold the baby
+  const fh=!arms&&!bb?cleanFish(F.L?.fh):null,busy=bb||fh;   // 🎣 or a big fish held across the chest
   K.E(c,0,0,26,8,'#81644823');
   if(F.L?.wg)paintWings(c,F,K,F.ws?{s:F.ws}:undefined);   // 🪽 behind everything (v4/wings-art.js; ws: the mirror's smaller pair)
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
-  K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l&&!bb)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r&&!bb)K.E(c,25,-36,8,14,sk.hand);
+  K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l&&!busy)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r&&!busy)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
-  if(!bb&&!arms?.r&&/^#[0-9a-f]{6}$/i.test(F.L?.held||'')){K.R(c,19,-47,12,19,F.L.held,3,'#3b2a22',1.5);K.R(c,21.5,-44,7,12,'#bfe0f2',2);K.E(c,25,-33,6,5,sk.hand);}   // 📱 the phone in use, in the right hand
+  if(!busy&&!arms?.r&&/^#[0-9a-f]{6}$/i.test(F.L?.held||'')){K.R(c,19,-47,12,19,F.L.held,3,'#3b2a22',1.5);K.R(c,21.5,-44,7,12,'#bfe0f2',2);K.E(c,25,-33,6,5,sk.hand);}   // 📱 the phone in use, in the right hand
   K.E(c,0,-84,33,35,F.hair);K.E(c,-29,-71,5,8,sk.ear);K.E(c,29,-71,5,8,sk.ear);K.E(c,0,-77,29,28,sk.face);
   K.path(c,F.short?FRONT.short:FRONT.soft,F.hair);
   K.E(c,-20,-67,7,4,male?'#efb3a466':'#efa7a0');K.E(c,20,-67,7,4,male?'#efb3a466':'#efa7a0');
@@ -712,6 +715,7 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   if(F.L?.pr)paintPairs(c,F,K);   // 🤝 phụ kiện đôi
   if(F.rk)paintRank(c,F,K);   // 🎖️ cấp hiệu and huy hiệu over the top
   if(bb)paintCarried(c,bb,K,F);   // 👶 in front of everything: held to the chest
+  if(fh)paintHeldFish(c,fh,K,sk);   // 🎣 likewise, the fish
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
 /** 🪽 A wing large, both sides (🛍️ Tiệm phụ kiện, the wardrobe): '' for a style this build lacks. */
@@ -721,6 +725,17 @@ export function wingIcon(wg,size=56,label=''){
   const aria=label?`role="img" aria-label="${label.replace(/[&<>"]/g,ch=>`&#${ch.charCodeAt(0)};`)}"`:'aria-hidden="true"';
   return `<svg class="wing-icon" width="${size}" height="${size}" viewBox="-30 -30 60 60" ${aria}>${out.join('')}</svg>`;
 }
+/** 🎣 A carried fish as drawn ({sp, r, kg, fam, body, belly, fin, pat} from the server's catalogue), or null. */
+export const cleanFish=fh=>fh&&typeof fh==='object'&&typeof fh.sp==='string'&&typeof fh.fam==='string'&&Number.isFinite(Number(fh.r))?fh:null;
+/** 🎣 The fish held across the chest in both hands, rarer and heavier = longer (fish-art.js carrySize). */
+function paintHeldFish(c,fh,K,sk){
+  const len=carrySize(fh.r,fh.kg)*3,sp={...fh,id:fh.sp},y=-36;
+  if(K.anim){const w=len*1.1,h=w/2;c.push(fishSvg(sp,{w,h}).replace('<svg ',`<svg x="${n1(-w/2)}" y="${n1(y-h/2)}" `));}
+  else drawFish(c,sp,0,y,len,{angle:-.08});
+  K.E(c,-len*.28,y+3,7,7.5,sk.hand);K.E(c,len*.3,y+1,7,7.5,sk.hand);
+}
+/** 🎣 A look with a walker's carried fish (`fh` beside its look on the walk maps). */
+export const withFish=(L,fh)=>{const f=cleanFish(fh);if(f)return {...L,fh:f};if(L&&'fh' in L){const {fh:_,...rest}=L;return rest;}return L;};
 /** A look with a walker's wing (`wg` beside its look on the street and the 2.5D map). */
 export const withWings=(L,wg)=>{const w=cleanWing(wg);if(w)return {...L,wg:w};if(L&&'wg' in L){const {wg:_,...rest}=L;return rest;}return L;};
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */

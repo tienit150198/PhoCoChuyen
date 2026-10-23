@@ -102,6 +102,8 @@ def action(s, name, payload):
         need(r['bite_at'] <= now <= r['bite_at'] + 1.95, 'Cá đã nhả mồi. Thả cần lần nữa nhé!', 'missed')
         fish = r['fish']
         d['fish'][fish] = min(LIMIT, d['fish'][fish]+1)
+        from . import fishing
+        fishing.legacy_catch(s, fish)   # 🎣 an older client's round: Sổ cá counts it too (game/fishing.py)
         label = next(x['name'] for x in FISH if x['id'] == fish)
         message = f'Bạn bắt được {label}! Đã lưu vào sổ cá của bạn.'
     else:

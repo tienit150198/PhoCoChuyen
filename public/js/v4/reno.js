@@ -155,13 +155,23 @@ function framedPhotos(){
   import('./portrait.js').then(m=>m.loadWall(S.env,wall,(uid,url)=>{if(A.PHOTO_ART.get(uid)===url)return false;A.PHOTO_ART.set(uid,url);return true;},
     ()=>{if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();})).catch(e=>console.warn('ảnh treo:',e));
 }
+/** 🎣 The fish of journey.fish (game/fishing.py): each tranh cá's catch by its uid (tro) and the aquarium's (aq), as the
+ * species of content.journey.fish, for deco-art.js FISH_TRO / AQUA. Own home only, like the photos. */
+function fishPieces(){
+  const f=J().fish,list=S.env?.api?.content?.journey?.fish?.species;A.FISH_TRO.clear();A.AQUA.length=0;
+  if(!f||typeof f!=='object'||!Array.isArray(list))return;
+  const by=new Map(list.map(s=>[s.id,s]));
+  for(const [uid,v] of Object.entries(f.tro&&typeof f.tro==='object'?f.tro:{}))if(Array.isArray(v)&&by.has(v[0]))A.FISH_TRO.set(uid,{sp:by.get(v[0]),g:Number(v[1])||0});
+  for(const v of Array.isArray(f.aq)?f.aq:[])if(Array.isArray(v)&&by.has(v[0]))A.AQUA.push(by.get(v[0]));
+}
 export async function openReno(env,mode,guestCode=''){
   const seq=++openSeq;
   S.env=env;
   if(!S.listening){
     S.listening=true;
     let seen='';
-    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey,sp=S.env.api.state?.marriage?.spouse;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco,sp]);if(key===seen)return;seen=key;
+    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey,sp=S.env.api.state?.marriage?.spouse;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco,sp,j?.fish?.tro,j?.fish?.aq]);if(key===seen)return;seen=key;
+      if(!S.remote)fishPieces();
       if(S.dlg?.open)refreshMate();
       if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
     live.on('home_changed',()=>{refreshMate();loadCoopLog();});
@@ -186,6 +196,7 @@ export async function openReno(env,mode,guestCode=''){
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
   hw().reopen();
   if(!guestCode)framedPhotos();
+  if(guestCode){A.FISH_TRO.clear();A.AQUA.length=0;}else fishPieces();   // 🎣 a guest sees a host's tranh cá as its shadow
   loadMate();loadHostGrant();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
   if(!S.remote){loadCoopLog();BB.css();BB.loadFamily(env.api).then(()=>{if(seq!==openSeq||!S.dlg?.open||S.remote)return;render();BB.greet(env,{here:true});});}   // 👶

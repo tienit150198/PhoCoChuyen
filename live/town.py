@@ -43,6 +43,7 @@ from game.content import CAREERS
 from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
 from game.wings_content import FLY_FAST   # 🪽 a flyer's speed by tier
 from . import bangs, charms, faces, wings
+from . import fish_carry
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
 from .street import clean_look, clean_pet
@@ -196,6 +197,7 @@ class Walker:
         self.pr = None   # 🤝 the phụ kiện đôi worn {kind: count} (live/charms.py)
         self.wg = None   # 🪽 the wing worn {k, r} (live/wings.py)
         self.fl = None   # 🪽 flying: the tier of the wings worn, else None
+        self.fh = None   # 🎣 the fish carried (live/fish_carry.py)
 
     def public(self):
         out = dict(pid=self.pid, name=self.player.name or 'Mây', lk=self.look, g=self.gender,
@@ -214,6 +216,8 @@ class Walker:
             out['wg'] = dict(self.wg)
         if self.fl is not None:
             out['fl'] = self.fl
+        if self.fh:
+            out['fh'] = dict(self.fh)
         return out
 
 
@@ -347,6 +351,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         look, gender = clean_look(f.get('look'), f.get('g'))
         ride = await plates.keep(self.db, conn.player, clean_ride(f.get('r')))   # 🚗 (an auction plate: only if won)
         pet = await pet_rank.keep(self.db, conn.player, clean_pet(f.get('pt')))   # 🐾 (its rank: only one they have)
+        fh = await fish_carry.keep(self.db, conn.player, fish_carry.clean(f.get('fh')))   # 🎣 (a rarity they have caught)
         await self._ensure_loaded(conn.player)
         treasure = getattr(self.app, 'by_name', {}).get('treasure')
         if treasure is not None and treasure.enabled():
@@ -358,6 +363,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         w.bg = await bangs.of_app(self.app).one(w.pid)   # ⚔️ once per entry, never per move
         w.pr = await charms.of_app(self.app).one(conn.player)   # 🤝 likewise
         w.wg = await wings.of_app(self.app).one(conn.player)   # 🪽 likewise
+        w.fh = fh
         if f.get('fl') is True and w.wg and activity is None:   # 🪽 in flight: a road vehicle stays home
             w.fl = w.wg['r']
             if road(w.ride):
@@ -390,6 +396,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
     async def town_mv(self, conn, f):
         ride = await plates.keep(self.db, conn.player, clean_ride(f['r'])) if 'r' in f else None   # 🚗 before any change
         pet = await pet_rank.keep(self.db, conn.player, clean_pet(f['pt'])) if 'pt' in f else None   # 🐾 likewise
+        fh = await fish_carry.keep(self.db, conn.player, fish_carry.clean(f['fh'])) if 'fh' in f else None   # 🎣 likewise
         room, w = self._me(conn)
         x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
                 if 'site_key' in room.data else clean_point(f.get('x'), f.get('y')))
@@ -427,6 +434,9 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         if 'pt' in f and pet != w.pet:
             w.pet = pet
             event['pt'] = dict(pet) if pet else None
+        if 'fh' in f and fh != w.fh:   # 🎣 picked up or put down
+            w.fh = fh
+            event['fh'] = dict(fh) if fh else None
         self._queue(room, w.pid, event)
 
     async def _refresh_blocks(self):

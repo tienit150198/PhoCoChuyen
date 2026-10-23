@@ -27,6 +27,8 @@ const BOARDS={
   race_deo_bike:['Đèo xe máy',[['⛰️','Vua đèo xe máy tuần'],['🏍️','Top đèo xe máy']]],
   race_deo_car:['Đèo ô tô',[['⛰️','Vua đèo ô tô tuần'],['🚗','Top đèo ô tô']]],
   wedding:['Khách mời',[['💒','Vua ăn cưới của tuần'],['💐','Khách mời vàng của tuần']]],   // 💍 game/lb_titles.py WEDDING (23/10): top 1, top 2–3
+  fish_big:['Cá lớn',[['🐋','Vua cá lớn của tuần'],['🎣','Cần thủ cá khủng'],['🐟','Hội săn cá lớn']]],   // 🎣 game/lb_titles.py FISH_BIG (24/10): this week's heaviest fish
+  fish_dex:['Sổ cá',[['📖','Nhà sưu tập cá của tuần'],['🐠','Bách khoa cá'],['🐡','Hội sưu tầm cá']]],   // 🎣 game/lb_titles.py FISH_DEX (24/10): species collected
 };
 // game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, then the runner-up's five
 const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;

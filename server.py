@@ -880,6 +880,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("mtq:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import lux
                 self.json(200,lux.board(self.server.store,token));return
+            if route=="/api/fish/records":  # 🎣 Sổ cá: each species' town record, the boards' top 3 (game/fish_lb.py), cached ~30 s
+                token=self.token()
+                if not self.server.rate_limit("fishrec:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import fish_lb
+                self.json(200,fish_lb.records(self.server.store,token));return
             if route=="/api/news":  # the ticker (game/marriage.py): public lines, cached ~10 s; + my alerts
                 if not self.server.rate_limit("news:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.news(self.server.store,(parse_qs(split.query).get("since") or ["0"])[0],self.token()));return

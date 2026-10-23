@@ -10,7 +10,7 @@
  * from the save, journey.isld, a visitor's from the trip's `design`), redrawn when the owner changes it. */
 import {layout,arrival,step,walkable,nearestWalkable,spotNear,standAt,spotById,spotLine,EMOTES,withBuilds,withDesign,footpaths,workAt,findPath} from '../island-layout.js';
 import {createIslandPresence,peerAt} from './island-live.js';
-import {lookOf} from './look.js';
+import {lookOf,withFish} from './look.js';
 import {newInterface} from '../interface-mode.js';
 
 const SPEED=.16,ARRIVE_MS=2600,SEND_MS=320;
@@ -58,7 +58,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   const me={x:sx,y:sy,target:null,dir:'se',left:false,walking:false,spot:null,pose:null,sent:[sx,sy],sendAt:0};
   const keys=new Set(),arriveMs=reduced?0:ARRIVE_MS;
   let renderer=null,presence=null,frameId=0,closed=false,started=false,t0=0,last=0,previousPause=false,arrived=false,statusAt=-1e9,why=null,signsAt=-1e9,pingOff=null;
-  const look=lookOf(env.api.state),gender=env.api.state?.journey?.gender==='male'||env.api.state?.journey?.gender==='female'?env.api.state.journey.gender:null;
+  const look=withFish(lookOf(env.api.state),env.api.state?.journey?.fish?.wear),gender=env.api.state?.journey?.gender==='male'||env.api.state?.journey?.gender==='female'?env.api.state.journey.gender:null;
 
   function close(reason=null){
     if(closed)return;closed=true;why=reason;caf(frameId);
@@ -79,6 +79,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   }
   let funBusy=false;
   async function fun(id,quiet=false){
+    if(id==='cau_ca'&&!quiet&&actions.fish)actions.fish();   // 🎣 the island's fishing chip opens the lake on this sea (v4/fishing.js)
     if(funBusy||closed)return '';funBusy=true;
     try{const line=await (id==='chest'?actions.chest?.():actions.fun?.(id));if(line&&!quiet&&!closed)view.notice(line);return line||'';}
     finally{funBusy=false;}

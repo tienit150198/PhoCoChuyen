@@ -199,5 +199,10 @@ HALLOWEEN_COLORS = (
 TITLES = TITLES + HALLOWEEN_TITLES
 FRAMES = FRAMES + HALLOWEEN_FRAMES
 COLORS = COLORS + HALLOWEEN_COLORS
+# 🎣 Sổ cá (game/fishing.py): completing a rarity tier, a spot or the whole book, granted for good by the jr_fish_land that
+# completes it (an older build keeps the id: spend.validate checks the format only, style_now skips an id it does not know).
+from .fishing_content import STYLE_TITLES as _FISH_TITLES, STYLE_FRAMES as _FISH_FRAMES   # noqa: E402
+TITLES = TITLES + _FISH_TITLES
+FRAMES = FRAMES + _FISH_FRAMES
 STYLE_ITEMS ={x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}

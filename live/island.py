@@ -32,6 +32,7 @@ from game.island_trips import ACCESS_SQL, ACCESS_SQL_FRIENDS, INVITED_SQL, acces
 
 FRIENDS_ONLY_RETRY = 60.0   # seconds before the full check (island_public, island_visitors) is tried again
 from .auth import pid_of
+from . import fish_carry
 from .db import Error as DbError, log
 from .fair import clean_point
 from .protocol import Feature, LiveError, on
@@ -166,6 +167,7 @@ class IslandFeature(Feature):
         look, gender = clean_look(f.get('look'), f.get('g'))
         point = clean_point([f.get('x'), f.get('y')]) if 'x' in f or 'y' in f else [.5, .75]
         p = conn.player
+        fh = await fish_carry.keep(self.db, p, fish_carry.clean(f.get('fh')))   # 🎣 the fish carried (live/fish_carry.py)
         ticket = object()
         p.ext['isl_join'] = ticket
         row, kind = await self._access(p.sid, trip)
@@ -187,7 +189,7 @@ class IslandFeature(Feature):
         room.data['ends'] = float(row['ends'])
         if not room.add(conn):
             raise LiveError('full', 'Đảo đã đủ người của chuyến này.')
-        person = dict(pid=p.pid, name=p.name, lk=look, g=gender, x=point[0], y=point[1], o=kind == 'owner')
+        person = dict(pid=p.pid, name=p.name, lk=look, g=gender, x=point[0], y=point[1], o=kind == 'owner', **({'fh': fh} if fh else {}))
         others = {c.player.pid: c.player for c in room.conns}
         people = [x for pid, x in room.data['people'].items() if pid != p.pid and pid in others and self._visible(p, others[pid])]
         room.data['people'][p.pid] = person

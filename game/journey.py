@@ -599,6 +599,8 @@ def upgrade(j: dict) -> None:
     villa_garage.upgrade(j)   # 🚘 journey['hamxe'] (optional)
     home_chores.upgrade(j)   # 🧹 journey['chores'] (optional)
     island_fun.upgrade(j)   # 🏖️ journey['beach'] (optional)
+    from . import fishing
+    fishing.upgrade(j)   # 🎣 journey['fish'] (optional)
     gd.upgrade(j)   # 📱
     if 'lab' in j:
         from . import research_lab as rl
@@ -1091,6 +1093,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
     elif name.startswith('jr_beach_'):   # 🏖️ Chơi trên đảo, rương báu (game/island_fun.py; the trip is checked at commit)
         from . import island_fun
         result.update(island_fun.action(s, name, p))
+    elif name.startswith('jr_fish_'):   # 🎣 Câu cá: rods, casts, Sổ cá, Chợ cá (game/fishing.py; an island cast is checked at commit)
+        from . import fishing
+        result.update(fishing.action(s, name, p))
     elif name in ('jr_tune_buy', 'jr_tune_fix'):   # 🔧 độ xe của mình (game/racing.py)
         from . import racing
         result.update(racing.action(s, name, p))
@@ -1260,6 +1265,7 @@ def public(s: dict) -> dict:
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({'travel': tvp} if (tvp := tv.public(s)) else {}),   # ✈️ story mode (game/travel.py)
         **({'wings': wpub} if (wpub := _wings_public(s)) else {}),   # 🪽 only once a wing was bought (game/wings.py)
+        **({'fish': fpub} if (fpub := _fish_public(s)) else {}),   # 🎣 only once fishing was played (game/fishing.py)
         **({'forge_locks': fl} if (fl := _locks_public(s)) else {}),   # 🔒 only once something is locked (game/forge_locks.py)
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
 
@@ -1311,6 +1317,14 @@ def _homelife_catalogue() -> dict:
                             every=home_chores.STREAK_EVERY, streak_xu=home_chores.STREAK_XU, why=home_chores.WHY),
                 beach=dict(acts=[dict(id=k, emoji=x['emoji'], name=x['name']) for k, x in island_fun.ACTS.items()],
                            spirit_max=island_fun.SPIRIT_MAX, chest=list(island_fun.CHEST_XU), spots=island_fun.SPOT_ACT))
+
+
+def _fish_public(s: dict) -> dict | None:
+    from . import fishing
+    out = fishing.public(s)
+    if out is not None:
+        out['wear'] = fishing.carried(s)   # 💪 the fish carried on the walk maps (the client sends it to live as `fh`)
+    return out
 
 
 def _wings_public(s: dict) -> dict | None:
@@ -1377,7 +1391,12 @@ def content() -> dict:
         unlock_chapter={cid: n for n, ids in [*CH_UNLOCKS.items(), *((n, (c,)) for c, n in LATE_UNLOCKS.items())] for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
         garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), travel=tv.catalogue(), island=isl.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
-        abroad=ab.catalogue(), school=sch.catalogue(), lixi=_lixi_catalogue(), homelife=_homelife_catalogue())
+        abroad=ab.catalogue(), school=sch.catalogue(), lixi=_lixi_catalogue(), homelife=_homelife_catalogue(), fish=_fish_catalogue())
+
+
+def _fish_catalogue() -> dict:
+    from . import fishing   # 🎣 Câu cá (game/fishing.py): species, rods, baits, spots
+    return fishing.catalogue()
 
 
 def _lixi_catalogue() -> dict:
@@ -1484,6 +1503,8 @@ def validate(s: dict) -> None:
     villa_garage.validate(s)   # 🚘 journey['hamxe'] (optional)
     home_chores.validate(s)   # 🧹 journey['chores'] (optional)
     island_fun.validate(s)   # 🏖️ journey['beach'] (optional)
+    from . import fishing
+    fishing.validate(s)   # 🎣 journey['fish'] (optional: game/fishing.py)
     if isinstance(s.get('journey'), dict) and 'tune' in s['journey']:
         from . import racing
         racing.validate(s)   # 🔧 journey['tune'] (optional: game/racing.py)

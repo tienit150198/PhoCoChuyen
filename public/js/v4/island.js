@@ -384,7 +384,9 @@ async function enter(t){
   // 🏖️ beach activities and the daily chest (game/island_fun.py): anyone on the trip; the server checks the island
   const fun=async act=>{try{return said(await env.api.command('jr_beach_do',{trip:t.id,act}));}catch(e){return e?.quiet?'':(e?.message||'');}};
   const chest=async()=>{try{return said(await env.api.command('jr_beach_chest',{trip:t.id}));}catch(e){return e?.quiet?'':(e?.message||'');}};
-  const actions=t.mine?{end,reload,use,build,fun,chest}:{reload,use,fun,chest};
+  // 🎣 Câu cá xịn on the island's sea (v4/fishing.js, spot 'dao'): the server checks the trip at each cast
+  const fish=env.api.content?.journey?.fish&&env.api.state?.journey?.story?async()=>{(await import('./fishing.js')).openFishing(env,{spot:'dao',trip:t.id});}:null;
+  const actions=t.mine?{end,reload,use,build,fun,chest,fish}:{reload,use,fun,chest,fish};
   openIslandScene(env,{...t,ends:t.ends-S.skew},{actions,skew:S.skew,onClose:()=>{if(t.visit)post('leave',{trip:t.id}).catch(()=>{});}});
 }
 

@@ -1,5 +1,6 @@
 /** Reference-matched chibi atlas: four views × idle/two walking poses, cached by saved wardrobe. */
-import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,cleanWing,CANVAS,topColour,hairColour} from '../v4/look.js';
+import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,cleanWing,cleanFish,CANVAS,topColour,hairColour} from '../v4/look.js';
+import {drawFish,carrySize} from '../v4/fish-art.js';
 import {drawWings,wingSparkles,wingBitmap,wingScale,drawRays,LIGHT_Y,cleanWing as wingOf} from '../v4/wings-art.js';
 
 const WIDTH=120,HEIGHT=160,FOOT=156;
@@ -29,6 +30,7 @@ const normalise=options=>{
   const look={...defaultLook(gender),...options.look};
   const pr=cleanPairs(look.pr);if(pr)look.pr=pr;else delete look.pr;   // 🤝 phụ kiện đôi: known kinds only (part of the stamp's key)
   const wg=cleanWing(look.wg);if(wg)look.wg=wg;else delete look.wg;   // 🪽 the wing worn, likewise
+  const fh=cleanFish(look.fh);if(fh)look.fh={sp:fh.sp,r:fh.r,kg:fh.kg,fam:fh.fam,body:fh.body,belly:fh.belly,fin:fh.fin,pat:fh.pat};else delete look.fh;   // 🎣 the fish carried
   const walkFrame=options.walkFrame??(options.step===1?1:options.step===3?2:0);
   return {gender,look,direction:Object.hasOwn(cells,options.direction)?options.direction:'se',walkFrame:atlasCell('se',walkFrame).y,uniformColor:options.uniformColor||''};
 };
@@ -211,6 +213,13 @@ function paintStampWings(c,o,[tx,ty]){
   if(back){q.clearRect(0,0,WIDTH,HEIGHT);paint(q,{aura:false});fade();c.drawImage(layer,0,0);}   // seen from the back: over it
   wingSparkles(c,CANVAS,o.look.wg,x,y,{s:opts.s});
 }
+/** 🎣 The carried fish held across the chibi's belly, facing the way it walks (rarer and heavier = longer); from the
+ * back (nw, ne) it shows past both sides of the body. */
+function paintStampFish(c,o,[tx,ty],[,hy]){
+  const fh=o.look.fh,len=carrySize(fh.r,fh.kg)*2.2,y=ty+(hy-ty)*.55,left=o.direction==='sw'||o.direction==='nw';
+  drawFish(c,{...fh,id:fh.sp},tx,y,len,{flip:left,angle:left?.08:-.08});
+  const hand=art(o.look,'skin').c;c.fillStyle=hand;for(const dx of [-len*.27,len*.3]){c.beginPath();c.arc(tx+(left?-dx:dx),y+2,3.4,0,Math.PI*2);c.fill();}
+}
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */
 export function getCharacterStamp(options={}){
   const o=normalise(options),key=characterKey(o),entry=atlasFor(o.gender,options.onReady);
@@ -230,6 +239,7 @@ export function getCharacterStamp(options={}){
   c.putImageData(pixels,x,y);
   if(o.look.wg)paintStampWings(c,o,top);
   paintWardrobeOverlay(c,o,{x,y,w,h},alignment);
+  if(o.look.fh)paintStampFish(c,o,top,hem);
   return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:true,top:[top[0],top[1]]});   // top: where wings drawn apart take root (stampWingFrame)
 }
 /** 🪽 The chibi with its whole pair spread on a wider canvas (WINGED_W×160, centred, the feet as in the stamp): the

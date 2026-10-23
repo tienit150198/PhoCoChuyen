@@ -49,7 +49,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
-import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing} from './look.js';
+import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish} from './look.js';
 import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING,WING_BOX,flyMotion,flyShadow,FLY_WING,FLY_LEAN} from './wings-art.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
@@ -183,7 +183,7 @@ function onClose(){
 function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;S.dj=false;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{},me={look:withBang(lookOf(st)),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{}),...(BB.wire(st)?{bb:BB.wire(st)}:{})};   // 🐾 pt: the pet with me · 👶 bb: the baby in my arms (older services ignore both)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
+  const st=S.env?.api?.state||{},me={look:withBang(lookOf(st)),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{}),...(BB.wire(st)?{bb:BB.wire(st)}:{}),...(cleanFish(st.journey?.fish?.wear)?{fh:{sp:st.journey.fish.wear.sp,kg:st.journey.fish.wear.kg}}:{})};   // 🐾 pt: the pet with me · 👶 bb: the baby in my arms (older services ignore both)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
   const r=wire(choice(st,S.env?.api?.content,TWO)),fl=live.flags?.fly&&flying(st);   // 🪽 arriving in flight
@@ -311,7 +311,7 @@ function tagTitle(p){
   return with_(more?`${lead} ${more}`:lead);
 }
 const bgName=p=>bgBadge(p.bg)?`${bgBadge(p.bg)} ${p.name}`:p.name;   // 🎖️ the bang badge worn before the name
-function person(p){const q={pid:p.pid,name:bgName(p),nm:p.name,ti0:p.ti??null,bg:p.bg&&typeof p.bg==='object'?p.bg:null,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,pr:cleanPairs(p.pr),wg:cleanWing(p.wg),rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+function person(p){const q={pid:p.pid,name:bgName(p),nm:p.name,ti0:p.ti??null,bg:p.bg&&typeof p.bg==='object'?p.bg:null,ti:tagTitle(p),tt:Array.isArray(p.tt)?p.tt:null,lk:p.lk,pr:cleanPairs(p.pr),wg:cleanWing(p.wg),fh:cleanFish(p.fh),rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,bb:p.bb&&typeof p.bb==='object'?p.bb:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion; 🪽 `fl` the tier of a
@@ -730,7 +730,7 @@ function sprite(p){
   const hw=55;p.hw=hw;   // 🪽 the wings are drawn apart (wingsBack / wingsFront): they move
   const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(2*hw*s);cv.height=Math.ceil(160*s);
   const c=cv.getContext('2d');c.setTransform(s,0,0,s,hw*s,150*s);
-  try{const F=figureOf(withPairs(p.lk,p.pr),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
+  try{const F=figureOf(withFish(withPairs(p.lk,p.pr),p.fh),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
   p.sp=cv;p.spk=key;return cv;
 }
 /* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop; on a vehicle it rides along

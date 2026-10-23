@@ -380,7 +380,7 @@ class MixedRollout(Base):
             self.assertIn(('2026-W40', 'pet_war', 1), got)
             self.assertIn(('2026-W40', 'all', 1), got)                            # the old build's rows untouched
             self.assertIn(('arena', 1), [(h['board'], h['rank']) for h in lbt.holders(self.store)[sid]])
-            self.assertEqual(sorted(b for k, b, *_ in asked if k == 'ended'), sorted(['arena', 'pet_cup', 'pet_war', *lbt.RACE, 'wedding']))   # 🏁 2.5.2, 💍 wedding
+            self.assertEqual(sorted(b for k, b, *_ in asked if k == 'ended'), sorted(['arena', 'pet_cup', 'pet_war', *lbt.RACE, 'wedding', 'fish_big']))   # 🏁 2.5.2, 💍 wedding, 🎣 2.6.2
             asked.clear()
             lbt._done.clear()                                                    # another process of this build
             self.assertFalse(lbt.refresh(self.store, MON + 120))

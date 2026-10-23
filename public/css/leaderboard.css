@@ -288,3 +288,10 @@ html[data-theme="dem"] .lb-wing{background:radial-gradient(circle,color-mix(in s
 .lb-wpod .lb-pod-card .lb-held{white-space:normal;text-align:center;line-height:1.25;padding:2px 6px}
 @media(max-width:480px){.lb-wpod .lb-pod-pet{font-size:.9rem}.lb-wpod .lb-pod-card.gold .lb-pod-pet{font-size:.98rem}}
 html[data-layout="phone"] .lb-wpod .lb-pod-pet{font-size:.9rem}html[data-layout="phone"] .lb-wpod .lb-pod-card.gold .lb-pod-pet{font-size:.98rem}
+/* 🎣 🐋 Cá lớn + 📖 Sổ cá (24/10): eleven tabs (twelve with 💍), four a row; two a row on a phone, an odd last one wide */
+.lb-kinds.eleven,.lb-kinds.twelve{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-1)}
+.lb-kinds.eleven>button,.lb-kinds.twelve>button{min-width:0;padding:var(--sp-1);font-size:var(--fs-2)}
+.lb-kinds.eleven>button:last-child{grid-column:span 2}
+html[data-layout="phone"] .lb-kinds.eleven,html[data-layout="phone"] .lb-kinds.twelve{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-layout="phone"] .lb-kinds.eleven>button:last-child{grid-column:span 2}
+@media(max-width:700px){.lb-kinds.eleven,.lb-kinds.twelve{grid-template-columns:repeat(2,minmax(0,1fr))}.lb-kinds.eleven>button:last-child{grid-column:span 2}}

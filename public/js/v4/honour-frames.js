@@ -23,7 +23,7 @@ const TIERS={all:['25','26','27'],titles:['36','35','34'],certs:['31','32','33']
 const LOOK={all:[0,'#f2b632'],titles:[0,'#b46cff'],certs:[0,'#3d7bff'],wealth:[0,'#25b86a'],collection:[0,'#d4a017'],
   online:[0,'#6a5cff'],pets:[0,'#ff7eb6'],island:[0,'#18c3c9'],wings:[200,'#7fd3ff'],arena:[330,'#ff5a4e'],pet_cup:[300,'#ff4fa3'],
   pet_war:[150,'#00b894'],race_drag_bike:[40,'#ff9f1c'],race_drag_car:[100,'#9bd832'],race_deo_bike:[160,'#2ec4b6'],race_deo_car:[230,'#c77dff'],
-  wedding:[0,'#ff8fb1']};
+  wedding:[0,'#ff8fb1'],fish_big:[0,'#2fb4e8'],fish_dex:[0,'#36d1b0']};
 const METAL=['g','s','b'];   // the medal of a rank tier: gold, silver, bronze
 // 🏆 Trùm <nghề>: the workplace's own art; the others wear "Top tổng hợp nghề" with the workplace's icon
 const CAREER={milk_tea:'37',clothing:'38',pharmacy:'39',accounting:'40',pilot:'41',grocery:'42',police:'43',flight_attendant:'44',
@@ -80,10 +80,18 @@ const ORN={
   gem:'<path d="M0-6L5 0L0 6L-5 0Z" fill="L" stroke="D" stroke-width="1"/>',
   heart:'<path d="M0 6C-6 1-6-5-2.5-5C-1-5 0-4 0-3C0-4 1-5 2.5-5C6-5 6 1 0 6Z" fill="M" stroke="L" stroke-width="1"/>',
   ring:'<circle cy="1" r="4.2" fill="none" stroke="L" stroke-width="2"/><path d="M-2.2-3.5L0-7L2.2-3.5Z" fill="M" stroke="L" stroke-width=".8"/>',
+  hook:'<path d="M1-7V2.5A3 3 0 1 1-5 2.5" fill="none" stroke="M" stroke-width="2.2" stroke-linecap="round"/><path d="M-5 2.5L-6.6-.6" stroke="M" stroke-width="2" stroke-linecap="round"/><circle cx="1" cy="-7" r="1.6" fill="L" stroke="D" stroke-width=".8"/>',
+  wave:'<path d="M-6 1Q-4.5-3-3 1T0 1T3 1T6 1" fill="none" stroke="L" stroke-width="2" stroke-linecap="round"/><path d="M-6 4.5Q-4.5 1-3 4.5T0 4.5T3 4.5T6 4.5" fill="none" stroke="M" stroke-width="1.6" stroke-linecap="round"/>',
+  scale:'<path d="M-5-1A5 5 0 0 1 5-1L0 6Z" fill="M" stroke="L" stroke-width="1"/><path d="M-3-1A3 3 0 0 1 3-1" fill="none" stroke="D" stroke-width=".9"/>',
+  fish:'<path d="M-6 0Q-1-5 4 0Q-1 5-6 0Z" fill="M" stroke="L" stroke-width="1"/><path d="M4 0L7-3V3Z" fill="L"/><circle cx="-3" cy="-.8" r=".9" fill="D"/>',
 };
 /* 💒 Boards with a frame drawn for them, not cut from the art pack: [top 1, top 2–3] like an auction title's row plus
  * the ribbon's text (game/lb_titles.py WEDDING, owner 23/10 "cái đám cưới nữa, mình cho danh hiệu với khung riêng"). */
-const DRAWN={wedding:[['💒','#fff4f7','#f7a8c4','#a8556f','heart',12,'TOP 1'],['💐','#fffaf0','#f1d39a','#9a6b3c','ring',10,'TOP 3']]};
+const DRAWN={wedding:[['💒','#fff4f7','#f7a8c4','#a8556f','heart',12,'TOP 1'],['💐','#fffaf0','#f1d39a','#9a6b3c','ring',10,'TOP 3']],
+  // 🎣 the fishing boards (owner 24/10 "khung riêng … nước, sóng, vảy cá, lưỡi câu vàng cho top 1"), three tiers each, with a medal of the rank
+  fish_big:[['🐋','#fff6d2','#f2b632','#0b5f8a','hook',10,'TOP 1'],['🎣','#e9f9ff','#38b6e8','#0d5476','wave',12,'TOP 3'],['🐟','#eef9fc','#8fd3e8','#2b6f86','scale',14,'TOP 10']],
+  fish_dex:[['📖','#fff8e6','#e9b949','#0e6a63','fish',10,'TOP 1'],['🐠','#eafff8','#3fcfae','#0f5e52','scale',12,'TOP 3'],['🐡','#f1fffa','#86dcc3','#2a7564','wave',14,'TOP 10']]};
+const DRAWN_MEDAL=new Set(['fish_big','fish_dex']);   // 🎣 these drawn frames wear the rank's medal too
 /** The tables, for tests/honour_frames_508.mjs. */
 export const TABLES={TIERS,LOOK,FREE,UQ,CAREER,WORN,DRAWN};
 const UQ_AV=[180,180,90,90,60,0];   // the drawn frame's box, like the art's (honour-frames-data.js av)
@@ -135,8 +143,8 @@ const has=f=>Boolean(f&&geo(f));
 export function look(f){
   if(!f)return null;
   if(f.uq){const [,,M]=uqSpec(f.uq);return {fx:`drop-shadow(0 0 4px ${M})`,cls:' hf-uq',medal:''};}
-  if(f.drawn){const [,,M]=spec(f),halo=LOOK[f.board]?.[1]||M;   // 💒 its ribbon says TOP 1 / TOP 3: no medal
-    return {fx:`drop-shadow(0 0 4px ${halo})`,cls:' hf-uq hf-top',medal:'',hue:0,halo,metal:METAL[f.tier]||'b',drawn:true};}
+  if(f.drawn){const [,,M]=spec(f),halo=LOOK[f.board]?.[1]||M,m=METAL[f.tier]||'b',medal=DRAWN_MEDAL.has(f.board);   // 💒 its ribbon says TOP 1 / TOP 3: no medal (🎣 the fish boards wear one)
+    return {fx:`drop-shadow(0 0 4px ${halo})`,cls:` hf-uq hf-top${medal?` hf-m${m}`:''}`,medal:medal?String(f.rank):'',hue:0,halo,metal:m,drawn:true};}
   if(f.board&&LOOK[f.board]){const [hue,halo]=LOOK[f.board],m=METAL[f.tier]||'b';
     return {fx:`${hue?`hue-rotate(${hue}deg) `:''}drop-shadow(0 0 3px ${halo})`,cls:` hf-top hf-m${m}`,medal:f.board==='pet_war'?String(f.tier+1):String(f.rank),hue,halo,metal:m};}
   if(f.tier===3)return {fx:'drop-shadow(0 0 3px #f2b632)',cls:' hf-top',medal:''};   // 🏆 Trùm: the art itself says TRÙM

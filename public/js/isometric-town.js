@@ -14,11 +14,13 @@
  * 🪽 `fl` (live/town.py, owner 24/10 "bay được k nhỉ"): flying (world.getFly), sent on joining and when it changes (true /
  * false); a flyer's entry has `fl` (the tier), a `mv` with `fl` (null: landed). An older live service (no `flags.fly`)
  * keeps a flyer to the fastest ride's pace (world.setFlyCap).
+ * 🎣 `fh` (live/fish_carry.py): the fish carried (journey.fish.wear), sent as {sp, kg} on joining and when it changes; the
+ * service answers with what draws it, kept beside the look (`look.fh`, v4/look.js withFish); a change comes as a `mv`.
  */
 import {live} from './v4/live.js';
 import {sitePresence} from './v4/site-presence.js';
 import {createTownSocial} from './isometric-social.js';
-import {lookOf,withPairs,cleanPairs,withWings,cleanWing} from './v4/look.js';
+import {lookOf,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish} from './v4/look.js';
 import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
 import {withBang,tagLine,tagInk,badge} from './v4/bang-tag.js';
 
@@ -51,9 +53,11 @@ function publicPeer(value){
   const activity=publicActivity(value.activity);
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
-    look:withWings(withPairs(value.lk&&typeof value.lk==='object'?value.lk:{},value.pr),value.wg),pr:cleanPairs(value.pr),wg:cleanWing(value.wg),
+    look:withFish(withWings(withPairs(value.lk&&typeof value.lk==='object'?value.lk:{},value.pr),value.wg),value.fh),pr:cleanPairs(value.pr),wg:cleanWing(value.wg),fh:cleanFish(value.fh),
     gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...flyOf(value.fl),...bangOf(value.bg)};
 }
+/** 🎣 {sp, kg} of the fish I carry (journey.fish.wear), or null. */
+export const myFishOf=state=>{const f=state?.journey?.fish?.wear;return f&&typeof f==='object'&&typeof f.sp==='string'&&Number.isFinite(Number(f.kg))?{sp:f.sp,kg:Number(f.kg)}:null;};
 /** 🪽 {fl: the tier} while flying, else {}. */
 export const flyOf=fl=>Number.isInteger(fl)&&fl>=0&&fl<=7?{fl}:{};
 /** ⚔️ {tag, ink, badge} for the name tag, or {} without a bang. */
@@ -75,7 +79,7 @@ export function createTownPresence(envGetter,options={}){
     joinedAppearance=null,lastAppearance=null,
     anchor=null,joinedActivity=null,lastActivity=null,pendingActivityClear=false,
     interval=null,started=false,taken=false,seq=0,retryAt=0,statusNode=null,lastStatus='',lastWorld=null,
-    joinedRide='null',lastRide='null',joinedPet='null',lastPet='null',joinedFly=false,lastFly=false;
+    joinedRide='null',lastRide='null',joinedPet='null',lastPet='null',joinedFish='null',lastFish='null',joinedFly=false,lastFly=false;
   const ride=()=>{try{return publicRide(world()?.getRide?.())}catch{return null;}};
   const fly=activity=>{try{return !activity&&!!world()?.getFly?.();}catch{return false;}};   // 🪽 on foot during an outdoor activity
   const myPet=()=>publicPet(env()?.api?.state?.journey?.pets?.ref);
@@ -138,9 +142,9 @@ export function createTownPresence(envGetter,options={}){
     if(!wanted()||!enabled()||room||joining||now()<retryAt)return;
     const at=point(),state=env()?.api?.state,activity=leisure.current;
     if(!at)return;
-    const cid=`town-in-${++seq}`,look=appearance(state),r=ride(),pt=myPet(),fl=fly(activity);
-    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{}),...(pt?{pt}:{}),...(fl?{fl:true}:{})})){
-      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);joinedPet=JSON.stringify(pt);joinedFly=fl;status();
+    const cid=`town-in-${++seq}`,look=appearance(state),r=ride(),pt=myPet(),fl=fly(activity),fh=myFishOf(state);
+    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{}),...(pt?{pt}:{}),...(fl?{fl:true}:{}),...(fh?{fh}:{})})){
+      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);joinedPet=JSON.stringify(pt);joinedFish=JSON.stringify(fh);joinedFly=fl;status();
     }
   }
   function sync(){
@@ -153,9 +157,10 @@ export function createTownPresence(envGetter,options={}){
     if(!at||now()-lastSent<GAP)return;
     const look=appearance(env()?.api?.state),lookChanged=look.key!==lastAppearance,r=ride(),rideKey=JSON.stringify(r),rideChanged=rideKey!==lastRide;
     const pt=myPet(),petKey=JSON.stringify(pt),petChanged=petKey!==lastPet,fl=fly(activity),flyChanged=fl!==lastFly;
-    if(!lookChanged&&!rideChanged&&!petChanged&&!flyChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
+    const fh=myFishOf(env()?.api?.state),fishKey=JSON.stringify(fh),fishChanged=fishKey!==lastFish;
+    if(!lookChanged&&!rideChanged&&!petChanged&&!flyChanged&&!fishChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
     // Update the public outfit in this room; rejoining would reset the treasure lease/checkpoint.
-    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{}),...(petChanged?{pt}:{}),...(flyChanged?{fl}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;lastPet=petKey;lastFly=fl;pendingActivityClear=false;}
+    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{}),...(petChanged?{pt}:{}),...(flyChanged?{fl}:{}),...(fishChanged?{fh}:{})})){lastSent=now();lastFish=fishKey;lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;lastPet=petKey;lastFly=fl;pendingActivityClear=false;}
   }
   function onActivity(sample){
     // Preserve the exit even if another scene opens before the next 4 Hz send.
@@ -175,7 +180,7 @@ export function createTownPresence(envGetter,options={}){
         if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){
           world()?.correctPresence?.({x:f.x,y:f.y});joinedPoint=point();
         }
-        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastPet=joinedPet;lastFly=joinedFly;lastSent=now();peers.clear();
+        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastPet=joinedPet;lastFish=joinedFish;lastFly=joinedFly;lastSent=now();peers.clear();
         for(const value of Array.isArray(f.people)?f.people:[]){const p=publicPeer(value);if(p&&p.pid!==me)peers.set(p.pid,p);}
         draw();status();
       }),
@@ -192,8 +197,9 @@ export function createTownPresence(envGetter,options={}){
               const peer=peers.get(e.pid);Object.assign(peer,at);
               if(Object.hasOwn(e,'pr'))peer.pr=cleanPairs(e.pr);
               if(Object.hasOwn(e,'wg'))peer.wg=cleanWing(e.wg);   // 🪽 (live/wings.py)
+              if(Object.hasOwn(e,'fh'))peer.fh=cleanFish(e.fh);   // 🎣 (live/fish_carry.py)
               if(Object.hasOwn(e,'lk')){peer.look=e.lk&&typeof e.lk==='object'?e.lk:{};peer.gender=e.g==='female'||e.g==='male'?e.g:null;}
-              if(Object.hasOwn(e,'lk')||Object.hasOwn(e,'pr')||Object.hasOwn(e,'wg')){const {pr:_,wg:__,...lk}=peer.look||{};peer.look=withWings(withPairs(lk,peer.pr),peer.wg);}
+              if(Object.hasOwn(e,'lk')||Object.hasOwn(e,'pr')||Object.hasOwn(e,'wg')||Object.hasOwn(e,'fh')){const {pr:_,wg:__,fh:___,...lk}=peer.look||{};peer.look=withFish(withWings(withPairs(lk,peer.pr),peer.wg),peer.fh);}
               if(Object.hasOwn(e,'activity')){if(activity)peer.activity=activity;else delete peer.activity;}
               if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
               if(Object.hasOwn(e,'pt')){const pt=publicPet(e.pt);if(pt)peer.pt=pt;else delete peer.pt;}

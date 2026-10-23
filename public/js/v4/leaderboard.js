@@ -20,7 +20,13 @@ const stars=v=>v?`${STARS.format(Number(v))}★`:'';
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const MEDALS=['🥇','🥈','🥉'];
-const OWN=['certs','titles','wealth','collection','online','pets','island','wings'];   // boards with their own tab
+const OWN=['certs','titles','wealth','collection','online','pets','island','wings','fish_big','fish_all','fish_dex'];   // boards with their own tab (🎣 fish_all: the 🐋 tab's "Mọi thời")
+const FISH=['fish_big','fish_all','fish_dex'];
+let fishKg=g=>`${(Number(g||0)/1000).toFixed(1).replace('.',',')} kg`,fishName=()=>'';
+/** 🎣 game/fish_lb.py rows: the kg and the species' name come from v4/fish-art.js and the catalogue. */
+function fishArt(){
+  if(fishArt.p)return;fishArt.p=import('./fish-art.js').then(m=>{fishKg=m.fmtKg;}).catch(()=>{});
+}
 /** 🦉 "12h05" / "45 phút": the online board's time (game/online_board.py, seconds). */
 const dur=s=>{const m=Math.floor((s||0)/60),h=Math.floor(m/60);return h?`${fmt(h)}h${String(m%60).padStart(2,'0')}`:`${m} phút`;};
 
@@ -63,6 +69,9 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
+  if(board==='fish_big')return '🐋 Con cá nặng nhất mỗi người câu được trong tuần này (thứ Hai đến Chủ nhật, giờ Việt Nam). Bằng nhau: ai câu trước đứng trên.';
+  if(board==='fish_all')return '🐋 Con cá nặng nhất mỗi người từng câu được. Chỉ có danh dự, không có thưởng tuần.';
+  if(board==='fish_dex')return '📖 Số loài cá trong Sổ cá. Bằng nhau: nhiều loài hiếm hơn (🔴 Cổ đại trước), rồi ai đạt trước.';
   if(board==='wings')return 'Điểm cánh = tổng mọi đôi đang có: D 1 · C 3 · B 9 · A 27 · S 81 · SS 243 · SSS 729 · HT 2187. Bằng điểm: hạng cao hơn, rồi ai đạt trước.';
   if(board==='island')return 'Hòn đảo đẹp nhất của mỗi người: mỗi cấp công trình đã xây xong cộng điểm (lâu đài nhiều nhất), thêm điểm cho mỗi loại công trình khác nhau. Đang xây chưa tính. Chỉ có danh hiệu, không có tiền.';
   if(board==='pets')return 'Mỗi người góp bé mạnh nhất của mình, xếp theo 💪 lực chiến: hạng, chỉ số, huấn luyện và linh kiện. Bằng nhau thì ai đạt trước đứng trên.';
@@ -76,6 +85,8 @@ function rule(api,board){
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
+  if(board==='fish_big'||board==='fish_all')return fishName(r.sp)||'';
+  if(board==='fish_dex')return (r.rc||[]).map((n,i)=>n?`${['⚪','🟢','🔵','🟣','🟠','🟡','🔴'][i]}${n}`:'').filter(Boolean).reverse().join(' ');
   if(board==='wings')return wingCounts(r);
   if(board==='island')return [r.island?`${r.island.emoji} ${r.island.name}`:'',r.built?`🏗️ ${fmt(r.built)} công trình`:''].filter(Boolean).join(' · ');
   if(board==='pets')return petLine(r);
@@ -88,6 +99,8 @@ function statsLine(board,r){
   return [`Cấp ${fmt(r.level)}`,`${fmt(r.days)} ngày`,stars(r.stars)].filter(Boolean).join(' · ');
 }
 function scoreBox(board,r){
+  if(board==='fish_big'||board==='fish_all')return `<span class="lb-score"><b>🐋 ${esc(fishKg(r.score))}</b><small>cá lớn nhất</small></span>`;
+  if(board==='fish_dex')return `<span class="lb-score"><b>📖 ${fmt(r.score)}</b><small>loài cá</small></span>`;
   if(board==='wings')return `<span class="lb-score"><b>🪽 ${fmt(r.score)}</b><small>điểm cánh</small></span>`;
   if(board==='island')return `<span class="lb-score"><b>✨ ${fmt(r.score)}</b><small>điểm đẹp</small></span>`;
   if(board==='pets')return `<span class="lb-score"><b>💪 ${fmt(r.score)}</b><small>lực chiến</small></span>`;
@@ -207,6 +220,7 @@ function meCard(env,board,d){
       :board==='online'?onlineWait(me)
       :board==='pets'?'Bạn chưa nuôi bé nào. Nhận nuôi một bé ở 🐾 Thú cưng để có tên trên bảng.'
       :board==='wings'?'Bạn chưa có đôi cánh nào. Mua cánh ở 🛍️ Cửa hàng để có tên trên bảng.'
+      :FISH.includes(board)?(board==='fish_big'?'Tuần này bạn chưa câu con cá nào. Ra hồ 🎣 Câu cá để có tên trên bảng.':'Câu con cá đầu tiên ở 🎣 Câu cá để có tên trên bảng.')
       :board==='island'?'Mua một hòn đảo rồi xây nhà, hồ bơi, công viên… trên đó để có tên trên bảng.'
       :board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
       :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
@@ -225,6 +239,7 @@ function meCard(env,board,d){
 function emptyText(api,board){
   if(board==='island')return ['Chưa đảo nào lên bảng','Xây công trình đầu tiên trên đảo riêng để mở hàng nhé.'];
   if(board==='wings')return ['Chưa ai có cánh','Mua đôi cánh đầu tiên để mở hàng nhé.'];
+  if(FISH.includes(board))return ['Hồ còn yên ắng','Chưa ai câu được cá. Ra hồ 🎣 Câu cá mở hàng nhé!'];
   if(board==='pets')return ['Chưa có bé nào lên bảng','Nhận nuôi một bé, chăm, huấn luyện và ghép lên hạng để có tên nhé.'];
   if(board==='online')return ['Tuần mới vừa bắt đầu','Chưa ai lên bảng tuần này. Chơi một lúc là có tên nhé.'];
   if(board==='collection')return ['Chưa có nhà sưu tầm','Nhận món đấu giá đầu tiên để có điểm sưu tầm.'];
@@ -273,9 +288,9 @@ function wedBody(env){
 
 /** Nine board kinds (🐾 Thú cưng since 19/10, 🪽 Cánh since 23/10), ten with 💍 Khách mời; two readable columns on a phone. */
 function kindsHTML(tab){
-  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾'),tab('wings','Cánh','🪽'),tab('island','Đảo đẹp','🏝️')];
+  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾'),tab('wings','Cánh','🪽'),tab('island','Đảo đẹp','🏝️'),tab('fish_big','Cá lớn','🐋'),tab('fish_dex','Sổ cá','📖')];
   if(wedOn())tabs.push(tab('wed','Khách mời','💍'));
-  return `<div class="segmented lb-kinds ${['seven','eight','nine','ten'][tabs.length-7]||'ten'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
+  return `<div class="segmented lb-kinds ${['seven','eight','nine','ten','eleven','twelve'][tabs.length-7]||'twelve'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
 }
 
 export function leaderboardView(env){
@@ -290,7 +305,9 @@ export function leaderboardView(env){
   if(kind==='exp'&&board!=='all'&&!api.state.careers?.[board])board=s.board='all';
   load(env,board);
   const d=s.data[board];
-  const tab=(id,label,ico)=>`<button type="button" role="tab" aria-selected="${kind===id}" class="${kind===id?'active':''}" data-action="lbKind" data-kind="${id}"><span aria-hidden="true">${ico}</span> ${label}</button>`;
+  const on=id=>kind===id||(id==='fish_big'&&kind==='fish_all');   // 🐋 one tab, two boards (this week, all time)
+  const tab=(id,label,ico)=>`<button type="button" role="tab" aria-selected="${on(id)}" class="${on(id)?'active':''}" data-action="lbKind" data-kind="${id}"><span aria-hidden="true">${ico}</span> ${label}</button>`;
+  if(FISH.includes(board)){fishArt();const sp=new Map((api.content?.journey?.fish?.species||[]).map(x=>[x.id,x.name]));fishName=id=>sp.get(id)||'';}
   let body;
   if(!d)body=`<div class="lb-loading" role="status">${icon('sparkle',24)}<p class="muted">Đang tải bảng xếp hạng…</p></div>`;
   else if(d.error)body=`<div class="notice danger">${icon('alert',17)}<div>${esc(d.error)}</div></div>${btn(icon('refresh',15)+' Thử lại','lbRetry',{board},'small')}`;
@@ -305,7 +322,7 @@ export function leaderboardView(env){
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Bảng xếp hạng</h2><p>Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   return head+`<div class="sheet-body lb">
     ${kindsHTML(tab)}
-    ${kind==='exp'?pickerHTML(api,board,s.more):''}
+    ${kind==='exp'?pickerHTML(api,board,s.more):''}${kind==='fish_big'||kind==='fish_all'?`<nav class="lb-picker" aria-label="Tuần hay mọi thời">${[['fish_big','📅','Tuần này'],['fish_all','🏛️','Mọi thời']].map(([id,e,l])=>`<button type="button" class="lb-chip${kind===id?' active':''}" data-action="lbKind" data-kind="${id}" aria-pressed="${kind===id}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</nav>`:''}
     ${board==='collection'?`<details class="lb-rule"><summary>Cách tính điểm sưu tầm ＋</summary><p>${esc(rule(api,board))}</p></details>`:`<p class="lb-rule">${esc(rule(api,board))}</p>`}${marketNote(api,board)}
     ${body}
     ${privacyNote(env)}</div>`;

@@ -499,6 +499,9 @@ for _S in SETS.values():
 # id} says which photo each frame holds (the client draws it with public/js/v4/portrait-art.js). 2.4.66 keeps the piece in
 # reno.items, unshown.
 ITEMS['anh_chup'] = dict(_i('wall', 'wall', 2, 2, 0, 2, _UQ_ROOMS, 'Ảnh chụp đóng khung', '🖼️', ('art',)), price=0, uq=True)
+# 🎣 Tranh cá: a fish the player caught, mounted (game/fishing.py jr_fish_mount): 2 × 2 on a wall, drawn from journey.fish.tro
+# {uid: [species, grams]} (public/js/v4/deco-art.js). Never sold in the shop (uq); an older build shows nothing for it.
+ITEMS['tranh_ca'] = dict(_i('wall', 'wall', 2, 2, 0, 3, _UQ_ROOMS, 'Tranh cá', '🐟', ('art',)), price=0, uq=True)
 
 # ---------------------------------------------------------------- 🛋️ Thêm đồ trang trí (owner 21/10/2026: "thêm đồ trang trí cho nhà")
 # 64 evergreen pieces for every room and style (+9 for the villa gym and study, 24/10) (nét Việt xưa, tối giản, pastel, góc gaming, góc đọc sách, bếp, nhà tắm,

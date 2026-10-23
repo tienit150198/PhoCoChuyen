@@ -92,6 +92,7 @@ from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX, PET_SETS
 from . import pet_rank
+from . import fish_carry
 from . import filters
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
                           TINT_SLOTS, TITLES, TOPICS, VENDORS, H, W)
@@ -339,7 +340,7 @@ def clean_pet(pt) -> dict | None:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg', 'pr', 'wg', 'fl')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg', 'pr', 'wg', 'fl', 'fh')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None,
                  pt: dict | None = None, bb: dict | None = None):
@@ -356,6 +357,7 @@ class Walker:
         self.pr = None                 # 🤝 the phụ kiện đôi worn {kind: count} (live/charms.py), outside the look
         self.wg = None                 # 🪽 the wing worn {k, r} (live/wings.py), outside the look
         self.fl = None                 # 🪽 flying: the tier of the wings worn (FLY_FAST), else None
+        self.fh = None                 # 🎣 the fish carried (live/fish_carry.py), outside the look
 
     @property
     def speed(self) -> float:
@@ -391,6 +393,8 @@ class Walker:
             d['pr'] = self.pr
         if self.wg:
             d['wg'] = self.wg
+        if self.fh:
+            d['fh'] = self.fh
         return d
 
 
@@ -676,6 +680,7 @@ class StreetFeature(Feature):
         bb = babies.clean_baby(f.get('bb'))   # 👶 the baby carried (optional)
         bsp = await babies.spouse_of(self.db, p, bb)
         pet = await pet_rank.keep(self.db, p, clean_pet(f.get('pt')))   # 🏅 a rank this player really has
+        fh = await fish_carry.keep(self.db, p, fish_carry.clean(f.get('fh')))   # 🎣 a rarity this player has caught
         r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
         bb, bby = babies.claim(self.hub, bb, bsp)
         self._leave_player(p, 'other', keep=conn)
@@ -689,6 +694,7 @@ class StreetFeature(Feature):
         w.bg = await bangs.of_app(self.app).one(p.pid)   # ⚔️ once per entry (live/bangs.py)
         w.pr = await charms.of_app(self.app).one(p)   # 🤝 the pairs worn, once per entry (live/charms.py)
         w.wg = await wings.of_app(self.app).one(p)   # 🪽 the wing worn, likewise (live/wings.py)
+        w.fh = fh
         if f.get('fl') is True and w.wg:   # 🪽 arriving in flight: the vehicle stays home
             w.fl, w.ride = w.wg['r'], None
         self._enter(room, conn, w)
@@ -1008,7 +1014,7 @@ class StreetFeature(Feature):
         for k, (p, conns, old) in enumerate(moving):
             sx, sy = g.spots['spawn']
             w = Walker(p, old.look, old.g, old.title, g.clamp(sx + (50 if k == 0 else -50), sy), now, rk=old.rk)   # seat 0 is on the right
-            w.st, w.tt, w.bg, w.pr, w.wg = old.st, old.tt, old.bg, old.pr, old.wg
+            w.st, w.tt, w.bg, w.pr, w.wg, w.fh = old.st, old.tt, old.bg, old.pr, old.wg, old.fh
             for c in conns:
                 self._enter(cafe, c, w)
             tb = cafe.data['tables'][0]

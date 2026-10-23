@@ -46,6 +46,7 @@ WINGS = 'wings'                 # 🪽 game/wing_lb.py (23/10)
 ARENA, PET_CUP, PET_WAR = 'arena', 'pet_cup', 'pet_war'   # ⚔️ game/pet_arena.py, 🏟️ game/pet_cup.py, 🛡️ game/pet_war.py (19/10)
 RACE = ('race_drag_bike', 'race_drag_car', 'race_deo_bike', 'race_deo_car')   # 🏁 game/racing.py: the week's best times (22/10)
 WEDDING = 'wedding'             # 💍 Khách mời của tuần (game/wedding_live.py race): weddings attended this week (owner 23/10)
+FISH_BIG, FISH_DEX = 'fish_big', 'fish_dex'   # 🎣 game/fish_lb.py (owner 24/10): 🐋 this week's heaviest fish, 📖 species collected
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -81,11 +82,15 @@ BOARD_TITLES = {                # (emoji, name) per tier
     # frames (public/js/v4/honour-frames.js DRAWN). Beside the race's own 🥇 Khách quý / 🎊 Ăn cưới chuyên nghiệp,
     # which last week's winners keep wearing this week (live/wedding.py).
     WEDDING: (('💒', 'Vua ăn cưới của tuần'), ('💐', 'Khách mời vàng của tuần')),
+    # 24/10 (owner: "🐋 Cá lớn nhất … 📖 Bộ sưu tập cá … danh hiệu, khung riêng như các bảng khác"): game/fish_lb.py, with
+    # their own drawn frames (public/js/v4/honour-frames.js DRAWN: water, waves, scales, a golden hook for top 1).
+    FISH_BIG: (('🐋', 'Vua cá lớn của tuần'), ('🎣', 'Cần thủ cá khủng'), ('🐟', 'Hội săn cá lớn')),
+    FISH_DEX: (('📖', 'Nhà sưu tập cá của tuần'), ('🐠', 'Bách khoa cá'), ('🐡', 'Hội sưu tầm cá')),
 }
 # A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five.
 BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10)), **{b: ((1, 1), (2, 3)) for b in (*RACE, WEDDING)}}
 BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân'), **{b: ('Top 1', 'Top 2–3') for b in (*RACE, WEDDING)}}
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, WINGS, ARENA, PET_CUP, PET_WAR, *RACE, WEDDING)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, WINGS, ARENA, PET_CUP, PET_WAR, *RACE, WEDDING, FISH_BIG, FISH_DEX)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -215,6 +220,9 @@ def standings(db, t: float | None = None) -> list:
         if board == WEDDING:   # 💍 the week of `t` (wedding_guests)
             out.extend(_wedding_standings(db, now() if t is None else t))
             continue
+        if board in (FISH_BIG, FISH_DEX):   # 🎣 🐋 the week of `t` (fish_best), 📖 the collection now (fish_dex)
+            out.extend(_fish_standings(db, board, now() if t is None else t))
+            continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))
     return out
@@ -254,6 +262,15 @@ def _wedding_standings(db, t: float) -> list:
                           'GROUP BY g.sid ORDER BY n DESC, last ASC, g.sid LIMIT ?',
                           (vn_week(t), GUEST_MIN_MINUTES, BOARD_TIERS[WEDDING][-1][1])).fetchall()
         return [(WEDDING, i + 1, r['sid'], int(r['n'])) for i, r in enumerate(rows)]
+    except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
+        return []
+
+
+def _fish_standings(db, board: str, t: float) -> list:
+    """🎣 [(board, rank, sid, score)]: 🐋 the week of `t` (grams), 📖 the collection now (species), top TOP."""
+    try:
+        from . import fish_lb
+        return fish_lb.standings(db, board, t, TOP)
     except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
         return []
 
@@ -324,10 +341,12 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
                     # ⚔️ the arena's ladder too: the ended week's own season
                     # 🏁 the race boards too: the ended week's own best times
                     # 💍 the wedding race too: the ended week's own guests
-                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA, WEDDING, *RACE)] + [r for r in standings_online(db, week_start(t) - 3600)]
+                    # 🐋 the fish board too: the ended week's own heaviest fish
+                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA, WEDDING, FISH_BIG, *RACE)] + [r for r in standings_online(db, week_start(t) - 3600)]
                              + _pet_standings(db, ARENA, week_start(t) - 3600, TOP)
                              + [r for b in RACE for r in _race_standings(db, b, week_start(t) - 3600)]
-                             + _wedding_standings(db, week_start(t) - 3600))
+                             + _wedding_standings(db, week_start(t) - 3600)
+                             + _fish_standings(db, FISH_BIG, week_start(t) - 3600))
                     _insert(db, last_week, ended, 1, day, t)
                 else:                   # a week long gone (the server was off): its last daily holders stand
                     db.execute('UPDATE lb_weekly SET final=1 WHERE final=0 AND week=?', (last_week,))
@@ -356,8 +375,8 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
 # What cannot be fixed from here: 🏝️ island's (and 🪽 wings', under 2.5.6) final row of an ended week frozen by 2.4.60 (the board is the islands'
 # beauty *now*: the builds at the week's end are not kept), and the hours between 2.4.60's refresh and this heal, when
 # those boards show no holder.
-NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE, WINGS, WEDDING)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them), 🪽 WINGS in 2.5.7, 💍 WEDDING after 2.5.9
-ENDED_BOARDS = (ARENA, PET_CUP, PET_WAR, *RACE, WEDDING)
+NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE, WINGS, WEDDING, FISH_BIG, FISH_DEX)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them), 🪽 WINGS in 2.5.7, 💍 WEDDING after 2.5.9, 🎣 FISH after 2.6.0
+ENDED_BOARDS = (ARENA, PET_CUP, PET_WAR, *RACE, WEDDING, FISH_BIG)
 HEAL_LOCK = 17863
 
 
@@ -378,6 +397,8 @@ def _new_standings(db, board: str, t: float) -> list:
             return []
     if board == WEDDING:
         return _wedding_standings(db, t)
+    if board in (FISH_BIG, FISH_DEX):
+        return _fish_standings(db, board, t)
     return _pet_standings(db, board, t, TOP)
 
 
@@ -389,6 +410,8 @@ def _ended_standings(db, board: str, t: float, prev: str) -> list:
             return _race_standings(db, board, week_start(t) - 3600)
         if board == WEDDING:
             return _wedding_standings(db, week_start(t) - 3600)
+        if board == FISH_BIG:
+            return _fish_standings(db, FISH_BIG, week_start(t) - 3600)
         if board == PET_CUP:
             from . import pet_cup
             return pet_cup.standings(db, TOP, prev)

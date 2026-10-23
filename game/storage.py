@@ -786,6 +786,9 @@ class Store:
                 if action.startswith('jr_beach_'):
                     from . import island_fun
                     island_fun.command_commit(db,sid,action,current,result)  # 🏖️ a beach act / the chest: only on the trip it names
+                if action.startswith('jr_fish_'):
+                    from . import fishing
+                    fishing.command_commit(db,sid,action,current,result)  # 🎣 an island cast: only on the trip; a catch: boards, records, ticker
                 if action.startswith('jr_lixi_'):
                     from . import lixi
                     lixi.command_commit(db,sid,action,current,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
@@ -900,6 +903,12 @@ class Store:
             if action.startswith('jr_isle_') or action in ('jr_island_sell','jr_island_buy','reset_all','import_save'):
                 from . import island_build
                 island_build.command_commit(db,sid,action,raw)  # 🏗️ island_builds follows the save; a use is checked on the island
+            if action.startswith('jr_beach_'):
+                from . import island_fun
+                island_fun.command_commit(db,sid,action,raw,result)  # 🏖️ a beach act / the chest: only on the trip it names
+            if action.startswith('jr_fish_'):
+                from . import fishing
+                fishing.command_commit(db,sid,action,raw,result)  # 🎣 an island cast: only on the trip; a catch: boards, records, ticker
             if action.startswith('jr_lixi_'):
                 from . import lixi
                 lixi.command_commit(db,sid,action,raw,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
@@ -953,6 +962,8 @@ class Store:
             from . import pet_arena
             from . import wings
             wings.forget(db,sid)  # 🪽 the worn wing others see (wing_worn)
+            from . import fish_lb
+            fish_lb.forget(db,sid)  # 🎣 their fishing boards rows and species records go
             pet_arena.forget(db,sid)  # ⚔️ their arena row, season rows, open cup entry and war pick (past matches keep the names shown)
             from . import lux
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous

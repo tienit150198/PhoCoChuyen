@@ -89,8 +89,8 @@ class Catalogue(unittest.TestCase):
         uq = [k for k, v in DC.ITEMS.items() if v.get('uq')]                 # 🔨 the paintings won at auction, after them
         self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq) + DC.NEW_2026)   # 🛋️ 21/10/2026: the new pieces, last
         self.assertEqual(DC.KNOWN_2471, DC.KNOWN_1911 + tuple(uq))
-        self.assertEqual(uq[-1], 'anh_chup')                                  # 📸 a framed player photo (game/photo_studio.py), last
-        self.assertTrue(uq and all(k.startswith(('uq_tr_', 'uq_dc_')) and DC.ITEMS[k]['price'] == 0 for k in uq[:-1]))   # 🪑 20/10 furniture too
+        self.assertEqual(uq[-2:], ['anh_chup', 'tranh_ca'])                  # 📸 a framed player photo (game/photo_studio.py), 🎣 a mounted fish (game/fishing.py), last
+        self.assertTrue(uq and all(k.startswith(('uq_tr_', 'uq_dc_')) and DC.ITEMS[k]['price'] == 0 for k in uq[:-2]))   # 🪑 20/10 furniture too
         self.assertEqual(DC.ITEMS['anh_chup']['price'], 0)
         self.assertEqual(DC.KNOWN_1715[-1], 'mam_ngu_qua')                  # the last piece 1.7.15 knows
         self.assertEqual(DC.KNOWN_132, tuple(DC.ITEMS)[:65])                # what a 1.3.2 build knows: its mirror holds only these

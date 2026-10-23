@@ -28,6 +28,9 @@ export async function visitTemple(env){
 
 export async function visitLeisure(env,kind){
   if(!['fishing','boat','pool'].includes(kind))return;
+  if(kind==='fishing'&&env.api?.state?.journey?.story&&env.api?.content?.journey?.fish){   // 🎣 the lake with rods, stalls and Sổ cá (v4/fishing.js)
+    env.closeSheet?.();return (await import('./fishing.js')).openFishing(env,{});
+  }
   const [{openPixelPlace},{loadLeisureArt}]=await Promise.all([import('../pixel/places.js'),import('../isometric/leisure-art.js')]);
   const leisureArt=await loadLeisureArt(kind);
   if(env.api?.state?.jail){await env.act('jail');return;}

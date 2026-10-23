@@ -76,6 +76,7 @@ export async function loadWorld(){
 /** Leisure places (Câu cá, Chèo thuyền, Bơi): the pixel place and its art, on the first visit. */
 export async function openLeisure(kind,env){
   if(env.api?.state?.jail){await env.act('jail');return;}
+  if(kind==='fishing'&&env.api?.state?.journey?.story&&env.api?.content?.journey?.fish){env.closeSheet?.();return (await import('./v4/fishing.js')).openFishing(env,{});}   // 🎣 v4/fishing.js
   const [{openPixelPlace},{loadLeisureArt}]=await Promise.all([import('./pixel/places.js'),import('./isometric/leisure-art.js')]);
   const leisureArt=await loadLeisureArt(kind);
   if(env.api?.state?.jail){await env.act('jail');return;}

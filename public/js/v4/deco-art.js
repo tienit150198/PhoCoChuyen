@@ -11,6 +11,7 @@
  * of its own colours take the chosen one (its main part: the sofa's fabric, a pot, a frame…), see `tinted`. */
 import {PALETTE} from './look.js';
 import {PAINTINGS,paintingSVG} from './auction-art.js';
+import {fishSvg,fmtKg} from './fish-art.js';   // 🎣 tranh cá and the fish in the aquarium (game/fishing.py)
 
 export const CW=40,FR=30,WR=34,PX=14,CEIL=10,TOP=12,BASE=28;
 const OL='#5b4535';
@@ -59,7 +60,7 @@ export const ART={
       +C(W-23,-37,1.5,'#282634',0)+L(`M${W-23} -35v12q0 6-8 8`,'#282634',1.4)},
   be_ca:{h:64,d:(W)=>shadow(W,30)+box(4,W-8,0,16,8,P.woodD,P.woodL)+R(6,-64,W-12,40,'#bfe7f7',5)+Rn(8,-56,W-16,30,'#8fd2ef',3,.75)
     +Pa('M18 -26q-4-12 2-18q2 10 2 18','#7cc47f',1)+Pa(`M${W-20} -26q-5-10 0-16q4 8 3 16`,P.leafD,1)
-    +E(30,-44,7,4,P.peachD,1.2)+Pa('M23 -44l-6-4v8z',P.peachD,1.2)+C(32,-45,.9,OL,0)+E(W-30,-36,6,3.5,P.butterD,1.2)+Pa(`M${W-24} -36l5-3v6z`,P.butterD,1.2)
+    +(AQUA.length?aquaFish(W):E(30,-44,7,4,P.peachD,1.2)+Pa('M23 -44l-6-4v8z',P.peachD,1.2)+C(32,-45,.9,OL,0)+E(W-30,-36,6,3.5,P.butterD,1.2)+Pa(`M${W-24} -36l5-3v6z`,P.butterD,1.2))
     +C(40,-56,2,'#fff',.8)+C(44,-50,1.4,'#fff',.8)+shine(10,-62,4,22)},
   ke_sach:{h:88,d:(W)=>shadow(W,30)+R(4,-88,W-8,88,P.woodD,4)+Rn(8,-84,W-16,80,P.wood,2)+R(6,-60,W-12,4,P.woodD,1,1)+R(6,-32,W-12,4,P.woodD,1,1)
     +[[10,-82,7,22,P.red],[18,-80,6,20,P.sky],[25,-84,8,24,P.butter],[34,-78,6,18,P.mint],[50,-82,12,6,P.lilac],[50,-76,12,6,P.pink],
@@ -680,6 +681,27 @@ ART.anh_chup={h:68,wall:1,d:(W,H,uid)=>{
     :Rn(x+6,y+6,fw-12,fh-12,'#f3e6d2',1)+C(W/2,y+fh*.42,fw*.16,'#d9bfa2',0)+Rn(W/2-fw*.22,y+fh*.6,fw*.44,fh*.3,'#d9bfa2',fw*.12);
   return Rn(x+1,y+2,fw,fh,'#000',3,.13)+R(x,y,fw,fh,'#8a5a36',3)+R(x+3,y+3,fw-6,fh-6,'#fbf3e6',2,0)+inner;
 }};
+
+/** 🎣 Tranh cá (game/fishing.py jr_fish_mount; `tranh_ca`, 2 × 2 wall cells): the fish mounted on a blue board in a wooden
+ * frame, a brass plate with its weight. FISH_TRO: piece uid → {sp: the species from content.journey.fish, g: grams}
+ * (reno.js fills it from journey.fish.tro); without it, a fish shadow. */
+export const FISH_TRO=new Map();
+ART.tranh_ca={h:68,wall:1,d:(W,H,uid)=>{
+  const t=uid?FISH_TRO.get(uid):null,fw=W-6,fh=Math.min(H-8,fw*.72),x=3,y=2,iw=fw-14,ih=fh-20;
+  const fish=t?.sp?fishSvg(t.sp,{w:iw,h:ih,title:t.sp.name||''}):fishSvg({id:'_',fam:'carp',r:0},{w:iw,h:ih,silhouette:true});
+  return Rn(x+1,y+2,fw,fh,'#000',3,.13)+R(x,y,fw,fh,'#7a4a2a',3)+R(x+3,y+3,fw-6,fh-6,'#2f5d7c',2,0)+Rn(x+5,y+5,fw-10,(fh-10)*.45,'#3c7096',2,.6)
+    +fish.replace('<svg ',`<svg x="${n(x+7)}" y="${n(y+5)}" `)
+    +R(W/2-15,y+fh-13,30,9,'#d9b866',1.5,1)+(t?`<text x="${n(W/2)}" y="${n(y+fh-6.4)}" text-anchor="middle" font-size="6" font-weight="700" fill="#5b4535">${fmtKg(t.g)}</text>`:'');
+}};
+/** 🐠 The fish swimming in the home aquarium (journey.fish.aq, game/fishing.py jr_fish_aqua): species from the content,
+ * filled by reno.js; empty: be_ca keeps its two cartoon fish. At most three show in one tank. */
+export const AQUA=[];
+function aquaFish(W){
+  const spots=[[.32,-46,0],[.68,-37,1],[.5,-30,0]];
+  return AQUA.slice(0,3).map((sp,i)=>{const [fx,y,flip]=spots[i],len=Math.min(24,(W-20)*.36),h=len/2,x=W*fx-len/2;
+    const svg=fishSvg(sp,{w:len,h,glow:false});
+    return `<g${flip?` transform="translate(${n(2*x+len)} 0) scale(-1 1)"`:''}>${svg.replace('<svg ',`<svg x="${n(x)}" y="${n(y-h/2)}" `)}</g>`;}).join('');
+}
 
 /* ---------------------------------------------------------------- the room */
 /** Free placement: units to a grid cell (game/deco_content.py U) and what one unit is in drawing pixels. */

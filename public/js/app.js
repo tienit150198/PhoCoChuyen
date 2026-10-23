@@ -382,6 +382,7 @@ function navItems(c){
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
   {const lv=L.live.m?.live;if(lv?.flags.wedding&&lv.welcomed)items.push(['liveWed','heart','Lịch cưới']);}  // 💍 Lịch cưới (v4/wedding.js): live weddings, while on
   {const lv=L.live.m?.live;if(lv?.flags.kara&&lv.welcomed)items.push(['liveKara','music','Phòng hát']);}  // 🎤 Phòng hát (v4/karaoke.js): only while the live service has it on (LIVE_KARAOKE)
+  if(api.state?.journey?.story&&api.content?.journey?.fish){RAIL_NOTE.fishing='Cần câu, Sổ cá, bán cá kiếm xu';items.push(['fishing','fish','Câu cá']);}  // 🎣 Câu cá (v4/fishing.js, own dialog): only once the server has it
   {const tm=api.state?.journey?.story&&api.state.journey.tile;if(tm){RAIL_NOTE.tileMatch='🧩 Phúc lợi +'+tm.pct+'%';items.push(['tileMatch','grid','Ghép ba Phố Mây']);}}  // 🧩 Ghép ba Phố Mây (v4/tile-match.js): its badge as the entry's line
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   if(api.state?.ads)items.push(['bonusVideo','sparkle','Quà xem quảng cáo',api.state.ads.left>0?api.state.ads.left:0]);  // 📺 v4/bonus-video.js: only while ads are on (game/ads.py)
@@ -450,7 +451,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over)||(x[0]==='townFair'&&fairNow()?.state==='open')||(x[0]==='halloween'&&hwNow()?.state==='open');   // 🎃 in sight while candy is earned
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
+  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','fishing','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1639,7 +1640,7 @@ async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const 
 async function handleAction(action,data,el){
   // These island routes open local scenes without a server command. Apply the same camp boundary before
   // they can change mode or load a destination; chat and the camera keep their existing behavior.
-  if(api.state?.jail&&['home','jrPick','jrPickFind','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
+  if(api.state?.jail&&['home','jrPick','jrPickFind','sharedIsland','leisurePlace','fishing','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
     await (await import('./v4/jail.js')).openJail(env());return;
   }
   if(action==='leisurePlace'){await (await import('./v4/venue-routing.js')).visitLeisure(env(),data.kind);return;}
@@ -1773,6 +1774,7 @@ async function handleAction(action,data,el){
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='liveKara'){await (await import('./v4/venue-routing.js')).visitVenue(env(),'karaoke',async()=>{await (await import('./v4/karaoke.js')).openKaraoke(env(),data);});break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
       if(action==='tileMatch'){await (await import('./v4/tile-match.js')).openTileMatch(env());break;}
+      if(action==='fishing'){closeSheet();await (await import('./v4/fishing.js')).openFishing(env(),{spot:data?.spot||''});break;}  // 🎣 Câu cá: the lake, its stalls, Sổ cá
       if(action==='bonusVideo'){const m=await import('./v4/bonus-video.js');   // 📺 a place's button (data-place) or the sheet
         if(data.place){const view=ui.view,extra={};for(const k of ['what','career'])if(data[k])extra[k]=data[k];   // 📝 what to retake, 📦 whose goods
           await m.watch(env(),data.place,{extra,restore:()=>{if(view)openSheet(view);}});if($('#sheet').open)renderSheet(false);}
