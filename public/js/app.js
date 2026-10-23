@@ -110,7 +110,7 @@ function moreWay(c,label,style='primary'){
 const SHUT_WORK=/^(shop_|ac_|cs_|ph_|cl_|desk_|more_work$)/;
 function shutWork(html){
   const c=room();if(!c||c.open||!api.state?.current)return html;
-  const g=meta().shift_gate,needs=op=>SHUT_WORK.test(op)||Boolean(g&&op.startsWith(g.prefix)&&!g.free.includes(op));
+  const g=meta().shift_gate,needs=op=>g&&op.startsWith(g.prefix)?!g.free.includes(op):SHUT_WORK.test(op);  // a plugin's own command follows its SPEC (singer cs_intro is free; its prefix is customer_care's cs_ too)
   return html.replace(/<button\b([^>]*?)\sdata-(command|op)="([^"]*)"([^>]*)>/g,(m,a,k,op,b)=>needs(op)&&!/\sdisabled\b/.test(a+b)?`<button${a} data-${k}="${op}"${b} disabled>`:m);
 }
 /** Work sheets pay from the workplace fund (game/engine.py money: "Chưa đủ xu…"). A command button that spends a
