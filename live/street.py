@@ -38,6 +38,12 @@ Moving (memory only, never the database)
   may carry `rel` {id, emoji, name}: the 💞 relationship the two set (game/friend_charms.py), read from friend_bonds.
 * 🪽 Cánh (live/wings.py: read from the game's table wing_worn, never from a frame): a public entry may carry `wg`
   {k: style, r: tier}; a change comes as a `wg` event {pid, wg} (null: none worn). Older clients ignore both.
+* 🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): a walker who
+  wears wings (`wg`, the server's own copy) may fly on a public place: `walk_in` may carry `fl: true`, and `fly {on}`
+  takes off or lands mid-stroll. A flyer moves game/wings_content.py FLY_FAST[tier] times as fast; their public entry has
+  `fl` (the tier) and `v` while flying, and the `rd` diff carries `fl` (null: on foot) beside `r`. Flying and riding never
+  go together: taking off sends the vehicle home (a passenger behind gets off, sitting behind someone gets off), riding or
+  sitting behind lands first. A café and a wedding are on foot (`no_fly`). Older clients ignore `fl` (they see a walker).
 * 👶 Bế bé đi chơi (live/babies.py): `walk_in` / `wed_in` may carry `bb` {n, g, o, sh?}, the baby in the player's
   arms; their public entry has `bb` while set. The shared child is carried by one spouse at a time (`bb_taken` in
   walk_room). Optional: an older client ignores it.
@@ -60,7 +66,7 @@ Tables and happenings
 Frames (client → server; replies in brackets)
   walk_places {}                                   [walk_places {places: [{id, name, icon, n}]}]
   walk_in {place, look, g, title, titles, r?, bb?} [walk_room {place, room, me, people, tables, geo, hap, at, bb_taken?}]
-  walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}  ride {r}  back {to}
+  walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}  ride {r}  back {to}  fly {on}
   card {pid}                                       [card {...}]
   invite {pid}                                     [invite_sent {id, pid}]; the other gets invited {id, pid, name}
   invite_reply {id, ok}                            [both: walk_room of the café | the inviter: invite_no {id}]
@@ -81,6 +87,7 @@ import secrets
 import time
 
 from . import babies, bangs, charms, coride, effects, honours, plates, styles, wings
+from game.wings_content import FLY_FAST   # 🪽 a flyer's speed by tier
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX, PET_SETS
@@ -332,7 +339,7 @@ def clean_pet(pt) -> dict | None:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg', 'pr', 'wg')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt', 'pt', 'bb', 'bg', 'pr', 'wg', 'fl')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None,
                  pt: dict | None = None, bb: dict | None = None):
@@ -348,9 +355,12 @@ class Walker:
         self.bg = None                 # ⚔️ the bang tag (live/bangs.py)
         self.pr = None                 # 🤝 the phụ kiện đôi worn {kind: count} (live/charms.py), outside the look
         self.wg = None                 # 🪽 the wing worn {k, r} (live/wings.py), outside the look
+        self.fl = None                 # 🪽 flying: the tier of the wings worn (FLY_FAST), else None
 
     @property
     def speed(self) -> float:
+        if self.fl is not None:
+            return SPEED * FLY_FAST[self.fl]
         return SPEED * RIDE_FAST if self.ride or self.back else SPEED
 
     def at(self, now: float) -> tuple:
@@ -369,6 +379,8 @@ class Walker:
             d['r'], d['v'] = self.ride, self.speed
         if self.back:
             d['b'], d['v'] = self.back, self.speed
+        if self.fl is not None:
+            d['fl'], d['v'] = self.fl, self.speed
         if self.st:
             d['st'] = self.st
         if self.tt:
@@ -416,6 +428,8 @@ class StreetFeature(Feature):
         self.lb_at = 0.0
         if self.cfg.street or self.cfg.fair:   # 💑 `back`, `fair_back`, `o` and `b` are understood (live/coride.py)
             self.cfg.flags_extra['coride'] = True
+        if self.cfg.street:   # 🪽 `fly` and `fl` are understood (a client offers 🪽 Bay only then)
+            self.cfg.flags_extra['fly'] = True
 
     def enabled(self) -> bool:
         """Moves, bubbles, emotes and tables also run the wedding parties (LIVE_WEDDING); walk_in needs LIVE_STREET."""
@@ -675,6 +689,8 @@ class StreetFeature(Feature):
         w.bg = await bangs.of_app(self.app).one(p.pid)   # ⚔️ once per entry (live/bangs.py)
         w.pr = await charms.of_app(self.app).one(p)   # 🤝 the pairs worn, once per entry (live/charms.py)
         w.wg = await wings.of_app(self.app).one(p)   # 🪽 the wing worn, likewise (live/wings.py)
+        if f.get('fl') is True and w.wg:   # 🪽 arriving in flight: the vehicle stays home
+            w.fl, w.ride = w.wg['r'], None
         self._enter(room, conn, w)
         out = self._snapshot(room, p, now)
         if by:
@@ -720,17 +736,51 @@ class StreetFeature(Feature):
             return None
         if by:
             return coride.taken_frame('walk_taken', self.hub, by)
-        if r == w.ride:
+        if r == w.ride and (r is None or w.fl is None):
             return None
         now = time.time()
         here, end = w.at(now), tuple(w.path[-1])
         if r is None and w.pill:
             self._hop_off(room, room.data['people'].get(w.pill), now)
         w.ride = r
+        if r is not None:
+            w.fl = None   # 🪽 on the vehicle: landed first
         w.path, w.t0 = GEO[room.data['place']].route(here, end), now
-        self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=r, v=w.speed, p=w.path, at=round(now, 3)))
+        self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=r, v=w.speed, p=w.path, at=round(now, 3), fl=w.fl))
         self._carry(room, w)
         return None
+
+    @on('fly', rate=(6, 10))
+    async def fly(self, conn, f):
+        """🪽 `fly {on}`: take off (wearing wings, on a public place) or land. Where they are now stays; the rest of the
+        path goes on at the new speed."""
+        room, w = self._me(conn)
+        tier = None
+        if f.get('on') is True:
+            if GEO[room.data['place']].private:
+                raise LiveError('no_fly', 'Ở đây đi bộ thôi, không bay được.')
+            if not w.wg:
+                raise LiveError('no_fly', 'Đeo cánh rồi mới bay được nhé.')
+            tier = w.wg['r']
+        self._set_fly(room, w, tier, time.time())
+        return None
+
+    def _set_fly(self, room, w: Walker, tier, now: float) -> bool:
+        """🪽 Flying at `tier` (None: on foot). Taking off sends the vehicle home and gets a passenger off, or gets off
+        the seat behind; tells the room with an `rd` (r, v, fl, the path re-stamped from where they are)."""
+        if tier == w.fl:
+            return False
+        if tier is not None:
+            if w.back:   # off the seat behind first
+                self._hop_off(room, w, now)
+            if w.pill:   # the passenger behind gets off
+                self._hop_off(room, room.data['people'].get(w.pill), now)
+            w.ride = None
+        here, end = w.at(now), tuple(w.path[-1])
+        w.fl = tier
+        w.path, w.t0 = GEO[room.data['place']].route(here, end), now
+        self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=w.ride, v=w.speed, p=w.path, at=round(now, 3), fl=w.fl))
+        return True
 
     # ---- 🛵 sitting behind the spouse (live/coride.py) ---------------------------------------------------------
     def _carry(self, room, w: Walker) -> None:
@@ -778,10 +828,10 @@ class StreetFeature(Feature):
             self._unseat(room, w, now)
         if w.pill:
             self._hop_off(room, room.data['people'].get(w.pill), now)
-        if w.ride:   # off my own vehicle first (it goes home)
+        if w.ride or w.fl is not None:   # off my own vehicle first (it goes home), or landed (🪽)
             here = w.at(now)
-            w.ride, w.path, w.t0 = None, [list(here), list(here)], now
-            self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=None, v=w.speed, p=w.path, at=round(now, 3)))
+            w.ride, w.fl, w.path, w.t0 = None, None, [list(here), list(here)], now
+            self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=None, v=w.speed, p=w.path, at=round(now, 3), fl=None))
         w.back, d.pill = to, w.pid
         self._carry(room, d)
         return None

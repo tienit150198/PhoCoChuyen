@@ -26,6 +26,11 @@ EARN = (2, 4, 6, 8, 11, 15, 20, 25)   # % of the work earnings (the pets give 2�
 # then "tăng nữa nhé, tối đa đó gấp đôi đi": the daily caps ×2
 CAP = (40_000, 100_000, 300_000, 800_000, 2_000_000, 6_000_000, 16_000_000, 30_000_000)   # xu a Vietnam day
 BATTLE = (2, 3, 4, 6, 8, 10, 12, 14)   # % on every stat of the owner's pets, so 💪 lực chiến itself (owner 23/10 "tăng trực tiếp luôn")
+# 🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): a flyer moves
+# FLY_FAST times their walk on the walk maps, by tier, on the vehicles' scale (public/js/v4/ride.js FAST): D a bicycle
+# (1.45), B an e-bike (1.6), S a motorbike (1.8), SS a small car (2.0), SSS a convertible (2.1), Huyền thoại a supercar
+# (2.3). The same numbers in public/js/v4/wings-art.js WING_FLY_FAST (tests/test_wing_fly.py keeps them together).
+FLY_FAST = (1.45, 1.5, 1.6, 1.7, 1.8, 2.0, 2.1, 2.3)
 
 
 def _s(sid, emoji, name, price, desc):

@@ -20,7 +20,7 @@ function harness({privateRoom=true,lastPublic='congvien',spouse=true}={}){
     people:new Map([['me',me],['spouse',driver]]),wedding:null,cv:null,picker:false,places:[],lastPublic,taken:null};
   const context=vm.createContext({S,live:{flags:{coride:true},send:message=>sent.push(JSON.parse(JSON.stringify(message)))},
     spouseOf:()=>spouse?{pid:'spouse'}:null,paintRide(){},paintOverlays(){},esc:String,icon:()=>'',
-    lookOf:()=>({}),withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',rankRef:()=>null,BB:{wire:()=>null},wire:()=>null,choice:()=>null,TWO:{two:true}});
+    lookOf:()=>({}),withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',rankRef:()=>null,BB:{wire:()=>null},wire:()=>null,choice:()=>null,TWO:{two:true},flying:()=>false,toggleFly:()=>''});
   vm.runInContext(code+';globalThis.ui={head,act,paintCo};',context);
   return {S,sent,node,me,driver,...context.ui};
 }

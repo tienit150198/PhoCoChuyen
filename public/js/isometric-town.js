@@ -11,6 +11,9 @@
  * kept beside the look (`look.pr`, v4/look.js withPairs) so the scene draws them; never sent by this client.
  * 🪽 `wg` (live/wings.py): the wing a walker wears {k, r}, likewise from the game's table, kept beside the look
  * (`look.wg`, v4/look.js withWings); a change comes as a `mv` with `wg`.
+ * 🪽 `fl` (live/town.py, owner 24/10 "bay được k nhỉ"): flying (world.getFly), sent on joining and when it changes (true /
+ * false); a flyer's entry has `fl` (the tier), a `mv` with `fl` (null: landed). An older live service (no `flags.fly`)
+ * keeps a flyer to the fastest ride's pace (world.setFlyCap).
  */
 import {live} from './v4/live.js';
 import {sitePresence} from './v4/site-presence.js';
@@ -20,6 +23,7 @@ import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
 import {withBang,tagLine,tagInk,badge} from './v4/bang-tag.js';
 
 const MAP='iso-town-v1',GAP=270,POLL=100,JOIN_WAIT=12000;
+const RIDE_MAX=1.8;   // 🪽 isometric/vehicle-art.js MAX_SPEED: a flyer's pace on a live service without `fly`
 const DIRECTIONS=new Set(['se','sw','ne','nw']);
 
 function publicPoint(value){
@@ -48,8 +52,10 @@ function publicPeer(value){
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
     look:withWings(withPairs(value.lk&&typeof value.lk==='object'?value.lk:{},value.pr),value.wg),pr:cleanPairs(value.pr),wg:cleanWing(value.wg),
-    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...bangOf(value.bg)};
+    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...flyOf(value.fl),...bangOf(value.bg)};
 }
+/** 🪽 {fl: the tier} while flying, else {}. */
+export const flyOf=fl=>Number.isInteger(fl)&&fl>=0&&fl<=7?{fl}:{};
 /** ⚔️ {tag, ink, badge} for the name tag, or {} without a bang. */
 export function bangOf(bg){
   const tag=tagLine(bg,true);if(!tag)return {};
@@ -69,8 +75,9 @@ export function createTownPresence(envGetter,options={}){
     joinedAppearance=null,lastAppearance=null,
     anchor=null,joinedActivity=null,lastActivity=null,pendingActivityClear=false,
     interval=null,started=false,taken=false,seq=0,retryAt=0,statusNode=null,lastStatus='',lastWorld=null,
-    joinedRide='null',lastRide='null',joinedPet='null',lastPet='null';
+    joinedRide='null',lastRide='null',joinedPet='null',lastPet='null',joinedFly=false,lastFly=false;
   const ride=()=>{try{return publicRide(world()?.getRide?.())}catch{return null;}};
+  const fly=activity=>{try{return !activity&&!!world()?.getFly?.();}catch{return false;}};   // 🪽 on foot during an outdoor activity
   const myPet=()=>publicPet(env()?.api?.state?.journey?.pets?.ref);
   const peers=new Map(),off=[];
   const env=()=>typeof envGetter==='function'?envGetter():envGetter;
@@ -122,7 +129,7 @@ export function createTownPresence(envGetter,options={}){
       if(statusNode.hidden!==hide)statusNode.hidden=hide;if(statusNode.dataset.connected!==on)statusNode.dataset.connected=on;
       if(text!==lastStatus){statusNode.textContent=text;lastStatus=text;}}
   }
-  function clear(){joinedRide='null';lastRide='null';socialEnabled=false;room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}
+  function clear(){joinedRide='null';lastRide='null';joinedFly=false;lastFly=false;socialEnabled=false;room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedAppearance=null;lastAppearance=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}
   function leave(){
     if(room||joining)socket.send({t:'town_out',cid:`town-out-${++seq}`});
     clear();
@@ -131,12 +138,13 @@ export function createTownPresence(envGetter,options={}){
     if(!wanted()||!enabled()||room||joining||now()<retryAt)return;
     const at=point(),state=env()?.api?.state,activity=leisure.current;
     if(!at)return;
-    const cid=`town-in-${++seq}`,look=appearance(state),r=ride(),pt=myPet();
-    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{}),...(pt?{pt}:{})})){
-      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);joinedPet=JSON.stringify(pt);status();
+    const cid=`town-in-${++seq}`,look=appearance(state),r=ride(),pt=myPet(),fl=fly(activity);
+    if(socket.send({t:'town_in',cid,map:MAP,...at,look:look.look,g:look.g,...(activity?{activity}:{}),...(r?{r}:{}),...(pt?{pt}:{}),...(fl?{fl:true}:{})})){
+      joining={cid,at:now()};joinedPoint=at;joinedAppearance=look.key;joinedActivity=activity;joinedRide=JSON.stringify(r);joinedPet=JSON.stringify(pt);joinedFly=fl;status();
     }
   }
   function sync(){
+    world()?.setFlyCap?.(socket.state==='open'&&socket.flags?.town&&!socket.flags?.fly?RIDE_MAX:Infinity);   // 🪽 an older live service: a ride's pace
     updateSocial();
     if(!wanted()||!enabled()){if(room||joining)leave();else status();return;}
     if(joining&&now()-joining.at>JOIN_WAIT){joining=null;retryAt=now()+2000;}
@@ -144,10 +152,10 @@ export function createTownPresence(envGetter,options={}){
     const at=point(),activity=pendingActivityClear?null:leisure.current;
     if(!at||now()-lastSent<GAP)return;
     const look=appearance(env()?.api?.state),lookChanged=look.key!==lastAppearance,r=ride(),rideKey=JSON.stringify(r),rideChanged=rideKey!==lastRide;
-    const pt=myPet(),petKey=JSON.stringify(pt),petChanged=petKey!==lastPet;
-    if(!lookChanged&&!rideChanged&&!petChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
+    const pt=myPet(),petKey=JSON.stringify(pt),petChanged=petKey!==lastPet,fl=fly(activity),flyChanged=fl!==lastFly;
+    if(!lookChanged&&!rideChanged&&!petChanged&&!flyChanged&&lastPoint&&at.x===lastPoint.x&&at.y===lastPoint.y&&at.direction===lastPoint.direction&&JSON.stringify(activity)===JSON.stringify(lastActivity))return;
     // Update the public outfit in this room; rejoining would reset the treasure lease/checkpoint.
-    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{}),...(petChanged?{pt}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;lastPet=petKey;pendingActivityClear=false;}
+    if(socket.send({t:'town_mv',...at,...(lookChanged?{look:look.look,g:look.g}:{}),...(activity||lastActivity?{activity}:{}),...(rideChanged?{r}:{}),...(petChanged?{pt}:{}),...(flyChanged?{fl}:{})})){lastSent=now();lastPoint=at;lastAppearance=look.key;lastActivity=activity;lastRide=rideKey;lastPet=petKey;lastFly=fl;pendingActivityClear=false;}
   }
   function onActivity(sample){
     // Preserve the exit even if another scene opens before the next 4 Hz send.
@@ -167,7 +175,7 @@ export function createTownPresence(envGetter,options={}){
         if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){
           world()?.correctPresence?.({x:f.x,y:f.y});joinedPoint=point();
         }
-        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastPet=joinedPet;lastSent=now();peers.clear();
+        socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastPet=joinedPet;lastFly=joinedFly;lastSent=now();peers.clear();
         for(const value of Array.isArray(f.people)?f.people:[]){const p=publicPeer(value);if(p&&p.pid!==me)peers.set(p.pid,p);}
         draw();status();
       }),
@@ -189,6 +197,7 @@ export function createTownPresence(envGetter,options={}){
               if(Object.hasOwn(e,'activity')){if(activity)peer.activity=activity;else delete peer.activity;}
               if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
               if(Object.hasOwn(e,'pt')){const pt=publicPet(e.pt);if(pt)peer.pt=pt;else delete peer.pt;}
+              if(Object.hasOwn(e,'fl')){delete peer.fl;Object.assign(peer,flyOf(e.fl));}   // 🪽 took off / landed
               if(Object.hasOwn(e,'bg')){delete peer.tag;delete peer.ink;delete peer.badge;delete peer.bu;Object.assign(peer,bangOf(e.bg));}
               changed=true;
             }

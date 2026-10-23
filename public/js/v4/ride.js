@@ -15,10 +15,20 @@
  *                                 the body and the rider are one cached bitmap per look, vehicle, side and size,
  *                                 a frame adds only the shadow and the two wheels (cheap phones)
  *   steer(r,dx,dist,dt)           the side it faces, the turn (a short squash through the middle), the wheels' angle
- * The art faces left (the front at -x) in character units (the character is about 140 tall, origin at its feet). */
+ * The art faces left (the front at -x) in character units (the character is about 140 tall, origin at its feet).
+ * 🪽 Bay (owner 24/10 "cánh cho to hơn, và bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe
+ * được"): a player wearing wings may fly on the walk maps instead of walking or riding (the town, the 2.5D island town,
+ * the strolls' public places), faster by the wings' tier (v4/wings-art.js WING_FLY_FAST: a bicycle's pace at D, a
+ * supercar's at Huyền thoại). Never both: taking off sends the vehicle home ("🛵 Cất xe, cất cánh!"), the vehicle
+ * toggle lands first ("🪽 Hạ cánh, lên xe!"); carrying a baby lands too. The live service enforces the same rule.
+ *   canFly(state) / flying(state)  wings worn (not in the trại tạm giữ) / and the toggle on
+ *   toggleFly(state,content)      take off or land (remembered in this browser: localStorage mnl.fly); returns the
+ *                                 toast to show, or ''
+ *   flyLabel(on), flySpeedNow(state)  the button's words; the speed × the walk now */
 import {paintPlayer,CANVAS} from './look.js';
 // 👶 carrying a baby means walking (v4/baby.js)
 import {carrying,setCarry} from './baby.js';
+import {wingOfState,flySpeed} from './wings-art.js';   // 🪽 Bay
 import {R,E,L,P,bloom} from '../scenes/kit.js';
 
 /** Garage vehicle id → how it is drawn. An id this build does not know: by its group (bike: a scooter, car: a small car). */
@@ -88,19 +98,42 @@ function write(on,pick){
   try{localStorage.setItem(PREF,on?'1':'0');if(pick)localStorage.setItem(PICK,pick);}catch{/* storage blocked: this visit only */}
   MEM.on=on;if(pick)MEM.pick=pick;
 }
-const MEM={on:null,pick:null};   // when storage is blocked the choice still holds for this visit
+const MEM={on:null,pick:null,fly:null};   // when storage is blocked the choice still holds for this visit
 function pref(){const p=read();return {on:MEM.on===null?p.on:MEM.on,pick:MEM.pick||p.pick};}
+/* ---- 🪽 Bay ---- */
+const FLY='mnl.fly';
+function flyPref(){if(MEM.fly!==null)return MEM.fly;try{return localStorage.getItem(FLY)==='1';}catch{return false;}}
+function writeFly(on){try{localStorage.setItem(FLY,on?'1':'0');}catch{/* storage blocked: this visit only */}MEM.fly=on;}
+/** Wears wings here (the 🪽 toggle shows only then). */
+export const canFly=state=>Boolean(state?.journey?.story&&!state?.jail&&wingOfState(state));
+/** Flying now: wings worn, the toggle on, no baby in the arms. */
+export const flying=state=>canFly(state)&&flyPref()&&!carrying(state);
+/** Take off (the vehicle goes home, the baby stays home) or land. Returns the toast to show ('' none). */
+export function toggleFly(state,content,o){
+  if(flying(state)){writeFly(false);return '';}
+  if(!canFly(state))return '';
+  const rode=Boolean(choice(state,content,o));
+  writeFly(true);write(false,null);
+  if(carrying(state))setCarry('');
+  return rode?FLY_TOAST.off:'';
+}
+export const FLY_TOAST=Object.freeze({off:'🛵 Cất xe, cất cánh!',land:'🪽 Hạ cánh, lên xe!'});
+/** The 🪽 toggle's words: what a tap does. */
+export const flyLabel=on=>on?'🪽 Hạ cánh':'🪽 Bay';
+/** × the walk while flying (1: not flying). */
+export const flySpeedNow=state=>flying(state)?flySpeed(wingOfState(state)):1;
 /** Owns something to ride here (the toggle shows only then). */
 export const canRide=(state,content,o)=>options(state,content,o).length>0;
 /** The vehicle ridden now, or null (walking). */
 export function choice(state,content,o){
   const list=options(state,content,o);if(!list.length)return null;
-  const p=pref();if(!p.on||carrying(state))return null;
+  const p=pref();if(!p.on||carrying(state)||flying(state))return null;   // 🪽 flying: no vehicle
   return list.find(v=>v.key===p.pick)||list[0];
 }
 /** The toggle: the next owned vehicle, then walking, then the first again. Returns the new choice. */
 export function next(state,content,o){
   const list=options(state,content,o);if(!list.length)return null;
+  if(flying(state))writeFly(false);   // 🪽 the vehicle toggle lands first (FLY_TOAST.land)
   const now=choice(state,content,o),i=now?list.findIndex(v=>v.key===now.key):-1;
   const v=i<0?list[0]:list[i+1]||null;
   write(Boolean(v),v?.key||null);

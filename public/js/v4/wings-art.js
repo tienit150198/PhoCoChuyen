@@ -18,6 +18,24 @@ export const WING_TIERS=Object.freeze(['D','C','B','A','S','SS','SSS','Huyền t
 /** The pets' rank colours (v4/pet-art.js RANK_COLOR) and the legendaries' gold. */
 export const WING_TIER_COLOR=Object.freeze(['#9aa0a6','#4caf6a','#3d8bfd','#a259ff','#f2b632','#ff6a3d','#ff4fa3','#ffd24a']);
 const TOP=7,RB=['#ff5a5a','#ffb43b','#ffe55c','#5fd46a','#4fb3ff','#a77bff'];
+/** 🪽 Owner 24/10 "cánh cho to hơn": every pair larger than before (D 1.12, Huyền thoại 1.35 of the style's own size;
+ * 22/10 they were .94 … 1.07), each tier a little larger than the one under it, so a high tier shows from afar. */
+export const tierScale=r=>1.12+.033*r;
+/** 🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): how many
+ * times a walk a flyer goes, by tier, on the vehicles' scale (v4/ride.js FAST): D a bicycle 1.45, B an e-bike 1.6, S a
+ * motorbike 1.8, SS a small car 2.0, SSS a convertible 2.1, Huyền thoại a supercar 2.3 (game/wings_content.py FLY_FAST:
+ * the live service moves the strolls' flyers at these speeds and lets the 2.5D map's go this fast). */
+export const WING_FLY_FAST=Object.freeze([1.45,1.5,1.6,1.7,1.8,2,2.1,2.3]);
+/** The speed of a flyer wearing `wg` (× the walk), 1 for no wing. */
+export const flySpeed=wg=>{const w=cleanWing(wg);return w?WING_FLY_FAST[w.r]:1;};
+/** How high a flyer hovers (the classic character's units, it is ~140 tall): higher with the tier; `t` (seconds, null:
+ * still) a slow bob up and down with the beat. */
+export function flyLift(wg,t=null){
+  const w=cleanWing(wg);if(!w)return 0;const base=24+2*w.r;
+  return t==null?base:base+4*Math.sin(2*Math.PI*t/((WING_BEAT[w.k]||2)*.7));
+}
+/** The flyer's shadow on the ground: smaller and fainter the higher they are ({rx, ry, a} at lift `h`, scale s). */
+export const flyShadow=(h,s=1)=>({rx:Math.max(10,26-h*.18)*s,ry:Math.max(3.5,7.5-h*.05)*s,a:Math.max(.12,.32-h*.004)});
 const RIM='#2b1d1a',GOLD_RIM='#6b4210';
 /** {k, r} with a known style and tier, or null (a newer build's style, a bad frame). */
 export function cleanWing(wg){
@@ -284,7 +302,7 @@ function svgLights(c,K,w,x,y,s,front){
  * the SVG pen animates by itself unless `anim` is false or the player wants stillness. */
 export function drawWings(c,K,wg,x,y,{s=1,gap=6,flap=null,sparkle=true,tall=1,spread=0,aura=true,body=true,t=null,anim=true,walk=false}={}){
   const w=cleanWing(wg);if(!w)return;
-  const p=PAL[w.k],r=w.r,ss=s*(.94+.018*r),still=stillMotion();
+  const p=PAL[w.k],r=w.r,ss=s*tierScale(r),still=stillMotion();
   const live=!!K.anim&&anim&&!still,tt=t!=null&&!still&&!live?t:null,f=flap??(tt!=null?flapAt(w.k,tt,walk):0);
   if(aura){if(live)svgLights(c,K,w,x,y,ss,false);
     else{auraBack(c,K,x,y,r,ss,tt!=null?wingPulse(tt):1);const ry=tt!=null?raysAt(r,tt):null;if(ry)drawRays(c,K,r,x,y,ss,ry.rot,ry.a);
@@ -293,16 +311,16 @@ export function drawWings(c,K,wg,x,y,{s=1,gap=6,flap=null,sparkle=true,tall=1,sp
   if(sparkle){if(live)svgLights(c,K,w,x,y,ss,true);else if(tt!=null)drawMotes(c,K,w,x,y,ss,tt,false);else auraFront(c,K,x,y,r,ss);}
 }
 /** The sparkles alone (the 2.5D stamp draws its wings behind the chibi, then these over it); `t` animates them. */
-export function wingSparkles(c,K,wg,x,y,{s=1,t=null}={}){const w=cleanWing(wg);if(!w)return;const ss=s*(.94+.018*w.r);if(t!=null&&!stillMotion())drawMotes(c,K,w,x,y,ss,t,false);else auraFront(c,K,x,y,w.r,ss);}
-/** The wings' scale for `s` (each tier a touch larger). */
-export const wingScale=(wg,s=1)=>{const w=cleanWing(wg);return w?s*(.94+.018*w.r):s;};
+export function wingSparkles(c,K,wg,x,y,{s=1,t=null}={}){const w=cleanWing(wg);if(!w)return;const ss=s*tierScale(w.r);if(t!=null&&!stillMotion())drawMotes(c,K,w,x,y,ss,t,false);else auraFront(c,K,x,y,w.r,ss);}
+/** The wings' scale for `s` (each tier a touch larger: tierScale). */
+export const wingScale=(wg,s=1)=>{const w=cleanWing(wg);return w?s*tierScale(w.r):s;};
 /** On the classic character (origin at the feet; paintPlayer, boba-world.js): roots behind the shoulder blades, the
  * pair rising past the big head. F.L.wg the wing; `t` a canvas scene's clock (boba-world.js: flaps from cached bitmaps,
  * breathes, sparkles), `walk` its walking stroke, `flap` a fixed flap. */
 export const CLASSIC_WING=Object.freeze({at:[0,-54],s:.72,gap:5,tall:1.04,spread:-.04});
 /** The box (w, h, roots x, roots y) of a pair's cached bitmap in the wings' units at scale 1: room for the biggest
  * style at Huyền thoại, its flap and stretch. */
-export const WING_BOX=Object.freeze([280,206,140,138]);
+export const WING_BOX=Object.freeze([360,280,180,180]);
 export function paintWings(c,F,K,{at=null,s=CLASSIC_WING.s,flap=null,tall=CLASSIC_WING.tall,spread=CLASSIC_WING.spread,t=null,walk=false,sparkle=true,aura=true,body=true}={}){
   const w=cleanWing(F?.L?.wg);if(!w)return;
   const [x,y]=at||CLASSIC_WING.at,o={s,gap:CLASSIC_WING.gap,tall,spread};
@@ -315,7 +333,7 @@ export function paintWings(c,F,K,{at=null,s=CLASSIC_WING.s,flap=null,tall=CLASSI
 /** The tips peeking behind the round bust (80×80, drawn first): still, a portrait is everywhere. */
 export function wingsBust(c,K,wg){const w=cleanWing(wg);if(!w)return;drawWings(c,K,w,40,64,{s:.4,gap:6,sparkle:false,anim:false});}
 /** A pair large, centred in a -30…30 box (the shop's tiles): flapping and sparkling in SVG. */
-export function wingIcon(c,K,wg){const w=cleanWing(wg);if(!w)return;drawWings(c,K,w,0,10,{s:.25,gap:1.5});}
+export function wingIcon(c,K,wg){const w=cleanWing(wg);if(!w)return;drawWings(c,K,w,0,10,{s:.21,gap:1.5});}   // the tile keeps its size (tierScale grew)
 /* ---- cached bitmaps for canvases that redraw often (the classic street, the workplace, the 2.5D map): a few flaps ---- */
 export const FLAP_STEPS=Object.freeze([-1,-.75,-.5,-.25,0,.25,.5,.75,1]);
 /** The nearest cached flap to f. */
