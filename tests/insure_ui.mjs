@@ -6,6 +6,7 @@ import {readFileSync} from 'node:fs';
 import * as art from '../public/js/v4/deco-art.js';
 import {setup} from '../public/js/v4/home-walk.js';
 import * as view from '../public/js/v4/home-view.js';
+import {zoomer} from '../public/js/v4/home-zoom.js';   // 🔍 2.6.0 (feat/home-2d): reno.js imports it
 import {escapeHTML,icon} from '../public/js/icons.js';
 
 const f=JSON.parse(readFileSync(0,'utf8'));
@@ -15,8 +16,8 @@ globalThis.window={matchMedia:()=>({matches:false})};
 /* ---- 🛠️ Sửa nhà ---- */
 const renoSrc=readFileSync(new URL('../public/js/v4/reno.js',import.meta.url),'utf8').replace(/^import .*;.*\r?\n/gm,'').replace(/^export /gm,'');
 const none=()=>'',many=new Proxy({},{get:()=>()=>[]});
-const rn=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','BB','flagSVG','flagBadge','PALETTE','tr',
-  renoSrc+'\nreturn {S,fixPanel,onClick};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},many,none,none,{},t=>t);
+const rn=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','BB','flagSVG','flagBadge','PALETTE','tr','zoomer',
+  renoSrc+'\nreturn {S,fixPanel,onClick};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},many,none,none,{},t=>t,zoomer);
 const sent=[];
 const env=reno=>({confirmAction:async()=>true,api:{state:{journey:{reno},settings:{sound:false}},content:{journey:{reno:f.reno_catalogue}},
   command:async(action,payload)=>{sent.push({action,payload});return {message:'ok'};}}});
