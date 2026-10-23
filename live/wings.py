@@ -8,7 +8,8 @@ client draws it (public/js/v4/look.js paintWings); an older client ignores `wg`.
 * Cheap, like live/charms.py: a bounded LRU of CACHE players, each entry kept TTL seconds, one indexed query per 500
   missing players, nothing on a movement frame.
 * The game server announces a change with NOTIFY {op: 'wing', pids}: those entries are dropped and their walkers on screen
-  get the new `wg` (a `mv` with `wg` on the map, a `wg` event on the street; null: none worn).
+  get the new `wg` (a `mv` with `wg` on the map, a `wg` event on the street; null: none worn). 🪽 A flyer whose wings
+  came off lands; a new tier flies at its own speed (`fl` in the `mv` on the map, an `rd` on the street).
 * The table comes with SCHEMA_VERSION 90. Until it exists every lookup answers {} and it is looked for again every RETRY
   seconds, so this service and the game server roll out in any order.
 """
@@ -114,12 +115,20 @@ class WingFeature(Feature):
         if not walkers:
             return
         worn = await cache.of(w.player for _, _, w in walkers)
+        now = time.time()
         for kind, room, w in walkers:
             wg = worn.get(w.pid)
             if getattr(w, 'wg', None) == wg:
                 continue
             w.wg = wg
+            fl = getattr(w, 'fl', None)
+            land = fl is not None and (wg['r'] if wg else None) != fl   # 🪽 wings off: landed; a new tier: its speed
             if kind == 'town':
-                town._queue(room, w.pid, dict(k='mv', pid=w.pid, x=w.x, y=w.y, direction=w.direction, wg=wg))
+                ev = dict(k='mv', pid=w.pid, x=w.x, y=w.y, direction=w.direction, wg=wg)
+                if land:
+                    w.fl = ev['fl'] = wg['r'] if wg else None
+                town._queue(room, w.pid, ev)
             else:
                 street._queue(room, w.pid, dict(k='wg', pid=w.pid, wg=wg))
+                if land:
+                    street._set_fly(room, w, wg['r'] if wg else None, now)

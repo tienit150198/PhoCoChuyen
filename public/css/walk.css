@@ -166,6 +166,13 @@ html[data-layout="phone"] .sheet.wd-sheet{width:100%;max-width:100%}
 .rd-toggle[hidden]{display:none}
 .rd-toggle[aria-pressed="true"]{border-color:#e0a93b;background:#fff3d6f2}
 .rd-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+/* 🪽 Bay / Hạ cánh (v4/ride.js): wearing wings, on a public place; under the vehicle's toggle, in its place without one. */
+.fl-toggle{position:absolute;right:10px;z-index:1;min-height:40px;padding:6px 13px;border-radius:var(--radius-pill);border:1.5px solid #b8c4e8;background:#f5f8fff0;color:#3a3f5a;font:inherit;font-weight:800;font-size:.88rem;box-shadow:0 2px 8px #0002;cursor:pointer;top:58px}
+.rd-toggle[hidden]+.fl-toggle{top:10px}
+.fl-toggle[hidden]{display:none}
+.fl-toggle[aria-pressed="true"]{border-color:#7f9be0;background:#e4ecfff2}
+.fl-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.rd-toggle:not([hidden])+.fl-toggle:not([hidden])+.rd-co{top:106px}
 /* 💑 vợ chồng chung xe (v4/ride.js, live/coride.py): "🛵 Ngồi sau", sitting behind ("Xuống xe"), a vehicle taken. */
 .rd-co{position:absolute;right:10px;top:58px;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;max-width:min(320px,calc(100% - 20px));padding:5px 6px 5px 11px;border-radius:18px;background:#fffaf0f2;color:#4a3a30;font-weight:700;font-size:.84rem;box-shadow:0 2px 8px #0002}
 .rd-co[hidden]{display:none}

@@ -9,7 +9,7 @@ export interface Navigation { bounds: Rect; roads: Rect[]; obstacles: Rect[]; st
 export interface Building { id: string; meta: Career; at: Point; door: Point; footprint: Rect; variant: 'grocery' | 'home' | 'cafe'; district: number; slot:number; neighbourhood?:string }
 export interface CameraView {width:number;height:number;scrollX:number;scrollY:number;zoom:number}
 export type Facing='se'|'sw'|'ne'|'nw';
-export interface RemotePlayer extends Point {pid:string;name:string;look:Record<string,any>;gender:'male'|'female'|'none';direction:Facing;r?:{v:string;c:string;p?:string};pt?:PetRef;tag?:string;ink?:string;badge?:string}
+export interface RemotePlayer extends Point {pid:string;name:string;look:Record<string,any>;gender:'male'|'female'|'none';direction:Facing;r?:{v:string;c:string;p?:string};pt?:PetRef;tag?:string;ink?:string;badge?:string;fl?:number}
 /** 🐾 The pet walking beside a player (game/pets.py walk_ref, live/street.py clean_pet): breed, coat, name, accessories,
  * 🏅 rank 1..6 (C..SSS; none = D) and an SSS coat effect. */
 export interface PetRef {b:string;c:number;n?:string;a:string[];r?:number;x?:string}
@@ -125,6 +125,7 @@ export function publicTownPlayers(peers:unknown,nav?:Navigation):RemotePlayer[]{
     seen.add(peer.pid);result.push({pid:peer.pid,name:typeof peer.name==='string'?peer.name.slice(0,64):'Người chơi',look,gender:peer.gender==='male'||peer.gender==='female'?peer.gender:'none',...at,direction:['se','sw','ne','nw'].includes(peer.direction)?peer.direction:'se'});
     const r=publicRide(peer.r);if(r)result[result.length-1].r=r;
     const pt=publicPet(peer.pt);if(pt)result[result.length-1].pt=pt;
+    if(Number.isInteger(peer.fl)&&peer.fl>=0&&peer.fl<=7&&look.wg)result[result.length-1].fl=peer.fl;   // 🪽 flying (live/town.py `fl`: the tier)
     // ⚔️ the bang tag line under the name, its ink, the 🎖️ badge (public/js/isometric-town.js bangOf)
     if(typeof peer.tag==='string'&&peer.tag){const last=result[result.length-1];last.tag=peer.tag.slice(0,40);
       if(typeof peer.ink==='string'&&/^#[0-9a-f]{6}$/i.test(peer.ink))last.ink=peer.ink;

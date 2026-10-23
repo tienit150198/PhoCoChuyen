@@ -12,7 +12,8 @@
  * Owner 17/10 "cho khác tí" (xe đẹp hơn, cảm giác lái, xe đỗ / sân bay): a soft ground shadow under the ride,
  * parkedStamp (the vehicle alone, left beside a door while the rider walks in), puffStamp / shadowStamp (exhaust,
  * a plane's contrail and its shadow sliding over the town), MOTOR (what smokes) and rearOf (where the tail is). */
-import {choice,wire,fromWire,drawRide,plateAt,halfOf,FAST,TWO} from '../v4/ride.js';
+import {choice,wire,fromWire,drawRide,plateAt,halfOf,FAST,TWO,flying,flySpeedNow} from '../v4/ride.js';
+import {wingOfState,cleanWing,flyLift,flyShadow} from '../v4/wings-art.js';   // 🪽 Bay
 import {figureOf} from '../v4/look.js';
 import {boatPaint} from '../v4/bang-tag.js';   // ⚔️ ⛵ Sơn thuyền màu bang (game/bang.py): my yachts in the bang's paint while worn
 
@@ -62,6 +63,21 @@ export function peerVehicle(r,content){
 }
 
 export const rideSpeed=v=>v?Math.min(MAX_SPEED,FAST[v.kind]||1.5):1;
+/** 🪽 Bay (v4/ride.js flying): {wg, tier, speed} while this player flies over the island town, else null. The speed is
+ * the wings' own (v4/wings-art.js WING_FLY_FAST, a supercar's at Huyền thoại: live/town.py gives a flyer the budget; the
+ * scene keeps it to a ride's pace on an older live service: World.setFlyCap). */
+export function townFly(state){
+  try{if(!flying(state))return null;const wg=wingOfState(state);return wg?{wg,tier:wg.r,speed:flySpeedNow(state)}:null;}catch{return null;}
+}
+/** How high a flyer wearing `wg` hovers on the island (world px: the chibi is ~110 px tall), bobbing at t (null: still). */
+export const flyHeight=(wg,t=null)=>cleanWing(wg)?flyLift(wg,t)*RIDE_SCALE:0;
+/** The flyer's shadow on the ground (64×24, a soft dark ellipse: scale it by flyShadow). A new canvas: cache it. */
+export function flyShadowStamp(){
+  const cv=document.createElement('canvas');cv.width=64;cv.height=24;const c=cv.getContext('2d');if(!c)return cv;
+  c.save();c.scale(1,24/64);const g=c.createRadialGradient(32,32,2,32,32,32);g.addColorStop(0,'rgba(40,30,25,.9)');g.addColorStop(.6,'rgba(40,30,25,.45)');g.addColorStop(1,'rgba(40,30,25,0)');
+  c.fillStyle=g;c.fillRect(0,0,64,64);c.restore();return cv;
+}
+export {flyShadow};
 /** ride.js art faces left: the island's sw/nw facings go left on screen, se/ne go right. */
 export const faceOf=direction=>direction==='se'||direction==='ne'?1:-1;
 /** Where the stamp's ground point is (Phaser origin). */

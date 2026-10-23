@@ -1,13 +1,17 @@
 /** Existing app routes shared by the compact HUD and searchable town guide.
  * Availability mirrors app.js navItems: no feature is invented by the map.
  */
-import {choice as rideChoice,canRide,label as rideLabel,next as nextRide} from '../v4/ride.js';
+import {choice as rideChoice,canRide,label as rideLabel,next as nextRide,canFly,flying,flyLabel,toggleFly,FLY_TOAST} from '../v4/ride.js';
 import {fairOpen} from '../v4/town-fair-data.js';   // 🎪 Hội chợ việc làm: on now (game/town_fair.py)
 import {hwShown} from '../v4/halloween-data.js';   // 🎃 Lễ hội Ma Phố: 26/10 → the end of 01/11 (game/halloween.py)
 /** 🚗 The HUD's "đi xe / đi bộ" toggle (the same choice as the old interface's walks, remembered in this browser):
  * its words while the player owns something to ride, else ''. nextTownRide switches to the next one. */
 export const townRideLabel=(state,content)=>canRide(state,content)?rideLabel(rideChoice(state,content)):'';
-export const nextTownRide=(state,content)=>nextRide(state,content);
+export const nextTownRide=(state,content)=>{const was=flying(state),v=nextRide(state,content);return was&&v?FLY_TOAST.land:'';};   // 🪽 lands first: its toast
+/** 🪽 The HUD's "Bay / Hạ cánh" toggle (v4/ride.js): its words while the player wears wings, else ''. toggleTownFly
+ * takes off (the vehicle goes home) or lands; returns the toast to show ('' none). */
+export const townFlyLabel=state=>canFly(state)?flyLabel(flying(state)):'';
+export const toggleTownFly=(state,content)=>toggleFly(state,content);
 /** 📯 What is ridden now (for the horn button): {kind, bell} (a bicycle rings a bell), or null on foot. */
 export function townRiding(state,content){
   try{const v=canRide(state,content)?rideChoice(state,content):null;return v?{kind:String(v.kind||''),bell:v.kind==='bicycle'}:null;}catch{return null;}

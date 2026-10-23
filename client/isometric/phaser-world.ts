@@ -19,6 +19,13 @@ const parkedFleet=(mine:any,peers:any,content:any):any[]=>VA.parkedFleet?VA.park
 const rideOrigin=()=>VA.RIDE_ORIGIN||{x:.5,y:1};
 const rideRes=():number=>VA.RES||1;
 const faceOfDir=(d:string):number=>VA.faceOf?VA.faceOf(d):(d==='se'||d==='ne'?1:-1);
+// 🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): a player wearing
+// wings flies over the town instead of walking or riding (v4/ride.js flying: never both): lifted off the ground (a bob
+// with the beat), a soft shadow on the ground under them, the wings at their full stroke, faster by the tier
+// (vehicle-art.js townFly: its speed eases in like a ride's). Others flying (`fl`, live/town.py) are drawn the same way.
+const townFly=(state:any)=>VA.townFly?VA.townFly(state):null;
+const flyHeight=(wg:any,t:number|null):number=>VA.flyHeight?VA.flyHeight(wg,t):0;
+const flyShadowOf=(h:number,s:number)=>VA.flyShadow?VA.flyShadow(h,s):{rx:20*s,ry:6*s,a:.25};
 // 🛵 Owner 17/10 "cảm giác lái": a ride starts at walking pace and reaches its speed over RIDE_RAMP s (eased).
 const RIDE_RAMP=.7;
 const easeOut=(t:number)=>1-(1-t)*(1-t);
@@ -63,7 +70,7 @@ export type WorldMode = 'town' | 'work';
 type StaticVisual=Phaser.GameObjects.Image|Phaser.GameObjects.Text|Phaser.GameObjects.Container;
 // mask: filled when first needed (maskOf) or in idle time (warmMasks), from the frame the image had when registered
 type Occluder=Omit<OccludingShape,'mask'>&{mask?:AlphaMask|null;maskKey:string;maskFrame:Phaser.Textures.Frame;image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
-type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string};
+type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string;fly?:number|null;shadow?:Phaser.GameObjects.Image|null};
 interface Hotspot extends Point {id:string;label:string;approach:Point;interactionPoint?:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
@@ -101,6 +108,12 @@ export class PhaserWorld {
   rideBoost=0;
   rideParked=false;
   private vehicleSignature='';
+  /** 🪽 {wg, tier, speed} while flying here (vehicle-art.js townFly), else null; `flyCap` the fastest the live service
+   * allows (isometric-town.js: an older one, without `fly`, a ride's pace). */
+  flight:any=null;
+  private flyCap=Infinity;
+  setFlyCap(n:number){this.flyCap=Number.isFinite(n)&&n>=1?n:Infinity;}
+  private flightSignature='';
   treasure:Array<Point&{id:string;count:number}>=[];
   direction:Facing='se';
   reduced=false;
@@ -204,6 +217,8 @@ export class PhaserWorld {
   getPresence(){return this.mode==='town'?{x:this.player.x,y:this.player.y,direction:this.direction}:null;}
   /** 🚗 The live presence's `r` (isometric-town.js): the vehicle ridden, or the yacht/plane "đang đi"; null on foot. */
   getRide(){return this.mode==='town'?this.vehicles?.wire||null:null;}
+  /** 🪽 The live presence's `fl` (isometric-town.js): true while flying over the town. */
+  getFly(){return this.mode==='town'&&!!this.flight;}
   correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
     const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).map(c=>({id:c.id,x:c.x,y:c.y,count:Number.isFinite(c.count)?Math.max(1,Math.floor(c.count)):1})):[];
@@ -230,7 +245,9 @@ export class PhaserWorld {
     if(changed){this.layoutSignature=signature;this.stage?.rebuild();}
     const vehicles=townVehicles(state,content),vehicleSignature=JSON.stringify(vehicles),vehiclesChanged=vehicleSignature!==this.vehicleSignature;
     if(vehiclesChanged){this.vehicles=vehicles;this.vehicleSignature=vehicleSignature;this.stage?.refreshVehicles();}
-    const lookChanged=this.stage?.refreshPlayer(this.stage.riderFrame());if(changed||lookChanged||vehiclesChanged)this.wake();
+    const flight=townFly(state),flightSignature=JSON.stringify(flight),flightChanged=flightSignature!==this.flightSignature;
+    if(flightChanged){this.flight=flight;this.flightSignature=flightSignature;if(flight&&this.rideParked){this.rideParked=false;this.stage?.unparkRide();}}
+    const lookChanged=this.stage?.refreshPlayer(this.stage.riderFrame());if(changed||lookChanged||vehiclesChanged||flightChanged)this.wake();
   }
   private updateCanvasLabel(){const meta=this.game?.catalogue?.find(c=>c.id===this.career);this.canvas.setAttribute('aria-label',canvasDescription(this.mode,String(this.c.life?.shop_name||meta?.place||meta?.short||this.career)));}
   setMode(mode:WorldMode){if(mode!==this.mode){this.clearMovementControls();this.rideParked=false;this.rideBoost=0;this.stage?.unparkRide();this.mode=mode;this.currentArea='main';this.player.path=[];this.pending=null;this.layoutSignature='';this.stage?.rebuild();this.resetCamera();this.updateCanvasLabel();document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode}}));}this.wake();}
@@ -308,10 +325,11 @@ export class PhaserWorld {
     if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}
     const stage=this.stage;if(!stage)return;
     let moving=false;const before={x:this.player.x,y:this.player.y},ride=this.mode==='town'?this.vehicles?.ride:null,intent=!!(this.keys.size||this.movementInput.x||this.movementInput.y||this.player.path.length);
+    const flight=this.mode==='town'&&!ride?this.flight:null;   // 🪽 never on a ride (ride.js flying)
     if(!ride&&this.rideParked){this.rideParked=false;stage.unparkRide();}
     if(ride&&intent&&this.rideParked){this.rideParked=false;stage.unparkRide();}   // the next step: back on the vehicle
-    this.rideBoost=ride&&intent&&!this.rideParked?(this.reduced?1:Math.min(1,this.rideBoost+dt/RIDE_RAMP)):Math.max(0,this.rideBoost-dt/.25);
-    const fast=ride&&!this.rideParked?1+(rideSpeed(ride)-1)*easeOut(this.rideBoost):1;
+    this.rideBoost=(ride||flight)&&intent&&!this.rideParked?(this.reduced?1:Math.min(1,this.rideBoost+dt/RIDE_RAMP)):Math.max(0,this.rideBoost-dt/.25);
+    const fast=ride&&!this.rideParked?1+(rideSpeed(ride)-1)*easeOut(this.rideBoost):flight?1+(Math.max(1,Math.min(this.flyCap,Number(flight.speed)||1))-1)*easeOut(this.rideBoost):1;
     if(this.keys.size||this.movementInput.x||this.movementInput.y){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
       const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),Math.min(.06,dt)*fast);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);if(moving)this.followAgain();
     }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;if(cb&&ride&&!this.rideParked){this.rideParked=true;this.rideBoost=0;stage.parkRide();}cb?.();}}
@@ -325,7 +343,7 @@ export class PhaserWorld {
     if(effect.clear){this._fx?.clear?.();this.paintFx();}
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
-    const active=fading||moving||remoteMoving||petMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
+    const active=fading||moving||remoteMoving||petMoving||((!!ride||!!flight)&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
     this.watchFrames(active);
     if(!active&&stage.settle()){this.engine.loop.sleep();if(wingsLive)this.wingTick();}
   }
@@ -414,14 +432,14 @@ class DioramaScene extends Phaser.Scene {
     const t=performance.now()/1000,still=this.owner.reduced,keep=new Set<string>(),top=(key:string)=>key&&this.textures.exists(key)?(this.textures.get(key) as any).customData?.wingTop||null:null;
     let budget=MAX_MOTES,live=0;
     if(this.actor){keep.add('me');const wg=wornWing(this.owner.state),show=!!wg&&this.actor.visible&&!this.riding,on=show&&!still;
-      budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on,walk:this.playerMoving},t,budget);if(on)live++;}
+      budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on,walk:this.playerMoving||this.flying},t,budget);if(on)live++;}
     const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,shown:RemoteActor[]=[];
     for(const actor of this.remoteActors.values())if(actor.look?.wg&&actor.image.visible&&!actor.ride&&this.owner.mode==='town')shown.push(actor);
     shown.sort((a,b)=>Math.hypot(a.image.x-cx,a.image.y-cy)-Math.hypot(b.image.x-cx,b.image.y-cy));
     const moving=new Set(shown.slice(0,Math.max(0,WING_LIVE-live)));
     for(const actor of this.remoteActors.values()){const id='peer:'+actor.peer.pid;keep.add(id);
       const show=shown.includes(actor),on=show&&!still&&moving.has(actor);if(on)live++;
-      budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on,walk:actor.path.length>0},t,Math.max(0,budget));}
+      budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on,walk:actor.path.length>0||actor.fly!=null},t,Math.max(0,budget));}
     this.wings.keepOnly(keep);
     return live>0;
   }
@@ -1104,7 +1122,7 @@ class DioramaScene extends Phaser.Scene {
   }
   syncRemotePlayers(){
     if(!this.sys.isActive())return false;const revision=this.remoteVisualRevision,peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));
-    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.characterFrames.release('iso-ride-peer-'+pid);this.pets.drop('peer:'+pid);this.remoteActors.delete(pid);}
+    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){if(actor.image.visible||actor.tag.visible)this.remoteVisualRevision++;actor.image.destroy();actor.tag.destroy();actor.shadow?.destroy();this.characterFrames.release('iso-peer-'+pid);this.characterFrames.release('iso-ride-peer-'+pid);this.pets.drop('peer:'+pid);this.remoteActors.delete(pid);}
     for(const peer of peers){
       const appearance=JSON.stringify([peer.gender,peer.look]);
       let actor=this.remoteActors.get(peer.pid);
@@ -1120,7 +1138,10 @@ class DioramaScene extends Phaser.Scene {
         if(nameTag(actor.peer)!==nameTag(peer)||actor.peer.ink!==peer.ink){actor.tag.setText(nameTag(peer)).setColor(peer.ink||'#654a39');if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
       }
       // 🚗 a two-wheeler or car under them (a yacht/plane waits at the harbour/airfield: refreshVehicles)
-      const v=peer.r?peerVehicle(peer.r,this.owner.game):null,road=v&&(v.group==='bike'||v.group==='car')?v:null,rideKey=road?JSON.stringify([road.id,road.kind,road.hex,road.plate,road.uq]):'';
+      // 🪽 flying (`fl`: the tier, only with wings on): never on a vehicle
+      const fly=Number.isInteger(peer.fl)&&actor.look?.wg?peer.fl as number:null;
+      if((actor.fly??null)!==fly){actor.fly=fly;if(fly==null&&actor.shadow)actor.shadow.setVisible(false);if(actor.image.visible)this.remoteVisualRevision++;}
+      const v=peer.r&&fly==null?peerVehicle(peer.r,this.owner.game):null,road=v&&(v.group==='bike'||v.group==='car')?v:null,rideKey=road?JSON.stringify([road.id,road.kind,road.hex,road.plate,road.uq]):'';
       if(actor.rideKey!==rideKey){actor.ride=road;actor.rideKey=rideKey;actor.pose='';}
     }
     this.refreshVehicles();
@@ -1137,6 +1158,17 @@ class DioramaScene extends Phaser.Scene {
     }
     return moving;
   }
+  /** 🪽 A flyer's shadow on the ground under them (`who`: a remote actor, or this player's), smaller the higher. */
+  private flyShadow(who:{shadow?:Phaser.GameObjects.Image|null},at:Point,lift:number){
+    const key='iso-fly-shadow';if(!this.textures.exists(key)&&VA.flyShadowStamp)this.textures.addCanvas(key,VA.flyShadowStamp());
+    if(!this.textures.exists(key))return;
+    if(!who.shadow)who.shadow=this.add.image(at.x,at.y,key);
+    const k=VA.RIDE_SCALE||.78,o=flyShadowOf(lift/k,k);
+    who.shadow.setPosition(at.x,at.y+1).setScale(2*o.rx/64,2*o.ry/24).setAlpha(o.a).setDepth(at.y+.2).setVisible(true);
+  }
+  /** 🪽 True while I fly over the town (World.flight, never on a ride). */
+  get flying(){return this.owner.mode==='town'&&!!this.owner.flight&&!this.riding;}
+  private myShadow:{shadow?:Phaser.GameObjects.Image|null}={shadow:null};
   stepRemotePlayers(now:number){
     let active=false;const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,hw=c.width/c.zoom/2+160,hh=c.height/c.zoom/2+160;
     const inView=(point:Point)=>point.x>=cx-hw&&point.x<=cx+hw&&point.y>=cy-hh&&point.y<=cy+hh;
@@ -1147,6 +1179,7 @@ class DioramaScene extends Phaser.Scene {
       if(actor.image.visible!==visible){actor.image.setVisible(visible);this.remoteVisualRevision++;}
       const tagVisible=visible&&c.zoom>=.22;if(actor.tag.visible!==tagVisible){actor.tag.setVisible(tagVisible);this.remoteVisualRevision++;}
       if(!visible){
+        if(actor.shadow?.visible)actor.shadow.setVisible(false);
         // Keep state, but no recolouring/texture creation or continuous repaint
         // for other players at the far end of the island. An incoming route near
         // the viewport still advances, so walking into view is never suppressed.
@@ -1163,9 +1196,11 @@ class DioramaScene extends Phaser.Scene {
           if(actor.ride)actor.image.setOrigin(rideOrigin().x,rideOrigin().y).setScale(1/rideRes());else actor.image.setOrigin(.5,1).setScale(CHARACTER_SCALE);}
         actor.pose=pose;actor.artRevision=this.characterRevision;
       }
-      if(actor.image.x!==point.x||actor.image.y!==point.y){actor.image.setPosition(point.x,point.y);this.remoteVisualRevision++;}
+      const lift=actor.fly!=null?flyHeight(actor.look?.wg,this.owner.reduced?null:now+(actor.peer.pid.length%7)*.37):0,iy=point.y-lift;   // 🪽 up in the air
+      if(lift)this.flyShadow(actor,point,lift);else if(actor.shadow?.visible)actor.shadow.setVisible(false);
+      if(actor.image.x!==point.x||actor.image.y!==iy){actor.image.setPosition(point.x,iy);this.remoteVisualRevision++;}
       if(actor.image.depth!==point.y+.5)actor.image.setDepth(point.y+.5);
-      if(actor.tag.x!==point.x||actor.tag.y!==point.y-112)actor.tag.setPosition(point.x,point.y-112);
+      if(actor.tag.x!==point.x||actor.tag.y!==iy-112)actor.tag.setPosition(point.x,iy-112);
       if(actor.tag.depth!==point.y+.7)actor.tag.setDepth(point.y+.7);
     }
     return active;
@@ -1354,7 +1389,9 @@ class DioramaScene extends Phaser.Scene {
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
   private playerMoving=false;   // 🪽 the wings' walking stroke
-  positionPlayer(moving:boolean){this.playerMoving=moving;const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.rideMotion(f,moving);else this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
+  positionPlayer(moving:boolean){this.playerMoving=moving;const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player),lift=!riding&&this.flying?flyHeight(this.owner.flight?.wg,this.owner.reduced?null:this.owner.time):0;   // 🪽 up in the air, its shadow below
+    if(lift)this.flyShadow(this.myShadow,f,lift);else if(this.myShadow.shadow?.visible)this.myShadow.shadow.setVisible(false);
+    if(this.actor.x!==f.x||this.actor.y!==f.y-lift)this.actor.setPosition(f.x,f.y-lift);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.rideMotion(f,moving);else this.actor.setRotation(lift?0:pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*(lift?1:pose.squash));if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138-lift};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.alpha>.6&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y||Number(b.hotspot.id.startsWith('treasure:'))-Number(a.hotspot.id.startsWith('treasure:')));return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

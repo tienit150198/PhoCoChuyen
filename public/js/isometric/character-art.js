@@ -233,7 +233,7 @@ export function getCharacterStamp(options={}){
 }
 /** 🪽 The chibi with its whole pair spread on a wider canvas (WINGED_W×160, centred, the feet as in the stamp): the
  * wardrobe's and the wing shop's mirror in the cozy look (isometric/portraits.js). Still: the light, the pair, sparkles. */
-export const WINGED_W=190;
+export const WINGED_W=230;   // 🪽 owner 24/10 "cánh cho to hơn": room for the larger pair (wings-art.js tierScale)
 const winged=new Map();
 export function wingedStamp(options={}){
   const wg=wingOf(options.look?.wg),{wg:_,...bare}=options.look||{},base=getCharacterStamp({...options,look:bare});
@@ -251,8 +251,8 @@ export function wingedStamp(options={}){
  * client/isometric/wing-rigs.ts). The stamp is then drawn without them (its look without `wg`); its `top` plus
  * STAMP_WING[view].dy is the roots. Every canvas here is shared by everyone wearing that wing, and by both views (the same
  * pair, only placed and layered apart): a few flaps (FLAP_STEPS), the glow, the rays, the ring, one mote. */
-export const RIG_BOX=Object.freeze([296,224,148,142]);   // the wing canvases: w, h, the roots at (148, 142)
-const RAYS_BOX=264;
+export const RIG_BOX=Object.freeze([344,272,172,172]);   // the wing canvases: w, h, the roots at (172, 172) (24/10: the larger pair)
+const RAYS_BOX=288;
 /** The pair at flap step f (no glow, no motes); `back` kept for the callers, the frames are the same. */
 export function stampWingFrame(wg,back,f){return wingBitmap(CANVAS,wg,f,WING_OPTS,RIG_BOX,1,'iso');}
 const LIGHTS=new Map();

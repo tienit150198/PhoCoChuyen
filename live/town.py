@@ -23,6 +23,13 @@ street (live/street.py clean_pet; its rank only up to one they have, live/pet_ra
 🤝 A walker's public entry may carry `pr` (live/charms.py: the phụ kiện đôi worn, {kind: count}, read at town_in from the
 game's table, never from a frame); a change comes as a `mv` with `pr` (null: none). Older clients ignore it.
 🪽 Likewise `wg` (live/wings.py: the wing worn {k, r}, from the game's table wing_worn), a change as a `mv` with `wg`.
+🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): town_in /
+town_mv may carry `fl` (true: flying, false: landed). Granted only to a walker wearing wings (`wg`, the server's own
+copy), in the town itself (never a site, never during an outdoor activity); a walker's public entry has `fl` (the
+tier) while flying, a `mv` carries `fl` (null: landed) only when it changed. Flying and riding never go together: a
+flyer's road vehicle (a two-wheeler or a car; a yacht or a plane waits at its harbour) goes home (`r` null), and a
+frame that names a road vehicle without `fl` lands them. A flyer's movement budget grows with the tier past the
+fastest ride (budget(): FLY_FAST[tier] / RIDE_MAX of SPEED). Older clients ignore `fl`.
 """
 from __future__ import annotations
 
@@ -34,6 +41,7 @@ from pathlib import Path
 
 from game.content import CAREERS
 from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
+from game.wings_content import FLY_FAST   # 🪽 a flyer's speed by tier
 from . import bangs, charms, faces, wings
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
@@ -52,6 +60,7 @@ EVENTS_MAX = 300
 SPEED = 8.0                     # grid units/s; model walk/joystick <= 6 units/s
 JITTER = .7                    # finite distance credit, not extra credit on every frame
 MAX_CREDIT = SPEED * 1.5 + JITTER
+RIDE_MAX = 1.8                  # public/js/isometric/vehicle-art.js MAX_SPEED: the fastest ride stays within SPEED
 DIRECTIONS = frozenset(('se', 'sw', 'ne', 'nw'))
 RESIDENTIAL_ACTIVITIES = frozenset(('homes-rent', 'homes-apartment', 'homes-townhouse', 'homes-villa'))
 ACTIVITY_PHASES = {'fishing': frozenset(('walk', 'waiting', 'bite')),
@@ -111,6 +120,16 @@ def clean_ride(r):
     if p:
         out['p'] = p
     return out
+
+
+def road(r) -> bool:
+    """🚗 A two-wheeler or a car under them (not a yacht or a plane waiting at its harbour)."""
+    return bool(r) and GARAGE.get(r.get('v'), {}).get('group') in ('bike', 'car')
+
+
+def budget(fl) -> float:
+    """🪽 Grid units a second a walker may cover: SPEED, more for a flyer faster than the fastest ride."""
+    return SPEED if fl is None else SPEED * max(1.0, FLY_FAST[fl] / RIDE_MAX)
 
 
 def clean_direction(value):
@@ -176,6 +195,7 @@ class Walker:
         self.bg = None   # ⚔️ the bang tag (live/bangs.py)
         self.pr = None   # 🤝 the phụ kiện đôi worn {kind: count} (live/charms.py)
         self.wg = None   # 🪽 the wing worn {k, r} (live/wings.py)
+        self.fl = None   # 🪽 flying: the tier of the wings worn, else None
 
     def public(self):
         out = dict(pid=self.pid, name=self.player.name or 'Mây', lk=self.look, g=self.gender,
@@ -192,6 +212,8 @@ class Walker:
             out['pr'] = dict(self.pr)
         if self.wg:
             out['wg'] = dict(self.wg)
+        if self.fl is not None:
+            out['fl'] = self.fl
         return out
 
 
@@ -201,6 +223,8 @@ class TownFeature(ScaleSites, TownSocial, Feature):
     def __init__(self, app):
         super().__init__(app)
         self.flushes = 0
+        if self.cfg.town:   # 🪽 `fl` is understood (a client offers 🪽 Bay, at its full speed, only then)
+            self.cfg.flags_extra['fly'] = True
         self._blocks_at = time.monotonic() + BLOCK_REFRESH
         self._social_prune_at = time.monotonic() + 60
 
@@ -334,6 +358,10 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         w.bg = await bangs.of_app(self.app).one(w.pid)   # ⚔️ once per entry, never per move
         w.pr = await charms.of_app(self.app).one(conn.player)   # 🤝 likewise
         w.wg = await wings.of_app(self.app).one(conn.player)   # 🪽 likewise
+        if f.get('fl') is True and w.wg and activity is None:   # 🪽 in flight: a road vehicle stays home
+            w.fl = w.wg['r']
+            if road(w.ride):
+                w.ride = None
         room.data['people'][w.pid] = w
         conn.ext['town'] = conn.player.ext['town'] = room.id
         self._queue(room, w.pid, dict(k='in', **w.public()))
@@ -366,11 +394,15 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
                 if 'site_key' in room.data else clean_point(f.get('x'), f.get('y')))
         now = time.monotonic()
-        credit = min(MAX_CREDIT, w.credit + max(0.0, now - w.last) * SPEED)
+        activity = None if 'site_key' in room.data else clean_activity(f['activity']) if 'activity' in f else w.activity
+        want = f['fl'] is True if 'fl' in f else w.fl is not None and not ('r' in f and road(ride))   # 🪽 riding lands
+        # 🪽 flying only in the town itself, never during an activity (fishing, rowing, swimming, at home: on foot)
+        fl = w.wg['r'] if want and w.wg and 'site_key' not in room.data and activity is None else None
+        k = max(budget(w.fl), budget(fl)) / SPEED   # landing or taking off: the faster of the two
+        credit = min(MAX_CREDIT * k, w.credit + max(0.0, now - w.last) * SPEED * k)
         distance = math.hypot(x - w.x, y - w.y)
         if distance > credit + .003:
             raise LiveError('speed', 'Bước đi quá xa.', x=w.x, y=w.y)
-        activity = None if 'site_key' in room.data else clean_activity(f['activity']) if 'activity' in f else w.activity
         remaining = activity_credit(w, activity, now)
         appearance = clean_look(f.get('look', w.look), f.get('g', w.gender)) if 'look' in f or 'g' in f else None
         w.credit, w.last = max(0.0, credit - distance), now
@@ -383,11 +415,15 @@ class TownFeature(ScaleSites, TownSocial, Feature):
             event.update(lk=w.look, g=w.gender)
         if changed_activity:
             event['activity'] = dict(activity) if activity is not None else None
-        if 'r' in f:
-            ride = None if 'site_key' in room.data else ride
+        if 'r' in f or fl is not None:
+            ride = None if 'site_key' in room.data else ride if 'r' in f else w.ride
+            if fl is not None and road(ride):
+                ride = None   # 🪽 flying: the vehicle goes home
             if ride != w.ride:
                 w.ride = ride
                 event['r'] = dict(ride) if ride else None
+        if fl != w.fl:
+            w.fl = event['fl'] = fl
         if 'pt' in f and pet != w.pet:
             w.pet = pet
             event['pt'] = dict(pet) if pet else None

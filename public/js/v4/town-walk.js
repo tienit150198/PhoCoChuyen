@@ -12,14 +12,19 @@
  * walks or the view moves (and ~12 a second for a new player's lit shops; none with reduced motion).
  * 🛵 A player who owns a vehicle (game/garage.py) rides it here (./ride.js): faster, wheels turning; at a door it is
  * parked beside the door and the player walks the last steps; the next walk starts by hopping back on. The small
- * "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it (each vehicle owned in turn, then walking; remembered here). */
+ * "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it (each vehicle owned in turn, then walking; remembered here).
+ * 🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): wearing wings,
+ * "🪽 Bay / 🪽 Hạ cánh" under it: the player hovers over the street (a bob with the wings' beat, their shadow on the
+ * ground), the wings drawn apart at their full stroke, faster by the tier (./ride.js flySpeedNow); never on the vehicle
+ * (its toggle lands first, taking off sends it home). No parking at a door: they fly to it. */
 import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
 import {figure,paintPlayer,CANVAS,lookOf,myPairs,wingOfState} from './look.js';
+import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,flyLift,flyShadow,CLASSIC_WING,WING_BOX} from './wings-art.js';   // 🪽 Bay
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
 import {escapeHTML as esc,icon} from '../icons.js';
-import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,loadSpouse} from './ride.js';
+import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,loadSpouse,canFly,flying,toggleFly,flyLabel,flySpeedNow,FLY_TOAST} from './ride.js';
 // 👶 "Bế bé đi chơi": the baby in your arms (v4/baby.js), a toggle under the ride's
 import * as BB from './baby.js';
 import {townBirds} from './town-birds.js';   // 🐦 a flock now and then (no frame loop)
@@ -37,7 +42,7 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
   cam:{x:0,y:0},free:false,me:null,raf:0,last:0,time:0,drawn:0,down:null,at:'',lastCur:undefined,look:null,st:null,stKey:'',
   sprite:null,spriteKey:'',ok:null,hooked:false,frames:[],zoom:1,destination:'',destinationKey:'',
-  ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null};
+  ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null,fly:false,fb:null};
 
 /* ------------------------------------------------------------ what the town shows */
 const S=()=>W.env.api.state;
@@ -143,12 +148,13 @@ function build(){
   const el=document.createElement('div');el.className='tw-stage';el.setAttribute('data-morph-keep','');
   el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas>
     <form class="tw-route-picker"><select aria-label="${esc(tr('Chọn điểm đến'))}"></select><button type="submit">${esc(tr('Chỉ đường'))}</button></form>
-    <div class="tw-where" aria-live="polite"></div><button type="button" class="rd-toggle" hidden></button><button type="button" class="bb-toggle" hidden></button>
+    <div class="tw-where" aria-live="polite"></div><button type="button" class="rd-toggle" hidden></button><button type="button" class="fl-toggle" hidden></button><button type="button" class="bb-toggle" hidden></button>
     <div class="tw-map-tools" role="group" aria-label="${esc(tr('Độ phóng bản đồ'))}"><button type="button" data-tw-zoom="out" aria-label="${esc(tr('Thu nhỏ bản đồ'))}">−</button><output>100%</output><button type="button" data-tw-zoom="in" aria-label="${esc(tr('Phóng to bản đồ'))}">+</button><button type="button" data-tw-zoom="me" aria-label="${esc(tr('Về vị trí của bạn'))}">◎</button></div>
     <div class="tw-card" hidden></div>`;
   W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.where=el.querySelector('.tw-where');W.card=el.querySelector('.tw-card');
-  W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S(),W.env.api.content);setRide();setBaby();});
-  W.bb=el.querySelector('.bb-toggle');W.bb.addEventListener('click',()=>{BB.nextCarry(S());setRide();setBaby();});   // 👶
+  W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{const was=flying(S());nextRide(S(),W.env.api.content);setRide();setFly();setBaby();if(was&&W.ride)W.env?.toast?.(tr(FLY_TOAST.land));});
+  W.fb=el.querySelector('.fl-toggle');W.fb.addEventListener('click',()=>{const say=toggleFly(S(),W.env.api.content);setRide();setFly();setBaby();if(say)W.env?.toast?.(tr(say));});   // 🪽
+  W.bb=el.querySelector('.bb-toggle');W.bb.addEventListener('click',()=>{BB.nextCarry(S());setRide();setFly();setBaby();});   // 👶
   el.querySelector('.tw-route-picker').addEventListener('submit',e=>{
     e.preventDefault();const key=el.querySelector('.tw-route-picker select').value,it=W.pl.items.find(it=>it.key===key);remember(key);
     if(it&&!W.st(it).off&&!W.st(it).lock)goItem(it,true);
@@ -175,7 +181,7 @@ export function townMount(env,h){
   const slot=document.querySelector('#sheet [data-tw-slot]');
   if(!slot)return;
   if(!W.el)build();
-  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});onTown(()=>{if(visible())refresh();});BB.onChange(()=>{if(visible()){setRide();setBaby();}});}
+  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});onTown(()=>{if(visible())refresh();});BB.onChange(()=>{if(visible()){setRide();setFly();setBaby();}});}
   if(W.el.parentNode!==slot){slot.prepend(W.el);W.cw=0;}
   refresh();
   if(!W.cw)size();
@@ -202,6 +208,7 @@ function refresh(){
   if(S().journey?.story)loadTown(W.env.api);   // 🏗️ at most a request a minute; a new page repaints the lots (townMount)
   const cur=S().current||null;
   setRide(false);loadSpouse(W.env.api).then(()=>setRide(false));   // 💑 the spouse's vehicles too (cached a minute)
+  setFly();
   setBaby();BB.loadFamily(W.env.api).then(()=>{if(visible())BB.greet(W.env);});   // 👶 the shared child too (cached a minute)
   if(!W.me||cur!==W.lastCur){W.lastCur=cur;place(spawn());W.free=false;snap();hide();parkAtDoor();}
   else if(W.at){const it=W.pl.items.find(x=>x.key===W.at);if(it&&!W.card.hidden)showCard(it,false);}
@@ -232,6 +239,13 @@ function setRide(fresh=true){
   W.drawn=0;kick();
 }
 const riding=()=>!!W.ride&&!W.park;
+/** 🪽 The fly toggle (only wearing wings) and the flight itself (never on the vehicle: ./ride.js). */
+function setFly(){
+  const can=canFly(S()),on=can&&flying(S())&&!W.ride;
+  if(W.fb){W.fb.hidden=!can;if(can){const t=tr(flyLabel(on));if(W.fb.textContent!==t)W.fb.textContent=t;W.fb.setAttribute('aria-pressed',String(on));W.fb.title=tr(on?'Đang bay: chạm để hạ cánh':'Bay nhanh như đi xe');}}
+  if(on===W.fly)return;
+  W.fly=on;if(on)W.park=null;W.drawn=0;kick();
+}
 /** 👶 The baby toggle (only with a baby at home) and the sprite with the baby in your arms. */
 function setBaby(){
   if(!W.bb)return;
@@ -307,7 +321,7 @@ function walkTo(p,then=null,door=null){
   W.free=false;W.arrive=then;W.destination=door?.key||'';
   if(door&&!W.st(door).off&&!W.st(door).lock)W.el.querySelector('.tw-route-picker select').value=door.key;
   const legs=[];
-  if(!W.ride)legs.push({to:p});
+  if(!W.ride)legs.push({to:p,fly:W.fly});   // 🪽 a flyer goes straight to the door
   else if(door&&W.park?.key===door.key)legs.push({to:door.stand});   // parked at this very door
   else{
     if(W.park)legs.push({to:[W.park.x,W.park.y],mount:true});
@@ -329,8 +343,8 @@ function nextLeg(){
     const path=route(W.pl,[W.me.x,W.me.y],g.to);
     let len=0;if(path)for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
     if(!path||len<.5){legEnd(g);continue;}
-    const fast=g.ride?speedOf(W.ride):1;
-    W.me.path=path.slice(1);W.me.len=Math.max(SPEED*fast,len/(g.ride?MAX_WALK/1.5:MAX_WALK));
+    const fast=g.ride?speedOf(W.ride):g.fly&&W.fly?flySpeedNow(S()):1;   // 🪽 the wings' speed
+    W.me.path=path.slice(1);W.me.len=Math.max(SPEED*fast,len/(fast>1?MAX_WALK/1.5:MAX_WALK));
     kick();return;
   }
 }
@@ -410,7 +424,7 @@ function drawPet(c,world){
   world();const w=(pose==='walk'?46:40)*B.w/B.base*B.k,h=w*B.h/B.w,foot=B.foot;
   c.save();c.translate(PET.x,PET.y);if(PET.face<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();
 }
-function animating(){return !still()&&!document.hidden&&(W.marks?.glow?.length||W.marks?.arrow);}
+function animating(){return !still()&&!document.hidden&&(W.marks?.glow?.length||W.marks?.arrow||W.fly);}   // 🪽 hovering: the bob and the wings
 function loop(now){
   W.raf=0;if(!visible()||!W.me)return;
   const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
@@ -442,11 +456,11 @@ function backdrop(){
 }
 /** The player as one small bitmap, made again only when the look or the zoom changes. */
 function sprite(){
-  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S()),myPairs(),wingOfState(S())]);   // 📱 the phone in hand · 👶 the baby in your arms · 🤝 the pairs worn · 🪽 the wings
+  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S()),myPairs(),wingOfState(S())])+(W.fly?'|fly':'');   // 📱 the phone in hand · 👶 the baby in your arms · 🤝 the pairs worn · 🪽 the wings (flying: drawn apart)
   if(W.sprite&&W.spriteKey===key)return W.sprite;
-  const cv=W.sprite||document.createElement('canvas'),w=Math.ceil((wingOfState(S())?144:110)*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;
+  const wide=wingOfState(S())&&!W.fly,cv=W.sprite||document.createElement('canvas'),w=Math.ceil((wide?250:110)*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;   // 🪽 room for the larger pair
   const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,w/2,h-12*sc);
-  try{paintPlayer(c,BB.withBaby(figure(S()),S()),CANVAS);}catch{/* look not ready */}
+  try{const F=BB.withBaby(figure(S()),S());if(W.fly&&F?.L?.wg){const {wg:_,...L}=F.L;F.L=L;}paintPlayer(c,F,CANVAS);}catch{/* look not ready */}
   W.sprite=cv;W.spriteKey=key;W.spriteFoot=[w/2,h-12*sc];return cv;
 }
 function draw(){
@@ -473,6 +487,7 @@ function draw(){
   // The player: the cached sprite, a little hop while walking; on the vehicle (./ride.js), or beside it parked.
   const sp=sprite(),m=W.me,hop=m.path?.length&&!still()?Math.abs(Math.sin(m.step))*3:0,v=W.ride,world=()=>c.setTransform(k*d,0,0,k*d,-W.cam.x*k*d,-W.cam.y*k*d);
   const me=()=>{
+    if(W.fly&&!riding()){flyer(c,sp,m,k,d,world);return;}   // 🪽
     if(riding()){world();if(W.figKey!==W.spriteKey){W.figKey=W.spriteKey;W.fig=figure(S());}const pet=PET.on?petImg('sit'):null;
       drawRide(c,{x:m.x,y:m.y,s:ME,px:k*d,F:W.fig,fkey:W.spriteKey,v,r:W.rv,pet,pkey:pet?JSON.stringify(S().journey.pets.ref):''});return;}
     c.setTransform(1,0,0,1,0,0);
@@ -487,12 +502,26 @@ function draw(){
   if(text!==W.whereText){W.whereText=text;W.where.textContent=text;}
 }
 
+/** 🪽 The player in flight: their shadow on the ground, the wings apart at their full stroke (a cached flap: wings-art.js
+ * wingBitmap), the sprite lifted over them by flyLift, the sparkles over it. */
+const WBOX=WING_BOX.map(v=>v*CLASSIC_WING.s);
+function flyer(c,sp,m,k,d,world){
+  const wg=wingOfState(S()),t=still()?null:W.time,lift=flyLift(wg,t)*ME,o=flyShadow(lift/ME,ME);
+  world();c.fillStyle=`rgba(40,30,25,${o.a.toFixed(2)})`;c.beginPath();c.ellipse(m.x,m.y+1,o.rx,o.ry,0,0,Math.PI*2);c.fill();
+  const [ax,ay]=CLASSIC_WING.at,wo={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread};
+  if(wg){c.save();c.translate(m.x+ax*ME,m.y-lift+ay*ME);c.scale(ME,ME);drawWings(c,CANVAS,wg,0,0,{...wo,body:false,sparkle:false,t});
+    const bm=wingBitmap(CANVAS,wg,t==null?0:flapStep(flapAt(wg.k,t,true)),wo,WBOX,ME*k*d,'town');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);c.restore();}
+  c.drawImage(sp,m.x-W.spriteFoot[0]/(k*d),m.y-lift-W.spriteFoot[1]/(k*d),sp.width/(k*d),sp.height/(k*d));
+  if(wg&&t!=null){c.save();c.translate(m.x+ax*ME,m.y-lift+ay*ME);c.scale(ME,ME);drawMotes(c,CANVAS,wg,0,0,wingScale(wg,CLASSIC_WING.s),t,false);c.restore();}
+}
+
 /* ---- test hooks (scratch browser checks) ---- */
 globalThis.__townWalk={
   state:()=>({on:visible(),me:W.me&&[Math.round(W.me.x),Math.round(W.me.y)],walking:!!W.me?.path?.length,at:W.at,card:!!W.card&&!W.card.hidden,
     cam:[Math.round(W.cam.x),Math.round(W.cam.y)],k:W.k,zoom:W.zoom,route:remainingPath(W.me,W.legs),destination:W.destination,size:W.pl&&[W.pl.W,W.pl.H],items:W.pl?.items.length,where:W.whereText,
     lit:W.marks?.glow?.map(it=>it.key)||[],arrow:W.marks?.arrow?.key||null,
-    ride:W.ride?.id||null,riding:riding(),park:W.park&&[Math.round(W.park.x),Math.round(W.park.y)],toggle:W.btn&&!W.btn.hidden?W.btn.textContent:null}),
+    ride:W.ride?.id||null,riding:riding(),park:W.park&&[Math.round(W.park.x),Math.round(W.park.y)],toggle:W.btn&&!W.btn.hidden?W.btn.textContent:null,
+    fly:W.fly,flyToggle:W.fb&&!W.fb.hidden?W.fb.textContent:null}),
   toggle:()=>{W.btn?.click();return W.ride?.id||null;},
   /** Client point of a building's sign (null when it is off the view). */
   screen:key=>{const it=W.pl?.items.find(x=>x.key===key);if(!it||!W.cv)return null;const r=W.cv.getBoundingClientRect(),x=r.left+(it.cx-W.cam.x)*W.k,y=r.top+(it.G-it.h*.55-W.cam.y)*W.k;
