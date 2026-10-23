@@ -545,7 +545,7 @@ function hudClock(c){
   return '';
 }
 /** Phone HUD keeps big sums short so nothing is cut at 390px: 125.400 → 125,4k, 3.373.500 → 3,37tr. */
-const shortMoney=n=>Math.abs(n)>=999950?`${(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:2})}tr`:Math.abs(n)>=1e5?`${(n/1e3).toLocaleString('vi-VN',{maximumFractionDigits:1})}k`:fmt(n);
+const shortMoney=n=>Math.abs(n)>=999995000?`${(n/1e9).toLocaleString('vi-VN',{maximumFractionDigits:2})} tỷ`:Math.abs(n)>=999950?`${(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:2})}tr`:Math.abs(n)>=1e5?`${(n/1e3).toLocaleString('vi-VN',{maximumFractionDigits:1})}k`:fmt(n);
 /** Something new behind the status sheet: a life story waiting (Phố nghề / Nhóm phố messages: the dot on Thêm). */
 const statusDot=()=>Boolean(api.state.life?.pending);
 function hudHTML(c,m){

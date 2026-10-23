@@ -131,7 +131,7 @@ class AdminGiftHTTP(unittest.TestCase):
         self.assertEqual(self.give(1, 'rid-bounds-0003')[1]['status'], 'created')
         status, out = self.give(sg.MAX_COINS, 'rid-bounds-0004', large=True)
         self.assertEqual((status, out['status'], out['gift']['coins']), (200, 'created', sg.MAX_COINS))
-        self.assertEqual(out['gift']['text'], 'Ban quản lý phố tặng bạn 1.000.000.000 xu. Chơi vui nha! 💛')
+        self.assertEqual(out['gift']['text'], 'Ban quản lý phố tặng bạn 1 tỷ xu. Chơi vui nha! 💛')
         self.assertEqual(out['gift']['title'], 'Quà từ Phố Có Chuyện')
         self.store.transaction(lambda db: db.execute('DELETE FROM system_gifts'))  # leave the other tests a clean table
 

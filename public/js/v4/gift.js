@@ -13,10 +13,13 @@
  * app.js imports this module only when the bootstrap carried a gift. */
 import {escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
+import {bigMoney} from './wealth.js';
 import {why,want} from './break-gate.js';
 
 let E=null,queue=[],dlg=null,timer=0,calm=0,openedAt=0,back=null,cssReady=null;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
+/** "+1.000.000.000 xu" with "(1 tỷ)" under it from 1 triệu up (wealth.js bigMoney). */
+const big=n=>{const w=bigMoney(n);return w?` <small class="gf-words">(${w})</small>`:'';};
 
 /** Why the card has to wait right now ('' = it may open). */
 export function blocker(env=E,doc=document){
@@ -33,14 +36,14 @@ export function blocker(env=E,doc=document){
   return why(dlg,{strict:false},doc);
 }
 
-const short=c=>c%1e6===0?`${c/1e6}tr`:`${c/1000}k`;
+const short=c=>c%1e9===0?`${c/1e9} tỷ`:c%1e6===0?`${c/1e6}tr`:`${c/1000}k`;
 /** 🎡 a wheel gift (system_gift WHEEL, 20/10): the slots round the wheel, the amount hidden until it stops. */
 function wheelHTML(g,more){
   const sl=g.wheel.slots,n=sl.length,deg=360/n;
   const seg=sl.map((x,i)=>`<span class="gf-seg" style="--a:${i*deg+deg/2}deg"><b>${esc(short(x.coins))}</b></span>`).join('');
   return `${more}<div class="gf-top"><p class="gf-title" id="gfTitle">${esc(g.title)}</p>`+
     `<div class="gf-wheel-wrap"><i class="gf-pin" aria-hidden="true">▼</i><div class="gf-wheel" style="--n:${n}" aria-hidden="true">${seg}</div></div>`+
-    `<p class="gf-amount gf-hide" aria-live="polite"><span>+${fmt(g.coins)} xu</span></p><p class="gf-note gf-hide"></p></div>`+
+    `<p class="gf-amount gf-hide" aria-live="polite"><span>+${fmt(g.coins)} xu${big(g.coins)}</span></p><p class="gf-note gf-hide"></p></div>`+
     `<p class="gf-text gf-wish" id="gfText">💌 ${esc(g.wheel.wish||g.text)}</p>`+
     `<div class="gf-foot"><button type="button" class="btn primary big full" data-gf="spin">🎡 Quay ngay</button></div>`;
 }
@@ -66,8 +69,8 @@ function html(g){
   const more=queue.length>1?`<p class="gf-count" aria-hidden="true">1/${queue.length}</p>`:'';
   if(g.wheel?.slots?.length)return wheelHTML(g,more);
   return `${more}<div class="gf-top"><p class="gf-title" id="gfTitle">${esc(g.title)}</p>`+
-    (g.take?`<p class="gf-amount gf-take"><span class="gf-box" aria-hidden="true">↩️</span><span>−${fmt(g.coins)} xu</span></p><p class="gf-where">Đã thu hồi khỏi ví và tài khoản</p></div>`   // ↩️ system_gift TAKE
-      :`<p class="gf-amount"><span class="gf-box" aria-hidden="true">🎁</span><span>+${fmt(g.coins)} xu</span></p><p class="gf-where">Đã vào ví của bạn 👛</p></div>`)+
+    (g.take?`<p class="gf-amount gf-take"><span class="gf-box" aria-hidden="true">↩️</span><span>−${fmt(g.coins)} xu${big(g.coins)}</span></p><p class="gf-where">Đã thu hồi khỏi ví và tài khoản</p></div>`   // ↩️ system_gift TAKE
+      :`<p class="gf-amount"><span class="gf-box" aria-hidden="true">🎁</span><span>+${fmt(g.coins)} xu${big(g.coins)}</span></p><p class="gf-where">Đã vào ví của bạn 👛</p></div>`)+
     `<p class="gf-text" id="gfText">${esc(g.text)}</p>`+
     `<div class="gf-foot"><button type="button" class="btn primary big full" data-gf="ok">${g.take?'Đã hiểu':'Nhận quà 💛'}</button></div>`;
 }

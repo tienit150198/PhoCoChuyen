@@ -371,8 +371,17 @@ def coins_text(n: int) -> str:
     return f'{int(n):,}'.replace(',', '.')
 
 
+def coins_words(n: int) -> str:
+    """An even big amount in words (10**9 -> '1 tỷ', 5_000_000 -> '5 triệu', 2_500_000_000 -> '2,5 tỷ'), any other in digits."""
+    n = int(n)
+    for unit, word in ((10**9, 'tỷ'), (10**6, 'triệu')):
+        if abs(n) >= unit and (n * 100) % unit == 0:
+            return f'{n / unit:g} {word}'.replace('.', ',')
+    return coins_text(n)
+
+
 def default_text(coins: int) -> str:
-    return f'Ban quản lý phố tặng bạn {coins_text(coins)} xu. Chơi vui nha! 💛'
+    return f'Ban quản lý phố tặng bạn {coins_words(coins)} xu. Chơi vui nha! 💛'
 
 
 def admin_id(by: str, user: str, rid: str) -> str:
@@ -401,7 +410,7 @@ def admin_grant(store, by: str, d: dict) -> dict:
         raise GiftError('Tên đăng nhập không hợp lệ.', 'bad_user')
     coins = d.get('coins')
     if type(coins) is not int or not 1 <= coins <= MAX_COINS:
-        raise GiftError(f'Số xu cần là số nguyên từ 1 đến {coins_text(MAX_COINS)}.', 'bad_coins')
+        raise GiftError(f'Số xu cần là số nguyên từ 1 đến {coins_words(MAX_COINS)}.', 'bad_coins')
     if coins > LARGE and d.get('large') is not True:
         raise GiftError(f'{coins_text(coins)} xu lớn hơn {coins_text(LARGE)} xu: cần xác nhận thêm một lần.', 'confirm_large')
     rid = d.get('rid')

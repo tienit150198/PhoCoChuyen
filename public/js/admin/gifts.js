@@ -10,10 +10,20 @@ import {esc,icon,hm,num,toast,tag} from './ui.js';
 
 const CHIPS=[1000,10000,100000,1000000];
 const STATUS={pending:['Chờ vào game','warn'],applied:['Đã vào ví','info'],seen:['Đã xem thiệp','good']};
-const defText=n=>`Ban quản lý phố tặng bạn ${num(n)} xu. Chơi vui nha! 💛`;
+/** 1.000.000.000 → "1 tỷ", 2.500.000 → "2,5 triệu", 999.999.999 → "≈ 1 tỷ"; under 1 triệu → '' (as v4/wealth.js bigMoney). */
+export const words=n=>{const v=Number(n)||0;if(Math.abs(v)<1e6)return '';const [d,w]=Math.abs(v)>=999995000?[1e9,'tỷ']:[1e6,'triệu'],r=Math.round(v/d*100)/100;return `${r*d===v?'':'≈ '}${r.toLocaleString('vi-VN',{maximumFractionDigits:2})} ${w}`;};
+const said=n=>words(n)?` <small class="gift-said">(${words(n)})</small>`:'';
+/** An even amount in words ("1 tỷ", "5 triệu"), any other in digits. */
+const coinsText=n=>words(n)&&!words(n).startsWith('≈')?words(n):num(n);
+const defText=n=>`Ban quản lý phố tặng bạn ${coinsText(n)} xu. Chơi vui nha! 💛`;
 const newRid=()=>{try{return crypto.randomUUID();}catch{return [...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,'0')).join('');}};
-/** "100.000" / "100 000" / "1e5" typed: the digits only. */
-const parseCoins=s=>{const d=String(s??'').replace(/\D/g,'');return d?Number(d.slice(0,9)):0;};
+const UNIT={k:1e3,'nghìn':1e3,'ngàn':1e3,tr:1e6,'triệu':1e6,m:1e6,'tỷ':1e9,'tỉ':1e9,b:1e9};
+/** "100.000" / "100 000": the digits; "500tr", "2,5 triệu", "1 tỷ", "1b": the number times its unit. */
+export const parseCoins=s=>{
+  const t=String(s??'').trim().toLowerCase(),m=/^([\d.,\s]+?)\s*(k|nghìn|ngàn|tr|triệu|m|tỷ|tỉ|b)$/.exec(t);
+  if(m){const x=Number(m[1].replace(/\s/g,'').replace(',','.'));return Number.isFinite(x)?Math.round(x*UNIT[m[2]]):0;}
+  const d=t.replace(/\D/g,'');return d?Number(d.slice(0,10)):0;
+};
 const statusTag=s=>{const [l,t]=STATUS[s]||[s,''];return tag(l,t);};
 
 export class GiftAdmin{
@@ -51,14 +61,14 @@ export class GiftAdmin{
   }
   userRow(u){
     const gifts=u.gifts.length?`<div class="gift-mini">${u.gifts.map(g=>this.giftRow(g,false)).join('')}${u.gift_count>u.gifts.length?`<small class="muted">và ${num(u.gift_count-u.gifts.length)} quà cũ hơn</small>`:''}</div>`:'';
-    const sum=u.gift_count?`<small class="muted"> · đã tặng ${num(u.gift_count)} quà, ${num(u.gift_coins)} xu</small>`:'';
+    const sum=u.gift_count?`<small class="muted"> · đã tặng ${num(u.gift_count)} quà, ${num(u.gift_coins)} xu${words(u.gift_coins)?` (${words(u.gift_coins)})`:''}</small>`:'';
     return `<div class="gift-user"><div class="grow"><b>@${esc(u.username)}</b> <span class="gift-name">${esc(u.display)}</span><br><small class="muted">tạo ${esc(String(u.created_at||'').slice(0,10))}</small>${sum}${gifts}</div>`+
       `<button type="button" class="btn primary sm" data-act="giftOpen" data-id="${esc(u.username)}" data-value="${esc(u.display)}">🎁 Tặng xu</button></div>`;
   }
   giftRow(g,who){
     const to=who?(g.user?`<b>@${esc(g.user)}</b> `:'<b>khách</b> '):'';
     const when=`tặng ${hm(g.created)}`+(g.applied_at?` · vào ví ${hm(g.applied_at)}`:'')+(g.seen_at?` · xem ${hm(g.seen_at)}`:'');
-    return `<div class="gift-row">${to}<b class="gift-coins">+${num(g.coins)} xu</b> ${statusTag(g.status)} <small class="muted">${when} · ${g.by?`bởi @${esc(g.by)}`:'bằng công cụ'}</small>`+
+    return `<div class="gift-row">${to}<b class="gift-coins">+${num(g.coins)} xu</b>${said(g.coins)} ${statusTag(g.status)} <small class="muted">${when} · ${g.by?`bởi @${esc(g.by)}`:'bằng công cụ'}</small>`+
       (who?`<div class="gift-words"><b>${esc(g.title)}</b> — ${esc(g.text)}</div>`:'')+`</div>`;
   }
 
@@ -92,7 +102,7 @@ export class GiftAdmin{
   problem(){
     const g=this.dlg;
     if(!g.coins)return 'Nhập số xu.';
-    if(g.coins>this.max)return `Tối đa ${num(this.max)} xu một lần.`;
+    if(g.coins>this.max)return `Tối đa ${coinsText(this.max)} xu một lần.`;
     if(!g.title.trim())return 'Cần tiêu đề thiệp.';
     if(g.title.trim().length>(this.data?.title_max||80))return `Tiêu đề tối đa ${num(this.data?.title_max||80)} ký tự.`;
     if(g.text.trim().length>(this.data?.text_max||300))return `Lời nhắn tối đa ${num(this.data?.text_max||300)} ký tự.`;
@@ -109,7 +119,7 @@ export class GiftAdmin{
   paintForm(){
     const g=this.dlg,el=this.el;if(!g||g.step!=='form')return;
     const p=this.problem(),out=el.querySelector('[data-out]'),err=el.querySelector('[data-err]'),go=el.querySelector('[data-go-next]'),cnt=el.querySelector('[data-count]');
-    if(out)out.innerHTML=g.coins?`= <b>${num(g.coins)} xu</b>${g.coins>this.large?` ${tag('trên '+num(this.large)+' xu: sẽ hỏi lại','warn')}`:''}`:'&nbsp;';
+    if(out)out.innerHTML=g.coins?`= <b>${num(g.coins)} xu</b>${said(g.coins)}${g.coins>this.large?` ${tag('trên '+num(this.large)+' xu: sẽ hỏi lại','warn')}`:''}`:'&nbsp;';
     if(err)err.textContent=g.coins||g.amount?p:'';
     if(go)go.disabled=!!p;
     el.querySelectorAll('[data-chip]').forEach(c=>{const on=Number(c.dataset.chip)===g.coins;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});
@@ -125,7 +135,7 @@ export class GiftAdmin{
       body=`<form class="gift-form" novalidate>
         <label for="gift-amount">Số xu</label>
         <div class="chips gift-chips">${CHIPS.map(n=>`<button type="button" class="chip" data-chip="${n}" aria-pressed="false">${num(n)}</button>`).join('')}</div>
-        <input id="gift-amount" name="amount" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="vd. 10.000" value="${esc(g.amount)}">
+        <input id="gift-amount" name="amount" autocomplete="off" maxlength="16" placeholder="vd. 10.000 · 500tr · 1 tỷ" value="${esc(g.amount)}">
         <p class="gift-out" data-out aria-live="polite">&nbsp;</p>
         <label for="gift-title">Tiêu đề thiệp</label>
         <input id="gift-title" name="title" maxlength="${this.data?.title_max||80}" value="${esc(g.title)}">
@@ -137,10 +147,10 @@ export class GiftAdmin{
     }else{
       const big=g.coins>this.large;
       body=`<div class="gift-confirm">
-        <p class="gift-ask">Tặng <b class="gift-big">${num(g.coins)} xu</b> cho ${who}?</p>
+        <p class="gift-ask">Tặng <b class="gift-big">${num(g.coins)} xu</b>${said(g.coins)} cho ${who}?</p>
         <div class="gift-card"><b>🎁 ${esc(g.title.trim())}</b><span>${esc(this.words().trim())}</span></div>
         <p class="note">Xu vào ví khi @${esc(g.user)} vào game lần tới. Gửi rồi thì không rút lại được.</p>
-        ${big?`<div class="notice warn">${icon('alert',16)}<div><b>Số lớn: ${num(g.coins)} xu</b> (trên ${num(this.large)} xu).<label class="gift-sure"><input type="checkbox" name="sure"${g.sure?' checked':''}${g.sending?' disabled':''}><span>Tôi chắc chắn tặng đúng <b>${num(g.coins)} xu</b> cho @${esc(g.user)}</span></label></div></div>`:''}
+        ${big?`<div class="notice warn">${icon('alert',16)}<div><b>Số lớn: ${num(g.coins)} xu</b>${said(g.coins)} (trên ${num(this.large)} xu).<label class="gift-sure"><input type="checkbox" name="sure"${g.sure?' checked':''}${g.sending?' disabled':''}><span>Tôi chắc chắn tặng đúng <b>${num(g.coins)} xu</b> cho @${esc(g.user)}</span></label></div></div>`:''}
         ${g.error?`<div class="notice bad" role="alert">${icon('alert',16)}<div>${esc(g.error)}</div></div>`:''}
         <div class="gift-btns"><button type="button" class="btn ghost" data-act="giftBack"${g.sending?' disabled':''}>${icon('back',15)} Sửa lại</button><button type="button" class="btn primary" data-act="giftSend"${g.sending||big&&!g.sure?' disabled':''}>${g.sending?'Đang gửi…':g.error?'Thử lại':`Xác nhận tặng ${num(g.coins)} xu`}</button></div>
       </div>`;

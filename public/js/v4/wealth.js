@@ -20,12 +20,21 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 
-/** Short numbers for the top bar on phones (no "xu"): 125.400 → 125,4k, 3.373.500 → 3,37tr. */
+/** Short numbers for the top bar on phones (no "xu"): 125.400 → 125,4k, 3.373.500 → 3,37tr, 1.250.000.000 → 1,25 tỷ. */
 export function shortNum(n){
   const v=num(n),a=Math.abs(v);
+  if(a>=999995000)return `${(v/1e9).toLocaleString('vi-VN',{maximumFractionDigits:2})} tỷ`;
   if(a>=999950)return `${(v/1e6).toLocaleString('vi-VN',{maximumFractionDigits:2})}tr`;
   if(a>=1e5)return `${(v/1e3).toLocaleString('vi-VN',{maximumFractionDigits:1})}k`;
   return fmt(v);
+}
+
+/** A big amount in words (gift cards, the operator site): 1.000.000.000 → "1 tỷ", 2.500.000 → "2,5 triệu",
+ * 999.999.999 → "≈ 1 tỷ" (rounded: "≈"); under 1 triệu → null (the digits read fine). */
+export function bigMoney(n){
+  const v=num(n),a=Math.abs(v);if(a<1e6)return null;
+  const [d,w]=a>=999995000?[1e9,'tỷ']:[1e6,'triệu'],r=Math.round(v/d*100)/100;
+  return `${r*d===v?'':'≈ '}${r.toLocaleString('vi-VN',{maximumFractionDigits:2})} ${w}`;
 }
 
 /** The two top-bar amounts: this workplace's fund and the wallet (null outside the story: free play has
