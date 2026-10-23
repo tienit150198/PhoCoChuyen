@@ -1,3 +1,8 @@
+# 2.5.8 — 23/10/2026
+
+- 🧩 Ghép ba Phố Mây màn 201–300 (feat/tile-300, owner 23/10 "thêm mở tới màn 300, khó hơn, có item ẩn, học candy fruits"): 100 màn mới khó dần (40→48 loại, băng 30→40, khóa 12→16, khay 6 ở màn 225/250/275/300), mỗi màn giải được theo cách dựng và được bộ giải độc lập kiểm; màn 1–200 giữ nguyên từng bit. Ô mới 🎁 hộp ẩn, 🌈 cầu vồng, ⛓️ xích, 💣 bom (thẻ giới thiệu, server replay kiểm, bản JS kiểm từng chạm). ⭐ 1–3 sao mỗi màn (tile_st), bản đồ màn tới 300, 🎁 rương mỗi 10 màn sau 200 (×2 ở 250/300). Phúc lợi +0,1 % mỗi màn sau 200, +40 % ở 300. Tiến độ sau 200 ở khóa mới tile_hi2 (bản cũ giữ khóa, chơi tiếp ở màn 200).
+- 🩺 server: câu trả lời "Dữ liệu không đúng cấu trúc" (invalid_data) giờ ghi một dòng [cmd-400] (route, action, career, loại lỗi, các frame cuối; không bao giờ ghi giá trị; tối đa 30 dòng mỗi phút mỗi tiến trình). Kai 23/10 19:30 gặp 10 lần ở màn Kho / Làm việc mà log không nói lệnh nào (lỗi có từ 22/10, không do 2.5.7; bản lưu hợp lệ, đổi nghề rồi quay lại là chơi tiếp).
+
 # 2.5.7 — 23/10/2026
 
 - 🛍️ Cửa hàng v2 (feat/shop-v2, owner 23/10 "gọn và dễ dùng như các game khác"): một hàng tab, lưới thẻ viền theo độ hiếm, lọc Độ hiếm / Giá / Chưa có, bảng chi tiết (thử đồ, ×1/×5/×10/Tối đa, một nút Mua), hỏi lại chỉ khi ≥ 20 % ví + ngân hàng, "Không hỏi lại" chung với ⚒️ (no-ask.js).

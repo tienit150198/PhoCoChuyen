@@ -39,6 +39,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.8", date="2026-10-23", items=(   # owner 23/10: "thêm mở tới màn 300 nhé, khó hơn, với có item ẩn"
+        dict(emoji='🧩', text="Ghép ba Phố Mây mở tới màn 300, khó hơn."),
+        dict(emoji='🎁', text="Ô mới: 🎁 hộp ẩn, 🌈 cầu vồng, ⛓️ xích, 💣 bom."),
+        dict(emoji='⭐', text="Mỗi màn 1–3 sao; cứ 10 màn có rương quà."),
+        dict(emoji='💰', text="Mỗi màn mới qua thêm +0,1% tiền làm việc và kinh doanh, tới +40% ở màn 300."),
+    )),
     dict(version="2.5.7", date="2026-10-23", items=(   # owner 23/10: "gọn và dễ dùng như các game khác", "xếp hạng cánh", "tăng lực chiến pet"
         dict(emoji='🛍️', text="Cửa hàng mới: thẻ theo độ hiếm, bấm vào là thử đồ, chọn số lượng và mua một lần.",
              go=dict(action='jrAccShop')),
