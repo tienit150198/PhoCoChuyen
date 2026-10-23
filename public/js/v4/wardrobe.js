@@ -151,7 +151,7 @@ function wingsCard(api){
   const c=api.content.journey?.wardrobe?.wings,w=api.state.journey?.wings,on=wingOfState(api.state);if(!c)return '';
   const n=Array.isArray(w?.own)?w.own.length:0,st=on&&c.styles.find(x=>x.id===on.k);
   const body=on?`<span class="wg-pick" style="--wt:${WING_TIER_COLOR[on.r]}">${wingIcon(on,60)}<i class="wg-tier" style="--wt:${WING_TIER_COLOR[on.r]}">${on.r===WING_TIERS.length-1?'🌟 HT':esc(WING_TIERS[on.r])}</i></span>
-      <span class="grow"><b>${esc(st?.name||'Cánh')} ${esc(WING_TIERS[on.r])}</b><small class="block muted">+${c.earn[on.r]}% tiền kiếm được · +${c.battle[on.r]}% sức thú khi đấu</small></span>`
+      <span class="grow"><b>${esc(st?.name||'Cánh')} ${esc(WING_TIERS[on.r])}</b><small class="block muted">+${c.earn[on.r]}% tiền kiếm được · +${c.battle[on.r]}% lực chiến thú</small></span>`
     :`<span class="grow"><b>🪽 Cánh</b><small class="block muted">${n?`Có ${n} đôi trong tủ, chưa đeo đôi nào.`:'Đeo cánh cho đẹp, còn được thêm tiền khi làm việc.'}</small></span>`;
   return `<section class="jr-card as-mine wd-wings"><div class="as-row-btns wd-wings-row">${body}${btn(n?'🪽 Tủ cánh':'🛍️ Xem cánh','jrAccShop',{tab:'wing'},'ghost small')}</div></section>`;
 }

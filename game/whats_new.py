@@ -39,6 +39,16 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.7", date="2026-10-23", items=(   # owner 23/10: "gọn và dễ dùng như các game khác", "xếp hạng cánh", "tăng lực chiến pet"
+        dict(emoji='🛍️', text="Cửa hàng mới: thẻ theo độ hiếm, bấm vào là thử đồ, chọn số lượng và mua một lần.",
+             go=dict(action='jrAccShop')),
+        dict(emoji='⚒️', text="Cường hóa mới: chọn món là thấy hạng kế tiếp; có Cường hóa tối đa và Ghép tất cả.",
+             go=dict(action='jrForge')),
+        dict(emoji='🔒', text="Khóa món yêu thích để không bị đem đi ghép."),
+        dict(emoji='💪', text="Cánh tăng thẳng lực chiến thú cưng, tới +14% với cánh Huyền thoại."),
+        dict(emoji='🪽', text="Bảng xếp hạng mới: Cánh.",
+             go=dict(action='rank', data=dict(board='wings'))),
+    )),
     dict(version="2.5.6", date="2026-10-23", items=(   # owner 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần"
         dict(emoji='⚡', text="Cường hóa nhanh tự ghép liên tục như Ghép tự động: chọn tới hạng nào, tiêu tối đa bao nhiêu.",
              go=dict(action='jrForge')),

@@ -155,7 +155,7 @@ function wingDetail(api,st,x){
   const stage=mirror(api,{...lookOf(api.state),wg:{k:x.id,r:mine[0]?.r||0}},`Nhân vật của bạn thử ${style.name}`);
   const cap=Math.max(1,Math.min(c.qty_max||1,c.own_max-own.length)),q=wq(st,x.id,cap),full=own.length>=c.own_max;
   const info=`<p class="as-d-price"><b>${fmt(style.price)} xu</b> / đôi</p><p class="small">${esc(style.desc)}</p><p class="as-d-note">🎲 Ra hạng D hoặc C</p>
-    <ul class="as-d-gives"><li>💰 +${c.earn[0]}–${c.earn[1]}% tiền kiếm được khi làm việc</li><li>⚔️ +${c.battle[0]}–${c.battle[1]}% máu và sức đánh cho thú khi đấu</li></ul>`;
+    <ul class="as-d-gives"><li>💰 +${c.earn[0]}–${c.earn[1]}% tiền kiếm được khi làm việc</li><li>💪 +${c.battle[0]}–${c.battle[1]}% lực chiến thú cưng</li></ul>`;
   const reveal=st.reveal?.length?wingReveal(api,st).replace('</section>',`${wingsReady(api)?forgeBtn('wing'):''}</section>`):'';
   const have=mine.length?`<details class="as-d-own"${reveal?' open':''}><summary>🪽 Bạn có ${mine.length} đôi ${esc(style.name)}</summary><ul class="wg-grid">${mine.map(o=>wingTile(api,w,o)).join('')}</ul></details>`:'';
   const ready=!reveal&&wingsReady(api)?`<p class="as-d-note">${forgeBtn('wing')}</p>`:'';

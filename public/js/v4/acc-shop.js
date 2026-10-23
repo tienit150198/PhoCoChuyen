@@ -26,7 +26,7 @@
  * - 🪽 Cánh (game/wings.py, owner 22/10): a style bought rolls hạng D or C on the server (jr_pet_wing_buy with a request id:
  *   a retry answers the same wings), shown in a small reveal; one worn at a time (jr_pet_wing_wear). Three wings ghép like
  *   the pets in ⚒️ Cường hóa (jr_pet_wing_fuse, the first one picked is the main one and keeps its style). The tier's badge and colour on
- *   every tile, what it adds (tiền kiếm được, sức thú khi đấu) under the mirror. */
+ *   every tile, what it adds (tiền kiếm được, 💪 lực chiến thú) under the mirror. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {shortNum} from './wealth.js';
 import {buyPayment,askBuy} from './payment.js';
@@ -100,7 +100,7 @@ const badge=r=>`<i class="wg-tier${r===WING_TIERS.length-1?' top':''}" style="--
 const styleOf=(api,k)=>WC(api)?.styles?.find(x=>x.id===k)||null;
 const wName=(api,x)=>`${styleOf(api,x.k)?.name||'Cánh'} ${tierName(x.r)}`;
 function wingPerks(api,r){const c=WC(api);if(!c)return '';
-  return `<ul class="wg-perks"><li>💰 +${c.earn[r]}% tiền kiếm được khi làm việc</li><li>⚔️ +${c.battle[r]}% máu và sức đánh cho thú khi đấu</li></ul>`;}
+  return `<ul class="wg-perks"><li>💰 +${c.earn[r]}% tiền kiếm được khi làm việc</li><li>💪 +${c.battle[r]}% lực chiến thú cưng</li></ul>`;}
 /** What three wings give (game/wings.py fuse): the main one goes to `to`, the fee is the lowest tier's, from tier S a miss
  * loses the two others. */
 function wingFuseOf(api,xs){
@@ -187,7 +187,7 @@ const wingTile=(api,w,x,pick=-1,forge=false)=>{const on=x.id===w.on;
     <small>${esc(styleOf(api,x.k)?.name||'Cánh')}${forge&&on?' · đang đeo':''}</small>${forge?'':`<span class="as-row-btns">${on?btn('Cất','jrAsWingWear',{id:''},'ghost small',busy):btn('Đeo','jrAsWingWear',{id:x.id},'small',busy)}${btn('Bỏ','jrAsWingDrop',{id:x.id},'ghost small',busy)}</span>`}</li>`;};
 const sortWings=own=>[...own].sort((a,b)=>b.r-a.r||String(a.k).localeCompare(b.k));
 const wingReveal=(api,st)=>st.reveal?.length?`<section class="jr-card wg-reveal" aria-live="polite"><h3>🎉 ${st.reveal.length>1?'Mở hộp cánh':'Cánh mới'}</h3><div class="wg-reveal-row">${st.reveal.map((x,i)=>`<span class="wg-reveal-item" style="--i:${i}">${wingIcon(x,72,wName(api,x))}${badge(x.r)}</span>`).join('')}</div>${btn('Tuyệt!','jrAsWingReveal',{},'primary small')}</section>`:'';
-const wingTable=c=>`<details class="jr-card wg-table"><summary>📈 Hạng cánh được gì</summary><table><thead><tr><th>Hạng</th><th>Tiền kiếm được</th><th>Thú khi đấu</th></tr></thead><tbody>${c.earn.map((e,r)=>`<tr><td>${badge(r)}</td><td>+${e}%</td><td>+${c.battle[r]}%</td></tr>`).join('')}</tbody></table></details><p class="wd-note as-foot">${btn('🏆 Xếp hạng cánh','rank',{board:'wings'},'ghost small')}</p>`;   // 🪽 the Cánh board (game/wing_lb.py)
+const wingTable=c=>`<details class="jr-card wg-table"><summary>📈 Hạng cánh được gì</summary><table><thead><tr><th>Hạng</th><th>Tiền kiếm được</th><th>Lực chiến thú</th></tr></thead><tbody>${c.earn.map((e,r)=>`<tr><td>${badge(r)}</td><td>+${e}%</td><td>+${c.battle[r]}%</td></tr>`).join('')}</tbody></table></details><p class="wd-note as-foot">${btn('🏆 Xếp hạng cánh','rank',{board:'wings'},'ghost small')}</p>`;   // 🪽 the Cánh board (game/wing_lb.py)
 /** ⚒️ Cường hóa's 🪽 shelf: ⚡ Cường hóa nhanh, the wings to pick, the fusion picked, what each tier gives. */
 function wingForge(env,st){
   const {api}=env,c=WC(api);if(!c)return `<p class="muted">Cánh đang về hàng, lát nữa quay lại nhé.</p>`;

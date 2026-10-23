@@ -1,3 +1,10 @@
+# 2.5.7 — 23/10/2026
+
+- 🛍️ Cửa hàng v2 (feat/shop-v2, owner 23/10 "gọn và dễ dùng như các game khác"): một hàng tab, lưới thẻ viền theo độ hiếm, lọc Độ hiếm / Giá / Chưa có, bảng chi tiết (thử đồ, ×1/×5/×10/Tối đa, một nút Mua), hỏi lại chỉ khi ≥ 20 % ví + ngân hàng, "Không hỏi lại" chung với ⚒️ (no-ask.js).
+- ⚒️ Cường hóa v2 (feat/forge-v2, public/js/v4/forge.js): một bố cục chung cho Cánh / Ghép thú / Đồ thú / Linh kiện, bảng nâng cấp (hạng → hạng kế, nguyên liệu tự điền, phí), Cường hóa tối đa (⚡ với `pin`), ⚡ Ghép tất cả, 🔒 Khóa món (journey.fzl, jr_pet_lock: game/forge_locks.py), Bỏ qua hiệu ứng (localStorage mnl.forgeFast).
+- 🪽 Xếp hạng cánh (feat/wing-lb, game/wing_lb.py, SCHEMA 91: bảng wing_board): điểm 3^hạng mỗi đôi, danh hiệu tuần, tab 🪽 Cánh trên Bảng xếp hạng; chạy scripts/backfill_wing_board.py một lần sau khi lên.
+- 💪 Cánh tăng thẳng lực chiến thú cưng (owner 23/10 "phải tăng lực chiến pet, tăng trực tiếp luôn"): BATTLE = 2…14 % trên mọi chỉ số (pet_tiers.stats), hiện trong 💪 lực chiến và các bảng; trận đấu không còn `wg` (ENGINE 1). Tiền kiếm được giữ nguyên (2…25 %).
+
 # 2.5.6.1 — 23/10/2026
 
 - ⚒️ Cường hóa → 🧬 Ghép thú: với nhiều bé (33 bé, video của người chơi 23/10) ô chọn "Bé" của ⚡ có tên dài làm cả sheet rộng ~1900px: thẻ lệch phải, nút ⚡ mất chữ. Ô chọn giờ vừa khung (width 100%, ellipsis), các khối của ⚒️ / .pt-embed là minmax(0,1fr) nên không gì nới rộng sheet nữa.

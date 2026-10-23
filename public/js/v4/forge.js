@@ -238,10 +238,10 @@ function slots(api,st,x,step){
     return `<li><button type="button" class="fv-cand${cur?' on':''}" data-action="jrFgPick" data-i="${st.slot}" data-id="${esc(y.id)}" aria-pressed="${cur}"${other?' disabled':''} aria-label="${esc(`${y.name} ${tierName(y.r)}`)}">${artOf(api,y,36)}<small data-no-translate>${esc(y.name)}</small></button></li>`;}).join('')}</ul>`:'';
   return `<div class="fv-slots" role="group" aria-label="Nguyên liệu ${n}/3"><span class="fv-cnt">${n}/3</span><span class="fv-slot main">${artOf(api,x,40)}${tierChip(x.r,'sm')}<small class="fv-sub">👑</small></span>${side(ps[0],0)}${side(ps[1],1)}</div>${list}`;
 }
-/** What changes: % thu nhập, sức thú khi đấu, chỉ số. */
+/** What changes: % thu nhập, 💪 lực chiến thú, chỉ số. */
 function gains(api,x,step){
   const row=(e,a,b)=>`<li><span aria-hidden="true">${e}</span> <b>${a}</b> → <b class="up">${b}</b></li>`;
-  if(x.kind==='wing'){const c=WC(api);return row('💰',`+${c.earn[x.r]}%`,`+${c.earn[step.to]}%`)+row('⚔️',`+${c.battle[x.r]}%`,`+${c.battle[step.to]}%`);}
+  if(x.kind==='wing'){const c=WC(api);return row('💰',`+${c.earn[x.r]}%`,`+${c.earn[step.to]}%`)+row('💪',`+${c.battle[x.r]}%`,`+${c.battle[step.to]}%`);}
   if(x.kind==='pet'){const R=TT(api).ranks;return step.to>6?row('💰',`+${R[6].profit}%`,'🌟'):row('💰',`+${R[x.r].profit}%`,`+${R[step.to].profit}%`);}
   if(x.kind==='ward'){const W=WD(api);return x.it?.slot==='bed'?'':row('💰',`+${W.bonus[x.r]}%`,`+${W.bonus[step.to]}%`);}
   const t=TT(api),st=t.stats.find(s=>s.id===t.gear.slots.find(z=>z.id===x.s)?.stat),bonus=t.gear.models?.[x.s]?.[x.m]?.bonus||0;
