@@ -88,6 +88,8 @@
 .ck-counter .ck-plus5{position:absolute;right:3px;bottom:3px;min-width:32px;min-height:26px;padding:0 6px;border-radius:8px;border:1px solid var(--ck-accent);background:var(--sk-surface);
   color:var(--ck-accent);font:800 12px/1 var(--font,inherit);cursor:pointer;touch-action:manipulation}
 .ck-counter .ck-cell:has(.ck-plus5) .ck-tile{padding-bottom:28px}
+/* A tile reached with Tab scrolls clear of the sticky bar (it hid the focus ring at 1280×585, player #497). */
+.ck-counter .ck-main button{scroll-margin-bottom:84px}
 
 /* ---------- the tray */
 .ck-counter .ck-tray{padding:10px;border-radius:var(--sk-r,16px);background:var(--sk-surface);border:1.5px solid var(--ck-accent)}

@@ -51,7 +51,12 @@ function queue(x,active,o){
 }
 
 /* ---------------------------------------------------------------- the customer's bubble */
-function chips(x,t,o){
+/** What the customer says, without the "Tên:" the opening may start with. */
+function sayOf(x,t){
+  const name=String(speaker(x,t).display_name||'');let say=String(t.opening||'');
+  return name&&say.startsWith(name+':')?say.slice(name.length+1).trim():say;
+}
+function chipList(x,t,o){
   const n=t.needs||{},d=data(x),tags=cc(x).tags||{},out=[];
   if(t.phase&&cc(x).phases?.[t.phase])out.push(['phase',cc(x).phases[t.phase]]);
   const bell=bellOf(x,t);
@@ -63,6 +68,10 @@ function chips(x,t,o){
   if(n.cover)out.push(['cover','📔 Bọc, dán nhãn']);
   if(n.sets&&n.pages)out.push(['photo',`🖨️ ${n.sets} bộ × ${n.pages} trang`]);
   if(n.sample&&o.sample)out.push([d.sampled?'sampled':'sample',d.sampled?'🧪 Đã lưu mẫu':'🧪 Chưa lưu mẫu']);
+  return out;
+}
+function chips(x,t,o){
+  const out=chipList(x,t,o);
   return out.length?`<div class="ck-tags">${out.map(([k,s])=>`<span class="ck-tag ${k}">${x.esc(s)}</span>`).join('')}</div>`:'';
 }
 function bubble(x,t,o){
@@ -70,13 +79,11 @@ function bubble(x,t,o){
     const more=x.room.open?(x.room.more_gate?'':x.cmd(`🔔 ${x.esc(o.callNext)}`,'more_work',{},'primary small ck-call')):`<small class="ck-closed">${x.esc(o.closedLine)}</small>`;
     return `<section class="ck-bubble ck-wait" aria-live="polite"><span class="ck-wait-emo" aria-hidden="true">${x.esc(o.icon)}</span><div class="ck-say"><p><b>Đang chờ khách…</b></p><small>${x.esc(o.waitLine)}</small></div>${more}</section>`;
   }
-  const who=speaker(x,t),name=String(who.display_name||'');
-  let say=String(t.opening||'');
-  if(name&&say.startsWith(name+':'))say=say.slice(name.length+1).trim();
+  const who=speaker(x,t),name=String(who.display_name||''),say=sayOf(x,t);
   const p=Math.max(0,Math.min(100,t.patience??100));
   return `<section class="ck-bubble" aria-label="${x.esc(name)}"><div class="ck-cust">${x.portrait(who,52)}<div class="ck-cust-name"><b>${x.esc(name)}</b>${who.role?`<small>${x.esc(who.role)}</small>`:''}</div></div>
     <div class="ck-say"><p>${x.esc(say)}</p>${t.known?chips(x,t,o):''}
-    <div class="ck-pat-row" title="Kiên nhẫn"><i class="ck-pat${p<50?' low':''}" aria-hidden="true"><b style="width:${p}%"></b></i><small>${p}%</small></div>
+    <div class="ck-pat-row" title="Kiên nhẫn"><i class="ck-pat${p<50?' low':''}" aria-hidden="true"><b style="width:${p}%"></b></i><small><span class="sr-only">Kiên nhẫn </span>${p}%</small></div>
     ${t.known?'':x.cmd('👂 Hỏi khách cần gì','ask',{task:t.id},'primary full ck-ask')}</div></section>`;
 }
 
@@ -155,13 +162,53 @@ function station(x,t,o){
   return `${dayLine(x)}${queue(x,t,o)}<div class="ck-main"><div class="ck-side">${bubble(x,t,o)}${tray(x,t,o)}${log(x,t)}</div>${shelves(x,t,o)}</div>${bar(x,t,o)}${reviews(x)}${notebook(x,o)}`;
 }
 
+/* ---------------------------------------------------------------- screen readers (player #497, blind, 23/10)
+ * Vào việc, Hỏi khách and Giao take their own button off the page (or turn it off): the focus fell to <body>, a
+ * screen reader went quiet and lost its place, and the next customer came in without a word. tick() says what
+ * changed in a hidden live line (data-morph-static: renders leave its words alone) and puts the focus back on the
+ * next step. Nothing changes on screen. */
+const LIVE='<p class="sr-only ck-live" aria-live="polite" aria-atomic="true" data-morph-static></p>';
+const NEXT=['.sk-event .sk-opt:not([disabled])','.ck-ask','.ck-call','.ck-tile:not([disabled])','.ck-serve:not([disabled])','.ck-guest','button:not([disabled])'];
+/** The words for what changed since the last tick ('' = nothing new): the last customer's outcome, a new customer,
+ * what they asked for, what is wrong with the tray, a surprise at the counter. */
+function news(x,o,root,s){
+  const tasks=x.room.tasks||[],tid=root.dataset.ckTask||'',t=tasks.find(k=>k.id===tid),ev=data(x).desk?.ev,intro=!!root.querySelector('.sk-intro');
+  const key=intro?'intro':`${tid}|${t?.known?1:0}|${(t?.lines||[]).length}|${ev?.title||''}`;
+  if(key===s.key)return '';
+  const was={...s};Object.assign(s,{key,tid,known:!!t?.known,lines:(t?.lines||[]).length,ev:ev?.title||'',at:1});
+  if(!was.at||intro)return '';   // the first look (the reader reads the screen itself) or the intro card
+  const out=[],who=k=>String(speaker(x,k).display_name||'');
+  if(was.tid&&was.tid!==tid){const p=tasks.find(k=>k.id===was.tid);const l=p&&DONE.includes(p.status)&&(p.lines||[]).at(-1);if(l)out.push(l);}
+  if(ev&&ev.title!==was.ev)out.push(`${ev.title}. ${ev.text||''}`);
+  if(!t)out.push(x.room.open?`Đang chờ khách. ${o.waitLine}`:o.closedLine);
+  else if(t.id!==was.tid||was.key==='intro')out.push(`${who(t)}: ${sayOf(x,t)}`);
+  else if(t.known&&!was.known)out.push(`${who(t)}: ${sayOf(x,t)}`,...chipList(x,t,o).map(([,c])=>c));
+  else if((t.lines||[]).length>was.lines)out.push(t.lines.at(-1));
+  return out.filter(Boolean).join(' · ');
+}
+function tick(root,x,o){
+  const s=x.ui.ckSr??={},live=root.querySelector('.ck-live'),said=news(x,o,root,s);
+  if(said&&live){live.textContent='';clearTimeout(s.t);s.t=setTimeout(()=>{if(live.isConnected)live.textContent=said;},150);}   // after the focus move, so it is not cut off
+  const a=document.activeElement,lost=!a||a===document.body||!a.isConnected||a.disabled&&root.contains(a);
+  if(!lost){s.had=root.contains(a);return;}
+  if(!s.had)return;
+  s.had=false;
+  for(const q of NEXT){
+    const el=[...root.querySelectorAll(q)].find(e=>e.offsetParent!==null);if(!el)continue;
+    el.focus({preventScroll:true});s.had=document.activeElement===el;
+    // A keyboard player sees it (after the render puts the sheet's scroll back); a tap scrolls nothing.
+    requestAnimationFrame(()=>{if(document.activeElement===el&&el.matches(':focus-visible'))el.scrollIntoView({block:'nearest'});});
+    return;
+  }
+}
+
 /** The career module for a counter shop. `o`: id, prefix (ct_ / vp_), icon, the tray's name (Khay / Giỏ) and its
  * icon, the serve label (or a function of the task), the waiting lines, the notes and the dock. */
 export function counterKit(o){
   o={deskWhere:'Chuyện ở quầy',shelvesTitle:'🛒 Quầy hàng',moreLabel:'Đón khách',callNext:'Mời khách tiếp theo',
     closedLine:'Quầy chưa mở: bắt đầu ngày để đón khách.',waitLine:'Khách tới là thấy ngay ở đây.',
     trayEmpty:'Chạm món trên kệ để lấy cho khách.',sample:false,...o};
-  const wrap=body=>`<div class="career-job sk ck-counter ${o.id}">${body}</div>`;
+  const wrap=(x,body,t)=>`<div class="career-job sk ck-counter ${o.id}" data-ck-task="${x.esc(t?.id||'')}">${LIVE}${body}</div>`;
   return {
     id:o.id,css:true,autoNext:true,
     next(t,x){
@@ -170,10 +217,11 @@ export function counterKit(o){
       return x.esc(Object.keys(t.tray||{}).length?(typeof o.serve==='function'?o.serve(t):o.serve):'Chạm món trên kệ');
     },
     job(t,x){
-      if(!data(x).intro||x.ui.intro)return wrap(introCard(x,o.prefix+'intro',o.icon));
-      return wrap(top(x,o)+station(x,t,o));
+      if(!data(x).intro||x.ui.intro)return wrap(x,introCard(x,o.prefix+'intro',o.icon),t);
+      return wrap(x,top(x,o)+station(x,t,o),t);
     },
-    idle(x){return wrap(top(x,o)+station(x,null,o));},
+    idle(x){return wrap(x,top(x,o)+station(x,null,o));},
+    tick(root,x){tick(root,x,o);},
     page(view,x){return view==='car:notes'?notesPage(x,{cls:`ck-counter ${o.id}`,eyebrow:o.place,title:x.esc(o.notesTitle),body:rulesList(x)+priceBoard(x)}):'';},
     actions:{...kitActions},
     dock:o.dock,

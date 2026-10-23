@@ -51,14 +51,15 @@ export function introHelp(x,i){
 /** The "what this job is" card: shown until the player starts (`go` = the career's intro command).
  * Short (≤ 30 words): the job's name, three icon rows of ≤ 5 words (intro.short, or the first three work lines cut
  * to their first clause) and a "?" with the lead and the three lists. The start button is the bar's main button
- * (the guide's intro step); the card keeps its own only as a fallback for a screen without that bar. */
+ * (the guide's intro step); the card keeps its own only as a fallback for a screen without that bar.
+ * A region, not a dialog: a card inside the sheet that never takes the focus (a screen reader announced a dialog, #497). */
 export function introCard(x,go,icon){
   const d=data(x),i=cc(x).intro;if(!i||(d.intro&&!x.ui.intro))return '';
   const name=String(i.title||'').replace(/^Giới thiệu nghề:?\s*/,'')||String(i.title||'');
   const rows=(i.short||(i.work||[]).slice(0,3).map(([e,s])=>[e,shortLine(s)])).slice(0,3);
   const btn=d.intro?act(x,'Đã hiểu','introClose',{},'full'):x.cmd(`${icon} Vào việc thôi!`,go,{},'primary full sk-intro-go');
   const q=helpBtn(`intro-${x.state?.current||go}`,`${icon} ${name}`,introHelp(x,i),{label:'?',cls:'sk-intro-q'});
-  return `<article class="sk-intro sk-intro-short card" role="dialog" aria-labelledby="sk-intro-title"><div class="sk-intro-head"><h3 id="sk-intro-title"><span aria-hidden="true">${icon}</span> ${x.esc(name.charAt(0).toUpperCase()+name.slice(1))}</h3>${q}</div>
+  return `<article class="sk-intro sk-intro-short card" role="region" aria-labelledby="sk-intro-title"><div class="sk-intro-head"><h3 id="sk-intro-title"><span aria-hidden="true">${icon}</span> ${x.esc(name.charAt(0).toUpperCase()+name.slice(1))}</h3>${q}</div>
     <ul class="sk-icons sk-intro-rows">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul>${btn}</article>`;
 }
 

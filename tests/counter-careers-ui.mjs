@@ -117,6 +117,41 @@ for(const [id,prefix] of [['canteen','ct_'],['stationery','vp_']]){
     assert.match(out,/ck-tile[^"]* zero/);assert.match(out,/ disabled/);assert.match(out,/>0<\/em>/);
   });
 
+  test(`${id}: a screen reader hears each step and keeps its place (player #497, blind)`,async()=>{
+    const t=taskOf(id,v=>v.needs&&!v.needs.budget);t.tray={};
+    const hidden={...t,known:false,needs:null},ui={};
+    const LIVE=/<p class="sr-only ck-live" aria-live="polite" aria-atomic="true" data-morph-static><\/p>/;
+    assert.match(career.job(hidden,harness(id,{tasks:[hidden]})),LIVE);assert.match(career.idle(harness(id)),LIVE);
+    assert.match(career.job(t,harness(id,{tasks:[t],data:{intro:false}})),LIVE,'the intro card too, so the line is there before the first step');
+    assert.match(career.job(t,harness(id,{tasks:[t]})),/<span class="sr-only">Kiên nhẫn <\/span>/);
+    // A page in miniature: the counter's root, its live line, the buttons each step leaves on it.
+    const was=globalThis.document,raf=globalThis.requestAnimationFrame,doc={body:{},activeElement:null};
+    globalThis.document=doc;globalThis.requestAnimationFrame=()=>0;doc.activeElement=doc.body;
+    const live={textContent:'',isConnected:true},btn=()=>({isConnected:true,offsetParent:{},disabled:false,focus(){doc.activeElement=this;},matches:()=>false});
+    let buttons={};
+    const root={dataset:{ckTask:t.id},querySelector:q=>q==='.ck-live'?live:null,querySelectorAll:q=>buttons[q]||[],contains:el=>!!el&&el!==doc.body};
+    const wait=()=>new Promise(r=>setTimeout(r,220));
+    try{
+      const ask=btn();buttons={'.ck-ask':[ask]};doc.activeElement=ask;
+      career.tick(root,harness(id,{tasks:[hidden],ui}));await wait();
+      assert.equal(live.textContent,'','the first look says nothing (the reader reads the screen)');
+      const tile=btn();buttons={'.ck-tile:not([disabled])':[tile]};doc.activeElement=doc.body;   // Hỏi khách left the page
+      career.tick(root,harness(id,{tasks:[t],ui}));
+      assert.equal(doc.activeElement,tile,'the focus goes on to the shelf, not to <body>');
+      await wait();assert.ok(live.textContent.includes(t.opening.slice(-12)),'what the customer asked for is said');
+      const next={...hidden,id:t.id+'n'},done={...t,status:'completed',stage:'done',lines:['Giao đủ cho Bé Na. Thu 12 xu.']},ask2=btn();
+      root.dataset.ckTask=next.id;buttons={'.ck-ask':[ask2]};doc.activeElement=doc.body;   // Giao: the next customer
+      career.tick(root,harness(id,{tasks:[done,next],ui}));
+      assert.equal(doc.activeElement,ask2,'the next customer\'s Hỏi khách cần gì');
+      await wait();assert.match(live.textContent,/^Giao đủ cho Bé Na\. Thu 12 xu\. · Bé Na: /,'the outcome, then who is next');
+      career.tick(root,harness(id,{tasks:[done,next],ui}));await wait();
+      assert.match(live.textContent,/^Giao đủ/,'nothing new: nothing said again');
+      doc.activeElement={outside:true,isConnected:true};root.contains=el=>el===ask2;
+      career.tick(root,harness(id,{tasks:[done,next],ui}));
+      assert.ok(doc.activeElement.outside,'focus the player put elsewhere stays there');
+    }finally{globalThis.document=was;globalThis.requestAnimationFrame=raf;}
+  });
+
   test(`${id}: the reviews panel, the queue, the intro, the desk card and the notes page`,()=>{
     const feed=[{author:'Chị <Thảo>',stars:5,text:'Bán đúng giá, hỏi kỹ dị ứng.',day:4},{author:'Anh Tuấn',stars:3,text:'Hơi lâu.',day:5},{text:'tin phố',day:5}];
     const idle=career.idle(harness(id,{},));
