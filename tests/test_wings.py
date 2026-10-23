@@ -77,8 +77,7 @@ class Tables(unittest.TestCase):
             self.assertEqual(len(t), len(WC.TIERS))
             self.assertEqual(list(t), sorted(t), 'never lower at a higher tier')
         self.assertEqual((WC.EARN[0], WC.EARN[WC.SSS], WC.EARN[-1]), (2, 20, 25), 'owner 22/10: "SSS được 20% đi"')
-        self.assertLessEqual(max(WC.BATTLE), 6)
-        self.assertLessEqual(max(WC.BATTLE), B.WG_MAX)
+        self.assertEqual((WC.BATTLE[0], WC.BATTLE[-1]), (2, 14), 'owner 23/10: straight into 💪 lực chiến')
         self.assertEqual(sum(W.ODDS_BUY), 10000)
         self.assertEqual(len(W.FUSE_FEE), WC.TOP)
         for st in WC.STYLES:
@@ -222,39 +221,47 @@ class Earnings(unittest.TestCase):
         self.assertEqual(W.fund_bonus(s, s['careers']['mother_baby'], 10000, 'Đơn', 'r1'), 0)
 
 
+def winged(f: dict) -> dict:
+    """🪽 A snapshot whose owner wears a Huyền thoại: +BATTLE[TOP] % on every stat (game/pet_tiers.py stats, 2.5.7)."""
+    w = WC.BATTLE[WC.TOP]
+    return dict(f, s=[v + v * w // 100 for v in f['s']])
+
+
 class Battle(unittest.TestCase):
     def test_snapshot_derive_and_engine(self):
         s, pid = get_pet(story(wallet=10**6), 'A', 'corgi', 0, 2)
         from game import pet_tiers as px
         p = next(q for q in px.all_pets(s) if q['id'] == pid)
-        self.assertNotIn('wg', A.fighter(s, p), 'no wings: the snapshot of 2.5.3')
+        f0, pw0 = A.fighter(s, p), px.power(s, p)
+        self.assertNotIn('wg', f0, 'no wings: the snapshot of 2.5.3')
         s, _ = owned(s, WC.TOP)
         f = A.fighter(s, p)
-        self.assertEqual(f['wg'], WC.BATTLE[WC.TOP])
-        plain = dict(f)
-        del plain['wg']
-        d0, d1 = B.derive(plain), B.derive(f)
-        self.assertEqual(d1['hp'], d0['hp'] + d0['hp'] * f['wg'] // 100)
-        self.assertEqual(d1['atk'], d0['atk'] + d0['atk'] * f['wg'] // 100)
-        self.assertEqual({k: v for k, v in d1.items() if k not in ('hp', 'atk')}, {k: v for k, v in d0.items() if k not in ('hp', 'atk')})
+        self.assertNotIn('wg', f, '2.5.7: the wing is in the stats, never a `wg` on top (owner 23/10 "tăng trực tiếp luôn")')
+        w = WC.BATTLE[WC.TOP]
+        self.assertEqual(f['s'], [v + v * w // 100 for v in f0['s']])
+        self.assertEqual(px.power(s, p), sum(v + v * w // 100 for v in f0['s']))
+        self.assertGreater(px.power(s, p), pw0, '💪 lực chiến shows the wing')
+        self.assertEqual(px.pet_extra(s, p)['pw'], px.power(s, p))
         self.assertEqual(B.ENGINE, 1)
-        self.assertEqual(B.engine_of([plain], [plain]), B.ENGINE)
+        self.assertEqual(B.engine_of([f0], [f]), B.ENGINE, 'no `wg`: every build replays it')
+        plain = dict(f, wg=3)    # a match stored by 2.5.4–2.5.6 still derives its wing bonus
         self.assertEqual(B.engine_of([plain], [f]), B.WING_ENGINE)
         self.assertEqual(B.wing_pct(dict(f, wg=99)), B.WG_MAX)
         self.assertEqual(B.wing_pct(dict(f, wg='5')), 0)
 
     def test_a_wing_never_outweighs_a_rank(self):
-        """Owner 22/10 "buff cho người chơi khi đánh pet": modest. 1-vs-1, each side first half the time."""
+        """Owner 22/10 "buff cho người chơi khi đánh pet", 23/10 "tăng trực tiếp luôn": a Huyền thoại helps clearly but a pet one rank
+        up still wins more often. 1-vs-1, each side first half the time."""
         n = 1200
         for r in (1, 3, 5):
             R = random.Random(40 + r)
-            wing = win_rate(R, lambda: dict(rand_pet(R, r), wg=WC.BATTLE[WC.TOP]), lambda: rand_pet(R, r), n)
+            wing = win_rate(R, lambda: winged(rand_pet(R, r)), lambda: rand_pet(R, r), n)
             R = random.Random(60 + r)
             rank = win_rate(R, lambda: rand_pet(R, r + 1), lambda: rand_pet(R, r), n)
             R = random.Random(80 + r)
-            both = win_rate(R, lambda: rand_pet(R, r + 1), lambda: dict(rand_pet(R, r), wg=WC.BATTLE[WC.TOP]), n)
+            both = win_rate(R, lambda: rand_pet(R, r + 1), lambda: winged(rand_pet(R, r)), n)
             self.assertGreater(wing, .5, 'the wings help')
-            self.assertLess(wing, .68)
+            self.assertLess(wing, .8, 'owner 23/10 "tăng trực tiếp luôn": stronger than 2.5.6, still never a sure win')
             self.assertLess(wing, rank)
             self.assertGreater(both, .52, 'a pet one rank up still wins against a Huyền thoại-winged one')
 
