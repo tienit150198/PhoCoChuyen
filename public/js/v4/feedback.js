@@ -104,28 +104,34 @@ function writeForm(env){
     <div class="fb-kinds" role="radiogroup" aria-label="Loại góp ý">${KINDS.map(([id,emo,label])=>`<button type="button" role="radio" class="chip fb-kind${fb.kind===id?' selected':''}" aria-checked="${fb.kind===id}" data-action="fbKind" data-kind="${id}"><span aria-hidden="true">${emo}</span> ${label}</button>`).join('')}</div>
     <label class="field fb-field" for="fb-text">Bạn muốn nói gì?<textarea id="fb-text" name="text" rows="5" maxlength="${TEXT_MAX}" placeholder="${esc(HINTS[fb.kind])}" data-no-translate>${esc(fb.draft)}</textarea></label>
     <div class="fb-meta"><span class="fb-context">${icon('clipboard',14)}<span>Gửi kèm: <b>${contextLine(env)}</b></span></span><output id="fb-count" class="fb-count${len>TEXT_MAX-50?' near':''}" for="fb-text">${len}/${TEXT_MAX}</output></div>
-    ${imagePicker(fb)}
+    ${fb.kind==='idea'?creditBox('fb-credit',!!fb.credit,env.api.state?.name):''}${imagePicker(fb)}
     <p class="small muted fb-privacy">Máy chủ tự ẩn số điện thoại, email và đường link trong lời viết. Hãy che thông tin riêng tư trên ảnh trước khi gửi. Chỉ bạn và nhà làm game xem được góp ý cùng ảnh đính kèm. <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a></p>
     <button class="btn primary full" type="submit"${fb.sending||fb.imagesBusy?' disabled':''}>${icon('send',16)} ${fb.sending?'Đang gửi…':'Gửi góp ý'}</button>
   </form>`;
 }
+/** 💡 F#503 "cảm ơn người góp ý tưởng": an idea may carry its player's character name into the "Có gì mới" thank-you
+ * line (game/whats_new.py thanks=); unticked (the default) it reads "một bạn chơi ẩn danh". Stored as context.credit. */
+function creditBox(id,checked,name){
+  return `<label class="fb-credit" for="${id}"><input type="checkbox" id="${id}"${checked?' checked':''}><span>Nếu ý tưởng được làm, ghi tên nhân vật của tôi trong “Có gì mới” để cảm ơn${name?` <b class="fb-credit-name" data-no-translate>(${esc(name)})</b>`:''}<small class="muted">Không tích thì ghi là một bạn chơi ẩn danh.</small></span></label>`;
+}
+const creditNote=it=>it.kind==='idea'&&it.credit?`<p class="small muted fb-credit-note">${it.credit==='name'?'🙋 Nếu ý tưởng được làm: ghi tên nhân vật của bạn':'🕶️ Nếu ý tưởng được làm: ghi ẩn danh'}</p>`:'';
 /** ✏️ F#295 "nên có nút sửa lại góp ý": a note with no reply yet can be edited in place (game/player_feedback.py edit
  * re-checks owner and "no reply" in one UPDATE). fb.edit = {id, draft, sending} while the form is open. */
 function editForm(fb,it){
   const e=fb.edit,len=[...e.draft].length;
   return `<form class="fb-edit-form" data-fb-edit="${it.id}" novalidate><label class="field fb-field" for="fb-edit-${it.id}">Sửa góp ý<textarea id="fb-edit-${it.id}" name="text" rows="4" maxlength="${TEXT_MAX}" data-preserve data-no-translate>${esc(e.draft)}</textarea></label>
-    <div class="fb-meta"><span class="small muted">Lưu xong, góp ý được đọc lại từ đầu.</span><output id="fb-edit-count" class="fb-count${len>TEXT_MAX-50?' near':''}" for="fb-edit-${it.id}">${len}/${TEXT_MAX}</output></div>
+    ${it.kind==='idea'?creditBox('fb-edit-credit',!!e.credit,fb.name):''}<div class="fb-meta"><span class="small muted">Lưu xong, góp ý được đọc lại từ đầu.</span><output id="fb-edit-count" class="fb-count${len>TEXT_MAX-50?' near':''}" for="fb-edit-${it.id}">${len}/${TEXT_MAX}</output></div>
     <div class="row wrap"><button class="btn primary small" type="submit"${e.sending?' disabled':''}>${icon('check',14)} ${e.sending?'Đang lưu…':'Lưu góp ý'}</button>${button('Hủy','fbEditCancel',{},'ghost small')}</div></form>`;
 }
 function mineItem(it,fb={}){
   const [emo,label]=kindOf(it.kind).slice(1),[st,cls]=STATUS[it.status]||STATUS.new,editing=!it.reply&&fb.edit?.id===it.id;
   return `<article class="fb-item"><div class="fb-item-top"><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(st,cls)}<small class="muted">${ago(it.created_at)}</small></div>
-    ${editing?editForm(fb,it):`<p class="fb-text" data-no-translate>${esc(it.text)}</p>`}
+    ${editing?editForm(fb,it):`<p class="fb-text" data-no-translate>${esc(it.text)}</p>${creditNote(it)}`}
     ${imageGallery(it.images)}
     ${it.reply?`<div class="fb-reply"><b>${icon('chat',14)} Nhà làm game trả lời</b><p data-no-translate>${esc(it.reply)}</p>${it.replied_at?`<small class="muted">${ago(it.replied_at)}</small>`:''}</div>`:editing?'':`<div class="row fb-edit-row">${fb.del===it.id?`<span class="small muted">Xóa góp ý này?</span>${button('Xóa thật','fbDeleteYes',{id:it.id},'danger small')}${button('Không','fbDeleteNo',{},'ghost small')}`:`${button('🗑️ Xóa','fbDelete',{id:it.id},'ghost small')}${button('✏️ Sửa','fbEdit',{id:it.id},'ghost small')}`}</div>`}</article>`;
 }
 function mineList(env){
-  const fb=fbState(env.ui);loadMine(env);
+  const fb=fbState(env.ui);loadMine(env);fb.name=env.api.state?.name||'';
   const d=fb.mine;
   const body=!d?loading:d.error?failed(d):d.items.length?`<div class="fb-list">${d.items.map(it=>mineItem(it,fb)).join('')}</div>`:`<p class="muted small fb-empty">Bạn chưa gửi góp ý nào. Góp ý đầu tiên luôn được đọc kỹ nhất!</p>`;
   return `<section class="fb-mine"><h3 class="section-title">Góp ý của bạn</h3>${body}</section>`;
@@ -140,14 +146,19 @@ function contextKV(env,ctx){
   });
   return rows.length?`<div class="kv fb-ctx">${rows.join('')}</div>`:'<p class="muted small">Không có ngữ cảnh.</p>';
 }
+/** F#503: "🙋 Muốn ghi tên: <nhân vật>" or "🕶️ Ẩn danh" on an idea (the name for whats_new.py thanks=). */
+const creditBadge=it=>it.kind!=='idea'?'':it.credit==='name'?pill(`🙋 Muốn ghi tên: <b data-no-translate>${esc(it.name||(it.account?'@'+it.account:'(chưa đặt tên)'))}</b>`,'green fb-credit-tag'):pill('🕶️ Ẩn danh','fb-credit-tag');
+/** 🎁 Owner 23/10 "chỉ cái nào được mình ghi nhận mới có thưởng": one thank-you gift per note (game/player_feedback.py acknowledge_note). */
+const fmtXu=n=>Number(n||0).toLocaleString('vi-VN');
+const ackRow=it=>it.reward?`<p class="small fb-ack-done">🎁 Đã ghi nhận · thưởng ${fmtXu(it.reward.coins)} xu</p>`:it.reward_coins?`<div class="row fb-ack-row">${button(`✅ Ghi nhận (thưởng ${fmtXu(it.reward_coins)} xu)`,'fbAck',{id:it.id,coins:it.reward_coins},'ghost small')}</div>`:'';
 function adminItem(env,it){
   const [emo,label]=kindOf(it.kind).slice(1),[st,cls]=STATUS[it.status]||STATUS.new;
   const who=it.account?`@${esc(it.account)}`:`khách #${esc(it.player)}`;
   const firstLine=esc((it.text||'').split('\n')[0].slice(0,90));
-  return `<details class="fb-admin-item ${it.status}" data-id="${it.id}"><summary><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(it.status==='new'?'Mới':st,it.status==='new'?'amber':cls)}<span class="fb-sum-text" data-no-translate>${firstLine}</span><small class="muted fb-sum-who" data-no-translate>${who} · ${ago(it.created_at)} · #${it.id}</small></summary>
+  return `<details class="fb-admin-item ${it.status}" data-id="${it.id}"><summary><span class="fb-item-kind"><span aria-hidden="true">${emo}</span> ${label}</span>${pill(it.status==='new'?'Mới':st,it.status==='new'?'amber':cls)}<span class="fb-sum-text" data-no-translate>${firstLine}</span><small class="muted fb-sum-who" data-no-translate>${who} · ${ago(it.created_at)} · #${it.id}</small>${creditBadge(it)}</summary>
     <div class="fb-admin-body"><p class="fb-text" data-no-translate>${esc(it.text)}</p>
       ${imageGallery(it.images)}
-      <h4 class="fb-sub">Ngữ cảnh</h4>${contextKV(env,it.context)}
+      ${ackRow(it)}<h4 class="fb-sub">Ngữ cảnh</h4>${contextKV(env,it.context)}
       <div class="fb-status-row" role="group" aria-label="Đổi trạng thái">${ADMIN_STATUS.map(([s,l])=>`<button type="button" class="chip${it.status===s?' selected':''}" aria-pressed="${it.status===s}" data-action="fbSetStatus" data-id="${it.id}" data-status="${s}">${l}</button>`).join('')}</div>
       <form class="fb-reply-form" data-fb-reply="${it.id}"><label class="field" for="fb-reply-${it.id}">Lời đáp cho người chơi<textarea id="fb-reply-${it.id}" name="reply" rows="3" maxlength="${REPLY_MAX}" data-preserve data-no-translate placeholder="Cảm ơn bạn, mình đã sửa trong bản tới…">${esc(it.reply||'')}</textarea></label>
         <div class="row wrap"><button class="btn primary small" type="submit">${icon('send',14)} ${it.reply?'Cập nhật lời đáp':'Gửi lời đáp'}</button>${it.reply?button('Xóa lời đáp','fbClearReply',{id:it.id},'ghost small'):''}</div></form>
@@ -208,8 +219,10 @@ export async function feedbackAction(action,data,el,env){
     case'fbReload':{const fb=fbState(ui);fb.inbox=null;env.renderSheet();return true;}
     case'fbMore':loadInbox(env,true);env.renderSheet();return true;
     case'fbSetStatus':{const it=await adminUpdate(env,{id:Number(data.id),status:data.status});if(it)env.toast('Đã đổi trạng thái.');return true;}
+    case'fbAck':{if(!confirm(`Ghi nhận góp ý #${data.id} và tặng người chơi ${fmtXu(data.coins)} xu? Mỗi góp ý chỉ được thưởng một lần.`))return true;
+      const it=await adminUpdate(env,{id:Number(data.id),acknowledge:true});if(it)env.toast(it.reward_error||'Đã ghi nhận, quà cảm ơn vào ví người chơi ở lần vào game tới.',it.reward_error?true:'good');return true;}
     case'fbEdit':{const fb=fbState(ui),it=fb.mine?.items?.find(x=>x.id===Number(data.id));if(!it||it.reply)return true;
-      fb.edit={id:it.id,draft:it.text,sending:false};env.renderSheet(false);setTimeout(()=>{const t=document.getElementById(`fb-edit-${it.id}`);if(t){t.focus();t.setSelectionRange?.(t.value.length,t.value.length);}},0);return true;}
+      fb.edit={id:it.id,draft:it.text,credit:it.credit==='name',sending:false};env.renderSheet(false);setTimeout(()=>{const t=document.getElementById(`fb-edit-${it.id}`);if(t){t.focus();t.setSelectionRange?.(t.value.length,t.value.length);}},0);return true;}
     case'fbEditCancel':fbState(ui).edit=null;env.renderSheet(false);return true;
     // 🗑️ F#412 "cái nút xóa góp ý": a note with no reply yet, after a second tap (game/player_feedback.py delete)
     case'fbDelete':{const fb=fbState(ui);fb.del=Number(data.id);fb.edit=null;env.renderSheet(false);return true;}
@@ -242,7 +255,7 @@ export async function feedbackSubmit(f,env){
     if([...text].length<3){toast('Viết thêm vài chữ nữa nhé.',true);return true;}
     e.sending=true;env.renderSheet(false);
     try{
-      const d=await api.post('/api/feedback/edit',{id,text});
+      const d=await api.post('/api/feedback/edit',{id,text,...(e.credit!==undefined&&fb.mine?.items?.find(x=>x.id===id)?.kind==='idea'?{credit:!!e.credit}:{})});
       const i=fb.mine?.items?.findIndex(x=>x.id===id)??-1;if(i>=0&&d.item)fb.mine.items[i]=d.item;
       fb.edit=null;toast(d.message||'Đã lưu góp ý.','good');
     }catch(err){
@@ -260,8 +273,8 @@ export async function feedbackSubmit(f,env){
   if(fb.sending||fb.imagesBusy)return true;
   fb.sending=true;env.renderSheet();
   try{
-    const d=await api.post('/api/feedback',{kind:fb.kind,text,context:clientContext(ui),images:(fb.images||[]).map(image=>image.data)});
-    fb.sent={id:d.id,message:d.message};fb.draft='';fb.images=[];fb.mine=null;
+    const d=await api.post('/api/feedback',{kind:fb.kind,text,context:clientContext(ui),...(fb.kind==='idea'?{credit:!!fb.credit}:{}),images:(fb.images||[]).map(image=>image.data)});
+    fb.sent={id:d.id,message:d.message};fb.draft='';fb.images=[];fb.mine=null;fb.credit=false;
   }catch(e){toast(e.status?e.message:'Mất kết nối. Góp ý vẫn còn trong ô, thử lại sau nhé.',true);}
   finally{fb.sending=false;env.renderSheet();}
   return true;
@@ -270,6 +283,8 @@ export async function feedbackSubmit(f,env){
 /** Live counter; the draft survives closing the sheet. */
 export function feedbackInput(el,env){
   if(el.id==='fb-images'){void addImages(el,env);return true;}
+  if(el.id==='fb-credit'){fbState(env.ui).credit=el.checked;return true;}
+  if(el.id==='fb-edit-credit'){const e=fbState(env.ui).edit;if(e)e.credit=el.checked;return true;}
   if(el.id?.startsWith('fb-edit-')){
     const e=fbState(env.ui).edit;if(!e||el.id!==`fb-edit-${e.id}`)return true;e.draft=el.value;
     const out=document.getElementById('fb-edit-count'),n=[...el.value].length;

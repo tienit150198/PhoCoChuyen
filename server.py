@@ -1253,7 +1253,9 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/admin/feedback":
                 if not self.server.rate_limit("fb-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
                 self.require_admin(token)
-                self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"))));return
+                # acknowledge: ✅ Ghi nhận, the note's one 🎁 thank-you gift (owner 23/10, game/player_feedback.py acknowledge_note)
+                self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"),data.get("acknowledge") is True,
+                                                           (accounts.status(self.server.store,token) or {}).get("username") or "admin")));return
             if route=="/api/admin/chat":  # 💬 hide / keep a message, mute / unmute a player; the live service applies it at once
                 if not self.server.rate_limit("chat-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
                 self.require_admin(token)

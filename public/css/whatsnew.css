@@ -26,6 +26,10 @@
 .wn-block{margin-top:10px}
 .wn-sub{margin:10px 0 2px;padding-top:10px;border-top:2px dashed var(--line);font-size:.938rem;font-weight:700;color:var(--muted)}
 .wn-older .wn-line p{font-size:1rem;color:var(--ink-2)}
+/* F#503 "💡 Cảm ơn … đã góp ý tưởng": the players behind a bullet, a quiet line under its text */
+.wn-copy{flex:1 1 220px;min-width:0}
+.wn-dialog .wn-copy p.wn-thanks{margin:4px 0 0;font-size:.875rem;line-height:1.4;font-weight:600;color:var(--muted);overflow-wrap:anywhere}
+.wn-thanks span{margin-right:2px}
 .wn-more{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--tap);margin:8px 0 0;padding:8px 12px;border:0;border-radius:12px;background:transparent;color:var(--accent-text);font:inherit;font-size:1rem;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 @media (hover:hover){.wn-more:hover{background:var(--surface-2)}}
 
