@@ -83,7 +83,6 @@ from game import observability  # 📺 /ads.txt (AdSense site check)
 from game import ads  # 📺 Quảng cáo có thưởng: /ads.txt and the page's referrer
 from game import wed_invite  # 💌 Thiệp mời cưới cả phố (game/wed_invite.py)
 from game import chua_wish  # 🌳 Cây ước nguyện (game/chua_wish.py)
-from game import event2010  # 💐 Thiệp 20/10: its own page /2010, cards anyone opens by link (game/event2010.py)
 from game import live_effects, live_dating
 from game import quay_hire
 from game import lixi  # 🧧 Lì xì: phát và giật (game/lixi.py)
@@ -96,7 +95,6 @@ from game import live_chat
 from game import karaoke  # 🎤 Phòng hát (game/karaoke.py; the rooms: live/karaoke.py)
 from game import karaoke_mic  # 🎙️ its live mic (LIVE_KARAOKE_MIC): the birth year, the headers below
 from game import sticker_event  # 🎨 Thi làm sticker (/sticker; game/sticker_event.py owns its routes)
-from game import dog_bark  # 🐕 Kéo co chó sủa was removed (15/10): only its stale tickets go back (maintenance below)
 from game import hotel_stay  # 🏨 Phòng cho người chơi (game/hotel_stay.py: its stays registered in Phố dịch vụ at import, /api/hotel/…)
 from game import town_fair  # 🎪 Hội chợ việc làm (game/town_fair.py: /api/townfair/…, its booths' discount asked by game/service_market.py)
 from game import halloween  # 🎃 Lễ hội Ma Phố, 26–31/10/2026 (game/halloween.py: /api/halloween…, MNL_HALLOWEEN_OFF)
@@ -153,6 +151,20 @@ STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset
               ".xml":"application/xml; charset=utf-8"}
 COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
 PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/sticker":"sticker.html","/":"index.html"}
+# 💐 Thiệp 20/10 ended (its code removed 23/10): /2010, /2010/c/<id> answer 410 with this page, /api/2010/* with EVENT_OVER
+EVENT_OVER="Sự kiện đã kết thúc."
+EVENT_OVER_PAGE=('<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+                 '<meta name="robots" content="noindex"><title>Thiệp 20/10 · Phố Có Chuyện</title><body style="margin:0;min-height:100vh;display:grid;'
+                 'place-items:center;background:#fff5f7;color:#3b2a30;font:17px/1.5 system-ui,sans-serif;text-align:center;padding:16px;box-sizing:border-box">'
+                 '<main><p style="font-size:20px;margin:0 0 16px">💐 Sự kiện Thiệp 20/10 đã kết thúc. Cảm ơn bạn đã tham gia!</p>'
+                 '<a href="/" style="color:#c2185b;font-weight:600">Về Phố Có Chuyện</a></main></body></html>').encode("utf-8")
+def ev2010_forget(store:Store,token:str)->None:
+    """Account deletion ("XOA"): this player's 20/10 cards and the reports on them (the tables stay, game/pg_schema.py; the reward log too: money paid)."""
+    sid=store.key(token)
+    def run(db):
+        db.execute("DELETE FROM ev2010_reports WHERE card IN (SELECT id FROM ev2010_cards WHERE sid=?)",(sid,))
+        db.execute("DELETE FROM ev2010_cards WHERE sid=?",(sid,))
+    store.transaction(run)
 env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
 CAS_HASH=re.compile(r"[0-9a-f]{12}")
 STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its file is stat()ed again (STATIC_RECHECK_SECONDS, see game/webassets.py)
@@ -1112,24 +1124,12 @@ class Handler(BaseHTTPRequestHandler):
                     self.respond(200,admin_retention.to_csv(data).encode("utf-8-sig"),"text/csv; charset=utf-8",
                                  {"Content-Disposition":f"attachment; filename=giu-chan-{data.get('today','')}.csv"});return
                 self.json(200,data);return
-            if route in ("/api/2010/me","/api/2010/card"):  # 💐 Thiệp 20/10 (game/event2010.py): no save is created or read here
-                token=self.token();ip=self.client_ip()
-                if route=="/api/2010/me":
-                    if not self.server.rate_limit("ev2010-me:"+(token or ip),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
-                    self.json(200,event2010.me(self.server.store,token,ip));return
-                if not self.server.rate_limit("ev2010-card:"+ip,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
-                self.json(200,event2010.card(self.server.store,token,(parse_qs(split.query).get("id") or [""])[0]));return
-            if route=="/api/admin/2010":  # 💐 reported cards first, the reward log (game/event2010.py); admin only
-                try:token,_,_,_=self.guarded(light=True)
-                except PermissionError as e:self.error(403,str(e),"forbidden");return
-                self.require_admin(token)
-                self.json(200,event2010.admin_view(self.server.store));return
             if route.startswith(("/api/sticker/","/api/admin/sticker")) and sticker_event.http_get(self,route,split.query):return  # 🎨 game/sticker_event.py
+            if route.startswith("/api/2010/") or route=="/api/admin/2010":self.error(410,EVENT_OVER,"event_over");return  # 💐 Thiệp 20/10 ended (code removed 23/10): a cached old page fails gracefully
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
             if route in ("/","/index.html"):self.page();return
-            if route in ("/2010","/2010/") or route.startswith("/2010/c/"):self.event2010_page(route);return
+            if route in ("/2010","/2010/") or route.startswith("/2010/c/"):self.respond(410,EVENT_OVER_PAGE,"text/html; charset=utf-8",{"X-Robots-Tag":"noindex"},cache="no-cache");return  # 💐 old card links
             self.static(route,split.query)
-        except event2010.EventError as e:self.error(e.status,e.message,e.code)
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
         except karaoke.KaraError as e:self.error(e.status,e.message,e.code)
@@ -1170,8 +1170,8 @@ class Handler(BaseHTTPRequestHandler):
             route=urlsplit(self.path).path
             if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
-            if route in ("/api/2010/heart","/api/2010/report"):self.event2010_reader(route);return  # 💐 anyone with the link: its own checks
-            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes","/api/2010/cards","/api/admin/2010") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/race/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair" or route.startswith("/api/halloween/") and route!="/api/halloween/buy")
+            if route.startswith("/api/2010/") or route=="/api/admin/2010":self.error(410,EVENT_OVER,"event_over");return  # 💐 Thiệp 20/10 ended: before the session check (body discarded)
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen","/api/admin/users/password","/api/town/treasure/claim","/api/chua/cards/visibility","/api/chua/wishes") or route.startswith("/api/work-visits/") or route.startswith("/api/svc/") or route.startswith("/api/wedsvc/") or route.startswith("/api/lab/") or route=="/api/admin/svc" or route.startswith("/api/island/") or route.startswith("/api/bang/") or route=="/api/admin/bang" or route[len("/api/arena/"):] in pet_arena.LIGHT and route.startswith("/api/arena/") or route.startswith("/api/bang-island/") or route.startswith("/api/photo/") or route.startswith("/api/race/") or route.startswith("/api/hotel/") or route.startswith("/api/radio/") or route.startswith("/api/townfair/") or route=="/api/admin/radio" or route=="/api/admin/townfair" or route.startswith("/api/halloween/") and route!="/api/halloween/buy")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if route=="/api/feedback" and length>pfb.feedback_images.MAX_BODY:
@@ -1223,17 +1223,6 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("admin-wish:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.require_admin(token)
                 self.json(200,chua_wish.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
-            if route=="/api/2010/cards":  # 💐 write / delete my card, claim the 100.000 xu (game/event2010.py act)
-                ip=self.client_ip()
-                if not self.server.rate_limit("ev2010-act:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
-                if data.get("op")=="create" and not (self.server.rate_limit("ev2010-write:"+token,int(os.environ.get("EV2010_CARDS_PER_MINUTE","6")))
-                                                     and self.server.rate_limit("ev2010-write-ip:"+ip,30,600)):
-                    self.error(429,"Từ từ thôi, viết chậm cho tròn chữ nhé 💌","rate_limited");return
-                self.json(200,event2010.act(self.server.store,token,data,ip));return
-            if route=="/api/admin/2010":  # 💐 hide / show a card (game/event2010.py admin_act); admin only
-                if not self.server.rate_limit("admin-2010:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
-                self.require_admin(token)
-                self.json(200,event2010.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/town/treasure/claim":
                 if not self.server.rate_limit("treasure-claim:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,town_treasure.claim(self.server.store,token,data),known=FULL);return
@@ -1312,7 +1301,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);event2010.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);photo_studio.forget(self.server.store,token);radio_station.forget(self.server.store,token);halloween.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);wed_invite.forget(self.server.store,token);chua_wish.forget(self.server.store,token);ev2010_forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);sticker_event.forget(self.server.store,token);lixi.forget(self.server.store,token);photo_studio.forget(self.server.store,token);radio_station.forget(self.server.store,token);halloween.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -1471,7 +1460,6 @@ class Handler(BaseHTTPRequestHandler):
         except karaoke.KaraError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except system_gift.GiftError as e:self.error(e.status,e.message,e.code)  # 🎁 /api/admin/gift: before ValueError (its base)
-        except event2010.EventError as e:self.error(e.status,e.message,e.code)
         except town_treasure.TreasureError as e:self.error(e.status,e.message,e.code)
         except pet_arena.ArenaError as e:self.error(e.status,str(e),e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
@@ -1515,40 +1503,6 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError:host=""
             retention.beacon(self.server.store,sid,data,own_host=host)
         self.respond(204,b"","text/plain; charset=utf-8")
-
-    def event2010_page(self,route:str):
-        """GET /2010 and /2010/c/<id> (game/event2010.py): public/2010.html with the preview tags, the card and ?v= asset URLs
-        (game/webassets.py versioned). Never creates or reads a save; a card that does not open answers 404 (410 after the
-        reading window) with the same page saying so."""
-        if not self.server.rate_limit("ev2010-page:"+self.client_ip(),int(os.environ.get("EV2010_PAGES_PER_MINUTE","120"))):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
-        entry=self.static_entry("/2010.html")
-        if entry is None:self.error(404,"Không tìm thấy trang.");return
-        cid=route[len("/2010/c/"):] if route.startswith("/2010/c/") else None
-        status,data=event2010.page_data(self.server.store,cid)
-        host=self.headers.get("Host","")
-        origin=("https" if self.secure() else "http")+"://"+(host if re.fullmatch(r"[A-Za-z0-9.\-]+(:\d{1,5})?",host) else "localhost")
-        body=self.server.assets.versioned(event2010.render(entry[1].decode("utf-8"),data,origin)).encode("utf-8")
-        self.respond(status,body,"text/html; charset=utf-8",{"X-Robots-Tag":"noindex, nofollow"} if cid is not None else None,compress=True,cache="no-cache")
-
-    def event2010_reader(self,route:str):
-        """POST /api/2010/heart {id, n} and /api/2010/report {id, reason}: anyone who opened a card's link (no game, often no
-        session). From our own pages only (Origin / Sec-Fetch-Site, JSON only: another site's form cannot send it), small
-        bodies, per-address budgets. The session cookie, when there is one, only tells a reader's own card apart."""
-        if not self.valid_host():self.error(403,"Host không được phép.","forbidden");return
-        origin,site=(self.headers.get("Origin") or "").strip(),(self.headers.get("Sec-Fetch-Site") or "").strip().lower()
-        if site=="cross-site" or (origin and origin!="null" and urlsplit(origin).netloc!=self.headers.get("Host")):self.error(403,"Không nhận thao tác từ website khác.","forbidden");return
-        try:length=int(self.headers.get("Content-Length","0"))
-        except ValueError:length=-1
-        if not 0<length<=2048:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
-        if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
-        ip=self.client_ip();heart=route=="/api/2010/heart"
-        if not (self.server.rate_limit("ev2010-heart:"+ip,int(os.environ.get("EV2010_HEARTS_PER_MINUTE","30"))) if heart else self.server.rate_limit("ev2010-report:"+ip,10,600)):
-            self.error(429,"Thả tim chậm lại chút nhé 💗" if heart else "Bạn báo cáo hơi nhiều, nghỉ tay chút nhé.","rate_limited");return
-        body=self.rfile.read(length);self.body_read=True
-        data=json.loads(body)
-        if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
-        if heart:self.json(200,event2010.heart(self.server.store,data.get("id"),data.get("n",1)));return
-        self.json(200,event2010.report(self.server.store,self.token(),data.get("id"),data.get("reason"),ip))
 
     def beacon_source_ok(self)->bool:
         """Is this beacon from our own pages? (see beacon()). Never used for state-changing routes (guarded())."""
@@ -1998,7 +1952,6 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         from game import service_market
         step("hotel",lambda:hotel_stay.run_housekeeping(store))  # 🏨 no-shows refunded, the night's situations, overdue check-outs paid (row locks: exactly once)
         step("svc",lambda:service_market.run_housekeeping(store))  # 🛎️ Phố dịch vụ: expired talks, refunds, auto-confirmed deliveries and their payments (status-guarded: exactly once)
-        dog_bark.run_housekeeping(store)  # 🐕 Kéo co chó sủa (removed): a ticket left open by 2.4.15 or older goes back to its wallet (guarded: exactly once)
         step("race",lambda:racing.run_housekeeping(store))  # 🏁 open duels past 24 h back to their challengers in full (status-guarded: exactly once)
         step("hween",lambda:halloween.run_housekeeping(store))  # 🎃 Lễ hội Ma Phố: after 01/11 00:00 the board's top 10 get their titles and the ticker its line (exactly once)
         step("townfair",lambda:town_fair.run_housekeeping(store))  # 🎪 Hội chợ việc làm: its ticker line once, then settle, archive and grant a fair's titles (status-guarded: exactly once)

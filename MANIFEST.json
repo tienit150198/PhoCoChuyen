@@ -3125,11 +3125,6 @@
       "sha256": "3d4d668f27f3dd45875e38669a679dada29f775162154b19ebfa9716b0560c23"
     },
     {
-      "path": "game/fair_golden_days.py",
-      "bytes": 4934,
-      "sha256": "f59db2f2e0084e85660474b62cb6c881fcc7bbcf67e8350184b00453b4528697"
-    },
-    {
       "path": "game/fair_hai.py",
       "bytes": 10715,
       "sha256": "9700b16a86fe315aa41235033b2db9ea07ced2839a8cd99053ba44d13c472ba5"
@@ -7585,11 +7580,6 @@
       "sha256": "f951da40dc4106155a7a6bce2da6c93552b8e3c1553f18aaccb42a2a40e12651"
     },
     {
-      "path": "scripts/activate_fair_golden_days.py",
-      "bytes": 1247,
-      "sha256": "4204800bee00c536287bac64bfdef4a127a689b59780b0299755f0e7c035f793"
-    },
-    {
       "path": "scripts/auction_rollback_check.py",
       "bytes": 5145,
       "sha256": "2cf920afe6de5d4ef99c5709ef7be34330ffd63caf8c064f3e4cbf6cf6f4ba37"
@@ -8163,11 +8153,6 @@
       "path": "scripts/prepare_isometric_assets.mjs",
       "bytes": 1494,
       "sha256": "d8f12134b9df977de45e99f47e3ff8da88c66215846baf54c4ae5faf682f750e"
-    },
-    {
-      "path": "scripts/publish_major_release.py",
-      "bytes": 4586,
-      "sha256": "78903211356595401ef0195a3de7f04d0e81f6bdaa50ad8a68df32609c9be370"
     },
     {
       "path": "scripts/release_from_live.py",
@@ -10400,11 +10385,6 @@
       "sha256": "ae953219da12a511573d4bff23fe06fd248445901873705560b148decabdd464"
     },
     {
-      "path": "tests/test_fair_golden_days.py",
-      "bytes": 12503,
-      "sha256": "0d3d88db552bd3ac2bfd1790d6af5b4aefa2aafb85e677df54b21e7d9f79a233"
-    },
-    {
       "path": "tests/test_fair_hai_police.py",
       "bytes": 6913,
       "sha256": "196471b4b6d1c59d230429717dfe2011c1edb4d2ad85f36448d1a2df2cfc7b43"
@@ -11043,11 +11023,6 @@
       "path": "tests/test_lux.py",
       "bytes": 24284,
       "sha256": "9c28fb657e181a43b63379f00353279208eadb4e2e502379fd7cbee4b19fbd99"
-    },
-    {
-      "path": "tests/test_major_release_notice.py",
-      "bytes": 5022,
-      "sha256": "852555072166f9b34b71097c202d83c7c9d057f678a7edad08b9a85dcd72b9be"
     },
     {
       "path": "tests/test_market_data.py",

@@ -16,11 +16,6 @@ const JOURNEY_FEATURES={tileMatch:'tile',garage:'garage',gadgets:'gadgets',pets:
 const CONTENT_FEATURES={quay:'quay',auction:'auction',auctionLands:'auction',jrCerts:'certs',island:'island',lixi:'lixi'};
 const LIVE_FEATURES={liveWalk:'street',liveDate:'dating',liveWed:'wedding',liveKara:'kara'};
 const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
-/** 💐 Thiệp 20/10 (/2010, game/event2010.py WRITE_UNTIL; tests/test_event2010.py keeps the two equal): the entries
- * (Tiện ích, the journey home, the card that opens once: v4/ev2010.js) show until writing closes, 21/10/2026 23:59 VN. */
-export const EV2010_UNTIL=1792515599e3;   // 20/10 23:59:59 VN: writing closed (owner 21/10), no card or entry after it
-export const ev2010Open=(t=Date.now())=>t<=EV2010_UNTIL;
-
 /** ⚒️ Cường hóa (v4/acc-shop.js forgeView, owner 23/10): something to ghép, the wings (game/wings.py) or the pets' tiers and
  * wardrobe (game/pets.py), as the server sends them. The menu (app.js) and the new map's Tiện ích show it on this gate. */
 export function forgeOpen(state={},content={}){
@@ -37,7 +32,6 @@ export function townServiceAvailable(action,state={},content={},social={},action
   if(action==='house'||action==='jrInvest'||action==='townProjects'||action==='bang')return story;
   if(action==='rui')return Boolean(state?.rui);
   if(action==='bangIsland')return Boolean(content?.bang_island);   // ⚔️ Đảo bang: only while MNL_BANG_ISLAND=1 (game/bang_island.py)
-  if(action==='ev2010')return ev2010Open();
   if(action==='halloween')return story&&hwShown();
   if(action==='townFair')return story&&fairOpen();   // 🎪 Saturday 14:00–17:00, or a fair an admin opened
   if(action==='fair'){
@@ -109,7 +103,7 @@ export function townUtilityGroups(state={},content={},social={}){
       ['liveWalk','map','🚶','Phố đi dạo'],['liveDate','heart','💕','Góc hẹn hò'],
       ['liveWed','heart','💍','Lịch cưới'],['liveKara','music','🎤','Phòng hát'],
       ['tileMatch','grid','🧩','Ghép ba Phố Mây'],
-      ['wedInvite','mail','💌','Thiệp mời cưới'],['ev2010','heart','💐','Thiệp 20/10'],['halloween','sparkle','🎃','Lễ hội Ma Phố'],
+      ['wedInvite','mail','💌','Thiệp mời cưới'],['halloween','sparkle','🎃','Lễ hội Ma Phố'],
     ])},
   ].filter(group=>group.items.length);
 }

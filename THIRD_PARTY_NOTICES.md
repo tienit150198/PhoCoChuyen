@@ -16,11 +16,6 @@ Licensed under the SIL Open Font License, Version 1.1; the full license text shi
 The WOFF2 subsets were taken unmodified from the `@fontsource/be-vietnam-pro` 5.3.0 package. The font is self-hosted (CSP `font-src 'self'`); no font CDN is contacted.
 System font stacks remain as fallbacks, and the legal pages (`public/css/legal.css`) still use system fonts only.
 
-**Dancing Script** (600), **Lora** (italic 500), **Pacifico** and **Patrick Hand** (Latin and Vietnamese subsets, WOFF2) in
-`public/fonts/2010/`, used only by the 20/10 card page (`public/css/event2010.css`). Taken unmodified from Google Fonts and
-self-hosted. Each is licensed under the SIL Open Font License, Version 1.1; the copyrights and the full license text ship next
-to the files as `public/fonts/2010/OFL.txt`.
-
 ## Music
 
 Six background-music tracks in `public/music/`, all released under **CC0 1.0** (public domain) on OpenGameArt.org:

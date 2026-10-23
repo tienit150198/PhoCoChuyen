@@ -696,7 +696,9 @@ CREATE TABLE IF NOT EXISTS chua_card_prayers (
   sid {T} NOT NULL, card_id {T} NOT NULL, by_sid {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (sid, card_id, by_sid)
 );
 CREATE INDEX IF NOT EXISTS chua_card_prayers_by ON chua_card_prayers(by_sid);
--- 💐 Thiệp 20/10 (game/event2010.py; SCHEMA_VERSION 46, owner 16/10): one row per card a player wrote on /2010, read by
+-- 💐 Thiệp 20/10 (SCHEMA_VERSION 46, owner 16/10). The event and its code (game/event2010.py) were removed 23/10; the tables
+-- stay (older releases still look for them, ev2010_rewards is the paid-reward history; account deletion in server.py still
+-- empties a player's cards). Was: one row per card a player wrote on /2010, read by
 -- anyone with its link (`id`: 12 random url-safe characters). status live -> hidden (reports) | removed (admin) | down (the
 -- sender deleted it: its words are emptied, the row stays for today's count). ev2010_reports: once per reader (their save
 -- or their address, hashed). ev2010_rewards: the 100.000 xu, once per account (uid) and per save (sid), with the system

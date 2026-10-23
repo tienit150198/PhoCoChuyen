@@ -1,8 +1,7 @@
 """Folk fair, played with in-game xu only.
 
-The ordinary rules below resume automatically outside the one-shot golden-days
-promotion (game/fair_golden_days.py). During its persisted 48-hour window only
-chiếu trong, lô tô and vé cào use the event draw; scratch wins then exclude refunds.
+The one-shot golden-days promotion (11–13/10, game/fair_golden_days.py) was removed 23/10: its per-round read is
+gone; a save's old `fair_golden_days` marker is ignored (unknown journey keys are kept, tests/test_fair_golden_days_gone.py).
 
 Owner 16/10 (rebalance, "tỷ lệ là 55 - 60% thôi … đừng cho lỗ nhưng đừng cho lãi nhiều", "phải tính cả trường hợp
 người ta cheat, hoặc chơi kiểu ít tiền thua sau đó chơi tiền lớn, hoặc cheat spam ăn nhiều", "đừng giới hạn 600 ván,
@@ -107,7 +106,6 @@ from .loss_limits import bounded_loss
 from . import fair_watch as watch   # 🕶️ the police's eye on the skill stalls: scripts and bursts only
 from . import fair_hai as hai     # 👴 Ông Hai's table: games a day, the police after a run of wins
 from . import fair_dog as dog    # 🐕 đua chó: the roster, the lineups, the draw
-from . import fair_golden_days as golden  # one persisted, server-only 48-hour luck event
 from . import fair_boost as boost  # 🎲 xóc đĩa's 3 s gap (owner 15/10; its boosts are gone since 16/10)
 
 VERSION = 1
@@ -217,7 +215,7 @@ AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}
 AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Nộp phạt'
 WALLET_CHECKS = False          # owner 11/10: _wealth_raid / _asset_audit off, fines are per round only
 # Owner 11/10 (evening): "người ta spam chơi 50k nhiều quá thì giảm tỷ lệ thắng xuống 40%, mức 50–300k cũng áp dụng":
-# a luck round staking BIG_WIN_FROM or more draws at most BIG_WIN_P (golden days included). Never shown.
+# a luck round staking BIG_WIN_FROM or more draws at most BIG_WIN_P. Never shown.
 BIG_WIN_FROM, BIG_WIN_P, BIG_WIN_GAMES = 50_000, .43, ('xd', 'lt', 'xs')   # owner 22/10: .40 → .43
 POLICE_SAY = 'Chào em, nghe nói em lời ở chợ đen hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
@@ -787,30 +785,20 @@ def run_rate(game: str, n: int) -> float:
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
-    """Count the round and choose its draw. Golden days (golden.rate, a past event): its own draw. Otherwise xd/lt/xs
+    """Count the round and choose its draw: xd/lt/xs
     draw base_p (today's net, the stake) less pace_cut (this stall's rounds in the last minute), never below P_MIN;
     ném vòng its run rate. Bầu cua counts its pace here (its dice stay honest: bc_bao). A 50k+ round: BIG_WIN_P at most.
     The 15/10 boosts are gone (fair_boost.rate is None); the spam decay's counts (_heat) are still kept for the ring."""
     _run(j, game, t)
     n = _heat(j, game, t, stake or 0)
     pace = _pace(j, game, t) if game in PACE_GAMES else 0
-    p = _golden_rate(j, f, game, t, stake)
-    if p is None:
-        if game in DRAWN:
-            p = max(P_MIN, round(base_p(_today(f, t)['net'], stake) - pace_cut(pace), 3))
-        else:
-            p = run_rate(game, n)
+    if game in DRAWN:
+        p = max(P_MIN, round(base_p(_today(f, t)['net'], stake) - pace_cut(pace), 3))
+    else:
+        p = run_rate(game, n)
     if type(stake) is int and stake >= BIG_WIN_FROM and game in BIG_WIN_GAMES:
         p = min(p, BIG_WIN_P)   # owner 11/10: a 50k+ round wins BIG_WIN_P at most, event or not ("tránh bị spam")
     return p
-
-
-def _golden_rate(j: dict, f: dict | None, game: str, t: float, stake: int | None) -> float | None:
-    """The golden-days draw of this round (None: not boosted, the ordinary rate)."""
-    if not golden.active(game, t):
-        return None
-    golden.mark_display(j)
-    return golden.rate(stake or 0, _today(f, t)['net'])
 
 
 def cold(j: dict, t: float) -> dict | None:
@@ -819,9 +807,8 @@ def cold(j: dict, t: float) -> dict | None:
     gap: 1 (an older client words it "nghỉ 1 phút")}. No rate and no threshold."""
     c = j.get(PACE_KEY)
     out = None
-    event = golden.public(j, t)
     for g in (c if isinstance(c, dict) else ()):
-        if g not in PACE_GAMES or event and g in golden.GAMES:
+        if g not in PACE_GAMES:
             continue
         lst = _pace_list(j, g, t)
         if len(lst) + 1 >= PACE_SLOW and (out is None or max(lst) >= out[0]):
@@ -831,7 +818,7 @@ def cold(j: dict, t: float) -> dict | None:
 
 def _draw_luck(j: dict, game: str, probability: float) -> bool:
     draw = _rng.random()
-    # A round locked at a higher rate (a prior ring round, or the golden-days draw) keeps it.
+    # A round locked at a higher rate (a prior ring round) keeps it.
     if probability > chance_rate(game, 0) + 1e-9:
         return draw < probability
     balance = j.setdefault('fair_balance', {})
@@ -1249,7 +1236,7 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     _guard_free(e, f, j, t, price)
     _police(j, f, t, 'xs', price)
     p = luck_p(j, f, 'xs', t, stake=price)
-    boosted = p > chance_rate('xs', t) + 1e-9   # the golden days' draw: a won ticket is a profit (no refund)
+    boosted = p > chance_rate('xs', t) + 1e-9   # a draw above the stall's rate (the golden days', gone 23/10): a won ticket is a profit
     win = _draw_luck(j, 'xs', p)
     mult = scratch.prize_mult(_rng, profit_only=boosted) if win else 0
     cells = scratch.layout(price, mult, _rng)
@@ -1388,7 +1375,6 @@ _loc_seen = [0.0]   # this worker's latest known grant time (any worker's): no r
 
 def loc_prepare(db, action: str) -> None:
     """Before computing `action`: open the gate for this command when the last Lộc is LOC_GAP old (one row read)."""
-    golden.prepare(db, action)  # also runs before the early return: lô tô locks its draw at purchase
     if action not in LOC_ACTIONS:
         _loc_gate.set(False)
         return
@@ -2002,7 +1988,7 @@ def public(s: dict) -> dict:
                            audit_from=AUDIT_FROM, loc_mult=LOC_MULT),
                 # the stall played too fast for its next round ("Vận đang nguội", owner 16/10: the pace), or None; under
                 # a new name and without its rate, so an older client (which printed "khoảng N% thắng" from `cold`) shows nothing
-                cool=cold(j, t), golden_days=golden.public(j, t),
+                cool=cold(j, t),
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},

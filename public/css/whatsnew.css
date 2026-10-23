@@ -77,13 +77,3 @@
 .x3-more>summary::after{content:"▸"}
 .x3-more[open]>summary::after{content:"▾"}
 .x3-more .x3-how{margin-top:0}
-
-/* 💐 Thiệp 20/10 (v4/ev2010.js): the season's card, once, in the same frame */
-.ev10-head{background:linear-gradient(180deg,color-mix(in srgb,#ff8fb1 26%,var(--surface)),var(--surface))}
-.ev10-art{display:block;width:min(260px,100%);height:auto;margin:6px auto 4px}
-.ev10-line{margin:6px 0 10px;font-size:1.05rem;line-height:1.55;color:var(--ink)}
-.ev10-gift{margin:0 0 4px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#ffd166 22%,var(--surface));border:1px dashed color-mix(in srgb,#e0a100 55%,var(--line));font-size:.97rem;line-height:1.45}
-.ev10-foot{display:grid;gap:6px}
-.ev10-foot .ev10-go{display:flex;align-items:center;justify-content:center;text-decoration:none;background:linear-gradient(135deg,#ff6b9a,#e8467c);border-color:transparent;color:#fff;box-shadow:0 3px 0 #b8235a}
-.ev10-foot .btn.ghost{min-height:var(--tap)}
-

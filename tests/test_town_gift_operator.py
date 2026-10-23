@@ -2,8 +2,9 @@ import os
 import unittest
 import uuid
 import psycopg
-from game.system_gift import BROADCASTS, _broadcast_id
+from game.system_gift import _broadcast_id
 from scripts.grant_town_broadcast import queue_all
+from tests.test_system_gift import FAIR
 
 
 class TownGiftOperator(unittest.TestCase):
@@ -14,7 +15,7 @@ class TownGiftOperator(unittest.TestCase):
         self.conn.execute('CREATE TEMP TABLE system_gifts(id text PRIMARY KEY,sid text,coins bigint,title text,text text,status text,created double precision)')
         self.conn.execute("INSERT INTO sessions VALUES('offline'),('online')")
         self.conn.commit()
-        self.b = next(b for b in BROADCASTS if b['prefix'] == 'fair1005')
+        self.b = FAIR
 
     def test_dry_run_then_repeat_queue_uses_same_lazy_ids(self):
         preview = queue_all(self.conn, self.b)

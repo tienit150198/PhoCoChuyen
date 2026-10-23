@@ -29,14 +29,13 @@ import {BangAdmin} from './bang.js';
 import {SvcAdmin} from './svc.js';  // 🛎️ Phố dịch vụ: buyers' reports and the market's totals (game/service_market.py); nothing automatic  // ⚔️ Bang: every guild, hide / rename an offensive name, never a delete (game/bang.py)  // 🌳 Ước nguyện: reported wishes first, hide / show (game/chua_wish.py)
 import {WedInviteAdmin} from './wedinvite.js';  // 💌 Thiệp cưới: the cards sent to the whole server, delete one  // 🎁 Tặng xu: accounts, a gift of coins per player, "Quà đã tặng"
 import {HalloweenAdmin} from './halloween.js';  // 🎃 Lễ hội Ma Phố: totals, the candy board, the xu bags by network (game/halloween.py, read only)
-import {Ev2010Admin} from './event2010.js';  // 💐 Thiệp 20/10: reported cards first, hide / show, the reward log (game/event2010.py)
 import {UsersAdmin} from './users.js';
 import {overviewView,liveView,skeleton,skelCard} from './stats.js';
 import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
-const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'nguoi-dung':['Người dùng','user'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'phong-hat':['Phòng hát','music'],'tang-xu':['Tặng xu','gift'],'thiep-cuoi':['Thiệp cưới','send'],'uoc-nguyen':['Ước nguyện','sparkle'],'bang':['Bang','user'],'dich-vu':['Phố dịch vụ','alert'],'thiep-2010':['Thiệp 20/10','gift'],'halloween':['Halloween','gift'],'sticker':['Thi sticker','gift'],'he-thong':['Hệ thống','server'],
+const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'nguoi-dung':['Người dùng','user'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'phong-hat':['Phòng hát','music'],'tang-xu':['Tặng xu','gift'],'thiep-cuoi':['Thiệp cưới','send'],'uoc-nguyen':['Ước nguyện','sparkle'],'bang':['Bang','user'],'dich-vu':['Phố dịch vụ','alert'],'halloween':['Halloween','gift'],'sticker':['Thi sticker','gift'],'he-thong':['Hệ thống','server'],
   'bao-cao':['Báo cáo số liệu','print']};
 const HIDDEN=new Set(['bao-cao']);  // reached from "Xuất báo cáo", not listed in the menu
 const INVEST_VIEWS=new Set(['dau-tu','bao-cao']);  // drawn from …/section?name=invest only (no summary request)
@@ -69,7 +68,6 @@ const wsAdmin=new WishAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='
 const bgAdmin=new BangAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='bang')renderView();},forbidden:()=>reauth()});
 const svcAdmin=new SvcAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='dich-vu')renderView();},forbidden:()=>reauth()});
 const hwAdmin=new HalloweenAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='halloween')renderView();},forbidden:()=>reauth()});
-const evAdmin=new Ev2010Admin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='thiep-2010')renderView();},forbidden:()=>reauth()});
 const stkAdmin=new StickerAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='sticker')renderView();},forbidden:()=>reauth()});
 const usersAdmin=new UsersAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='nguoi-dung')renderView();},forbidden:()=>reauth()});
 let retMod=null;  // ./retention.js once imported ("Giữ chân")
@@ -112,7 +110,7 @@ function reauth(){
   usersAdmin.close(true,false);
   reauthing??=api.bootstrap().then(()=>{
     if(!api.admin)toast(api.account?'Tài khoản này không còn quyền vận hành.':'Phiên đăng nhập đã hết. Đăng nhập lại nhé.','bad');
-    resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();wsAdmin.reset();bgAdmin.reset();svcAdmin.reset();evAdmin.reset();hwAdmin.reset();stkAdmin.reset();usersAdmin.reset();decide();
+    resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();wsAdmin.reset();bgAdmin.reset();svcAdmin.reset();hwAdmin.reset();stkAdmin.reset();usersAdmin.reset();decide();
   }).catch(e=>toast(e.message,'bad')).finally(()=>{reauthing=null;});
   return reauthing;
 }
@@ -139,7 +137,7 @@ async function login(form){
 async function logout(){
   try{await api.logout();toast('Đã đăng xuất.');}
   catch(e){toast(e.message,'bad');}
-  resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();wsAdmin.reset();bgAdmin.reset();svcAdmin.reset();evAdmin.reset();hwAdmin.reset();stkAdmin.reset();usersAdmin.reset();ui.unread=null;ui.navOpen=false;
+  resetStats();inbox.reset();chatAdmin.reset();karaAdmin.reset();giftAdmin.reset();wiAdmin.reset();wsAdmin.reset();bgAdmin.reset();svcAdmin.reset();hwAdmin.reset();stkAdmin.reset();usersAdmin.reset();ui.unread=null;ui.navOpen=false;
   decide();
 }
 
@@ -371,11 +369,6 @@ function renderTools(){
     meta.innerHTML=hwAdmin.meta();
     return;
   }
-  if(ui.view==='thiep-2010'){
-    tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="evReload"${evAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
-    meta.innerHTML=evAdmin.meta();
-    return;
-  }
   if(ui.view==='thiep-cuoi'){
     tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="wiReload"${wiAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
     meta.innerHTML=wiAdmin.meta();
@@ -437,7 +430,6 @@ function renderView(){
   else if(ui.view==='uoc-nguyen')view.innerHTML=wsAdmin.view();
   else if(ui.view==='bang')view.innerHTML=bgAdmin.view();
   else if(ui.view==='dich-vu')view.innerHTML=svcAdmin.view();
-  else if(ui.view==='thiep-2010')view.innerHTML=evAdmin.view();
   else if(ui.view==='halloween')view.innerHTML=hwAdmin.view();
   else if(ui.view==='sticker')view.innerHTML=stkAdmin.view();
   else if(ui.view==='phong-hat')view.innerHTML=karaAdmin.view();
@@ -557,7 +549,6 @@ root.addEventListener('click',async ev=>{
   if(await wsAdmin.action(act,el.dataset))return;
   if(await bgAdmin.action(act,el.dataset))return;
   if(await svcAdmin.action(act,el.dataset))return;
-  if(await evAdmin.action(act,el.dataset))return;
   if(await hwAdmin.action(act,el.dataset))return;
   if(await stkAdmin.action(act,el.dataset))return;
   if(await chatAdmin.action(act,el.dataset))return;

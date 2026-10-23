@@ -324,8 +324,8 @@ ENTRIES = (
         dict(emoji='👮', text='Điều lệnh Công an: không chuộc người thân đang chấp hành án, không cá độ ở chợ đen; Giám đốc CATP tối đa 6 lần vi phạm.'),
     )),
     dict(version="2.4.26", date="2026-10-16", items=(
-        dict(emoji='💐', text='Mùa thiệp 20/10: viết thiệp tặng người thương với 13 mẫu xinh, gửi link là người nhận đọc ngay, không cần chơi.', go=dict(action='ev2010', data={})),
-        dict(emoji='🎁', text='Gửi tấm thiệp đầu tiên, Phố tặng 100.000 xu. Hạn chót 21/10!', go=dict(action='ev2010', data={})),
+        dict(emoji='💐', text='Mùa thiệp 20/10: viết thiệp tặng người thương với 13 mẫu xinh, gửi link là người nhận đọc ngay, không cần chơi.'),
+        dict(emoji='🎁', text='Gửi tấm thiệp đầu tiên, Phố tặng 100.000 xu. Hạn chót 21/10!'),
     )),
     dict(version="2.4.25", date="2026-10-16", items=(
         dict(emoji='🫖', text='Hai buổi sáng đầu, Cô Ba ủ sẵn trà và nấu sẵn trân châu cho quầy; cảnh chương và bảng chuẩn bị gọn hơn.'),
