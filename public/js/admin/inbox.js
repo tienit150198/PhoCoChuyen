@@ -1,13 +1,19 @@
 /** "Góp ý": the operator's feedback inbox on the standalone site. Same API as the in-game
  * inbox (public/js/v4/feedback.js): GET /api/admin/feedback?status&kind&before and
- * POST /api/admin/feedback {id, status?, reply?}. List + detail; on a phone the detail
- * replaces the list (with a back button). */
+ * POST /api/admin/feedback {id, status?, reply?, acknowledge?}. List + detail; on a phone the detail
+ * replaces the list (with a back button). An idea shows whether its player wants their character's name in the
+ * "Có gì mới" thank-you line (F#503, game/whats_new.py thanks=); ✅ Ghi nhận pays the note's one 🎁 thank-you gift
+ * (owner 23/10, game/player_feedback.py acknowledge_note). */
 import {esc,icon,ago,stamp,num,KINDS,kindOf,STATUS,tag,toast} from './ui.js';
 
 const REPLY_MAX=10000;   // owner 10/10 (game/player_feedback.py)
 const STATUSES=[['new','Mới'],['seen','Đã xem'],['done','Xong']];
 const CTX_LABEL={career:'Nghề',day:'Ngày trong nghề',life_day:'Ngày đời',view:'Màn hình',layout:'Bố cục',screen:'Kích thước',lang:'Ngôn ngữ',version:'Phiên bản',ua:'Trình duyệt'};
 const LAYOUT={phone:'điện thoại',tablet:'máy tính bảng',desktop:'máy tính'};
+/** F#503: the name to write in whats_new.py thanks= (the character's, else the account), or "ẩn danh". */
+const creditTag=it=>it.kind!=='idea'?'':it.credit==='name'?tag(`🙋 Muốn ghi tên: ${esc(it.name||(it.account?'@'+it.account:'(chưa đặt tên)'))}`,'good'):tag('🕶️ Ẩn danh');
+const ack=(it,saving)=>it.reward?`<p class="fb-ack done">🎁 Đã ghi nhận · thưởng ${num(it.reward.coins)} xu</p>`:
+  it.reward_coins?`<p class="fb-ack"><button type="button" class="btn ghost sm" data-act="fbAck" data-id="${it.id}"${saving?' disabled':''}>✅ Ghi nhận (thưởng ${num(it.reward_coins)} xu)</button></p>`:'';
 
 export class Inbox{
   /** hooks: {rerender(), counts(counts), forbidden(error)} */
@@ -60,7 +66,7 @@ export class Inbox{
     const first=esc((it.text||'').split('\n')[0].slice(0,140));
     return `<li><button type="button" class="fb-row ${it.status}${this.sel===it.id?' on':''}" data-act="fbOpen" data-id="${it.id}" aria-current="${this.sel===it.id}">
       <span class="fb-kind" title="${esc(label)}" aria-label="${esc(label)}">${emo}</span>
-      <span class="fb-main"><span class="fb-first">${first}</span><small>${who} · ${ago(it.created_at)} · #${it.id}${it.reply?` · ${icon('send',11)} đã đáp`:''}</small></span>
+      <span class="fb-main"><span class="fb-first">${first}</span><small>${who} · ${ago(it.created_at)} · #${it.id}${it.reply?` · ${icon('send',11)} đã đáp`:''}${it.kind==='idea'?(it.credit==='name'?' · 🙋 ghi tên':' · 🕶️ ẩn danh'):''}${it.reward?' · 🎁':''}</small></span>
       ${tag(st,tone)}</button></li>`;
   }
   context(ctx){
@@ -79,7 +85,9 @@ export class Inbox{
       <button type="button" class="btn ghost sm back" data-act="fbClose">${icon('back',15)} Danh sách</button>
       <header class="fb-dhead"><span class="fb-dkind"><span aria-hidden="true">${emo}</span> ${esc(label)}</span>${tag(st,tone)}<small>#${it.id}</small></header>
       <p class="fb-meta">${who} · gửi ${stamp(it.created_at)} (${ago(it.created_at)})${it.updated_at&&it.updated_at-it.created_at>1?` · cập nhật ${ago(it.updated_at)}`:''}</p>
+      ${it.kind==='idea'?`<p class="fb-credit">${creditTag(it)}</p>`:''}
       <div class="fb-text">${esc(it.text)}</div>
+      ${ack(it,this.saving)}
       <div class="fb-status" role="group" aria-label="Đổi trạng thái"><span class="fb-status-l">Trạng thái</span><div class="seg">${STATUSES.map(([s,l])=>
         `<button type="button" class="${it.status===s?'on':''}" aria-pressed="${it.status===s}" data-act="fbStatus" data-id="${it.id}" data-status="${s}"${this.saving?' disabled':''}>${it.status===s?icon('check',13):''}${l}</button>`).join('')}</div></div>
       <form class="fb-reply" data-form="reply" data-id="${it.id}">
@@ -116,6 +124,11 @@ export class Inbox{
       case'fbOpen':this.sel=Number(data.id);if(this.item(this.sel)?.context?.career)this.api.loadNames().then(ok=>{if(ok)this.hooks.rerender();});this.hooks.rerender();document.querySelector('.pane-detail')?.scrollTo?.(0,0);if(matchMedia('(max-width: 899px)').matches)scrollTo(0,0);return true;
       case'fbClose':{const id=this.sel;this.sel=null;this.hooks.rerender();document.querySelector(`.fb-row[data-id="${id}"]`)?.focus();return true;}
       case'fbStatus':await this.save({id:Number(data.id),status:data.status},'Đã đổi trạng thái.');return true;
+      case'fbAck':{const it=this.item(Number(data.id));
+        if(!it||it.reward||!confirm(`Ghi nhận góp ý #${it.id} và tặng người chơi ${num(it.reward_coins)} xu? Mỗi góp ý chỉ được thưởng một lần.`))return true;
+        const out=await this.save({id:it.id,acknowledge:true},'Đã ghi nhận: quà cảm ơn vào ví người chơi ở lần vào game tới.');
+        if(out?.reward_error)toast(out.reward_error,'bad');
+        return true;}
       case'fbClearReply':{const it=await this.save({id:Number(data.id),reply:''},'Đã xóa lời đáp.');if(it)delete this.drafts[it.id];return true;}
     }
     return false;

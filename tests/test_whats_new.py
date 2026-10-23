@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from game import __version__
 from game import whats_new as wn
@@ -71,6 +72,26 @@ class EntriesData(unittest.TestCase):
             with self.subTest(item=item), self.assertRaises(ValueError):
                 wn.validate((dict(version='1.0.0', date='2026-10-01', items=(item,)),))
         wn.validate((dict(version='1.0.0', date='2026-10-01', items=(dict(emoji='🏆', text='Bảng xếp hạng mới.', go=dict(action='rank', data=dict(tab='career'))),)),))
+
+    def test_thanks_names_the_players_behind_an_idea(self):
+        # F#503: thanks=(names…) under a bullet; a name only with the player's consent, else wn.ANON ("ẩn danh").
+        one = lambda **kw: (dict(version='1.0.0', date='2026-10-01', items=(dict(emoji='💡', text='Nghề mới làm bánh.', **kw),)),)
+        for good in (('Lụm',), ('Lụm', wn.ANON), (wn.ANON, wn.ANON), ('Bơ', 'Lụm', 'Na', wn.ANON, 'x' * wn.MAX_NAME)):
+            with self.subTest(good=good):
+                wn.validate(one(thanks=good))
+        for bad in ((), ('A', 'B', 'C', 'D', 'E', 'F'), ('x' * (wn.MAX_NAME + 1),), ('<b>Lụm</b>',), ('Lụm\nBơ',),('',), (' Lụm',),
+                    ('Lụm', 'Lụm'), ('Lụm', 3), 'Lụm', ['Lụm'], None, {'name': 'Lụm'}):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                wn.validate(one(thanks=bad))
+        with self.assertRaises(ValueError):
+            wn.validate(one(thanks=('Lụm',), note='x'))
+        # The browser copy carries it as a list, one bullet per line as before.
+        entries = one(thanks=('Lụm', wn.ANON))
+        with patch.object(wn, 'ENTRIES', entries):
+            self.assertEqual(wn.public()[0]['items'][0]['thanks'], ['Lụm', wn.ANON])
+            js = wn.render_js()
+            self.assertIn('"thanks":["Lụm","ẩn danh"]', js)
+            self.assertEqual(json.loads(js.split('export default ', 1)[1].rstrip().rstrip(';')), wn.public())
 
 
 class SeenVersionInTheSave(unittest.TestCase):

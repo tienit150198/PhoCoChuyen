@@ -195,6 +195,100 @@ class FeedbackModuleTests(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(pfb.FeedbackError):
                 pfb.edit(self.store, self.token, bad)
 
+    def test_idea_credit_is_stored_for_ideas_only_and_editable(self):
+        """F#503: an idea carries the player's choice for the "Có gì mới" thank-you line (context.credit, no schema
+        change): 'name' only when ticked, else 'anon'; other kinds never carry one."""
+        named = pfb.submit(self.store, self.token, self.state(), dict(kind='idea', text='Thêm nghề làm bánh', credit=True))['id']
+        anon = pfb.submit(self.store, self.token, self.state(), dict(kind='idea', text='Thêm nghề bán kem'))['id']
+        junk = pfb.submit(self.store, self.token, self.state(), dict(kind='idea', text='Thêm nghề bán bóng', credit='yes'))['id']
+        bug = pfb.submit(self.store, self.token, self.state(), dict(kind='bug', text='Nút gửi bị che', credit=True))['id']
+        rows = {x['id']: x for x in pfb.list_admin(self.store)['items']}
+        self.assertEqual([rows[i]['context'].get('credit') for i in (named, anon, junk, bug)], ['name', 'anon', 'anon', None])
+        self.assertEqual([rows[i].get('credit') for i in (named, anon, bug)], ['name', 'anon', None])
+        mine = {x['id']: x for x in pfb.list_mine(self.store, self.token)}
+        self.assertEqual((mine[named]['credit'], mine[anon]['credit']), ('name', 'anon'))
+        self.assertNotIn('credit', mine[bug])
+        self.assertNotIn('context', mine[named])
+        # The character's name for the admin badge: leaderboard_players by sid (its primary key).
+        with self.store.connect() as db:
+            db.execute('INSERT INTO leaderboard_players(sid,name,updated) VALUES(?,?,?) ON CONFLICT(sid) DO UPDATE SET name=excluded.name',
+                       (self.store.key(self.token), 'Lụm', 1.0))
+        rows = {x['id']: x for x in pfb.list_admin(self.store)['items']}
+        self.assertEqual(rows[named]['name'], 'Lụm')
+        self.assertNotIn('name', rows[bug])
+        # Editable while unreplied: tick, untick; a text-only edit keeps it; a kind change drops / restores it.
+        self.assertEqual(pfb.edit(self.store, self.token, dict(id=anon, text='Thêm nghề bán kem dừa', credit=True))['item']['credit'], 'name')
+        self.assertEqual(pfb.edit(self.store, self.token, dict(id=anon, text='Thêm nghề bán kem chuối'))['item']['credit'], 'name')
+        self.assertEqual(pfb.edit(self.store, self.token, dict(id=anon, text='Thêm nghề bán kem', credit=False))['item']['credit'], 'anon')
+        self.assertNotIn('credit', pfb.edit(self.store, self.token, dict(id=named, text='Thật ra là lỗi', kind='bug', credit=True))['item'])
+        self.assertEqual(pfb.edit(self.store, self.token, dict(id=bug, text='Thật ra là ý tưởng', kind='idea'))['item']['credit'], 'anon')
+        ctx = {x['id']: x['context'] for x in pfb.list_admin(self.store)['items']}
+        self.assertNotIn('credit', ctx[named])
+        self.assertEqual(ctx[bug]['credit'], 'anon')
+        pfb.update(self.store, anon, reply='Hay đó!')
+        with self.assertRaises(pfb.FeedbackError):
+            pfb.edit(self.store, self.token, dict(id=anon, text='Thêm nghề bán kem', credit=True))
+
+    def gifts(self):
+        with self.store.connect() as db:
+            return [dict(r) for r in db.execute("SELECT id,sid,coins,title,text,status FROM system_gifts WHERE id LIKE 'fb-thanks-%' ORDER BY id")]
+
+    def test_acknowledge_pays_one_thank_you_gift_per_note(self):
+        """Owner 23/10 "chỉ cái nào được mình ghi nhận mới có thưởng": 'done' alone pays nothing; ✅ Ghi nhận pays
+        REWARD[kind] (30.000 xu for every kind) once per note, through the gift system."""
+        self.assertEqual(set(pfb.REWARD), set(pfb.KINDS))
+        self.assertEqual(set(pfb.REWARD_GIFT), set(pfb.KINDS))
+        self.assertEqual(set(pfb.REWARD.values()), {30_000})
+        ids = {k: self.send(f'Góp ý loại {k} ' + 'rất dài ' * 20, kind=k)['id'] for k in pfb.KINDS}
+        for fid in ids.values():
+            pfb.update(self.store, fid, status='seen')
+            pfb.update(self.store, fid, status='done', reply='Cảm ơn bạn!')
+        self.assertEqual(self.gifts(), [], "'seen' and 'done' pay nothing by themselves")
+        self.assertIsNone(pfb.list_admin(self.store)['items'][0]['reward'])
+        for kind, fid in ids.items():
+            out = pfb.acknowledge_note(self.store, fid, 'op')
+            self.assertEqual((out['status'], out['coins'], out['gift_status']), ('created', 30_000, 'pending'), kind)
+            self.assertEqual(pfb.acknowledge_note(self.store, fid)['status'], 'exists')       # a second click: no second gift
+            item = pfb.update(self.store, fid, status='done', acknowledge=True)               # nor through update()
+            self.assertEqual(item['reward'], dict(coins=30_000, status='pending'))
+            pfb.update(self.store, fid, status='seen'); pfb.update(self.store, fid, status='done')
+        gifts = self.gifts()
+        self.assertEqual(len(gifts), len(pfb.KINDS))
+        sid = self.store.key(self.token)
+        for g in gifts:
+            fid = int(g['id'].rsplit('-', 1)[1])
+            kind = next(k for k, i in ids.items() if i == fid)
+            self.assertEqual((g['sid'], g['coins'], g['title']), (sid, 30_000, pfb.REWARD_GIFT[kind][0]))
+            self.assertIn(f'Góp ý loại {kind}', g['text'])
+            self.assertIn('…', g['text'])   # a long note is quoted short
+            self.assertLessEqual(len(g['text']), 300)
+            self.assertNotIn('30', g['text'])   # a thank-you for that note, never a rule
+        for kind in ('praise', 'hard'):
+            text = next(g['text'] for g in gifts if g['id'] == pfb.reward_id(ids[kind]))
+            self.assertNotRegex(text, 'được làm|đã sửa')
+        self.assertEqual({x['id']: x['reward']['coins'] for x in pfb.list_admin(self.store)['items']}, {i: 30_000 for i in ids.values()})
+        with self.assertRaises(pfb.FeedbackError) as e:
+            pfb.acknowledge_note(self.store, max(ids.values()) + 99)
+        self.assertEqual(e.exception.status, 404)
+
+    def test_a_failed_gift_never_loses_the_reply_or_status(self):
+        fid = self.send('Thêm nghề làm bánh', kind='idea')['id']
+        with patch.object(pfb.system_gift, 'grant', side_effect=RuntimeError('db down')), self.assertLogs('game.player_feedback', 'ERROR'):
+            item = pfb.update(self.store, fid, status='done', reply='Đã làm rồi nhé!', acknowledge=True)
+        self.assertEqual((item['status'], item['reply'], item['reward']), ('done', 'Đã làm rồi nhé!', None))
+        self.assertTrue(item['reward_error'])
+        self.assertEqual(self.gifts(), [])
+        # A save that is gone: a clear error from acknowledge_note, reported (not raised) by update().
+        with patch.object(pfb.system_gift, 'grant', side_effect=pfb.system_gift.GiftError('Không có bản lưu nào với sid này.')):
+            with self.assertRaises(pfb.FeedbackError) as e:
+                pfb.acknowledge_note(self.store, fid)
+            self.assertEqual(e.exception.code, 'reward_failed')
+            with self.assertLogs('game.player_feedback', 'ERROR'):
+                self.assertIn('sid', pfb.update(self.store, fid, acknowledge=True)['reward_error'])
+        self.assertEqual(pfb.update(self.store, fid, acknowledge=True)['reward']['coins'], 30_000)   # works once the gift can go
+        with self.assertRaises(pfb.FeedbackError):
+            pfb.update(self.store, fid, acknowledge='yes')   # nothing to update
+
     def test_delete_own_note_until_it_has_a_reply(self):
         """F#412 "cập nhập thêm cái nút xóa góp ý": the owner deletes a note (and its images) while it has no reply."""
         keep = self.send('Góp ý giữ lại')['id']
@@ -390,6 +484,26 @@ class FeedbackHTTPTests(unittest.TestCase):
         with patch.dict(os.environ, {'ADMIN_USERS': ''}):
             self.assertEqual(self.req(admin, '/api/admin/feedback')[0], 403)
 
+    def test_acknowledge_route_is_admin_only(self):
+        """✅ Ghi nhận through POST /api/admin/feedback {id, acknowledge: true}: admin only, one gift per note."""
+        a = self.device()
+        fid = self.send(a, 'Thêm nghề làm bánh', 'idea')[1]['id']
+        player = self.signed('regular_ack')
+        for dev in (a, player):
+            self.assertEqual(self.req(dev, '/api/admin/feedback', 'POST', dict(id=fid, acknowledge=True))[0], 403)
+        admin = self.admin()
+        self.assertEqual(self.req(admin, '/api/admin/feedback', 'POST', dict(id=fid, acknowledge=True), csrf=False)[0], 403)
+        with self.server.store.connect() as db:
+            self.assertIsNone(db.execute('SELECT 1 FROM system_gifts WHERE id=?', (pfb.reward_id(fid),)).fetchone())
+        for _ in range(2):
+            status, out = self.req(admin, '/api/admin/feedback', 'POST', dict(id=fid, acknowledge=True))
+            self.assertEqual(status, 200, out)
+            self.assertEqual((out['item']['reward'], out['item']['reward_coins']), (dict(coins=30_000, status='pending'), 30_000))
+        with self.server.store.connect() as db:
+            rows = db.execute('SELECT coins,granted_by FROM system_gifts WHERE id=?', (pfb.reward_id(fid),)).fetchall()
+        self.assertEqual([(r['coins'], r['granted_by']) for r in rows], [(30_000, 'op_admin')])
+        self.assertNotIn('reward', self.req(a, '/api/feedback/mine')[1]['items'][0])   # secret until the gift card comes
+
     def test_admin_paging(self):
         admin = self.admin()
         a = self.device()
@@ -413,6 +527,18 @@ class FeedbackHTTPTests(unittest.TestCase):
         with self.server.store.connect() as db:
             after = db.execute("SELECT COUNT(*) FROM player_feedback WHERE text='Xóa tôi đi nhé'").fetchone()[0]
         self.assertEqual(after, 0)
+
+
+class FeedbackCreditUI(unittest.TestCase):
+    def test_credit_box_and_acknowledge_in_the_browser(self):
+        """F#503 credit box + ✅ Ghi nhận (tests/feedback-credit.mjs, run with node when it is installed)."""
+        import shutil, subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'feedback-credit.mjs')], cwd=root, capture_output=True, text=True, encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
 
 
 if __name__ == '__main__':

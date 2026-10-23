@@ -11,6 +11,7 @@ Text is cleaned like the street's, but contact details and links are redacted
 from __future__ import annotations
 import hashlib
 import json
+import logging
 import os
 import re
 import secrets
@@ -21,6 +22,7 @@ from . import accounts
 from .ai import redact
 from .social import BANNED
 from . import feedback_images
+from . import system_gift
 
 KINDS = ('bug', 'idea', 'praise', 'hard')
 STATUSES = ('new', 'seen', 'done')
@@ -28,6 +30,18 @@ TEXT_MAX, TEXT_MIN, REPLY_MAX = 10000, 3, 10000   # owner 06/10: góp ý up to 1
 MINE_LIMIT, ADMIN_PAGE = 20, 50
 LAYOUTS = ('phone', 'tablet', 'desktop')
 THANKS = 'Đã ghi nhận, cảm ơn bạn!'
+CREDITS = ('name', 'anon')   # F#503: an idea's thank-you line in "Có gì mới" (game/whats_new.py thanks=): the character's name, or "ẩn danh"
+# 🎁 Owner 23/10 "chỉ cái nào được mình ghi nhận mới có thưởng": a note the operator acknowledges (✅ Ghi nhận) pays its
+# player once, through the gift system (game/system_gift.py, id reward_id(fid)). Secret: the form never mentions it.
+REWARD = {'bug': 30_000, 'idea': 30_000, 'praise': 30_000, 'hard': 30_000}
+REWARD_GIFT = {   # kind -> (card title, text with the note's first words as {q}): a thank-you for that note, no rule
+    'idea': ('💡 Cảm ơn ý tưởng của bạn', 'Cảm ơn bạn đã góp ý tưởng: “{q}”. Nhà làm game đã ghi nhận ý tưởng này, gửi bạn chút quà cảm ơn! 💛'),
+    'bug': ('🐞 Cảm ơn bạn đã báo lỗi', 'Cảm ơn bạn đã báo lỗi: “{q}”. Nhà làm game đã ghi nhận lỗi bạn báo, gửi bạn chút quà cảm ơn! 💛'),
+    'praise': ('💛 Cảm ơn lời khen của bạn', 'Cảm ơn lời khen của bạn: “{q}”. Cả nhà làm game đọc mà vui lắm, gửi bạn chút quà cảm ơn! 💛'),
+    'hard': ('🧭 Cảm ơn góp ý của bạn', 'Cảm ơn bạn đã góp ý: “{q}”. Nhà làm game đã đọc kỹ và ghi nhận, gửi bạn chút quà cảm ơn! 💛'),
+}
+QUOTE = 60
+LOG = logging.getLogger(__name__)
 _VIEW = re.compile(r'[A-Za-z0-9_-]{1,40}')
 _SCREEN = re.compile(r'\d{2,5}x\d{2,5}')
 
@@ -95,6 +109,27 @@ def clean_context(client, state: dict, ua: str = '', version: str = '') -> dict:
     return out
 
 
+def with_credit(ctx: dict, kind: str, credit=None) -> dict:
+    """F#503: an idea keeps context['credit'] ('name' only when the player ticked "ghi tên nhân vật", else 'anon');
+    any other kind has none. credit: True / False from the form, None = keep what the note had (default 'anon')."""
+    ctx = dict(ctx)
+    if kind != 'idea':
+        ctx.pop('credit', None)
+    elif type(credit) is bool:
+        ctx['credit'] = 'name' if credit else 'anon'
+    elif ctx.get('credit') not in CREDITS:
+        ctx['credit'] = 'anon'
+    return ctx
+
+
+def _ctx(raw) -> dict:
+    try:
+        ctx = json.loads(raw or '{}')
+    except ValueError:
+        return {}
+    return ctx if isinstance(ctx, dict) else {}
+
+
 # ---------------------------------------------------------------- who is who
 def admin_users() -> set[str]:
     return {u.strip().lower() for u in os.environ.get('ADMIN_USERS', '').split(',') if u.strip()}
@@ -117,17 +152,41 @@ def _tag(sid: str) -> str:
     return hashlib.sha256(('fb:' + sid).encode()).hexdigest()[:8]
 
 
-def _row(r, admin: bool = False, images: dict | None = None) -> dict:
+def _row(r, admin: bool = False, images: dict | None = None, extras: dict | None = None) -> dict:
     item = dict(id=r['id'], kind=r['kind'], text=r['text'], status=r['status'], reply=r['reply'],
                 created_at=r['created_at'], updated_at=r['updated_at'], replied_at=r['replied_at'],
                 images=(images or {}).get(r['id'], []))
+    ctx = _ctx(r['context'])
+    if r['kind'] == 'idea' and ctx.get('credit') in CREDITS:
+        item['credit'] = ctx['credit']   # F#503: the player's own choice shows (and is editable) in their list too
     if admin:
-        try:
-            ctx = json.loads(r['context'] or '{}')
-        except ValueError:
-            ctx = {}
-        item.update(context=ctx if isinstance(ctx, dict) else {}, account=r['account'], player=_tag(r['sid']))
+        item.update(context=ctx, account=r['account'], player=_tag(r['sid']), reward=None, reward_coins=REWARD.get(r['kind']))
+        item.update((extras or {}).get(r['id'], {}))
     return item
+
+
+def reward_id(fid: int) -> str:
+    """The 🎁 thank-you gift's id for one note (system_gift.valid_id): the same note can only ever be paid once."""
+    return f'fb-thanks-{int(fid)}'
+
+
+def _extras(db, rows) -> dict:
+    """Admin rows: the thank-you gift (system_gifts by its primary key) and, for an idea, the character's name
+    (leaderboard_players by sid, its primary key) for the credit badge. Two bounded lookups, never a scan."""
+    if not rows:
+        return {}
+    out: dict = {r['id']: {} for r in rows}
+    gids = {reward_id(r['id']): r['id'] for r in rows}
+    for g in db.execute(f'SELECT id,coins,status FROM system_gifts WHERE id IN ({",".join("?" for _ in gids)})', list(gids)):
+        out[gids[g['id']]]['reward'] = dict(coins=int(g['coins']), status=g['status'])
+    named = {r['sid'] for r in rows if r['kind'] == 'idea'}
+    if named:
+        names = {n['sid']: n['name'] for n in db.execute(
+            f'SELECT sid,name FROM leaderboard_players WHERE sid IN ({",".join("?" for _ in named)})', list(named))}
+        for r in rows:
+            if r['kind'] == 'idea':
+                out[r['id']]['name'] = names.get(r['sid']) or None
+    return out
 
 
 def _image_metadata(db, rows) -> dict:
@@ -171,7 +230,7 @@ def submit(store, token: str, state: dict, data: dict, ua: str = '', version: st
         images = feedback_images.decode_images(data.get('images', []))
     except feedback_images.ImageUploadError as exc:
         raise FeedbackError(str(exc), exc.code, exc.status) from None
-    context = clean_context(data.get('context'), state, ua, version)
+    context = with_credit(clean_context(data.get('context'), state, ua, version), kind, data.get('credit'))
     sid = store.key(token)
     account = account_of(store, token)
     now = time.time()
@@ -193,7 +252,7 @@ NOT_EDITABLE = 'Góp ý này đã có lời đáp nên không sửa được n�
 def edit(store, token: str, data: dict) -> dict:
     """F#295 "nên có nút sửa lại góp ý": the player's own note, while it has no reply yet. One UPDATE by id AND owner
     (this save or this account, as list_mine) AND reply IS NULL, so a reply written meanwhile wins. The edited note
-    goes back to "new" so the operator reads it again. Kind may change too (optional)."""
+    goes back to "new" so the operator reads it again. Kind may change too (optional), and an idea's credit (F#503)."""
     need(isinstance(data, dict), 'Dữ liệu góp ý không hợp lệ.')
     fid = _int(data.get('id'), 'Mã góp ý')
     need(fid is not None, 'Thiếu mã góp ý.')
@@ -205,9 +264,12 @@ def edit(store, token: str, data: dict) -> dict:
     account = account_of(store, token)
     now = time.time()
     with store.connect() as db:
-        row = db.execute("UPDATE player_feedback SET text=?, kind=COALESCE(?, kind), status='new', updated_at=? "
-                         'WHERE id=? AND (sid=? OR (account IS NOT NULL AND account=?)) AND reply IS NULL RETURNING *',
-                         (text, kind, now, fid, sid, account or '')).fetchone()
+        cur = db.execute('SELECT kind,context FROM player_feedback WHERE id=? AND (sid=? OR (account IS NOT NULL AND account=?)) '
+                         'AND reply IS NULL', (fid, sid, account or '')).fetchone()
+        ctx = json.dumps(with_credit(_ctx(cur['context']), kind or cur['kind'], data.get('credit')), ensure_ascii=False) if cur else None
+        row = db.execute("UPDATE player_feedback SET text=?, kind=COALESCE(?, kind), context=COALESCE(?, context), status='new', "
+                         'updated_at=? WHERE id=? AND (sid=? OR (account IS NOT NULL AND account=?)) AND reply IS NULL RETURNING *',
+                         (text, kind, ctx, now, fid, sid, account or '')).fetchone()
         images = _image_metadata(db, [row]) if row else {}
     need(row, NOT_EDITABLE, 'not_editable', 409)
     return dict(ok=True, item=_row(row, images=images), message=EDITED)
@@ -290,18 +352,21 @@ def list_admin(store, status=None, kind=None, before=None, limit: int = ADMIN_PA
         counts = {s: 0 for s in STATUSES}
         for r in db.execute('SELECT status, COUNT(*) AS n FROM player_feedback GROUP BY status'):
             counts[r['status']] = r['n']
-        images = _image_metadata(db, rows[:limit])
+        images, extras = _image_metadata(db, rows[:limit]), _extras(db, rows[:limit])
     more = len(rows) > limit
     rows = rows[:limit]
-    return dict(items=[_row(r, admin=True, images=images) for r in rows], next=rows[-1]['id'] if more and rows else None, counts=counts)
+    return dict(items=[_row(r, admin=True, images=images, extras=extras) for r in rows], next=rows[-1]['id'] if more and rows else None,
+                counts=counts)
 
 
-def update(store, fid, status=None, reply=None) -> dict:
-    """status: new|seen|done or None (keep). reply: text, '' (clear) or None (keep)."""
+def update(store, fid, status=None, reply=None, acknowledge: bool = False, by: str | None = None) -> dict:
+    """status: new|seen|done or None (keep). reply: text, '' (clear) or None (keep). acknowledge=True: also ✅ ghi nhận
+    the note (acknowledge_note) once the status and reply are saved; a gift that fails is logged and reported in the
+    item's reward_error, never undoing them. 'done' alone pays nothing (owner 23/10)."""
     fid = _int(fid, 'Mã góp ý')
     need(fid is not None, 'Thiếu mã góp ý.')
     touch_reply = reply is not None
-    need(status is not None or touch_reply, 'Không có gì để cập nhật.')
+    need(status is not None or touch_reply or acknowledge is True, 'Không có gì để cập nhật.')
     need(status is None or status in STATUSES, 'Trạng thái không hợp lệ.')
     if touch_reply:
         reply = clean_text(reply, REPLY_MAX, 0, 'Lời đáp') or None
@@ -314,7 +379,47 @@ def update(store, fid, status=None, reply=None) -> dict:
             sets.append('status=?'); args.append(status)
         if touch_reply:
             sets += ['reply=?', 'replied_at=?']; args += [reply, now if reply else None]
-        db.execute(f'UPDATE player_feedback SET {",".join(sets)} WHERE id=?', (*args, fid))
+        if len(sets) > 1:
+            db.execute(f'UPDATE player_feedback SET {",".join(sets)} WHERE id=?', (*args, fid))
+    error = None
+    if acknowledge is True:
+        try:
+            acknowledge_note(store, fid, by)
+        except Exception as e:   # noqa: BLE001 - the reply and status are saved already; the operator sees why
+            LOG.exception('feedback #%s: the thank-you gift failed', fid)
+            error = getattr(e, 'message', None) or 'Chưa gửi được quà cảm ơn.'
+    with store.connect() as db:
         row = db.execute('SELECT * FROM player_feedback WHERE id=?', (fid,)).fetchone()
-        images = _image_metadata(db, [row])
-    return _row(row, admin=True, images=images)
+        images, extras = _image_metadata(db, [row]), _extras(db, [row])
+    item = _row(row, admin=True, images=images, extras=extras)
+    if error:
+        item['reward_error'] = error
+    return item
+
+
+def _quote(text: str) -> str:
+    line = ' '.join((text or '').split('\n')[0].split())
+    return line if len(line) <= QUOTE else line[:QUOTE - 1].rstrip() + '…'
+
+
+def acknowledge_note(store, fid, by: str | None = None) -> dict:
+    """✅ Ghi nhận (owner 23/10): queue this note's thank-you gift, REWARD[kind] xu with a card quoting the note, paid at
+    the player's next load (game/system_gift.py). Once per note whatever the clicks, retries or status changes: the gift
+    id is reward_id(fid). Returns {status: created | exists, coins, gift_status}."""
+    fid = _int(fid, 'Mã góp ý')
+    need(fid is not None, 'Thiếu mã góp ý.')
+    gid = reward_id(fid)
+    with store.connect() as db:
+        row = db.execute('SELECT id,sid,kind,text FROM player_feedback WHERE id=?', (fid,)).fetchone()
+        need(row, 'Không tìm thấy góp ý này.', 'not_found', 404)
+        have = db.execute('SELECT coins,status FROM system_gifts WHERE id=?', (gid,)).fetchone()
+    if have:
+        return dict(status='exists', coins=int(have['coins']), gift_status=have['status'])
+    coins = REWARD.get(row['kind'])
+    need(coins, 'Loại góp ý này không có quà cảm ơn.', 'no_reward')
+    title, text = REWARD_GIFT[row['kind']]
+    try:
+        out = system_gift.grant(store, row['sid'], coins, title, text.format(q=_quote(row['text'])), gid=gid, by=by)
+    except system_gift.GiftError as e:
+        raise FeedbackError(f'Chưa gửi được quà cảm ơn: {e.message}', 'reward_failed', 409) from None
+    return dict(status=out['status'], coins=int(out['gift']['coins']), gift_status=out['gift']['status'])
