@@ -2,7 +2,9 @@
    a grid of the pieces (border = rank colour --tc, a corner chip, a red ⚡ dot when it can go up now, 🔒), the upgrade
    panel of the piece tapped, the result card. Light and dark (html[data-theme="dem"]); 360 px phones without a sideways
    scroll; on a wide sheet the panel sits beside the grid. ⏩ Bỏ qua hiệu ứng / reduced motion: no animation. */
-.fv{display:grid;gap:12px;min-width:0;container-type:inline-size}
+.fv{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0;container-type:inline-size}
+/* nothing inside may widen the sheet (2.5.6.1: a long option did): one-column grids minmax(0,1fr), children min-width:0 */
+.fv>*,.fv-main>*,.fv-panel>*,.fv-res>*,.fv-myth>*,.fv-max>*,.fv-acts>*{min-width:0}
 .fv .wing-icon{display:block;overflow:visible}
 .fv .pet-svg{display:block;max-width:100%;height:auto}
 .fv h3{margin:0}
@@ -35,7 +37,7 @@
 .fv-ready{position:absolute;top:2px;right:4px;font-style:normal;font-size:.78rem;line-height:1}
 
 /* the grid of pieces */
-.fv-main{display:grid;gap:12px;min-width:0}
+.fv-main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
 .fv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;margin:0;padding:0;list-style:none}
 .fv-tile{position:relative;display:grid;justify-items:center;align-content:start;gap:1px;width:100%;min-height:104px;padding:8px 4px 6px;border:2px solid color-mix(in srgb,var(--tc) 70%,var(--line));border-radius:14px;
   background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 16%,var(--surface)),var(--surface) 70%);color:var(--ink);font:inherit;cursor:pointer;text-align:center}
@@ -57,7 +59,7 @@
 .fv-empty p{margin:0;color:var(--ink-2)}
 
 /* the upgrade panel */
-.fv-panel{display:grid;gap:10px;padding:12px 14px;border:2px solid var(--accent);scroll-margin-top:72px}
+.fv-panel{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:12px 14px;border:2px solid var(--accent);scroll-margin-top:72px}
 .fv-ph{display:flex;align-items:center;gap:6px}
 .fv-ph h3{flex:1;min-width:0;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fv-ph h3:focus{outline:none}
@@ -73,7 +75,7 @@
 .fv-ladder .up,.fv-gain .up{color:var(--good)}
 .fv-gain{display:grid;gap:2px;margin:0;padding:0;list-style:none;font-size:.88rem}
 .fv-gain b{font-variant-numeric:tabular-nums}
-.fv-slots{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fv-slots{display:flex;min-width:0;align-items:center;gap:8px;flex-wrap:wrap}
 .fv-cnt{min-width:30px;font-weight:900;font-size:.9rem;color:var(--ink-2)}
 .fv-slot{position:relative;display:grid;place-items:center;width:58px;height:58px;padding:0;border:2px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--ink);font:inherit}
 .fv-slot svg{max-width:44px;max-height:44px}
@@ -83,7 +85,7 @@
 .fv-slot.pick{cursor:pointer}
 .fv-slot.pick:hover,.fv-slot.open{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}
 .fv-slot.empty{border-style:dashed;color:var(--ink-2);font-size:1.3rem}
-.fv-cands{display:flex;gap:6px;margin:0;padding:4px 2px 6px;list-style:none;overflow-x:auto;overscroll-behavior-x:contain}
+.fv-cands{display:flex;min-width:0;max-width:100%;gap:6px;margin:0;padding:4px 2px 6px;list-style:none;overflow-x:auto;overscroll-behavior-x:contain}
 .fv-cand{display:grid;justify-items:center;gap:1px;width:64px;min-height:64px;padding:4px 2px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
 .fv-cand small{max-width:58px;font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fv-cand.on{border:2px solid var(--accent)}
@@ -91,10 +93,10 @@
 .fv-fee{margin:0;font-size:.95rem}
 .fv-need{margin:0;color:var(--bad);font-weight:700;font-size:.88rem}
 .fv-warn{margin:0;padding:5px 10px;border-radius:10px;background:#fff1e6;color:#9a3412;font-size:.82rem;font-weight:700}
-.fv-acts{display:grid;gap:8px}
-.fv-acts.two{grid-template-columns:1fr 1fr}
+.fv-acts{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.fv-acts.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .fv-acts .btn.fv-go{width:100%;min-height:50px;font-size:1.02rem;font-weight:800}
-.fv-max{display:grid;gap:6px;padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.fv-max{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
 .fv-max .btn.fv-go2{width:100%;min-height:46px;font-weight:800}
 .fv-bud{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px}
 .fv-step{display:inline-flex;align-items:center;gap:4px}
@@ -102,12 +104,12 @@
 .fv-qchips{display:inline-flex;flex-wrap:wrap;gap:4px}
 
 /* the result card */
-.fv-res{display:grid;gap:10px;padding:12px 14px;border:2px solid var(--line)}
+.fv-res{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:12px 14px;border:2px solid var(--line)}
 .fv-res.win{border-color:var(--good);background:linear-gradient(180deg,color-mix(in srgb,var(--good) 10%,var(--surface)),var(--surface) 60%)}
 .fv-rh{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .fv-rh .btn{min-width:40px;min-height:40px}
 .fv-rbest{position:relative;display:grid;justify-items:center;gap:4px}
-.fv-rbest b{font-size:.95rem}
+.fv-rbest b{max-width:100%;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fv-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .fv-stats div{display:grid;place-items:center;gap:1px;padding:7px 2px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:center;min-width:0}
 .fv-stats b{font-size:1.1rem;line-height:1.15;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -124,7 +126,8 @@
 @keyframes fv-glow{0%{box-shadow:0 0 0 0 var(--tc)}100%{box-shadow:0 0 0 14px transparent}}
 
 /* ✨ thần thú */
-.fv-myth{display:grid;gap:8px;padding:12px 14px;border:2px solid #d9a400}
+.fv-myth{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:12px 14px;border:2px solid #d9a400}
+.fv-center b{overflow-wrap:anywhere}
 .fv-myth-row{display:flex;align-items:center;justify-content:center;gap:10px;font-size:1.4rem}
 
 /* a wide sheet: the panel beside the grid */

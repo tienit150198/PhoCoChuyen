@@ -14,7 +14,7 @@
  * Every rule, fee and roll stays on the server; the plans here mirror game/wings.py sets, game/pet_tiers.py fuse_sets /
  * gear_step and game/pet_wardrobe.py triples (locks and pin included) only to show what will happen. No odds (owner
  * 19/10 "đừng show tỷ lệ ra"). Short words on screen (owner 23/10 "không cần giải thích nhiều"). A redraw keeps the
- * scroll (env.renderSheet(); only a tab change goes back to the top). Styles: /css/forge.css. */
+ * scroll (env.renderSheet(), a tab change too). Styles: /css/forge.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {shortNum} from './wealth.js';
 import {wingIcon} from './look.js';
@@ -325,7 +325,7 @@ export function forgeView(env){
   const kind=kindOf(as.ftab),items=sortItems(api,itemsOf(api,kind));
   if(st.sel&&!items.some(x=>x.id===st.sel))st.sel=null;
   const tabs=KINDS.filter(x=>ok.includes(x[0])).map(([id,e,label,k])=>{const on=id===as.ftab,n=itemsOf(api,k).length,go=!!autoMax(api,k)&&planOf(api,k).n>0;
-    return `<button type="button" role="tab" id="fv-t-${id}" class="fv-kind${on?' on':''}" aria-selected="${on}" aria-controls="fv-pane" tabindex="${on?0:-1}" data-action="jrFgTab" data-tab="${id}"><span aria-hidden="true">${e}</span><b>${label}</b><small>${n}</small>${go?'<i class="fv-ready" aria-label="Cường hóa nhanh được">⚡</i>':''}</button>`;}).join('');
+    return `<button type="button" role="tab" id="fv-t-${id}" class="fv-kind${on?' on':''}" aria-selected="${on}" aria-controls="fv-pane" data-action="jrFgTab" data-tab="${id}"><span aria-hidden="true">${e}</span><b>${label}</b><small>${n}</small>${go?'<i class="fv-ready" aria-label="Cường hóa nhanh được">⚡</i>':''}</button>`;}).join('');
   const plan=allPlan(api,st),sum=plan.reduce((a,x)=>a+x.b,0);
   const all=`<div class="fv-all">${btn(running==='all'?`⚒️ ${st.allAt||''}`:'⚡ Ghép tất cả','jrFgAll',{},'primary fv-allgo',busy||!plan.length)}
     <span class="fv-allx" role="group" aria-label="Tiêu tối đa">${[1,2,5].map(m=>`<button type="button" class="fv-qb${(st.allx||1)===m?' on':''}" data-action="jrFgAllX" data-x="${m}" aria-pressed="${(st.allx||1)===m}">×${m}</button>`).join('')}</span>
@@ -425,7 +425,7 @@ export async function forgeAction(action,data,el,env){
   const {api,ui}=env,st=S(ui),as=ui.as??={};
   const find=id=>itemsOf(api,kindOf(as.ftab)).find(x=>x.id===id);
   switch(action){
-    case'jrFgTab':if(forgeTabs(api).includes(data.tab)){as.ftab=data.tab;st.sel=null;st.slot=-1;}env.renderSheet(false);return true;
+    case'jrFgTab':if(forgeTabs(api).includes(data.tab)){as.ftab=data.tab;st.sel=null;st.slot=-1;}env.renderSheet();return true;   // the tabs stay under the finger
     case'jrFgSel':{const x=data.id&&find(data.id);st.sel=x&&st.sel!==x.id?x.id:null;st.slot=-1;env.renderSheet();if(st.sel)focusPanel();return true;}
     case'jrFgSlot':{const i=Number(data.i);st.slot=st.slot===i?-1:(i===0||i===1?i:-1);env.renderSheet();return true;}
     case'jrFgPick':{const x=st.sel&&find(st.sel),i=Number(data.i);if(!x||!(i===0||i===1))return true;

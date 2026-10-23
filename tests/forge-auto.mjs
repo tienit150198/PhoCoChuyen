@@ -232,7 +232,7 @@ test('⚒️ v2: Cường hóa tối đa = the kind\'s ⚡ pinned on the piece, 
 
 test('⚒️ v2: each kind sends its own commands (pets, clothes, gear +1)',async()=>{
   fgReset();
-  await go('jrFgTab',{tab:'plab'});assert.equal(fg.draws.at(-1),false,'a new tab goes to the top');
+  await go('jrFgTab',{tab:'plab'});assert.notEqual(fg.draws.at(-1),false,'a new tab keeps the scroll too');
   await go('jrFgSel',{id:'p6'});let html=view();assert.match(html,/id="fv-panel"/);
   await go('jrFgOne',{id:'p6'});assert.equal(fg.sent[0][0],'jr_pet_fuse');assert.equal(fg.sent[0][1].main,'p6');assert.ok(!fg.sent[0][1].pets.includes('p2'));
   await go('jrFgMax',{id:'p6'});assert.equal(fg.sent[1][0],'jr_pet_fuse_auto');assert.equal(fg.sent[1][1].pin,'p6');
