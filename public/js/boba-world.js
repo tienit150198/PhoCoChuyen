@@ -50,6 +50,9 @@ function segHitsEllipse(A,B,o,rx,ry){const u0=(A.x-o.x)/rx,v0=(A.y-o.y)/ry,du=(B
   const t=len?Math.max(0,Math.min(1,-(u0*du+v0*dv)/len)):0,u=u0+t*du,v=v0+t*dv;return u*u+v*v<1;}
 /** Seconds between redraws of a time-animated room backdrop (its slow ambience runs at ~10 fps). */
 const ROOM_TICK=.1;
+// Android Chrome drops a backgrounded tab's canvas memory: the cached room comes back black (an alpha:false layer) while
+// furniture and people, drawn every frame, still show (player 23/10, Đại lý xe). Back on the page, or a lost layer: repaint.
+let shown=0;globalThis.document?.addEventListener?.('visibilitychange',()=>{if(!globalThis.document.hidden)shown++;});
 const PEN=['fillStyle','strokeStyle','lineWidth','lineCap','lineJoin','miterLimit','font','textAlign','textBaseline','globalAlpha','globalCompositeOperation','shadowBlur','shadowColor','shadowOffsetX','shadowOffsetY','lineDashOffset','imageSmoothingEnabled'];
 /** Copy drawing state (not the transform) between the stage and its cached backdrop. */
 function copyPen(from,to){for(const k of PEN)if(to[k]!==from[k])to[k]=from[k];to.setLineDash?.(from.getLineDash?.()||[]);}
@@ -451,9 +454,10 @@ export class BobaWorld extends World {
   * After a long idle spell (World.longIdle) that ambience holds still until the player is back. A room can
   * also keep its moving bits out of the backdrop (ambient()): then it is painted once and they move every frame. */
  backdrop(){const cv=this.canvas,main=this.ctx;
-   const key=[cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,areaOf(this)?.id,language(),!!this.reduced].join('|');
+   const key=[cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,areaOf(this)?.id,language(),!!this.reduced,shown].join('|');
    let L=this.layer;
-   if(!L||L.canvas.width!==cv.width||L.canvas.height!==cv.height){const canvas=globalThis.document.createElement('canvas');canvas.width=cv.width;canvas.height=cv.height;L=this.layer={canvas,ctx:canvas.getContext('2d',{alpha:false}),key:null};}
+   if(!L||L.canvas.width!==cv.width||L.canvas.height!==cv.height){const canvas=globalThis.document.createElement('canvas');canvas.width=cv.width;canvas.height=cv.height;L=this.layer={canvas,ctx:canvas.getContext('2d',{alpha:false}),key:null};const L2=L;canvas.addEventListener?.('contextrestored',()=>{L2.key=null;});}
+   if(L.ctx.isContextLost?.()){this.paintBackdrop();return;}   // lost and not back yet: the room straight onto the stage
    if(L.key===key&&L.rev!==this.rev&&L.reads?.same(this)){L.rev=this.rev;if(CHECK)this.checkBackdrop(L);}   // a new state, nothing the room shows changed
    if(L.key!==key||L.rev!==this.rev||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=ROOM_TICK){
      // Same pen state as painting straight onto the stage would have had, in and out.

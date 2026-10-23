@@ -1,3 +1,7 @@
+# 2.5.4.2 — 23/10/2026
+
+Hotfix: giao diện cũ, cảnh làm việc đen thui chỉ còn đồ đạc và mèo (người chơi Đại lý xe, Android): Chrome xóa bộ nhớ khung vẽ phòng khi chuyển app; boba-world.js vẽ lại phòng khi quay lại trang (visibilitychange), khi khung vẽ báo contextrestored, và vẽ thẳng lên sân khấu khi khung vẽ đang mất (isContextLost).
+
 # 2.5.4.1 — 23/10/2026
 
 Hotfix: 🪽 tab Cánh báo "Thao tác chưa hoàn tất" khi mở Tiệm phụ kiện từ menu (jrAccShop trong v4/journey.js tạo ui.as thiếu wfz → st.wfz.filter lỗi). journey.js khởi tạo đủ wfz / reveal / wtry; acc-shop.js wingShelf chịu được ui.as cũ.
