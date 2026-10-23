@@ -69,6 +69,7 @@ from . import history_course as hcourse   # 📜 Học lịch sử Việt Nam: i
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 from . import quay as qy   # 🏪 Quầy của bạn: your own counter, staff, the till (game/quay.py)
 from . import abroad as ab   # ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
+from . import school as sch   # 🏫 Đại học nhiều ngành, ✈️ du học một học kỳ (game/school.py)
 from . import career_locks as cl   # 🔒 vì sao chưa làm được nghề này (game/career_locks.py)
 
 VERSION = 1
@@ -320,6 +321,11 @@ TITLES = [
     _t('k_learning', 'skill', '📚', 'Ham học hỏi', 'Kỹ năng ham học đạt mức 3.', lambda x: x['sk'].get('learning', 0) >= 3),
     # 📜 Học lịch sử Việt Nam (game/history_course.py): given with the certificate, and here for a save certified outside the story.
     _t('h_history', 'skill', '📜', 'Người kể sử', 'Thi đạt khóa Lịch sử Việt Nam.', lambda x: x.get('history', False)),
+    # 🏫 Trường học (game/school.py): given at graduation, never by _award.
+    _t('h_bachelor', 'skill', '🎓', 'Cử nhân', 'Tốt nghiệp một ngành ở Đại học Phố Mây.', lambda x: False),
+    _t('h_double', 'skill', '📚', 'Song bằng', 'Tốt nghiệp hai ngành đại học.', lambda x: False),
+    _t('h_top', 'skill', '🏅', 'Thủ khoa', 'Tốt nghiệp loại Xuất sắc (GPA từ 3,60).', lambda x: False),
+    _t('h_overseas', 'skill', '🌏', 'Du học sinh', 'Học trọn một học kỳ ở nước ngoài.', lambda x: False),
     # Money.
     _t('m_first_draw', 'money', '👛', 'Tự lo cơm áo', 'Lần đầu rút tiền lời về ví.', lambda x: x['stats'].get('withdrawn', 0) > 0),
     _t('m_save200', 'money', '🐷', 'Có của để dành', 'Ví có từ 200 xu.', lambda x: x['stats'].get('max_wallet', 0) >= 200),
@@ -655,7 +661,8 @@ def is_unlocked(s: dict, career: str) -> bool:
     if not j or not j.get('story'):
         return True
     # 💼 an accounting place: its certificate opens it early, and without it (nor past work there) it stays shut
-    return (career in j.get('unlocked', ()) or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career)) and aj.can_work(s, career)[0]
+    return (career in j.get('unlocked', ()) or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career)
+            or sch.opens(s, career)) and aj.can_work(s, career)[0]   # 🏫 a degree opens its workplaces early
 
 
 def _playable(s: dict, cid: str) -> bool:
@@ -705,7 +712,8 @@ def gate(s: dict, career: str, action: str, internal: bool = False, p: dict | No
     j = s['journey']
     if internal or not j['story']:
         return
-    if not (career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career)):   # 🛃 Hải quan: 3 chapters done
+    if not (career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career)   # 🛃 Hải quan: 3 chapters done
+            or sch.opens(s, career)):   # 🏫 a degree of a related major
         raise e.GameError(cl.refusal(s, career), 'locked')   # 🔒 the place, why and what opens it (game/career_locks.py)
     ok, why = aj.can_work(s, career)   # 💼 an accounting place takes you once you pass its exam
     e.need(ok, f'{_place(career)} chưa nhận bạn: {why[:1].lower()}{why[1:]}' if why else why, 'need_cert')
@@ -1114,6 +1122,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(qy.action(s, name, p))
     elif name.startswith('jr_abroad_'):
         result.update(ab.action(s, name, p))   # ✈️🌏
+    elif name.startswith('jr_sch_'):
+        result.update(sch.action(s, name, p))   # 🏫 Trường học: đại học, du học một học kỳ (game/school.py)
     elif name == 'jr_frame':   # 🖼️ owner 18/10 "nhiều khung thì chủ động đổi khung được k": the frame worn in chat (live/honours.py)
         need(set(p) <= {'id'}, 'Khung không hợp lệ.')
         v = p.get('id')
@@ -1202,7 +1212,7 @@ def public(s: dict) -> dict:
     return dict(
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
         finale=j['chapter'] > LAST,
-        unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) + [gvr.HQ_CAREER] + list(LATE_UNLOCKS) if cid in s['careers'] and cid not in j['unlocked'] and (cid not in (gvr.HQ_CAREER, *LATE_UNLOCKS) or gvr.opens(s, cid) or late_opens(s, cid))] if j['story'] else list(s['careers']),
+        unlocked=_unlocked_public(s) if j['story'] else list(s['careers']),
         wallet=j['wallet'], debt=max(0, -j['wallet']), invest_max=min(CAPITAL_MAX, invest_max(s)) if j['story'] else 0,
         life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),
@@ -1221,12 +1231,21 @@ def public(s: dict) -> dict:
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'islb': ibp} if (ibp := _islb_public(s)) else {}),   # 🏗️ only once something was built (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
+        **({'school': schp} if (schp := sch.summary(s)) else {}),   # 🏫 only once the school was used (state size)
         **({'remote': rm} if (rm := _remote_public(s)) else {}),   # 📲 khép ca từ xa: open shifts, the device (game/remote_close.py)
         **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({'wings': wpub} if (wpub := _wings_public(s)) else {}),   # 🪽 only once a wing was bought (game/wings.py)
         **({'forge_locks': fl} if (fl := _locks_public(s)) else {}),   # 🔒 only once something is locked (game/forge_locks.py)
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+
+
+def _unlocked_public(s: dict) -> list[str]:
+    """The places open to the story save: the chapters', and those opened early (accounting exam, Hải quan, late
+    unlocks, 🏫 a degree of a related major)."""
+    j = s['journey']
+    out = list(j['unlocked']) + [cid for cid in aj.opened(s) + [gvr.HQ_CAREER] + list(LATE_UNLOCKS) if cid in s['careers'] and cid not in j['unlocked'] and (cid not in (gvr.HQ_CAREER, *LATE_UNLOCKS) or gvr.opens(s, cid) or late_opens(s, cid))]
+    return out + [cid for cid in sch.opened(s) if cid not in out]
 
 
 def _progress(ctx: dict, j: dict) -> tuple[int, int]:
@@ -1305,7 +1324,7 @@ def content() -> dict:
         unlock_chapter={cid: n for n, ids in [*CH_UNLOCKS.items(), *((n, (c,)) for c, n in LATE_UNLOCKS.items())] for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
         garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), island=isl.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
-        abroad=ab.catalogue(), lixi=_lixi_catalogue())
+        abroad=ab.catalogue(), school=sch.catalogue(), lixi=_lixi_catalogue())
 
 
 def _lixi_catalogue() -> dict:
@@ -1447,6 +1466,7 @@ def validate(s: dict) -> None:
     vang.validate(s)   # 💰 journey['vang'] (optional)
     qy.validate(s)   # 🏪 journey['quay'] (optional)
     ab.validate(s)   # ✈️🌏 journey['abroad'] (optional)
+    sch.validate(s)   # 🏫 journey['school'] (optional)
     from . import jail
     jail.validate(s)   # 🚔 journey['jail'] (optional)
     from . import tile_match

@@ -1,0 +1,72 @@
+/* 🏫 Trường học (public/js/v4/school.js): mobile first (390 px), theme tokens only. */
+.sch-body{display:flex;flex-direction:column;gap:12px}
+.sch-tabs{align-self:stretch;margin:0}
+.sch-intro{margin:0;font-size:.92rem;color:var(--ink-2,var(--ink))}
+.sch-title{margin:2px 0 0;font-size:1.08rem}
+.sch-body > .small{margin:0}
+.sch-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.sch-majors{display:flex;flex-direction:column;gap:8px}
+.sch-major{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer;box-shadow:var(--shadow-sm);min-height:64px}
+.sch-major small{display:block;font-size:.8rem;line-height:1.35}
+.sch-major .tag{flex:none}
+.sch-emoji{font-size:1.6rem;line-height:1;flex:none;width:34px;text-align:center}
+.sch-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border:1px solid var(--line);border-radius:var(--radius-lg,18px);background:var(--surface);box-shadow:var(--shadow-sm);min-width:0}
+.sch-card h3{margin:0;font-size:1.02rem}
+.sch-card p{margin:0}
+.sch-card .btn{min-height:42px}
+.sch-now{border-color:var(--accent);background:var(--accent-soft)}
+.sch-eyebrow{margin:0;font-size:.78rem;font-weight:800;letter-spacing:.03em;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.sch-perk{font-size:.86rem;color:var(--ink-2,var(--ink))}
+.sch-why{color:var(--warn);font-size:.9rem}
+.sch-wait{font-size:.9rem;color:var(--ink-2,var(--ink))}
+.sch-note{margin:0;padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:.9rem}
+.sch-note.good{background:var(--good-soft)}
+.sch-sem ul{margin:4px 0 0;padding-left:18px;font-size:.9rem}
+.sch-sem li{margin:2px 0}
+.sch-opts{display:flex;flex-direction:column;gap:8px;align-self:stretch}
+.sch-opts .btn,.sch-tf .btn{width:100%;justify-content:flex-start;text-align:left;min-height:48px;white-space:normal;line-height:1.3}
+.sch-opt.on{opacity:.75}
+.sch-n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:.8rem}
+.sch-tf{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-self:stretch}
+.sch-tf .btn{justify-content:center}
+.sch-row{display:flex;gap:8px;justify-content:space-between;align-self:stretch}
+.sch-class small{margin-left:auto;font-weight:600;color:var(--muted)}
+.sch-q{font-weight:700;font-size:1rem}
+.sch-scene{font-style:italic}
+.sch-num{display:flex;gap:8px;align-self:stretch}
+.sch-num input{flex:1;min-width:0;min-height:48px;padding:8px 12px;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:1.1rem}
+.sch-progress{align-self:stretch;height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.sch-progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.sch-lecture{align-self:stretch;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px dashed var(--line-strong)}
+.sch-lecture ul{margin:6px 0 0;padding-left:18px;font-size:.92rem}
+.sch-lecture li{margin:3px 0}
+.sch-subs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.sch-sub{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.sch-sub.done{background:var(--good-soft)}
+.sch-sub .grow{min-width:0;flex:1 1 180px}
+.sch-sub small{display:block;font-size:.8rem;color:var(--muted)}
+.sch-acts{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.sch-dots{display:inline-flex;gap:4px;vertical-align:middle}
+.sch-dots i{width:9px;height:9px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line-strong)}
+.sch-dots i.on{background:var(--star);border-color:var(--star)}
+.sch-week{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:10px 12px}
+.sch-week summary{cursor:pointer;font-weight:700;min-height:28px}
+.sch-week ul{list-style:none;margin:8px 0 6px;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.86rem}
+.sch-week li{display:grid;grid-template-columns:72px 1fr;gap:8px;padding:4px 6px;border-radius:8px}
+.sch-week li.today{background:var(--accent-soft);font-weight:700}
+.sch-foot{display:flex;justify-content:flex-end}
+.sch-docs{display:flex;flex-direction:column;gap:6px;align-self:stretch}
+.sch-doc{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer}
+.sch-doc input{width:20px;height:20px;flex:none}
+.sch-lines{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px;align-self:stretch}
+.sch-lines li{padding:8px 10px;border-radius:10px;background:var(--surface);animation:sch-in .45s both;animation-delay:calc(var(--i) * .35s)}
+.sch-arrive li{background:var(--good-soft)}
+@keyframes sch-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sch-lines li{animation:none}}
+.sch-review{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;align-self:stretch}
+.sch-review li small{display:block;font-size:.84rem;color:var(--ink-2,var(--ink))}
+.sch-review li.no b{color:var(--warn)}
+.sch-diploma{position:relative;display:flex;flex-direction:column;gap:6px;padding:16px;border:3px double var(--line-strong);border-radius:16px;background:var(--surface);text-align:center;align-items:center}
+.sch-diploma h3{margin:0;font-size:1.02rem}
+.sch-diploma p{margin:0}
+.sch-seal{font-size:2rem}

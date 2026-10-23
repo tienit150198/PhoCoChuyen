@@ -627,7 +627,7 @@ def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: s
         chance = _cert_roll(s, c, career, post, bool(fatal), bool(post.get('reference') and not honest))
         if chance:
             app['chance'] = chance
-            lines.append(_chance_line(chance))
+            lines.append(_chance_line(chance, s, career))
     lucky = bool(chance and chance['hired'])
     if score >= PASS_SCORE or lucky:
         low, high = post['salary']
@@ -635,7 +635,7 @@ def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: s
         job['status'] = 'offer'
         job['offer'] = dict(salary=salary, negotiated=False, score=score, day=c['day'])
         e.metric(c, 'job_offers')
-        cert = _cert_name(chance) if lucky else ''
+        cert = _cert_name(chance, s, career) if lucky else ''
         if trial and lucky:
             msg = (f'Kết quả làm thử: {score}/100, chưa đủ {PASS_SCORE}. {_cap(_boss(career, post))} vẫn nhận bạn nhờ {cert}: '
                    f'lương cứng {salary} xu/ngày (thử việc {post["probation_days"]} ngày).')
@@ -685,7 +685,10 @@ def hire_chance(score: int, certified: bool) -> int:
 
 def _cert_roll(s: dict, c: dict, career: str, post: dict, fatal: bool, dishonest: bool) -> dict | None:
     from . import certificates as ct
+    from . import school
     gid = ct.held_for(s, career)
+    if not gid and school.degree_for(s, career):   # 🏫 a degree of a related major counts as the place's certificate
+        gid = ct.group_of(career)
     if not gid:
         return None
     blocked = 'fatal' if fatal else 'reference' if dishonest else None
@@ -695,14 +698,19 @@ def _cert_roll(s: dict, c: dict, career: str, post: dict, fatal: bool, dishonest
     return dict(cert=gid, pct=pct, roll=roll, hired=roll < pct, blocked=blocked)
 
 
-def _cert_name(chance: dict) -> str:
+def _cert_name(chance: dict, s: dict | None = None, career: str | None = None) -> str:
     from . import certificates as ct
+    if s is not None and career and not ct.held_for(s, career):   # 🏫 the roll came from a degree (school.degree_for)
+        from . import school
+        pid = school.degree_for(s, career)
+        if pid:
+            return f'🎓 {school.degree_name(pid)}'
     g = ct.INDEX[chance['cert']]
     return f'{g["emoji"]} {g["name"]}'
 
 
-def _chance_line(chance: dict) -> str:
-    name = _cert_name(chance)
+def _chance_line(chance: dict, s: dict | None = None, career: str | None = None) -> str:
+    name = _cert_name(chance, s, career)
     if chance['blocked'] == 'fatal':
         return f'{name} không bù được một bước làm mất an toàn.'
     if chance['blocked'] == 'reference':

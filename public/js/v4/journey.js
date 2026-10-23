@@ -371,7 +371,7 @@ function homeMain(env){
   // A new neighbour's first day (firstDay; feedback 16/10 "nhiều chữ"): the goal, you and the places. Certificates, the
   // house, the fair, the board, abroad and the stories join from day 2.
   const fresh=firstDay(api.state);
-  const more=fresh?'':`${stickerCard(env)}${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${remoteEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
+  const more=fresh?'':`${stickerCard(env)}${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${remoteEntry(env)}${schoolEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
   return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
@@ -380,6 +380,15 @@ function remoteEntry(env){
   const {api}=env,J=api.state.journey,R=J?.story&&J.remote,n=(R?.shops||[]).filter(x=>!x.here).length;if(!n)return '';
   const line=R.own?`${n} ca đang mở ở nơi khác · khép ngay tại đây`:`${n} ca đang mở ở nơi khác · cần Máy quản lý từ xa`;
   return `<button type="button" class="jr-card ct-entry" data-action="remoteClose"><span class="ct-entry-icon" aria-hidden="true">📲</span><span class="grow"><b>Đóng ca từ xa</b><small>${esc(line)}</small></span>${icon('arrow',16)}</button>`;
+}
+
+/* 🏫 Trường học (v4/school.js, game/school.py): đại học nhiều ngành, du học một học kỳ; one line (the 🎓 entry styles). */
+function schoolEntry(env){
+  const {api}=env,J=api.state.journey,S=J?.school,K=api.content.journey?.school;if(!J?.story||!K)return '';
+  const c=S?.cur,p=c&&(K.majors.find(x=>x.id===c.p)||K.terms.find(x=>x.id===c.p));
+  const line=p?`${p.flag||p.emoji} ${p.flag?p.country:p.name} · đạt ${c.done}/${c.of} môn${c.todo?' · hôm nay có lớp':''}`
+    :S?.deg?.length?`🎓 ${S.deg.length} tấm bằng · học thêm ngành khác?`:`${K.majors.length} ngành đại học, du học ${K.terms.length} nước`;
+  return `<button type="button" class="jr-card ct-entry" data-action="school"><span class="ct-entry-icon" aria-hidden="true">🏫</span><span class="grow"><b>Trường học</b><small>${esc(line)}</small></span>${c?.todo?'<span class="tag green">Vào học</span>':''}${icon('arrow',16)}</button>`;
 }
 
 /* ✈️ Du học, 🌏 Làm việc ở nước ngoài (v4/abroad.js, game/abroad.py): one line, under 🎓 Thi chứng chỉ (its styles). */

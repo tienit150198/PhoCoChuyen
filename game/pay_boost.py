@@ -169,20 +169,28 @@ def _story(s: dict) -> bool:
 
 
 def pcts(s: dict, career: str, t: float | None = None) -> dict:
-    """The parts (%) of the bonus on one earning of `career` now, already clamped: {raise, event, tools, total, cap}."""
+    """The parts (%) of the bonus on one earning of `career` now, already clamped: {raise, event, tools, degree, total,
+    cap}. `degree`: 🎓 a degree of a major (or a term abroad) for this workplace (game/school.py pay_pct): earned in
+    the school, not a bonus of this module, so 🛑 MNL_PAYBOOST_OFF leaves it."""
+    from . import school
     if off():
-        return dict(raise_=0, event=0, tools=0, total=0, cap=CAP_PCT)
+        dg = school.pay_pct(s, career)
+        return dict(raise_=0, event=0, tools=0, degree=dg, total=dg, cap=CAP_PCT)
     from . import x3_week
     r, ev, tl = raise_pct(career), EVENT_PCT if event_on(t) else 0, TOOL_PCTS[min(TOP, tier(s, career))]
+    dg = school.pay_pct(s, career)
     cap = CAP_X3_PCT if x3_week.on(career, t) else CAP_PCT
-    total = min(cap, r + ev + tl)
-    # Clamped from the top: the tools first, then the event (the raise alone never reaches a cap).
-    over = r + ev + tl - total
+    total = min(cap, r + ev + tl + dg)
+    # Clamped from the top: the tools first, then the event, then the degree (the raise alone never reaches a cap).
+    over = r + ev + tl + dg - total
     cut = min(tl, over)
     tl -= cut
     over -= cut
-    ev -= min(ev, over)
-    return dict(raise_=r, event=ev, tools=tl, total=r + ev + tl, cap=cap)
+    cut = min(ev, over)
+    ev -= cut
+    over -= cut
+    dg -= min(dg, over)
+    return dict(raise_=r, event=ev, tools=tl, degree=dg, total=r + ev + tl + dg, cap=cap)
 
 
 def _hash(key: str) -> int:
@@ -211,7 +219,7 @@ def _note(**parts) -> None:
 def on_earning(s: dict, c: dict, base: int, what: str, ref: str | None) -> int:
     """💰 + 🎉 + 🧰 on one earning of the player's own work (tile_match.fund_bonus, not direct): its own row in the
     fund. Returns the xu booked."""
-    if off() or not _story(s) or type(base) is not int or base <= 0:
+    if not _story(s) or type(base) is not int or base <= 0:   # 🛑 off: pcts() keeps only the 🎓 degree part
         return 0
     career = _career_of(s, c)
     if not career:
@@ -224,11 +232,13 @@ def on_earning(s: dict, c: dict, base: int, what: str, ref: str | None) -> int:
         return 0
     ev = min(bonus, base * p['event'] // 100)
     tl = min(bonus - ev, base * p['tools'] // 100)
-    rs = bonus - ev - tl
-    label = f'{PREFIX} +{p["total"]}%' + (' (🎉 Tuần lễ tay nghề)' if p['event'] else '') + f' · {what}'
+    dg = min(bonus - ev - tl, base * p['degree'] // 100)
+    rs = bonus - ev - tl - dg
+    label = (f'{PREFIX} +{p["total"]}%' + (' (🎉 Tuần lễ tay nghề)' if p['event'] else '') + (' (🎓 có bằng)' if p['degree'] else '')
+             + f' · {what}')
     from .engine import money
     money(s, c, bonus, label[:120], ref, category='other_income')
-    _note(base=base, raise_=rs, event=ev, tools=tl, pct=p['total'], ref=ref)
+    _note(base=base, raise_=rs, event=ev, tools=tl, degree=dg, pct=p['total'], ref=ref)
     return bonus
 
 
@@ -283,9 +293,9 @@ def collect(run):
     try:
         state, result = run()
         box = _PARTS.get()
-        if box and any(box.get(k) for k in ('raise_', 'event', 'tools', 'tip', 'streak')):
+        if box and any(box.get(k) for k in ('raise_', 'event', 'tools', 'degree', 'tip', 'streak')):
             out = {('raise' if k == 'raise_' else k): v for k, v in box.items()}
-            extra = sum(box.get(k, 0) for k in ('raise_', 'event', 'tools', 'tip', 'streak'))
+            extra = sum(box.get(k, 0) for k in ('raise_', 'event', 'tools', 'degree', 'tip', 'streak'))
             result = dict(result, payboost=out, message=(result.get('message') or 'Đã hoàn thành.') + f' 💰 +{extra} xu tiền công thêm.')
         return state, result
     finally:
@@ -459,6 +469,7 @@ def career_public(s: dict, c: dict, career: str) -> dict | None:
         t = next((x for x in c.get('tasks', []) if x.get('id') == c['active_task']), None)
     plan = fast_plan(s, c, career, t) if t else None
     out = dict(off=off(), raise_pct=p['raise_'], event_pct=p['event'], tool_pct=p['tools'], total=p['total'], cap=p['cap'],
+               **({'degree_pct': p['degree']} if p['degree'] else {}),   # 🎓 game/school.py
                tier=n, top=TOP, tools=[dict(n=i, name=TOOL_NAMES[i], pct=TOOL_PCTS[i], price=TOOL_PRICES[i]) for i in range(1, TOP + 1)],
                book=has(s, 'book', career), book_price=BOOK_PRICE, tip_chance=TIP_CHANCE, tip_pct=TIP_PCT,
                money=c.get('money', 0))

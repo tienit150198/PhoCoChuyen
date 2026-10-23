@@ -41,7 +41,9 @@ def chapter_lock(s: dict, cid: str, progress: tuple[int, int] | None = None) -> 
     jr = _jr()
     from . import accounting_jobs as aj, gov_rules as gvr
     j = s.get('journey') or {}
-    if not j.get('story') or cid in j.get('unlocked', ()) or aj.opens(s, cid) or gvr.opens(s, cid) or jr.late_opens(s, cid):
+    from . import school
+    if (not j.get('story') or cid in j.get('unlocked', ()) or aj.opens(s, cid) or gvr.opens(s, cid) or jr.late_opens(s, cid)
+            or school.opens(s, cid)):   # 🏫 a degree of a related major opens it early
         return None
     ch = int(j.get('chapter') or 1)
     if cid == gvr.HQ_CAREER:
