@@ -30,6 +30,7 @@ feat/pairs-wings (từ origin/main afb38304 = 2.5.3): 🤝 thêm 7 phụ kiện 
 - 👗 Thời trang, Thay đồ ma-nơ-canh: nút áo / áo khoác / giày không còn bị co méo (class nhóm của nút đổi g-* → cg-*, trùng với hình ma-nơ-canh).
 - 🛠️ Thiết bị tăng tốc (feedback #498): save có nhiều nơi làm việc có nhân viên luôn còn đơn cũ, mua thiết bị báo "Còn đơn cũ đang chốt tiền" mãi; giờ chốt riêng đơn của nơi đó rồi lắp (workplace_business.settle(only=)).
 - 🏦 Giao dịch viên (feedback #495): bước "Tiền quầy phải có" hiện lại sổ giao dịch trong ngày.
+- ♿ Văn phòng phẩm / Căn tin (feedback #497, người chơi khiếm thị): dòng đọc cho trình đọc màn hình (khách cần gì, kết quả giao, khách tiếp theo), focus tự tới bước kế tiếp; thẻ giới thiệu street_kit là region thay vì dialog.
 
 ## Kiểm thử
 - tests/test_wings.py (mới), tests/test_wings_live.py (mới), tests/wings-art.mjs (mới); tests/test_friend_charms.py thêm Bonds (quan hệ), giá và danh sách mới; tests/friend-charms.mjs. tests/wings-art.mjs thêm: nhịp từng kiểu, hạt / tia / vòng theo hạng, SVG tự động (SMIL) và giảm chuyển động, phố cũ và 2.5D vẽ cánh tách rời; tests/isometric-vehicles.mjs có withWings.
