@@ -761,7 +761,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action=="payk_fast":  # ⏩ Làm nhanh: the career's own command for the step, its answer from the task's key
         action,p=pay_boost.resolve_fast(s,c,career,p);fast=True
     plugin_action=bool(mod) and action.startswith(mod.SPEC['prefix'])
-    if action.startswith(("shop_","ac_","cs_")) or action in ("ph_pick","ph_check","ph_deliver","ph_refer","ph_inspect"):
+    # The core careers' prefixes (mother_baby shop_, accounting ac_, customer_care cs_, pharmacy ph_*) need an open shift.
+    # A plugin's own command is gated below by its SPEC (free_actions): the singer's prefix is also cs_ and its cs_intro
+    # is free, so a plugin action never takes the core rule (dispatch is by career, not by prefix alone).
+    if not plugin_action and (action.startswith(("shop_","ac_","cs_")) or action in ("ph_pick","ph_check","ph_deliver","ph_refer","ph_inspect")):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
     if career in dk.CAREERS and action not in CARE_ACTIONS and (action.startswith(("ac_","cs_")) or action in ("ph_pick","ph_check","ph_deliver","ph_refer","ph_inspect","basket_remove")):
         desk_task=next((x for x in c["tasks"] if x["id"]==(p.get("task") or c["active_task"])),None)
