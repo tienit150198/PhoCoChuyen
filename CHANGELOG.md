@@ -1,3 +1,14 @@
+# 2.6.2 — 24/10/2026
+
+🎣 Câu cá (feat/fishing a4168179 + d6966f52; chủ game 24/10). Schema 93 (fish_best, fish_dex, fish_rec: chỉ thêm bảng và index). Có gì mới 2.6.2.
+
+- Hồ câu riêng (Hồ phố, Sông, Bến cảng) có vạch gần/vừa/xa/sâu, 3 quầy: 🎣 bán cần, 🐟 thu mua, 📖 bảng bộ sưu tập (top 3 ngay trên bảng).
+- Giữ để lấy lực quăng (quăng càng xa cá càng to, tầm xa hên xui ±), phao nhấp/rỉa rồi chìm hẳn mới giật (sớm: cá sợ; trễ: nhả mồi), kéo giữ kim trong vùng xanh (đỏ lâu: đứt dây). Chờ cắn 5–15 s cá nhỏ, 15–30 s cá lớn, Cổ đại tới 45 s; chờ lâu thì cá nặng hơn. Server quyết cá, cân nặng, giờ cắn lúc quăng.
+- 122 loài, 7 độ hiếm (Phổ thông 10–150 … Cổ đại 3–10 tr xu). 7 cần: tre 0, trúc 30k, carbon 200k, biển 1,5 tr, vàng 8 tr, bạch kim 20 tr, Long Vương 50 tr (hoàn vốn ≈42–51 giờ câu). 5 mồi. Không giới hạn mỗi ngày.
+- Chợ cá: luôn bán theo giá cá, ~1/4 lần thương lái trả 70–95 %: đồng ý / mặc cả / thôi (lời trả giá giữ cả ngày).
+- 📖 Sổ cá: bóng "???" + gợi ý nơi câu, kỷ lục từng loài, mốc thưởng mỗi độ hiếm. 🐋 Cá lớn nhất (tuần + mọi thời) và 📖 Bộ sưu tập: thưởng tuần 1 tr / 500k / 200k (lb_titles), danh hiệu và khung riêng.
+- Vác cá Hiếm+ đi dạo (live/fish_carry.py kiểm lại), tranh cá treo tường, bể cá ở nhà. Số cá rô/chép/trắm cũ chuyển vào Sổ cá.
+
 # 2.6.1 — 24/10/2026
 
 Chủ game 24/10: "bay thì cho cánh to hơn nha, cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)". Nhánh feat/fly-pose (df12bd96). Không đổi schema. Có gì mới 2.6.1.

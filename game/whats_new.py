@@ -39,6 +39,14 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.2", date="2026-10-24", items=(   # owner 24/10: "phát triển thành bộ sưu tập cá, rồi mua cần câu cá … cá chia nhiều loại … tới huyền thoại, cổ đại", "bảng xếp hạng cá lớn nhất và bộ sưu tập cá", "chợ cá … bị trả giá"
+        dict(emoji='🎣', text="Câu cá: giữ để lấy lực, quăng xa ra cá to, giật đúng lúc rồi kéo cho khéo!", go=dict(action='fishing')),
+        dict(emoji='📖', text="Sổ cá 122 loài, 7 độ hiếm, có cả cá Huyền thoại và Cổ đại", go=dict(action='fishing')),
+        dict(emoji='🛒', text="7 cây cần từ cần tre tới Long Vương, 5 loại mồi; câu cá kiếm xu thật"),
+        dict(emoji='🐟', text="Bán cá ở Quầy thu mua, thương lái hay trả giá: đồng ý, mặc cả hoặc thôi"),
+        dict(emoji='🐋', text="Bảng Cá lớn và Sổ cá trong Xếp hạng, thưởng tuần kèm danh hiệu, khung riêng", go=dict(action='rank')),
+        dict(emoji='💪', text="Vác cá hiếm đi dạo khắp phố; treo tranh cá, thả cá vào bể ở nhà"),
+    )),
     dict(version="2.6.1", date="2026-10-24", items=(   # owner 24/10: "bay thì cho cánh to hơn… cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)"
         dict(emoji='🪽', text="Khi bay, cánh xòe to hơn người, đập cánh nhịp nhàng", go=dict(action='pets', data={'tab': 'shop', 'kind': 'wing'})),
         dict(emoji='🕊️', text="Bay là lơ lửng, không bước chân nữa; ai cũng thấy bạn bay"),
