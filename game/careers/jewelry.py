@@ -561,7 +561,11 @@ SPEC = dict(
               station='Quầy kính, cân tiểu ly và két sắt',
               greeting='Đếm két, kiểm cân, treo bảng giá rồi mới mở cửa. Cân trước mặt khách, giấy tờ rõ ràng.',
               caption='Vàng thật, giá thật, giấy tờ thật', map_label='TIỆM VÀNG NGỌC MÂY'),
-    staff=[('Chú Tư Bạc', 'smith', 'Thợ kim hoàn: đánh bóng, hàn khoen, khắc chữ, coi tủ kính.', 72, 80)], roles={'smith': 'Thợ kim hoàn'},
+    staff=[('Chú Tư Bạc', 'smith', 'Thợ kim hoàn: đánh bóng, hàn khoen, khắc chữ, coi tủ kính.', 72, 80),
+           ('Chị Kim', 'counter', 'Bán hàng: mời khách thử nhẫn, ghi rõ tuổi vàng trên phiếu.', 84, 86),
+           ('Anh Lâm', 'assay', 'Thử tuổi vàng, cân từng ly, đọc số to rõ cho khách xem.', 74, 95),
+           ('Ngân', 'cashier', 'Thu ngân: đếm tiền hai lượt, giữ sổ mua lại.', 80, 92)],
+    roles={'smith': 'Thợ kim hoàn', 'counter': 'Bán hàng – tủ kính', 'assay': 'Thử vàng – cân', 'cashier': 'Thu ngân'},
     tip=1, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK, waste_items=(),
     inventory=dict(items=ITEMS, capacity=80),   # inventory.LINE_MAX: every stocked shelf holds 80 (tests/test_stock_limits.py)
     prices=PRICES,

@@ -335,7 +335,11 @@ SPEC = dict(
               work='Đơn căn tin', station='Quầy căn tin: kệ đồ ăn sáng, tủ nước, khay cơm phần',
               greeting='Rửa tay, đeo găng, hỏi dị ứng. Giao kịp trước khi trống đánh, bán đúng giá niêm yết.',
               caption='Học trò no bụng, phụ huynh yên tâm', map_label='CĂN TIN TRƯỜNG'),
-    staff=[('Cô Sáu Mận', 'cook', 'Bếp chính: nấu cơm trưa, lưu mẫu thức ăn, dặn dò học trò.', 70, 80)], roles={'cook': 'Bếp căn tin'},
+    staff=[('Cô Sáu Mận', 'cook', 'Bếp chính: nấu cơm trưa, lưu mẫu thức ăn, dặn dò học trò.', 70, 80),
+           ('Chị Bảy', 'prep', 'Nhặt rau, rửa ba nước, thớt sống thớt chín để riêng.', 80, 88),
+           ('Cô Hiền', 'serve', 'Chia phần đều tay, nhớ em nào dị ứng tôm.', 84, 86),
+           ('Chú Năm', 'wash', 'Rửa khay, tráng nước sôi, lau sàn trước giờ ra chơi.', 78, 90)],
+    roles={'cook': 'Bếp căn tin', 'prep': 'Sơ chế', 'serve': 'Chia cơm – thu tiền', 'wash': 'Rửa khay – vệ sinh'},
     tip=0, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK, waste_items=(),
     inventory=dict(items=ITEMS, capacity=80),   # inventory.LINE_MAX: every stocked shelf holds 80 (tests/test_stock_limits.py)
     prices={},   # the school's approved board: fixed list prices, never tuned

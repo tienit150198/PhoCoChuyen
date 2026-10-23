@@ -572,6 +572,38 @@ class StaffIncidentRateTests(unittest.TestCase):
             for h in hits:self.assertTrue(all(b-a>=ops.STAFF_INCIDENT_GAP for a,b in zip(h,h[1:])),h)
 
 
+class StaffCandidateBoardTests(unittest.TestCase):
+    """Feedback #510: văn phòng phẩm / đại lý xe listed one candidate, so a Tiệm sân vườn (4 slots) could only ever
+    hold one person ("Các ứng viên của nghề này đều đã gia nhập đội."). Every career's board fills its largest premises."""
+    def test_every_career_has_a_candidate_for_every_slot(self):
+        most=max(p['staff_cap'] for p in ops.PROPERTIES)
+        self.assertEqual(most,4)
+        for cid in ops.CAREERS:
+            people=[x for x in ops.CANDIDATES if x['career']==cid]
+            self.assertGreaterEqual(len(people),most,cid)
+            self.assertEqual([x['id'] for x in people],[f'{cid}-staff-{n}' for n in range(1,len(people)+1)],cid)
+            self.assertEqual(len({x['name'] for x in people}),len(people),cid)
+            for x in people:
+                self.assertIn(x['role'],ops.ROLES[cid],(cid,x['name']))
+                self.assertTrue(x['bio'] and ops.role_name(cid,x['role']),(cid,x['name']))
+                self.assertLess(x['avatar'],4,(cid,x['name']))   # the board's four portrait colours
+    def test_existing_hires_keep_their_ids(self):
+        for sid,name in (('stationery-staff-1','Chú Hai Bút'),('car_dealer-staff-1','Tú'),('moto-staff-1','Tèo'),
+                         ('canteen-staff-1','Cô Sáu Mận'),('jewelry-staff-1','Chú Tư Bạc'),('kol-staff-1','Bin'),
+                         ('laundry-staff-1','Nhàn'),('restore-staff-1','Lụa'),('tuning-staff-1','Mi Lốp')):
+            self.assertEqual(ops.CANDIDATE_INDEX[sid]['name'],name)
+    def test_full_team_in_the_garden_shop(self):
+        for cid in ('stationery','car_dealer'):
+            with self.subTest(cid):
+                for target in ('game.workplace_business.refresh','game.workplace_business.settle'):
+                    mocked=patch(target,return_value=False);mocked.start();self.addCleanup(mocked.stop)
+                j=Journey(cid);c=j.c
+                c['ops']['property']['tier']='garden';c['money']+=500;c['ops']['finance']['opening_balance']+=500
+                for n in range(1,5):j.act('ops_hire',candidate=f'{cid}-staff-{n}',confirm=True)
+                self.assertEqual(sum(e['status']=='hired' for e in j.c['ops']['staff']),4)
+                validate_state(j.state)
+
+
 class OperationsSaveTests(unittest.TestCase):
     @staticmethod
     def legacy():

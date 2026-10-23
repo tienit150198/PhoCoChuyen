@@ -285,7 +285,11 @@ SPEC = dict(
               work='Đơn văn phòng phẩm', station='Kệ vở, tủ bút, máy photo và bàn bọc vở',
               greeting='Nghe kỹ khách cần gì, đưa đúng loại vở của lớp, đếm lại trước mặt khách.',
               caption='Đồ dùng đủ, đầu năm học vui', map_label='VĂN PHÒNG PHẨM BÚT MÂY'),
-    staff=[('Chú Hai Bút', 'clerk', 'Chủ tiệm: coi máy photo, bọc vở, nhớ danh sách đồ dùng từng lớp.', 70, 80)], roles={'clerk': 'Bán hàng văn phòng phẩm'},
+    staff=[('Chú Hai Bút', 'clerk', 'Chủ tiệm: coi máy photo, bọc vở, nhớ danh sách đồ dùng từng lớp.', 70, 80),
+           ('Mai', 'cashier', 'Thu ngân: tính nhẩm nhanh, thối tiền đếm lại trước mặt khách.', 84, 86),
+           ('Tâm', 'shelf', 'Sắp kệ theo từng lớp, đếm vở tồn cuối ngày.', 78, 90),
+           ('Anh Lợi', 'print', 'Coi máy photo, in màu, ép plastic, gỡ kẹt giấy nhẹ tay.', 76, 92)],
+    roles={'clerk': 'Bán hàng văn phòng phẩm', 'cashier': 'Thu ngân', 'shelf': 'Sắp kệ – kiểm hàng', 'print': 'In ấn – photo'},
     tip=0, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK, waste_items=(),
     inventory=dict(items=ITEMS, capacity=80),   # inventory.LINE_MAX: every stocked shelf holds 80 (tests/test_stock_limits.py)
     prices={},   # the cover prices and the posted service board: fixed, never tuned

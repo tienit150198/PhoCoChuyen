@@ -586,7 +586,11 @@ SPEC = dict(
               station='Showroom, bàn giấy tờ và xưởng bảo dưỡng',
               greeting='Nhận lô xe, kiểm năm bước, treo bảng giá rồi mới mở cửa. Tư vấn đúng nhu cầu, nói thật thông số.',
               caption='Xe đúng người, giấy đủ tờ', map_label='ĐẠI LÝ XE PHỐ MÂY'),
-    staff=[('Tú', 'tech', 'Kỹ thuật viên: kiểm xe mới, bảo dưỡng, lau xe trước khi giao.', 72, 80)], roles={'tech': 'Kỹ thuật viên'},
+    staff=[('Tú', 'tech', 'Kỹ thuật viên: kiểm xe mới, bảo dưỡng, lau xe trước khi giao.', 72, 80),
+           ('Chị Diễm', 'sales', 'Tư vấn bán xe: so bảng giá, tính trả góp rõ ràng, không ép khách.', 84, 86),
+           ('Anh Hậu', 'paper', 'Lo trước bạ, đăng ký, biển số; mỗi xe một bìa hồ sơ.', 74, 94),
+           ('Phong', 'delivery', 'Đưa khách lái thử, chạy xe đi đăng kiểm, giao xe đúng hẹn.', 86, 82)],
+    roles={'tech': 'Kỹ thuật viên', 'sales': 'Tư vấn bán xe', 'paper': 'Thủ tục giấy tờ', 'delivery': 'Lái thử – giao xe'},
     tip=1, physical=PHYSICAL, free_actions=FREE, no_tick=NO_TICK, waste_items=(),
     inventory=dict(items=ITEMS, capacity=80),   # inventory.LINE_MAX: every stocked shelf holds 80 (tests/test_stock_limits.py)
     prices=PRICES,
