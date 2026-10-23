@@ -17,6 +17,7 @@ const BOARDS={
   online:['Online',[['🦉','Cú đêm của phố'],['🌙','Thức cùng ánh trăng'],['🏮','Hội cú đêm']]],
   pets:['Thú cưng',[['🐉','Vua thú cưng của phố'],['🦄','Sen cưng siêu cấp'],['🐾','Hội sen yêu bé']]],
   island:['Đảo đẹp',[['🏝️','Đảo đẹp nhất phố'],['🌴','Chủ đảo mộng mơ'],['⛱️','Hội chủ đảo xinh']]],   // 🏝️ game/island_lb.py (19/10)
+  wings:['Cánh',[['🪽','Đôi cánh số 1 phố'],['🌟','Cánh thần thoại'],['🕊️','Hội chắp cánh']]],   // 🪽 game/wing_lb.py (23/10)
   arena:['Đấu trường',[['🏆','Vua đấu trường tuần'],['⚔️','Cao thủ đấu trường'],['🛡️','Chiến binh đấu trường']]],
   pet_cup:['Giải pet',[['👑','Vô địch giải pet tuần'],['🥈','Top 3 giải pet tuần'],['🎗️','Top 10 giải pet tuần']]],
   pet_war:['Bang chiến',[['🏆','Bang vô địch đấu pet'],['🥈','Á quân bang chiến pet']]],

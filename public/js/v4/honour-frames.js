@@ -11,7 +11,7 @@ import {FRAMES} from './honour-frames-data.js';
 const DIR='/icons/frames/';
 // game/lb_titles.py BOARD_TITLES: [top 1, top 2–3, top 4–10]
 const TIERS={all:['25','26','27'],titles:['36','35','34'],certs:['31','32','33'],wealth:['28','30','29'],collection:['60','59','59'],
-  online:['73','71','69'],pets:['57','02','19'],island:['68','66','62'],
+  online:['73','71','69'],pets:['57','02','19'],island:['68','66','62'],wings:['36','57','27'],   // 🪽 Cánh (23/10): the crowned laurels, the starry frame, the winged TOP 10
   arena:['65','20','57'],pet_cup:['25','26','27'],pet_war:['25','20'],
   race_drag_bike:['65','26'],race_drag_car:['65','26'],race_deo_bike:['65','26'],race_deo_car:['65','26']};   // 🏁 Đường đua Bến Mây (22/10): the stadium, the laurels   // ⚔️ 🏟️ 🛡️ the pet arena's boards (19/10): the stadium, the corgi, the starry pets; the laurels; the war's two tiers   // 🏝️ Đảo đẹp (19/10): Chúa đảo's frame, the island bridge, the park   // 🐾 Thú cưng (19/10): the starry cat-and-dog frame, the orange cat, the bunny   // 🦉 Cú đêm của phố (owner's own board 18/10), the night-lantern frame, the sunset frame
 // 🏆 Trùm <nghề>: the workplace's own art; the others wear "Top tổng hợp nghề" with the workplace's icon

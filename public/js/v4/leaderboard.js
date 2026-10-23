@@ -7,7 +7,7 @@
  * Cài đặt → Dữ liệu (lbPrivacyRow). Actions: rank (open), rankWork (open on the workplace on screen, F#294), lbKind, lbBoard, lbMore, lbVisible, lbRetry, lbName. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
-import {myPortrait} from './look.js';
+import {myPortrait,wingIcon,WING_TIERS,WING_TIER_COLOR} from './look.js';   // 🪽 the Cánh board draws each best wing
 import {live} from './live.js';
 import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the top titles' frames and colours (owner 18/10)
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
@@ -19,7 +19,7 @@ const stars=v=>v?`${Number(v).toLocaleString('vi-VN',{minimumFractionDigits:1,ma
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const MEDALS=['🥇','🥈','🥉'];
-const OWN=['certs','titles','wealth','collection','online','pets','island'];   // boards with their own tab
+const OWN=['certs','titles','wealth','collection','online','pets','island','wings'];   // boards with their own tab
 /** 🦉 "12h05" / "45 phút": the online board's time (game/online_board.py, seconds). */
 const dur=s=>{const m=Math.floor((s||0)/60),h=Math.floor(m/60);return h?`${fmt(h)}h${String(m%60).padStart(2,'0')}`:`${m} phút`;};
 
@@ -62,6 +62,7 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
+  if(board==='wings')return 'Điểm cánh = tổng mọi đôi đang có: D 1 · C 3 · B 9 · A 27 · S 81 · SS 243 · SSS 729 · HT 2187. Bằng điểm: hạng cao hơn, rồi ai đạt trước.';
   if(board==='island')return 'Hòn đảo đẹp nhất của mỗi người: mỗi cấp công trình đã xây xong cộng điểm (lâu đài nhiều nhất), thêm điểm cho mỗi loại công trình khác nhau. Đang xây chưa tính. Chỉ có danh hiệu, không có tiền.';
   if(board==='pets')return 'Mỗi người góp bé mạnh nhất của mình, xếp theo 💪 lực chiến: hạng, chỉ số, huấn luyện và linh kiện. Bằng nhau thì ai đạt trước đứng trên.';
   if(board==='online')return 'Thời gian chơi trong tuần này, từ thứ Hai đến Chủ nhật (giờ Việt Nam). Chỉ tính lúc đang chơi: rời tay quá 10 phút thì dừng đếm. Thứ Hai bắt đầu lại từ đầu, và giờ chơi đầu tiên của tuần chưa tính lên bảng.';
@@ -74,6 +75,7 @@ function rule(api,board){
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
+  if(board==='wings')return wingCounts(r);
   if(board==='island')return [r.island?`${r.island.emoji} ${r.island.name}`:'',r.built?`🏗️ ${fmt(r.built)} công trình`:''].filter(Boolean).join(' · ');
   if(board==='pets')return petLine(r);
   if(board==='online')return 'Thời gian chơi tuần này';
@@ -85,6 +87,7 @@ function statsLine(board,r){
   return [`Cấp ${fmt(r.level)}`,`${fmt(r.days)} ngày`,stars(r.stars)].filter(Boolean).join(' · ');
 }
 function scoreBox(board,r){
+  if(board==='wings')return `<span class="lb-score"><b>🪽 ${fmt(r.score)}</b><small>điểm cánh</small></span>`;
   if(board==='island')return `<span class="lb-score"><b>✨ ${fmt(r.score)}</b><small>điểm đẹp</small></span>`;
   if(board==='pets')return `<span class="lb-score"><b>💪 ${fmt(r.score)}</b><small>lực chiến</small></span>`;
   if(board==='online')return `<span class="lb-score"><b>${dur(r.score)}</b><small>online</small></span>`;
@@ -125,6 +128,37 @@ function petRow(r){
     <span class="lb-pet" aria-hidden="true">${petArt(r,52)}</span>
     <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.pn||'Bé cưng')}</b> ${petTag(r)}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>Sen: <span data-no-translate>${esc(r.name)}</span>${r.guest?' · khách':''}${breedName(r)?` · ${esc(breedName(r))}`:''}</small></span>
     ${scoreBox('pets',r)}</li>`;
+}
+/* ---- 🪽 Cánh (game/wing_lb.py): each player's điểm cánh, the best wing drawn in its tier's colour, a podium for the top 3 ---- */
+const WT=r=>Math.max(0,Math.min(WING_TIERS.length-1,Number(r)||0));
+const wtShort=r=>WT(r)===WING_TIERS.length-1?'HT':WING_TIERS[WT(r)];
+const wingStyle=k=>(lbApi?.content?.journey?.wardrobe?.wings?.styles||[]).find(x=>x.id===k)?.name||'';
+/** "HT×1 · SSS×2 · SS×3": the three highest tiers held. */
+function wingCounts(r){const n=Array.isArray(r.n)?r.n:[];
+  return n.map((c,i)=>[i,c]).filter(([,c])=>c>0).reverse().slice(0,3).map(([i,c])=>`${wtShort(i)}×${fmt(c)}`).join(' · ');}
+const wingTag=r=>r.wg?`<i class="lb-wt${WT(r.wg.r)===WING_TIERS.length-1?' top':''}" style="--wt:${WING_TIER_COLOR[WT(r.wg.r)]}">${WT(r.wg.r)===WING_TIERS.length-1?'🌟 HT':wtShort(r.wg.r)}</i>`:'';
+function wingArt(r,size){const label=`${wingStyle(r.wg?.k)||'Cánh'} ${wtShort(r.wg?.r)}`;
+  return wingIcon(r.wg,size,label)||'<span class="lb-pet-none" aria-hidden="true">🪽</span>';}
+const WPOD=[['🥇','gold','👑'],['🥈','silver','✨'],['🥉','bronze','✨']];
+function wingPodium(rows){
+  const top=rows.slice(0,3);if(!top.length)return '';
+  const card=r=>{const [medal,tone,crown]=WPOD[r.rank-1],fr=r.title?hfLogo('wings',r.rank):'';
+    return `<li class="lb-pod-card ${tone}${r.me?' me':''}" aria-label="Hạng ${r.rank}"><span class="lb-pod-crown" aria-hidden="true">${crown}</span>
+      <span class="lb-pod-ring" style="--wt:${WING_TIER_COLOR[WT(r.wg?.r)]}"><span class="lb-pod-sparks" aria-hidden="true"><i>✦</i><i>✧</i><i>✦</i><i>✧</i></span>${wingArt(r,r.rank===1?112:88)}</span>
+      <span class="lb-pod-medal" aria-hidden="true">${fr||medal}</span>
+      <b class="lb-pod-pet" data-no-translate>${esc(r.name)}</b><span class="lb-pod-tag">${wingTag(r)}${r.me?' <span class="tag blue">Bạn</span>':''}</span>
+      <small class="lb-pod-owner">${esc(wingCounts(r))}</small>
+      ${r.title?`<span class="lb-held hn-chip${chipClass(`lb_wings_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
+      <span class="lb-pod-power">🪽 ${fmt(r.score)}</span></li>`;};
+  const order=[top[1],top[0],top[2]].filter(Boolean);
+  return `<div class="lb-podwrap lb-wpod"><span class="lb-pod-ribbon">🪽 Top đôi cánh 🪽</span><ol class="lb-pod" aria-label="Top 3 cánh">${order.map(card).join('')}</ol></div>`;
+}
+function wingRow(r){
+  const fr=r.title?hfLogo('wings',r.rank):'';
+  return `<li class="lb-row lb-prow lb-wrow${r.me?' me':''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||`<b>${r.rank}</b>`}</span>
+    <span class="lb-pet lb-wing" style="--wt:${WING_TIER_COLOR[WT(r.wg?.r)]}">${wingArt(r,52)}</span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b> ${wingTag(r)}${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_wings_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(wingCounts(r))}</small></span>
+    ${scoreBox('wings',r)}</li>`;
 }
 function rowHTML(board,r){
   const medal=r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:'';
@@ -169,6 +203,7 @@ function meCard(env,board,d){
       :board==='collection'?'Nhận món độc bản đầu tiên từ nhà đấu giá để lên bảng.'
       :board==='online'?onlineWait(me)
       :board==='pets'?'Bạn chưa nuôi bé nào. Nhận nuôi một bé ở 🐾 Thú cưng để có tên trên bảng.'
+      :board==='wings'?'Bạn chưa có đôi cánh nào. Mua cánh ở 🛍️ Cửa hàng để có tên trên bảng.'
       :board==='island'?'Mua một hòn đảo rồi xây nhà, hồ bơi, công viên… trên đó để có tên trên bảng.'
       :board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
       :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
@@ -186,6 +221,7 @@ function meCard(env,board,d){
 
 function emptyText(api,board){
   if(board==='island')return ['Chưa đảo nào lên bảng','Xây công trình đầu tiên trên đảo riêng để mở hàng nhé.'];
+  if(board==='wings')return ['Chưa ai có cánh','Mua đôi cánh đầu tiên để mở hàng nhé.'];
   if(board==='pets')return ['Chưa có bé nào lên bảng','Nhận nuôi một bé, chăm, huấn luyện và ghép lên hạng để có tên nhé.'];
   if(board==='online')return ['Tuần mới vừa bắt đầu','Chưa ai lên bảng tuần này. Chơi một lúc là có tên nhé.'];
   if(board==='collection')return ['Chưa có nhà sưu tầm','Nhận món đấu giá đầu tiên để có điểm sưu tầm.'];
@@ -231,11 +267,11 @@ function wedBody(env){
   return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Dự một đám cưới để có tên.</p></div>`)+last;
 }
 
-/** Seven board kinds (🐾 Thú cưng since 19/10), eight with 💍 Khách mời; two readable columns on a phone. */
+/** Nine board kinds (🐾 Thú cưng since 19/10, 🪽 Cánh since 23/10), ten with 💍 Khách mời; two readable columns on a phone. */
 function kindsHTML(tab){
-  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾'),tab('island','Đảo đẹp','🏝️')];
+  const tabs=[tab('exp','Trải nghiệm','🏆'),tab('titles','Danh hiệu','🎖️'),tab('certs','Chứng chỉ','📜'),tab('wealth','Tài phú','💰'),tab('collection','Sưu tầm','💎'),tab('online','Online','🦉'),tab('pets','Thú cưng','🐾'),tab('wings','Cánh','🪽'),tab('island','Đảo đẹp','🏝️')];
   if(wedOn())tabs.push(tab('wed','Khách mời','💍'));
-  return `<div class="segmented lb-kinds ${['seven','eight','nine'][tabs.length-7]||'nine'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
+  return `<div class="segmented lb-kinds ${['seven','eight','nine','ten'][tabs.length-7]||'ten'}" role="tablist" aria-label="Loại bảng">${tabs.join('')}</div>`;
 }
 
 export function leaderboardView(env){
@@ -258,6 +294,7 @@ export function leaderboardView(env){
     const [title,text]=emptyText(api,board);
     if(board==='pets')ensurePetCss();
     const list=board==='pets'?(d.rows.length?podium(d.rows)+(d.rows.length>3?`<ol class="lb-list lb-plist" aria-label="Top ${d.rows.length}">${d.rows.slice(3).map(petRow).join('')}</ol>`:''):'')
+      :board==='wings'?(d.rows.length?wingPodium(d.rows)+(d.rows.length>3?`<ol class="lb-list lb-plist lb-wlist" aria-label="Top ${d.rows.length}">${d.rows.slice(3).map(wingRow).join('')}</ol>`:''):'')
       :d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`:'';
     body=weeklyHTML(d.weekly,board)+meCard(env,board,d)+(list||`<div class="empty lb-empty">${icon('award',30)}<h3>${esc(title)}</h3><p class="muted small">${esc(text)}</p></div>`);
   }

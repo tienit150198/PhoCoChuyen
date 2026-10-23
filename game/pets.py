@@ -777,6 +777,8 @@ def command_commit(db, sid: str, action: str, after: dict, result=None) -> None:
     if action.startswith('jr_pet_wing_'):
         from . import wings
         wings.commit(db, sid, after)   # 🪽 the worn wing others see (wing_worn, live/wings.py)
+    from . import wing_lb
+    wing_lb.commit(db, sid, after, action.startswith('jr_pet_wing_'))   # 🪽 Xếp hạng cánh (wing_board): any pet command heals it
     from . import pet_arena
     pet_arena.on_pet_commit(db, sid, after)   # ⚔️ the arena lineup's snapshot follows the pets (a player who set one)
     from . import forge_news

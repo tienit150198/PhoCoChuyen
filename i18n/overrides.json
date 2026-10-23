@@ -44404,7 +44404,19 @@
     "Đề nghị ghi nhận Gia Bảo, đính kèm kết quả đã kiểm; giúp Khánh Linh và Đức Anh hoàn thiện hồ sơ.": "Recommend Gia Bảo with verified results; help Khánh Linh and Đức Anh complete their evidence.",
     "Ghi nhận dựa trên hồ sơ: Gia Bảo đã đưa đúng loại vở cho từng lớp, bọc dán đủ số quyển và photo đủ bộ. Đồng nghiệp cũng được hướng dẫn cải thiện. Đây là đề nghị trong tổ NPC, không tự cấp chức vụ.": "Recognition follows the evidence: Gia Bảo gave every grade the right notebooks, covered and labelled every one, and printed every set. Colleagues also receive guidance. This NPC-team recommendation does not grant a job rank.",
     "Chú Hai Bút · chủ tiệm văn phòng phẩm Bút Mây": "Hai Bút · owner of the Bút Mây stationery shop",
-    "đúng loại vở theo lớp, đủ từng dòng danh sách, đếm trước mặt khách và bán đúng giá bìa": "the right notebook for the grade, every line of the list, counted in front of the customer, at the cover price"
+    "đúng loại vở theo lớp, đủ từng dòng danh sách, đếm trước mặt khách và bán đúng giá bìa": "the right notebook for the grade, every line of the list, counted in front of the customer, at the cover price",
+    "Cánh": "Wings",
+    "Điểm cánh = tổng mọi đôi đang có: D 1 · C 3 · B 9 · A 27 · S 81 · SS 243 · SSS 729 · HT 2187. Bằng điểm: hạng cao hơn, rồi ai đạt trước.": "Wing points = every pair you own: D 1 · C 3 · B 9 · A 27 · S 81 · SS 243 · SSS 729 · HT 2187. Ties: higher tier, then who got there first.",
+    "điểm cánh": "wing points",
+    "Bạn chưa có đôi cánh nào. Mua cánh ở 🛍️ Cửa hàng để có tên trên bảng.": "You have no wings yet. Buy a pair at the 🛍️ Shop to get on the board.",
+    "Chưa ai có cánh": "Nobody has wings yet",
+    "Mua đôi cánh đầu tiên để mở hàng nhé.": "Buy the first pair to open the board.",
+    "Top đôi cánh": "Top wings",
+    "Top 3 cánh": "Top 3 wings",
+    "Xếp hạng cánh": "Wing ranking",
+    "Đôi cánh số 1 phố": "No. 1 Wings in Town",
+    "Cánh thần thoại": "Mythic Wings",
+    "Hội chắp cánh": "Winged Club"
   },
   "patterns": {
     "📲 Đã khép ca từ xa ở $1.": "📲 Closed the shift at $1 remotely.",
