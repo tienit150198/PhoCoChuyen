@@ -24,7 +24,7 @@ const MOOD={vui:'😊',on:'🙂',buon:'🥺'};
 const S={dlg:null,env:null,tab:'home',sub:'',pet:'',kind:'dog',breed:'',coat:0,item:'',food:'hat',toy:'',clean:'bath',vet:'kham',slot:'head',
   shelter:-1,nick:'',donate:0,pose:'happy',frame:'nang',board:null,boardAt:0,busy:false,flash:null,listening:false,
   stat:'spd',gslot:'giay',fz:[],fzMix:false,fzBreed:'',gv:'bag',g:'',gbslot:'giay',gmodel:0,grank:0,bkind:'week',ff:{k:'',r:'',at:''},
-  wk:'',wrank:0,wslot:'',wsel:'',wfslot:'',bq:1,wascope:'all',watop:6,wabud:0,wres:null};
+  wk:'',wrank:0,wslot:'',wsel:'',wfslot:'',bq:1,wascope:'all',watop:6,wabud:0,wres:null,host:null,part:null};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().pets;
@@ -97,7 +97,7 @@ function dialog(){
   S.dlg=d;return d;
 }
 export async function openPets(env,tab,kind){
-  S.env=env;
+  S.env=env;S.host=null;S.part=null;   // the dialog again, not 🛍️ Cửa hàng / ⚒️ Cường hóa's shelves (petEmbedHTML)
   if(!S.listening){
     S.listening=true;
     let seen='';env.api.addEventListener('state',()=>{if(!S.dlg?.open)return;const key=JSON.stringify([J().wallet,J().pets,J().bank?.balance]);if(key===seen)return;seen=key;if(!S.busy)render();});   // closed: no work per command
@@ -127,7 +127,7 @@ async function send(action,payload={}){
   try{
     const r=await api.command(action,payload);
     S.flash={text:[r.message,...(r.effects||[]).filter(Boolean)].filter(Boolean).join(' '),kind:'good'};
-    const f=S.flash;setTimeout(()=>{if(S.flash===f&&!S.busy){S.flash=null;if(S.dlg?.open)render();}},6000);   // good news fades (the bank's way)
+    const f=S.flash;setTimeout(()=>{if(S.flash===f&&!S.busy){S.flash=null;if(S.dlg?.open||S.host)render();}},6000);   // good news fades (the bank's way)
     return r;
   }catch(e){S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
   finally{S.busy=false;render();}
@@ -331,7 +331,10 @@ async function onClick(op,data){
     case'gv':S.gv=data.v;S.g='';S.bq=1;render();top();return;
     case'gsel':S.g=S.g===data.id?'':data.id;render();return;
     case'gpick':{const l=(X()?.gear||[]).filter(x=>x.s===data.slot&&x.r===Number(data.r)).sort((a,b)=>b.lv-a.lv||(a.on?1:0)-(b.on?1:0));if(l[0]){S.g=l[0].id;render();}return;}
-    case'gshop':S.gv='buy';S.gbslot=data.slot;S.grank=Number(data.r)||0;S.gmodel=0;S.g='';S.bq=Number(data.n)||1;   // the mates still missingrender();top();return;
+    case'gshop':S.gv='buy';S.gbslot=data.slot;S.grank=Number(data.r)||0;S.gmodel=0;S.g='';S.bq=Number(data.n)||1;   // the mates still missing
+      if(S.host){S.part='gear';S.env.act?.('jrAccShop',{tab:'pgear'});return;}   // ⚒️ Cường hóa → 🛍️ Cửa hàng's 🧰 shelf, this pick kept
+      render();top();return;
+    case'quick':return quick();
     case'gbslot':S.gbslot=data.slot;S.gmodel=0;render();return;
     case'gmodel':S.gmodel=Number(data.m)||0;render();return;
     case'grank':S.grank=Number(data.r)||0;render();return;
@@ -396,8 +399,9 @@ async function go(){
 }
 
 /* ---- rendering ---- */
-const top=()=>S.dlg?.querySelector('.pt-body')?.scrollTo?.(0,0);
+const top=()=>S.host?document.querySelector('#sheet .pt-embed')?.scrollIntoView?.({block:'start'}):S.dlg?.querySelector('.pt-body')?.scrollTo?.(0,0);
 function render(){
+  if(S.host){if(document.querySelector('#sheet .pt-embed'))S.env?.renderSheet?.(false);return;}   // 🛍️ ⚒️ inside the sheet: the sheet redraws
   if(!S.dlg)return;
   const root=S.dlg.querySelector('.pt-root'),html=page();
   S.dlg.setAttribute('aria-busy',String(S.busy));
@@ -417,6 +421,96 @@ function page(){
   const bar=label?`<footer class="pt-bar">${w?`<small class="pt-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big pt-main" data-pt="go"${S.busy||w||why===' '?' disabled':''}>${esc(label)}</button></footer>`:'';
   const flash=`<p class="pt-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
   return head+tabs+`<div class="sheet-body pt-body">${flash}${S.sub||S.tab==='board'?'':myth(c)}${inner}</div>`+bar;
+}
+/* 🛍️ Cửa hàng and ⚒️ Cường hóa (v4/acc-shop.js, owner 23/10 "shop riêng", "cửa hàng hoặc shop đều là 1", "Cường hóa …
+ * có cường hóa nhanh"): this dialog's shelves drawn inside the journey sheet, the same views, picks and jr_pet_* commands (S is
+ * shared; S.host 'sheet' while they are there: render() redraws the sheet, clicks come in by bindSheet). The dialog keeps
+ * every tab. `part`: buy (🐶🐱 a pet) | wear (👗) | wing (🪽) | toy (🎾) | gear (🧰 buy) in the shop; lab (🧬 ghép thú) |
+ * ward (👗 ghép đồ) | gearup (🧰 cường hóa, lên hạng) in Cường hóa. */
+let bound=false;
+function bindSheet(){
+  if(bound||typeof document==='undefined')return;bound=true;
+  document.addEventListener('click',e=>{
+    const el=e.target.closest?.('#sheet .pt-embed [data-pt]');if(!el||el.disabled||!S.host)return;
+    e.preventDefault();onClick(el.dataset.pt,el.dataset);
+  });
+  document.addEventListener('input',e=>{if(S.host&&e.target.name==='nick'&&e.target.closest?.('#sheet .pt-embed'))S.nick=e.target.value;});
+  document.addEventListener('change',e=>{const el=e.target.closest?.('#sheet .pt-embed [data-pt-sel]');if(!el||!S.host)return;   // 🤖 Ghép tự động's pickers
+    if(el.dataset.ptSel==='wascope')S.wascope=el.value||'all';else if(el.dataset.ptSel==='watop')S.watop=Number(el.value)||6;else return;S.wabud=0;render();});
+}
+const PART={buy:['shop'],wear:['shop','wear'],wing:['shop','wing'],toy:['shop','toy'],gear:['gear','','buy'],lab:['lab'],ward:['ward'],gearup:['gear','','bag']};
+export function petEmbedHTML(env,part){
+  S.env=env;S.host='sheet';bindSheet();
+  const v=V(),c=CAT(),want=PART[part]||PART.buy;
+  if(!v||!c)return '<p class="pt-empty">⏳</p>';
+  if(!v.story)return '<p class="pt-empty">Chỉ có trong hành trình.</p>';
+  if(S.part!==part){S.part=part;S.flash=null;S.wk='';S.wslot='';S.item='';S.breed='';S.g='';S.wsel='';S.fz=[];S.bq=1;S.sub='';S.wres=null;}   // another shelf: a fresh pick
+  // a purchase may have moved them (go: tab home, gear bag); 🤖 Ghép tự động is the one sub view kept (Đồ thú)
+  S.tab=want[0];if(part==='buy'&&!['dog','cat'].includes(S.kind))S.kind='dog';else if(want[1])S.kind=want[1];if(want[2])S.gv=want[2];if(part!=='ward'||S.sub!=='wauto')S.sub='';
+  if(['wear','wing','ward'].includes(part)?!WARD():['gear','gearup','lab'].includes(part)&&!TT())return '<p class="pt-empty">⏳</p>';
+  // no pet yet: what is bought waits in the pet's wardrobe / bag; the way to a pet first (home()'s words)
+  const none=part!=='buy'&&!allPets().length?`<section class="pt-card pt-center pt-none"><h3>Chưa có bé nào</h3><p class="pt-muted">Góc Chân Nhỏ có bé chờ nhà mới.${['lab','gearup'].includes(part)?'':' Đồ mua trước được cất sẵn, có bé rồi mặc cho bé.'}</p>
+    <div class="pt-chips pt-center"><button type="button" class="pt-chip on" data-action="jrAccShop" data-tab="pbuy">🐶 Mua bé</button><button type="button" class="pt-chip" data-action="pets" data-tab="adopt">🏠 Nhận nuôi</button></div></section>`:'';
+  const inner=part==='lab'?lab(v,c):part==='ward'?ward(v,c):part==='gear'||part==='gearup'?gear(v,c):shop(v,c);
+  const [label,,why]=main(),w=why&&why.trim();
+  const bar=label?`<footer class="pt-bar">${w?`<small class="pt-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big pt-main" data-pt="go"${S.busy||w||why===' '?' disabled':''}>${esc(label)}</button></footer>`:'';
+  const flash=`<p class="pt-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
+  const back=S.sub?`<div class="pt-chips"><button type="button" class="pt-chip" data-pt="back">↩︎ Quay lại</button></div>`:'';   // the dialog's ← is in its own head
+  return `<div class="pt-root pt-embed" aria-busy="${S.busy}">${flash}${back}${none}${inner}${bar}</div>`;
+}
+/** A way out of the sheet's shelf to the other place: 🛍️ Cửa hàng's shelf (tab) in the sheet, this dialog's tab else. */
+const shopChip=(tab,kind,label)=>S.host?`<button type="button" class="pt-chip" data-action="jrAccShop" data-tab="${tab}">${label}</button>`:chip('tab',{tab:'shop',kind},false,label);
+
+/* ---- ⚡ Cường hóa nhanh (owner 23/10 "mọi thứ đều có cường hóa nhanh"): one tap picks a valid set the way a careful
+ * player would, the usual question shows exactly what goes in and the fee, then ONE enhancement with the usual command.
+ * The odds stay on the server (owner 19/10 "đừng show tỷ lệ ra"). ---- */
+/** 🧬 Three pets of the highest rank that has three: the 👑 main one is the pet walked (or the strongest), never a
+ * legendary; the two others the least needed (in the kennel or at the grandparents' before home, never the one walked,
+ * the weakest first). [main, a, b] ids or null. */
+function quickLab(){
+  if(!TT())return null;
+  const walk=V()?.walk,all=allPets().filter(p=>!fuseWhy(p)),rk=p=>p.legend?6:p.r||0;
+  for(let r=6;r>=0;r--){
+    const g=all.filter(p=>rk(p)===r),mains=g.filter(p=>!p.legend);if(g.length<3||!mains.length)continue;
+    const main=mains.find(p=>p.id===walk)||[...mains].sort((a,b)=>(b.pw||0)-(a.pw||0))[0];
+    const rest=g.filter(p=>p.id!==main.id).sort((a,b)=>(a.id===walk)-(b.id===walk)||(a.legend?1:0)-(b.legend?1:0)||(a.at==='home')-(b.at==='home')||(a.pw||0)-(b.pw||0));
+    return [main.id,rest[0].id,rest[1].id];
+  }
+  return null;
+}
+/** 👗 Three of one piece and rank, below SSS: the highest rank first, three not worn before a set that would undress
+ * a pet (the server takes the ones in the wardrobe first). 'k|r' or ''. */
+function quickWard(){
+  const m=new Map();
+  for(const i of myItems()){if(i.r>=6||!wItem(i.k))continue;const key=`${i.k}|${i.r}`;const o=m.get(key)||{key,r:i.r,n:0,free:0};o.n++;if(!i.on)o.free++;m.set(key,o);}
+  return [...m.values()].filter(o=>o.n>=3).sort((a,b)=>(b.free>=3)-(a.free>=3)||b.r-a.r)[0]?.key||'';
+}
+/** 🧰 A gear that can go up a rank now (+max and two free mates; the worn one first, the highest rank first), else the
+ * one to strengthen (+1): the worn one first, the highest rank, then the highest level. {g, op 'gfuse' | 'gup'} or null. */
+function quickGear(){
+  const t=TT(),bag=X()?.gear||[];if(!t)return null;
+  const best=(a,b)=>(b.on?1:0)-(a.on?1:0)||b.r-a.r||b.lv-a.lv;
+  const up=bag.filter(g=>gearUp(g)?.ok).sort(best)[0];if(up)return {g:up,op:'gfuse'};
+  const st=bag.filter(g=>g.lv<t.gear.lv_max).sort(best)[0];return st?{g:st,op:'gup'}:null;
+}
+/** What ⚡ would do on this tab, in a few words ('' when nothing can go up). */
+function quickLine(){
+  if(S.tab==='lab'){const q=quickLab();if(!q)return '';const ps=q.map(id=>allPets().find(p=>p.id===id)),r=ps[0].legend?6:ps[0].r||0;
+    return `👑 ${ps[0].n} + ${ps[1].n} + ${ps[2].n} → ${r>=6?'🌟 huyền thoại':`hạng ${RNAME(r+1)}`}`;}
+  if(S.tab==='ward'){const key=quickWard();if(!key)return '';const [k,r]=key.split('|'),it=wItem(k);return `3 × ${it.emoji} ${it.name} ${RKS[r]} → hạng ${RKS[Number(r)+1]}`;}
+  if(S.tab==='gear'){const q=quickGear();if(!q)return '';const g=q.g;return q.op==='gfuse'?`${g.emoji} ${g.name} ${g.rank} +${g.lv} → hạng ${gearUp(g).next}`:`✨ ${g.emoji} ${g.name} ${g.rank} +${g.lv} → +${g.lv+1}`;}
+  return '';
+}
+const quickBtn=()=>{const l=quickLine(),none=S.tab==='lab'?'Chưa có 3 bé cùng hạng để ghép lên.':S.tab==='ward'?'Chưa có 3 món giống hệt để ghép.':'Chưa có món nào cường hóa được nữa.';
+  return `<section class="pt-card pt-quick"><button type="button" class="btn primary pt-quickbtn" data-pt="quick"${l&&!S.busy?'':' disabled'}>⚡ Cường hóa nhanh</button><small>${esc(l||none)}</small></section>`;};
+async function quick(){
+  if(S.busy)return;
+  if(S.tab==='lab'){const q=quickLab();if(!q)return;S.fz=q;S.fzMix=false;S.fzBreed='';render();return go();}   // go → the usual 🧬 question
+  if(S.tab==='ward'){const key=quickWard();if(!key)return;S.wsel=key;S.sub='';render();return onClick('wfuse',{});}
+  if(S.tab==='gear'){const q=quickGear();if(!q)return;S.gv='bag';S.g=q.g.id;render();
+    if(q.op==='gfuse')return onClick('gfuse',{});
+    const g=q.g;if(!await ask(`Cường hóa ${g.name} ${g.rank} +${g.lv}?`,`Lên +${g.lv+1} nếu thành công. Trượt: món đồ vẫn nguyên, mất phí.`,`✨ ${fmt(g.up_fee)} xu`,g.up_fee))return;
+    const r=await send('jr_pet_gear_up',{gear:g.id,confirm:true});if(r?.ok===false){S.flash={...S.flash,kind:'bad'};render();}}
 }
 const meters=n=>`<div class="pt-needs">${NEEDS.map(([k,e,l])=>`<span class="pt-need${n[k]<CAT().low?' low':''}" title="${l} ${n[k]}" aria-label="${l} ${n[k]}"><i aria-hidden="true">${e}</i><b style="--v:${n[k]}%"></b></span>`).join('')}</div>`;
 const chip=(op,data,on,inner,label='')=>`<button type="button" class="pt-chip${on?' on':''}" data-pt="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')} aria-pressed="${on}"${label?` aria-label="${esc(label)}" title="${esc(label)}"`:''}>${inner}</button>`;
@@ -560,7 +654,7 @@ function odds(){
 const SHOPK=[['dog','🐶 Chó'],['cat','🐱 Mèo'],['wear','👗 Quần áo'],['wing','🪽 Cánh'],['toy','🎾 Đồ chơi']];
 function shop(v,c){
   if(S.kind==='do')S.kind='toy';
-  const kinds=`<div class="pt-chips pt-kinds">${SHOPK.filter(([k])=>WARD()||(k!=='wear'&&k!=='wing')).map(([k,l])=>chip('kind',{kind:k},S.kind===k,l)).join('')}</div>`;
+  const kinds=S.host&&!['dog','cat'].includes(S.kind)?'':`<div class="pt-chips pt-kinds">${SHOPK.filter(([k])=>S.host?k==='dog'||k==='cat':WARD()||(k!=='wear'&&k!=='wing')).map(([k,l])=>chip('kind',{kind:k},S.kind===k,l)).join('')}</div>`;
   if(S.kind==='wear'||S.kind==='wing')return kinds+wshop();
   if(S.kind==='toy'){
     const tiles=shopItems().map(it=>`<button type="button" class="pt-tile${S.item===it.id?' on':''}" data-pt="item" data-id="${esc(it.id)}" aria-pressed="${S.item===it.id}" aria-label="${esc(it.name)}" title="${esc(it.name)}"><span aria-hidden="true">${esc(it.emoji)}</span><small>${fmt(it.price)}</small></button>`).join('');
@@ -608,7 +702,7 @@ function ward(v,c){
   const its=myItems(),slots=W.slots;
   const help=`<details class="pt-more"><summary>💡 Tủ đồ dùng thế nào?</summary><p class="pt-muted">1. Mua đồ, cánh ở 🛍️ Tiệm (hạng D hoặc C).<br>2. Chọn món bên dưới rồi chạm tên bé để mặc.<br>3. Có 3 món giống hệt (cùng món, cùng hạng) thì 🔀 ghép ra 1 món hạng cao hơn. Từ hạng A có thể ra 💎 dòng sang.<br>4. Mỗi món đang mặc cộng thêm: ${W.ranks.map((r,i)=>`${r} +${W.bonus[i]}%`).join(', ')}; 💎 dòng sang +${W.lux_bonus}%, đủ bộ +${W.set_bonus}% (tối đa +${W.bonus_max}%). Ổ nằm chỉ để ở nhà.</p></details>`;
   if(S.sub==='wauto'&&W.auto_max)return wauto(W);
-  if(!its.length)return help+`<p class="pt-empty">👗</p><p class="pt-muted pt-center">Tủ đồ còn trống.</p><div class="pt-chips pt-center">${chip('tab',{tab:'shop',kind:'wear'},false,'👗 Mua quần áo')}${chip('tab',{tab:'shop',kind:'wing'},false,'🪽 Mua cánh')}</div>`;
+  if(!its.length)return help+`<p class="pt-empty">👗</p><p class="pt-muted pt-center">Tủ đồ còn trống.</p><div class="pt-chips pt-center">${shopChip('pwear','wear','👗 Mua quần áo')}${shopChip('pwing','wing','🪽 Mua cánh')}</div>`;
   const groups=new Map();
   for(const i of its){const it=wItem(i.k);if(!it)continue;const key=`${i.k}|${i.r}`;const g=groups.get(key)||{key,k:i.k,r:i.r,it,n:0,on:[]};g.n++;if(i.on)g.on.push(i.on);groups.set(key,g);}
   const order=slots.map(x=>x.id),has=new Set([...groups.values()].map(g=>g.it.slot));
@@ -625,8 +719,8 @@ function ward(v,c){
   // 🤖 Ghép tự động (an older server has no auto_max: no button)
   const au=W.auto_max?autoPlan('all',6):null;
   const auto=au?`<button type="button" class="pt-autobtn${au.n?' on':''}" data-pt="sub" data-sub="wauto"><span class="pt-ico" aria-hidden="true">🤖</span><b>Ghép tự động<small>${au.n?`${au.n} bộ ba ghép được ngay`:'Cần 3 món giống hệt (cùng món, cùng hạng)'}</small></b><em aria-hidden="true">›</em></button>`:'';
-  return help+auto+card+chipsF+`<div class="pt-list">${rows.map(r=>`<button type="button" class="pt-item${r.key===S.wsel?' on':''}" data-pt="wsel" data-key="${esc(r.key)}" aria-pressed="${r.key===S.wsel}"><span class="pt-ico" aria-hidden="true">${esc(r.it.emoji)}</span><b>${esc(r.it.name)} ${RK(r.r)}${r.n>1?` <small>×${r.n}</small>`:''}${r.on.length?`<small> · 🐾 ${r.on.map(id=>esc(petName(id))).join(', ')}</small>`:''}</b><em>${r.n>=3&&r.r<6?'🔀':''}</em></button>`).join('')}</div>`
-    +`<div class="pt-chips pt-center">${chip('tab',{tab:'shop',kind:'wear'},false,'👗 Mua thêm')}${chip('tab',{tab:'shop',kind:'wing'},false,'🪽 Mua cánh')}</div>`;
+  return help+quickBtn()+auto+card+chipsF+`<div class="pt-list">${rows.map(r=>`<button type="button" class="pt-item${r.key===S.wsel?' on':''}" data-pt="wsel" data-key="${esc(r.key)}" aria-pressed="${r.key===S.wsel}"><span class="pt-ico" aria-hidden="true">${esc(r.it.emoji)}</span><b>${esc(r.it.name)} ${RK(r.r)}${r.n>1?` <small>×${r.n}</small>`:''}${r.on.length?`<small> · 🐾 ${r.on.map(id=>esc(petName(id))).join(', ')}</small>`:''}</b><em>${r.n>=3&&r.r<6?'🔀':''}</em></button>`).join('')}</div>`
+    +`<div class="pt-chips pt-center">${shopChip('pwear','wear','👗 Mua thêm')}${shopChip('pwing','wing','🪽 Mua cánh')}</div>`;
 }
 
 /** 🤖 Ghép tự động (owner: "ghép thú thì thêm chế độ ghép tự động cho áo quần nhé"): which piece, up to which rank, the
@@ -644,7 +738,7 @@ function wauto(W){
   const setTag=(k,r,n)=>{const it=wItem(k);return it?`<span class="pt-aset"><i aria-hidden="true">${esc(it.emoji)}</i>${esc(it.name)} ${RK(r)}${n>1?`<small>×${n}</small>`:''}</span>`:'';};
   let body;
   if(!pl.n)body=`<p class="pt-empty">🤖</p><p class="pt-muted pt-center">Chưa có 3 món giống hệt (cùng món, cùng hạng) chưa mặc để ghép.</p>`
-    +`<div class="pt-chips pt-center">${chip('tab',{tab:'shop',kind:'wear'},false,'👗 Mua quần áo')}${chip('tab',{tab:'shop',kind:'wing'},false,'🪽 Mua cánh')}</div>`;
+    +`<div class="pt-chips pt-center">${shopChip('pwear','wear','👗 Mua quần áo')}${shopChip('pwing','wing','🪽 Mua cánh')}</div>`;
   else{
     const cap=Math.max(pl.min,ready()),step=pl.min;
     const quick=[];for(const [n,l] of [[pl.est,'Vòng đầu'],[pl.est*2,'×2'],[pl.est*5,'×5']]){const v=Math.max(pl.min,Math.min(n,cap));if(!quick.some(q=>q[0]===v))quick.push([v,l]);}
@@ -703,14 +797,15 @@ function lab(v,c){
   const recipes=`<details class="pt-more"><summary>🧬 Công thức giống lai (${t.recipes.length})</summary><ul class="pt-recipes">${t.recipes.map(r=>{const to=breedOf(r.to);return `<li>${petPic(c,{b:r.to,c:0},'sit',40,{})}<span><b>${esc(to?.name||r.to)}</b> <small>từ hạng ${esc(r.floor)}</small><br><small>${r.of.map(id=>esc(breedOf(id)?.name||id)).join(' + ')}</small></span></li>`;}).join('')}
     <li>${petPic(c,{b:t.legend.dog,c:0,r:6},'sit',40,{})}${petPic(c,{b:t.legend.cat,c:0,r:6},'sit',40,{})}<span><b>🌟 Huyền thoại</b><br><small>3 bé SSS · ${fmt(t.ranks[6].fee)} xu · giống nào cũng lên được, giữ giống hoặc đổi sang ${esc(breedOf(t.legend.dog)?.name||'')} / ${esc(breedOf(t.legend.cat)?.name||'')}</small></span></li></ul></details>`;
   const ret=(x?.ret||[]).length?`<details class="pt-more"><summary>👵 Đang nghỉ ở nhà bà (${x.ret.length})</summary><div class="pt-strip wrap">${x.ret.slice().reverse().map(r=>`<span class="pt-mini" title="${esc(r.n)}">${petPic(c,{b:r.b,c:r.c,r:r.r,fx:r.fx},'sleep',44,{})}</span>`).join('')}</div></details>`:'';
-  return `<section class="pt-card pt-center"><div class="pt-slots">${slots}</div>${info}</section>`+group('home','🐾 Ở nhà')+group('ken',`🏠 Trại nuôi · ${(x?.ken||[]).length}/${t.limits.kennel}`)+group('farm','🌾 Ở quê')+kennel()+table+recipes+ret;
+  return quickBtn()+`<section class="pt-card pt-center"><div class="pt-slots">${slots}</div>${info}</section>`+group('home','🐾 Ở nhà')+group('ken',`🏠 Trại nuôi · ${(x?.ken||[]).length}/${t.limits.kennel}`)+group('farm','🌾 Ở quê')+kennel()+table+recipes+ret;
 }
 
 /* ---- 🧰 gear: the bag, the shop, strolls that find things ---- */
 function gear(v,c){
   const t=TT();if(!t)return '<p class="pt-empty">⏳</p>';
   const x=X(),bag=x?.gear||[],w=x?.today?.stroll||0;
-  const top=`<div class="pt-chips">${chip('gv',{v:'bag'},S.gv!=='buy',`🎒 Túi ${bag.length}/${t.limits.gear}`)}${chip('gv',{v:'buy'},S.gv==='buy','🛍️ Tiệm')}${chip('stroll',{},false,`🦮 Dạo tìm đồ ${w}/${t.limits.stroll_day}`)}</div>`;
+  const top=S.host?(S.gv==='buy'?`<div class="pt-chips"><button type="button" class="pt-chip" data-action="jrForge" data-tab="pgear">🎒 Túi ${bag.length}/${t.limits.gear} · ⚒️ Cường hóa</button></div>`
+    :`<div class="pt-chips"><button type="button" class="pt-chip" data-action="jrAccShop" data-tab="pgear">🛍️ Mua linh kiện</button>${chip('stroll',{},false,`🦮 Dạo tìm đồ ${w}/${t.limits.stroll_day}`)}</div>`):`<div class="pt-chips">${chip('gv',{v:'bag'},S.gv!=='buy',`🎒 Túi ${bag.length}/${t.limits.gear}`)}${chip('gv',{v:'buy'},S.gv==='buy','🛍️ Tiệm')}${chip('stroll',{},false,`🦮 Dạo tìm đồ ${w}/${t.limits.stroll_day}`)}</div>`;
   if(S.gv==='buy'){
     const models=t.gear.models[S.gbslot]||[],r=Math.min(S.grank,t.gear.shop.length-1),slot=t.gear.slots.find(s=>s.id===S.gbslot),st=t.stats.find(s=>s.id===slot?.stat);
     return top+`<div class="pt-chips">${t.gear.slots.map(s=>chip('gbslot',{slot:s.id},S.gbslot===s.id,s.emoji,s.name)).join('')}</div>
@@ -734,7 +829,7 @@ function gear(v,c){
     return l.length?`<button type="button" role="cell" class="pt-gl-c${up?' up':''}${on?' on':''}" data-pt="gpick" data-slot="${sl.id}" data-r="${r}" aria-label="${esc(sl.name)} ${esc(RNAME(r))}: ${l.length}${up?' · lên hạng được':''}">${l.length}${up?' <i aria-hidden="true">⬆</i>':''}</button>`:'<span role="cell" class="pt-gl-c off">·</span>';}).join('')}</div>`).join('')}</div>`;
   const how=`<p class="pt-muted pt-center pt-ghow">📈 Lên hạng D → C → B → A → S → SS → SSS: cường hóa một món tới +${L}, rồi ghép với 2 món cùng loại, cùng hạng. Từ hạng S, ghép trượt mất 2 món nguyên liệu.</p>`;
   const order=t.gear.slots.map(s=>s.id),list=bag.slice().sort((a,b)=>order.indexOf(a.s)-order.indexOf(b.s)||b.r-a.r||b.lv-a.lv);
-  return top+card+(g?'':how)+ladder+`<div class="pt-list">${list.map(x=>`<button type="button" class="pt-item${x.id===S.g?' on':''}" data-pt="gsel" data-id="${esc(x.id)}" aria-pressed="${x.id===S.g}"><span class="pt-ico" aria-hidden="true">${x.emoji}</span><b>${esc(x.name)} <span class="pt-rk r${x.r}">${esc(x.rank)}</span>${x.lv?` +${x.lv}`:''}${x.on?`<small> · 🐾 ${esc(petName(x.on))}</small>`:''}</b><em>+${x.value}</em></button>`).join('')}</div>`;
+  return top+quickBtn()+card+(g?'':how)+ladder+`<div class="pt-list">${list.map(x=>`<button type="button" class="pt-item${x.id===S.g?' on':''}" data-pt="gsel" data-id="${esc(x.id)}" aria-pressed="${x.id===S.g}"><span class="pt-ico" aria-hidden="true">${x.emoji}</span><b>${esc(x.name)} <span class="pt-rk r${x.r}">${esc(x.rank)}</span>${x.lv?` +${x.lv}`:''}${x.on?`<small> · 🐾 ${esc(petName(x.on))}</small>`:''}</b><em>+${x.value}</em></button>`).join('')}</div>`;
 }
 
 /* ---- 📸 photo booth: the character beside the pet, in a frame; saved as a PNG on this device only ---- */

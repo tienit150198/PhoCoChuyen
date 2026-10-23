@@ -1,3 +1,29 @@
+# 2.5.5 — 24/10/2026
+
+🛍️ Cửa hàng và ⚒️ Cường hóa (chủ game 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi, xong thú cưng hay người gì trong đó cả", "cửa hàng hoặc shop đều là 1 đó nhé, mua gì nằm đó hết cho dễ"). Chỉ client: không đổi server, không đổi kinh tế, không đổi schema, không đổi save. Mọi lệnh mua / ghép là lệnh cũ (jr_wd_buy, charm_*, jr_pet_wing_*, jr_pet_buy, jr_pet_wbuy, jr_pet_gear_*, jr_pet_fuse, jr_pet_wfuse). Có gì mới 2.5.5.
+
+## 🛍️ Cửa hàng (v4/acc-shop.js, jrView 'accshop')
+- Mục riêng trên menu: giao diện cũ ở đầu "Đời sống" (app.js railHTML, không còn trong "Của mình"), bản đồ mới trong Tiện ích (isometric-shell.js, nút "Cửa hàng"). Một tên duy nhất "Cửa hàng" (charms.js SHOP_NAME), không có mục "Shop" thứ hai; Tiện ích bỏ nhóm "Các quầy trong Shop" và hai dòng Tiệm phụ kiện / Phụ kiện đôi lẻ.
+- Ba nhóm: 👤 Cho bạn (🎀 Phụ kiện, 🤝 Phụ kiện đôi, 🪽 Cánh, 👕 Trang phục), 🐾 Thú cưng (🐶 Mua bé, 👗 Đồ cho bé, 🪽 Cánh cho bé, 🎾 Đồ chơi, 🧰 Linh kiện; chỉ hiện khi server có thú cưng), 🏠 Nhà & xe (thẻ mở quầy riêng: xe & phương tiện, điện thoại & đồ công nghệ, đồ trong nhà, phong cách, mua sắm cao cấp, nhà đấu giá; chỉ những quầy save này có).
+- 👕 Trang phục: áo, quần, giày, tóc có giá, mặc thử trước gương, mua bằng jr_wd_buy (mặc luôn). Tủ đồ (Thay đồ) để mặc / đổi màu đồ đã có; nút mua trong Tủ đồ giờ mở Cửa hàng đúng quầy, món đó đã lên gương.
+- 🐾 Các quầy thú cưng là phần vẽ của v4/pets.js (petEmbedHTML) đặt trong sheet: cùng cách chọn, cùng nút chính. Hộp thoại Thú cưng vẫn bán như cũ.
+- Liên kết cũ vẫn chạy: jrAccShop {tab, code, item} (thẻ bạn bè ở marriage.js → 🤝, charms.js, Tủ đồ), tab lạ về 🎀.
+- Sửa lỗi cũ trong pets.js: mua linh kiện xong (gshop) không vẽ lại vì `render();top();` nằm sau dấu chú thích.
+
+## ⚒️ Cường hóa (v4/acc-shop.js forgeView, jrView 'forge', action jrForge)
+- Mục riêng trên menu ở cả hai giao diện (app.js "Cường hóa", Tiện ích "Cường hóa"), hiện khi có cánh hoặc thú cưng trên server (town-utilities.js forgeOpen).
+- Bốn quầy: 🪽 Cánh (ghép ba đôi, jr_pet_wing_fuse), 🧬 Ghép thú (jr_pet_fuse, ghép / nâng hạng thú), 👗 Đồ thú cưng (ghép ba món cùng loại cùng hạng, jr_pet_wfuse), 🧰 Linh kiện thú (cường hóa jr_pet_gear_up, lên hạng jr_pet_gear_fuse). Ghép cánh chuyển hẳn từ quầy Cánh sang đây; quầy Cánh trong Cửa hàng còn mua / đeo / cất / bỏ và nút "⚒️ Cường hóa". Không gộp: hạng ngân hàng, xe, đảo, quầy, nhà (không phải ghép đồ).
+- ⚡ Cường hóa nhanh ở mọi quầy: client tự chọn một bộ hợp lệ rồi hỏi lại đúng món sẽ dùng và phí, đồng ý thì làm một lần bằng lệnh cũ.
+  - Cánh: hạng cao nhất (dưới Huyền thoại) có đủ ba đôi; cánh chính là đôi đang đeo nếu ở trong nhóm, không thì kiểu đắt nhất; hai đôi phụ không bao giờ là đôi đang đeo (trừ khi không còn đôi nào), kiểu rẻ trước.
+  - Thú: hạng cao nhất có đủ ba bé ghép được; bé chính là bé đang dắt hoặc bé mạnh nhất; bé phụ không phải bé đang dắt, không phải thú huyền thoại, ở chuồng / trang trại trước ở nhà, yếu trước.
+  - Đồ thú cưng: nhóm cùng loại cùng hạng cao nhất có ba món, ưu tiên ba món không mặc (server vẫn chọn món không mặc trước).
+  - Linh kiện: món lên hạng được (đang lắp trước, hạng / cấp cao trước), không có thì cường hóa món chưa tối đa.
+- Không hiện tỉ lệ thành công (luật chủ game 19/10 "đừng show tỷ lệ ra"; server không gửi tỉ lệ): câu hỏi ghi món dùng, kết quả khi thành, điều mất khi trượt và phí.
+
+## Kỹ thuật
+- Không đụng hình cánh (v4/wings-art.js, client/isometric/wing-rigs.ts), không build lại phaser-world.js.
+- scripts/browser_shop.py: chạy thử trên trình duyệt thật (giao diện cũ và bản đồ mới, 390×844 và 1280×800).
+
 # 2.5.4.1 — 23/10/2026
 
 Hotfix: 🪽 tab Cánh báo "Thao tác chưa hoàn tất" khi mở Tiệm phụ kiện từ menu (jrAccShop trong v4/journey.js tạo ui.as thiếu wfz → st.wfz.filter lỗi). journey.js khởi tạo đủ wfz / reveal / wtry; acc-shop.js wingShelf chịu được ui.as cũ.

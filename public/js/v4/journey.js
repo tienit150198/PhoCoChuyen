@@ -31,7 +31,8 @@ import {ev2010Open} from '../isometric/town-utilities.js';   // 💐 Thiệp 20/
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css','/css/acc-shop.css']});
-// 🛍️ Tiệm phụ kiện (v4/acc-shop.js, owner 22/10): accessories and 🤝 phụ kiện đôi are bought there, likewise loaded on first sight.
+// 🛍️ Cửa hàng and ⚒️ Cường hóa (v4/acc-shop.js, owner 22/10, 23/10): accessories, 🤝 phụ kiện đôi, wings, clothes, the pets'
+// shelves; every ghép / nâng hạng. Likewise loaded on first sight.
 const AS=lazy(()=>import('./acc-shop.js'),{css:['/css/wardrobe.css','/css/acc-shop.css']});
 // 🙂 Ảnh đại diện khi chat (v4/avatar.js): likewise.
 const AV=lazy(()=>import('./avatar.js'),{css:['/css/avatar.css']});
@@ -120,7 +121,8 @@ export function journeyHome(env){
   if(ui.jrView==='profile')return profileView(env);
   if(ui.jrView==='certs')return certsView(env);
   if(ui.jrView==='wardrobe'){const m=WD.use();return m?m.wardrobeView(env):head('Tủ đồ','',{back:true})+skeleton();}
-  if(ui.jrView==='accshop'){const m=AS.use();return m?m.accShopView(env):head('Tiệm phụ kiện','',{back:true,eyebrow:'MUA SẮM'})+skeleton();}
+  if(ui.jrView==='accshop'){const m=AS.use();return m?m.accShopView(env):head('🛍️ Cửa hàng','',{back:true,eyebrow:'MUA SẮM'})+skeleton();}
+  if(ui.jrView==='forge'){const m=AS.use();return m?m.forgeView(env):head('⚒️ Cường hóa','',{back:true,eyebrow:'NÂNG CẤP'})+skeleton();}
   if(ui.jrView==='avatar'){const m=AV.use();return m?m.avatarView(env):head('Ảnh đại diện','',{back:true})+skeleton();}
   return homeMain(env);
 }
@@ -463,7 +465,7 @@ function profileView(env){
   const {api}=env,J=api.state.journey;
   const wd=J.gender?`<button type="button" class="jr-card jr-wd-entry" data-action="jrWardrobe">${avatar(J.gender,52,lookOf(api.state))}<span class="grow"><b>Tủ đồ</b><small>Đổi kiểu tóc, áo quần, giày và phụ kiện.</small></span>${icon('arrow',16)}</button>`:'';
   const av=`<button type="button" class="jr-card jr-wd-entry" data-action="jrAvatar"><span class="jr-av-emoji" aria-hidden="true">🙂</span><span class="grow"><b>Ảnh đại diện</b><small>Gương mặt hiện cạnh tin nhắn chat, mặc đồ trong Tủ đồ.</small></span>${icon('arrow',16)}</button>`;
-  const shop=J.gender?`<button type="button" class="jr-card jr-wd-entry" data-action="jrAccShop"><span class="jr-av-emoji" aria-hidden="true">🛍️</span><span class="grow"><b>${esc(api.content.journey?.wardrobe?.acc_shop?.name||'Tiệm phụ kiện')}</b><small>Phụ kiện và phụ kiện đôi tặng bạn thân.</small></span>${icon('arrow',16)}</button>`:'';
+  const shop=J.gender?`<button type="button" class="jr-card jr-wd-entry" data-action="jrAccShop"><span class="jr-av-emoji" aria-hidden="true">🛍️</span><span class="grow"><b>Cửa hàng</b><small>Phụ kiện, trang phục, phụ kiện đôi, cánh và đồ cho thú cưng.</small></span>${icon('arrow',16)}</button>`:'';
   return head('Nhân vật của bạn','',{back:true})+`<div class="sheet-body jr-body jr-profile">${whoForm(env,'','','Lưu lại')}${wd}${shop}${J.gender?pairsCard(env):''}${av}</div>`;
 }
 
@@ -657,12 +659,20 @@ export async function journeyAction(action,data,el,env){
   if(action==='jrWardrobe'){WD.use();const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
     if(open){env.ui.jrView='wardrobe';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'wardrobe'});return true;}
   if(action.startsWith('jrWd'))return (await WD.get()).wardrobeAction(action,data,el,env);
-  // 🛍️ Tiệm phụ kiện: `tab` 'pair' opens the 🤝 shelf, `code` a friend to give to (v4/marriage.js friend card), `item` an accessory to try
-  if(action==='jrAccShop'){AS.use();const st=env.ui.as??={tab:'acc',draft:null,to:'',wfz:[],reveal:null,wtry:null};
-    if(data.tab==='pair'||data.code)st.tab='pair';else if(data.tab==='wing')st.tab='wing';else if(data.item||data.tab==='acc')st.tab='acc';
-    if(typeof data.code==='string'&&data.code)st.to=data.code;if(typeof data.item==='string'&&data.item)st.draft=data.item;
+  // 🛍️ Cửa hàng (v4/acc-shop.js): `tab` a shelf (acc, pair, wing, wear; pbuy, pwear, pwing, ptoy, pgear for the pets; more; one
+  // this save lacks falls back to 🎀), `code` a friend to give to (v4/marriage.js friend card: 🤝), `item` an accessory to try
+  // (or, with tab wear, a piece of clothing: Tủ đồ's buy buttons). ⚒️ Cường hóa (jrForge): `tab` wing, plab, pward or pgear.
+  if(action==='jrAccShop'||action==='jrForge'){AS.use();const st=env.ui.as??={tab:'acc',draft:null,to:'',wfz:[],reveal:null,wtry:null};
+    const tab=typeof data.tab==='string'&&/^[a-z]{2,8}$/.test(data.tab)?data.tab:'',view=action==='jrForge'?'forge':'accshop';
+    if(view==='forge'){if(tab)st.ftab=tab;}
+    else{
+      if(data.code)st.tab='pair';else if(tab)st.tab=tab;else if(data.item)st.tab='acc';
+      (st.last??={})[/^p(buy|wear|wing|toy|gear)$/.test(st.tab)?'pet':st.tab==='more'?'more':'me']=st.tab;   // the group remembers its shelf
+      if(typeof data.code==='string'&&data.code)st.to=data.code;
+      if(typeof data.item==='string'&&data.item){if(st.tab==='wear'){st.cdraft=data.item;st.cslot=null;}else st.draft=data.item;}
+    }
     const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
-    if(open){env.ui.jrView='accshop';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'accshop'});return true;}
+    if(open){env.ui.jrView=view;env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:view});return true;}
   if(action.startsWith('jrAs'))return (await AS.get()).accShopAction(action,data,el,env);
   if(action==='jrAvatar'){AV.use();const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
     if(open){env.ui.jrView='avatar';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'avatar'});return true;}

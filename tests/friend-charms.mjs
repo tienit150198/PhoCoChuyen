@@ -110,11 +110,89 @@ test('🛍️ Tiệm phụ kiện: the accessory shelf sells, the pair shelf lis
   setPairs(null);
 });
 
-test('the wardrobe sends a missing accessory to the shop; the menus open it',()=>{
+test('the wardrobe sends a missing accessory or piece to Cửa hàng; the menus open it and ⚒️ Cường hóa',()=>{
   const wd=readFileSync(new URL('../public/js/v4/wardrobe.js',import.meta.url),'utf8');
   assert.match(wd,/r\.it\.slot==='acc'\?btn\(`🛍️ Mua/);
+  assert.match(wd,/'jrAccShop',\{tab:'wear',item:r\.it\.id\}/,'Tủ đồ\'s clothes buy button opens the 👕 shelf with the piece');
   const app=readFileSync(new URL('../public/js/app.js',import.meta.url),'utf8');
-  assert.match(app,/\['jrAccShop','bag','Tiệm phụ kiện'/);assert.match(app,/charmsBoot\(api\)/);
+  assert.match(app,/\['jrAccShop','bag','Cửa hàng'/);assert.match(app,/charmsBoot\(api\)/);
+  assert.match(app,/\['jrForge','wrench','Cường hóa'\]/);
+  assert.doesNotMatch(app,/Shop Phố Mây/,'one name: Cửa hàng (owner 23/10 "cửa hàng hoặc shop đều là 1")');
+  // 🛍️ its own entry (owner 23/10 "shop riêng"), no longer inside the "Của mình" hub; ⚒️ likewise
+  for(const a of ['jrAccShop','jrForge'])assert.doesNotMatch(app.match(/\['minh','gift','Của mình',\[[^\]]*\]/)[0],new RegExp(a));
   const town=readFileSync(new URL('../public/js/isometric/town-utilities.js',import.meta.url),'utf8');
-  assert.match(town,/\['jrAccShop','bag','🎀','Tiệm phụ kiện'\]/);
+  assert.doesNotMatch(town,/\['jrAccShop'/,'Tiện ích: one Cửa hàng button, no second list of its shelves');
+  const shell=readFileSync(new URL('../public/js/isometric-shell.js',import.meta.url),'utf8');
+  assert.match(shell,/control\('Cửa hàng','jrAccShop'/);assert.match(shell,/control\('Cường hóa','jrForge'/);
+});
+
+test('🛍️ Cửa hàng: 👤 Cho bạn, 🐾 Thú cưng and 🏠 Nhà & xe shelves',async()=>{
+  const {townUtilityGroups,townServiceAvailable,forgeOpen}=await import('../public/js/isometric/town-utilities.js');
+  const pets={wardrobe:{items:[],slots:[]},tiers:{}};
+  const st={journey:{story:true,gender:'female',pets:{}}},ct={journey:{pets}};
+  assert.equal(townUtilityGroups(st,ct,{}).some(g=>g.items.some(i=>i.action==='jrAccShop')),false);
+  assert.equal(townServiceAvailable('jrAccShop',{journey:{story:true,gender:'male'}},{},{}, {tab:'pbuy'}),false,'no pets on the server: no pet shelf');
+  assert.equal(townServiceAvailable('jrAccShop',{journey:{story:true}},ct,{}),false,'no character yet');
+  assert.equal(forgeOpen(st,ct),true,'pets with tiers: ⚒️');assert.equal(forgeOpen({journey:{gender:'male'}},{journey:{wardrobe:{wings:{}}}}),true,'wings: ⚒️');
+  assert.equal(forgeOpen({journey:{gender:'male'}},{journey:{}}),false,'nothing to ghép: no ⚒️');
+  assert.equal(townServiceAvailable('jrForge',st,ct,{}),true);
+  const wd={...content.journey.wardrobe,slots:[{id:'top',name:'Áo · đầm'},...content.journey.wardrobe.slots],items:[...content.journey.wardrobe.items,{id:'ao_len',slot:'top',name:'Áo len',price:88}]};
+  const ui={},api={content:{...content,journey:{...content.journey,wardrobe:wd,pets:{...pets,breeds:[]}}},state:{...state,journey:{...state.journey,story:true,pets:{story:true,pets:[]},garage:true,gadgets:true}},account:{username:'lan'},json:()=>new Promise(()=>{})};
+  const env={api,ui,renderSheet(){},renderMain(){},toast(){}};
+  ui.as={tab:'wear',cdraft:'ao_len'};
+  const wear=accShopView(env);
+  assert.match(wear,/🛍️ Cửa hàng/);assert.match(wear,/data-action="jrAsGroup" data-group="pet"/);assert.match(wear,/data-action="jrAsGroup" data-group="more"/);
+  assert.match(wear,/data-tab="wear"><span aria-hidden="true">👕<\/span>Trang phục/);
+  assert.match(wear,/data-action="jrAsClBuy" data-item="ao_len"/);assert.match(wear,/Mua Áo len · 88 xu/);
+  assert.match(wear,/class="wd-item on" data-action="jrAsClTry" data-item="ao_len"/,'the piece sent from Tủ đồ is on the mirror');
+  assert.match(wear,/class="chip active" aria-pressed="true" data-action="jrAsClSlot" data-slot="top"/,'on its own rack');
+  // the pet shelf is v4/pets.js, loaded on first sight (lazy.js: a stylesheet link and an event)
+  globalThis.document??={querySelector:()=>null,createElement:()=>({dataset:{},addEventListener(){}}),head:{append(){}},dispatchEvent(){},addEventListener(){}};
+  for(const t of ['acc','pair','wear'])assert.match(wear,new RegExp(`data-action="jrAsTab" data-tab="${t}"`));
+  assert.doesNotMatch(wear,/data-tab="pbuy"/,'the other group\'s shelves wait behind its switch');
+  ui.as.tab='pbuy';
+  const pet=accShopView(env);
+  for(const t of ['pbuy','pwear','pwing','ptoy','pgear'])assert.match(pet,new RegExp(`data-tab="${t}"`));
+  assert.match(pet,/mnl-skel/,'the pet shelf loads v4/pets.js on first sight');
+  ui.as.tab='nope';accShopView(env);assert.equal(ui.as.tab,'acc','an unknown shelf falls back to 🎀');
+  // 🏠 Nhà & xe: a card for each screen that sells the rest, only those this save has
+  ui.as.tab='more';const more=accShopView(env);
+  assert.match(more,/class="jr-card as-kind as-more" data-action="garage"/);assert.match(more,/data-action="gadgets"/);
+  assert.doesNotMatch(more,/data-action="lux"/,'no 💎 on this save');assert.doesNotMatch(more,/data-action="jrAsTab"/,'one shelf: no tabs');
+  // v4/pets.js draws its own shelf in the sheet: same picks (data-pt), same main button, the way to a pet first
+  const {petEmbedHTML}=await import('../public/js/v4/pets.js');
+  api.content.journey.pets.toys=[{id:'bong',emoji:'🎾',name:'Bóng nảy',price:30}];
+  const toy=petEmbedHTML(env,'toy');
+  assert.match(toy,/class="pt-root pt-embed"/);assert.match(toy,/data-pt="item" data-id="bong"/);assert.match(toy,/data-pt="go"/);
+  assert.match(toy,/Chưa có bé nào/);assert.match(toy,/data-action="jrAccShop" data-tab="pbuy"/);assert.match(toy,/data-action="pets" data-tab="adopt"/);
+  assert.doesNotMatch(toy,/data-pt="kind"/,'the shop\'s tabs pick the shelf, not the dialog\'s chips');
+});
+
+test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh picks a valid set and never the worn wing',async()=>{
+  const {wingQuick,forgeView,forgeTabs}=await import('../public/js/v4/acc-shop.js');
+  const wings={styles:[{id:'buom',emoji:'🦋',name:'Cánh bướm',price:8800,desc:''},{id:'rong',emoji:'🐉',name:'Cánh rồng',price:36000,desc:''}],
+    earn:[2,4,6,8,11,15,20,25],battle:[1,1,2,2,3,4,5,6],fee:[500,2000,10000,50000,300000,2e7,2e8],own_max:40,lose_from:4};
+  const own=[{id:'w1',k:'buom',r:0},{id:'w2',k:'rong',r:0},{id:'w3',k:'buom',r:0},{id:'w4',k:'buom',r:1},{id:'w5',k:'buom',r:1},{id:'w6',k:'rong',r:1},{id:'w7',k:'buom',r:0}];
+  const api={content:{journey:{wardrobe:{...content.journey.wardrobe,wings}}},state:{...state,journey:{...state.journey,wings:{own,on:'w5'}}}};
+  // tier C has three: the main is the one worn (w5), the others the cheapest, never the worn one
+  assert.deepEqual(wingQuick(api).map(x=>x.id),['w5','w4','w6']);
+  api.state.journey.wings={own,on:null};
+  assert.deepEqual(wingQuick(api).map(x=>x.id),['w6','w4','w5'],'nothing worn: the dearest style is the main one');
+  api.state.journey.wings={own:own.filter(x=>x.r===0),on:'w2'};
+  assert.deepEqual(wingQuick(api).map(x=>x.id),['w2','w1','w3']);
+  api.state.journey.wings={own:own.slice(0,2),on:null};assert.equal(wingQuick(api),null,'two wings: nothing to ghép');
+  api.state.journey.wings={own,on:'w5'};
+  assert.deepEqual(forgeTabs(api),['wing'],'no pets on this server: wings only');
+  const ui={as:{tab:'acc',wfz:[]}},env={api,ui,renderSheet(){},renderMain(){},toast(){}};
+  const fg=forgeView(env);
+  assert.match(fg,/⚒️ Cường hóa/);assert.match(fg,/data-action="jrAsWingQuick"/);assert.match(fg,/Cánh bướm C \+ Cánh bướm C \+ Cánh rồng C → hạng B · 2\.000 xu/);
+  assert.match(fg,/data-action="jrAsWingPick" data-id="w1"/,'or pick three by hand');
+  assert.doesNotMatch(fg,/tỉ lệ|tỷ lệ|%<\/small>/,'no odds (owner 19/10)');
+  // the shop's Cánh shelf buys and wears; the ghép is a way to ⚒️
+  ui.as.tab='wing';const shelf=accShopView(env);
+  assert.match(shelf,/data-action="jrForge" data-tab="wing"/);assert.doesNotMatch(shelf,/jrAsWingPick|jrAsWingFuse/);
+  // every pets' ghép shelf has its ⚡ (v4/pets.js quickBtn in lab, ward, the gear bag)
+  const pj=readFileSync(new URL('../public/js/v4/pets.js',import.meta.url),'utf8');
+  assert.equal((pj.match(/quickBtn\(\)\+/g)||[]).length,3);
+  assert.match(pj,/case'quick':return quick\(\);/);
 });

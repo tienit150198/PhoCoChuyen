@@ -91,3 +91,33 @@ html[data-layout="phone"] .as-kind-art svg{width:76px;height:76px}
 .wd-wings-row{align-items:center;flex-wrap:nowrap}
 .wd-wings-row .grow{min-width:0;flex:1}
 html[data-layout="phone"] .wg-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* 🛍️ Cửa hàng (owner 23/10): 👤 Cho bạn / 🐾 Thú cưng / 🏠 Nhà & xe, then the group's shelves; the pets' shelves are
+   v4/pets.js markup (pets.css) drawn in the sheet (.pt-embed), its main button sticky at the bottom as in its dialog. */
+.as-groups{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:4px;padding:4px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.as-group{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 10px;border:0;border-radius:14px;background:transparent;color:var(--ink-2);font:inherit;font-weight:800;cursor:pointer}
+.as-group>span{font-size:1.15rem}
+.as-group.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 -3px 0 var(--accent)}
+.as-group:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.as-chips .chip{min-height:40px}
+.pt-embed{display:grid;gap:10px;min-height:0}
+.pt-embed .pt-flash:empty{display:none}
+.pt-embed .pt-bar{margin:4px -6px 0;border-radius:16px 16px 0 0;box-shadow:0 -6px 14px color-mix(in srgb,var(--ink) 8%,transparent)}
+.pt-none .pt-chip{min-height:40px}
+html[data-layout="phone"] .as .wd-tabs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+html[data-layout="phone"] .as .wd-tab{flex-direction:column;white-space:normal;text-align:center;padding:4px 2px}
+html[data-layout="phone"] .as-group{font-size:.9rem;padding:6px 4px;gap:4px}
+/* 🏠 Nhà & xe: a card per screen that sells the rest */
+.as-more{font:inherit;color:inherit;text-align:left;cursor:pointer;align-items:center;border:1px solid var(--line)}
+.as-more .as-kind-art{font-size:2.6rem}
+.as-more .as-kind-text small{color:var(--ink-2);line-height:1.4}
+.as-more:hover{border-color:var(--accent)}
+.as-more:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* ⚒️ Cường hóa (forgeView): ⚡ Cường hóa nhanh on top of every shelf, what it picked under the button */
+.fg-intro{margin:0}
+.fg-quick,.pt-quick{display:grid;gap:6px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.fg-quick .btn,.pt-quick .btn{width:100%;min-height:46px;font-weight:800}
+.fg-quick small,.pt-quick small{color:var(--ink-2);line-height:1.45}
+.fg-empty{display:grid;gap:8px;padding:14px}
+.fg-empty h3{margin:0}
+.fg-empty .btn{justify-self:start}
+span.wg-pick{cursor:default}

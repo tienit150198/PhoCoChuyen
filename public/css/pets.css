@@ -276,3 +276,7 @@ html[data-theme="dem"] .pt-gl-c{background:#2a2633;border-color:#fff2}html[data-
 .pt-ares .pt-stage{min-height:120px;margin:6px 0 8px}
 @media (max-width:340px){.pt-astats.four{grid-template-columns:repeat(2,minmax(0,1fr))}.pt-afields{grid-template-columns:1fr}}
 @media (max-height:480px){.pt-ares .pt-stage{display:none}.pt-autobtn{min-height:48px}}
+/* ⚡ Cường hóa nhanh (v4/pets.js quickBtn, owner 23/10): the set it will use under the button */
+.pt-quick{display:grid;gap:6px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.pt-quick .pt-quickbtn{width:100%;min-height:46px;font-weight:800}
+.pt-quick small{color:var(--ink-2);line-height:1.45}

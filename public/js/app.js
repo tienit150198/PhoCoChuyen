@@ -28,7 +28,7 @@ import {quickOpen,firstDay,EASY_DAYS} from './v4/onboard.js';  // a brand-new pl
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf,townOn} from './v4/journey.js';
 import {charmsBoot,waiting as charmsWaiting} from './v4/charms.js';   // 🤝 phụ kiện đôi worn from the first frame (game/friend_charms.py)
-import {ev2010Open} from './isometric/town-utilities.js';   // 💐 Thiệp 20/10: while writing is open
+import {ev2010Open,forgeOpen} from './isometric/town-utilities.js';   // 💐 Thiệp 20/10: while writing is open
 import {seedFair,fairNow} from './v4/town-fair-data.js';   // 🎪 Hội chợ việc làm: on or soon (ui.tfair, then the ticker's poll)
 import {seedHween,hwNow,hwShown} from './v4/halloween-data.js';   // 🎃 Lễ hội Ma Phố 26/10 → 01/11 (ui.hween, then the ticker's poll)
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
@@ -373,7 +373,8 @@ function navItems(c){
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['rank','award','Xếp hạng']);
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
-  if(api.state?.journey?.gender)items.push(['jrAccShop','bag','Tiệm phụ kiện',charmsWaiting(api)]);  // 🛍️ accessories and 🤝 phụ kiện đôi (v4/acc-shop.js); the badge: gifts waiting
+  if(api.state?.journey?.gender)items.push(['jrAccShop','bag','Cửa hàng',charmsWaiting(api)]);  // 🛍️ Cửa hàng (v4/acc-shop.js): for the character and the pets, its own entry beside the hubs (railHTML); the badge: gifts waiting
+  if(api.state?.journey?.gender&&forgeOpen(api.state,api.content))items.push(['jrForge','wrench','Cường hóa']);  // ⚒️ Cường hóa (v4/acc-shop.js forgeView): every ghép / nâng hạng, its own entry too
   if(!newInterface(api.state))items.push(['sharedIsland','map','Ra đảo nhặt rương']);
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
@@ -435,7 +436,7 @@ function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)retur
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={remoteClose:'Khép ca ở nơi khác, khỏi về tiệm',halloween:'Săn bí ngô, gõ cửa xin kẹo',townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={jrAccShop:'Mua đồ cho bạn, thú cưng, nhà và xe',jrForge:'Ghép cánh, ghép thú, có cường hóa nhanh',remoteClose:'Khép ca ở nơi khác, khỏi về tiệm',halloween:'Săn bí ngô, gõ cửa xin kẹo',townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
@@ -450,7 +451,7 @@ const RAIL_GROUPS=[
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','jrAccShop','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse','abroad']],
+  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool','historyCourse','abroad']],
 ];
 /** ☕ v4/spend.js (game/spend.py): the menu entries and the town map's doors (each opens its tab). */
 const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
@@ -509,14 +510,16 @@ function railHTML(c){
   const onBar=x=>phone&&!town&&shown.some(y=>y[0]===x[0]),scene=sceneActions(),nav=navItems(c);
   const extra=phone||town?[...scene,...(town?shown.filter(x=>!scene.some(y=>y[0]===x[0])&&!nav.some(y=>y[0]===x[0])):[])].filter(x=>!onBar(x)):[];
   const order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
-  const main=nav.filter(railMain).sort((a,b)=>order(a)-order(b));
+  // 🛍️ Cửa hàng and ⚒️ Cường hóa (owner 23/10): their own entries at the head of Đời sống, not inside a hub nor among the work pages
+  const own=x=>x[0]==='jrAccShop'||x[0]==='jrForge';
+  const shop=nav.filter(own),main=nav.filter(x=>railMain(x)&&!own(x)).sort((a,b)=>order(a)-order(b));
   const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(x=>x&&!railMain(x))]).filter(g=>g[3].length);
   const open=groups.some(g=>g[0]===ui.railGroup)?ui.railGroup:null,hide=phone&&open?' hidden':'';
   const title=t=>phone?`<p class="rail-title"${hide}>${esc(t)}</p>`:'';
   const mini=(a,i,l,d='')=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}"${d} aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
   return (extra.length?title(wordsFor(career()).rail_in)+extra.map(([a,i,l])=>railItem([a,i,l],'',hide)).join(''):'')+
     // The phone's "Thêm" does not repeat the bar: those entries stay in the markup, hidden (deep links, sweeps).
-    title('Công việc')+main.map(x=>railItem(x,'',onBar(x)?' hidden':hide)).join('')+title('Đời sống')+
+    title('Công việc')+main.map(x=>railItem(x,'',onBar(x)?' hidden':hide)).join('')+title('Đời sống')+shop.map(x=>railItem(x,' rail-shop',hide)).join('')+
     groups.map(([g,ic,label,items])=>{const on=open===g,cur=items.some(x=>x[0]===ui.view);
       return `<button type="button" class="rail-item rail-group${cur?' active':''}" data-action="v4Group" data-group="${g}" data-menu-stay aria-expanded="${on}"${hide}>${icon(ic,21)}<span>${label}</span>${badgeHTML(groupBadge(items))}<i class="rail-caret" aria-hidden="true">${icon('chevron',12)}</i></button>`+
         `<div class="rail-sub" data-group="${g}" role="group" aria-label="${label}"${on?'':' hidden'}><div class="rail-sub-head"><button type="button" class="icon-btn rail-back" data-action="v4Group" data-group="" data-menu-stay aria-label="Quay lại">${icon('back',20)}</button><b>${label}</b></div>${items.map(x=>railItem(x)).join('')}</div>`;}).join('')+
