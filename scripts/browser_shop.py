@@ -51,6 +51,13 @@ WIDE = "document.documentElement.scrollWidth-document.documentElement.clientWidt
 # the wallet as the server has it (the sheet's money chip rounds on phones)
 WALLET = "(async()=>{const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'});const d=await r.json();return Number(d.state?.journey?.wallet)||0})()"
 WINGS = "(async()=>{const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'});const d=await r.json();return d.state?.journey?.wings?.own||[]})()"
+# an account (🤝 pairs live on accounts: charms.js refreshCharms, game/friend_charms.py)
+REGISTER = """async ([u, pw]) => {
+  const boot = await fetch('/api/bootstrap?lite=1').then(r => r.json());
+  const r = await fetch('/api/account/register', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Game-CSRF': boot.csrf},
+    body: JSON.stringify({username: u, password: pw, confirm: pw, display: 'Lan'})});
+  return r.status;
+}"""
 CLICK = "(([a,d])=>{const b=document.createElement('button');b.dataset.action=a;Object.assign(b.dataset,d);b.hidden=true;document.body.append(b);b.click();b.remove();})"
 
 
@@ -79,6 +86,8 @@ async def main():
                     page.on('pageerror', lambda e, t=tag: errors.append(f'{t}: {e}'))
                     await page.goto(base)
                     await page.wait_for_selector('#app:not([hidden])', timeout=30000)
+                    status = await page.evaluate(REGISTER, [f'lan{mode}{w}', 'matkhau-dai-lam'])
+                    check(status == 200, f'{tag}: an account (status {status})')
                     token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
                     subprocess.run([PY, '-c', SEED, db, token, '1' if mode == 'new' else '0'], cwd=ROOT, check=True)
                     await page.reload()
@@ -224,16 +233,21 @@ async def main():
                     await tab('wing')
                     check(not await page.locator('#sheet [data-action="jrAsWingPick"]').count(), f'{tag}: the Cánh shelf buys and wears, the ghép is in Cường hóa')
                     before = await wallet()
-                    for i in range(5):   # D or C each: five make three of one tier
-                        await tap('#sheet [data-action="jrAsWingBuy"]', 'wingbuy')
-                        await confirm('confirm-wing' if i == 0 else 'confirm')
-                        await page.wait_for_selector('#sheet .wg-reveal [data-action="jrAsWingReveal"]', timeout=10000)
-                        if i == 0:
-                            await shot('6-bought-wing')
-                        await tap('#sheet [data-action="jrAsWingReveal"]', 'reveal')
-                        await page.wait_for_selector('#sheet .wg-reveal', state='detached', timeout=8000)
+                    # 🛒 many at once (owner 23/10): ×5 on the first style, one confirm, one jr_pet_wing_buy (D or C each:
+                    # five make three of one tier for ⚒️)
+                    await tap('#sheet .wg-style [data-action="jrAsWingQty"][data-n="5"]', 'wingqty')
+                    label = await page.inner_text('#sheet .wg-style [data-action="jrAsWingBuy"] >> nth=0')
+                    check('×5' in label, f'{tag}: the quantity shows on the buy button ({label.strip()})')
+                    await shot('6-wing-qty')
+                    await tap('#sheet [data-action="jrAsWingBuy"]', 'wingbuy')
+                    text = await confirm('confirm-wing')
+                    check('5 đôi' in text and 'trả một lần' in text, f'{tag}: one confirm with the total of the five')
+                    await page.wait_for_selector('#sheet .wg-reveal [data-action="jrAsWingReveal"]', timeout=10000)
+                    await shot('6-bought-wing')
+                    await tap('#sheet [data-action="jrAsWingReveal"]', 'reveal')
+                    await page.wait_for_selector('#sheet .wg-reveal', state='detached', timeout=8000)
                     own = await page.evaluate(WINGS)
-                    check(len(own) == 5 and await wallet() < before, f'{tag}: five pairs of wings bought ({"".join("DC"[x["r"]] for x in own)})')
+                    check(len(own) == 5 and await wallet() < before, f'{tag}: five pairs of wings bought in one purchase ({"".join("DC"[x["r"]] for x in own)})')
                     await shot('6-wings')
                     check(await page.locator('#sheet [data-action="jrForge"][data-tab="wing"]').count() == 1, f'{tag}: the Cánh shelf links to ⚒️ Cường hóa')
 
@@ -247,7 +261,49 @@ async def main():
                     check(await wallet() < before, f'{tag}: a piece of clothing bought and worn')
                     await shot('7-bought-clothes')
 
+                    # 🧺 the cart: two accessories and a piece of clothing, one jr_wd_buy items
+                    await tab('acc')
+                    await tap('#sheet [data-action="jrAsMulti"]', 'multi')
+                    for i in range(2):
+                        await page.locator('#sheet .wd-item:has(.wd-tag.price):not(.in-cart)').first.click()
+                        await page.wait_for_timeout(300)
+                    await tab('wear')
+                    await page.locator('#sheet .wd-item:has(.wd-tag.price):not(.in-cart)').first.click()
+                    await page.wait_for_selector('#sheet .as-cart', timeout=8000)
+                    head = await page.inner_text('#sheet .as-cart-head')
+                    check('3 món' in head, f'{tag}: the cart holds pieces from both shelves ({head.strip()})')
+                    await shot('7-cart')
+                    before = await wallet()
+                    await tap('#sheet [data-action="jrAsBuyMany"]', 'buymany')
+                    text = await confirm('confirm-cart')
+                    check('trả một lần' in text, f'{tag}: one confirm for the cart')
+                    await page.wait_for_selector('#sheet .as-cart', state='detached', timeout=10000)
+                    check(await wallet() < before, f'{tag}: three pieces bought in one purchase')
+                    # 🤝 two pairs at once
+                    await tab('pair')
+                    await page.wait_for_selector('#sheet [data-action="jrAsPairQty"][data-n="2"]', timeout=10000)
+                    await tap('#sheet [data-action="jrAsPairQty"][data-n="2"]', 'pairqty')
+                    before = await wallet()
+                    await tap('#sheet .as-kind [data-action="jrAsPairBuy"]', 'pairbuy')
+                    await confirm('confirm-pairs')
+                    await page.wait_for_selector('#sheet .as-box', timeout=10000)
+                    box = await page.inner_text('#sheet .as-box h3')
+                    check('2/' in box and await wallet() < before, f'{tag}: two pairs bought in one purchase ({box.strip()})')
+                    await shot('7-pairs')
+
                     await group('pet')
+                    await tab('ptoy')
+                    await page.click('#sheet .pt-embed [data-pt="item"]')
+                    await page.wait_for_selector('#sheet .pt-embed [data-pt="bq"][data-n="5"]', timeout=8000)
+                    await page.click('#sheet .pt-embed .pt-qty-chips [data-pt="bq"][data-n="5"]')
+                    await page.wait_for_timeout(400)
+                    before = await wallet()
+                    await page.click('#sheet .pt-embed [data-pt="go"]')
+                    await confirm('confirm-toys')
+                    await page.wait_for_selector('#sheet .pt-embed .pt-flash.good', timeout=10000)
+                    flash = (await page.inner_text('#sheet .pt-embed .pt-flash')).strip()
+                    check('×5' in flash and await wallet() < before, f'{tag}: five toys bought in one purchase ({flash})')
+                    await shot('8-toys')
                     await tab('pwear')
                     await page.click('#sheet .pt-embed [data-pt="wk"]')
                     await page.wait_for_selector('#sheet .pt-embed .pt-wsel', timeout=8000)
@@ -269,8 +325,11 @@ async def main():
 
                     # ---- ⚒️ Cường hóa, from the menu ----
                     await from_menu('jrForge', 'Cường hóa')
-                    await page.wait_for_selector('#sheet[open] .fg .wd-tabs', timeout=15000)
+                    await page.wait_for_selector('#sheet[open] .fg .fg-kinds', timeout=15000)
+                    await page.wait_for_function("[...document.querySelectorAll('#sheet .fg-kind small')].every(x=>x.textContent!=='…')", timeout=10000)
                     check('Cường hóa' in await page.inner_text('#sheet .sheet-head'), f'{tag}: the sheet is Cường hóa')
+                    kinds = await page.locator('#sheet .fg-kind').all_inner_texts()
+                    check(len(kinds) == 4 and 'đôi' in kinds[0], f'{tag}: what can be ghép, by kind, counted: {" | ".join(k.replace(chr(10), " ") for k in kinds)}')
                     for t in FORGE:
                         await tab(t, 'jrAsForgeTab')
                         await page.wait_for_selector('#sheet .fg-quick, #sheet .pt-quick', timeout=15000)

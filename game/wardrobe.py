@@ -18,7 +18,7 @@ Some items are unlocked instead of bought: a maturity level, a title, or being m
 
 Art lives in public/js/v4/look.js under the same ids (tests/test_wardrobe.py checks the lists match).
 Commands (routed by journey.action, so journey.after + validate_state run as for every jr_* command):
-``jr_wd_wear`` {look: {slot: id, …, uniform?, tint?}}, ``jr_wd_buy`` {item, wear?, pay?},
+``jr_wd_wear`` {look: {slot: id, …, uniform?, tint?}}, ``jr_wd_buy`` {item | items, wear?, pay?},
 ``jr_wd_unlock`` {color, pay?}, ``jr_wd_color`` {item, color, buy?, wear?, pay?} and
 ``jr_wd_deco`` {uid, color, buy?, pay?}.
 
@@ -67,6 +67,7 @@ LABEL = 'Mua sắm quần áo'         # wallet row: "Mua sắm quần áo · Á
 # wearing and arranging what you own.
 ACC_SHOP_NAME = 'Tiệm phụ kiện'
 ACC_SHOP_TITLE = 'Tiệm phụ kiện Hạt Cườm'
+BUY_MANY_MAX = 12                 # 🛍️ jr_wd_buy `items`: pieces bought in one go (owner 23/10 "mua nhiều cái 1 lần")
 KIND = 'life'                     # journey.HISTORY_KINDS (an existing kind: older builds still validate the row)
 
 
@@ -892,28 +893,43 @@ def action(s: dict, name: str, p: dict) -> dict:
         deco[uid] = cid
         return dict(message=f'{paid} {nm} giờ mang màu {cname}.'.strip())
     if name == 'jr_wd_buy':
-        need(set(p) <= {'item', 'wear', 'pay'}, 'Thông tin mua hàng không hợp lệ.')
-        iid = p.get('item')
-        need(isinstance(iid, str) and iid in BUYABLE, 'Món này không bán.')
-        it = INDEX[iid]
+        # 🛍️ owner 23/10 "mua thì cho mua nhiều cái 1 lần": `items` (several different pieces, a whole outfit or a few
+        # accessories, BUY_MANY_MAX at most) instead of `item`; one price for all, all bought or none. Every piece is
+        # owned once, so there is no count of one piece. A retry of a purchase that went through finds them all owned
+        # and pays nothing (the command's request id answers it first anyway).
+        need(set(p) <= {'item', 'items', 'wear', 'pay'} and ('item' in p) != ('items' in p), 'Thông tin mua hàng không hợp lệ.')
+        many = 'items' in p
+        ids = p['items'] if many else [p.get('item')]
+        need(isinstance(ids, list) and 1 <= len(ids) <= BUY_MANY_MAX and len(set(map(str, ids))) == len(ids), 'Thông tin mua hàng không hợp lệ.')
+        need(all(isinstance(i, str) and i in BUYABLE for i in ids), 'Món này không bán.')
         need(p.get('wear', True) in (True, False), 'Thông tin mua hàng không hợp lệ.')
         w = _box(s)
-        need(iid not in _box_owned(s), f'Bạn đã có {it["name"]} rồi.')
-        if it['need'] == 'shop':
-            need(staff(s), f'{it["name"]} chỉ bán cho người làm ở {SHOP_NAME}. Vào làm ở đó một ngày là mua được.')
-        if it['need'] == OPEN_SHOP:
-            need(shop_open(s), f'{it["name"]} bán ở {ACC_SHOP_NAME}, có hàng từ chương 3 của hành trình.' if it['slot'] == 'acc'
-                 else f'{it["name"]} bán ở {SHOP_NAME}, tiệm mở cửa từ chương 3 của hành trình.')
-        cost = price(s, iid)
+        if many and all(i in _box_owned(s) for i in ids):
+            return dict(message='Bạn đã có đủ các món này rồi.', bought=[])
+        its = [INDEX[i] for i in ids]
+        for iid, it in zip(ids, its):
+            need(iid not in _box_owned(s), f'Bạn đã có {it["name"]} rồi.')
+            if it['need'] == 'shop':
+                need(staff(s), f'{it["name"]} chỉ bán cho người làm ở {SHOP_NAME}. Vào làm ở đó một ngày là mua được.')
+            if it['need'] == OPEN_SHOP:
+                need(shop_open(s), f'{it["name"]} bán ở {ACC_SHOP_NAME}, có hàng từ chương 3 của hành trình.' if it['slot'] == 'acc'
+                     else f'{it["name"]} bán ở {SHOP_NAME}, tiệm mở cửa từ chương 3 của hành trình.')
+        costs = [price(s, i) for i in ids]
+        cost, what = sum(costs), its[0]['name'] if len(ids) == 1 else f'{len(ids)} món'
         from . import bank as bk
-        paid = bk.pay(s, cost, f'{LABEL} · {it["name"]}', method=p.get('pay', 'auto'), kind=KIND,
-                      career=SHOP if staff(s) else None, short=f'Ví chưa đủ {cost} xu để mua {it["name"]}.')
-        (_plusbox(s)['owned'] if iid in PLUS else w['owned']).append(iid)
-        if p.get('wear', True):
-            _wear_slot(s, it['slot'], iid)
+        paid = bk.pay(s, cost, f'{LABEL} · {what}', method=p.get('pay', 'auto'), kind=KIND,
+                      career=SHOP if staff(s) else None, short=f'Ví chưa đủ {cost} xu để mua {what}.')
+        for iid, it in zip(ids, its):
+            (_plusbox(s)['owned'] if iid in PLUS else w['owned']).append(iid)
+            if p.get('wear', True):
+                _wear_slot(s, it['slot'], iid)
         how = f'Đã trả {cost} xu' if paid['method'] == 'cash' else paid['text'].rstrip('.')
-        off = f' (giá nhân viên {SHOP_NAME})' if cost < it['price'] else ''
-        return dict(message=f'{how}{off} cho {it["name"]}.' + (' Mặc luôn rồi nè!' if p.get('wear', True) else ' Đã cất vào tủ.'))
+        off = f' (giá nhân viên {SHOP_NAME})' if any(c < it['price'] for c, it in zip(costs, its)) else ''
+        names = its[0]['name'] if len(ids) == 1 else ', '.join(it['name'] for it in its)
+        out = dict(message=f'{how}{off} cho {names}.' + (' Mặc luôn rồi nè!' if p.get('wear', True) else ' Đã cất vào tủ.'))
+        if many:
+            out['bought'] = list(ids)
+        return out
     raise e.GameError('Thao tác tủ đồ không hợp lệ.', 'unknown_action')
 
 

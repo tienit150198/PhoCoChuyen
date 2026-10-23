@@ -72,9 +72,9 @@ class Limits(unittest.TestCase):
 
     def test_the_client_reads_the_server_limits(self):
         js = (ROOT / 'public/js/v4/pets.js').read_text(encoding='utf-8')
-        for needle in ('CAT()?.buy_qty', 't?.limits?.gear_qty', 'W?.qty_max', 'qtyBox(', '...(q>1?{qty:q}:{})'):
+        for needle in ('CAT()?.buy_qty', 't?.limits?.gear_qty', 'W?.qty_max', 'CAT()?.item_qty', 'qtyBox(', '...(q>1?{qty:q}:{})'):
             self.assertIn(needle, js)
-        self.assertEqual(js.count('...(q>1?{qty:q}:{})'), 3)    # qty only above 1: an older server never sees it
+        self.assertEqual(js.count('...(q>1?{qty:q}:{})'), 4)    # qty only above 1 (2.5.5: toys too): an older server never sees it
 
 
 class Pets(unittest.TestCase):

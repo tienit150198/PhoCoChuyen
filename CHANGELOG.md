@@ -1,6 +1,6 @@
 # 2.5.5 — 24/10/2026
 
-🛍️ Cửa hàng và ⚒️ Cường hóa (chủ game 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi, xong thú cưng hay người gì trong đó cả", "cửa hàng hoặc shop đều là 1 đó nhé, mua gì nằm đó hết cho dễ"). Chỉ client: không đổi server, không đổi kinh tế, không đổi schema, không đổi save. Mọi lệnh mua / ghép là lệnh cũ (jr_wd_buy, charm_*, jr_pet_wing_*, jr_pet_buy, jr_pet_wbuy, jr_pet_gear_*, jr_pet_fuse, jr_pet_wfuse). Có gì mới 2.5.5.
+🛍️ Cửa hàng và ⚒️ Cường hóa (chủ game 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi, xong thú cưng hay người gì trong đó cả", "cửa hàng hoặc shop đều là 1 đó nhé, mua gì nằm đó hết cho dễ"). Thêm (chủ game 23/10): "mua thì cho mua nhiều cái 1 lần", "ghép thì đưa vào mục riêng, hiện tại khó ghép quá". Không đổi giá, tỉ lệ, phí, schema hay save; server chỉ nhận thêm số lượng ở ba lệnh mua cũ (rollback về 2.5.4.1 an toàn: dữ liệu không đổi dạng). Mọi lệnh ghép là lệnh cũ (jr_pet_wing_fuse, jr_pet_fuse, jr_pet_wfuse, jr_pet_gear_*). Có gì mới 2.5.5 (4 dòng).
 
 ## 🛍️ Cửa hàng (v4/acc-shop.js, jrView 'accshop')
 - Mục riêng trên menu: giao diện cũ ở đầu "Đời sống" (app.js railHTML, không còn trong "Của mình"), bản đồ mới trong Tiện ích (isometric-shell.js, nút "Cửa hàng"). Một tên duy nhất "Cửa hàng" (charms.js SHOP_NAME), không có mục "Shop" thứ hai; Tiện ích bỏ nhóm "Các quầy trong Shop" và hai dòng Tiệm phụ kiện / Phụ kiện đôi lẻ.
@@ -10,7 +10,18 @@
 - Liên kết cũ vẫn chạy: jrAccShop {tab, code, item} (thẻ bạn bè ở marriage.js → 🤝, charms.js, Tủ đồ), tab lạ về 🎀.
 - Sửa lỗi cũ trong pets.js: mua linh kiện xong (gshop) không vẽ lại vì `render();top();` nằm sau dấu chú thích.
 
+## 🛒 Mua nhiều một lần
+- Một lần xác nhận, một lệnh server, một tổng tiền, đủ cả hoặc không món nào (lỗi thì save không đổi); lệnh gửi lại cùng request id (engine: game/storage.py command; charm_buy và cánh: `rid`) trả kết quả cũ, không trừ tiền lần hai.
+- 🪽 Cánh: chọn số lượng − N + với ×1 / ×5 / ×10 / Tối đa (jr_pet_wing_buy `qty` đã có, tối đa 20, còn chỗ trong tủ cánh, đủ tiền).
+- 🤝 Phụ kiện đôi: charm_buy nhận `qty` 1..BOX_MAX (game/friend_charms.py): một dòng trừ tiền cho tổng, hộp quà còn đủ chỗ (box_full), ví đủ cho cả (not_enough); có mã bạn thì cặp đầu gửi bạn, còn lại nằm trong hộp.
+- 🎾 Đồ chơi / phụ kiện cho bé: jr_pet_buy `qty` tối đa pets_content.ITEM_QTY_MAX = 20 (trước 3); content gửi `item_qty`. Mua bé, đồ cho bé, linh kiện vẫn dùng qty sẵn có.
+- 🎀 Phụ kiện và 👕 Trang phục mỗi món chỉ có một cái, nên "nhiều" là 🧺 Giỏ: bật "Chọn nhiều món", chạm các món ở cả hai quầy (tối đa 12), "Mua cả giỏ" = jr_wd_buy `items` (game/wardrobe.py, BUY_MANY_MAX 12): giá cộng một dòng ví "· N món", mặc luôn khi mỗi chỗ một món, không thì cất tủ; cả giỏ đã có rồi (gửi lại) thì không trả gì. `item` một món như cũ.
+- Số lượng tối đa theo giới hạn server và tiền đang có (ví + ngân hàng).
+
 ## ⚒️ Cường hóa (v4/acc-shop.js forgeView, jrView 'forge', action jrForge)
+- Đầu trang là các thẻ loại đồ ghép được, đếm sẵn: 🪽 "N đôi · C×3 D×4", 🧬 số bé theo hạng, 👗 số món / bộ ghép được, 🧰 số linh kiện / lên hạng được; dấu ⚡ khi có bộ ghép ngay (pets.js petForgeCounts).
+- 🪽 Tự chọn: cánh xếp theo hạng, mỗi nhóm ghi "ghép được k lần / thiếu n đôi"; không hiện tỉ lệ.
+- Hộp thoại Thú cưng (Ghép thú, Đồ cho bé, Linh kiện) có nút "⚒️ Cường hóa" mở mục này đúng quầy; ghép trong hộp thoại vẫn dùng được.
 - Mục riêng trên menu ở cả hai giao diện (app.js "Cường hóa", Tiện ích "Cường hóa"), hiện khi có cánh hoặc thú cưng trên server (town-utilities.js forgeOpen).
 - Bốn quầy: 🪽 Cánh (ghép ba đôi, jr_pet_wing_fuse), 🧬 Ghép thú (jr_pet_fuse, ghép / nâng hạng thú), 👗 Đồ thú cưng (ghép ba món cùng loại cùng hạng, jr_pet_wfuse), 🧰 Linh kiện thú (cường hóa jr_pet_gear_up, lên hạng jr_pet_gear_fuse). Ghép cánh chuyển hẳn từ quầy Cánh sang đây; quầy Cánh trong Cửa hàng còn mua / đeo / cất / bỏ và nút "⚒️ Cường hóa". Không gộp: hạng ngân hàng, xe, đảo, quầy, nhà (không phải ghép đồ).
 - ⚡ Cường hóa nhanh ở mọi quầy: client tự chọn một bộ hợp lệ rồi hỏi lại đúng món sẽ dùng và phí, đồng ý thì làm một lần bằng lệnh cũ.
@@ -22,7 +33,8 @@
 
 ## Kỹ thuật
 - Không đụng hình cánh (v4/wings-art.js, client/isometric/wing-rigs.ts), không build lại phaser-world.js.
-- scripts/browser_shop.py: chạy thử trên trình duyệt thật (giao diện cũ và bản đồ mới, 390×844 và 1280×800).
+- scripts/browser_shop.py: chạy thử trên trình duyệt thật (giao diện cũ và bản đồ mới, 390×844 và 1280×800): ×5 cánh, giỏ 3 món, 2 cặp, 5 đồ chơi, thẻ đếm ở ⚒️.
+- tests/test_shop_qty.py: mua nhiều (đủ cả hoặc không, ví cho tổng, hộp đầy, số sai, request id / rid trả một lần).
 
 # 2.5.4.1 — 23/10/2026
 

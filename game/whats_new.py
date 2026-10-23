@@ -37,6 +37,10 @@ ENTRIES = (
              go=dict(action='jrAccShop')),
         dict(emoji='⚒️', text="Cường hóa: ghép cánh, ghép thú… ở một chỗ, có Cường hóa nhanh.",
              go=dict(action='jrForge')),
+        dict(emoji='🛒', text="Mua nhiều món một lần: chọn số lượng cánh, phụ kiện đôi, đồ cho bé; phụ kiện, trang phục cho vào giỏ.",
+             go=dict(action='jrAccShop')),
+        dict(emoji='🧩', text="Cường hóa dễ hơn: thấy hết đồ ghép được theo từng loại, đếm sẵn, chạm ⚡ là ghép.",
+             go=dict(action='jrForge')),
     )),
     dict(version="2.5.4", date="2026-10-23", items=(   # owner 22/10: "bảo thêm linh kiện và cánh là được rồi"
         dict(emoji='🤝', text="Thêm nhiều phụ kiện đôi mới ở Tiệm phụ kiện."),

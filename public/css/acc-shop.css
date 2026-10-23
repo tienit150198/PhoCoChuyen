@@ -121,3 +121,33 @@ html[data-layout="phone"] .as-group{font-size:.9rem;padding:6px 4px;gap:4px}
 .fg-empty h3{margin:0}
 .fg-empty .btn{justify-self:start}
 span.wg-pick{cursor:default}
+/* 🛍️ Mua nhiều một lần (owner 23/10): − N + with ×1 ×5 ×10 / Tối đa and the sum (🪽 🤝); 🧺 the cart of pieces (🎀 👕) */
+.as-qty{display:grid;gap:6px;margin:4px 0 2px}
+.as-qty-step{display:inline-flex;align-items:center;gap:6px}
+.as-qty-b{min-width:40px;min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-pill,999px);background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer}
+.as-qty-b.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.as-qty-b:disabled{opacity:.45;cursor:default}
+.as-qty-b:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.as-qty-n{min-width:28px;text-align:center;font-size:1.05rem}
+.as-qty-chips{display:flex;flex-wrap:wrap;gap:6px}
+.as-qty-chips .as-qty-b{min-height:36px;font-size:.85rem}
+.as-qty-sum{color:var(--ink-2)}
+.as-multi .chip{min-height:40px}
+.as-cart{display:grid;gap:6px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.as-cart-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.as-cart p{margin:0}
+.wd-item{position:relative}
+.wd-item.in-cart{outline:3px solid var(--accent);outline-offset:1px}
+.as-incart{position:absolute;top:4px;right:4px;font-style:normal;font-size:1rem}
+/* ⚒️ Cường hóa (owner 23/10 "ghép thì đưa vào mục riêng"): a card per kind owned, its counts, ⚡ when a set is ready */
+.fg-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.fg-kind{position:relative;display:grid;gap:2px;justify-items:start;text-align:left;min-height:64px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.fg-kind.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface));box-shadow:inset 0 -3px 0 var(--accent)}
+.fg-kind:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.fg-kind-e{font-size:1.3rem;line-height:1}
+.fg-kind small{color:var(--ink-2);font-size:.78rem;line-height:1.3}
+.fg-ready{position:absolute;top:6px;right:8px;font-style:normal}
+html[data-layout="phone"] .fg-kinds{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wg-group{display:grid;gap:6px;margin-top:8px}
+.wg-group-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0}
+.wg-group-head .wg-tier{position:static}

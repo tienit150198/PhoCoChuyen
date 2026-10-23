@@ -3,7 +3,9 @@
 export default [
  {"version":"2.5.5","date":"2026-10-24","items":[
   {"emoji":"🛍️","text":"Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.","go":{"action":"jrAccShop"}},
-  {"emoji":"⚒️","text":"Cường hóa: ghép cánh, ghép thú… ở một chỗ, có Cường hóa nhanh.","go":{"action":"jrForge"}}
+  {"emoji":"⚒️","text":"Cường hóa: ghép cánh, ghép thú… ở một chỗ, có Cường hóa nhanh.","go":{"action":"jrForge"}},
+  {"emoji":"🛒","text":"Mua nhiều món một lần: chọn số lượng cánh, phụ kiện đôi, đồ cho bé; phụ kiện, trang phục cho vào giỏ.","go":{"action":"jrAccShop"}},
+  {"emoji":"🧩","text":"Cường hóa dễ hơn: thấy hết đồ ghép được theo từng loại, đếm sẵn, chạm ⚡ là ghép.","go":{"action":"jrForge"}}
  ]},
  {"version":"2.5.4","date":"2026-10-23","items":[
   {"emoji":"🤝","text":"Thêm nhiều phụ kiện đôi mới ở Tiệm phụ kiện."},

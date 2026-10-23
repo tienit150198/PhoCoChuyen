@@ -107,6 +107,14 @@ test('🛍️ Tiệm phụ kiện: the accessory shelf sells, the pair shelf lis
   assert.match(pair,/với Châu/);assert.match(pair,/với Mai/);
   assert.equal((pair.match(/data-action="jrAsWear"/g)||[]).length,2,'each pair its own switch, no limit');
   assert.match(pairsCard(env),/đang đeo 1\/2/);
+  // 🛒 owner 23/10 "mua thì cho mua nhiều cái 1 lần": a quantity per kind (the box's room), one charm_buy with qty
+  assert.match(pair,/data-action="jrAsPairQty" data-kind="tri_ki" data-n="2"/);
+  ui.as={tab:'pair',draft:null,to:'',pq:{tri_ki:3}};assert.match(accShopView(env),/Mua cặp ×3 · 390 xu/);
+  // 🧺 several accessories at once: the cart and its sum (jr_wd_buy items)
+  ui.as={tab:'acc',draft:null,to:'',multi:true,cart:['kinh_tron']};
+  const cart=accShopView(env);
+  assert.match(cart,/🧺 Giỏ · 1 món/);assert.match(cart,/data-action="jrAsBuyMany"/);assert.match(cart,/Mua cả giỏ · 90 xu/);
+  assert.match(cart,/class="wd-item in-cart" data-action="jrAsTry" data-item="kinh_tron" aria-pressed="true"/);
   setPairs(null);
 });
 
@@ -171,7 +179,7 @@ test('🛍️ Cửa hàng: 👤 Cho bạn, 🐾 Thú cưng and 🏠 Nhà & xe sh
 test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh picks a valid set and never the worn wing',async()=>{
   const {wingQuick,forgeView,forgeTabs}=await import('../public/js/v4/acc-shop.js');
   const wings={styles:[{id:'buom',emoji:'🦋',name:'Cánh bướm',price:8800,desc:''},{id:'rong',emoji:'🐉',name:'Cánh rồng',price:36000,desc:''}],
-    earn:[2,4,6,8,11,15,20,25],battle:[1,1,2,2,3,4,5,6],fee:[500,2000,10000,50000,300000,2e7,2e8],own_max:40,lose_from:4};
+    earn:[2,4,6,8,11,15,20,25],battle:[1,1,2,2,3,4,5,6],fee:[500,2000,10000,50000,300000,2e7,2e8],own_max:40,qty_max:20,lose_from:4};
   const own=[{id:'w1',k:'buom',r:0},{id:'w2',k:'rong',r:0},{id:'w3',k:'buom',r:0},{id:'w4',k:'buom',r:1},{id:'w5',k:'buom',r:1},{id:'w6',k:'rong',r:1},{id:'w7',k:'buom',r:0}];
   const api={content:{journey:{wardrobe:{...content.journey.wardrobe,wings}}},state:{...state,journey:{...state.journey,wings:{own,on:'w5'}}}};
   // tier C has three: the main is the one worn (w5), the others the cheapest, never the worn one
@@ -187,12 +195,18 @@ test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh picks a v
   const fg=forgeView(env);
   assert.match(fg,/⚒️ Cường hóa/);assert.match(fg,/data-action="jrAsWingQuick"/);assert.match(fg,/Cánh bướm C \+ Cánh bướm C \+ Cánh rồng C → hạng B · 2\.000 xu/);
   assert.match(fg,/data-action="jrAsWingPick" data-id="w1"/,'or pick three by hand');
+  // owner 23/10 "ghép thì đưa vào mục riêng": what is owned by kind, counted, ⚡ when a set is ready; the wings by tier
+  assert.match(fg,/class="fg-kind active"[^>]*data-tab="wing"><span class="fg-kind-e" aria-hidden="true">🪽<\/span><b>Cánh<\/b><small>7 đôi · C×3 D×4<\/small><i class="fg-ready"/);
+  assert.match(fg,/<b>Hạng C<\/b> · 3 đôi <small class="muted">· ghép được 1 lần/);assert.match(fg,/<b>Hạng D<\/b> · 4 đôi/);
   assert.doesNotMatch(fg,/tỉ lệ|tỷ lệ|%<\/small>/,'no odds (owner 19/10)');
   // the shop's Cánh shelf buys and wears; the ghép is a way to ⚒️
   ui.as.tab='wing';const shelf=accShopView(env);
   assert.match(shelf,/data-action="jrForge" data-tab="wing"/);assert.doesNotMatch(shelf,/jrAsWingPick|jrAsWingFuse/);
+  assert.match(shelf,/data-action="jrAsWingQty" data-k="buom" data-n="2"/,'🛒 a quantity per style');
+  ui.as.wq={rong:3};assert.match(accShopView(env),/Mua ×3 · 108\.000 xu/);
   // every pets' ghép shelf has its ⚡ (v4/pets.js quickBtn in lab, ward, the gear bag)
   const pj=readFileSync(new URL('../public/js/v4/pets.js',import.meta.url),'utf8');
   assert.equal((pj.match(/quickBtn\(\)\+/g)||[]).length,3);
   assert.match(pj,/case'quick':return quick\(\);/);
+  assert.equal((pj.match(/forgeLink\('p(lab|ward|gear)'\)\+/g)||[]).length,3,'the ghép shelves of the dialog link to ⚒️ Cường hóa');
 });
