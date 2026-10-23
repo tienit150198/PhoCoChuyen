@@ -609,7 +609,7 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         noticed = False
         if not internal or action == business.ACTION:
             noticed = business.business_progression.owner_access(out)
-        if business.reconcile(out) or noticed:validate_state(out)
+        if action!=slim.ACTION and (business.reconcile(out) or noticed):validate_state(out)  # 💤 a night compaction settles nothing
         return out,result
     try:return bank_speaker.collect(lambda:income_gear.collect(lambda:pay_boost.collect(run)))
     finally:
@@ -618,7 +618,9 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
-    if action!="reset_all":slim.compact(s,career if career in CAREERS else None)  # 💤 a few cold careers a command, rows to the archive
+    if action==slim.ACTION:  # 💤 the night job (scripts/slim_saves.py): cold careers' old rows to the archive, nothing else
+        need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
+        return s,slim.apply(s,payload if isinstance(payload,dict) else {})
     settled_at=business.time.time()
     if not internal or action == business.ACTION:
         business.business_progression.owner_access(s,now=settled_at)
@@ -1452,7 +1454,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["feed"]=[fbk.public_post(f,cid,raw.get("day")) for f in raw["feed"]]
         c["feedback_stats"]=fbk.stats(raw)
         c.pop("ext",None)
-        c["slim"]=slim.view(raw)  # 💤 rows a cold spell moved to the archive: "Xem cũ hơn" on short lists, older photos
+        c["slim"]=slim.view(raw)  # 💤 rows a cold spell moved to the archive: "Xem cũ hơn" on short lists
         c["life"]=life.public_life(s["careers"][cid])
         c["day_clock"]=dc.view(raw,cid)  # giờ trong ngày: HUD clock, closing warnings, the scene's light
         c["ot"]=None if pm.managing(s,raw,cid) else ovt.public(raw,cid)  # ⏱️ the work screen's overtime chip (view only)

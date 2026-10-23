@@ -31,7 +31,6 @@ IN_SAVE = {
     "feed": dict(path=("feed",), newest_first=True),
     "wallet": dict(path=("history",), journey=True),
     "chua.cards": dict(path=("chua", "cards"), journey=True),
-    "album": dict(path=("album",), newest_first=True),   # 📷 the Kỷ niệm sheet's older photos (game/slim.py)
 }
 
 _OUT: contextvars.ContextVar = contextvars.ContextVar("archive_out", default=None)

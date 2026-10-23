@@ -1,44 +1,49 @@
-"""💤 Cold careers keep a slim record (perf 23/10: "lag lắm, cái nào cũ cũ giảm tải được xóa được thì bỏ bớt").
+"""💤 Cold careers keep a slim record (perf 23/10: "lag lắm, cái nào cũ cũ giảm tải được xóa được thì bỏ bớt";
+owner after review: "đừng để ảnh hưởng và làm chậm").
 
 The biggest saves (6–12 MB) are ~70 career records, each with its full lists: the cash book (≈250 rows), the
-album (six photos), the journal (100 rows)... Every command parses, validates (each career a staff order moved),
-serializes and writes all of it. Most of those careers have not been played for a long time: their staff work, but
-the player is elsewhere. Such a career is COLD: it is not the current or acting career and none of the last
-COLD_DAYS days of the journey (journey.days, one row per closed day) was spent there. A save with fewer recorded
-days than that has no cold career.
+journal (100 rows)... Every command parses, validates (each career a staff order moved), serializes and writes all
+of it. Most of those careers have not been played for a long time: their staff work, but the player is elsewhere.
+Such a career is COLD: it is not the current career and none of the last COLD_DAYS days of the journey
+(journey.days, one row per closed day) was spent there. A save with fewer recorded days than that has no cold career.
 
-A cold career keeps (compact, at most PER_COMMAND careers a command, only inside a command whose cut rows are written
-to the archive: game/archive.py, never dropped):
-* cash book: the newest LEDGER_KEEP rows, every row of the day its lãi/lỗ card shows and after (today while the shift
-  is open, else the day just closed: the card's detail, today's staff sums, overtime, bonuses) and every row of a job
-  still on the desk; the rows before them go to the archive, their sum into the
-  opening balance (opening_balance + rows == wallet, as operations.trim_ledger). The lãi/lỗ chart's days among them
-  (7 days back from the career's day) leave a per-day, per-category total in ops.finance.day_sums (v4/pnl.js adds it);
-* album: every photo goes to the archive (the Kỷ niệm sheet loads them back through GET /api/archive, kind "album");
-* journal: the newest JOURNAL_KEEP rows, and today's rows while the shift is open (inventory._turn0 reads the
-  "Mở ca" row); "Xem cũ hơn" pages the rest;
-* life histories nothing reads back (the played trò nhỏ, the price changes): the newest LIFE_KEEP of each.
-What was moved is counted in c["ext"]["slim"] (the view's c.slim: the client then offers "Xem cũ hơn" even on a short
-list). Reviews (ratings and boards read them), jobs (slot numbers), histories whose length picks what comes next and
-everything else stay as they are. A career played again simply grows its lists back.
+Player commands never compact (no extra work in them, ever). The night job scripts/slim_saves.py (04:00–05:00, big
+saves only) sends the internal command ACTION through the normal Store path: the same transaction writes the cut
+rows to the archive (game/archive.py, never dropped), the revision check skips a save that moved, and the command
+settles nothing (no staff work, no fees: only these lists change). A cold career then keeps:
+* cash book: the newest LEDGER_KEEP rows (the Sổ dòng tiền shows 24), every row of the day its lãi/lỗ card shows
+  and after (today while the shift is open, else the day just closed) and every row of a job still on the desk; the
+  rows before them go to the archive, their sum into the opening balance (opening_balance + rows == wallet, as
+  operations.trim_ledger). The lãi/lỗ chart's days among them (7 days back from the career's day) leave a per-day,
+  per-category total in ops.finance.day_sums (v4/pnl.js adds it: the same chart);
+* journal: the newest JOURNAL_KEEP rows (the Sổ tay shows 80), and today's rows while the shift is open
+  (inventory._turn0 reads the "Mở ca" row); "Xem cũ hơn" pages the rest, as before;
+* life histories nothing shows (the played trò nhỏ, the price changes): the newest LIFE_KEEP of each.
+What was moved is counted in c["ext"]["slim"] (the view's c.slim: "Xem cũ hơn" stays offered on the shortened
+lists, the cash book's header counts the moved rows too). Photos (the Kỷ niệm sheet shows all six on open), reviews
+(ratings and boards read them), jobs (slot numbers), histories whose length picks what comes next and everything
+else stay as they are. A career played again simply grows its lists back.
 """
 from __future__ import annotations
 
 from . import archive as ar
 
+ACTION = 'slim_compact'   # internal only (engine._apply_action): scripts/slim_saves.py
 COLD_DAYS = 10        # closed days (journey.days) without this career: cold
-PER_COMMAND = 8       # careers compacted per command at most (the first commands after a deploy spread the work)
+PER_COMMAND = 24      # careers compacted per night command at most (its row lock stays short)
+MAX_PER_COMMAND = 80
 LEDGER_KEEP = 30      # cash-book rows a cold career keeps at least (the Sổ dòng tiền lists the newest 24)
-JOURNAL_KEEP = 30     # journal rows a cold career keeps at least
+JOURNAL_KEEP = 80     # journal rows a cold career keeps at least (the Sổ tay lists the newest 80; the save keeps 100)
+JOURNAL_SLACK = 10
 CHART_DAYS = 7        # the lãi/lỗ chart: 7 days ending at the summary day (the career's day or the day before)
 SLACK = 20            # a list is compacted again only once it is this much over its keep
 SUMS_DAYS = CHART_DAYS + 1   # day_sums keeps the days day-CHART_DAYS .. day
 LIFE_KEEP = 10        # rows of each life history (experiences.py) a cold career keeps
 LIFE = (('activity_history', 'life.activities'), ('price_history', 'life.prices'))   # goals_history keeps 3 already
-COUNTS = ('ledger', 'album', 'journal', 'life')
+COUNTS = ('ledger', 'journal', 'life')
 
 
-def cold(s: dict, acting=None) -> list:
+def cold(s: dict) -> list:
     """Ids of the cold careers of this save (see the module doc), in save order."""
     j = s.get('journey') if type(s) is dict else None
     days = j.get('days') if isinstance(j, dict) else None
@@ -46,7 +51,7 @@ def cold(s: dict, acting=None) -> list:
     if not isinstance(days, list) or len(days) < COLD_DAYS or type(careers) is not dict:
         return []
     warm = {r.get('c') for r in days[-COLD_DAYS:] if isinstance(r, dict)}
-    warm.update((s.get('current'), acting))
+    warm.add(s.get('current'))
     return [cid for cid, c in careers.items() if cid not in warm and type(c) is dict and c.get('started') is True]
 
 
@@ -69,15 +74,12 @@ def _prefix(rows: list, keep: int, first_day: int, refs=frozenset()) -> int:
     return max(0, cut)
 
 
-
-
 def needs(c: dict) -> bool:
     """This cold career has something to compact (cheap: lengths only)."""
     f = ((c.get('ops') or {}).get('finance') or {}) if isinstance(c.get('ops'), dict) else {}
     ledger = f.get('ledger') if isinstance(f, dict) else None
     return ((isinstance(ledger, list) and len(ledger) > LEDGER_KEEP + SLACK)
-            or (isinstance(c.get('album'), list) and len(c['album']) > 0)
-            or (isinstance(c.get('journal'), list) and len(c['journal']) > JOURNAL_KEEP + SLACK)
+            or (isinstance(c.get('journal'), list) and len(c['journal']) > JOURNAL_KEEP + JOURNAL_SLACK)
             or (isinstance(c.get('life'), dict) and any(isinstance(c['life'].get(k), list) and len(c['life'][k]) > LIFE_KEEP + SLACK for k, _ in LIFE)))
 
 
@@ -133,15 +135,6 @@ def ledger(c: dict, cid: str) -> int:
     return cut
 
 
-def album(c: dict, cid: str) -> int:
-    photos = c.get('album')
-    if not isinstance(photos, list) or not photos:
-        return 0
-    ar.record(list(reversed(photos)), 'album', cid)   # kept newest first: archived oldest first, like ar.first's cuts
-    c['album'] = []
-    return len(photos)
-
-
 def journal(c: dict, cid: str) -> int:
     rows = c.get('journal')
     if not isinstance(rows, list) or type(c.get('day')) is not int:
@@ -167,27 +160,44 @@ def life(c: dict, cid: str) -> int:
     return n
 
 
-def compact(s: dict, acting=None, limit: int = PER_COMMAND) -> list:
+def plan(s: dict) -> list:
+    """Ids of the cold careers that have something to compact (lengths only: the night job's dry run)."""
+    careers = s.get('careers') if type(s) is dict else None
+    return [cid for cid in cold(s) if needs(careers[cid])]
+
+
+def compact(s: dict, limit: int = PER_COMMAND) -> list:
     """Compact up to `limit` cold careers that need it; their ids. Nothing happens outside a command whose cut rows
     are written to the archive (archive.collecting()): a copy, a preview, a test without a collector."""
     if not ar.collecting():
         return []
     done = []
     careers = s['careers']
-    for cid in cold(s, acting):
+    for cid in cold(s):
         if len(done) >= limit:
             break
         c = careers[cid]
         if not needs(c):
             continue
         moved = 0
-        for kind, fn in (('ledger', ledger), ('album', album), ('journal', journal), ('life', life)):
+        for kind, fn in (('ledger', ledger), ('journal', journal), ('life', life)):
             n = fn(c, cid)
             _count(c, kind, n)
             moved += n
         if moved:
             done.append(cid)
     return done
+
+
+def apply(s: dict, p: dict) -> dict:
+    """The internal command ACTION: {"careers": how many at most}. Nothing to do: refused (nothing is written)."""
+    from .engine import GameError
+    n = p.get('careers', PER_COMMAND)
+    limit = n if type(n) is int and 1 <= n <= MAX_PER_COMMAND else PER_COMMAND
+    done = compact(s, limit)
+    if not done:
+        raise GameError('Bản lưu đã gọn.', 'slim_nothing')
+    return dict(message='Đã cất bớt sổ cũ của các nghề lâu không ghé.', slim=dict(careers=done, left=len(plan(s))))
 
 
 def view(c: dict) -> dict | None:

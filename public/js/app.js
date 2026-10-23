@@ -14,7 +14,7 @@ import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummar
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {fillToast,toastHead} from './toast-lines.js';
 import {reqList,fold,clean as uiClean,few,actBar,tip as uiTip,helpBtn,withWhy,headChip} from './ui-kit.js';
-import {olderRows,olderButton,loadOlder,syncOlder,olderPage} from './archive.js';
+import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
@@ -1427,12 +1427,7 @@ document.addEventListener('submit',async e=>{
   const f=e.target;if(!(f instanceof HTMLFormElement)||!f.dataset.csCall)return;e.preventDefault();
   const input=f.querySelector('textarea'),text=input?.value.trim();if(!text)return;input.value='';await csCallSend(f.dataset.csCall,{text});
 });
-function albumView(){const c=room(),cid=career(),photo=p=>`<article class="polaroid"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy"><p>${esc(p.title)}</p><div class="row spread"><small>Ngày ${p.day} · ${esc(meta().place)}</small>${button(icon('download',13),'downloadPhoto',{id:p.id},'ghost small')}</div></article>`;
-  // 💤 a career left alone for a while keeps its photos in the archive (game/slim.py): the first page opens by itself
-  const older=olderRows(cid,'album'),page=olderPage(cid,'album'),moved=Boolean(c.slim?.album);
-  if(moved&&!c.album.length&&!older.length&&!page.done&&!page.loading)queueMicrotask(()=>loadOlder(api,cid,'album',0,6).then(()=>{if(ui.view==='album')renderSheet();}).catch(()=>{}));
-  const shots=[...c.album,...older].map(photo).join('')+olderButton(cid,'album',c.album.length,moved||c.album.length>=6,6);
-  return header('Kỷ niệm','Giữ 6 ảnh gần nhất trong tiệm, ảnh cũ hơn ở “Xem cũ hơn”.','ALBUM')+`<div class="sheet-body"><div class="row spread">${api.state?.journey?.story?button('🖼️ Album ảnh chụp','photoStudio',{tab:'album'},'ghost'):'<span></span>'}${button(icon('camera',16)+' Chụp góc hiện tại','photo',{},'primary')}</div><div class="album-grid space-top">${shots||(moved&&!page.done?'<p class="muted small">Đang mở ảnh cũ…</p>':empty('Một album chưa có ảnh','','camera'))}</div>${c.quests_claimed.length?`<h3 class="space-top">Kỷ vật câu chuyện</h3>${c.quests_claimed.map(id=>`<div class="memory">${icon('award',17)} ${esc(api.content.quests.find(q=>q.id===id).keepsake)}</div>`).join('')}`:''}${api.state.marriage?.spouse?'<div data-wed-album></div>':''}</div>`;
+function albumView(){const c=room();return header('Kỷ niệm','Giữ 6 ảnh gần nhất.','ALBUM')+`<div class="sheet-body"><div class="row spread">${api.state?.journey?.story?button('🖼️ Album ảnh chụp','photoStudio',{tab:'album'},'ghost'):'<span></span>'}${button(icon('camera',16)+' Chụp góc hiện tại','photo',{},'primary')}</div><div class="album-grid space-top">${c.album.map(p=>`<article class="polaroid"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy"><p>${esc(p.title)}</p><div class="row spread"><small>Ngày ${p.day} · ${esc(meta().place)}</small>${button(icon('download',13),'downloadPhoto',{id:p.id},'ghost small')}</div></article>`).join('')||empty('Một album chưa có ảnh','','camera')}</div>${c.quests_claimed.length?`<h3 class="space-top">Kỷ vật câu chuyện</h3>${c.quests_claimed.map(id=>`<div class="memory">${icon('award',17)} ${esc(api.content.quests.find(q=>q.id===id).keepsake)}</div>`).join('')}`:''}${api.state.marriage?.spouse?'<div data-wed-album></div>':''}</div>`;
 }
 const CLOSE_LABELS={markdown_sold:'Bánh giảm giá đã bán',markdown_income:'Thu từ bánh giảm giá (xu)',discarded:'Món phải bỏ',wilted:'Cành hoa héo',wilted_value:'Giá trị hoa héo (xu)',sales:'Doanh thu quầy (xu)',ledger_total:'Tổng sổ ghi nợ (xu)',repaired:'Máy đã sửa xong',returned:'Máy trả lại khách',hazards:'Lỗi an toàn',expired_units:'Nông sản quá hạn',eggs_tomorrow:'Trứng còn trong ổ',hungry_hens:'Gà chưa được cho ăn',ripe_tomorrow:'Luống chín ngày mai',delivered:'Đơn đã giao',failed:'Giao thất bại',refused:'Đơn đã từ chối nhận',km:'Quãng đường (ô phố)',fees:'Phí giao (xu)',fuel:'Xăng còn (%)',settled_at_close:'COD tự nộp cuối ca (xu)',food_cancelled:'Đơn đồ ăn bị hủy',arrived:'Khách nhận phòng',walked:'Khách phải chuyển chỗ',moved:'Khách đổi phòng',dirty:'Phòng cần dọn',staying:'Bé đang ở lại',free:'Chuồng trống',posted:'Bút toán đã ghi',dossiers:'Hồ sơ hoàn tất',milestones:'Mốc kỳ kế toán',balanced:'Sổ cân đối'};
 /** Career-specific part of the day summary: module.summary(data,x) or a generic list. */
@@ -1713,7 +1708,7 @@ async function handleAction(action,data,el){
     case'journal':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('passport');else openSheet('journal',{journalTab:'quests'});break;
     case'library':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('workshop');else openSheet('journal',{journalTab:'library'});break;
     case'journalTab':ui.journalTab=data.tab;renderSheet(false);break;
-    case'loadOlder':{const p=loadOlder(api,data.career,data.kind,data.shown,data.limit);renderSheet();try{await p;}catch(e){toast(e.message,true);}renderSheet();break;}
+    case'loadOlder':{const p=loadOlder(api,data.career,data.kind,data.shown);renderSheet();try{await p;}catch(e){toast(e.message,true);}renderSheet();break;}
     case'warehouse':openSheet(career()==='milk_tea'?'prepare':['mother_baby','pharmacy','accounting','customer_care'].includes(career())?'warehouse':room().inventory?'inventory':'queue',INV_PLAIN);break;
     case'job':await openJob(data.task);break;
     case'nextJob':ui.task=null;await openJob(null,'shelf');break;
@@ -1749,7 +1744,7 @@ async function handleAction(action,data,el){
     case'practice':{const e=room().event;if(e&&e.stage!=='resolved'){if(e.practice){if(!(await confirmAction('Chuyển tình huống diễn tập?','Diễn tập hiện tại được cất lại, không thay đổi tiền hoặc quan hệ.','Chuyển tình huống')))break;await cmd('event_dismiss',{}, {quiet:true});}else{toast('Bạn đang có một chuyện thật trong ca. Hoàn thành trước rồi mở diễn tập nhé.',true);openSheet('event');break;}}const r=await cmd('event_start',{event:data.event});if(r)openSheet('event');break;}
     case'reviewFollowup':{if(REVIEW_PASSPORT.includes(career())){openSheet('passport');break;}const r=await cmd('review_followup',{post:data.post});if(r)openSheet('event');break;}
     case'photo':{closeSheet();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const image=world.snapshot();if(!image){toast('Máy chưa chụp được ảnh. Thử lại nhé.',true);break;}const r=await cmd('photo',{image,title:meta().place+' · Ngày '+dayNo(room())});if(r)openSheet('album');break;}
-    case'downloadPhoto':{const p=[...room().album,...olderRows(career(),'album')].find(x=>x.id===data.id);if(p){const a=document.createElement('a');a.href=p.image;a.download=`goc-pho-ngay-${p.day}.${/^data:image\/(png|jpeg)/.exec(p.image)?.[1]?.replace('jpeg','jpg')||'webp'}`;a.click();}break;}
+    case'downloadPhoto':{const p=room().album.find(x=>x.id===data.id);if(p){const a=document.createElement('a');a.href=p.image;a.download=`goc-pho-ngay-${p.day}.${/^data:image\/(png|jpeg)/.exec(p.image)?.[1]?.replace('jpeg','jpg')||'webp'}`;a.click();}break;}
     case'saveAI':await cmd('settings',{aiConsent:$('#ai-consent').checked});break;
     case'export':try{const data=await api.exportSave();download(JSON.stringify(data,null,2),'mot-ngay-lam-nghe-save.json');toast('Đã xuất bản lưu riêng của bạn.');}catch(e){toast(e.message,true);}break;
     case'import':$('#import-file').click();break;
