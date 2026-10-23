@@ -142,7 +142,7 @@ export function pickView(env,{iso=false}={}){
   const close=api.state.current||iso?btn(icon('x',20),'close',{},'ghost small cp-x'):'';
   const q=esc(ui.cpQ||'');
   // The title row scrolls away; the search under it stays on top (a phone's one-row header has no room for it).
-  const head=`<header class="sheet-head cp-head"><div class="grow"><span class="eyebrow">Công việc</span><h2>Đổi nghề</h2><p>${ok}/${all} nơi làm được · mỗi nơi vẫn giữ tiến trình</p></div>${J.story?btn('🧭<span class="cp-word"> Hành trình</span>','jrView',{view:'home'},'cream small cp-jr'):''}${close}</header>`;
+  const head=`<header class="sheet-head cp-head"><div class="grow"><span class="eyebrow">Công việc</span><h2>Đổi nghề</h2><p>${ok}/${all} nơi làm được</p></div>${J.story?`<button type="button" class="btn cream small cp-jr" data-action="jrView" data-view="home" aria-label="Hành trình: việc cần làm của chương" title="Hành trình">🧭<span class="cp-word"> Hành trình</span></button>`:''}${close}</header>`;
   const bar=`<div class="cp-bar"><div class="cp-q" role="search"><label class="sr-only" for="cp-q">Tìm nghề</label>${icon('search',17)}<input id="cp-q" type="search" class="input" data-cp-q data-preserve enterkeyhint="search" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Tìm nghề: phở, bán hoa, công an…" value="${q}" aria-describedby="cp-found"><button type="button" class="cp-clear" data-action="jrPickClear" aria-label="Xóa chữ đang tìm"${q?'':' hidden'}>${icon('x',16)}</button></div></div>`;
   return `${head}<div class="cp">${bar}
     <nav class="home-filters cp-chips" aria-label="Lọc theo tình trạng">${st}</nav><nav class="home-filters cp-chips cp-cats" aria-label="Nhóm nghề">${gr}</nav>

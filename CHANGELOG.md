@@ -1,3 +1,12 @@
+# Unreleased
+
+🔎 Đổi nghề dễ hơn (chủ game 23/10 "mục đổi nghề/công việc nên cho người dùng search được nhé, và chọn được dễ hơn đi … nhiều người k biết tại sao mình k đc chơi nghề này nghề kia nữa"), cả giao diện cũ lẫn bản đồ 2.5D (feat/career-picker):
+- Trang Đổi nghề mới (public/js/v4/career-pick.js, ui.jrView 'pick' trong sheet home): ô tìm dính trên đầu, gõ không dấu ("ban hoa" → Tiệm Hoa Nắng, "cong an", "y ta" → Điều dưỡng), khớp cả tên nơi, nghề, nhóm và từ thường gọi (KEYS); cụm từ trước, từ nguyên trước, đầu từ, rồi chỗ nào cũng được. Lọc tức thì, nút ✕ xóa, Enter vào thẻ đầu, Esc xóa. Chip Tất cả · Làm được · Đã làm · Bị khóa và theo nhóm; 💰 Nhiều xu trước. Thứ tự: Đang làm → Gần đây (journey.recent, 3 nơi vừa làm) → Làm được ngay → Chưa làm được (đang chờ trước). Thẻ to, bấm cả thẻ; danh sách dài gập lại tới khi tìm hoặc bấm chip.
+- Vì sao chưa làm được: mỗi thẻ khóa ghi lý do + cách mở, bấm "Vì sao?" xem giải thích và nút đi tới (📋 Xem việc cần làm, 🎓 Đi học kế toán, 🌏 Làm việc ở nước ngoài, Vẫn ghé xem với khóa mềm). game/career_locks.py dựng lý do từ đúng luật server: chưa tới chương (client tự tính, test so khớp chữ với server), Hải quan cần xong 3 chương, cần chứng nhận kế toán, khai trừ ngành nhà nước (còn N ngày tốt để gỡ), cấm vào cửa khẩu, chờ phỏng vấn lại, đang làm ở nước ngoài. journey.public gửi thêm locks (chỉ lý do ngoài chương) + recent.
+- Lời từ chối của select_career thành câu rõ: "<Nơi> chưa mở với bạn. Làm xong việc cần làm của chương N…" / "<Nơi> chưa nhận bạn: cần chứng nhận …".
+- Lối vào: thanh bên / menu "Đổi nghề" (jrPick thay home), nút 🔎 Đổi nghề ở danh sách hành trình, nút đổi nghề trong tiệm; 2.5D: Công việc / túi / hàng chờ mở thẳng trang này. Ô khóa ở hành trình và cửa khóa khi đi dạo dùng chung lý do. Gợi ý hướng dẫn trỏ vào nút mới.
+- Test: tests/test_career_locks.py, tests/career_pick.mjs; cập nhật isometric-shell, journey_experience, test_feedback_workflows, docs/qa/isometric-feature-parity.json.
+
 # 2.5.4.3 — 23/10/2026
 
 🪽 Cánh vẽ lại to và đẹp hơn (chủ game 23/10 "cánh mua xong ra ngoài xấu quá", "to hơn nhé"), cả bản đồ mới lẫn giao diện cũ: thiên thần lông nhiều lớp, phượng hoàng lông lửa, dơi / rồng màng có xương (rồng gai vảy vàng), tiên hai đôi trong có gân, bướm cánh trước sau có mắt cánh; sải cánh ~1,4–2× đầu chibi, mọc từ bả vai lên ngang đầu; hạng: viền màu B/A, quầng + tia từ S, lấp lánh SS/SSS, viền vàng Huyền thoại; đập nhẹ khi đứng, mạnh khi đi; vẽ một lần mỗi kiểu, dùng chung (feat/wings-v2 3b186310).

@@ -78,7 +78,7 @@ test('the page: search on top, chips, a reason on every shut card and its explan
   assert.match(h,/id="cp-why-nurse"[^>]*hidden><p>Lần phỏng vấn trước chưa đạt\.<\/p><div class="cp-why-go">[\s\S]*?data-action="choose" data-career="nurse"/,'a soft lock still lets you look in');
   assert.match(h,/id="cp-why-corp_accounting"[\s\S]*?data-action="accountingSchool"/,'the exam way in');
   assert.match(h,/id="cp-why-pho"[\s\S]*?data-action="jrView" data-view="home"/,'the goals of the chapter');
-  assert.match(h,/Đổi nghề · 5\/9 nơi làm được/);
+  assert.match(h,/<h2>Đổi nghề<\/h2><p>5\/9 nơi làm được/);
   const q=items(pickView(env({cpQ:'ban hoa'}))).filter(x=>!x.hidden).map(x=>x.id);
   assert.deepEqual(q,['florist']);
   const locked=items(pickView(env({cpSt:'lock'}))).filter(x=>!x.hidden).map(x=>x.id);
