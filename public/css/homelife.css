@@ -1,0 +1,136 @@
+/* ==========================================================================
+   🗺️ Tổng quan nhà (public/js/v4/home-overview.js) and 🚘 Hầm để xe (public/js/v4/villa-garage.js), on top of
+   bank.css + house.css. Theme tokens for the cards; the cutaway and the garage keep their own materials (sky, grass,
+   water, concrete) in every theme, darkened a little under html[data-theme="dem"]. Phone first (390px), 44px targets.
+   ========================================================================== */
+
+/* ---- 🗺️ the cutaway ---- */
+.ho-homes{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px;padding-bottom:2px}
+.ho-homes::-webkit-scrollbar{display:none}
+.ho-home{flex:none;min-height:40px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink-2);white-space:nowrap;font:inherit;font-size:.86rem;cursor:pointer}
+.ho-home span{margin-right:4px}
+.ho-home.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700}
+.ho-home small{color:var(--muted);font-weight:400}
+.ho-sum{flex-wrap:wrap;margin:0 0 10px}
+.ho-card{padding:10px}
+.ho-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.ho-tools small{color:var(--muted);line-height:1.3}
+.ho-zoom{display:inline-flex;align-items:center;gap:4px;flex:none}
+.ho-zoom b{min-width:3.2em;text-align:center;font-size:.82rem;color:var(--ink-2)}
+.ho-zoom .btn{min-width:40px;min-height:40px;padding:0 10px;font-size:1.1rem}
+.ho-scroll{overflow-x:auto;overflow-y:hidden;border-radius:14px;border:1px solid var(--line);background:#cfe8f5}
+.ho-scroll:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.ho-stage{position:relative;margin:0 auto;font-size:calc(12px * var(--z,1))}
+.ho-sky{position:absolute;left:0;right:0;top:0;background:linear-gradient(#bfe2f4,#e9f5fa)}
+.ho-ground{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#8c6a4a 0 6px,#6f543b 6px)}
+.ho-roof{position:absolute;background:#b5583a;clip-path:polygon(4% 100%,50% 0,96% 100%);filter:drop-shadow(0 2px 0 rgba(0,0,0,.18))}
+.ho-stage.g-estate .ho-roof{background:#7b5a44}
+.ho-stage.g-rent .ho-roof{background:#a2775a}
+.ho-apt{position:absolute;display:grid;place-items:center;border-radius:6px 6px 0 0;background:repeating-linear-gradient(90deg,#d9d2c6 0 18px,#c9c0b2 18px 20px);color:#5b5146;font-size:.7rem;opacity:.9}
+.ho-slab{position:absolute;height:4px;border-radius:2px;background:#9a8f80}
+.ho-flabel{position:absolute;left:8px;padding:0 7px;line-height:15px;border-radius:999px;background:rgba(255,255,255,.82);color:#4a3d32;font-size:.62rem;font-weight:700;pointer-events:none;z-index:2}
+.ho-room{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;padding:4px 6px;margin:0;
+  border:2px solid #7a6553;border-radius:6px 6px 2px 2px;background:#fbf3e4;color:#3a2a21;font:inherit;text-align:left;cursor:pointer;overflow:hidden;
+  box-shadow:inset 0 -9px 0 rgba(140,100,60,.16);transition:transform .12s ease,box-shadow .12s ease}
+.ho-room:hover{box-shadow:inset 0 -9px 0 rgba(140,100,60,.16),0 0 0 3px rgba(255,255,255,.75)}
+.ho-room:active{transform:scale(.98)}
+.ho-room:focus-visible{outline:3px solid var(--focus);outline-offset:2px;z-index:3}
+.ho-room.t-bed,.ho-room.t-suite{background:#f3ecfb}
+.ho-room.t-bed2{background:#fdeef3}
+.ho-room.t-kitchen{background:#eef7ea}
+.ho-room.t-bath{background:#e6f3f8}
+.ho-room.t-study,.ho-room.t-cellar{background:#f2e6d7}
+.ho-room.t-cinema{background:#3d2b3c;color:#fbeaf3}
+.ho-room.t-gym,.ho-room.t-showroom{background:#e9ecef}
+.ho-room.t-closet{background:#fde9ee}
+.ho-room.z-garden{border-color:#4f8a3e;border-radius:10px;background:linear-gradient(#a7d58a,#86c06a);box-shadow:none}
+.ho-room.z-garden.t-pool,.ho-room.z-garden.t-infinity,.ho-room.z-deck.t-infinity{border-color:#2f7fa3;background:linear-gradient(#7fd0ea,#3ea9d1);color:#0c3346}
+.ho-room.z-deck{border-style:dashed;border-color:#8a7a68;border-radius:4px;background:linear-gradient(#f7efe2,#e8dcc8);box-shadow:none}
+.ho-rname{display:block;max-width:100%;font-weight:700;font-size:.78em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ho-rname>span{font-size:1.25em}
+.ho-badge{padding:0 5px;border-radius:999px;background:rgba(255,255,255,.85);color:#4a3d32;font-size:.66em;white-space:nowrap}
+.ho-room.t-cinema .ho-badge{color:#3a2a21}
+.ho-people{position:absolute;right:3px;bottom:3px;display:flex;flex-wrap:wrap-reverse;justify-content:flex-end;gap:1px;max-width:70%}
+.ho-face{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);font-size:.9em;overflow:hidden;line-height:1}
+.ho-face svg{width:100%;height:100%}
+.ho-fill{position:absolute;display:grid;place-items:center;border:2px solid #7a6553;border-radius:6px 6px 2px 2px;background:repeating-linear-gradient(135deg,#efe4d2 0 6px,#e6d8c2 6px 12px);opacity:.85;font-size:1.2em}
+.ho-garage{position:absolute;display:flex;flex-direction:column;gap:3px;padding:4px 6px;margin:0;border:2px solid #4b4a52;border-radius:4px;background:repeating-linear-gradient(90deg,#55545c 0 22px,#5c5b63 22px 24px);color:#f2f0ea;font:inherit;text-align:left;cursor:pointer;overflow:hidden}
+.ho-garage.s-san,.ho-garage.s-bai{background:#9b968c;border-color:#7b766c}
+.ho-garage.s-nha{background:#b8a58c;border-color:#7a6553;color:#2f241c}
+.ho-garage:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.ho-bays{display:flex;flex-wrap:wrap;gap:3px}
+.ho-bay{display:inline-grid;place-items:center;width:1.9em;height:1.4em;border:1px dashed rgba(255,214,90,.75);border-radius:3px;font-size:.9em}
+.ho-bay i{font-style:normal;display:inline-grid;place-items:center;width:100%;height:100%;border-radius:3px;background:var(--gr-paint,#ccc)}
+html[data-theme="dem"] .ho-scroll{background:#22303b;border-color:var(--line)}
+html[data-theme="dem"] .ho-sky{background:linear-gradient(#20344a,#2c3f52)}
+html[data-theme="dem"] .ho-room{filter:brightness(.88)}
+
+.ho-who{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:6px 0 8px;padding:0}
+.ho-who li{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 10px 4px 4px;border-radius:999px;background:var(--surface-2)}
+.ho-who li span{display:flex;flex-direction:column;line-height:1.15}
+.ho-who small{color:var(--muted);font-size:.74rem}
+.ho-who .ho-face{width:30px;height:30px;font-size:1.05rem}
+
+.ho-prog{height:8px;border-radius:999px;background:var(--surface-3);overflow:hidden;margin:6px 0}
+.ho-prog i{display:block;height:100%;border-radius:inherit;background:var(--good);transition:width .3s ease}
+.ho-chore-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ho-chore{justify-content:flex-start;min-height:44px;text-align:left}
+.ho-chore.done{opacity:.75}
+.ho-done{color:var(--good);margin-left:auto}
+.ho-chore{gap:8px}
+.ho-ctext{display:flex;flex-direction:column;line-height:1.2}
+.ho-ctext small{color:var(--muted);font-size:.72rem;font-weight:400}
+.ho-list summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.ho-list h4{margin:10px 0 4px;font-size:.86rem;color:var(--ink-2)}
+.ho-list ul{list-style:none;margin:0;padding:0}
+.ho-row{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:6px 8px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ho-row small{color:var(--muted)}
+.ho-row i{font-style:normal;color:var(--muted)}
+@media (max-width:360px){.ho-chore-grid{grid-template-columns:1fr}}
+
+/* ---- 🚘 Hầm để xe ---- */
+.vg-logo{background:#3c3b44}
+.vg-ham{position:relative;margin:0 0 12px;padding:30px 12px 12px;border-radius:16px;overflow:hidden;color:#f2f0ea;
+  background:radial-gradient(ellipse at 50% 0,rgba(255,244,200,.22),transparent 60%),repeating-linear-gradient(0deg,#4a4950 0 46px,#504f57 46px 48px)}
+.vg-ham.s-san,.vg-ham.s-bai{background:linear-gradient(#a7d58a 0 22px,#8f8a80 22px)}
+.vg-ham.s-nha{background:linear-gradient(#c9b79f,#b19c80);color:#2f241c}
+.vg-lights{position:absolute;left:0;right:0;top:6px;display:flex;justify-content:space-around;pointer-events:none}
+.vg-lights i{width:56px;height:5px;border-radius:3px;background:#fff6cf;box-shadow:0 0 14px 4px rgba(255,240,180,.55)}
+.vg-ham.s-san .vg-lights,.vg-ham.s-bai .vg-lights,.vg-ham.s-nha .vg-lights{display:none}
+.vg-ramp{position:absolute;right:10px;top:14px;padding:1px 8px;border-radius:999px;background:rgba(0,0,0,.35);color:#ffe28a;font-size:.68rem;font-weight:700}
+.vg-bays{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none;margin:6px 0 0;padding:0}
+@media (min-width:560px){.vg-bays{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.vg-bay{position:relative;min-height:112px;border-left:3px solid #f0c43c;border-right:3px solid #f0c43c;border-radius:2px}
+.vg-bay::after{content:'';position:absolute;left:12%;right:12%;bottom:6px;height:3px;border-radius:2px;background:rgba(240,196,60,.55)}
+.vg-bay-btn{display:grid;place-items:center;gap:6px;width:100%;height:100%;min-height:112px;padding:8px 4px 16px;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.vg-bay-btn:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.vg-bay.on .vg-bay-btn{background:rgba(255,255,255,.12)}
+.vg-bay-no{position:absolute;left:6px;top:4px;font:700 .64rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#ffe28a;opacity:.9}
+.vg-empty{display:grid;place-items:center;height:100%;min-height:112px;color:rgba(255,255,255,.55);font-size:.8rem}
+.vg-ham.s-nha .vg-empty{color:rgba(47,36,28,.6)}
+.vg-car{position:relative;display:inline-grid;place-items:center;width:64px;height:64px;border-radius:18px;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 55%),var(--gr-paint,#ccc);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.16),0 6px 10px -4px rgba(0,0,0,.55)}
+.vg-car.big{width:96px;height:96px;border-radius:26px}
+.vg-car.small{width:44px;height:44px;border-radius:12px}
+.vg-emoji{font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 1px rgba(0,0,0,.25))}
+.vg-car.big .vg-emoji{font-size:3.3rem}
+.vg-car.small .vg-emoji{font-size:1.4rem}
+.vg-plate{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);max-width:120%;padding:0 5px;border:1.5px solid #333;border-radius:4px;background:#fbfaf4;color:#222;
+  font:700 .6rem/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vg-plate.uq{background:linear-gradient(160deg,#fff6d5,#f3d27a);border-color:#b8862f;color:#3b2a06}
+.vg-car.small .vg-plate{display:none}
+.vg-star{position:absolute;right:-6px;top:-6px;font-size:.95rem}
+.vg-sparkle{position:absolute;left:-4px;top:-8px;font-size:1rem;animation:vg-twinkle 1.6s ease-in-out infinite}
+.vg-car.shine{box-shadow:inset 0 -4px 0 rgba(0,0,0,.16),0 0 0 2px rgba(255,255,255,.7),0 6px 14px -4px rgba(255,240,180,.75)}
+.vg-car.broken{filter:grayscale(.55)}
+@keyframes vg-twinkle{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.vg-sparkle{animation:none}}
+.vg-note{margin:10px 0 0;font-size:.78rem;opacity:.85}
+.vg-tap{text-align:center}
+.vg-row{display:flex;flex-direction:column;gap:6px;list-style:none;margin:6px 0 0;padding:0}
+.vg-mini{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:6px 8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.vg-mini.on{border-color:var(--accent);background:var(--accent-soft)}
+.vg-mini span{display:flex;flex-direction:column;line-height:1.2}
+.vg-mini small{color:var(--muted);font-size:.76rem}
+.vg-card .hs-home-top{align-items:center;gap:14px}

@@ -182,6 +182,7 @@ export async function openReno(env,mode,guestCode=''){
   S.tab=mode==='fix'&&R()?'fix':'deco';S.edit=mode==='decor'||S.coop;S.held=null;S.sel='';S.flash=null;S.photo=null;S.cat='';S.style='';S.q='';S.try=null;
   const v=V();
   if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';if(!S.remote)S.drawer=v.bag.length?'bag':'shop';}
+  if(v&&!guestCode&&typeof mode==='string'&&mode.startsWith('room:')&&v.rooms.some(r=>r.id===mode.slice(5)))S.room=mode.slice(5);   // 🗺️ Tổng quan nhà: a room tapped (v4/home-overview.js)
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
   hw().reopen();
   if(!guestCode)framedPhotos();

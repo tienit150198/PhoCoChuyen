@@ -417,7 +417,11 @@ async function enter(t){
     const cap=BC()?.use_max||0;if(!cap||(Number(BL()?.used)||0)>=cap)return '';
     try{const r=await env.api.command('jr_isle_use',{trip:t.id,plot});return r?.refused?'':(r?.message||'');}catch{return '';}};
   const build=plot=>openBuild(env,t.island.id,plot);
-  const actions=t.mine?{end,reload,use,build}:{reload,use};
+  const said=r=>r?.refused?'':[r?.message,...(r?.effects||[])].filter(Boolean).join(' ');
+  // 🏖️ beach activities and the daily chest (game/island_fun.py): anyone on the trip; the server checks the island
+  const fun=async act=>{try{return said(await env.api.command('jr_beach_do',{trip:t.id,act}));}catch(e){return e?.quiet?'':(e?.message||'');}};
+  const chest=async()=>{try{return said(await env.api.command('jr_beach_chest',{trip:t.id}));}catch(e){return e?.quiet?'':(e?.message||'');}};
+  const actions=t.mine?{end,reload,use,build,fun,chest}:{reload,use,fun,chest};
   openIslandScene(env,{...t,ends:t.ends-S.skew},{actions,skew:S.skew,onClose:()=>{if(t.visit)post('leave',{trip:t.id}).catch(()=>{});}});
 }
 

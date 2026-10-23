@@ -588,6 +588,10 @@ def upgrade(j: dict) -> None:
     rn.upgrade(j)   # 🛠️
     dc.upgrade(j)   # 🪴
     gr.upgrade(j)   # 🚗
+    from . import villa_garage, home_chores, island_fun
+    villa_garage.upgrade(j)   # 🚘 journey['hamxe'] (optional)
+    home_chores.upgrade(j)   # 🧹 journey['chores'] (optional)
+    island_fun.upgrade(j)   # 🏖️ journey['beach'] (optional)
     gd.upgrade(j)   # 📱
     if 'lab' in j:
         from . import research_lab as rl
@@ -1065,6 +1069,15 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(dc.action(s, name, p))
     elif name.startswith('jr_garage_'):
         result.update(gr.action(s, name, p))
+    elif name.startswith('jr_hamxe_'):   # 🚘 Hầm để xe: rửa xe, xếp chỗ đỗ (game/villa_garage.py)
+        from . import villa_garage
+        result.update(villa_garage.action(s, name, p))
+    elif name.startswith('jr_chore_'):   # 🧹 Việc nhà hôm nay (game/home_chores.py)
+        from . import home_chores
+        result.update(home_chores.action(s, name, p))
+    elif name.startswith('jr_beach_'):   # 🏖️ Chơi trên đảo, rương báu (game/island_fun.py; the trip is checked at commit)
+        from . import island_fun
+        result.update(island_fun.action(s, name, p))
     elif name in ('jr_tune_buy', 'jr_tune_fix'):   # 🔧 độ xe của mình (game/racing.py)
         from . import racing
         result.update(racing.action(s, name, p))
@@ -1199,6 +1212,7 @@ def public(s: dict) -> dict:
     secret = {tid: dict(name=TITLE_INDEX[tid]['name'], emoji=TITLE_INDEX[tid]['emoji'], desc=TITLE_INDEX[tid]['desc'])
               for tid in j['titles'] if TITLE_INDEX[tid]['secret']}
     eq = TITLE_INDEX.get(j['equipped'])
+    dpub = dc.public(s)
     return dict(
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
         finale=j['chapter'] > LAST,
@@ -1215,7 +1229,8 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         **({'locks': lk} if (lk := cl.public(s, _progress(ctx, j))) else {}), recent=_recent(s),   # 🔒 why a place is shut, 🕘 the last places worked (v4/career-pick.js)
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
+        bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dpub,
+        **({'homelife': hl} if (hl := _homelife_public(s, dpub)) else {}),   # 🗺️ tổng quan, 🚘 hầm xe, 🧹 việc nhà, 🏖️ đảo
         garage=gr.public(s), gadgets=gd.public(s), **({'lab': _lab_public(s)} if 'lab' in j else {}), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
@@ -1244,6 +1259,30 @@ def _recent(s: dict, n: int = 4) -> list[str]:
             if len(out) == n:
                 break
     return out
+
+
+def _homelife_public(s: dict, dpub: dict | None) -> dict | None:
+    """🗺️ Tổng quan nhà (game/home_overview.py), 🚘 Hầm để xe (game/villa_garage.py), 🧹 Việc nhà (game/home_chores.py),
+    🏖️ Chơi trên đảo (game/island_fun.py): one small block, story mode only."""
+    if not s['journey'].get('story'):
+        return None
+    from . import home_overview, villa_garage, home_chores, island_fun
+    out = dict(ov=home_overview.public(s, dpub), hamxe=villa_garage.public(s), chores=home_chores.public(s, dpub))
+    beach = island_fun.public(s)
+    if beach:
+        out['beach'] = beach
+    return out
+
+
+def _homelife_catalogue() -> dict:
+    from . import home_overview, villa_garage, home_chores, island_fun
+    return dict(plans=home_overview.catalogue(), floors=home_overview.FLOOR_NAMES,
+                wash_spirit=villa_garage.WASH_SPIRIT,
+                chores=dict(acts=[dict(id=k, emoji=x['emoji'], name=x['name']) for k, x in home_chores.ACTS.items()],
+                            spirit_max=home_chores.SPIRIT_MAX, bonus_at=home_chores.BONUS_AT, bonus=home_chores.BONUS_XU,
+                            every=home_chores.STREAK_EVERY, streak_xu=home_chores.STREAK_XU, why=home_chores.WHY),
+                beach=dict(acts=[dict(id=k, emoji=x['emoji'], name=x['name']) for k, x in island_fun.ACTS.items()],
+                           spirit_max=island_fun.SPIRIT_MAX, chest=list(island_fun.CHEST_XU), spots=island_fun.SPOT_ACT))
 
 
 def _wings_public(s: dict) -> dict | None:
@@ -1305,7 +1344,7 @@ def content() -> dict:
         unlock_chapter={cid: n for n, ids in [*CH_UNLOCKS.items(), *((n, (c,)) for c, n in LATE_UNLOCKS.items())] for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
         garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), lux=lx.catalogue(), island=isl.catalogue(), auction=auc.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content(),
-        abroad=ab.catalogue(), lixi=_lixi_catalogue())
+        abroad=ab.catalogue(), lixi=_lixi_catalogue(), homelife=_homelife_catalogue())
 
 
 def _lixi_catalogue() -> dict:
@@ -1408,6 +1447,10 @@ def validate(s: dict) -> None:
     rn.validate(s)
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
+    from . import villa_garage, home_chores, island_fun
+    villa_garage.validate(s)   # 🚘 journey['hamxe'] (optional)
+    home_chores.validate(s)   # 🧹 journey['chores'] (optional)
+    island_fun.validate(s)   # 🏖️ journey['beach'] (optional)
     if isinstance(s.get('journey'), dict) and 'tune' in s['journey']:
         from . import racing
         racing.validate(s)   # 🔧 journey['tune'] (optional: game/racing.py)

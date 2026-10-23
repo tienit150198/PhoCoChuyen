@@ -783,6 +783,9 @@ class Store:
                 if action.startswith('jr_isle_') or action in ('jr_island_sell','jr_island_buy','reset_all','import_save'):
                     from . import island_build
                     island_build.command_commit(db,sid,action,current)  # 🏗️ island_builds follows the save; a use is checked on the island
+                if action.startswith('jr_beach_'):
+                    from . import island_fun
+                    island_fun.command_commit(db,sid,action,current,result)  # 🏖️ a beach act / the chest: only on the trip it names
                 if action.startswith('jr_lixi_'):
                     from . import lixi
                     lixi.command_commit(db,sid,action,current,result)  # 🧧 the lixi_packets row (too soon / too many refuses: nothing paid)
