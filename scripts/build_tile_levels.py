@@ -16,6 +16,13 @@ Levels 101–200 (owner 17/10: "mở thêm tới màn 200, khó hơn … càng t
 kinds (every icon of tile_match.ICONS), 8–9 layers, deeper stacks, more 🔒 and 🧊, a bigger board, and a quick player
 who wins less and less (6 % → 2 %). Levels 1–100 never change: saves, replays and their difficulty stay.
     python scripts/build_tile_levels.py --check    # rebuilds every level from the table and solves it, writes nothing
+    python scripts/build_tile_levels.py --extend2  # keeps levels 1–200 as they are, (re)builds 201–300 only
+
+Levels 201–300 (2.5.7, owner 23/10 "thêm mở tới màn 300 nhé, khó hơn, với có item ẩn … học candy fruits"): the deep
+boards of 191–200 with more of everything and the four special tiles (game/tile_match.py), each brought in on its own
+level with fewer icons (a breather, like a candy game's new-candy level), then mixed in. `curve_hi2` is the rule; the
+table in game/tile_match_levels.py's docstring shows what was built. Every tenth level from 210 holds a 🎁 chest of free
+boosters (tile_match.chest); 225, 250, 275 and 300 have a tray of 6.
 """
 from __future__ import annotations
 
@@ -37,6 +44,8 @@ LANDMARK = {10: 'house', 20: 'heart', 30: 'pagoda', 40: 'lighthouse', 50: 'lante
 FIVES = ('pyramid', 'butterfly', 'x', 'heart', 'hourglass', 'house', 'lantern', 'boba', 'bridge')
 GENERAL = ('diamond', 'square', 'plus', 'ring', 'lantern', 'pyramid', 'x', 'hourglass', 'butterfly', 'heart', 'house', 'lantern')
 TRIES = 160
+TRIES2 = 64                     # levels 201–300: bigger, slower to check
+SOLVE_LIMIT = 150_000           # …and a level the solver has not cleared by then is not kept (the tests allow 400 000)
 
 
 BASE = 100                      # levels 1–100: the 2.4.7 table, never rebuilt by --extend
@@ -47,8 +56,29 @@ HI_SHAPES = ('pagoda', 'lantern', 'hourglass', 'lighthouse', 'house', 'butterfly
 HI_DEEP = ('pagoda', 'lantern', 'lighthouse', 'hourglass')
 
 
+HI = 200                        # levels 1–200: kept as they are by --extend2
+HI2_LANDMARK = {210: 'house', 220: 'heart', 230: 'pagoda', 240: 'lighthouse', 250: 'lantern', 260: 'boba',
+                270: 'hourglass', 280: 'pagoda', 290: 'lighthouse', 300: 'heart'}
+INTRO = {201: 'box', 211: 'joker', 221: 'chain', 231: 'bomb'}
+
+
+def curve_hi2(lv: int) -> dict:
+    """Levels 201–300: from where level 200 stands to every icon and every special tile."""
+    u = (lv - HI - 1) / 99
+    kinds = min(48, 40 + round(8 * u)) - (6 if lv in INTRO else 0)
+    cap = 6 if lv % 25 == 0 else 0
+    return dict(shape=HI2_LANDMARK.get(lv) or HI_SHAPES[lv % len(HI_SHAPES)], target=3 * round(70 + 6 * u), kinds=kinds,
+                layers=12 + round(u), stacks=(12 + round(u),) * 2 + (10 + round(u),), locks=12 + round(4 * u),
+                ice=30 + round(10 * u), peak=5 if cap else 6,
+                box=4 + round(10 * u), joker=0 if lv < 211 else 1 if lv < 261 else 2,
+                chain=0 if lv < 221 else 2 + round(6 * (lv - 221) / 79),
+                bomb=0 if lv < 231 else 1 if lv < 261 else 2 if lv < 291 else 3, cap=cap)
+
+
 def win_rate(lv: int) -> float:
     """The quick player's (greedy_rate) wins wanted at level lv: easy openers, then steadily harder."""
+    if lv > HI:
+        return max(0.01, 0.02 - 0.01 * (lv - HI - 1) / 99)
     if lv > BASE:
         return max(0.02, 0.06 - 0.04 * (lv - BASE - 1) / 99)
     return 1.0 if lv < 5 else max(0.06, 0.82 - 0.8 * ((lv - 4) / 96) ** 0.5)
@@ -68,6 +98,8 @@ def curve_hi(lv: int) -> dict:
 
 
 def curve(lv: int) -> dict:
+    if lv > HI:
+        return curve_hi2(lv)
     if lv > BASE:
         return curve_hi(lv)
     t = (lv - 1) / 99
@@ -90,7 +122,7 @@ def curve(lv: int) -> dict:
 def candidates(lv: int):
     """Level lv's acceptable rows; past 100, a level with none at the wanted depth takes one layer less, then two,
     then (a landmark) other shapes too."""
-    for slack, free in (((1, False), (2, False), (3, False), (3, True)) if lv > BASE else ((1, False),)):
+    for slack, free in (((1, False), (2, False), (3, False), (3, True)) + (((4, True), (5, True)) if lv > HI else ()) if lv > BASE else ((1, False),)):
         got = list(_candidates(lv, slack, free))
         if got:
             return got
@@ -100,36 +132,42 @@ def candidates(lv: int):
 def _candidates(lv: int, slack: int, free: bool = False):
     c = curve(lv)
     hi = lv > BASE
-    fixed = not free and (lv in HI_LANDMARK if hi else lv in LANDMARK or lv % 5 == 0 or lv < 5)
+    hi2 = lv > HI
+    fixed = not free and (lv in HI2_LANDMARK if hi2 else lv in HI_LANDMARK if hi else lv in LANDMARK or lv % 5 == 0 or lv < 5)
     shapes = [c['shape']] + ([] if fixed else list(HI_DEEP) if hi else ['big', 'square'])
     low = 0.7 if hi else 0.55 if fixed else 0.65
-    for i in range(TRIES):
+    for i in range(TRIES2 if hi2 else TRIES):
         seed = (lv * 7919 + i * 104729) % 2_147_483_647
-        shape = shapes[0] if i < TRIES * 3 // 4 else shapes[i % len(shapes)]
+        shape = shapes[0] if i < (TRIES2 if hi2 else TRIES) * 3 // 4 else shapes[i % len(shapes)]
         fill = ((1000, 1000, 1000, 950, 950) if hi else (1000, 900, 800, 700, 600))[i % 5]
         offset = 'dhv'[(i // 5) % 3] if lv > 2 else 'd'
         if hi:   # one straight layer in three to 150, then pairs too (the hardest: fully covered tiles)
-            offset += '3' if lv <= 150 or i % 2 else ''
+            offset += '3' if (lv <= 150 and not hi2) or i % 2 else ''
             offset = offset if offset.endswith('3') else offset.upper()
         layers = c['layers'] + ((0, 1, 2, 4) if hi else (0, 1, 2, -1))[(i // 2) % 4] if lv > 2 else c['layers']
         layers = max(1 if lv == 1 else 2, min(15 if lv > BASE else 9, layers))
         kinds = c['kinds']
         row = (seed, shape, kinds, layers, fill, offset, c['stacks'], c['locks'], c['ice'], c['peak'], c['target'])
+        if hi2:
+            row += (c['box'], c['joker'], c['chain'], c['bomb'], c['cap'])
         try:
             level = tm.build(lv, row)
         except tm.Gen:
             continue
         n = len(level['tiles'])
-        if n < c['target'] * low or n > c['target']:
+        if n < c['target'] * low or n > c['target'] + c.get('joker', 0):   # a 🌈 is not an item: one more tile
             continue
         depth = 1 + max(t[2] for t in level['tiles'][:level['board']])
         if hi and depth < c['layers'] - slack:   # trimmed back to a shallow pile: not what 101–200 are about
             continue
-        if len(set(t[3] for t in level['tiles'])) != kinds:
+        if len(set(t[3] for t in level['tiles']) - {-1}) != kinds:   # -1: a 🌈
             continue
         if sum(1 for t in level['tiles'] if t[4] & tm.LOCK) != c['locks'] or sum(1 for t in level['tiles'] if t[4] & tm.ICE) != c['ice']:
             continue
-        if tm.solve(level) is None:
+        if hi2 and [sum(1 for t in level['tiles'] if t[4] & f) for f in (tm.BOX, tm.JOKER, tm.CHAIN, tm.BOMB)] \
+                != [c['box'], c['joker'], c['chain'], c['bomb']]:
+            continue
+        if tm.solve(level, limit=SOLVE_LIMIT if hi2 else 400_000) is None:
             continue
         rate = tm.greedy_rate(level)
         yield dict(row=row, d=tm.difficulty(level, rate), rate=rate, n=n, depth=depth)
@@ -155,7 +193,7 @@ def choose(all_cands: list[list[dict]], first: int = 1, low: float = 1.0, kinds:
     out = []
     for lv, cands in enumerate(all_cands, first):
         want = win_rate(lv)
-        cands = [x for x in cands if x['row'][2] >= kinds] or cands   # item kinds never go down
+        cands = [x for x in cands if x['row'][2] >= kinds or lv in INTRO] or cands   # item kinds never go down (an intro: fewer)
         if lv > BASE:   # one quick win in 48 at least, and the deeper stacks first
             cands = [x for x in cands if x['rate'] > 0] or cands
         def miss(x):
@@ -165,7 +203,7 @@ def choose(all_cands: list[list[dict]], first: int = 1, low: float = 1.0, kinds:
         best = min(cands, key=miss)
         out.append((best, want))
         low = min(low, best['rate']) if lv >= 5 else low
-        kinds = max(kinds, best['row'][2])
+        kinds = kinds if lv in INTRO else max(kinds, best['row'][2])
     return out
 
 
@@ -178,8 +216,28 @@ def write(rows, scores):
              '',
              'One row a level: (seed, shape, kinds, layers, fill ‰, layer offset, stack depths, 🔒 locks, 🧊 ice, tray peak of',
              'the intended solution, tile target). game/tile_match.py build() makes the level from its row, deterministically.',
-             'SCORES: each level\'s difficulty (tile_match.difficulty) when the table was built; tests check they rise."""',
-             '',
+             'SCORES: each level\'s difficulty (tile_match.difficulty) when the table was built; tests check they rise.']
+    if len(rows) > HI:
+        lines += ['',
+                  'Levels 201–300 (2.5.7) carry five more: 🎁 boxes, 🌈 jokers, ⛓️ chains, 💣 bombs, tray (0 = 7). Built, ten by ten',
+                  '(tiles and layers as built; a range is min–max; ★ the level that brings a special tile in, with a card):',
+                  '',
+                  '    levels   tiles    icons  layers  stacks      🔒     🧊     🎁     🌈   ⛓️    💣   tray  quick wins']
+        for a in range(HI + 1, len(rows) + 1, 10):
+            grp = list(range(a, min(a + 10, len(rows) + 1)))
+            built = [tm.build(lv, rows[lv - 1]) for lv in grp]
+            rng_ = lambda xs: f'{min(xs)}–{max(xs)}' if min(xs) != max(xs) else f'{min(xs)}'
+            col = lambda i: rng_([tm._row(rows[lv - 1])[i] for lv in grp])
+            n = rng_([len(b['tiles']) for b in built])
+            depth = rng_([1 + max(t[2] for t in b['tiles'][:b['board']]) for b in built])
+            stacks = rng_([sum(tm._row(rows[lv - 1])[6]) for lv in grp])
+            trays = sorted({b['cap'] for b in built})
+            rate = rng_([round(100 * tm.greedy_rate(b)) for b in built])
+            star = ''.join(f' ★{lv}' for lv in grp if lv in INTRO)
+            lines.append(f'    {a}–{grp[-1]}  {n:8s} {col(2):6s} {depth:7s} {stacks:11s} {col(7):6s} {col(8):6s} {col(11):6s} '
+                         f'{col(12):4s} {col(13):5s} {col(14):4s} {"/".join(map(str, trays)):5s} {rate} %{star}')
+    lines[-1] += '"""'
+    lines += ['',
              'LEVELS = (']
     for i, row in enumerate(rows, 1):
         lines.append(f'    {row!r},   # {i}')
@@ -192,7 +250,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--check', action='store_true')
     ap.add_argument('--upto', type=int, default=BASE)
-    ap.add_argument('--extend', action='store_true', help='keep levels 1-100, build 101..LEVEL_MAX')
+    ap.add_argument('--extend', action='store_true', help='keep levels 1-100, build 101..200')
+    ap.add_argument('--extend2', action='store_true', help='keep levels 1-200, build 201..LEVEL_MAX')
     a = ap.parse_args()
     if a.check:
         from game.tile_match_levels import LEVELS, SCORES
@@ -210,6 +269,12 @@ def main():
         first, rows, scores = BASE + 1, list(LEVELS[:BASE]), list(SCORES[:BASE])
         kinds = max(r[2] for r in rows)
         low = min(tm.greedy_rate(tm.build(lv, LEVELS[lv - 1])) for lv in range(BASE - 9, BASE + 1))
+        a.upto = HI
+    if a.extend2:
+        from game.tile_match_levels import LEVELS, SCORES
+        first, rows, scores = HI + 1, list(LEVELS[:HI]), list(SCORES[:HI])
+        kinds = 0   # the 🎁 intro level has fewer icons: no floor from 200
+        low = min(tm.greedy_rate(tm.build(lv, LEVELS[lv - 1])) for lv in range(HI - 9, HI + 1))
         a.upto = tm.LEVEL_MAX
     with Pool() as pool:
         all_cands = pool.map(_one, range(first, a.upto + 1), chunksize=1)
@@ -222,7 +287,7 @@ def main():
         rows.append(row)
         scores.append(x['d'])
         print(f'{lv:3d} {row[1]:10s} tiles {x["n"]:3d} kinds {row[2]:2d} layers {row[3]} stacks {row[6]} locks {row[7]} '
-              f'ice {row[8]} peak {row[9]}  rate {x["rate"]:.2f} (want {want:.2f})  D {x["d"]:5.1f}', flush=True)
+              f'ice {row[8]} peak {row[9]} {row[11:]}  rate {x["rate"]:.2f} (want {want:.2f})  D {x["d"]:5.1f}', flush=True)
     write(rows, scores)
 
 

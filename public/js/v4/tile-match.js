@@ -11,19 +11,36 @@
  * restart. The server counts a first clear need_ms(taps) after its clock (`tile.at`): the queue waits for that quietly.
  *
  * Drawing: one element per tile, positioned by transform; a move only changes where a tile belongs and the CSS
- * transition flies it (board → tray, tray → hold, undo back). Three of a kind pop; a quick run of triples is a combo. */
+ * transition flies it (board → tray, tray → hold, undo back). Three of a kind pop; a quick run of triples is a combo.
+ *
+ * Levels 201–300 (2.5.7) bring four special tiles (rules in game/tile_match.py's doc, mirrored in Game below): 🎁 a "?" box
+ * that shows its item once nothing covers it, 🌈 a joker that finishes any pair in the tray (and pulls that item's third
+ * tile off the board), ⛓️ a chain that opens after N triples, 💣 a bomb to match before its count runs out. Each comes
+ * with a one-time card (INTRO, remembered in localStorage SEEN_KEY). ⭐ 1–3 stars a won level (boosters used), kept by
+ * the server (tile.st) and drawn on the level map; a 🎁 chest of free boosters on every tenth level past 200. */
 import {escapeHTML as esc} from '../icons.js';
 import {actBar,helpBtn} from '../ui-kit.js';
 import {stylesheet} from '../lazy.js';
 
-const ICE=1,KEY=2,LOCK=4,HOLD=3,SLOT_MAX=1;
+const ICE=1,KEY=2,LOCK=4,BOX=8,JOKER=16,BOMB=32,CHAIN=64,HOLD=3,SLOT_MAX=1;
 const MOVE={undo:-1,shuffle:-2,push:-3,slot:-4},BOOST_OF={'-1':'undo','-2':'shuffle','-3':'push','-4':'slot'};
 const BOOSTS=[['undo','↩','Hoàn tác'],['shuffle','🔀','Xáo'],['push','⇪','Đẩy ra'],['slot','➕','Thêm ô']];
 const MIN_TAP_MS=250,MIN_LEVEL_MS=20000,PAID_MAX=12;
 export const SYNC_KEY='mnl.tile.q';
+const SEEN_KEY='mnl.tile.seen';
+/** The special tiles' first-time cards (owner: short words). */
+const INTRO=[['box',BOX,'🎁','Hộp bí ẩn','Ô “?” lộ món khi không còn ô nào đè lên.'],
+  ['joker',JOKER,'🌈','Cầu vồng','Ghép với một đôi bất kỳ trong khay, hút luôn ô thứ ba.'],
+  ['chain',CHAIN,'⛓️','Xích','Ghép ba đủ số lần ghi trên xích thì ô mở.'],
+  ['bomb',BOMB,'💣','Bom','Ghép ô bom trước khi số về 0, không thì thua!']];
+const HI=200,CHEST_EVERY=10,CHEST={undo:2,shuffle:1,push:1,slot:1};
+/** 🎁 The chest of a level's first clear (tile_match.chest). */
+export function chestOf(lv){if(lv<=HI||lv%CHEST_EVERY)return null;const m=lv%50?1:2;return Object.fromEntries(Object.entries(CHEST).map(([k,v])=>[k,v*m]));}
+/** ⭐ tile_match.stars. */
+export const starsOf=boosters=>boosters<=0?3:boosters<=2?2:1;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const T={dlg:null,env:null,view:'home',level:null,g:null,lv:0,moves:[],t0:0,busy:false,flash:null,combo:0,lastClear:-9,
-  result:null,cache:new Map(),els:new Map(),lay:null,ro:null,why:null,q:null,pumping:false,timer:0,seq:0};
+  result:null,cache:new Map(),els:new Map(),lay:null,ro:null,why:null,q:null,pumping:false,timer:0,seq:0,intro:[],shown:new Set()};
 
 /* ---------------------------------------------------------------- rules (mirror of game/tile_match.py) */
 /** mulberry32, bit for bit tile_match.Rng. */
@@ -36,30 +53,64 @@ export const shuffleSeed=(seed,n)=>(seed^(Math.imul(0x9E3779B1,n+1)>>>0))>>>0;
 export class Game{
   constructor(lv){
     this.lv=lv;this.n=lv.tiles.length;this.kind=lv.tiles.map(t=>t[3]);this.ice=lv.tiles.map(t=>t[4]&ICE?1:0);
+    this.joker=lv.tiles.map(t=>!!(t[4]&JOKER));this.items=this.n-this.joker.filter(Boolean).length;
     this.where=Array(this.n).fill('b');this.block=lv.b.map(b=>b.length);this.under=Array.from({length:this.n},()=>[]);
     lv.b.forEach((b,i)=>b.forEach(j=>this.under[j].push(i)));
-    this.tray=[];this.hold=[];this.cap=lv.cap;this.undoStack=[];this.shuffles=0;this.slots=0;this.gone=0;this.taps=0;this.lost=false;
+    this.chain=Array(this.n).fill(0);for(const [t,c] of lv.chain||[])this.chain[t]=c;
+    this.fuse=new Map((lv.fuse||[]).map(([t,f])=>[t,f]));this.lit=new Map();
+    this.tray=[];this.hold=[];this.cap=lv.cap;this.undoStack=[];this.shuffles=0;this.slots=0;this.gone=0;this.done=0;this.clears=0;this.taps=0;this.lost=false;this.boom=null;
     this.used={undo:0,shuffle:0,push:0,slot:0};
+    this.light();
   }
-  get won(){return this.gone===this.n;}
+  get won(){return this.done===this.items;}
   get over(){return this.lost||this.won;}
-  open(t){return this.where[t]==='h'||(this.where[t]==='b'&&this.block[t]===0);}
+  get boosters(){return Object.values(this.used).reduce((a,b)=>a+b,0);}
+  open(t){return this.where[t]==='h'||(this.where[t]==='b'&&this.block[t]===0&&this.chain[t]<=this.clears);}
+  clear(out){
+    for(const x of out){if(this.where[x]==='t')this.tray.splice(this.tray.indexOf(x),1);this.where[x]='g';}
+    this.gone+=out.length;this.done+=out.filter(x=>!this.joker[x]).length;this.clears++;this.undoStack=[];return out;
+  }
   toTray(t){
-    const k=this.kind[t];let at=this.tray.length;
-    for(let i=this.tray.length-1;i>=0;i--)if(this.kind[this.tray[i]]===k){at=i+1;break;}
-    this.tray.splice(at,0,t);this.where[t]='t';
-    const same=this.tray.filter(x=>this.kind[x]===k);
-    if(same.length===3){for(const x of same){this.tray.splice(this.tray.indexOf(x),1);this.where[x]='g';}this.gone+=3;this.undoStack=[];return same;}
+    const k=this.kind[t];
+    if(this.joker[t])this.tray.push(t);
+    else{
+      let at=-1;for(let i=this.tray.length-1;i>=0;i--)if(this.kind[this.tray[i]]===k){at=i+1;break;}
+      if(at<0){at=this.tray.findIndex(x=>this.joker[x]);if(at<0)at=this.tray.length;}   // a new item: before the 🌈 waiting at the end
+      this.tray.splice(at,0,t);
+    }
+    this.where[t]='t';
+    if(!this.joker[t]){const same=this.tray.filter(x=>this.kind[x]===k);if(same.length===3)return this.clear(same);}
+    const jk=this.tray.filter(x=>this.joker[x]);
+    if(jk.length)for(const x of this.tray){   // 🌈: the leftmost pair with the leftmost 🌈, and that item's third tile off the board
+      if(this.joker[x])continue;
+      const pair=this.tray.filter(y=>this.kind[y]===this.kind[x]);if(pair.length!==2)continue;
+      const out=[...pair,jk[0]],z=y=>this.lv.tiles[y][2];let third=-1;
+      for(let y=0;y<this.n;y++)if(this.kind[y]===this.kind[x]&&!this.joker[y]&&(this.where[y]==='b'||this.where[y]==='h')&&(third<0||z(y)<z(third)))third=y;
+      if(third>=0){
+        if(this.where[third]==='b'){for(const d of this.under[third])this.block[d]--;}else this.hold.splice(this.hold.indexOf(third),1);
+        out.push(third);
+      }
+      return this.clear(out);
+    }
     if(this.tray.length>=this.cap)this.lost=true;
     return null;
+  }
+  light(){for(const [b,f] of this.fuse)if(!this.lit.has(b)&&this.where[b]!=='g'&&(this.where[b]!=='b'||this.open(b)))this.lit.set(b,f);}
+  /** 💣 After a tap: each lit bomb still there loses one; at 0 the attempt is lost. */
+  tick(){
+    if(!this.fuse.size)return;
+    for(const [b,v] of this.lit)if(this.where[b]!=='g'){this.lit.set(b,v-1);if(v-1<=0&&!this.lost){this.lost=true;this.boom=b;}}
+    this.light();
   }
   tap(t){
     if(this.over||!Number.isInteger(t)||t<0||t>=this.n||!this.open(t))throw new Error('tap');
     this.taps++;
-    if(this.where[t]==='b'&&this.ice[t]){this.ice[t]--;return 'ice';}
+    if(this.where[t]==='b'&&this.ice[t]){this.ice[t]--;this.tick();return 'ice';}
     if(this.where[t]==='h'){const i=this.hold.indexOf(t);this.hold.splice(i,1);this.undoStack.push([t,i]);}
     else{for(const d of this.under[t])this.block[d]--;this.undoStack.push([t,null]);}
-    return this.toTray(t)||'tray';
+    const r=this.toTray(t)||'tray';
+    if(!this.won)this.tick();
+    return r;
   }
   canUndo(){return !this.over&&this.undoStack.length>0;}
   undo(){
@@ -68,7 +119,7 @@ export class Game{
     if(i===null){this.where[t]='b';for(const d of this.under[t])this.block[d]++;}else{this.hold.splice(i,0,t);this.where[t]='h';}
     this.used.undo++;
   }
-  boardIds(){const out=[];for(let t=0;t<this.n;t++)if(this.where[t]==='b')out.push(t);return out;}
+  boardIds(){const out=[];for(let t=0;t<this.n;t++)if(this.where[t]==='b'&&!this.joker[t])out.push(t);return out;}   // a 🌈 stays a 🌈
   canShuffle(){return !this.over&&this.boardIds().length>=2;}
   shuffle(){
     if(!this.canShuffle())throw new Error('shuffle');
@@ -81,12 +132,27 @@ export class Game{
   canSlot(){return !this.over&&this.slots<SLOT_MAX;}
   slot(){if(!this.canSlot())throw new Error('slot');this.slots++;this.cap++;this.used.slot++;}
   move(m){if(m>=0)return this.tap(m);const b=BOOST_OF[m];if(!b)throw new Error('move');this[b]();return b;}
+  /** No tile to tap (all left are covered or chained) and not over: only a booster helps. */
+  stuck(){if(this.over)return false;for(let t=0;t<this.n;t++)if(this.open(t))return false;return true;}
 }
 
 /* ---------------------------------------------------------------- state from the server */
 const S=()=>T.env?.api?.state?.journey?.tile||{lv:0,max:100,pm:0,pct:'0',n:0,cap:15,free:{},price:{}};
-/** The last level this server has (100 before 2.4.43, 200 since). */
-const MAX=()=>Number.isInteger(S().max)&&S().max>0?S().max:100;
+/** The last level this server has (100 before 2.4.43, 200 since, 300 since 2.5.7: `last`; `max` stays 200 for older pages). */
+const MAX=()=>Number.isInteger(S().last)&&S().last>0?S().last:Number.isInteger(S().max)&&S().max>0?S().max:100;
+/** ⭐ The best stars of level n: the server's (tile.st) or a won level still on its way. */
+function bestStars(n){
+  const st=typeof S().st==='string'?S().st:'';let best=Number(st[n-1]||0)||0;
+  for(const x of queue())if(x.n===n&&x.stars>best)best=x.stars;
+  return best;
+}
+function readSeen(){try{const v=JSON.parse(localStorage.getItem(SEEN_KEY)||'[]');return Array.isArray(v)?v:[];}catch{return [];}}
+function markSeen(key){try{const v=readSeen();if(!v.includes(key)){v.push(key);localStorage.setItem(SEEN_KEY,JSON.stringify(v));}}catch{/* private mode */}T.shown.add(key);}
+/** The cards to show for a level: its special tiles never seen on this device. */
+export function introsFor(level,seen=readSeen()){
+  const has=f=>level.tiles.some(t=>t[4]&f);
+  return INTRO.filter(([key,f])=>has(f)&&!seen.includes(key)&&!T.shown.has(key));
+}
 const wallet=()=>T.env?.api?.state?.journey?.wallet??0;
 const sound=()=>T.env?.sound||null;
 /* ---------------------------------------------------------------- the sync queue (finished levels not confirmed yet) */
@@ -170,6 +236,7 @@ async function act(a,ds){
     case'next':await start(Math.min(MAX(),T.lv+1));break;
     case'home':T.view='home';T.result=null;paint();break;
     case'boost':boost(ds.k);break;
+    case'intro':T.intro.shift();if(T.intro.length)paintIntro();else{T.dlg?.querySelector('.tm-intro')?.remove();}break;
   }
 }
 const nextLevel=()=>Math.min(MAX(),localLv()+1);
@@ -188,7 +255,8 @@ async function start(lv){
     const level=await loadLevel(lv);
     T.lv=lv;T.level=level;T.g=new Game(level);T.g.useFree={};T.g.usePaid={};T.g.useCost={};
     T.moves=[];T.t0=Date.now();T.combo=0;T.lastClear=-9;T.result=null;T.view='play';
-    T.els=new Map();
+    T.els=new Map();T.revealed=new Set();
+    T.intro=introsFor(level);for(const [key] of T.intro)markSeen(key);
   }catch(e){T.flash=e.message||'Chưa mở được màn.';T.view='home';}
   T.busy=false;paint();
 }
@@ -216,12 +284,16 @@ function boostWhy(kind){
   return 'Còn quá ít ô để xáo.';
 }
 function tapTile(t){
-  const g=T.g;if(T.view!=='play'||!g||g.over||T.busy)return;
-  if(!g.open(t)){const el=T.els.get(t);el?.classList.remove('tm-nope');void el?.offsetWidth;el?.classList.add('tm-nope');return;}
+  const g=T.g;if(T.view!=='play'||!g||g.over||T.busy||T.intro.length)return;
+  if(!g.open(t)){
+    const el=T.els.get(t);el?.classList.remove('tm-nope');void el?.offsetWidth;el?.classList.add('tm-nope');
+    if(g.where[t]==='b'&&g.block[t]===0&&g.chain[t]>g.clears)why(`⛓️ Còn ${g.chain[t]-g.clears} lần ghép ba.`);
+    return;
+  }
   let r;try{r=g.tap(t);}catch{return;}
   T.moves.push(t);
   const s=sound();
-  if(r==='ice'){T.els.get(t)?.classList.add('tm-crack');s?.tone?.(1200,.05,.03);layout();paintBoosts();return;}
+  if(r==='ice'){T.els.get(t)?.classList.add('tm-crack');s?.tone?.(1200,.05,.03);layout();paintBoosts();if(g.lost)setTimeout(lose,380);return;}
   if(Array.isArray(r)){
     const n=T.moves.length;T.combo=n-T.lastClear<=4?T.combo+1:1;T.lastClear=n;
     popFx(r);
@@ -230,17 +302,18 @@ function tapTile(t){
   }else if(s?.pop)s.pop();else s?.click?.();
   layout();paintBoosts();
   if(g.won){const g0=g;setTimeout(()=>win(g0),420);}
-  else if(g.lost)setTimeout(lose,380);
+  else if(g.lost)setTimeout(lose,g.boom!==null?700:380);
+  else if(g.stuck())why('Hết nước đi: dùng ↩ Hoàn tác hoặc chơi lại.');
 }
 /** The board is cleared: the card shows at once; the level goes to the queue (a copy of its moves) unless it is a
  * replay without boosters (nothing for the server to count). Never waits for the server. */
 function win(g){
-  if(g!==T.g||g.done)return;g.done=true;
-  const lv=T.lv,ms=Date.now()-T.t0,first=lv===localLv()+1,cost=costNow();
-  const item={id:Date.now()*1000+(T.seq++%1000),who:who(),n:lv,moves:T.moves.slice(),t0:T.t0,taps:g.taps,first,cost,free:{...g.useFree},day:S().day||'',v:T.level?.v||1};
-  const send=first||T.moves.some(m=>m<0);
+  if(g!==T.g||g.shown)return;g.shown=true;
+  const lv=T.lv,ms=Date.now()-T.t0,first=lv===localLv()+1,cost=costNow(),stars=starsOf(g.boosters),better=stars>bestStars(lv);
+  const item={id:Date.now()*1000+(T.seq++%1000),who:who(),n:lv,moves:T.moves.slice(),t0:T.t0,taps:g.taps,first,cost,free:{...g.useFree},day:S().day||'',v:T.level?.v||1,stars};
+  const send=first||better||T.moves.some(m=>m<0);   // ⭐ a replay with more stars is sent too (the server keeps the best)
   if(send){queue().push(item);saveQ();}
-  T.result={win:true,lv,taps:g.taps,ms,first,id:send?item.id:0,sync:send?'wait':'none',cost};
+  T.result={win:true,lv,taps:g.taps,ms,first,id:send?item.id:0,sync:send?'wait':'none',cost,stars,better,chest:first?chestOf(lv):null};
   T.view='done';paint();sound()?.success?.();
   if(send)pump();
 }
@@ -263,7 +336,7 @@ async function revive(){
 }
 function lose(){
   sound()?.error?.();
-  T.result={win:false,lv:T.lv,full:true};T.view='done';paint();
+  T.result={win:false,lv:T.lv,full:true,boom:T.g?.boom!==null&&T.g?.boom!==undefined};T.view='done';paint();
 }
 /** Refusals that pass: too early, today's cap (counted tomorrow), wallet short, a conflict, jail, busy, a new release.
  * Any other 4xx (an invalid game, a level not open) can never count: the level is dropped with its reason. */
@@ -303,7 +376,7 @@ async function pump(){
 function settled(item,sync,why='',r=null){
   const res=T.result;
   if(res&&res.id===item.id){
-    res.sync=sync;res.why=why||'';if(r){res.first=!!r.first;res.pct=r.tile?.pct;}
+    res.sync=sync;res.why=why||'';if(r){res.first=!!r.first;res.pct=r.tile?.pct;if(r.chest)res.chest=r.chest;}
     if(T.view==='done')paint();
   }else if(sync==='err'&&why)T.env?.toast?.(`🧩 Màn ${item.n}: ${why}`,'bad');
   if(T.view==='home')paint();
@@ -319,24 +392,38 @@ function head(){
     ${T.view==='home'?`<span class="tm-badge">🧩 +${esc(st.pct||'0')}%</span>`:''}
     ${helpBtn('tile-match','🧩 Ghép ba Phố Mây',[
       {title:'Cách chơi',open:true,body:'<ul><li>Chạm ô sáng để đưa xuống khay. Ô bị ô khác đè (dù một phần) thì mờ, chưa chạm được.</li><li>Ba ô giống nhau trong khay sẽ biến mất. Dọn sạch bàn là qua màn; khay đầy 7 ô là thua.</li><li>Chồng úp: chỉ ô trên cùng mở. 🔒 mở khi đã lấy ô 🔑. 🧊 chạm hai lần.</li></ul>'},
+      {title:'Ô đặc biệt (màn 201+)',body:'<ul><li>🎁 Ô “?” lộ món khi không còn ô nào đè lên.</li><li>🌈 Ghép với một đôi bất kỳ trong khay, hút luôn ô thứ ba của món đó trên bàn.</li><li>⛓️ Mở sau khi ghép ba đủ số lần ghi trên xích.</li><li>💣 Ghép ô bom trước khi số về 0, không thì thua.</li><li>⭐ Không dùng trợ giúp: 3 sao. 1–2 lần: 2 sao.</li><li>🎁 Mỗi 10 màn từ 210 có rương trợ giúp miễn phí.</li></ul>'},
       {title:'Trợ giúp',body:`<ul><li>↩ Hoàn tác ô vừa đưa xuống · 🔀 Xáo các ô còn trên bàn · ⇪ Đẩy 3 ô đầu khay lên hàng chờ · ➕ Thêm 1 ô khay cho màn này.</li><li>Mỗi ngày có vài lượt miễn phí; sau đó trả xu, giá gấp đôi mỗi lần dùng trong cùng màn.</li></ul>`},
-      {title:'Phúc lợi',body:`<ul><li>Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (lương, tiền làm, nhân viên, quầy, hợp đồng). +20% ở màn 100, rồi +0,1% mỗi màn sau đó: tối đa +30% ở màn 200.</li><li>Không áp dụng cho lãi ngân hàng, đầu tư, chợ đen, quà, chuyển khoản.</li><li>Chơi bao nhiêu màn mỗi ngày cũng được.</li></ul>`}],{cls:'tm-q'})}
+      {title:'Phúc lợi',body:`<ul><li>Mỗi màn MỚI qua lần đầu: +0,2% tiền kiếm từ làm việc và kinh doanh (lương, tiền làm, nhân viên, quầy, hợp đồng). +20% ở màn 100, rồi +0,1% mỗi màn sau đó: +30% ở màn 200, tối đa +40% ở màn 300.</li><li>Không áp dụng cho lãi ngân hàng, đầu tư, chợ đen, quà, chuyển khoản.</li><li>Chơi bao nhiêu màn mỗi ngày cũng được.</li></ul>`}],{cls:'tm-q'})}
     <button type="button" class="tm-x" data-tm="close" aria-label="Đóng">✕</button></header>`;
 }
 function homeView(){
   const st=S(),top=localLv(),lv=nextLevel(),today=localToday(),max=MAX(),capped=!!st.capped&&top<max&&today>=st.cap,done=top>=max,wait=queue().length;
-  const cleared=Array.from({length:top},(_,i)=>i+1).reverse();
-  const replay=cleared.length?`<details class="tm-replay"><summary>Chơi lại · ${top} màn</summary><div class="tm-grid">${cleared.map(n=>`<button type="button" class="tm-lvbtn" data-tm="play" data-lv="${n}">${n}</button>`).join('')}</div></details>`:'';
+  const replay=top?`<details class="tm-replay"${top>=HI?' open':''}><summary>Bản đồ · ${top}/${max}</summary><div class="tm-grid">${mapCells(top,max)}</div></details>`:'';
+  const nextChest=top>=HI&&top<max?Math.min(max,(Math.floor(top/CHEST_EVERY)+1)*CHEST_EVERY):0;
   const main=done?`<button type="button" class="btn primary big" data-tm="play" data-lv="${max}">🏆 Chơi lại màn ${max}</button>`
     :`<button type="button" class="btn primary big" data-tm="play" data-lv="${lv}"${capped?` aria-disabled="true" data-why="Hôm nay đã qua ${st.cap} màn mới. Mai chơi tiếp nhé!"`:''}${T.busy?' disabled':''}>▶ Chơi màn ${lv}</button>`;
   return `<div class="tm-lobby">${T.flash?`<p class="tm-flash">${esc(T.flash)}</p>`:''}
     <div class="tm-hero"><div class="tm-hero-tiles" aria-hidden="true"><i>💄</i><i>🍜</i><i>🐶</i></div>
       <p class="tm-lv"><b>${done?`🏆 ${max}/${max}`:`Màn ${lv}`}</b><span>${top}/${max}</span></p>
       <div class="tm-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${top}"><i style="width:${Math.min(100,top*100/max)}%"></i></div>
+      ${nextChest?`<p class="tm-chip">🎁 Rương ở màn ${nextChest}</p>`:''}
       ${wait?`<p class="tm-sub" role="status">⏳ ${wait}</p>`:''}</div>
     ${replay}
     <p class="tm-why" role="status" hidden></p></div>
     ${actBar({main,cls:'tm-bar'})}`;
+}
+/** The level map: every cleared level (its stars), the next one, the chests past 200, the rest locked. */
+function mapCells(top,max){
+  const out=[];
+  for(let n=1;n<=max;n++){
+    const chest=chestOf(n)?'<i class="tm-cbox" aria-hidden="true">🎁</i>':'';
+    if(n<=top){const st=bestStars(n);
+      out.push(`<button type="button" class="tm-lvbtn${chest?' tm-chest':''}" data-tm="play" data-lv="${n}" aria-label="Màn ${n}${st?`, ${st} sao`:''}">${n}${st?`<small class="tm-st" aria-hidden="true">${'★'.repeat(st)}${'☆'.repeat(3-st)}</small>`:''}</button>`);}
+    else if(n===top+1)out.push(`<button type="button" class="tm-lvbtn tm-now${chest?' tm-chest':''}" data-tm="play" data-lv="${n}">${n}${chest}</button>`);
+    else out.push(`<span class="tm-lvbtn tm-locked${chest?' tm-chest':''}" aria-hidden="true">${n}${chest}</span>`);
+  }
+  return out.join('');
 }
 function boostBtn([k,emo,name]){
   const g=T.g,free=freeOf(k),cost=priceOf(k);
@@ -345,23 +432,35 @@ function boostBtn([k,emo,name]){
   return `<button type="button" class="tm-boost" data-tm="boost" data-k="${k}"${can?'':' aria-disabled="true" data-why="'+esc(g?boostWhy(k):'')+'"'} aria-label="${name}${free>0?`, còn ${free} lượt miễn phí`:`, ${fmt(cost)} xu`}"><span aria-hidden="true">${emo}</span>${tag}</button>`;
 }
 function playView(){
-  return `<div class="tm-play"><div class="tm-stage"><div class="tm-board"></div><div class="tm-holdrow" aria-label="Hàng chờ"></div><div class="tm-tray" aria-label="Khay"></div><div class="tm-fx" aria-hidden="true"></div></div>
+  return `<div class="tm-play"><div class="tm-stage"><div class="tm-board"></div><div class="tm-holdrow" aria-label="Hàng chờ"></div><div class="tm-tray" aria-label="Khay"></div><div class="tm-fx" aria-hidden="true"></div>${introCard()}</div>
     <p class="tm-why" role="status" hidden></p>
     <div class="tm-boosts">${BOOSTS.map(boostBtn).join('')}</div></div>`;
 }
+/** A special tile's first-time card over the stage (taps wait until it is closed). */
+function introCard(){
+  const it=T.intro[0];if(!it)return '';
+  const [,,emo,name,line]=it;
+  return `<div class="tm-intro" role="dialog" aria-modal="false" aria-labelledby="tm-intro-h"><div class="tm-intro-card">
+    <div class="tm-intro-tile" aria-hidden="true">${emo}</div><h3 id="tm-intro-h">${esc(name)}</h3><p>${esc(line)}</p>
+    <button type="button" class="btn primary" data-tm="intro">${T.intro.length>1?'Tiếp ▶':'Chơi thôi!'}</button></div></div>`;
+}
+function paintIntro(){const st=T.dlg?.querySelector('.tm-stage');if(!st)return;st.querySelector('.tm-intro')?.remove();st.insertAdjacentHTML('beforeend',introCard());}
+function starRow(n){return `<p class="tm-stars" aria-label="${n} sao">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}" style="--i:${i}">★</i>`).join('')}</p>`;}
+const BOOST_EMO={undo:'↩',shuffle:'🔀',push:'⇪',slot:'➕'};
 function doneView(){
   const r=T.result||{},st=S();
   if(r.win){
     const last=r.lv>=MAX();
     return `<div class="tm-done win"><div class="tm-burst" aria-hidden="true">${['✨','🎉','⭐'].map((c,i)=>`<i style="--i:${i}">${c}</i>`).join('')}</div>
-      <h3>🎉 Qua màn ${r.lv}!</h3>
+      <h3>🎉 Qua màn ${r.lv}!</h3>${r.stars?starRow(r.stars):''}
+      ${r.chest?`<p class="tm-gift">🎁 Rương: ${Object.entries(r.chest).map(([k,v])=>`<span>${BOOST_EMO[k]}×${v}</span>`).join('')}</p>`:''}
       ${r.first&&r.sync==='ok'?`<p class="tm-gain">🧩 Phúc lợi +${esc(r.pct||st.pct)}%</p>`:''}
       ${syncLine(r)}${r.cost?`<p class="tm-stats">−${fmt(r.cost)} xu</p>`:''}</div>
       ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',
         main:`<button type="button" class="btn primary big" data-tm="${last?'home':'next'}">${last?`🏆 Xong ${MAX()} màn`:`Màn ${Math.min(MAX(),r.lv+1)} ▶`}</button>`,cls:'tm-bar'})}`;
   }
   const ad=T.env?.api?.state?.ads,tv=ad?.left>0&&T.g?.lost?`<button type="button" class="btn primary big tm-revive" data-tm="revive">📺 Hồi sinh · xem quảng cáo <small>còn ${ad.left}/${ad.max}</small></button><p class="tm-sub">Ô vừa đặt quay lại bàn, kèm +1 ↩ 🔀 ⇪.</p>`:'';   // 📺 game/ads.py
-  return `<div class="tm-done lose"><h3>😵 Khay đầy rồi!</h3>${tv}</div>
+  return `<div class="tm-done lose"><h3>${r.boom?'💥 Bom nổ rồi!':'😵 Khay đầy rồi!'}</h3>${r.boom?'':tv}</div>
     ${actBar({next:'<button type="button" class="btn" data-tm="home">Sảnh</button>',main:`<button type="button" class="btn ${tv?'':'primary '}big" data-tm="again">↻ Chơi lại màn ${r.lv}</button>`,cls:'tm-bar'})}`;
 }
 function syncLine(r){
@@ -415,7 +514,8 @@ function tileEl(t){
   const f=T.level.tiles[t][4];
   el=document.createElement('button');el.type='button';el.className='tm-tile';el.dataset.id=String(t);
   if(f&ICE)el.classList.add('tm-ice');if(f&LOCK)el.classList.add('tm-lock');if(f&KEY)el.classList.add('tm-key');
-  el.innerHTML='<span class="tm-face"></span>';
+  if(f&JOKER)el.classList.add('tm-joker');if(f&BOMB)el.classList.add('tm-bomb');if(f&CHAIN)el.classList.add('tm-chain');if(f&BOX)el.classList.add('tm-boxt');
+  el.innerHTML=f&(BOMB|CHAIN)?'<span class="tm-face"></span><i class="tm-mark"></i>':'<span class="tm-face"></span>';
   T.dlg.querySelector('.tm-board').append(el);T.els.set(t,el);return el;
 }
 function stackOf(t,lv=T.level){const st=lv.stacks||[];for(const s of st){const i=s.ids.indexOf(t);if(i>=0)return {s,i};}return null;}
@@ -471,9 +571,18 @@ function layout(){
     el.classList.toggle('tm-small',w!=='b');
     el.style.zIndex=String(zi);el.style.width=el.style.height=`${size-2}px`;
     el.style.transform=`translate(${px+1}px,${py+1}px)`;
-    const face=el.firstChild,icon=stacked?'':lv.icons[g.kind[t]]||'?';
-    if(face.textContent!==icon)face.textContent=icon;
-    el.setAttribute('aria-label',stacked?'Ô úp':covered?`${icon} bị đè`:icon);
+    const f=lv.tiles[t][4],hidden=!!(f&BOX)&&w==='b'&&!g.open(t)&&!T.revealed?.has(t);   // 🎁 "?" until open
+    if(f&BOX&&!hidden&&w==='b'&&!T.revealed?.has(t)){T.revealed?.add(t);if(T.moves.length)el.classList.add('tm-reveal');}
+    el.classList.toggle('tm-hidden',hidden);
+    const icon=stacked?'':g.joker[t]?'🌈':hidden?'?':lv.icons[g.kind[t]]||'?';
+    const face=el.firstChild;if(face.textContent!==icon)face.textContent=icon;
+    let tag='';
+    if(f&CHAIN){const left=w==='b'?g.chain[t]-g.clears:0;el.classList.toggle('tm-chained',left>0);if(left>0)tag=String(left);
+      else if(el.classList.contains('tm-was-chained')===false&&g.chain[t]&&g.clears>=g.chain[t]&&T.moves.length){el.classList.add('tm-was-chained','tm-unchain');}}
+    if(f&BOMB){const lit=g.lit.get(t),left=lit===undefined?g.fuse.get(t):lit;tag=w==='g'?'':String(left);
+      el.classList.toggle('tm-lit',lit!==undefined&&w!=='g');el.classList.toggle('tm-hot',lit!==undefined&&lit<=3&&w!=='g');}
+    const mark=el.querySelector('.tm-mark');if(mark&&mark.textContent!==tag)mark.textContent=tag;
+    el.setAttribute('aria-label',stacked?'Ô úp':g.joker[t]?'Cầu vồng':hidden?'Hộp bí ẩn':`${icon}${f&BOMB&&tag?`, bom ${tag}`:''}${f&CHAIN&&el.classList.contains('tm-chained')?`, xích ${tag}`:''}${covered?' bị đè':''}`);
     el.tabIndex=g.open(t)?0:-1;
   }
 }
@@ -481,11 +590,13 @@ function popFx(ids){
   const fx=T.dlg?.querySelector('.tm-fx');
   for(const t of ids){const el=T.els.get(t);if(!el)continue;el.classList.add('tm-pop');setTimeout(()=>{el.classList.remove('tm-pop');el.classList.add('tm-gone');},360);}
   if(fx&&T.lay){
-    const g=T.lay,x=g.tray.x+g.ts*1.5,y=g.tray.y;
+    const g=T.lay,c=T.combo,x=g.tray.x+g.ts*(c>1?(T.g?.cap||7)/2:1.5),y=g.tray.y;   // a combo's longer line: the tray's middle
     const b=document.createElement('b');b.className='tm-combo';b.style.left=`${x}px`;b.style.top=`${y-10}px`;
-    b.textContent=T.combo>1?`Combo ×${T.combo}!`:'✨';fx.append(b);setTimeout(()=>b.remove(),900);
+    b.textContent=c>=4?`Siêu đỉnh! ×${c}`:c===3?`Tuyệt vời! ×3`:c===2?'Combo ×2!':'✨';
+    if(c>1){b.classList.add(`tm-c${Math.min(4,c)}`);const ring=document.createElement('i');ring.className='tm-ring';ring.style.left=`${x}px`;ring.style.top=`${y+g.ts/2}px`;fx.append(ring);setTimeout(()=>ring.remove(),700);}
+    fx.append(b);setTimeout(()=>b.remove(),c>1?1200:900);
   }
 }
 function shuffleFx(){const b=T.dlg?.querySelector('.tm-board');if(!b)return;b.classList.remove('tm-shuffling');void b.offsetWidth;b.classList.add('tm-shuffling');}
 /** tests/test_tile_match.py PageSync drives the queue without a page. */
-export const _tileTest={T,win,pump,queue,localLv,localToday,SYNC_KEY};
+export const _tileTest={T,win,pump,queue,localLv,localToday,SYNC_KEY,bestStars,mapCells};

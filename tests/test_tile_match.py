@@ -60,15 +60,16 @@ def cleared(lv, wallet=5000):
 # ---------------------------------------------------------------- levels
 class Levels(unittest.TestCase):
     def test_two_hundred_compact_rows(self):
+        """Levels 1–200 (201–300: tests/test_tile_match_300.py)."""
         self.assertEqual(len(LEVELS), tm.LEVEL_MAX)
         self.assertEqual(len(SCORES), tm.LEVEL_MAX)
-        self.assertEqual(tm.LEVEL_MAX, 200)
-        for row in LEVELS:
+        self.assertEqual(tm.HI_MAX, 200)
+        for row in LEVELS[:tm.HI_MAX]:
             self.assertEqual(len(row), 11)
             self.assertTrue(all(isinstance(x, (int, str, tuple)) for x in row), row)
 
     def test_every_level_is_solvable_by_the_solver_and_its_own_intended_order(self):
-        for lv in range(1, tm.LEVEL_MAX + 1):
+        for lv in range(1, tm.HI_MAX + 1):   # 201–300: tests/test_tile_match_300.py
             level = tm.build(lv)
             n = len(level['tiles'])
             self.assertEqual(n % 3, 0, lv)
@@ -507,16 +508,18 @@ class PastHundred(unittest.TestCase):
         self.assertEqual(e.exception.code, 'tile_level')
 
     @with_clock
-    def test_the_last_level(self):
+    def test_level_200(self):
+        """The last level until 2.5.7 (201–300 and journey.tile_hi2: tests/test_tile_match_300.py)."""
         s = cleared(199)
         s['journey']['tile']['cur'] = dict(lv=100, t=int(T0 * 1000), b={}, p={})
         self.clock.tick(tm.need_ms(len(tm.level(200)['solution'])) / 1000)
         s, r = end(s, 200)
         self.assertTrue(r['first'])
         self.assertEqual((tm.cleared(s), tm.permille(s), r['tile']['pct']), (200, 300, '30'))
+        self.assertNotIn('tile_hi2', s['journey'])
         with self.assertRaises(GameError) as e:
-            act(s, 'jr_tile_end', n=201, moves=[])
-        self.assertEqual(e.exception.code, 'tile_level')
+            act(s, 'jr_tile_end', n=202, moves=[])
+        self.assertEqual(e.exception.code, 'tile_locked')
         validate_state(s)
 
     def test_validation(self):
@@ -1070,7 +1073,7 @@ const {{Game,geometry,place,above}}=await import({json.dumps(script.as_uri())});
 let data='';process.stdin.on('data',d=>data+=d);process.stdin.on('end',()=>{{
   const out=[];
   for(const lv of JSON.parse(data)){{
-    const bad=[];const cnt={{}};for(const t of lv.tiles)cnt[t[3]]=(cnt[t[3]]||0)+1;
+    const bad=[];const cnt={{}};for(const t of lv.tiles)if(t[3]>=0)cnt[t[3]]=(cnt[t[3]]||0)+1;   // -1: a 🌈 (201–300)
     if(Object.values(cnt).some(c=>c%3))bad.push('kinds not in threes');
     for(const [W,H] of [[390,680],[360,600],[820,300]]){{
       const g=new Game(lv),geo=geometry(W,H,lv,g.cap);
