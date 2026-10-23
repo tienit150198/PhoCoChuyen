@@ -199,7 +199,7 @@ test('riding speed: builds up, then at most 1.8× the walk and within live/town.
     const w=Object.create(PhaserWorld.prototype);
     Object.assign(w,{destroyed:false,visible:true,_paused:false,keys:new Set(),pointers:new Map(),movementInput:{x:0,y:1},player:{x:0,y:0,path:[],goal:null},mode:'town',reduced:false,direction:'se',walkDistance:0,rideBoost:0,rideParked:false,
       vehicles:{ride,fleet:[],fly:'',wire:null},engine:{loop:{sleep(){},wake(){}}}});
-    w.stage={navigation:{bounds:{x0:-100,y0:-100,x1:100,y1:100},roads:[{x0:-100,y0:-100,x1:100,y1:100}],obstacles:[],step:.5,clearance:0},cameraMode:'browse',
+    w.stage={navigation:{bounds:{x0:-100,y0:-100,x1:100,y1:100},roads:[{x0:-100,y0:-100,x1:100,y1:100}],obstacles:[],step:.5,clearance:0},cameraMode:'browse',cameras:{main:{scrollX:0,scrollY:0,zoom:1,setScroll(){}}},
       positionPlayer(){},bobParked(){},updateOcclusion:()=>false,stepRemotePlayers:()=>false,hasEffects:()=>false,renderRequested:false,settle:()=>true,load:{isLoading:()=>false}};
     for(let i=0;i<60;i++)w.step(1/60);   // owner 17/10 "cảm giác lái": the ride speeds up over RIDE_RAMP (0.7 s) first
     const from=Math.hypot(w.player.x,w.player.y);

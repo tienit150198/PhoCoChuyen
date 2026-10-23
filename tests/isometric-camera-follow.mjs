@@ -93,11 +93,13 @@ try {
     assert.equal(arrived,1);assert.equal(f.world.player.path.length,0);assert.deepEqual(view(f.camera),chosen,'arrival does not reset browse');
     assert.equal(f.world.engine.loop.running,false,'idle browse still lets the existing loop sleep');
   });
-  await test('joystick and WASD movement preserve browse until explicit recenter or Home',t=>{
-    const f=fixture(t);drag(f);const chosen=view(f.camera),before={...f.world.player};walk(f,30);
-    assert.notEqual(f.world.player.x,before.x);assert.deepEqual(view(f.camera),chosen,'joystick does not resume follow');
-    keyboard(f,'keydown','w');for(let i=0;i<30;i++)f.world.step(1/60);keyboard(f,'keyup','w');
-    assert.deepEqual(view(f.camera),chosen,'WASD does not resume follow');
+  // 2.5.4 (players: "move nhân vật mà cam không đi theo"): walking again follows again, as on the classic map; the zoom stays.
+  await test('joystick and WASD movement resume follow after browsing, keeping the chosen zoom',t=>{
+    const f=fixture(t);drag(f);f.world.zoomBy(1.2);const chosen=view(f.camera),before={...f.world.player};walk(f,30);
+    assert.notEqual(f.world.player.x,before.x);assert.notDeepEqual(view(f.camera),chosen,'joystick resumes follow');
+    assert.equal(f.world.cameraMode,'follow');assert.equal(f.camera.zoom,chosen.zoom,'the chosen zoom stays');
+    drag(f);const looked=view(f.camera);keyboard(f,'keydown','w');for(let i=0;i<30;i++)f.world.step(1/60);keyboard(f,'keyup','w');
+    assert.notDeepEqual(view(f.camera),looked,'WASD resumes follow');drag(f);
     f.world.recenter();assert.notDeepEqual(view(f.camera),chosen);const recentered=view(f.camera);walk(f,240);
     assert.notDeepEqual(view(f.camera),recentered,'recenter restores follow while walking');
     drag(f);const panned=view(f.camera);keyboard(f,'keydown','Home');assert.notDeepEqual(view(f.camera),panned);const home=view(f.camera);walk(f,240);
@@ -107,7 +109,7 @@ try {
     const f=fixture(t);drag(f);const chosen=center(f.camera),zoom=f.camera.zoom;
     for(const [width,height] of [[850,600],[390,740],[1300,800]]){
       resize(f,width,height);assert.deepEqual(center(f.camera),chosen,'resize preserves the viewed world point');assert.equal(f.camera.zoom,zoom,'browse retains the chosen zoom');
-      const resized=view(f.camera);walk(f);assert.deepEqual(view(f.camera),resized,'resize must not restore following');
+      assert.equal(f.world.cameraMode,'browse','resize must not restore following');
     }
   });
   await test('layout refresh and relocation keep browse, while switching scene mode restores follow',t=>{
@@ -132,21 +134,24 @@ try {
       }
       const after=f.world.worldPoint(gesture==='wheel'?{x:240,y:220}:{x:350,y:220});
       assert.ok(Math.hypot(after.x-anchor.x,after.y-anchor.y)<1e-8,'zoom keeps the same world point under the gesture');
-      const chosen=view(f.camera);assert.notEqual(chosen.zoom,initialZoom);walk(f,30);assert.deepEqual(view(f.camera),chosen,gesture+' persists after release');
+      const chosen=view(f.camera);assert.notEqual(chosen.zoom,initialZoom);assert.equal(f.world.cameraMode,'browse',gesture+' persists after release');
+      walk(f,30);assert.equal(f.camera.zoom,chosen.zoom,gesture+' zoom stays when walking follows again');
   });
-  for(const kind of ['district','career','overview','zoom'])await test(kind+' controls preserve manual browsing through movement',t=>{
+  for(const kind of ['district','career','overview','zoom'])await test(kind+' controls: movement follows again (the island overview stays)',t=>{
       const f=fixture(t);
       if(kind==='district')assert.equal(f.world.focusDistrict(f.world.townDistricts().at(-1).id),true);
       if(kind==='career'){f.stage.buildings=[{id:'home',at:{x:50,y:2}}];f.world.focusCareer('home');}
       if(kind==='overview')f.world.overviewIsland();
       if(kind==='zoom'){drag(f);f.world.zoomBy(1.2);}
-      const chosen=view(f.camera);walk(f,30);assert.deepEqual(view(f.camera),chosen,kind+' must not recenter on movement');
-      if(kind==='overview')assert.equal(f.stage.islandOverview,true,'overview remains selected until an explicit camera action');
+      const chosen=view(f.camera);walk(f,30);
+      if(kind==='overview'){assert.deepEqual(view(f.camera),chosen,'overview must not recenter on movement');assert.equal(f.stage.islandOverview,true,'overview remains selected until an explicit camera action');}
+      else{assert.equal(f.world.cameraMode,'follow',kind+': walking follows again');assert.equal(f.camera.zoom,chosen.zoom,kind+': the zoom stays');}
   });
-  await test('cancelled drags and window blur preserve the chosen view',t=>{
+  await test('cancelled drags and window blur preserve the chosen view until the player walks',t=>{
     const f=fixture(t);pointer(f,'pointerdown',400,300);pointer(f,'pointermove',-1000,900);pointer(f,'pointercancel',-1000,900);
-    const chosen=view(f.camera);walk(f,30);assert.deepEqual(view(f.camera),chosen,'pointer cancellation does not resume follow');
-    window.dispatchEvent(new Event('blur'));walk(f,30);assert.deepEqual(view(f.camera),chosen,'returning after blur does not resume follow');
+    const chosen=view(f.camera);f.world.step(1/60);assert.deepEqual(view(f.camera),chosen,'pointer cancellation does not resume follow');
+    window.dispatchEvent(new Event('blur'));f.world.step(1/60);assert.deepEqual(view(f.camera),chosen,'returning after blur does not resume follow');
+    walk(f,30);assert.equal(f.world.cameraMode,'follow','walking does');
   });
   await test('plain walking and a tap without a drag retain the default follow behavior',t=>{
     const f=fixture(t);const start=view(f.camera);pointer(f,'pointerdown',400,300);pointer(f,'pointerup',401,301);walk(f,240);

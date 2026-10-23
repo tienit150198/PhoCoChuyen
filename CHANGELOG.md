@@ -32,6 +32,8 @@ feat/pairs-wings (từ origin/main afb38304 = 2.5.3): 🤝 thêm 7 phụ kiện 
 - 🏦 Giao dịch viên (feedback #495): bước "Tiền quầy phải có" hiện lại sổ giao dịch trong ngày.
 - ♿ Văn phòng phẩm / Căn tin (feedback #497, người chơi khiếm thị): dòng đọc cho trình đọc màn hình (khách cần gì, kết quả giao, khách tiếp theo), focus tự tới bước kế tiếp; thẻ giới thiệu street_kit là region thay vì dialog.
 
+- 🗺️ Bản đồ mới: kéo / zoom bản đồ xong, nhân vật đi lại (chạm đất, chạm nhà, phím, cần điều khiển) thì camera đi theo lại như bản đồ cũ, giữ mức zoom đã chọn (trước phải bấm 🧭 Về giữa; người chơi: "move nhân vật mà cam không đi theo"). Toàn cảnh đảo giữ nguyên.
+
 ## Kiểm thử
 - tests/test_wings.py (mới), tests/test_wings_live.py (mới), tests/wings-art.mjs (mới); tests/test_friend_charms.py thêm Bonds (quan hệ), giá và danh sách mới; tests/friend-charms.mjs. tests/wings-art.mjs thêm: nhịp từng kiểu, hạt / tia / vòng theo hạng, SVG tự động (SMIL) và giảm chuyển động, phố cũ và 2.5D vẽ cánh tách rời; tests/isometric-vehicles.mjs có withWings.
 - RollbackTo253: save có cánh qua 2.5.3 (git archive afb38304) validate / migrate / qua ngày rồi về lại nguyên vẹn; trận không cánh phát lại giống hệt 2.5.3.
