@@ -1,6 +1,7 @@
 """🏆 Thưởng top tuần and 💍 the wedding board's weekly titles (owner 23/10: "cái đám cưới nữa, mình cho danh hiệu với
 khung riêng nhé. với từ giờ những người được top sẽ có thưởng riêng hằng tuần … riêng đám cưới cho cao hơn chút";
-amounts: wedding top 1 2,000,000 xu, every other reward 1,000,000 xu).
+amounts 24/10: every board 1,000,000 / 500,000 / 200,000 xu for top 1 / 2–3 / 4–10, the wedding board 2,000,000 /
+1,000,000, each Trùm nghề 1,000,000, the bang war's fighters 500,000 / 200,000).
 
 * reward_of / tiers_of: the amounts of game/lb_titles.py WEEKLY_REWARD per tier; the wedding board pays more.
 * The Monday freeze writes one system gift per final holder (lbw-<week>-<board>-<rank>); a second refresh, another
@@ -21,13 +22,14 @@ from tests.test_leaderboard import Base
 class Amounts(unittest.TestCase):
     def test_table(self):
         self.assertEqual([lbt.reward_of('wedding', r) for r in (1, 2, 3, 4)], [2_000_000, 1_000_000, 1_000_000, 0])
-        self.assertEqual([lbt.reward_of('all', r) for r in (1, 2, 4, 10, 11)], [1_000_000] * 4 + [0])
-        self.assertEqual([lbt.reward_of('pet_war', r) for r in (1, 6, 11)], [1_000_000, 1_000_000, 0])
-        self.assertEqual([lbt.reward_of('race_drag_bike', r) for r in (1, 3, 4)], [1_000_000, 1_000_000, 0])
+        self.assertEqual([lbt.reward_of('all', r) for r in (1, 2, 3, 4, 10, 11)], [1_000_000, 500_000, 500_000, 200_000, 200_000, 0])
+        self.assertEqual([lbt.reward_of('pet_war', r) for r in (1, 5, 6, 10, 11)], [500_000, 500_000, 200_000, 200_000, 0])
+        self.assertEqual([lbt.reward_of('race_drag_bike', r) for r in (1, 3, 4)], [1_000_000, 500_000, 0])
         self.assertEqual([lbt.reward_of('milk_tea', r) for r in (1, 2)], [1_000_000, 0])   # 🏆 Trùm: top 1 only
         self.assertGreater(lbt.reward_of('wedding', 1), max(lbt.reward_of(b, 1) for b in lbt.MAIN if b != 'wedding'))
         self.assertEqual([t['reward'] for t in lbt.tiers_of('wedding')], [2_000_000, 1_000_000])
-        self.assertEqual([t['reward'] for t in lbt.tiers_of('wealth')], [1_000_000] * 3)
+        self.assertEqual([t['reward'] for t in lbt.tiers_of('wealth')], [1_000_000, 500_000, 200_000])
+        self.assertEqual([t['reward'] for t in lbt.tiers_of('pet_war')], [500_000, 200_000])
         self.assertEqual(lbt.tiers_of('grocery')[0]['reward'], 1_000_000)
 
     def test_wedding_board_titles(self):
@@ -91,7 +93,7 @@ class Rewards(Base):
         g = self.gifts()
         self.assertEqual(g['lbw-2026-W40-all-1']['sid'], self.sid(a))
         self.assertEqual(g['lbw-2026-W40-all-1']['coins'], 1_000_000)
-        self.assertEqual(g['lbw-2026-W40-all-2']['sid'], self.sid(b))
+        self.assertEqual((g['lbw-2026-W40-all-2']['sid'], g['lbw-2026-W40-all-2']['coins']), (self.sid(b), 500_000))
         self.assertEqual(g['lbw-2026-W40-grocery-1']['sid'], self.sid(a))   # 🏆 Trùm tạp hóa
         self.assertEqual({r['status'] for r in g.values()}, {'pending'})
         self.assertEqual({r['title'] for r in g.values()}, {lbt.REWARD_TITLE})

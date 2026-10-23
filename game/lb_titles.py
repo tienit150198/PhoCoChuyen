@@ -101,12 +101,13 @@ CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders
 
 # 🏆 Thưởng top tuần (owner 23/10: "từ giờ những người được top sẽ có thưởng riêng hằng tuần … riêng đám cưới cho cao
-# hơn chút"; amounts set by the owner: "đám cưới top 1 2m xu, mấy cái khác được 1m xu"). Xu per tier of a board
-# (BOARD_TIERS / TIERS order), paid once to each final holder of a frozen week (reward_week). One table to tune.
+# hơn chút"; amounts set by the owner 24/10). Xu per tier of a board (BOARD_TIERS / TIERS order), paid once to each
+# final holder of a frozen week (reward_week). One table to tune.
 WEEKLY_REWARD = {
     WEDDING: (2_000_000, 1_000_000),          # 💍 top 1, top 2–3
+    PET_WAR: (500_000, 200_000),              # 🛡️ each fighter of the champion bang (ranks 1–5), of the runner-up (6–10)
 }
-REWARD_DEFAULT = (1_000_000, 1_000_000, 1_000_000)   # any other board: top 1, top 2–3 (🛡️ the runner-up bang), top 4–10
+REWARD_DEFAULT = (1_000_000, 500_000, 200_000)   # any other board: top 1, top 2–3, top 4–10 (🏁 races: top 1, top 2–3)
 REWARD_CAREER = 1_000_000       # 🏆 Trùm <nghề>: a workplace board's top 1
 REWARD_FROM = '2026-W43'        # the first week paid (19–25/10/2026, frozen Monday 26/10): earlier weeks never are
 REWARD_TITLE = '🏆 Thưởng top tuần'
