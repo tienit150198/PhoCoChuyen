@@ -1653,6 +1653,8 @@ a,summary,label,select,input,textarea,[data-action],[data-command]{touch-action:
 :is(.hud-note,.rail-item,.choice,.chip-btn,.quick-replies button,.pill-tabs button,.soc-tabs button,.settings-tabs button,.ops-tabbar button,.review-row,.rv-card,.player-card,.cozy-day,.cozy-till,.cozy-rating,.career-card,.mode-card,.swatch,.react):active{opacity:.8}
 /* Phone sheets cover the stage: no full-screen backdrop blur (re-blurred on every canvas frame). */
 html[data-layout="phone"] .sheet::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
+/* ⚡ Light mode (perf-mode.js, a device measured slow): no blur anywhere, also on phone scene dialogs (.jr-scene) and the pause veil. */
+html[data-perf="low"] *,html[data-perf="low"] ::backdrop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 /* The phone sheet head is the drag handle (drag down to close, app.js): the browser must not pan it. */
 /* Titles stay scrollable: a swipe cancelled by native scrolling must not dismiss the sheet. */
 html[data-layout="phone"] .sheet .sheet-head,html[data-layout="phone"] .sheet .home-top{touch-action:pan-y}

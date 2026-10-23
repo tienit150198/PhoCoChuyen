@@ -133,8 +133,6 @@ export class PhaserWorld {
   private cachedPreview=new Map<string,string>();
   private lastInput=0;
   private fxPaintAt=-Infinity;
-  private dialogAt=-1;
-  private dialogOpen=[false,false];
   private slowEma=0;
   private slowFrames=0;
   private offLow:()=>void=noOp;
@@ -173,7 +171,7 @@ export class PhaserWorld {
       scene:[new DioramaScene(owner)],callbacks:{postBoot(game){game.events.once(Phaser.Core.Events.DESTROY,()=>owner.disposeObservers());}}});
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas.parentElement||canvas);
     if(typeof IntersectionObserver==='function'){this.visibleObserver=new IntersectionObserver(entries=>{this.visible=entries[entries.length-1]?.isIntersecting??true;this.wake();});this.visibleObserver.observe(canvas);}
-    this.modalObserver=new MutationObserver(()=>{this.dialogAt=-1;if(this.blockingDialog())this.clearMovementControls();this.wake();});this.modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+    this.modalObserver=new MutationObserver(()=>{if(this.blockingDialog())this.clearMovementControls();this.wake();});this.modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
     this.listen(canvas,'pointerdown',this.pointerDown as EventListener);
     this.listen(canvas,'pointermove',this.pointerMove as EventListener);
     this.listen(canvas,'pointerup',this.pointerUp as EventListener);
@@ -184,7 +182,7 @@ export class PhaserWorld {
     this.listen(canvas,'blur',()=>{this.clearMovementControls();this.pointers.clear();this.pinch=null;this.wake();});
     this.listen(window,'blur',()=>{this.clearMovementControls();this.pointers.clear();this.pinch=null;this.wake();});
     this.listen(document,'visibilitychange',()=>this.wake());
-    this.listen(document,'close',()=>{this.dialogAt=-1;this.wake();},true);
+    this.listen(document,'close',()=>this.wake(),true);
     if(lowEnd())this.capFps();else this.offLow=onLowEnd(()=>this.capFps());
     this.listen(window,'pagehide',()=>{this.clearMovementControls();this.engine.loop.sleep();});
     this.listen(window,'pageshow',()=>this.wake());
@@ -292,12 +290,12 @@ export class PhaserWorld {
     const image=out.toDataURL('image/webp',.8);this.cachedPreview.set(career,image);return image;
   }
   wake(){if(this.destroyed||!this.engine)return;if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}this.stage?.requestRender();this.engine.loop.wake();}
-  /** An open dialog over the map. Asked several times a frame (step, wake, keys): one DOM query per 100 ms, at once
-   * again after any open/close (modalObserver, the 'close' event). */
-  private blockingDialog(allowDrawer=false){const now=performance.now(),i=allowDrawer?1:0;
-    if(now-this.dialogAt>100||this.dialogAt<0){this.dialogAt=now;const own=this.canvas?.closest?.('dialog[data-shared-island]')?':not([data-shared-island])':'';
-      this.dialogOpen=[!!document.querySelector('dialog[open]'+own),!!document.querySelector('dialog[open]:not(.drawer)'+own)];}
-    return this.dialogOpen[i];}
+  /** An open dialog over the map. Asked several times a frame (step, wake, keys): the page's live dialog list (a handful),
+   * not a selector query over the whole DOM each time (~1.5% of a phone's walking frame). */
+  private blockingDialog(allowDrawer=false){const own=!!this.canvas?.closest?.('dialog[data-shared-island]'),doc:any=document;
+    if(typeof doc.getElementsByTagName!=='function')return !!doc.querySelector('dialog[open]'+(allowDrawer?':not(.drawer)':'')+(own?':not([data-shared-island])':''));
+    for(const d of doc.getElementsByTagName('dialog'))if(d.open&&!(allowDrawer&&d.classList.contains('drawer'))&&!(own&&d.hasAttribute('data-shared-island')))return true;
+    return false;}
   /** ⚡ Light mode: the loop runs at most LOW_FPS frames a second (Phaser's own limiter, rebound on wake). */
   private capFps(){const loop:any=this.engine?.loop;if(!loop||loop.fpsLimit===LOW_FPS)return;loop.fpsLimit=LOW_FPS;loop.hasFpsLimit=true;loop._limitRate=1000/LOW_FPS;if(loop.running){loop.sleep();loop.wake();}}
   private watchFrames(active:boolean){
@@ -1046,7 +1044,9 @@ class DioramaScene extends Phaser.Scene {
     const source=this.textures.get('art-'+kind).getSourceImage() as HTMLImageElement|HTMLCanvasElement,size=careerFacadeSize(source);
     return this.textureObject(key,size.width,size.height,ctx=>drawCareerFacade(ctx,source,career,kind));
   }
-  private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);this.textures.addCanvas(key,c)!.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
+  private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);
+    // Drawn once, never edited: a plain texture (addCanvas' CanvasTexture reads back a full RGBA copy, ~10% of a phone's town build).
+    const texture=this.textures.create(key,c)!;texture.add('__BASE',0,0,0,width,height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
   private characterTexture(prefix:string,look:any,gender:string,direction:Facing,uniformColor:string,walkFrame=0){
     // 🪽 the stamp without its wings: they are a rig of their own that moves (stepWings, wing-rigs.ts)
     if(look?.wg){const {wg:_,...bare}=look;look=bare;}
