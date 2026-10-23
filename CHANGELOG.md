@@ -1,3 +1,11 @@
+# 2.6.1 — 24/10/2026
+
+Chủ game 24/10: "bay thì cho cánh to hơn nha, cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)". Nhánh feat/fly-pose (df12bd96). Không đổi schema. Có gì mới 2.6.1.
+
+- 🪽 Khi bay cánh ×1,3 so với dưới đất: sải cánh ≈1,75× chiều cao người ở bậc D, ≈2,1× ở Huyền thoại; gốc cánh ở vai, sau lưng. Đập chậm, rộng khi lơ lửng, nhanh khi di chuyển; dưới đất giữ nguyên.
+- 🕊️ Không bước chân khi bay (phố 2.5D giữ khung đứng, phố cổ điển và Đi dạo bỏ nhịp nhún): lơ lửng nhấp nhô theo nhịp cánh, bóng dưới đất, nghiêng tới trước khi bay đi. Người khác thấy y vậy (live đã gửi trạng thái bay, không đổi giao thức). Giảm chuyển động: cánh đứng yên, không nghiêng.
+- 🛠️ Sửa: Đi dạo không vẽ cánh từ 2.6.0 (một dòng lọt vào chú thích); phố 2.5D có thể lỗi dừng cảnh khi người đeo cánh rời đi.
+
 # 2.6.0 — 24/10/2026
 
 Bản lớn gom 12 nhánh (chủ game 23–24/10 + góp ý #508 #313 #364 #315 #322 #464 #358 #330 #372 #271 #510). Schema 92 (bảng mới `island_layout`, chỉ thêm). Có gì mới 2.6.0.

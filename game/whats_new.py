@@ -39,6 +39,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.1", date="2026-10-24", items=(   # owner 24/10: "bay thì cho cánh to hơn… cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)"
+        dict(emoji='🪽', text="Khi bay, cánh xòe to hơn người, đập cánh nhịp nhàng", go=dict(action='pets', data={'tab': 'shop', 'kind': 'wing'})),
+        dict(emoji='🕊️', text="Bay là lơ lửng, không bước chân nữa; ai cũng thấy bạn bay"),
+        dict(emoji='🛠️', text="Sửa lỗi phố 2.5D có thể đứng hình khi người đeo cánh rời đi"),
+    )),
     dict(version="2.6.0", date="2026-10-24", items=(   # owner 23-24/10: đảo to + chế độ xây, nhà 2D, tổng quan nhà, du lịch thật, trường học, cánh bay, thưởng top tuần; góp ý #508 #313 #364 #315 #322 #464 #358 #330 #372 #510
         dict(emoji='🏝️', text="Đảo to hơn, 🛠️ Chế độ xây: đặt nhà, hồ bơi, cây cối khắp đảo, 🌊 lấn biển!", go=dict(action='island')),
         dict(emoji='🛋️', text="Nhà 2D: xoay đồ 4 hướng, phóng to thu nhỏ, ngồi ghế, nằm giường thật", go=dict(action='house')),
