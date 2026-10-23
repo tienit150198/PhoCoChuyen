@@ -26,6 +26,8 @@ When
 * Monday 00:00 (Vietnam): the first refresh of a new week freezes the week that ended — the standings at that
   moment become that week's final holders (`final`=1, kept, never deleted) — then the new week starts from the
   same standings and moves with them, day by day.
+* 🏆 Thưởng top tuần (owner 23/10): when a week is frozen, every final holder gets WEEKLY_REWARD xu once, as a system
+  gift (game/system_gift.py, id lbw-<week>-<board>-<rank>: paid at the next load with its card); reward_week.
 
 Table `lb_weekly` (PostgreSQL in game/pg_schema.py): one row per (week, board, rank). `final`=0 rows
 are the current holders (the latest daily refresh), `final`=1 rows are past weeks. `title` holds the title text so
@@ -43,6 +45,7 @@ ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND = 'all', 'titles', 
 WINGS = 'wings'                 # 🪽 game/wing_lb.py (23/10)
 ARENA, PET_CUP, PET_WAR = 'arena', 'pet_cup', 'pet_war'   # ⚔️ game/pet_arena.py, 🏟️ game/pet_cup.py, 🛡️ game/pet_war.py (19/10)
 RACE = ('race_drag_bike', 'race_drag_car', 'race_deo_bike', 'race_deo_car')   # 🏁 game/racing.py: the week's best times (22/10)
+WEDDING = 'wedding'             # 💍 Khách mời của tuần (game/wedding_live.py race): weddings attended this week (owner 23/10)
 TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
@@ -73,11 +76,16 @@ BOARD_TITLES = {                # (emoji, name) per tier
     'race_drag_car': (('🏁', 'Vua drag ô tô tuần'), ('🚗', 'Top drag ô tô')),
     'race_deo_bike': (('⛰️', 'Vua đèo xe máy tuần'), ('🏍️', 'Top đèo xe máy')),
     'race_deo_car': (('⛰️', 'Vua đèo ô tô tuần'), ('🚗', 'Top đèo ô tô')),
+    # 23/10 (owner: "cái đám cưới nữa, mình cho danh hiệu với khung riêng nhé"): 💍 the guests who went to the most
+    # weddings this week (wedding_guests, the race of game/wedding_live.py), top 1 and top 2–3, with their own drawn
+    # frames (public/js/v4/honour-frames.js DRAWN). Beside the race's own 🥇 Khách quý / 🎊 Ăn cưới chuyên nghiệp,
+    # which last week's winners keep wearing this week (live/wedding.py).
+    WEDDING: (('💒', 'Vua ăn cưới của tuần'), ('💐', 'Khách mời vàng của tuần')),
 }
 # A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five.
-BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10)), **{b: ((1, 1), (2, 3)) for b in RACE}}
-BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân'), **{b: ('Top 1', 'Top 2–3') for b in RACE}}
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, WINGS, ARENA, PET_CUP, PET_WAR, *RACE)     # the order of honour (a name tag shows the best one: tier first, then this order)
+BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10)), **{b: ((1, 1), (2, 3)) for b in (*RACE, WEDDING)}}
+BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân'), **{b: ('Top 1', 'Top 2–3') for b in (*RACE, WEDDING)}}
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, WINGS, ARENA, PET_CUP, PET_WAR, *RACE, WEDDING)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -91,6 +99,19 @@ CAREER_NOUN = dict(
 # A workplace whose top 1 is not a "Trùm": nobody is the boss of a pagoda (game/pagoda_voice.py).
 CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders
+
+# 🏆 Thưởng top tuần (owner 23/10: "từ giờ những người được top sẽ có thưởng riêng hằng tuần … riêng đám cưới cho cao
+# hơn chút"; amounts set by the owner 24/10). Xu per tier of a board (BOARD_TIERS / TIERS order), paid once to each
+# final holder of a frozen week (reward_week). One table to tune.
+WEEKLY_REWARD = {
+    WEDDING: (2_000_000, 1_000_000),          # 💍 top 1, top 2–3
+    PET_WAR: (500_000, 200_000),              # 🛡️ each fighter of the champion bang (ranks 1–5), of the runner-up (6–10)
+}
+REWARD_DEFAULT = (1_000_000, 500_000, 200_000)   # any other board: top 1, top 2–3, top 4–10 (🏁 races: top 1, top 2–3)
+REWARD_CAREER = 1_000_000       # 🏆 Trùm <nghề>: a workplace board's top 1
+REWARD_FROM = '2026-W43'        # the first week paid (19–25/10/2026, frozen Monday 26/10): earlier weeks never are
+REWARD_TITLE = '🏆 Thưởng top tuần'
+REWARD_ID = 'lbw-'              # system_gifts id: lbw-<week>-<board>-<rank> (game/system_gift.py pays it on load)
 
 
 
@@ -134,10 +155,21 @@ def tiers_of(board: str) -> list:
     """The tiers of a board for the view: [{tier, label, emoji, name, ranks: (lo, hi)}]."""
     if board in BOARD_TITLES:
         tiers, labels = BOARD_TIERS.get(board, TIERS), BOARD_LABELS.get(board, TIER_LABELS)
-        return [dict(tier=i, label=labels[i], emoji=e, name=n, lo=tiers[i][0], hi=tiers[i][1])
+        return [dict(tier=i, label=labels[i], emoji=e, name=n, lo=tiers[i][0], hi=tiers[i][1], reward=reward_of(board, tiers[i][0]))
                 for i, (e, n) in enumerate(BOARD_TITLES[board])]
     t = title_of(board, 1)
-    return [dict(tier=0, label='Top 1', emoji=t['emoji'], name=t['name'], lo=1, hi=1)]
+    return [dict(tier=0, label='Top 1', emoji=t['emoji'], name=t['name'], lo=1, hi=1, reward=reward_of(board, 1))]
+
+
+def reward_of(board: str, rank: int) -> int:
+    """🏆 The weekly reward (xu) of a final holder of `rank` on `board`, 0 for none."""
+    tier = tier_of(board, rank)
+    if tier is None:
+        return 0
+    if board not in BOARD_TITLES:
+        return REWARD_CAREER
+    row = WEEKLY_REWARD.get(board, REWARD_DEFAULT)
+    return int(row[tier]) if tier < len(row) else 0
 
 
 def honour(board: str, rank: int) -> tuple:
@@ -180,6 +212,9 @@ def standings(db, t: float | None = None) -> list:
         if board in RACE:   # 🏁 the week of `t` (race_runs)
             out.extend(_race_standings(db, board, now() if t is None else t))
             continue
+        if board == WEDDING:   # 💍 the week of `t` (wedding_guests)
+            out.extend(_wedding_standings(db, now() if t is None else t))
+            continue
         rows = db.execute(f"SELECT l.sid,l.score {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT ?", (board, n)).fetchall()
         out.extend((board, i + 1, r['sid'], int(r['score'])) for i, r in enumerate(rows))
     return out
@@ -204,6 +239,21 @@ def _race_standings(db, board: str, t: float) -> list:
     try:
         from . import racing
         return racing.standings(db, board, t, BOARD_TIERS[board][-1][1])
+    except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
+        return []
+
+
+def _wedding_standings(db, t: float) -> list:
+    """💍 [(board, rank, sid, weddings)] of the week of `t`: its top 3 (the race's order: most weddings, then who got
+    there first), only players the boards show (game/leaderboard.py _VISIBLE)."""
+    try:
+        from .leaderboard import _VISIBLE
+        from .wedding_live import GUEST_MIN_MINUTES
+        rows = db.execute('SELECT g.sid, COUNT(*) AS n, MAX(g.counted_at) AS last FROM wedding_guests g LEFT JOIN accounts a ON a.sid=g.sid '
+                          f'LEFT JOIN leaderboard_players p ON p.sid=g.sid WHERE g.week=? AND g.ok=1 AND g.steps>=? AND {_VISIBLE} '
+                          'GROUP BY g.sid ORDER BY n DESC, last ASC, g.sid LIMIT ?',
+                          (vn_week(t), GUEST_MIN_MINUTES, BOARD_TIERS[WEDDING][-1][1])).fetchall()
+        return [(WEDDING, i + 1, r['sid'], int(r['n'])) for i, r in enumerate(rows)]
     except Exception:  # noqa: BLE001 - a fault here never costs the other boards their titles
         return []
 
@@ -273,12 +323,15 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
                     # 🦉 Online starts again from zero each week: the ended week's own totals
                     # ⚔️ the arena's ladder too: the ended week's own season
                     # 🏁 the race boards too: the ended week's own best times
-                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA, *RACE)] + [r for r in standings_online(db, week_start(t) - 3600)]
+                    # 💍 the wedding race too: the ended week's own guests
+                    ended = ([r for r in rows if r[0] not in (ONLINE, ARENA, WEDDING, *RACE)] + [r for r in standings_online(db, week_start(t) - 3600)]
                              + _pet_standings(db, ARENA, week_start(t) - 3600, TOP)
-                             + [r for b in RACE for r in _race_standings(db, b, week_start(t) - 3600)])
+                             + [r for b in RACE for r in _race_standings(db, b, week_start(t) - 3600)]
+                             + _wedding_standings(db, week_start(t) - 3600))
                     _insert(db, last_week, ended, 1, day, t)
                 else:                   # a week long gone (the server was off): its last daily holders stand
                     db.execute('UPDATE lb_weekly SET final=1 WHERE final=0 AND week=?', (last_week,))
+                reward_week(db, last_week, t)   # 🏆 the final holders' weekly rewards, once each
             db.execute('DELETE FROM lb_weekly WHERE final=0')
             _insert(db, week, rows, 0, day, t)
             from .live_chat import notify   # 🏅 the live service reads the holders again (live/honours.py `tt`)
@@ -303,8 +356,8 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
 # What cannot be fixed from here: 🏝️ island's (and 🪽 wings', under 2.5.6) final row of an ended week frozen by 2.4.60 (the board is the islands'
 # beauty *now*: the builds at the week's end are not kept), and the hours between 2.4.60's refresh and this heal, when
 # those boards show no holder.
-NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE, WINGS)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them), 🪽 WINGS in 2.5.7
-ENDED_BOARDS = (ARENA, PET_CUP, PET_WAR, *RACE)
+NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE, WINGS, WEDDING)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them), 🪽 WINGS in 2.5.7, 💍 WEDDING after 2.5.9
+ENDED_BOARDS = (ARENA, PET_CUP, PET_WAR, *RACE, WEDDING)
 HEAL_LOCK = 17863
 
 
@@ -323,6 +376,8 @@ def _new_standings(db, board: str, t: float) -> list:
             return wing_lb.standings(db, TOP)
         except Exception:  # noqa: BLE001
             return []
+    if board == WEDDING:
+        return _wedding_standings(db, t)
     return _pet_standings(db, board, t, TOP)
 
 
@@ -332,6 +387,8 @@ def _ended_standings(db, board: str, t: float, prev: str) -> list:
             return _pet_standings(db, ARENA, week_start(t) - 3600, TOP)
         if board in RACE:
             return _race_standings(db, board, week_start(t) - 3600)
+        if board == WEDDING:
+            return _wedding_standings(db, week_start(t) - 3600)
         if board == PET_CUP:
             from . import pet_cup
             return pet_cup.standings(db, TOP, prev)
@@ -361,10 +418,12 @@ def heal(store, t: float | None = None) -> bool:
             ended = [r for b in ENDED_BOARDS if b not in had for r in _ended_standings(db, b, t, prev)]
             if ended:
                 _insert(db, prev, ended, 1, day, t)
+        # 🏆 a week an older build froze (it pays no reward), or a reward this process missed: paid once each
+        paid = reward_week(db, prev, t)
         if rows or ended:
             from .live_chat import notify
             notify(db, dict(op='honours_lb'))
-        return bool(rows or ended)
+        return bool(rows or ended or paid)
     try:
         did = bool(store.transaction(run, 250))
     except Exception:  # noqa: BLE001 - a page or the housekeeping never fails because of this
@@ -372,6 +431,45 @@ def heal(store, t: float | None = None) -> bool:
     if did:
         clear_cache()
     return did
+
+
+def reward_week(db, week: str | None, t: float | None = None) -> int:
+    """🏆 Thưởng top tuần: one system gift (game/system_gift.py: paid at the holder's next load through the game's
+    command path, with its private card) per final holder (week, board, rank) of a frozen week, from REWARD_FROM on.
+    Idempotent: the gift's id is lbw-<week>-<board>-<rank> (primary key; ON CONFLICT DO NOTHING), so a second refresh,
+    a heal or another process never pays twice. Admin accounts (ADMIN_USERS) and players the boards hide get nothing.
+    Runs inside the caller's transaction; returns the gifts written."""
+    if not isinstance(week, str) or week < REWARD_FROM:
+        return 0
+    rows = db.execute('SELECT board, rank, sid FROM lb_weekly WHERE final=1 AND week=?', (week,)).fetchall()
+    if not rows:
+        return 0
+    have = {r['id'] for r in db.execute('SELECT id FROM system_gifts WHERE id LIKE ?', (f'{REWARD_ID}{week}-%',)).fetchall()}
+    from .leaderboard import _privacy
+    from .player_feedback import admin_users
+    from .system_gift import valid_id
+    admins, t, n = admin_users(), now() if t is None else t, 0
+    for r in rows:
+        board, rank, sid = r['board'], int(r['rank']), r['sid']
+        gid, xu, ti = f'{REWARD_ID}{week}-{board}-{rank}', reward_of(board, rank), title_of(board, rank)
+        if gid in have or not xu or not ti or not valid_id(gid) or not sid:
+            continue
+        p = _privacy(db, sid)
+        if not p['visible']:
+            continue
+        if admins and p['account']:
+            u = db.execute('SELECT username FROM accounts WHERE sid=?', (sid,)).fetchone()
+            if u and str(u['username']).lower() in admins:
+                continue
+        text = (f'Tuần {week[-2:]} bạn giữ danh hiệu “{ti["text"]}” ({ti["label"]}). Phố gửi bạn {fmt_xu(xu)} xu thưởng '
+                'top tuần. Tuần này giữ phong độ nha!')
+        n += db.execute("INSERT INTO system_gifts(id, sid, coins, title, text, status, created) VALUES(?, ?, ?, ?, ?, 'pending', ?) "
+                        'ON CONFLICT(id) DO NOTHING', (gid, sid, xu, REWARD_TITLE, text[:300], t)).rowcount
+    return n
+
+
+def fmt_xu(n: int) -> str:
+    return f'{int(n):,}'.replace(',', '.')
 
 
 def run_refresh(store) -> None:

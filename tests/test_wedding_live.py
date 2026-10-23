@@ -602,6 +602,9 @@ class Race(WedBase):
         self.assertEqual([(r['name'], r['n']) for r in v['top']], [('Binh', 2), ('An', 2), ('Chi', 1)])
         self.assertTrue(v['top'][2]['me'])
         self.assertEqual([p['xu'] for p in v['prizes']], [300, 150, 150])
+        # 💒 the board's weekly titles and 🏆 rewards (game/lb_titles.py WEDDING, owner 23/10): the tiers with their reward
+        self.assertEqual([(t['name'], t['reward']) for t in v['weekly']['tiers']],
+                         [('Vua ăn cưới của tuần', 2_000_000), ('Khách mời vàng của tuần', 1_000_000)])
 
 
 class WeekScript(WedBase):

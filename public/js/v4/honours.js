@@ -26,6 +26,7 @@ const BOARDS={
   race_drag_car:['Drag ô tô',[['🏁','Vua drag ô tô tuần'],['🚗','Top drag ô tô']]],
   race_deo_bike:['Đèo xe máy',[['⛰️','Vua đèo xe máy tuần'],['🏍️','Top đèo xe máy']]],
   race_deo_car:['Đèo ô tô',[['⛰️','Vua đèo ô tô tuần'],['🚗','Top đèo ô tô']]],
+  wedding:['Khách mời',[['💒','Vua ăn cưới của tuần'],['💐','Khách mời vàng của tuần']]],   // 💍 game/lb_titles.py WEDDING (23/10): top 1, top 2–3
 };
 // game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, then the runner-up's five
 const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;
