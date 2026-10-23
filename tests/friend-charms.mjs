@@ -209,7 +209,7 @@ test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh fuses aga
   ui.as.wres={n:5,ok:3,spent:4500,stop:'budget',used:6,made:[{id:'w4',k:'buom',r:2,z:1}],left:1};
   const res=forgeView(env);
   assert.match(res,/⚡ Kết quả cường hóa nhanh/);assert.match(res,/<b>5<\/b><small>lượt ghép/);assert.match(res,/<b>3<\/b><small>thành công/);
-  assert.match(res,/<b>2<\/b><small>trượt/);assert.match(res,/<b>4\.500<\/b><small>xu đã tiêu/);assert.match(res,/Dừng vì chạm số xu đã đặt\. Còn 1 bộ ba\./);
+  assert.match(res,/<b>2<\/b><small>trượt/);assert.match(res,/<b[^>]*>4\.500<\/b><small>xu đã tiêu/);assert.match(res,/Dừng vì chạm số xu đã đặt\. Còn 1 bộ ba\./);
   assert.match(res,/class="fg-ares-best"/);assert.match(res,/data-action="jrAsWingRes"/);
   delete ui.as.wres;
   // owner 23/10 "ghép thì đưa vào mục riêng": what is owned by kind, counted, ⚡ when a set is ready; the wings by tier

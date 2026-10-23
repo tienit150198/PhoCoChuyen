@@ -54,7 +54,7 @@ test('🧬 lab: one card, one question, ONE jr_pet_fuse_auto, its summary above 
   assert.deepEqual(sent,[['jr_pet_fuse_auto',{scope:'all',top:7,budget:est,confirm:true}]]);
   html=petEmbedHTML(env,'lab');
   assert.match(html,/⚡ Kết quả cường hóa nhanh/);assert.match(html,/<b>3<\/b><small>lượt/);assert.match(html,/<b>2<\/b><small>thành công/);
-  assert.match(html,/<b>1<\/b><small>trượt/);assert.match(html,/<b>2\.500<\/b><small>xu đã tiêu/);assert.match(html,/Bé lên hạng/);
+  assert.match(html,/<b>1<\/b><small>trượt/);assert.match(html,/<b[^>]*>2\.500<\/b><small>xu đã tiêu/);assert.match(html,/Bé lên hạng/);
   assert.ok(html.indexOf('Kết quả cường hóa nhanh')<html.indexOf('pt-auto pt-quick'),'the summary above the card');
   assert.ok(draws>0);
   // ghép tới hạng B: nothing at S, nothing lost; the budget back to the estimate
