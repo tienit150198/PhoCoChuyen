@@ -55,7 +55,9 @@ const CALL_SHOW=900;              // 📣 a dating-corner invitation shows this 
 /** Cả phố holds messages (numeric ids) and 📣 invitation lines (sys, placed after the message they followed: k). */
 const byK=(a,b)=>(a.k??a.id)-(b.k??b.id);
 const lastId=list=>{for(let i=list.length-1;i>=0;i--)if(!list[i].sys)return list[i].id;return 0;};
-const clock=at=>new Date(at*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+// 23/10 lag: one formatter for every time label; toLocaleTimeString with options builds a new one per call (~45 µs, ×400 messages per redraw)
+const HHMM=new Intl.DateTimeFormat('vi-VN',{hour:'2-digit',minute:'2-digit'});
+const clock=at=>HHMM.format(new Date(at*1000));
 const adm=()=>Boolean(live.me?.adm);   // the server says so (ADMIN_USERS); every admin action is checked there again
 const DEL=()=>Boolean(live.flags.chatdel&&live.me?.account);   // 🗑️ the service deletes on my side (an account's)
 const RECALL_S=86400,CLEAR_MAX=20;   // live/chat.py RECALL_SECS (Thu hồi for 24 h), CLEAR_MAX (chats per "Xóa")
@@ -441,7 +443,7 @@ function submit(){
 
 /* ---- drawing ----------------------------------------------------------------------------------- */
 function flash(text){S.flash=text;clearTimeout(S.flashTimer);S.flashTimer=setTimeout(()=>{S.flash='';const f=S.dlg?.querySelector('.ch-flash');if(f)f.hidden=true;},3800);}
-const hm=at=>{const d=new Date(at*1000),now=new Date();const t=d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});return d.toDateString()===now.toDateString()?t:`${d.getDate()}/${d.getMonth()+1}`;};
+const hm=at=>{const d=new Date(at*1000),now=new Date();return d.toDateString()===now.toDateString()?HHMM.format(d):`${d.getDate()}/${d.getMonth()+1}`;};
 /** An avatar: a person or a message {av, fc} (its face, else its emoji), or an emoji string ('👥'). */
 const av=(a,cls='')=>{const fr=typeof a==='object'&&a?.st?frameAttrs(S.env?.api,a.st):{cls:'',attrs:''};const h=`<span class="ch-av ${cls}${fr.cls}"${fr.attrs} aria-hidden="true">${typeof a==='string'?esc(a):avInner(a)}</span>`;return typeof a==='object'&&a?hfAvatar(a.tt,a.st,h,S.env?.api):h;};   // 🎨 a frame of the week (st.f)
 const dot=on=>on?'<i class="ch-on" aria-label="Đang online"></i>':'';
@@ -647,7 +649,7 @@ function compose(){
   if(S.view)return null;
   if(!S.thread&&S.tab!=='town')return null;
   if(live.state!=='open')return {ro:'Mất kết nối. Đang thử lại…'};
-  if(live.me?.muted&&live.me.muted*1000>Date.now())return {ro:`Bạn đang bị tạm khóa chat đến ${new Date(live.me.muted*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}.`};
+  if(live.me?.muted&&live.me.muted*1000>Date.now())return {ro:`Bạn đang bị tạm khóa chat đến ${clock(live.me.muted)}.`};
   if(live.me&&!live.me.account)return {ro:'Tạo tài khoản để chat.',act:'account'};   // guests read only (owner, 01/10)
   if(S.thread){
     if(!live.me?.name)return {ro:'Đặt tên nhân vật để nhắn.'};
@@ -676,7 +678,7 @@ function render(bottom=false,keepFromBottom=false){
   const d=S.dlg;if(!d)return;
   renderPin();
   const b=d.querySelector('.ch-body'),fromBottom=b.scrollHeight-b.scrollTop-b.clientHeight,atBottom=fromBottom<60;
-  d.querySelector('.ch-head').innerHTML=head();
+  const hd=d.querySelector('.ch-head'),hh=head();if(hd._h!==hh){hd.innerHTML=hh;hd._h=hh;}   // 23/10 lag: a message or presence frame mostly leaves the header as it was
   d.querySelector('.ch-net').hidden=!(live.welcomed&&live.state!=='open');
   // Presence/read updates usually change only the header. Keep message nodes (and focus) intact.
   // Forms still redraw from state: a locally toggled preference may have failed to save.

@@ -306,8 +306,8 @@ export function updateIsometricShell(env){
   }
   const model=isometricHUDModel(env.api.state,env.api.content,env.world?.mode,chatLive||{},env.api.live||{});
   const root=document.documentElement;
-  root.dataset.sceneMode=model.mode;
-  hud.dataset.sceneMode=model.mode;
+  if(root.dataset.sceneMode!==model.mode)root.dataset.sceneMode=model.mode;   // 23/10 lag: an attribute write, even the same value, wakes the joystick's observer
+  if(hud.dataset.sceneMode!==model.mode)hud.dataset.sceneMode=model.mode;
   model.menuOpen=root.classList.contains('menu-open');
   model.cameraOpen=cameraOpen;
   if(env.ui?.view&&document.getElementById('sheet')?.open)model.activeTab=env.ui.isoTab;

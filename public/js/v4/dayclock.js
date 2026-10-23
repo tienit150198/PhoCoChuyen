@@ -83,9 +83,13 @@ function lampPost(c,x,y,s,on){
   const g=Math.round(150+100*on);c.fillStyle=`rgb(255,${g},${Math.round(120+60*on)})`;c.beginPath();c.ellipse(24,-156,7,4,0,0,Math.PI*2);c.fill();
   c.restore();
 }
-function glow(c,x,y,r,a,color='255,214,140'){
-  if(a<=.01)return;const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(${color},${a})`);g.addColorStop(.55,`rgba(${color},${a*.35})`);g.addColorStop(1,`rgba(${color},0)`);
-  c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2);
+// 23/10 lag: once the light has settled the tint and every glow are the same gradients frame after frame (the workplace
+// draws ~30 a second); they are kept per world by their numbers (scene space: the canvas transform applies when filling)
+function grad(w,key,make){const G=w._lightG??=new Map();let g=G.get(key);if(!g){if(G.size>40)G.clear();g=make();G.set(key,g);}return g;}
+function glow(c,x,y,r,a,color='255,214,140',w=null){
+  if(a<=.01)return;
+  const make=()=>{const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(${color},${a})`);g.addColorStop(.55,`rgba(${color},${a*.35})`);g.addColorStop(1,`rgba(${color},0)`);return g;};
+  c.fillStyle=w?grad(w,`g|${x}|${y}|${r}|${a}|${color}`,make):make();c.fillRect(x-r,y-r,r*2,r*2);
 }
 /** Where the lights are: the stations (hotspots), the window glass and the door; outdoor lamp posts. */
 function lightSpots(w){
@@ -121,15 +125,15 @@ export function daylight(w){
   if(cur.alpha>.005){
     // Multiply tint, a little lighter over the room itself (its lights are on) than around it.
     const rgb=cur.rgb.map(Math.round).join(','),port=w.isPortrait?.(),cx=port?350:600,cy=port?470:470,inner=outdoor?.85:1-.45*cur.lamps;
-    const g=c.createRadialGradient(cx,cy,port?120:180,cx,cy,port?560:720);g.addColorStop(0,`rgba(${rgb},${cur.alpha*inner})`);g.addColorStop(1,`rgba(${rgb},${cur.alpha})`);
+    const g=grad(w,`t|${rgb}|${cur.alpha}|${inner}|${port}`,()=>{const g=c.createRadialGradient(cx,cy,port?120:180,cx,cy,port?560:720);g.addColorStop(0,`rgba(${rgb},${cur.alpha*inner})`);g.addColorStop(1,`rgba(${rgb},${cur.alpha})`);return g;});
     c.globalCompositeOperation='multiply';c.fillStyle=g;
     const tl={x:-w.offset.x/w.scale,y:-w.offset.y/w.scale};c.fillRect(tl.x,tl.y,w.width/w.scale,w.height/w.scale);
     c.globalCompositeOperation='source-over';
   }
   if(cur.lamps>.02){
     c.globalCompositeOperation='lighter';const a=.34*cur.lamps;
-    for(const [x,y,r,col] of lightSpots(w))glow(c,x,y,r,a,col);
-    if(outdoor){const s=w.isPortrait?.()?.9:1;for(const [x,y] of lampSpots(w)){glow(c,x+24*s,y-150*s,90,a*1.2,'255,220,150');glow(c,x+10,y,110,a*.8,'255,214,140');}}
+    for(const [x,y,r,col] of lightSpots(w))glow(c,x,y,r,a,col,w);
+    if(outdoor){const s=w.isPortrait?.()?.9:1;for(const [x,y] of lampSpots(w)){glow(c,x+24*s,y-150*s,90,a*1.2,'255,220,150',w);glow(c,x+10,y,110,a*.8,'255,214,140',w);}}
     c.globalCompositeOperation='source-over';
   }
   c.restore();

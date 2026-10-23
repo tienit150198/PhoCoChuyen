@@ -15,7 +15,8 @@ import {petPicture,lookup,accOf,fxRef} from './pet-art.js';      // 🐾 the Th�
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
-const stars=v=>v?`${Number(v).toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1})}★`:'';
+const STARS=new Intl.NumberFormat('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1});   // 23/10 lag: one formatter for every row, not one per call
+const stars=v=>v?`${STARS.format(Number(v))}★`:'';
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const MEDALS=['🥇','🥈','🥉'];

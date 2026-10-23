@@ -198,14 +198,21 @@ function draw(o){
 }
 
 /** The face of `code` (a string or parseFace's result) as an inline SVG, '' when it is not a face. */
+// 23/10 lag: the same few faces (chat lists of 400 messages, hotel, fair, the avatar picker) were rebuilt as a fresh
+// ~2–3 KB SVG on every render; a face code always draws the same, so its markup is kept (at most 400, oldest out).
+const FACES=new Map();
 export function faceSVG(code,size=40,label=''){
+  const key=typeof code==='string'?`${code}|${size}|${label}`:null,hit=key&&FACES.get(key);if(hit)return hit;
   const o=typeof code==='string'?parseFace(code):code;
   if(!o||o.kind!=='face')return '';
-  return `<svg class="fc-svg" width="${size}" height="${size}" viewBox="0 0 80 80" ${label?`role="img" aria-label="${esc(label)}"`:'aria-hidden="true"'} focusable="false">${draw(o)}</svg>`;
+  const out=`<svg class="fc-svg" width="${size}" height="${size}" viewBox="0 0 80 80" ${label?`role="img" aria-label="${esc(label)}"`:'aria-hidden="true"'} focusable="false">${draw(o)}</svg>`;
+  if(key){FACES.set(key,out);if(FACES.size>400)FACES.delete(FACES.keys().next().value);}
+  return out;
 }
 /** What a chat avatar shows for a person or a message: the drawn face, the emoji of an emoji code, else its `av`. */
 export function avInner(who){
+  if(typeof who?.fc==='string'){const hit=FACES.get(`${who.fc}|64|`);if(hit)return hit;}
   const o=parseFace(who?.fc);
-  if(o?.kind==='face')return faceSVG(o,64);
+  if(o?.kind==='face')return typeof who.fc==='string'?faceSVG(who.fc,64):faceSVG(o,64);
   return esc(o?.kind==='emoji'?o.emoji:(who?.av||'🌸'));
 }

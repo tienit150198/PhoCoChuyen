@@ -213,7 +213,7 @@ function paintStampWings(c,o,[tx,ty]){
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */
 export function getCharacterStamp(options={}){
   const o=normalise(options),key=characterKey(o),entry=atlasFor(o.gender,options.onReady);
-  const hit=stamps.get(key);if(hit&&hit.ready===entry.ready)return hit;
+  const hit=stamps.get(key);if(hit&&hit.ready===entry.ready){stamps.delete(key);stamps.set(key,hit);return hit;}   // 23/10 lag: a hit counts as recent (LRU), so a busy square keeps its walkers' stamps instead of cycling them out
   const canvas=document.createElement('canvas');canvas.width=WIDTH;canvas.height=HEIGHT;
   if(!entry.ready){fallback(canvas,o);return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:false});}
   const view=extractView(entry,o.direction,o.walkFrame),scale=entry.scale,w=Math.round(view.w*scale),h=Math.round(view.h*scale),x=Math.round((WIDTH-w)/2),y=FOOT-h;
@@ -238,7 +238,7 @@ const winged=new Map();
 export function wingedStamp(options={}){
   const wg=wingOf(options.look?.wg),{wg:_,...bare}=options.look||{},base=getCharacterStamp({...options,look:bare});
   if(!wg||!base.ready||!base.top||!globalThis.document?.createElement)return base;
-  const key=characterKey({...options,look:bare})+JSON.stringify(wg);let hit=winged.get(key);if(hit)return hit;
+  const key=characterKey({...options,look:bare})+JSON.stringify(wg);let hit=winged.get(key);if(hit){winged.delete(key);winged.set(key,hit);return hit;}
   const canvas=document.createElement('canvas');canvas.width=WINGED_W;canvas.height=HEIGHT;const c=canvas.getContext('2d');if(!c)return base;
   const dx=(WINGED_W-WIDTH)/2,back=options.direction==='nw'||options.direction==='ne',v=back?STAMP_WING.back:STAMP_WING.front;
   const x=base.top[0]+dx,y=base.top[1]+v.dy,o={s:.62,gap:4,tall:1,spread:0,anim:false};

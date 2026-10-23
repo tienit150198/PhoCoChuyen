@@ -37,10 +37,11 @@ export function paymentShortfall(J,cost){
 }
 
 /** Big sums shortened on phones so the chip stays one line: 125.400 → 125,4k, 3.373.500 → 3,37tr. */
+const D1=new Intl.NumberFormat('vi-VN',{maximumFractionDigits:1}),D2=new Intl.NumberFormat('vi-VN',{maximumFractionDigits:2});   // 23/10 lag: kept, not built per call
 export function shortXu(n,phone=false){
   const v=Number(n||0),a=Math.abs(v);
   if(!phone||a<1e5)return `${fmt(v)} xu`;
-  return a>=999950?`${(v/1e6).toLocaleString('vi-VN',{maximumFractionDigits:2})}tr xu`:`${(v/1e3).toLocaleString('vi-VN',{maximumFractionDigits:1})}k xu`;
+  return a>=999950?`${D2.format(v/1e6)}tr xu`:`${D1.format(v/1e3)}k xu`;
 }
 
 /** What players call the workplace's money: the place's own word when it is a fund ("Quỹ lớp",

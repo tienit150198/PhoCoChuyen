@@ -216,12 +216,13 @@ const moteCol=(r,i)=>r===TOP?(i%2?'#fff3b0':'#ffd24a'):r===6?RB[i%6]:r===5?(i%2?
 /** The sparkles of a wing, in the wings' frame (the roots' centre at 0,0, up negative, before the scale): each starts at
  * (x, y), drifts (dx, dy) over `life` seconds from its offset `off` (0…1), `sz` its size; `burst` the SSS / HT motes that
  * fly out of the centre with the ring. */
+const MOTE_SETS=new Map();   // 23/10 lag: the list depends only on the tier; built once per tier, not per walker per frame
 export function wingMotes(wg){
-  const w=cleanWing(wg);if(!w)return [];const r=w.r,out=[];
+  const w=cleanWing(wg);if(!w)return [];const r=w.r;let out=MOTE_SETS.get(r);if(out)return out;out=[];
   for(let i=0;i<MOTES[r];i++){const side=i%2?1:-1,u=(i*.381966)%1,v=(i*.618034)%1;
     out.push({x:side*(44+u*56),y:-80+v*100,dx:side*(6+u*10),dy:-(16+((i*.7)%1)*16),life:1.5+((i*.437)%1)*1.1,off:(i*.723)%1,sz:(r>=6?3.2:r>=4?2.8:2.3)*(i%3?1:1.3),col:moteCol(r,i),star:i%3!==1});}
   if(r>=6)for(let i=0;i<8;i++){const a=i/8*Math.PI*2+.3;out.push({x:Math.cos(a)*10,y:-LIGHT_Y+Math.sin(a)*8,dx:Math.cos(a)*84,dy:Math.sin(a)*60-8,life:2.6,off:0,sz:2.3,col:r===TOP?(i%2?'#ffe58a':'#fffbe0'):RB[i%6],star:false,burst:true});}
-  return out;
+  out.forEach(Object.freeze);Object.freeze(out);MOTE_SETS.set(r,out);return out;   // shared: frozen so no caller edits it
 }
 /** Where mote `m` is at t: {x, y} in the wings' frame, `a` its opacity 0…1. */
 export function moteAt(m,t){

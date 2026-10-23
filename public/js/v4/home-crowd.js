@@ -45,7 +45,8 @@ export function crowd({live,state,redraw,still,svg,xy,approach,isWalking=()=>fal
   function figure(F,pid=C.me){return affectionFigure(F,pose(pid));}
   function markup(r=C.r,scope=C.scope){
     if(r!==C.r||scope!==C.scope)return '';let out='';
-    for(const q of C.people.values()){let fig='';try{fig=figure(figureOf(q.lk,q.g),q.pid);}catch{}const [x,y]=xy(at(q));out+=`<g class="hc-person" data-pid="${esc(q.pid)}" data-y="${y}" aria-hidden="true" style="transform:translate(${x.toFixed(1)}px,${y.toFixed(1)}px)"><g class="hw-fig${q.path?' walk':''}"><g transform="scale(.42)">${fig}</g></g><text class="hc-name" text-anchor="middle" y="-69">${esc(q.name||'Người thương')}</text></g>`;}
+    for(const q of C.people.values()){let fig='';try{const ps=pose(q.pid);fig=ps?affectionFigure(figureOf(q.lk,q.g),ps):(q.svg??=affectionFigure(figureOf(q.lk,q.g)));}catch{}   // 23/10 lag: a visitor standing as they are keeps their drawn figure (redrawn on every emote, note, in or out)
+    const [x,y]=xy(at(q));out+=`<g class="hc-person" data-pid="${esc(q.pid)}" data-y="${y}" aria-hidden="true" style="transform:translate(${x.toFixed(1)}px,${y.toFixed(1)}px)"><g class="hw-fig${q.path?' walk':''}"><g transform="scale(.42)">${fig}</g></g><text class="hc-name" text-anchor="middle" y="-69">${esc(q.name||'Người thương')}</text></g>`;}
     const e=C.effect;
     if(e){const a=xy(e.positions[e.pid]),b=xy(e.positions[e.to]),elapsed=performance.now()-e.start;out+=`<g class="hc-effect hc-effect-${e.kind}" aria-hidden="true" transform="translate(${a[0]},${a[1]-37})" style="--hc-flight-x:${b[0]-a[0]}px;--hc-flight-y:${b[1]-a[1]-5}px;--hc-delay:-${Math.min(POSE_MS,elapsed)}ms"><text class="hc-heart" text-anchor="middle">${e.kind==='heart'?'♥':e.kind==='hug'?'♡':e.kind==='kiss'?'♥':e.kind==='shy'?'〃':'…'}</text></g>`;}
     return out;
