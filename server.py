@@ -242,6 +242,20 @@ def _log_big_command(data:dict,length:int)->None:
     sys.stderr.write(f"[cmd-413] action={clip(data.get('action',''))} career={clip(data.get('career') or '-')} bytes={length}{fields}\n")
 
 
+_bad_budget=[0.0,0]  # [minute started, lines written in it]: [cmd-400] at most 30 a minute per process
+def _log_invalid_data(route:str,data,err:BaseException)->None:
+    """One stderr line for an answer "Dữ liệu không đúng cấu trúc" (invalid_data; 23/10 Kai: it said nothing of where):
+    the route, the action and career, the exception type and the last code frames. Never a payload value."""
+    b=_bad_budget;now=time.monotonic()
+    if now-b[0]>=60:b[0]=now;b[1]=0
+    if b[1]>=30:return
+    b[1]+=1
+    clip=lambda x:"".join(ch if ch.isprintable() and ch not in ' ="' else "?" for ch in str(x)[:40])
+    d=data if isinstance(data,dict) else {}
+    frames=" < ".join(f"{os.path.basename(f.filename)}:{f.lineno}:{f.name}" for f in reversed(traceback.extract_tb(err.__traceback__)[-4:]))
+    sys.stderr.write(f"[cmd-400] {route} action={clip(d.get('action','-'))} career={clip(d.get('career') or '-')} {type(err).__name__} @ {frames}\n")
+
+
 def client_outdated(data:dict,game_page:bool,minimum:str|None=None,server:str=__version__)->bool:
     """True when a command comes from a page older than the floor (see MIN_CLIENT)."""
     floor=release_of(MIN_CLIENT if minimum is None else minimum)
@@ -1453,7 +1467,9 @@ class Handler(BaseHTTPRequestHandler):
         except town_treasure.TreasureError as e:self.error(e.status,e.message,e.code)
         except pet_arena.ArenaError as e:self.error(e.status,str(e),e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
-        except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
+        except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError) as e:
+            _log_invalid_data(locals().get("route","?"),locals().get("data"),e)
+            self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
         except dbm.OperationalError as e:  # busy/unreachable database: nothing was committed (or its receipt replays it)
             self.log_error("Database error: %s",type(e).__name__)
             self.error(503,"Máy chủ đang bận, thử lại sau giây lát.","db_unavailable")
