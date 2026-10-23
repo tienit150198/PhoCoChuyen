@@ -12,7 +12,8 @@ Who holds what
 * Only players the board shows (game/leaderboard.py _VISIBLE: accounts unless hidden, guests who opted in), in
   the board's own order. 💎 Sưu tầm (`collection`) too since 18/10, 🐾 Thú cưng (`pets`, game/pet_lb.py: the best pet's
   💪 lực chiến, from pet_board) since 19/10, 🏝️ Đảo đẹp (`island`, game/island_lb.py: the most beautiful island's
-  points, from island_builds) since 19/10, and 🦉 Online (`online`, game/online_board.py:
+  points, from island_builds) since 19/10, 🪽 Cánh (`wings`, game/wing_lb.py: the điểm cánh of the wings owned, from
+  wing_board) since 23/10, and 🦉 Online (`online`, game/online_board.py:
   play time this week, read from stat_play, not from the `leaderboard` table). Nothing is written into a save: holding a weekly title is a server fact (table
   `lb_weekly`), shown on the board, under the name in Phố nghề and on the name tag in Đi dạo.
 
@@ -39,6 +40,7 @@ from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calend
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
 ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND = 'all', 'titles', 'certs', 'wealth', 'collection', 'online', 'pets', 'island'
+WINGS = 'wings'                 # 🪽 game/wing_lb.py (23/10)
 ARENA, PET_CUP, PET_WAR = 'arena', 'pet_cup', 'pet_war'   # ⚔️ game/pet_arena.py, 🏟️ game/pet_cup.py, 🛡️ game/pet_war.py (19/10)
 RACE = ('race_drag_bike', 'race_drag_car', 'race_deo_bike', 'race_deo_car')   # 🏁 game/racing.py: the week's best times (22/10)
 TOP = 10                        # ranks that hold a title on the main boards
@@ -57,6 +59,8 @@ BOARD_TITLES = {                # (emoji, name) per tier
     PETS: (('🐉', 'Vua thú cưng của phố'), ('🦄', 'Sen cưng siêu cấp'), ('🐾', 'Hội sen yêu bé')),
     # 19/10 (owner: "Đảo đẹp nhất tuần", a title only): 🏝️ the most beautiful island's points (game/island_lb.py).
     ISLAND: (('🏝️', 'Đảo đẹp nhất phố'), ('🌴', 'Chủ đảo mộng mơ'), ('⛱️', 'Hội chủ đảo xinh')),
+    # 23/10 (owner: "có hạng cánh nữa nhé, xếp hạng cánh ấy"): 🪽 the điểm cánh of the wings owned (game/wing_lb.py).
+    WINGS: (('🪽', 'Đôi cánh số 1 phố'), ('🌟', 'Cánh thần thoại'), ('🕊️', 'Hội chắp cánh')),
     # 19/10 (owner: "thêm thi đua nữa nhé, kết hợp với pet ra tranh đấu với bang nữa"): ⚔️ the arena's weekly ladder
     # (game/pet_arena.py standings: the week's season rating), 🏟️ the latest weekly cup (game/pet_cup.py), 🛡️ the
     # fighters of the bang war's champion and runner-up (game/pet_war.py; its own two tiers, BOARD_TIERS).
@@ -73,7 +77,7 @@ BOARD_TITLES = {                # (emoji, name) per tier
 # A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five.
 BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10)), **{b: ((1, 1), (2, 3)) for b in RACE}}
 BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân'), **{b: ('Top 1', 'Top 2–3') for b in RACE}}
-MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, ARENA, PET_CUP, PET_WAR, *RACE)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, WINGS, ARENA, PET_CUP, PET_WAR, *RACE)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -165,6 +169,10 @@ def standings(db, t: float | None = None) -> list:
         if board == ISLAND:
             from . import island_lb
             out.extend(island_lb.standings(db, n, t))
+            continue
+        if board == WINGS:
+            from . import wing_lb
+            out.extend(wing_lb.standings(db, n))
             continue
         if board in (ARENA, PET_CUP, PET_WAR):   # ⚔️ 🏟️ 🛡️ not on the `leaderboard` table
             out.extend(_pet_standings(db, board, now() if t is None else t, n))
@@ -288,14 +296,14 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
 # 2.4.60 refreshes only the boards it knows: its daily refresh deletes every current row (final=0) and writes its own
 # boards back, its Monday freeze writes the ended week's finals of its boards only. The boards new since then are
 # re-derived here, by the next process of this build that sees the day done (refresh above), once a process a day:
-# * this week's current rows (final=0) of 🏝️ island, ⚔️ arena, 🏟️ pet_cup, 🛡️ pet_war: from their standings now;
+# * this week's current rows (final=0) of 🏝️ island, ⚔️ arena, 🏟️ pet_cup, 🛡️ pet_war (🏁 race, 🪽 wings): from their standings now;
 # * the ended week's finals (final=1) of arena (that week's season), pet_cup (the latest cup of a week up to it) and
 #   pet_war (the latest war over by the week's end): exact, as long as it runs before the next cup / war, so only on the
 #   first day of the new week.
-# What cannot be fixed from here: 🏝️ island's final row of an ended week frozen by 2.4.60 (the board is the islands'
+# What cannot be fixed from here: 🏝️ island's (and 🪽 wings', under 2.5.6) final row of an ended week frozen by 2.4.60 (the board is the islands'
 # beauty *now*: the builds at the week's end are not kept), and the hours between 2.4.60's refresh and this heal, when
 # those boards show no holder.
-NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them)
+NEW_BOARDS = (ISLAND, ARENA, PET_CUP, PET_WAR, *RACE, WINGS)   # 🏁 RACE: new in 2.5.2 (2.5.1 neither refreshes nor freezes them), 🪽 WINGS in 2.5.7
 ENDED_BOARDS = (ARENA, PET_CUP, PET_WAR, *RACE)
 HEAL_LOCK = 17863
 
@@ -309,6 +317,12 @@ def _new_standings(db, board: str, t: float) -> list:
             return []
     if board in RACE:
         return _race_standings(db, board, t)
+    if board == WINGS:
+        from . import wing_lb
+        try:
+            return wing_lb.standings(db, TOP)
+        except Exception:  # noqa: BLE001
+            return []
     return _pet_standings(db, board, t, TOP)
 
 

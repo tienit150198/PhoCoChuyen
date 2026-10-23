@@ -469,6 +469,8 @@ def commit(db, sid: str, after: dict) -> None:
 
 def forget(db, sid: str) -> None:
     db.execute('DELETE FROM wing_worn WHERE sid=?', (sid,))
+    from . import wing_lb
+    wing_lb.forget(db, sid)   # 🪽 Xếp hạng cánh (wing_board, SCHEMA_VERSION 91)
 
 
 __all__ = ['ORDER', 'STYLES']

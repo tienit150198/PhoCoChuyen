@@ -44440,7 +44440,19 @@
     "Bỏ qua hiệu ứng": "Skip effects",
     "⚡ Cường hóa tối đa?": "⚡ Enhance to max?",
     "⚡ Ghép tất cả?": "⚡ Fuse all?",
-    "Cường hóa nhanh được": "Quick enhance ready"
+    "Cường hóa nhanh được": "Quick enhance ready",
+    "Cánh": "Wings",
+    "Điểm cánh = tổng mọi đôi đang có: D 1 · C 3 · B 9 · A 27 · S 81 · SS 243 · SSS 729 · HT 2187. Bằng điểm: hạng cao hơn, rồi ai đạt trước.": "Wing points = every pair you own: D 1 · C 3 · B 9 · A 27 · S 81 · SS 243 · SSS 729 · HT 2187. Ties: higher tier, then who got there first.",
+    "điểm cánh": "wing points",
+    "Bạn chưa có đôi cánh nào. Mua cánh ở 🛍️ Cửa hàng để có tên trên bảng.": "You have no wings yet. Buy a pair at the 🛍️ Shop to get on the board.",
+    "Chưa ai có cánh": "Nobody has wings yet",
+    "Mua đôi cánh đầu tiên để mở hàng nhé.": "Buy the first pair to open the board.",
+    "Top đôi cánh": "Top wings",
+    "Top 3 cánh": "Top 3 wings",
+    "Xếp hạng cánh": "Wing ranking",
+    "Đôi cánh số 1 phố": "No. 1 Wings in Town",
+    "Cánh thần thoại": "Mythic Wings",
+    "Hội chắp cánh": "Winged Club"
   },
   "patterns": {
     "📲 Đã khép ca từ xa ở $1.": "📲 Closed the shift at $1 remotely.",
