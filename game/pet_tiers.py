@@ -33,6 +33,19 @@ The pet games and tournaments come later (owner: "trò chơi của pets chưa l�
   mới cho lên bậc, cũng 3 món, bậc S trở đi thì mất đồ nguyên liệu"): the first gear, at +10, plus two more of its slot
   and rank; on success it goes up IN PLACE (worn or not) and back to +0, the two others are used up; a failure from S
   (LOSE_FROM) loses the two others, below S only the fee. Stats only, never money.
+* ⚡ Cường hóa nhanh (owner 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần", "nó giống
+  ghép tự động của áo quần ấy"): one command runs the single one again and again, one charge, one save, a summary {n, ok,
+  spent, used, made, stop, left}, within a budget, the money and AUTO_MAX:
+  - jr_pet_fuse_auto {budget, top?, scope?, confirm}: jr_pet_fuse's own fusion (_fuse_check / _fuse_roll: the same fee,
+    odds, 📺 boost, retiring and losses) of three pets of the lowest rank first (`fuse_sets`, the quick pick's rule: the
+    👑 main one the pet walked or the strongest, keeping its breed, never a hybrid; the two others never the pet walked,
+    those in the kennel or at the grandparents' before those at home, the weakest first; no 🌟 legendary and no sad pet
+    ever used; the result at most `top`, 7 = 🌟), a miss tried again while the pets remain. It stops at a ✨ thần thú
+    offer, so the player answers it (jr_pet_morph) before another fusion could replace it.
+  - jr_pet_gear_auto {budget, top?, scope?, confirm}: jr_pet_gear_up / jr_pet_gear_fuse's own steps (_gear_up_roll,
+    _gear_fuse_roll) by `gear_step`: three of one slot and rank (the lowest rank first, the result at most `top`), the
+    main one (worn first, then the highest level) strengthened to +GLV_MAX then ranked up with the two free ones of the
+    lowest levels; with no such three, the gear worn by the pets strengthened to +GLV_MAX (highest rank first).
 * Pets are bound to the account: nothing here gives, sells or moves a pet to anyone.
 
 State `journey['petx']` (absent until the first pet; older builds keep unknown journey keys, and they never see the
@@ -135,7 +148,9 @@ GEAR_QTY_MAX = 20                             # 🛍️ owner 21/10 "cho chọn 
 STROLL_DAY = 3
 GEAR_ODDS = (7000, 3000, 0, 0, 0, 0, 0)        # per 10 000, a find on a stroll: D or C
 COMMANDS = ('jr_pet_fuse', 'jr_pet_train', 'jr_pet_kennel', 'jr_pet_stroll', 'jr_pet_gear_buy', 'jr_pet_gear_up',
-            'jr_pet_gear_fuse', 'jr_pet_gear_wear', 'jr_pet_gear_drop')
+            'jr_pet_gear_fuse', 'jr_pet_gear_wear', 'jr_pet_gear_drop', 'jr_pet_fuse_auto', 'jr_pet_gear_auto')
+AUTO_MAX = 50                                  # ⚡ the pet fusions one Cường hóa nhanh makes at most
+GEAR_AUTO_MAX = 100                            # ⚡ the gear steps (+1 or a rank up) one makes at most
 REC_KEYS = frozenset({'r', 'fx', 'pt', 'tn', 'g', 'z'})
 BLOCK_KEYS = frozenset({'v', 't', 'ken', 'ret', 'rn', 'gear', 'gs', 'day'})
 DAY_KEYS = ('d', 'f', 'tr', 'w', 'got')
@@ -486,6 +501,8 @@ def action(s: dict, name: str, p: dict) -> dict:
     day = j['life_day']
     if name == 'jr_pet_fuse':
         return _fuse(s, p)
+    if name == 'jr_pet_fuse_auto':
+        return _fuse_auto(s, p)
     if name == 'jr_pet_kennel':
         pt._keys(p, {'pet', 'to', 'swap', 'walk'}, {'pet', 'to'})
         _need(p['to'] in ('ken', 'home'), 'Thông tin không hợp lệ.')
@@ -565,6 +582,8 @@ def action(s: dict, name: str, p: dict) -> dict:
             rank = max(rank, _pick(GEAR_ODDS, 10000))
         g = _new_gear(x, GSLOT_IDS[roll(len(GSLOT_IDS))], rank)
         return dict(message=f'🎁 {pet["n"]} tha về {gear_name(g, s)}!', found=g['id'])
+    if name == 'jr_pet_gear_auto':
+        return _gear_auto(s, p)
     x = _ensure(s)
     if name == 'jr_pet_gear_buy':
         # 🛍️ owner 21/10 "mua linh kiện cho chọn số lượng": qty (absent: 1, an older client) pieces of one model and rank,
@@ -604,8 +623,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         fee = GUP_FEE[g['r']] * (g['lv'] + 1)
         _confirm(p, f'Xác nhận cường hóa {gear_name(g, s)} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Cường hóa linh kiện · {gear_name(g, s)}')
-        if roll(10000) < GUP_BP[g['lv']]:
-            g['lv'] += 1
+        if _gear_up_roll(g):
             return dict(message=f'✨ Thành công! {gear_name(g, s)}. ({how})', ok=True)
         return dict(message=f'💨 Cường hóa trượt, món đồ vẫn nguyên {gear_name(g, s)}. ({how})', ok=False)
     if name == 'jr_pet_gear_fuse':
@@ -623,26 +641,12 @@ def action(s: dict, name: str, p: dict) -> dict:
         fee = GFUSE_FEE[r]
         _confirm(p, f'Xác nhận ghép ba {GSLOTS[GSLOT_IDS.index(main["s"])][2].lower()} hạng {RANKS[r]} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Ghép linh kiện {RANKS[r]}')
-        if roll(10000) < FUSE_BP[r]:
-            # The main one goes up in place (worn or not), back to +0; it takes the best model of the three.
-            best = max(model_of(g, s) for g in gs)
-            for g in others:
-                x['gear'].remove(g)
-            main['r'], main['lv'] = r + 1, 0
-            from . import pet_wardrobe
-            if best >= 3:
-                main['m'] = 0
-                pet_wardrobe.set_model(s, main['id'], best - 3)
-            else:
-                main['m'] = best
-            pet_wardrobe.tidy_models(s)
-            return dict(message=f'🎉 Lên hạng thành công: {gear_name(main, s)} {RANKS[r + 1]}! Cường hóa lại tới +{GLV_MAX} '
-                                f'để lên hạng tiếp. ({how})', ok=True, gear=main['id'])
+        if _gear_fuse_roll(s, x, main, others):
+            from . import forge_news   # 📣 SS and up: one line on the street's ticker
+            return forge_news.mark(dict(message=f'🎉 Lên hạng thành công: {gear_name(main, s)} {RANKS[r + 1]}! Cường hóa lại '
+                                                f'tới +{GLV_MAX} để lên hạng tiếp. ({how})', ok=True, gear=main['id']),
+                                   'gear', [dict(id=main['id'], r=main['r'], n=model_def(main['s'], model_of(main, s))[1])])
         if r >= LOSE_FROM:   # owner 19/10: from S up a failure loses the two ingredients (the main one stays)
-            for g in others:
-                x['gear'].remove(g)
-            from . import pet_wardrobe
-            pet_wardrobe.tidy_models(s)
             return dict(message=f'💨 Ghép trượt: hai món nguyên liệu đã mất, {gear_name(main, s)} vẫn còn. ({how})',
                         ok=False, gear=main['id'], lost=[g['id'] for g in others])
         return dict(message=f'💨 Ghép trượt, ba món vẫn còn nguyên. ({how})', ok=False, gear=main['id'])
@@ -677,6 +681,243 @@ def action(s: dict, name: str, p: dict) -> dict:
         pet_wardrobe.tidy_models(s)
         return dict(message=f'Đã bỏ {gear_name(g, s)}.')
     raise AssertionError(name)
+
+
+def _gear_up_roll(g: dict) -> bool:
+    """✨ One +1 (paid already), jr_pet_gear_up's own: GUP_BP of its level; a miss loses nothing but the fee."""
+    if roll(10000) < GUP_BP[g['lv']]:
+        g['lv'] += 1
+        return True
+    return False
+
+
+def _gear_fuse_roll(s: dict, x: dict, main: dict, others: list) -> bool:
+    """📈 One rank up (paid already), jr_pet_gear_fuse's own: FUSE_BP of the rank; a success raises the main one in place
+    (worn or not) back to +0 with the best model of the three and uses the two others up; a miss from LOSE_FROM loses the
+    two others, below it keeps the three."""
+    from . import pet_wardrobe
+    r = main['r']
+    if roll(10000) < FUSE_BP[r]:
+        best = max(model_of(g, s) for g in [main] + others)
+        for g in others:
+            x['gear'].remove(g)
+        main['r'], main['lv'] = r + 1, 0
+        if best >= 3:
+            main['m'] = 0
+            pet_wardrobe.set_model(s, main['id'], best - 3)
+        else:
+            main['m'] = best
+        pet_wardrobe.tidy_models(s)
+        return True
+    if r >= LOSE_FROM:
+        for g in others:
+            x['gear'].remove(g)
+        pet_wardrobe.tidy_models(s)
+    return False
+
+
+def _auto_args(p: dict, scopes, top_max: int, scope_msg: str) -> tuple:
+    """The common fields of a ⚡ Cường hóa nhanh command: (scope, top, budget)."""
+    _pt()._keys(p, {'budget', 'top', 'scope', 'confirm'}, {'budget', 'confirm'})
+    scope = p.get('scope', 'all')
+    _need(scope == 'all' or (isinstance(scope, str) and scope in scopes), scope_msg)
+    top = p.get('top', top_max)
+    _need(_int(top, 1, top_max), 'Hạng dừng không hợp lệ.')
+    budget = p['budget']
+    _need(_int(budget, 1, 10**12), 'Nhập số xu tối đa muốn tiêu nhé.')
+    return scope, top, budget
+
+
+AUTO_STOP = {'done': ' Hết bộ ba để ghép.', 'top': ' Đã tới hạng đặt.', 'budget': ' Dừng vì chạm số xu đã đặt.',
+             'money': ' Dừng vì hết tiền.', 'cap': ' Đủ lượt tối đa một lần, bấm tiếp nếu muốn.',
+             'myth': ' ✨ Có thần thú muốn nhập vào bé: trả lời trước rồi ghép tiếp nhé.'}
+
+
+# ---------------------------------------------------------------- ⚡ Cường hóa nhanh: pets
+def fuse_sets(s: dict, scope: str = 'all', top: int = TOP + 1) -> list:
+    """⚡ What Cường hóa nhanh may fuse now: [(rank, [main, a, b] pet ids, how many sets of that rank)], the lowest rank
+    first, for every rank with three pets that may join (no 🌟 legendary, no sad pet at home; `scope` 'dog' / 'cat' one
+    kind) whose result is at most `top` (TOP + 1: 🌟). The quick pick's rule (v4/pets.js quickLab): the 👑 main one the pet
+    walked when it is among them, else the strongest; the two others never the pet walked, those in the kennel or at
+    the grandparents' first, then the weakest."""
+    pt = _pt()
+    b = pt.get(s)
+    if not b:
+        return []
+    walk = b['walk']
+    day = s['journey']['life_day']
+    groups: dict = {}
+    for p in all_pets(s):
+        br = C.BREEDS.get(p['b'])
+        if not br or is_legend(p, s) or (scope != 'all' and br['kind'] != scope):
+            continue
+        rows, _, where = _where(s, p['id'])
+        if where == 'home':
+            n = pt.needs_at(p, day) if p['t'] < day else {k: p[k] for k in pt.NEEDS}
+            if pt.mood(n) == 'buon':
+                continue
+        r = rec_of(s, p)['r']
+        if r + 1 > top:
+            continue
+        groups.setdefault(r, []).append((p, where, power(s, p)))
+    out = []
+    for r in sorted(groups):
+        g = groups[r]
+        if len(g) < 3:
+            continue
+        main = next((q for q in g if q[0]['id'] == walk), None) or max(g, key=lambda q: (q[2], q[0]['id']))
+        rest = sorted((q for q in g if q is not main and q[0]['id'] != walk),
+                      key=lambda q: (q[1] == 'home', q[2], q[0]['id']))
+        if len(rest) < 2:
+            continue
+        out.append((r, [main[0]['id'], rest[0][0]['id'], rest[1][0]['id']], len(g) // 3))
+    return out
+
+
+def _fuse_auto(s: dict, p: dict) -> dict:
+    """⚡ jr_pet_fuse_auto: see the module's doc."""
+    pt = _pt()
+    scope, top, budget = _auto_args(p, ('dog', 'cat'), TOP + 1, 'Chọn chó, mèo hoặc tất cả nhé.')
+    first = fuse_sets(s, scope, top)
+    above = top <= TOP and bool(fuse_sets(s, scope))
+    _need(bool(first), f'Đã tới hạng {RANKS[top]} rồi: chọn hạng cao hơn nhé.' if above
+          else 'Chưa có ba bé cùng hạng (vui vẻ, không phải huyền thoại) để ghép.', 'not_owned')
+    fee0 = FUSE_FEE[first[0][0]]
+    _need(fee0 <= budget, f'Số xu đặt chưa đủ cho lượt ghép đầu ({_fmt(fee0)} xu).', 'not_enough')
+    why = pt._ready_why(s, fee0)
+    _need(not why, why, 'not_enough')
+    _confirm(p, f'Xác nhận cường hóa nhanh thú cưng, tiêu tối đa {_fmt(budget)} xu.')
+    before = {q['id']: (rec_of(s, q)['r'], is_legend(q, s)) for q in all_pets(s)}
+    n = won = spent = 0
+    stop = 'done'
+    myth = None
+    while True:
+        left = fuse_sets(s, scope, top)
+        if not left:
+            stop = 'top' if top <= TOP and fuse_sets(s, scope) else 'done'
+            break
+        if n >= AUTO_MAX:
+            stop = 'cap'
+            break
+        r, ids, _ = left[0]
+        fee = FUSE_FEE[r]
+        if spent + fee > budget:
+            stop = 'budget'
+            break
+        if pt._ready_why(s, spent + fee):
+            stop = 'money'
+            break
+        c = _fuse_check(s, dict(pets=ids, main=ids[0], confirm=True))
+        spent += fee
+        n += 1
+        out = _fuse_roll(s, c, '')
+        if out['fuse']['ok']:
+            won += 1
+            if out['fuse'].get('myth'):
+                myth = out['fuse']['myth']
+                stop = 'myth'
+                break
+    how = pt._pay(s, spent, f'Cường hóa nhanh thú cưng · {n} lượt')
+    now = {q['id']: q for q in all_pets(s)}
+    made = [dict(id=i, n=q['n'], b=q['b'], r=rec_of(s, q)['r'], legend=is_legend(q, s)) for i, q in now.items()
+            if i in before and (rec_of(s, q)['r'], is_legend(q, s)) > before[i]]
+    used = len(set(before) - set(now))
+    msg = f'⚡ Cường hóa nhanh {n} lượt: {won} thành công, {n - won} trượt.'
+    from . import forge_news   # 📣 one line for the run: the highest rank reached
+    return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
+                                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, myth=myth,
+                                          left=sum(k for _, _, k in fuse_sets(s, scope, top)))),
+                           'pet', [dict(id=q['id'], r=q['r'], n=C.BREEDS.get(q['b'], {}).get('name', 'thú cưng'), lg=q['legend'])
+                                   for q in made])
+
+
+# ---------------------------------------------------------------- ⚡ Cường hóa nhanh: gear
+def gear_step(s: dict, x: dict, scope: str = 'all', top: int = TOP) -> tuple | None:
+    """⚡ The next step of Cường hóa nhanh linh kiện: ('up', gear) a +1, ('fuse', main, [a, b]) a rank up, or None.
+    Three of one slot and rank whose result is at most `top`, the lowest rank first (then the slots' order): the main one
+    the gear worn (then the highest level), strengthened to +GLV_MAX then ranked up with the two free ones (not worn) of
+    the lowest levels. With none of those: the gear worn below +GLV_MAX, the highest rank first."""
+    bag = [g for g in x['gear'] if scope == 'all' or g['s'] == scope]
+    worn = {g['id'] for g in bag if _wearer(x, g['id'])}
+    groups: dict = {}
+    for g in bag:
+        if g['r'] < min(top, TOP):
+            groups.setdefault((g['r'], GSLOT_IDS.index(g['s'])), []).append(g)
+    for key in sorted(groups):
+        gs = groups[key]
+        main = max(gs, key=lambda g: (g['id'] in worn, g['lv'], -int(g['id'][1:])))
+        mates = sorted((g for g in gs if g is not main and g['id'] not in worn), key=lambda g: (g['lv'], int(g['id'][1:])))
+        if len(mates) < 2:
+            continue
+        return ('up', main) if main['lv'] < GLV_MAX else ('fuse', main, mates[:2])
+    on = sorted((g for g in bag if g['id'] in worn and g['lv'] < GLV_MAX), key=lambda g: (-g['r'], -g['lv'], int(g['id'][1:])))
+    return ('up', on[0]) if on else None
+
+
+def _step_fee(step: tuple) -> int:
+    g = step[1]
+    return GUP_FEE[g['r']] * (g['lv'] + 1) if step[0] == 'up' else GFUSE_FEE[g['r']]
+
+
+def _gear_left(x: dict, scope: str, top: int) -> int:
+    """How many rank ups are still possible (three of a slot and rank, two of them free, the result at most `top`)."""
+    bag = [g for g in x['gear'] if scope == 'all' or g['s'] == scope]
+    n = 0
+    for r in range(min(top, TOP)):
+        for sl in GSLOT_IDS:
+            gs = [g for g in bag if g['s'] == sl and g['r'] == r]
+            free = [g for g in gs if not _wearer(x, g['id'])]
+            if len(gs) >= 3 and len(free) >= 2:
+                n += min(len(gs) // 3, len(free) // 2)
+    return n
+
+
+def _gear_auto(s: dict, p: dict) -> dict:
+    """⚡ jr_pet_gear_auto: see the module's doc."""
+    pt = _pt()
+    scope, top, budget = _auto_args(p, GSLOT_IDS, TOP, 'Chọn một loại linh kiện hoặc tất cả nhé.')
+    x = get(s)
+    first = gear_step(s, x, scope, top) if x else None
+    _need(first is not None, 'Chưa có món nào cường hóa được: cần ba món cùng loại, cùng hạng (hai món chưa gắn) '
+          'hoặc một món đang gắn chưa tới +' + str(GLV_MAX) + '.', 'not_owned')
+    fee0 = _step_fee(first)
+    _need(fee0 <= budget, f'Số xu đặt chưa đủ cho lượt đầu ({_fmt(fee0)} xu).', 'not_enough')
+    why = pt._ready_why(s, fee0)
+    _need(not why, why, 'not_enough')
+    _confirm(p, f'Xác nhận cường hóa nhanh linh kiện, tiêu tối đa {_fmt(budget)} xu.')
+    before = {g['id']: (g['r'], g['lv']) for g in x['gear']}
+    n = won = ups = spent = 0
+    stop = 'done'
+    while True:
+        step = gear_step(s, x, scope, top)
+        if step is None:
+            break
+        if n >= GEAR_AUTO_MAX:
+            stop = 'cap'
+            break
+        fee = _step_fee(step)
+        if spent + fee > budget:
+            stop = 'budget'
+            break
+        if pt._ready_why(s, spent + fee):
+            stop = 'money'
+            break
+        spent += fee
+        n += 1
+        if step[0] == 'up':
+            won += _gear_up_roll(step[1])
+        else:
+            ups += 1
+            won += _gear_fuse_roll(s, x, step[1], step[2])
+    how = pt._pay(s, spent, f'Cường hóa nhanh linh kiện · {n} lượt')
+    made = [gear_view(x, g, s) for g in x['gear'] if g['id'] in before and (g['r'], g['lv']) > before[g['id']]]
+    used = len(set(before) - {g['id'] for g in x['gear']})
+    msg = f'⚡ Cường hóa nhanh {n} lượt: {won} thành công, {n - won} trượt.'
+    from . import forge_news   # 📣 one line for the run: the highest rank reached (a +1 is no rank)
+    return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
+                                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, fuses=ups,
+                                          left=_gear_left(x, scope, top))),
+                           'gear', [dict(id=g['id'], r=g['r'], n=g['name']) for g in made if g['r'] > before[g['id']][0]])
 
 
 def chance(ranks: list) -> int:
@@ -716,6 +957,22 @@ def breed_choices(pets: list, k: int, low: int) -> list:
 
 
 def _fuse(s: dict, p: dict) -> dict:
+    c = _fuse_check(s, p)
+    _confirm(p, f'Xác nhận ghép ba bé ({_fmt(c["fee"])} xu).')
+    how = _pt()._pay(s, c['fee'], f'Ghép thú cưng · {", ".join(q["n"] for q in c["pets"])}'[:120])
+    out = _fuse_roll(s, c, how)
+    f = out['fuse']
+    if f['ok']:   # 📣 SS and up (or a 🌟 legendary): one line on the street's ticker
+        q = _where(s, f['pet'])[1]
+        if q is not None:
+            from . import forge_news
+            forge_news.mark(out, 'pet', [dict(id=q['id'], r=rec_of(s, q)['r'], n=C.BREEDS.get(q['b'], {}).get('name', 'thú cưng'),
+                                              lg=is_legend(q, s))])
+    return out
+
+
+def _fuse_check(s: dict, p: dict) -> dict:
+    """🧬 jr_pet_fuse's checks, before the question: what the fusion is (the pets, the main one, the fee, the odds)."""
     pt = _pt()
     j = s['journey']
     day = j['life_day']
@@ -752,8 +1009,18 @@ def _fuse(s: dict, p: dict) -> dict:
     if boost:   # 📺 a rewarded ad: +10 points on this fusion at any rank, still a roll (game/ads.py)
         bp = min(_ads().PET_TOP, bp + boost)
     nick = pt._name(p['nick']) if p.get('nick') not in (None, '') else None
-    _confirm(p, f'Xác nhận ghép ba bé ({_fmt(fee)} xu).')
-    how = pt._pay(s, fee, f'Ghép thú cưng · {", ".join(q["n"] for q in pets)}'[:120])
+    return dict(p=p, found=found, pets=pets, recs=recs, ranks=ranks, k=k, main=main, mrec=mrec, low=low, want=want,
+                fee=fee, bp=bp, boost=boost, nick=nick, x=x, d=d)
+
+
+def _fuse_roll(s: dict, c: dict, how: str) -> dict:
+    """🧬 One fusion (paid already), jr_pet_fuse's own: the count, the 📺 boost spent, one roll; a miss keeps the three
+    below LOSE_FROM and loses the two others from it; a success a hybrid pup (`mix`) or the main pet up in place."""
+    pt = _pt()
+    day = s['journey']['life_day']
+    p, found, pets, recs, k, main, mrec = c['p'], c['found'], c['pets'], c['recs'], c['k'], c['main'], c['mrec']
+    low, want, bp, boost, nick, x, d = c['low'], c['want'], c['bp'], c['boost'], c['nick'], c['x'], c['d']
+    main_id = main['id']
     d['f'] = min(10**9, d['f'] + 1)   # counted only (no daily limit since 19/10)
     if boost:
         _ads().spend_pet_boost(s)
@@ -911,4 +1178,5 @@ def catalogue() -> dict:
                           for k, v in GMODELS.items()},
                   base=list(GBASE), shop=list(GSHOP), up_fee=list(GUP_FEE), fuse_fee=list(GFUSE_FEE), lv_max=GLV_MAX),
         limits=dict(train_day=TRAIN_DAY, train_max=TRAIN_MAX, train_step=TRAIN_STEP, stroll_day=STROLL_DAY,
-                    kennel=KENNEL_MAX, gear=GEAR_MAX, lose_from=LOSE_FROM, gear_qty=GEAR_QTY_MAX))
+                    kennel=KENNEL_MAX, gear=GEAR_MAX, lose_from=LOSE_FROM, gear_qty=GEAR_QTY_MAX,
+                    auto_max=AUTO_MAX, gear_auto_max=GEAR_AUTO_MAX))

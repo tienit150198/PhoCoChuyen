@@ -84,6 +84,7 @@ export function settingsView(env){
       <div class="divider"></div>${button('Bắt đầu lại riêng nghề này','resetCareer',{},'danger small')}</section>
     <section class="settings-block"><h3>${icon('shield',18)} Quyền riêng tư</h3>
       ${toggle('publicProfile','Hiện quán của tôi ở Phố nghề',s.publicProfile)}${lbPrivacyRow(env)}
+      ${toggle('forgeAnon','Ẩn tên khi lên hạng SS+',!!s.forgeAnon)}
       <p class="small"><a href="/privacy" target="_blank" rel="noopener">Chính sách quyền riêng tư</a> · <a href="/terms" target="_blank" rel="noopener">Điều khoản sử dụng</a> · <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
       <div class="danger-zone"><b>Xóa dữ liệu của tôi</b><p class="small muted">Xóa vĩnh viễn bản lưu, tài khoản, hồ sơ, bài viết, quà, hàng ở chợ và đăng ký thông báo trên máy chủ. Không thể hoàn tác.</p>${button('Xóa toàn bộ dữ liệu','v4DeleteData',{},'danger small')}</div></section>`;
   return head('Cài đặt','','THIẾT LẬP')+`<div class="sheet-body settings-v4">${nav}<div class="settings-pane">${body}</div></div>`;

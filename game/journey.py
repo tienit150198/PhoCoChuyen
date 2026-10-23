@@ -1417,6 +1417,8 @@ def validate(s: dict) -> None:
     pt.pw.validate(s)   # 👗 journey['petw'] (optional)
     from . import wings
     wings.validate(s)   # 🪽 journey['wings'] (optional: game/wings.py)
+    from . import forge_news
+    forge_news.validate(s)   # 📣 journey['fzn'] (optional: game/forge_news.py, 🕶️ Ẩn tên)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     isl.validate(s)   # 🏝️ journey['island'] (optional)
     from . import island_build

@@ -250,11 +250,6 @@ html[data-theme="dem"] .pt-gl-c{background:#2a2633;border-color:#fff2}html[data-
 .pt-qty-sum{margin:2px 0 0;font-size:.92rem;color:var(--ink-2)}
 .pt-qty-sum b{color:var(--ink)}
 /* 🤖 Ghép tự động (tủ đồ): the entry row, its pickers, the preview, the summary */
-.pt-autobtn{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;margin:0 0 10px;padding:8px 12px;border:1px dashed var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-align:left;cursor:pointer}
-.pt-autobtn.on{border:1px solid var(--accent);background:var(--accent-soft)}
-.pt-autobtn b{flex:1 1 auto;min-width:0;display:grid;font-size:1rem}
-.pt-autobtn small{font-weight:600;font-size:.82rem;color:var(--ink-2)}
-.pt-autobtn em{flex:none;font-style:normal;font-size:1.4rem;font-weight:800;color:var(--accent-text)}
 .pt-afields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,8.5em);gap:8px;margin:4px 0 10px}
 .pt-afield{display:grid;gap:3px;min-width:0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
 .pt-afield select{min-height:44px;font-size:.95rem;color:var(--ink)}
@@ -275,8 +270,12 @@ html[data-theme="dem"] .pt-gl-c{background:#2a2633;border-color:#fff2}html[data-
 .pt-ares-h .pt-chip{min-width:44px;padding:0;font-size:.95rem}
 .pt-ares .pt-stage{min-height:120px;margin:6px 0 8px}
 @media (max-width:340px){.pt-astats.four{grid-template-columns:repeat(2,minmax(0,1fr))}.pt-afields{grid-template-columns:1fr}}
-@media (max-height:480px){.pt-ares .pt-stage{display:none}.pt-autobtn{min-height:48px}}
-/* ⚡ Cường hóa nhanh (v4/pets.js quickBtn, owner 23/10): the set it will use under the button */
-.pt-quick{display:grid;gap:6px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
-.pt-quick .pt-quickbtn{width:100%;min-height:46px;font-weight:800}
-.pt-quick small{color:var(--ink-2);line-height:1.45}
+@media (max-height:480px){.pt-ares .pt-stage{display:none}}
+/* ⚡ Cường hóa nhanh (v4/pets.js autoCard, owner 23/10 "nó giống ghép tự động của áo quần"): the card on each ghép
+ * shelf: pickers, what it finds, the budget, the button; Tự chọn below it */
+.pt-quick{display:grid;gap:8px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.pt-quick h3{margin:0}
+.pt-quick>.pt-muted{margin:0;font-size:.85rem;line-height:1.45}
+.pt-quick .pt-afields,.pt-quick .pt-astats,.pt-quick .pt-asets,.pt-quick .pt-qty,.pt-quick .pt-fzwarn{margin:0}
+.pt-autogo{width:100%;min-height:48px;font-weight:800}
+.pt-own{margin:12px 2px 6px;font-size:.95rem}

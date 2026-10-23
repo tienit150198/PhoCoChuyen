@@ -769,7 +769,7 @@ def board_row(after: dict) -> dict | None:
                 acc=json.dumps(pw.walk_look(after, best).get('a', [])))
 
 
-def command_commit(db, sid: str, action: str, after: dict) -> None:
+def command_commit(db, sid: str, action: str, after: dict, result=None) -> None:
     """Called by the storage layer for jr_pet_* commands, in the save's transaction (game/storage.py)."""
     if not action.startswith('jr_pet_'):
         return
@@ -779,8 +779,8 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
         wings.commit(db, sid, after)   # 🪽 the worn wing others see (wing_worn, live/wings.py)
     from . import pet_arena
     pet_arena.on_pet_commit(db, sid, after)   # ⚔️ the arena lineup's snapshot follows the pets (a player who set one)
-    if action == 'jr_pet_fuse':
-        _fuse_news(db, sid, after)
+    from . import forge_news
+    forge_news.post(db, sid, after, result)   # 📣 a piece up to SS or more (wings, pets, clothes, gear): one ticker line
     row = board_row(after)
     if not row:
         return
@@ -807,25 +807,6 @@ def _power_row(db, sid: str, after: dict) -> None:
                'ON CONFLICT (sid, week) DO UPDATE SET name=EXCLUDED.name, breed=EXCLUDED.breed, coat=EXCLUDED.coat, '
                'acc=EXCLUDED.acc, pts=EXCLUDED.pts, at=EXCLUDED.at', (sid, POWER, p['n'], p['b'], p['c'], acc, top['pw'], now()))
     _BOARD.clear()
-
-
-def _fuse_news(db, sid: str, after: dict) -> None:
-    """🌈 A pet of rank SS or more, or a 🌟 legendary, born from a fusion in the last minutes: a line on the street's
-    ticker for the whole town (once a rank: the ref is the pet's and its rank, a main pet goes up in place since 19/10)."""
-    x = px.get(after)
-    if not x:
-        return
-    t = now()
-    for p in px.all_pets(after):
-        rec = x['t'].get(p['id'])
-        if not rec or not rec['z'] or t - rec['z'] > 600 or not (rec['r'] >= 5 or px.is_legend(p, after)):
-            continue
-        from . import lux, marriage
-        who = lux._display(db, sid, False)
-        br = C.BREEDS.get(p['b'], {}).get('name', 'thú cưng')
-        text = (f'🌟 {who} vừa ghép ra HUYỀN THOẠI {br}!' if px.is_legend(p, after)
-                else f'🌈 {who} vừa ghép ra bé {br} hạng {px.RANKS[rec["r"]]}!')
-        marriage._post_news(db, 'pets', f'petfz:{sid[:16]}:{p["id"]}:{"L" if px.is_legend(p, after) else rec["r"]}', text, '', '')
 
 
 def forget(db, sid: str) -> None:

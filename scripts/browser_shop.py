@@ -1,4 +1,4 @@
-"""🛍️ Cửa hàng and ⚒️ Cường hóa (v4/acc-shop.js, 2.5.5): a browser walk-through (dev tool, needs playwright + chromium).
+"""🛍️ Cửa hàng and ⚒️ Cường hóa (v4/acc-shop.js, 2.5.5; ⚡ auto 2.5.6): a browser walk-through (dev tool, needs playwright + chromium).
 
 Runs the real app on a throwaway story-mode server and seeds one save per run straight in its database (a named
 character on life day 20 with 2 triệu xu, a bank account and one Samoyed). For the classic interface and the new map,
@@ -9,7 +9,7 @@ at 390x844 and 1280x800:
 - opens ⚒️ Cường hóa from the menu, switches its shelves, and runs ⚡ Cường hóa nhanh once on the wings and once on
   the pet gear (the question names what is used and the fee, never the odds);
 - checks the pets' dialog still sells and that the old links land on their shelf (🤝, Tủ đồ's clothes button).
-The first run also shows the "Có gì mới" card of 2.5.5. Fails on any console error or page error.
+The first run also shows the newest "Có gì mới" card. Fails on any console error or page error.
 
     TEST_DATABASE_URL=postgresql://… python scripts/browser_shop.py [out_dir]
 """
@@ -112,7 +112,7 @@ async def main():
                         if first:
                             await shot('0-whatsnew')
                             card = await page.inner_text('#wnDialog')
-                            check('Cửa hàng riêng' in card and 'Cường hóa nhanh' in card, f'{tag}: Có gì mới 2.5.5 tells about Cửa hàng and Cường hóa')
+                            check('Cường hóa nhanh' in card, f'{tag}: Có gì mới (2.5.6) tells about ⚡ Cường hóa nhanh')
                     except Exception:  # noqa: BLE001 - another popup first
                         pass
                     await popups()
@@ -336,30 +336,31 @@ async def main():
                         await shot(f'10-forge-{t}')
                         check(await page.evaluate(WIDE) <= 0, f'{tag}: ⚒️ {t} has ⚡ Cường hóa nhanh, no sideways scroll')
                     await tab('wing', 'jrAsForgeTab')
-                    quick = page.locator('#sheet [data-action="jrAsWingQuick"]')
+                    quick = page.locator('#sheet [data-action="jrAsWingAuto"]')
                     check(await quick.is_enabled(), f'{tag}: ⚡ on the wings is ready (three of one tier)')
                     before, n0 = await wallet(), len(await page.evaluate(WINGS))
                     await quick.click()
                     text = await confirm('11-quick-wing-confirm')
-                    check('Dùng:' in text and 'Phí' in text and '%' not in text, f'{tag}: ⚡ asks with the wings used and the fee, no odds')
-                    await page.wait_for_timeout(800)
+                    check('tối đa' in text and '%' not in text, f'{tag}: ⚡ asks once with the most to spend, no odds')
+                    await page.wait_for_selector('#sheet .fg-ares', timeout=15000)
                     n1 = len(await page.evaluate(WINGS))
-                    check(await wallet() < before, f'{tag}: ⚡ ran one wing fusion ({"thành" if n1 == n0 - 2 else "trượt"}, {n0} → {n1} pairs)')
+                    check(await wallet() < before, f'{tag}: ⚡ ran the auto fusion, paid once ({n0} → {n1} pairs)')
                     await clear()
-                    if await page.locator('#sheet [data-action="jrAsWingReveal"]').count():
-                        await page.locator('#sheet [data-action="jrAsWingReveal"]').click(timeout=8000)
                     await shot('12-quick-wing-done')
 
                     await tab('pgear', 'jrAsForgeTab')
                     await page.wait_for_selector('#sheet .pt-embed .pt-quick', timeout=15000)
-                    pq = page.locator('#sheet .pt-embed [data-pt="quick"]')
-                    check(await pq.is_enabled(), f'{tag}: ⚡ on the pet gear is ready')
-                    before = await wallet()
-                    await pq.click()
-                    text = await confirm('13-quick-gear-confirm')
-                    check('%' not in text, f'{tag}: ⚡ gear question without odds ({text.splitlines()[0] if text else ""})')
-                    await page.wait_for_selector('#sheet .pt-embed .pt-flash:not(:empty)', timeout=10000)
-                    check(await wallet() < before, f'{tag}: ⚡ strengthened one gear piece')
+                    pq = page.locator('#sheet .pt-embed [data-pt="auto"]')
+                    if not await pq.count():   # one loose piece: nothing to strengthen, the card says what it needs
+                        check('Chưa có món nào cường hóa được' in await page.inner_text('#sheet .pt-embed .pt-quick'),
+                              f'{tag}: ⚡ on the pet gear says what it needs')
+                    else:
+                        before = await wallet()
+                        await pq.click()
+                        text = await confirm('13-quick-gear-confirm')
+                        check('%' not in text, f'{tag}: ⚡ gear question without odds ({text.splitlines()[0] if text else ""})')
+                        await page.wait_for_selector('#sheet .pt-embed .pt-ares, #sheet .pt-embed .pt-flash:not(:empty)', timeout=15000)
+                        check(await wallet() < before, f'{tag}: ⚡ ran the gear auto (one command)')
                     await shot('14-quick-gear-done')
 
                     # the old pets UI still sells (players are used to it)
