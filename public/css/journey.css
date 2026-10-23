@@ -429,3 +429,60 @@ html[data-layout="phone"] .jr-chapter>.jr-line.compact{display:none}
 .jr-2010 .grow{display:grid;gap:2px;min-width:0}
 .jr-2010 small{color:color-mix(in srgb,#c2255c 70%,var(--ink));font-weight:600;font-size:.867rem}
 .jr-2010-ico{font-size:1.8rem;line-height:1}
+
+/* 🔎 Đổi nghề (v4/career-pick.js, owner 23/10): the title and the search stay on top; big cards, the reason on each shut one */
+html:not([data-layout="phone"]) .sheet.home:has(.cp){width:min(780px,calc(100vw - 48px))}
+.sheet-head.cp-head{position:relative;align-items:center}   /* scrolls away: the search bar below stays */
+.cp-head h2{margin:0}
+.cp-head .cp-jr{flex:none;min-height:40px}
+.cp-bar{position:sticky;top:0;z-index:5;margin:0 -20px;padding:10px 20px 8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.cp-q{position:relative;display:block}
+.cp-q>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.cp-q input.input{width:100%;min-height:48px;margin:0;padding-left:42px!important;padding-right:48px!important;font-size:1rem;background:var(--surface)}
+.cp-q input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+.cp-clear{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}
+.cp-clear:hover,.cp-clear:focus-visible{background:var(--surface-2);color:var(--ink)}
+.cp-clear[hidden]{display:none}
+.cp{display:grid;gap:6px;padding:0 20px 24px}
+.cp .cp-chips{padding:2px 0!important}
+.cp-found{margin:2px 0 0;font-size:var(--fs-2);font-weight:700;color:var(--muted)}
+.cp-found:empty{display:none}
+.cp-sec h3{display:flex;align-items:baseline;gap:6px;margin:10px 0 6px;font-size:var(--fs-3)}
+.cp-sec h3 small{color:var(--muted);font-weight:700}
+.cp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.cp-item{display:grid;align-content:start;min-width:0}
+.cp-card{display:flex;align-items:center;gap:12px;width:100%;min-height:68px;padding:10px 12px;border:1px solid var(--line);border-left:5px solid var(--career);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:border-color var(--dur),background var(--dur)}
+.cp-card:hover{border-color:var(--line-strong);border-left-color:var(--career)}
+.cp-card:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.cp-card.current{background:color-mix(in srgb,var(--career) 8%,var(--surface))}
+.cp-card.locked{background:var(--surface-2);border-left-color:var(--line-strong)}
+.cp-card.locked .cp-emoji{filter:grayscale(.7);opacity:.7}
+.cp-emoji{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:var(--surface-2);background:color-mix(in srgb,var(--career) 15%,var(--surface));font-size:1.5rem;line-height:1}
+.cp-text{flex:1 1 auto;display:grid;gap:2px;min-width:0}
+.cp-text b{font-size:var(--fs-3);line-height:1.25;overflow-wrap:anywhere}
+.cp-text small{font-size:var(--fs-2);line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-lock{font-size:var(--fs-2);font-weight:700;line-height:1.35;color:var(--warn)}
+.cp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.cp-tags .tag{padding:2px 8px;font-size:var(--fs-1)}
+.cp-go{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:6px 12px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-ink);font-size:var(--fs-2);font-weight:800;white-space:nowrap}
+.cp-go.lock{border:1px solid currentColor;background:transparent;color:var(--warn)}
+.cp-card[aria-expanded="true"]{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.cp-card[aria-expanded="true"] .cp-go.lock{background:var(--warn);color:var(--surface)}
+.cp-why{padding:12px 14px;border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;background:var(--warn-soft);font-size:var(--fs-2);line-height:1.5;color:var(--ink)}
+.cp-why p{margin:0}
+.cp-why-go{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cp-why-go .btn{min-height:42px}
+.cp [hidden]{display:none!important}
+.cp-none{display:grid;justify-items:center;gap:8px;padding:18px 0;text-align:center}
+.cp-none p{margin:0;color:var(--muted)}
+.cp-foot{margin:14px 0 0;font-size:var(--fs-2);text-align:center}
+.jr-sec-head .jr-pick{margin-left:auto;min-height:36px}
+.jr-sec-head .jr-pick+.jr-rank{margin-left:0}
+.jr-lock-how{display:block;margin-top:2px;color:var(--muted);font-size:var(--fs-1);line-height:1.4}
+html[data-layout="phone"] .cp{padding:0 14px 20px}
+html[data-layout="phone"] .cp-bar{margin:0 -14px;padding:8px 14px 6px}
+html[data-layout="phone"] .cp-go{min-height:32px;padding:5px 10px;font-size:var(--fs-1)}
+html[data-layout="phone"] .cp-emoji{width:42px;height:42px;font-size:1.35rem}
+html[data-layout="phone"] .cp-list{grid-template-columns:minmax(0,1fr)}
+html[data-layout="phone"] .cp-word{display:none}
+html[data-layout="phone"] .cp-card{gap:10px;padding:10px}

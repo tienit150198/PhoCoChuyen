@@ -51,7 +51,7 @@ test('workplace goal opens existing catalogue and focuses it without a game comm
 });
 test('existing home navigation explicitly names changing workplace',()=>{
  const app=readFileSync(new URL('../public/js/app.js',import.meta.url),'utf8');
- assert.match(app,/\['home','grid','Đổi nghề'\]/);
+ assert.match(app,/\['jrPick','grid','Đổi nghề'\]/,'🔎 Đổi nghề opens the picker (v4/career-pick.js)');
  assert.match(app,/home:'Hành trình · mục tiêu của bạn'/);
  assert.match(app,/case'home':openSheet\('home'/,'same home destination retained');
 });

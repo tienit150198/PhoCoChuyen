@@ -46,9 +46,9 @@ const TIPS=[
     find:()=>first('#sheet[open] .btn[data-action="end"]')||first('#taskHUD .btn[data-action="end"]'),
     done:()=>view()==='summary'||!room()?.open},
   {id:'journey',emoji:'🧭',ttl:9000,   // day 2: the rest of the street (on a phone it sits behind "Thêm")
-    text:()=>first('#isoHUD .iso-nav [data-action="isoCareers"]')?'Công việc: việc cần làm và nơi làm khác.':first('#rail [data-action="home"]')?'Hành trình: việc cần làm và nơi làm khác.':'Thêm → Hành trình: việc cần làm, nơi làm khác.',
+    text:()=>first('#isoHUD .iso-nav [data-action="isoCareers"]')?'Công việc: tìm và đổi nơi làm.':first('#rail [data-action="jrPick"]')?'Đổi nghề: tìm và chọn nơi làm khác.':'Thêm → Đổi nghề: tìm và chọn nơi làm khác.',
     when:()=>calmStage()&&(S()?.journey?.life_day|0)>=2,
-    find:()=>first('#isoHUD .iso-nav [data-action="isoCareers"]')||first('#rail [data-action="home"]')||first('#dock [data-action="v4Menu"]'),
+    find:()=>first('#isoHUD .iso-nav [data-action="isoCareers"]')||first('#rail [data-action="jrPick"]')||first('#dock [data-action="v4Menu"]'),
     done:()=>!calmStage()},   // opened Hành trình, the menu or anything else: it has done its job
 ];
 

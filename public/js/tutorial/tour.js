@@ -67,9 +67,9 @@ const STEPS=[
     done:()=>!inIntro()||introStep()==='job'},
   // Phone: Hành trình sits in the "Thêm" menu; the ring goes to "Thêm" first, then to Hành trình inside it.
   // 2.5D (isometric-shell.js): the same page is "Công việc" on the bottom bar.
-  {id:'journey',emoji:'🧭',text:()=>vis(ISO_JOBS)?'Bấm Công việc.':vis('#rail [data-action="home"]')||vis('#jrHud:not([hidden])')||vis('.brand')?'Bấm mở Hành trình.':'Bấm Thêm, rồi Hành trình.',
+  {id:'journey',emoji:'🧭',text:()=>vis(ISO_JOBS)?'Bấm Công việc.':vis('#rail [data-action="jrPick"]')?'Bấm Đổi nghề.':vis('#jrHud:not([hidden])')||vis('.brand')?'Bấm mở Hành trình.':'Bấm Thêm, rồi Đổi nghề.',
     when:()=>!inIntro()&&sheetView()!=='home',plan:()=>!inIntro(),
-    find:()=>vis(ISO_JOBS)||vis('#jrHud:not([hidden])')||vis('#rail [data-action="home"]')||vis('.brand')||vis('#dock [data-action="v4Menu"]'),
+    find:()=>vis(ISO_JOBS)||vis('#jrHud:not([hidden])')||vis('#rail [data-action="jrPick"]')||vis('.brand')||vis('#dock [data-action="v4Menu"]'),
     done:()=>sheetView()==='home'},
   // 🗺️ The town as home (v4/town-walk.js): the card's "Vào làm" once at a door, else the town itself.
   {id:'pick',emoji:'🏪',text:()=>vis('#sheet[open] .tw-stage')&&!firstVis('#sheet[open] [data-action="choose"]')?'Đi tới một tiệm rồi bấm Vào làm.':'Chọn một tiệm để làm.',

@@ -9,7 +9,7 @@ const {cafe:coffee,clothing,tea,content}=JSON.parse(readFileSync(0,'utf8'));
 const x=careers.careerContext({api:{state:coffee,content},ui:{}});
 assert.match(cafe.job(x.room.tasks[0],x),/4×/);
 assert.equal(typeof careers.careerSwitchButton,'function','career change has an obvious visible control');
-assert.match(careers.careerSwitchButton(),/data-action="home"/);
+assert.match(careers.careerSwitchButton(),/data-action="jrPick"/,"Đổi nghề opens the career picker (v4/career-pick.js)");
 assert.match(careers.careerSwitchButton(),/Đổi nghề/);
 
 const element=dataset=>({dataset,flags:{},classList:{toggle(k,v){this.owner.flags[k]=v;}},closest:()=>null,
