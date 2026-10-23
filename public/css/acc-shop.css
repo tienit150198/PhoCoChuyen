@@ -99,7 +99,10 @@ html[data-layout="phone"] .wg-grid{grid-template-columns:repeat(3,minmax(0,1fr))
 .as-group.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 -3px 0 var(--accent)}
 .as-group:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .as-chips .chip{min-height:40px}
-.pt-embed{display:grid;gap:10px;min-height:0}
+.pt-embed{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-height:0;min-width:0}
+/* a long option (a pet's name, a set) never widens the sheet: every block of ⚒️ stays the sheet's width (seen 23/10, 33 pets) */
+.fg,.fg-quick,.pt-quick{grid-template-columns:minmax(0,1fr)}
+.fg>*,.pt-embed>*{min-width:0}
 .pt-embed .pt-flash:empty{display:none}
 .pt-embed .pt-bar{margin:4px -6px 0;border-radius:16px 16px 0 0;box-shadow:0 -6px 14px color-mix(in srgb,var(--ink) 8%,transparent)}
 .pt-none .pt-chip{min-height:40px}
@@ -123,8 +126,8 @@ html[data-layout="phone"] .as-group{font-size:.9rem;padding:6px 4px;gap:4px}
 .fg-quick .btn.fg-ago,.pt-quick .btn.pt-autogo{width:100%;min-height:48px;font-weight:800}
 .fg-quick small,.pt-quick small{color:var(--ink-2);line-height:1.45}
 .fg-afields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,9em);gap:8px}
-.fg-afield{display:grid;gap:3px;min-width:0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
-.fg-afield select{min-height:44px;font-size:.95rem;color:var(--ink)}
+.fg-afield{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.fg-afield select{width:100%;min-width:0;max-width:100%;text-overflow:ellipsis;min-height:44px;font-size:.95rem;color:var(--ink)}
 .fg-astats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .fg-astats.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .fg-astats div{display:grid;place-items:center;gap:1px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:center}

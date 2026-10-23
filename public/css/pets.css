@@ -251,8 +251,8 @@ html[data-theme="dem"] .pt-gl-c{background:#2a2633;border-color:#fff2}html[data-
 .pt-qty-sum b{color:var(--ink)}
 /* 🤖 Ghép tự động (tủ đồ): the entry row, its pickers, the preview, the summary */
 .pt-afields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,8.5em);gap:8px;margin:4px 0 10px}
-.pt-afield{display:grid;gap:3px;min-width:0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
-.pt-afield select{min-height:44px;font-size:.95rem;color:var(--ink)}
+.pt-afield{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.pt-afield select{width:100%;min-width:0;max-width:100%;text-overflow:ellipsis;min-height:44px;font-size:.95rem;color:var(--ink)}
 .pt-astats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0 0 8px}
 .pt-astats.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .pt-astats div{display:grid;place-items:center;gap:1px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:center}
