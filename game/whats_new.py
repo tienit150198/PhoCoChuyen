@@ -36,6 +36,10 @@ ENTRIES = (
         dict(emoji='⚡', text="Cường hóa nhanh tự ghép liên tục như Ghép tự động: chọn tới hạng nào, tiêu tối đa bao nhiêu.",
              go=dict(action='jrForge')),
         dict(emoji='🪽', text="Cánh, thú cưng, đồ cho bé, linh kiện đều ghép được một lần bấm; cánh đang đeo và bé đang dắt luôn được giữ."),
+        dict(emoji='📣', text="Lên hạng SS trở lên: cả phố được báo. Muốn giấu tên thì tích “Ẩn tên” ở Cường hóa.",
+             go=dict(action='jrForge')),
+        dict(emoji='☑️', text="Tích “Không hỏi lại” ở Cường hóa: bấm là làm luôn, khỏi bấm hai lần.",
+             go=dict(action='jrForge')),
     )),
     dict(version="2.5.5", date="2026-10-23", items=(   # owner 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi"
         dict(emoji='🛍️', text="Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.",

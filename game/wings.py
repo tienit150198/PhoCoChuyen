@@ -262,8 +262,9 @@ def action(s: dict, name_: str, p: dict) -> dict:
                         fuse=dict(ok=False, main=main['id'], lost=[x['id'] for x in others]))
         return dict(message=f'💨 Lần này chưa thành, ba đôi cánh vẫn còn nguyên. ({how})', fuse=dict(ok=False, main=main['id'], lost=[]))
     head = '🌟 HUYỀN THOẠI! ' if main['r'] == TOP else '🎉 '
-    return dict(message=f'{head}{INDEX.get(main["k"], {}).get("name", "Đôi cánh")} lên hạng {tier_label(main["r"])}! ({how})',
-                fuse=dict(ok=True, main=main['id'], tier=main['r']))
+    from . import forge_news   # 📣 SS and up: one line on the street's ticker
+    return forge_news.mark(dict(message=f'{head}{INDEX.get(main["k"], {}).get("name", "Đôi cánh")} lên hạng {tier_label(main["r"])}! ({how})',
+                                fuse=dict(ok=True, main=main['id'], tier=main['r'])), 'wing', [_fz(main)])
 
 
 def _fuse_three(w: dict, main: dict, others: list) -> bool:
@@ -381,9 +382,15 @@ def _auto(s: dict, p: dict) -> dict:
     best = max(made, key=lambda x: x['r'], default=None)
     if best:
         msg += f' Cao nhất: {name(best)}.'
-    return dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
-                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made,
-                          left=sum(k for _, _, k in sets(w, scope, top))))
+    from . import forge_news   # 📣 one line for the run: the highest rank reached
+    return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
+                                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made,
+                                          left=sum(k for _, _, k in sets(w, scope, top)))), 'wing', [_fz(x) for x in made])
+
+
+def _fz(x: dict) -> dict:
+    """A wing as game/forge_news.py marks it."""
+    return dict(id=x['id'], r=x['r'], n=INDEX.get(x['k'], {}).get('name', 'Đôi cánh'))
 
 
 # ---------------------------------------------------------------- views

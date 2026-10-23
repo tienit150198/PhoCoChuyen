@@ -155,6 +155,9 @@ async def main():
                 check(await go.is_enabled() and 'tiêu tối đa' in label, f'{tag}: 🪽 the button says the most to spend ({label})')
                 body = await page.inner_text('#sheet .fg-auto')
                 check('%' not in body and 'tỉ lệ' not in body, f'{tag}: 🪽 no odds on the card')
+                prefs = ' '.join((await page.inner_text('#sheet .fg-prefs')).split())
+                check(prefs == 'Không hỏi lại Ẩn tên', f'{tag}: two short ticks, no help text ({prefs})')
+                check(await page.locator('#sheet .fg-intro').count() == 0, f'{tag}: no long intro')
                 # no jump: scroll a bit, pick a chip and a rank; the sheet stays where it was
                 await page.wait_for_timeout(2500)   # first-visit cards (🔥 x3 của tuần) open late
                 await clear()
@@ -202,14 +205,34 @@ async def main():
                     await page.evaluate(SET_Y, ['#sheet .pt-auto', 0])
                     before = await wallet()
                     await clear()
-                    await go.click()
-                    text = await confirm(f'6-{name}-confirm')
-                    check('Tiêu tối đa' in text and '%' not in text, f'{tag}: {name} one question, no odds')
+                    if name == 'ward':   # ☑️ Không hỏi lại: ticked, the tap acts at once
+                        await page.locator('#sheet [data-as-noask]').check()
+                        await page.wait_for_timeout(500)
+                        check(await page.evaluate("localStorage.getItem('mnl.noAsk')") == '1', f'{tag}: Không hỏi lại stored (mnl.noAsk)')
+                        await go.click()
+                        await page.wait_for_timeout(1200)
+                        check(await page.locator('#confirmDialog[open]').count() == 0, f'{tag}: ward Không hỏi lại: no question')
+                        await page.wait_for_selector('#sheet .pt-embed .pt-ares', timeout=15000)
+                        await clear()
+                        await page.locator('#sheet [data-as-noask]').uncheck(timeout=8000)
+                        await page.wait_for_timeout(400)
+                        check(await page.evaluate("localStorage.getItem('mnl.noAsk')") is None, f'{tag}: unticked, it asks again')
+                    else:
+                        await go.click()
+                        text = await confirm(f'6-{name}-confirm')
+                        check('Tiêu tối đa' in text and '%' not in text, f'{tag}: {name} one question, no odds')
                     await page.wait_for_selector('#sheet .pt-embed .pt-ares', timeout=15000)
                     res = await page.inner_text('#sheet .pt-embed .pt-ares')
                     check('xu đã tiêu' in res, f'{tag}: {name} the summary ({" ".join(res.split())[:120]})')
                     check(await wallet() < before, f'{tag}: {name} paid once')
                     await shot(f'7-{name}-result')
+
+                # 🕶️ Ẩn tên: the save's setting (forgeAnon)
+                await page.locator('#sheet [data-as-fzanon]').check()
+                await page.wait_for_timeout(1500)
+                anon = await page.evaluate("fetch('/api/state',{cache:'no-store'}).then(r=>r.json()).then(d=>d.state?.settings?.forgeAnon)")
+                check(anon is True, f'{tag}: Ẩn tên saved ({anon})')
+                await shot('7b-ticks')
 
                 # the pets' dialog: the same card
                 await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")

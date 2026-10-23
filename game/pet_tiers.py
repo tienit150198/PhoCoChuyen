@@ -642,8 +642,10 @@ def action(s: dict, name: str, p: dict) -> dict:
         _confirm(p, f'Xác nhận ghép ba {GSLOTS[GSLOT_IDS.index(main["s"])][2].lower()} hạng {RANKS[r]} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Ghép linh kiện {RANKS[r]}')
         if _gear_fuse_roll(s, x, main, others):
-            return dict(message=f'🎉 Lên hạng thành công: {gear_name(main, s)} {RANKS[r + 1]}! Cường hóa lại tới +{GLV_MAX} '
-                                f'để lên hạng tiếp. ({how})', ok=True, gear=main['id'])
+            from . import forge_news   # 📣 SS and up: one line on the street's ticker
+            return forge_news.mark(dict(message=f'🎉 Lên hạng thành công: {gear_name(main, s)} {RANKS[r + 1]}! Cường hóa lại '
+                                                f'tới +{GLV_MAX} để lên hạng tiếp. ({how})', ok=True, gear=main['id']),
+                                   'gear', [dict(id=main['id'], r=main['r'], n=model_def(main['s'], model_of(main, s))[1])])
         if r >= LOSE_FROM:   # owner 19/10: from S up a failure loses the two ingredients (the main one stays)
             return dict(message=f'💨 Ghép trượt: hai món nguyên liệu đã mất, {gear_name(main, s)} vẫn còn. ({how})',
                         ok=False, gear=main['id'], lost=[g['id'] for g in others])
@@ -821,9 +823,12 @@ def _fuse_auto(s: dict, p: dict) -> dict:
             if i in before and (rec_of(s, q)['r'], is_legend(q, s)) > before[i]]
     used = len(set(before) - set(now))
     msg = f'⚡ Cường hóa nhanh {n} lượt: {won} thành công, {n - won} trượt.'
-    return dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
-                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, myth=myth,
-                          left=sum(k for _, _, k in fuse_sets(s, scope, top))))
+    from . import forge_news   # 📣 one line for the run: the highest rank reached
+    return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
+                                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, myth=myth,
+                                          left=sum(k for _, _, k in fuse_sets(s, scope, top)))),
+                           'pet', [dict(id=q['id'], r=q['r'], n=C.BREEDS.get(q['b'], {}).get('name', 'thú cưng'), lg=q['legend'])
+                                   for q in made])
 
 
 # ---------------------------------------------------------------- ⚡ Cường hóa nhanh: gear
@@ -908,9 +913,11 @@ def _gear_auto(s: dict, p: dict) -> dict:
     made = [gear_view(x, g, s) for g in x['gear'] if g['id'] in before and (g['r'], g['lv']) > before[g['id']]]
     used = len(set(before) - {g['id'] for g in x['gear']})
     msg = f'⚡ Cường hóa nhanh {n} lượt: {won} thành công, {n - won} trượt.'
-    return dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
-                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, fuses=ups,
-                          left=_gear_left(x, scope, top)))
+    from . import forge_news   # 📣 one line for the run: the highest rank reached (a +1 is no rank)
+    return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
+                                auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, fuses=ups,
+                                          left=_gear_left(x, scope, top))),
+                           'gear', [dict(id=g['id'], r=g['r'], n=g['name']) for g in made if g['r'] > before[g['id']][0]])
 
 
 def chance(ranks: list) -> int:
@@ -953,7 +960,15 @@ def _fuse(s: dict, p: dict) -> dict:
     c = _fuse_check(s, p)
     _confirm(p, f'Xác nhận ghép ba bé ({_fmt(c["fee"])} xu).')
     how = _pt()._pay(s, c['fee'], f'Ghép thú cưng · {", ".join(q["n"] for q in c["pets"])}'[:120])
-    return _fuse_roll(s, c, how)
+    out = _fuse_roll(s, c, how)
+    f = out['fuse']
+    if f['ok']:   # 📣 SS and up (or a 🌟 legendary): one line on the street's ticker
+        q = _where(s, f['pet'])[1]
+        if q is not None:
+            from . import forge_news
+            forge_news.mark(out, 'pet', [dict(id=q['id'], r=rec_of(s, q)['r'], n=C.BREEDS.get(q['b'], {}).get('name', 'thú cưng'),
+                                              lg=is_legend(q, s))])
+    return out
 
 
 def _fuse_check(s: dict, p: dict) -> dict:

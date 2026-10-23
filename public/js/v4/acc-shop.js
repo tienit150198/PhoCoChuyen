@@ -34,6 +34,7 @@ import {kinds,kindOf,adopt,refreshCharms,pairRows,waiting,relOf,SHOP_NAME} from 
 import {wdStatus,wdItem,wdThumb} from './wardrobe.js';
 import {lazy,skeleton} from '../lazy.js';
 import {qtyBox,QTY,afterTap} from '../qty-input.js';
+import {noAsk,setNoAsk} from './no-ask.js';   // ☑️ Không hỏi lại (this device, shared with 🛍️'s buy buttons)
 import {townServiceAvailable} from '../isometric/town-utilities.js';   // 🏠 which other shops this save has (the menu's gates)
 // 🐾 the pet shelves (v4/pets.js), loaded the first time that group opens
 const PT=lazy(()=>import('./pets.js'),{css:['/css/pets.css']});
@@ -280,7 +281,6 @@ function wingAuto(env,st){
       +btn(`⚡ Cường hóa nhanh · tiêu tối đa ${fmt(b)} xu`,'jrAsWingAuto',{},'primary fg-ago',busy||short);
   }
   return `<section class="jr-card fg-quick fg-auto" aria-label="Cường hóa nhanh"><h3>⚡ Cường hóa nhanh</h3>
-    <p class="small muted">Tự ghép liên tục ba đôi cùng hạng, hạng thấp trước; đôi vừa lên hạng ghép tiếp được. Trượt thì thử lại khi còn đủ ba đôi. Dừng khi hết bộ ba, tới hạng đặt, chạm số xu bạn đặt hoặc đủ ${max} lượt. 🪽 Cánh đang đeo luôn là cánh chính, không bao giờ bị dùng mất.</p>
     ${fields}${body}</section>`;
 }
 /** The last ⚡ run's summary (game/wings.py _auto `auto`): turns, successes, misses, xu spent, wings used, why it stopped,
@@ -406,10 +406,25 @@ export function forgeView(env){
   const part=FORGE.find(x=>x[0]===st.ftab)[3];
   const body=part?(PT.use()?.petEmbedHTML(env,part)||skeleton()):wingForge(env,st);
   return top+`<div class="sheet-body jr-body wd as fg">
-    <p class="wd-note fg-intro">⚡ Cường hóa nhanh tự ghép liên tục như Ghép tự động: chọn tới hạng nào, tiêu tối đa bao nhiêu, hỏi lại một lần rồi làm.</p>
+    <div class="fg-prefs">${noAskRow()}${fzAnonRow(api)}</div>
     <nav class="fg-kinds" role="tablist" aria-label="Đồ ghép được của bạn">${tabs}</nav>
     ${body}
   </div>`;
+}
+
+/** 📣 Báo cả phố khi lên SS+ (game/forge_news.py): 🕶️ Ẩn tên (the `settings` command, forgeAnon). Short labels only (owner 23/10 "không cần giải thích nhiều"). */
+function fzAnonRow(api){
+  return `<label class="fg-noask" title="Báo cả phố khi lên hạng SS+ mà không hiện tên bạn"><input type="checkbox" data-as-fzanon ${api.state?.settings?.forgeAnon?'checked':''}><span>Ẩn tên</span></label>`;
+}
+
+/** ☑️ Không hỏi lại: Cường hóa, ⚡ Cường hóa nhanh and the ghép buttons act at once (v4/no-ask.js); always in sight. */
+function noAskRow(){
+  return `<label class="fg-noask"><input type="checkbox" data-as-noask ${noAsk()?'checked':''}><span>Không hỏi lại</span></label>`;
+}
+
+async function fzAnon(env,on){
+  if(busy||!!env.api.state.settings?.forgeAnon===on)return;
+  busy=true;try{await env.cmd('settings',{forgeAnon:on},{quiet:true});}finally{busy=false;}env.renderSheet();
 }
 
 /** ⚡ The wings' pickers (data-as-sel): a change sets the value and drops a picked budget back to the estimate; the sheet
@@ -418,7 +433,10 @@ let pickEnv=null;
 function bindPickers(env){
   if(pickEnv||typeof document==='undefined'){pickEnv=env;return;}
   pickEnv=env;
-  document.addEventListener('change',e=>{const el=e.target?.closest?.('#sheet [data-as-sel]');if(!el||!pickEnv)return;const st=S(pickEnv.ui);
+  document.addEventListener('change',e=>{
+    const na=e.target?.closest?.('#sheet [data-as-noask]');if(na&&pickEnv){setNoAsk(!!na.checked);pickEnv.renderSheet();return;}
+    const an=e.target?.closest?.('#sheet [data-as-fzanon]');if(an&&pickEnv){fzAnon(pickEnv,!!an.checked);return;}
+    const el=e.target?.closest?.('#sheet [data-as-sel]');if(!el||!pickEnv)return;const st=S(pickEnv.ui);
     if(el.dataset.asSel==='wascope')st.wascope=el.value||'all';
     else if(el.dataset.asSel==='watop')st.watop=Math.max(1,Math.min(WING_TIERS.length-1,Number(el.value)||WING_TIERS.length-1));else return;
     st.wabud=0;pickEnv.renderSheet();});
@@ -526,7 +544,7 @@ export async function accShopAction(action,data,el,env){
       const {scope,top}=wAuto(st),pl=wingPlan(api,scope,top),b=wingBudget(api,st,pl),T=WING_TIERS.length-1;if(!pl.n||funds(api)<pl.min)return true;
       const lose=top>(c2.lose_from??4),sn=scope==='all'?'Mọi kiểu cánh':`Chỉ ${styleOf(api,scope)?.name||'kiểu này'}`;
       const msg=`${sn}, ba đôi cùng hạng, hạng thấp trước, tới hạng ${top===T?'🌟 Huyền thoại':tierName(top)}. Thành công: cánh chính lên hạng, giữ kiểu; hai đôi kia dùng hết. Trượt: ${lose?'dưới hạng S ba đôi vẫn còn; ⚠️ từ hạng S trở lên mất hai đôi phụ, cánh chính ở lại':'ba đôi vẫn còn'}, mất phí lượt đó. Cánh đang đeo luôn là cánh chính, không bao giờ bị dùng mất. Tiêu tối đa ${fmt(b)} xu, tối đa ${c2.auto_max||50} lượt, trả một lần: ví trước, thiếu thì lấy từ tài khoản.`;
-      if(!await confirmAction('⚡ Cường hóa nhanh cánh?',msg,`⚡ Cường hóa · tối đa ${fmt(b)} xu`,{cost:Math.min(b,funds(api))}))return true;
+      if(!noAsk()&&!await confirmAction('⚡ Cường hóa nhanh cánh?',msg,`⚡ Cường hóa · tối đa ${fmt(b)} xu`,{cost:Math.min(b,funds(api))}))return true;
       // the request id (game/wings.py rq): a retry answers the run it made and pays nothing
       busy=true;renderSheet();const r=await cmd('jr_pet_wing_fuse_auto',{budget:b,top,scope,rid:rid().replace(/[^A-Za-z0-9_.:-]/g,'').slice(0,64),confirm:true});busy=false;
       if(r?.auto){st.wres=r.auto;st.wabud=0;st.wfz=[];if(scope!=='all'&&!wingPlan(api,scope,top).n&&!ownWings(api).some(x=>x.k===scope))st.wascope='all';}
@@ -535,7 +553,7 @@ export async function accShopAction(action,data,el,env){
       const own=ownWings(api),xs=st.wfz.map(id=>own.find(x=>x.id===id)).filter(Boolean);if(xs?.length!==3)return true;
       const f=wingFuseOf(api,xs),[m,a,b]=xs,top=WING_TIERS.length-1;if(m.r>=top)return true;
       const what=`Dùng: ${wName(api,m)} (cánh chính, giữ kiểu${m.id===wingsOf(api)?.on?', đang đeo':''}), ${wName(api,a)}, ${wName(api,b)}.`;
-      if(!await confirmAction('Ghép ba đôi cánh?',`${what} Thành công: ${styleOf(api,m.k)?.name||'Cánh'} ${f.to>m.r?'lên':'giữ'} hạng ${tierName(f.to)}, hai đôi kia dùng hết. Trượt: ${f.lose?'⚠️ hai đôi kia sẽ mất':'ba đôi vẫn còn'}. Phí ${fmt(f.fee)} xu, thành hay trượt đều mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,{cost:f.fee}))return true;
+      if(!noAsk()&&!await confirmAction('Ghép ba đôi cánh?',`${what} Thành công: ${styleOf(api,m.k)?.name||'Cánh'} ${f.to>m.r?'lên':'giữ'} hạng ${tierName(f.to)}, hai đôi kia dùng hết. Trượt: ${f.lose?'⚠️ hai đôi kia sẽ mất':'ba đôi vẫn còn'}. Phí ${fmt(f.fee)} xu, thành hay trượt đều mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,{cost:f.fee}))return true;
       busy=true;const r=await cmd('jr_pet_wing_fuse',{wings:xs.map(x=>x.id),main:m.id,confirm:true});busy=false;
       if(r?.fuse){const lost=r.fuse.lost||[];st.wfz=r.fuse.ok?[]:st.wfz.filter(id=>!lost.includes(id));if(r.fuse.ok){const mm=ownWings(api).find(x=>x.id===r.fuse.main);if(mm)st.reveal=[{k:mm.k,r:mm.r}];}}
       renderSheet();return true;}

@@ -8,6 +8,14 @@
 - 🧬 `jr_pet_fuse_auto` {budget, top 1..7 (7 = 🌟), scope all | dog | cat, confirm} (game/pet_tiers.py `_fuse_auto`, `fuse_sets`): luật chọn của ⚡ cũ (bé chính là bé đang dắt hoặc bé mạnh nhất, giữ giống, không lai; bé nguyên liệu không bao giờ là bé đang dắt, ở trại nuôi / ở quê trước rồi mới ở nhà, yếu trước); không bao giờ dùng bé 🌟 huyền thoại hay bé đang buồn. Mỗi lượt là `_fuse_check` + `_fuse_roll` (tách từ jr_pet_fuse, cùng phí, tỉ lệ, 📺 quảng cáo, về quê / mất từ S). Dừng khi có ✨ thần thú (`myth`) để người chơi trả lời trước. Tin "ghép ra SS / huyền thoại" trên phố vẫn chạy (command_commit). AUTO_MAX 50.
 - 🧰 `jr_pet_gear_auto` {budget, top 1..6, scope all | loại linh kiện, confirm} (`_gear_auto`, `gear_step`): ba món cùng loại cùng hạng (hai món chưa gắn), món chính (đang gắn trước, rồi cộng cao nhất) cường hóa lên +10 rồi lên hạng với hai món chưa gắn cộng thấp nhất; hết bộ ba thì cường hóa món đang gắn lên +10. Mỗi bước là `_gear_up_roll` / `_gear_fuse_roll` (tách từ jr_pet_gear_up / jr_pet_gear_fuse). GEAR_AUTO_MAX 100.
 - 👗 Đồ thú cưng dùng `jr_pet_wfuse_auto` có sẵn.
+
+## 📣 Báo cả phố khi lên SS+ (chủ game 23/10: "cho mọi người thông báo / ẩn thông tin nếu nâng hạng SS trở lên")
+- game/forge_news.py: lệnh ghép / cường hóa đánh dấu kết quả (`fz`: món tốt nhất, các món SS+ khác đếm theo hạng); game/pets.py command_commit (giao dịch của save) đăng MỘT dòng lên ticker (marriage._post_news): 🪽 cánh (jr_pet_wing_fuse, _auto, cả HT Huyền thoại), 🧬 thú (jr_pet_fuse, _auto; thay `_fuse_news` cũ, ref `petfz:` giữ nguyên), 👗 đồ thú (jr_pet_wfuse, _auto), 🧰 linh kiện lên hạng (jr_pet_gear_fuse, _auto; cộng +1 không tính). Ref là món + hạng: mỗi món mỗi hạng một dòng. Một lần ⚡ chỉ một dòng: hạng cao nhất của lượt, "(và 1 đôi SS)" cho phần còn lại. Dưới SS không báo.
+- 🕶️ Ẩn tên: lệnh `settings` {forgeAnon}, lưu ở khóa journey tùy chọn `fzn` {v, anon} (mọi bản cũ giữ khóa journey lạ; khối settings của bản cũ kiểm khóa chặt nên không đụng vào); state.settings.forgeAnon cho client. Bật thì dòng tin dùng lux.ANON_NAME. Ô "Ẩn tên" ở ⚒️ Cường hóa và "Ẩn tên khi lên hạng SS+" ở Cài đặt → Quyền riêng tư.
+
+## ☑️ Không hỏi lại (chủ game 23/10: "bấm là cường hóa luôn, đỡ phải bấm 2 lần")
+- v4/no-ask.js: localStorage `mnl.noAsk` = '1' (try/catch, mặc định hỏi; 🛍️ Cửa hàng dùng chung khóa). Ô "Không hỏi lại" ở đầu ⚒️ Cường hóa; khi tích, ⚡ Cường hóa nhanh, ghép cánh, ghép thú, ghép đồ, lên hạng / cường hóa linh kiện gửi lệnh ngay (confirm: true như sau hộp thoại). Server không đổi.
+- Chữ trên màn gọn lại (chủ game: "không cần giải thích nhiều"): bỏ dòng giới thiệu và đoạn giải thích trên thẻ ⚡; điều có thể mất khi trượt vẫn ghi ngắn (⚠️).
 - content: wings `auto_max`, tiers.limits `auto_max`, `gear_auto_max`.
 
 ## Client
@@ -17,7 +25,8 @@
 
 ## Kiểm thử
 - tests/test_forge_auto.py: mỗi lệnh bằng đúng chuỗi lệnh đơn cùng xúc xắc; ngân sách, tiền, giới hạn lượt, lý do dừng; trượt chỉ mất như lệnh đơn; cánh đang đeo / bé đang dắt / bé huyền thoại / bé buồn / linh kiện đang gắn không bao giờ làm nguyên liệu; rid; gửi lại qua Store; lệnh đơn (cánh, thú, linh kiện) cho kết quả y như 2.5.5; save đọc được trên 2.5.5 và 2.5.4.3.
-- tests/forge-auto.mjs (thẻ ⚡ của thú cưng vẽ từ save thật), tests/friend-charms.mjs (thẻ ⚡ cánh).
+- tests/forge-auto.mjs (thẻ ⚡ của thú cưng vẽ từ save thật; Không hỏi lại), tests/friend-charms.mjs (thẻ ⚡ cánh, hai ô tích).
+- tests/test_forge_news.py: SS+ đăng một dòng, lại đăng khi lên hạng mới; ⚡ một dòng; Ẩn tên dùng tên ẩn; dưới SS không đăng; khóa `fzn` được 2.5.5 / 2.5.4.3 giữ (test_forge_auto Live).
 
 # 2.5.5 — 23/10/2026
 

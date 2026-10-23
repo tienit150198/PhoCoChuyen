@@ -351,13 +351,16 @@ async def main():
                     await tab('pgear', 'jrAsForgeTab')
                     await page.wait_for_selector('#sheet .pt-embed .pt-quick', timeout=15000)
                     pq = page.locator('#sheet .pt-embed [data-pt="auto"]')
-                    check(await pq.is_enabled(), f'{tag}: ⚡ on the pet gear is ready')
-                    before = await wallet()
-                    await pq.click()
-                    text = await confirm('13-quick-gear-confirm')
-                    check('%' not in text, f'{tag}: ⚡ gear question without odds ({text.splitlines()[0] if text else ""})')
-                    await page.wait_for_selector('#sheet .pt-embed .pt-ares, #sheet .pt-embed .pt-flash:not(:empty)', timeout=15000)
-                    check(await wallet() < before, f'{tag}: ⚡ ran the gear auto (one command)')
+                    if not await pq.count():   # one loose piece: nothing to strengthen, the card says what it needs
+                        check('Chưa có món nào cường hóa được' in await page.inner_text('#sheet .pt-embed .pt-quick'),
+                              f'{tag}: ⚡ on the pet gear says what it needs')
+                    else:
+                        before = await wallet()
+                        await pq.click()
+                        text = await confirm('13-quick-gear-confirm')
+                        check('%' not in text, f'{tag}: ⚡ gear question without odds ({text.splitlines()[0] if text else ""})')
+                        await page.wait_for_selector('#sheet .pt-embed .pt-ares, #sheet .pt-embed .pt-flash:not(:empty)', timeout=15000)
+                        check(await wallet() < before, f'{tag}: ⚡ ran the gear auto (one command)')
                     await shot('14-quick-gear-done')
 
                     # the old pets UI still sells (players are used to it)

@@ -583,6 +583,7 @@ class Live(unittest.TestCase):
         s = wings(10**9, ('buom', 0, 20), ('tien', 4, 6), on=0)
         with seeded(W, 4):
             s, _ = act(s, 'jr_pet_wing_fuse_auto', budget=10**9, rid='forge-live-0001', confirm=True)
+        s, _ = act(s, 'settings', forgeAnon=True)   # 📣 🕶️ an optional journey key (game/forge_news.py)
         saves.append(s)
         s, _ = pets(*([0] * 9 + [4] * 3))
         with seeded(px, 4):
@@ -600,7 +601,7 @@ class Live(unittest.TestCase):
                 'out=[]\n'
                 'for s in json.load(sys.stdin):\n'
                 ' validate_state(s);s=migrate_state(s);validate_state(s);public_state(s)\n'
-                ' out.append({k:s["journey"].get(k) for k in ("wings","petx","pets")})\n'
+                ' out.append({k:s["journey"].get(k) for k in ("wings","petx","pets","fzn")})\n'
                 'print(json.dumps(out))')
         for label, rev in RELEASES.items():
             with self.subTest(release=label):
@@ -608,6 +609,8 @@ class Live(unittest.TestCase):
                 for back, mine in zip(got, saves):
                     self.assertEqual(back['wings'], mine['journey'].get('wings'))
                     self.assertEqual(back['petx'], mine['journey'].get('petx'))
+                    self.assertEqual(back['fzn'], mine['journey'].get('fzn'))
+                self.assertEqual(got[0]['fzn'], dict(v=1, anon=True), '🕶️ kept by the older build')
 
 
 if __name__ == '__main__':

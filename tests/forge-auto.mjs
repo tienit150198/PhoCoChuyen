@@ -102,3 +102,22 @@ test('⚒️ the overview: ⚡ where each card has something to do',()=>{
   assert.equal(m.ward.quick,false);assert.equal(m.gear.quick,false);
   petForgeCounts(env);
 });
+
+test('☑️ Không hỏi lại (localStorage mnl.noAsk): ⚡ and the ghép buttons act at once, no question; unticked asks again',async()=>{
+  const store=new Map();
+  globalThis.localStorage={getItem:k=>store.has(k)?store.get(k):null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)};
+  const {noAsk,setNoAsk}=await import('../public/js/v4/no-ask.js');
+  assert.equal(noAsk(),false,'the default asks');
+  setNoAsk(true);assert.equal(store.get('mnl.noAsk'),'1');assert.equal(noAsk(),true);
+  asked.length=0;sent.length=0;answer={message:'⚡',ok:true,auto:{n:1,ok:1,spent:1,stop:'done',used:2,made:[],myth:null,left:0}};
+  petEmbedHTML(env,'lab');
+  tap({pt:'auto',kind:'lab'});await settle();await settle();
+  assert.equal(asked.length,0,'no confirm dialog');
+  assert.equal(sent.length,1);assert.equal(sent[0][0],'jr_pet_fuse_auto');assert.equal(sent[0][1].confirm,true);
+  setNoAsk(false);assert.equal(store.has('mnl.noAsk'),false);
+  sent.length=0;petEmbedHTML(env,'lab');tap({pt:'auto',kind:'lab'});await settle();await settle();
+  assert.equal(asked.length,1,'unticked: the question again');
+  globalThis.localStorage={getItem(){throw new Error('blocked');},setItem(){throw new Error('blocked');},removeItem(){throw new Error('blocked');}};
+  assert.equal(noAsk(),false,'no storage: it asks');setNoAsk(true);assert.equal(noAsk(),false);
+  delete globalThis.localStorage;
+});

@@ -216,6 +216,11 @@ test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh fuses aga
   assert.match(fg,/class="fg-kind active"[^>]*data-tab="wing"><span class="fg-kind-e" aria-hidden="true">🪽<\/span><b>Cánh<\/b><small>7 đôi · C×3 D×4<\/small><i class="fg-ready"/);
   assert.match(fg,/<b>Hạng C<\/b> · 3 đôi <small class="muted">· ghép được 1 lần/);assert.match(fg,/<b>Hạng D<\/b> · 4 đôi/);
   assert.doesNotMatch(fg,/tỉ lệ|tỷ lệ|%<\/small>/,'no odds (owner 19/10)');
+  // owner 23/10 "không cần giải thích nhiều": two short ticks near the top, no intro, no help lines
+  assert.match(fg,/<label class="fg-noask"><input type="checkbox" data-as-noask ><span>Không hỏi lại<\/span><\/label>/,'☑️ Không hỏi lại (mnl.noAsk), unticked by default');
+  assert.match(fg,/data-as-fzanon ><span>Ẩn tên<\/span>/,'🕶️ Ẩn tên (settings forgeAnon), unticked by default');
+  assert.doesNotMatch(fg,/fg-intro|Tự ghép liên tục/,'no long intro');
+  api.state.settings={...(api.state.settings||{}),forgeAnon:true};assert.match(forgeView(env),/data-as-fzanon checked><span>Ẩn tên/);delete api.state.settings.forgeAnon;
   // the shop's Cánh shelf buys and wears; the ghép is a way to ⚒️
   ui.as.tab='wing';const shelf=accShopView(env);
   assert.match(shelf,/data-action="jrForge" data-tab="wing"/);assert.doesNotMatch(shelf,/jrAsWingPick|jrAsWingFuse|jrAsWingAuto/);

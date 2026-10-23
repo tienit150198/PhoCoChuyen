@@ -15,6 +15,7 @@ import {paint as sheetPaint} from './sheet-paint.js';
 import {lookOf,figureSVG} from './look.js';
 import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
 import {qtyBox,QTY,afterTap} from '../qty-input.js';
+import {noAsk} from './no-ask.js';
 
 // owner 19/10 "chưa thấy chỗ mua cánh, đổi pets dắt đi như nào cũng k biết, làm dễ hiểu hơn": every tab says its name
 const TABS=[['home','🐾','Bé nhà mình','Bé nhà'],['shop','🛍️','Tiệm thú cưng','Tiệm'],['ward','👗','Tủ đồ của bé','Tủ đồ'],['lab','🧬','Ghép bé','Ghép'],
@@ -132,6 +133,8 @@ async function send(action,payload={}){
   finally{S.busy=false;render();}
 }
 const ask=(title,msg,label,cost)=>S.env.confirmAction?S.env.confirmAction(title,msg,label,cost?{cost,pocket:POCKET}:undefined):Promise.resolve(confirm(msg));
+// ☑️ Không hỏi lại (⚒️ Cường hóa's tick, v4/no-ask.js): on the sheet's shelves a ghép / cường hóa acts at once
+const askForge=(...a)=>S.host&&noAsk()?Promise.resolve(true):ask(...a);
 
 /* ---- picks ---- */
 const pets=()=>V()?.pets||[];
@@ -283,7 +286,7 @@ async function onClick(op,data){
       send('jr_pet_wwear',{pet:data.pet,slot:it.slot,item:one.on===data.pet?null:one.id});return;}
     case'wwear':{const p=cur();if(!p)return;send('jr_pet_wwear',{pet:p.id,slot:data.slot,item:data.id||null});return;}
     case'wfuse':{const [k,r]=S.wsel.split('|'),it=wItem(k),W=WARD(),rr=Number(r),fee=W.fee[rr];if(!it)return;
-      if(!await ask(`Ghép ba ${it.name} hạng ${RKS[rr]}?`,`Thành công: ra một ${it.name} hạng ${RKS[rr+1]}${rr>=3?' (có khi ra món 💎 dòng sang)':''}. Trượt: ba món vẫn còn, mất phí. Món đang mặc sẽ được tháo ra.`,`🔀 Ghép · ${fmt(fee)} xu`,fee))return;
+      if(!await askForge(`Ghép ba ${it.name} hạng ${RKS[rr]}?`,`Thành công: ra một ${it.name} hạng ${RKS[rr+1]}${rr>=3?' (có khi ra món 💎 dòng sang)':''}. Trượt: ba món vẫn còn, mất phí. Món đang mặc sẽ được tháo ra.`,`🔀 Ghép · ${fmt(fee)} xu`,fee))return;
       const res=await send('jr_pet_wfuse',{k,r:rr,confirm:true});if(res?.ok){const n=myItems().find(i=>i.id===res.item);S.wsel=n?`${n.k}|${n.r}`:'';}else if(res)S.flash={...S.flash,kind:'bad'};render();return;}
     case'abud':{const k=AK[data.kind];if(!k)return;S[k.bud]=Math.max(1,Number(data.n)||0);afterTap(render);return;}
     case'ares':{const k=AK[data.kind];if(k)S[k.res]=null;render();return;}
@@ -335,7 +338,7 @@ async function onClick(op,data){
     case'grank':S.grank=Number(data.r)||0;render();return;
     case'stroll':{const r=await send('jr_pet_stroll',{});if(r?.found){S.gv='bag';S.g=r.found;render();}return;}
     case'gfuse':{const g=gearOf(S.g),m=gearMates(g),u=gearUp(g);if(!m||!u?.ok)return;const fee=u.fee;
-      if(!await ask(`Lên hạng ${g.name} ${g.rank} → ${u.next}?`,`Dùng thêm hai món ${g.rank} cùng loại. Thành công: ${g.name} lên hạng ${u.next}, về +0. Trượt: ${u.lose?`mất hai món nguyên liệu, ${g.name} vẫn còn.`:'ba món vẫn còn, chỉ mất phí.'}`,`📈 Lên hạng · ${fmt(fee)} xu`,fee))return;
+      if(!await askForge(`Lên hạng ${g.name} ${g.rank} → ${u.next}?`,`Dùng thêm hai món ${g.rank} cùng loại. Thành công: ${g.name} lên hạng ${u.next}, về +0. Trượt: ${u.lose?`mất hai món nguyên liệu, ${g.name} vẫn còn.`:'ba món vẫn còn, chỉ mất phí.'}`,`📈 Lên hạng · ${fmt(fee)} xu`,fee))return;
       const r=await send('jr_pet_gear_fuse',{gears:[g.id,...m.map(x=>x.id)],confirm:true});if(r){if(r.ok===false)S.flash={...S.flash,kind:'bad'};S.g=r.gear||S.g;render();}return;}
     case'gdrop':{const g=gearOf(S.g);if(!g)return;if(!await ask(`Bỏ ${g.name}?`,`${g.name} ${g.rank}${g.lv?` +${g.lv}`:''} sẽ mất hẳn.`,'🗑️ Bỏ'))return;
       const r=await send('jr_pet_gear_drop',{gear:g.id,confirm:true});if(r){S.g='';render();}return;}
@@ -375,13 +378,13 @@ async function go(){
     case'fuse':{const f=fusion();if(!f||f.ps.length!==3||f.why)return;const m=f.ps[0],mix=S.fzMix&&!!f.recipe,two=f.ps.slice(1).map(p=>p.n).join(' và ');
       const to=f.choices.includes(S.fzBreed)?S.fzBreed:m.b,bn=to===m.b?'giữ nguyên giống':`thành giống ${breedOf(to)?.name||''}`;
       const win=f.low===6?`${m.n} thành 🌟 huyền thoại, ${bn}`:`${m.n} lên hạng ${RNAME(f.low+1)}, ${bn}`;
-      if(!await ask('Ghép ba bé?',`Thành công: ${mix?`có thể ra bé giống lai (ba bé về quê với bà), không thì ${win}`:win}; ${two} về quê với bà. Trượt: ${f.lose?`⚠️ ${two} sẽ mất, ${m.n} ở lại`:'ba bé vẫn ở lại'}, mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,f.fee))return;
+      if(!await askForge('Ghép ba bé?',`Thành công: ${mix?`có thể ra bé giống lai (ba bé về quê với bà), không thì ${win}`:win}; ${two} về quê với bà. Trượt: ${f.lose?`⚠️ ${two} sẽ mất, ${m.n} ở lại`:'ba bé vẫn ở lại'}, mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,f.fee))return;
       const r=await send('jr_pet_fuse',{pets:[...S.fz],main:m.id,...(mix?{mix:true}:{}),...(to!==m.b?{breed:to}:{}),confirm:true});
       if(r?.fuse){if(r.fuse.ok){S.fz=[];S.fzMix=false;S.fzBreed='';if(pets().some(x=>x.id===r.fuse.pet))S.pet=r.fuse.pet;S.flash={...S.flash,kind:'good win'};}
         else{const lost=r.fuse.lost||[];S.fz=S.fz.filter(id=>!lost.includes(id));S.flash={...S.flash,kind:'bad'};}render();}
       return;}
     case'gup':{const g=gearOf(S.g);if(!g)return;
-      if(g.up_fee>=1000&&!await ask(`Cường hóa ${g.name}?`,`Trượt: món đồ vẫn nguyên, mất phí.`,`✨ ${fmt(g.up_fee)} xu`,g.up_fee))return;
+      if(g.up_fee>=1000&&!await askForge(`Cường hóa ${g.name}?`,`Trượt: món đồ vẫn nguyên, mất phí.`,`✨ ${fmt(g.up_fee)} xu`,g.up_fee))return;
       const r=await send('jr_pet_gear_up',{gear:g.id,confirm:true});if(r?.ok===false){S.flash={...S.flash,kind:'bad'};render();}return;}
     case'gbuy':{const t=TT(),r=Math.min(S.grank,t.gear.shop.length-1),m=t.gear.models[S.gbslot]?.[S.gmodel];if(!m)return;const q=bq(),one=t.gear.shop[r]*(m.mult||1),pr=one*q;
       if(pr>=1000&&!await ask(`Mua ${m.name} hạng ${RNAME(r)}${times(q)}?`,q>1?`${q} × ${fmt(one)} xu = ${fmt(pr)} xu, trả một lần.`:`Trả ${fmt(pr)} xu.`,`🛍️ ${fmt(pr)} xu`,pr))return;
@@ -530,14 +533,12 @@ function autoParts(kind,pl){
     const scope=opt('all',`Tất cả (${all.n})`,S.wascope==='all')+[...per].map(([id,n])=>{const it=wItem(id);return opt(id,`${it.emoji} ${it.name} (${n})`,S.wascope===id);}).join('');
     return {label:'Món',scope,ranks:RKS.slice(1).map((r,i)=>opt(i+1,r,top===i+1)).join(''),unit:'bộ ba ghép được ngay',
       tags:pl.sets.slice(0,8).map(x=>setTag(x.k,x.r,x.t)).join('')+(pl.sets.length>8?`<span class="pt-aset">+${pl.sets.length-8}</span>`:''),
-      note:'Tự ghép từng bộ 3 món giống hệt, hạng thấp trước; món mới ra ghép tiếp được. Trượt thì thử lại bộ đó, ba món vẫn còn. 👗 Đồ đang mặc được giữ nguyên.',
       none:'Chưa có 3 món giống hệt (cùng món, cùng hạng) chưa mặc để ghép.',lose:false};
   }
   if(kind==='lab'){
     const n=sc=>labPlan(sc,top).n,scope=opt('all',`Tất cả (${n('all')})`,S.lascope==='all')+opt('dog',`🐶 Chó (${n('dog')})`,S.lascope==='dog')+opt('cat',`🐱 Mèo (${n('cat')})`,S.lascope==='cat');
     return {label:'Bé',scope,ranks:[1,2,3,4,5,6].map(r=>opt(r,RNAME(r),top===r)).join('')+opt(7,'🌟 Huyền thoại',top===7),unit:'bộ ba bé ghép được ngay',
       tags:pl.sets.map(x=>rankSet(x.r,x.t)).join(''),
-      note:'Tự ghép ba bé cùng hạng, hạng thấp trước; bé chính lên hạng rồi ghép tiếp được. 👑 Bé chính là bé đang dắt hoặc bé mạnh nhất, giữ giống; hai bé nguyên liệu về quê với bà (bé ở trại nuôi, ở quê dùng trước). Không bao giờ dùng bé đang dắt làm nguyên liệu, không đụng bé 🌟 huyền thoại hay bé đang buồn.',
       none:'Chưa có 3 bé cùng hạng (vui vẻ, không phải huyền thoại) để ghép.',lose:top>loseFrom()};
   }
   const t=TT(),L=t.gear.lv_max,cnt=sc=>gearPlan(sc,top).n;
@@ -545,7 +546,6 @@ function autoParts(kind,pl){
   const gt=(g,to)=>`<span class="pt-aset"><i aria-hidden="true">${esc(g.emoji)}</i>${esc(g.name)} ${RK(g.r)}${g.lv?` +${g.lv}`:''} → ${to}</span>`;
   return {label:'Linh kiện',scope,ranks:[1,2,3,4,5,6].map(r=>opt(r,RNAME(r),top===r)).join(''),unit:pl.sets.length?'món lên hạng được':'món đang gắn cường hóa được',
     tags:pl.sets.slice(0,8).map(x=>gt(x.g,`${RK(x.r+1)}`)).join('')+pl.worn.slice(0,8).map(g=>gt(g,`+${L}`)).join(''),
-    note:`Món chính (món đang gắn trước, rồi món cộng cao nhất) cường hóa lên +${L}, rồi ghép với 2 món cùng loại cùng hạng chưa gắn để lên hạng, hạng thấp trước. Hết bộ ba thì cường hóa các món đang gắn lên +${L}. Cường hóa trượt chỉ mất phí. Món đang gắn không bao giờ bị dùng làm nguyên liệu.`,
     none:`Chưa có món nào cường hóa được: cần 3 món cùng loại, cùng hạng (2 món chưa gắn), hoặc một món đang gắn chưa tới +${L}.`,lose:top>loseFrom()};
 }
 /** The ⚡ card of a shelf (and the last run's summary above it). An older server (no auto limits): no card. */
@@ -571,7 +571,7 @@ function autoCard(kind){
       +(why?`<small class="pt-why">${esc(why)}</small>`:'')
       +`<button type="button" class="btn primary pt-autogo" data-pt="auto" data-kind="${kind}"${S.busy||why?' disabled':''}>⚡ Cường hóa nhanh · tiêu tối đa ${fmt(b)} xu</button>`;
   }
-  const card=`<section class="pt-card pt-auto pt-quick" aria-label="Cường hóa nhanh"><h3>⚡ Cường hóa nhanh</h3><p class="pt-muted">${esc(o.note)} Dừng khi hết, tới hạng đặt, chạm số xu bạn đặt hoặc đủ ${max} lượt.</p>${fields}${body}</section>`;
+  const card=`<section class="pt-card pt-auto pt-quick" aria-label="Cường hóa nhanh"><h3>⚡ Cường hóa nhanh</h3>${fields}${body}</section>`;
   return (S[k.res]?autoResult(kind,S[k.res],max):'')+card;
 }
 /** The last ⚡ run's summary (the server's `auto`): turns, successes, misses, the xu spent, what was used, why it
@@ -617,7 +617,7 @@ async function runAuto(kind){
   else{const L=TT().gear.lv_max;
     msg=`Cường hóa món chính lên +${L} rồi ghép lên hạng, hạng thấp trước, tới hạng ${RNAME(top)}; hết bộ ba thì cường hóa món đang gắn lên +${L}. Cường hóa trượt: món vẫn nguyên, mất phí. Ghép trượt: ${o.lose?'dưới hạng S ba món vẫn còn; ⚠️ từ hạng S trở lên mất 2 món nguyên liệu':'ba món vẫn còn'}, mất phí. Món đang gắn không bao giờ là nguyên liệu. ${pay}`;
     cmd='jr_pet_gear_auto';payload={scope:S.gascope,top,budget:b,confirm:true};}
-  if(!await ask('⚡ Cường hóa nhanh?',msg,`⚡ Cường hóa · tối đa ${fmt(b)} xu`,Math.min(b,ready())))return;
+  if(!await askForge('⚡ Cường hóa nhanh?',msg,`⚡ Cường hóa · tối đa ${fmt(b)} xu`,Math.min(b,ready())))return;
   const r=await send(cmd,payload);
   if(r?.auto){S[k.res]=r.auto;S[k.bud]=0;if(!r.ok)S.flash={...S.flash,kind:'bad'};if(S[k.sc]!=='all'&&!planOf(kind).n)S[k.sc]='all';
     if(kind==='lab'){S.fz=[];S.fzBreed='';S.fzMix=false;}if(kind==='gear')S.g='';render();}
