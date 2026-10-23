@@ -29,7 +29,7 @@
  *   every tile, what it adds (tiền kiếm được, sức thú khi đấu) under the mirror. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {shortNum} from './wealth.js';
-import {confirmPurchase} from './payment.js';
+import {buyPayment,askBuy} from './payment.js';
 import {lookOf,figureSVG,portrait,pairIcon,myPairs,wingIcon,wingOfState,WING_TIERS,WING_TIER_COLOR} from './look.js';
 import {kinds,kindOf,adopt,refreshCharms,pairRows,waiting,relOf,SHOP_NAME} from './charms.js';
 import {wdStatus,wdItem,wdThumb} from './wardrobe.js';
@@ -39,6 +39,9 @@ import {noAsk,setNoAsk} from './no-ask.js';   // ☑️ Không hỏi lại (this
 import {townServiceAvailable} from '../isometric/town-utilities.js';   // 🏠 which other shops this save has (the menu's gates)
 // 🐾 the pet shelves (v4/pets.js), loaded the first time that group opens
 const PT=lazy(()=>import('./pets.js'),{css:['/css/pets.css']});
+// 🛍️ the shop's sheet (one row of tabs, a grid of cards, the detail sheet): v4/shop-shelves.js; its commands stay here
+import {shopAction,wingsReady,focusDetail} from './shop-shelves.js';
+export {accShopView} from './shop-shelves.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const W=api=>api.content.journey?.wardrobe;
@@ -81,130 +84,12 @@ function cartBar(api,st){
     <p class="small muted">${xs.length?xs.map(it=>esc(it.name)).join(', '):'Chạm các món muốn mua, ở cả 🎀 Phụ kiện và 👕 Trang phục, rồi mua một lần.'}</p>
     <div class="as-row-btns">${btn(`🛍️ Mua cả giỏ · ${fmt(sum)} xu`,'jrAsBuyMany',{},'primary small',busy||!xs.length)}${btn(xs.length?'Bỏ giỏ':'Thôi','jrAsMulti',{off:'1'},'ghost small')}</div></section>`;
 }
-const multiChip=st=>`<div class="as-chips as-multi">${btn(st.multi?'✓ Đang chọn nhiều món':'🧺 Chọn nhiều món, mua một lần','jrAsMulti',{},`chip${st.multi?' active':''}`)}</div>`;
 const inCart=(st,id)=>(st.cart||[]).includes(id);
 const cartLook=(api,st)=>Object.fromEntries(cartOf(api,st).map(it=>[it.slot,it.id]));
 
-/* ---- 🎀 Phụ kiện ---- */
-function accTile(api,st,it,saved,look,g){
-  const worn=saved.acc===it.id,on=look.acc===it.id,stt=wdStatus(api,it);
-  const tag=worn?'<small class="wd-tag worn">Đang đeo</small>'
-    :stt?.lock?`<small class="wd-tag lock">🔒 ${esc(stt.lock)}</small>`
-    :stt?.buy?`<small class="wd-tag price">${stt.price<it.price?`<s>${fmt(it.price)}</s> `:''}${fmt(stt.price)} xu</small>`
-    :`<small class="wd-tag">${it.price?'Đã có':it.need?'Đã mở':'Miễn phí'}</small>`;
-  const cart=inCart(st,it.id);
-  return `<button type="button" class="wd-item${on?' on':''}${cart?' in-cart':''}${stt?.lock?' locked':''}" data-action="jrAsTry" data-item="${esc(it.id)}" aria-pressed="${st.multi?cart:on}">
-    <span class="wd-thumb" aria-hidden="true">${portrait({...look,acc:it.id},g,64,'')}</span><b>${esc(it.name)}</b>${tag}${cart?'<i class="as-incart" aria-label="trong giỏ">🧺</i>':''}</button>`;
-}
-const CART_HINT=`<p class="wd-hint">🧺 Đang chọn nhiều món: chạm để thêm / bỏ khỏi giỏ, gương mặc thử cả giỏ, mua ở giỏ bên dưới.</p>`;
-function accActions(api,st,saved,look){
-  if(st.multi)return CART_HINT;
-  if(!st.draft||st.draft===saved.acc)return `<p class="wd-hint">👇 Chạm một món để đeo thử trước gương.</p>`;
-  const it=wdItem(api,st.draft),stt=it&&wdStatus(api,it);if(!it)return '';
-  const main=stt?.lock?`<p class="wd-lock">🔒 ${esc(it.name)}: ${esc(stt.lock.charAt(0).toLowerCase()+stt.lock.slice(1))}.</p>`
-    :stt?.buy?btn(`Mua ${esc(it.name)} · ${fmt(stt.price)} xu`,'jrAsBuy',{item:it.id},'primary full',busy)
-    :btn(`🎀 Đeo ${esc(it.name)}`,'jrAsWearAcc',{item:it.id},'primary full',busy);
-  return main+btn('Bỏ thử','jrAsReset',{},'ghost small full');
-}
-function accShelf(env,st){
-  const {api}=env,c=W(api),g=api.state.journey.gender,saved=lookOf(api.state),look={...saved,...(st.draft?{acc:st.draft}:{})};
-  const pr=myPairs(),mirror=figureSVG(pr?{...look,pr}:look,g,{w:150,h:212,label:'Nhân vật của bạn đang đeo thử'});
-  const items=c.items.filter(x=>x.slot==='acc'&&x.id!=='pk_khong');
-  const staff=c.staff_off&&api.state.careers?.[c.shop]?.started?`<p class="wd-note good">🏷️ Giá nhân viên ${esc(c.shop_name)}: −${c.staff_off}%</p>`:'';
-  return `<section class="jr-card wd-stage">
-      <div class="wd-mirror">${mirror}</div>
-      <div class="wd-side"><h3>${esc(api.state.name)}</h3>${staff}<div class="wd-actions" aria-live="polite">${accActions(api,st,saved,look)}</div></div>
-    </section>
-    ${multiChip(st)}${cartBar(api,st)}
-    <div class="wd-grid">${items.map(it=>accTile(api,st,it,saved,look,g)).join('')}</div>
-    <p class="wd-note as-foot">🎀 ${esc(c.acc_shop?.title||'Tiệm phụ kiện')} · 🎨 Đổi màu, phối với áo quần: ${btn('👗 Tủ đồ','jrWardrobe',{},'ghost small')}</p>`;
-}
-
-/* ---- 👕 Trang phục: the wardrobe's pieces with a price (game/wardrobe.py), one tried on at a time ---- */
+/* ---- 👕 Trang phục: the racks (game/wardrobe.py slots) ---- */
 const CL=['top','bottom','shoes','hair'];
 const CL_EMOJI={top:'👕',bottom:'👖',shoes:'👟',hair:'💇'};
-function clActions(api,st,saved){
-  if(st.multi)return CART_HINT;
-  const it=st.cdraft&&wdItem(api,st.cdraft);
-  if(!it||saved[it.slot]===it.id)return `<p class="wd-hint">👇 Chạm một món để mặc thử trước gương.</p>`;
-  const stt=wdStatus(api,it);
-  const main=stt?.lock?`<p class="wd-lock">🔒 ${esc(it.name)}: ${esc(stt.lock.charAt(0).toLowerCase()+stt.lock.slice(1))}.</p>`
-    :stt?.buy?btn(`Mua ${esc(it.name)} · ${fmt(stt.price)} xu`,'jrAsClBuy',{item:it.id},'primary full',busy)
-    :btn(`${CL_EMOJI[it.slot]||'✨'} Mặc ${esc(it.name)}`,'jrAsClOn',{item:it.id},'primary full',busy);
-  return main+btn('Bỏ thử','jrAsClTry',{item:''},'ghost small full');
-}
-function wearShelf(env,st){
-  const {api}=env,c=W(api),g=api.state.journey.gender,saved=lookOf(api.state);
-  const slots=c.slots.filter(x=>CL.includes(x.id)).sort((a,b)=>CL.indexOf(a.id)-CL.indexOf(b.id));
-  const it=st.cdraft&&wdItem(api,st.cdraft);
-  if(!slots.some(x=>x.id===st.cslot))st.cslot=it&&CL.includes(it.slot)?it.slot:slots[0]?.id||'top';   // from Tủ đồ: the piece's own rack
-  const look={...saved,...(st.multi?cartLook(api,st):{}),...(it?{[it.slot]:it.id}:{})},pr=myPairs();   // 🧺 the cart on the mirror: a whole outfit
-  const mirror=figureSVG(pr?{...look,pr}:look,g,{w:150,h:212,label:'Nhân vật của bạn đang mặc thử'});
-  const staff=c.staff_off?api.state.careers?.[c.shop]?.started?`<p class="wd-note good">🏷️ Giá nhân viên ${esc(c.shop_name)}: −${c.staff_off}%</p>`:`<p class="wd-note">🏷️ Làm ở ${esc(c.shop_name)}: giảm ${c.staff_off}%</p>`:'';
-  const chips=slots.map(x=>`<button type="button" class="chip${st.cslot===x.id?' active':''}" aria-pressed="${st.cslot===x.id}" data-action="jrAsClSlot" data-slot="${esc(x.id)}">${CL_EMOJI[x.id]||''} ${esc(x.name)}</button>`).join('');
-  const tile=x=>{const on=look[x.slot]===x.id,worn=saved[x.slot]===x.id,stt=wdStatus(api,x);
-    const tag=worn?'<small class="wd-tag worn">Đang mặc</small>':stt?.lock?`<small class="wd-tag lock">🔒 ${esc(stt.lock)}</small>`
-      :stt?.buy?`<small class="wd-tag price">${stt.price<x.price?`<s>${fmt(x.price)}</s> `:''}${fmt(stt.price)} xu</small>`:'<small class="wd-tag">Đã có</small>';
-    const cart=inCart(st,x.id);
-    return `<button type="button" class="wd-item${on?' on':''}${cart?' in-cart':''}${stt?.lock?' locked':''}" data-action="jrAsClTry" data-item="${esc(x.id)}" aria-pressed="${st.multi?cart:on}">
-      <span class="wd-thumb" aria-hidden="true">${wdThumb({...saved,[x.slot]:x.id},g,x.slot)}</span><b>${esc(x.name)}</b>${tag}${cart?'<i class="as-incart" aria-label="trong giỏ">🧺</i>':''}</button>`;};
-  const items=c.items.filter(x=>x.slot===st.cslot&&x.price);
-  return `<section class="jr-card wd-stage">
-      <div class="wd-mirror">${mirror}</div>
-      <div class="wd-side"><h3>${esc(api.state.name)}</h3>${staff}<div class="wd-actions" aria-live="polite">${clActions(api,st,saved)}</div></div>
-    </section>
-    <div class="as-chips" role="group" aria-label="Loại đồ">${chips}</div>
-    ${multiChip(st)}${cartBar(api,st)}
-    <div class="wd-grid">${items.map(tile).join('')||'<p class="muted">Quầy này đang hết hàng.</p>'}</div>
-    <p class="wd-note as-foot">🎨 Đổi màu, phối cả bộ: ${btn('👗 Tủ đồ','jrWardrobe',{},'ghost small')}</p>`;
-}
-
-/* ---- 🐾 Thú cưng: v4/pets.js draws the shelf (its picks, its main button), loaded on first sight ---- */
-function petShelf(env,st){
-  const m=PT.use(),part=PET.find(x=>x[0]===st.tab)?.[3]||'buy';
-  return m?m.petEmbedHTML(env,part):skeleton();
-}
-
-/* ---- 🤝 Phụ kiện đôi ---- */
-function friendPick(v,st,id){
-  const fr=v.friends||[];
-  if(!fr.length)return `<p class="muted small">Kết bạn trước rồi tặng nhé.</p>`;
-  const opts=fr.map(f=>`<option value="${esc(f.code)}"${f.code===st.to?' selected':''}>${esc(f.name)}</option>`).join('');
-  return `<div class="as-give"><label class="sr-only" for="as-to-${esc(id)}">Tặng cho</label><select class="input" id="as-to-${esc(id)}" data-as-to>${st.to&&fr.some(f=>f.code===st.to)?'':'<option value="">Chọn một người bạn…</option>'}${opts}</select>
-    ${btn('🎁 Tặng','jrAsGive',{id},'primary small',busy)}</div>`;
-}
-function pairShelf(env,st){
-  const {api}=env,v=api.charmView,list=kinds(api);
-  refreshCharms(env,15000)?.then(x=>{if(x)env.renderSheet();});   // a gift may have come in since
-  const canBuy=!v||v.can_buy!==false,toName=st.to&&v?.friends?.find(f=>f.code===st.to)?.name;
-  const room=v?Math.max(0,(v.box_max||10)-v.box.length-v.sent.length):1,pq=st.pq||{};
-  const forWho=toName?`<p class="jr-card as-for">🎁 <span class="grow">Đang chọn quà cho <b>${esc(toName)}</b>: mua xong là gửi luôn.</span>${btn('Bỏ chọn','jrAsTo',{code:''},'ghost small')}</p>`:'';
-  const cat=list.map(k=>`<article class="jr-card as-kind as-${esc(k.id)}">
-      <span class="as-kind-art">${pairIcon(k.id,84,`Cặp ${k.name}`)}</span>
-      <div class="as-kind-text"><h3>${esc(k.emoji)} ${esc(k.name)}</h3><p class="as-item">${esc(k.item)}</p><p class="small">${esc(k.desc)}</p><p class="as-hint">${esc(k.hint)}</p>
-      ${qtyRow(api,'jrAsPairQty',{kind:k.id},pq[k.id]||1,room,k.price)}
-      ${btn(`${toName?'Mua & tặng':'Mua cặp'}${(pq[k.id]||1)>1&&room>1?` ×${Math.min(pq[k.id],room)} · ${fmt(k.price*Math.min(pq[k.id],room))}`:` · ${fmt(k.price)}`} xu`,'jrAsPairBuy',{kind:k.id},'primary small',busy||!canBuy)}</div></article>`).join('');
-  if(!v)return `<div class="as-shelf">${cat}</div><p class="muted small">Đang mở hộp quà…</p>`;
-  const K=id=>kindOf(api,id)||{emoji:'🎁',name:'Phụ kiện'};
-  const incoming=v.incoming.length?`<section class="jr-card as-incoming" aria-label="Quà đang chờ bạn"><h3>🎁 Quà đang chờ bạn</h3><ul class="as-list">${v.incoming.map(o=>`<li><span class="as-pair-art">${pairIcon(o.kind,44)}</span>
-      <span class="grow"><b>${esc(o.name)}</b><small>tặng bạn một chiếc ${esc(K(o.kind).emoji)} ${esc(K(o.kind).name)}, mỗi người đeo một chiếc</small></span>
-      <span class="as-row-btns">${btn('Nhận','jrAsAnswer',{id:o.id,answer:'accept'},'primary small',busy)}${btn('Từ chối','jrAsAnswer',{id:o.id,answer:'decline'},'ghost small',busy)}</span></li>`).join('')}</ul></section>`:'';
-  const box=v.box.length?`<section class="jr-card as-box" aria-label="Hộp quà"><h3>🎀 Hộp quà <small class="muted">${v.box.length}/${v.box_max}</small></h3><p class="muted small">Tặng một chiếc cho bạn bè, cặp này thành của hai người.</p><ul class="as-list">${v.box.map(b=>`<li class="as-box-row"><span class="as-pair-art">${pairIcon(b.kind,44)}</span>
-      <span class="grow"><b>${esc(K(b.kind).emoji)} ${esc(K(b.kind).name)}</b>${friendPick(v,st,b.id)}</span>
-      ${btn(`Bán lại · ${fmt(b.sell)} xu`,'jrAsSell',{id:b.id},'ghost small',busy)}</li>`).join('')}</ul></section>`:'';
-  const sent=v.sent.length?`<section class="jr-card as-sent" aria-label="Đã gửi"><h3>⏳ Chờ bạn nhận</h3><ul class="as-list">${v.sent.map(o=>`<li><span class="as-pair-art">${pairIcon(o.kind,44)}</span>
-      <span class="grow"><b>${esc(K(o.kind).emoji)} ${esc(K(o.kind).name)}</b><small>đã gửi tới ${esc(o.name)}</small></span>${btn('Rút lại','jrAsCancel',{id:o.id},'ghost small',busy)}</li>`).join('')}</ul></section>`:'';
-  const on=v.pairs.filter(p=>p.on).length;
-  const mine=v.pairs.length?`<section class="jr-card as-mine" aria-label="Cặp của bạn"><div class="as-mine-head"><b>🤝 Đang có ${v.pairs.length} cặp</b><small class="muted">đang đeo ${on}</small></div>
-      <ul class="as-pairs">${pairRows(api,v.pairs)}</ul>
-      <div class="as-mine-foot">${btn('Đeo hết','jrAsWearAll',{on:'1'},'ghost small',busy||on===v.pairs.length)}${btn('Cất hết','jrAsWearAll',{on:'0'},'ghost small',busy||!on)}</div></section>`:'';
-  const full=v.can_buy===false?`<p class="wd-lock">🎀 Hộp quà đã đầy ${v.box_max} cặp chưa tặng. Tặng bớt rồi mua thêm nhé.</p>`:'';
-  const bonds=(v.bond_in||[]).map(o=>({...o,r:relOf(api,o.label)})).filter(o=>o.r);
-  const bondIn=bonds.length?`<section class="jr-card as-incoming" aria-label="Lời mời quan hệ"><h3>💞 Lời mời quan hệ</h3><ul class="as-list">${bonds.map(o=>`<li><span class="as-rel-emoji" aria-hidden="true">${esc(o.r.emoji)}</span>
-      <span class="grow"><b>${esc(o.name)}</b><small>muốn hai bạn thành “${esc(o.r.name)}”</small></span>
-      <span class="as-row-btns">${btn('Đồng ý','jrAsBondAnswer',{id:o.id,answer:'accept'},'primary small',busy)}${btn('Để sau','jrAsBondAnswer',{id:o.id,answer:'decline'},'ghost small',busy)}</span></li>`).join('')}</ul></section>`:'';
-  return `${bondIn}${incoming}${forWho}${mine}${box}${sent}${full}<div class="as-shelf">${cat}</div>`;
-}
 
 /* ---- 🪽 Cánh: bought and worn here; ghép in ⚒️ Cường hóa (forgeView) ---- */
 const WC=api=>api.content.journey?.wardrobe?.wings;
@@ -303,26 +188,6 @@ const wingTile=(api,w,x,pick=-1,forge=false)=>{const on=x.id===w.on;
 const sortWings=own=>[...own].sort((a,b)=>b.r-a.r||String(a.k).localeCompare(b.k));
 const wingReveal=(api,st)=>st.reveal?.length?`<section class="jr-card wg-reveal" aria-live="polite"><h3>🎉 ${st.reveal.length>1?'Mở hộp cánh':'Cánh mới'}</h3><div class="wg-reveal-row">${st.reveal.map((x,i)=>`<span class="wg-reveal-item" style="--i:${i}">${wingIcon(x,72,wName(api,x))}${badge(x.r)}</span>`).join('')}</div>${btn('Tuyệt!','jrAsWingReveal',{},'primary small')}</section>`:'';
 const wingTable=c=>`<details class="jr-card wg-table"><summary>📈 Hạng cánh được gì</summary><table><thead><tr><th>Hạng</th><th>Tiền kiếm được</th><th>Thú khi đấu</th></tr></thead><tbody>${c.earn.map((e,r)=>`<tr><td>${badge(r)}</td><td>+${e}%</td><td>+${c.battle[r]}%</td></tr>`).join('')}</tbody></table></details>`;
-function wingShelf(env,st){
-  const {api}=env,c=WC(api);
-  if(!c)return `<p class="muted">Cánh đang về hàng, lát nữa quay lại nhé.</p>`;
-  const w=wingsOf(api)||{},own=ownWings(api),worn=wingOfState(api.state),g=api.state.journey.gender;
-  const show=st.wtry?{k:st.wtry,r:0}:worn,look=lookOf(api.state),pr=myPairs();
-  const mirror=figureSVG({...look,...(pr?{pr}:{}),...(show?{wg:show}:{})},g,{w:150,h:212,label:show?'Nhân vật của bạn với đôi cánh':'Nhân vật của bạn'});
-  const wx=worn&&own.find(x=>x.id===w.on);
-  const side=st.wtry?`<h3>${esc(styleOf(api,st.wtry)?.name||'')}</h3><p class="small">Đang thử trước gương. Mua xong mới biết ra hạng D hay C nhé.</p>${btn('Bỏ thử','jrAsWingTry',{k:''},'ghost small')}`
-    :wx?`<h3>${esc(wName(api,wx))} ${badge(wx.r)}</h3>${wingPerks(api,wx.r)}${w.got?`<p class="small muted">Hôm nay cánh đã thêm ${fmt(w.got)} xu.</p>`:''}`
-    :`<h3>Chưa đeo cánh</h3><p class="small">Mỗi đôi mua về ra hạng D hoặc C, ghép ba đôi ở ⚒️ Cường hóa để lên hạng. Hạng càng cao càng đẹp và càng được nhiều.</p>`;
-  const cap=Math.max(1,Math.min(c.qty_max||1,c.own_max-own.length));
-  const forge=own.length>=3?`<p class="jr-card as-for">⚒️ <span class="grow">Ghép ba đôi để lên hạng${wingPlan(api).n?', có thể ghép ngay':''}.</span>${btn('⚒️ Cường hóa','jrForge',{tab:'wing'},'small')}</p>`:'';
-  const tiles=own.length?`<section class="jr-card wg-own"><div class="as-mine-head"><b>🪽 Tủ cánh</b><small class="muted">${own.length}/${c.own_max}</small></div>
-    <ul class="wg-grid">${sortWings(own).map(x=>wingTile(api,w,x)).join('')}</ul></section>`:'';
-  const shelf=c.styles.map(x=>`<article class="jr-card as-kind wg-style"><button type="button" class="as-kind-art" data-action="jrAsWingTry" data-k="${esc(x.id)}" aria-label="Thử ${esc(x.name)} trước gương">${wingIcon({k:x.id,r:0},84)}</button>
-      <div class="as-kind-text"><h3>${esc(x.emoji)} ${esc(x.name)}</h3><p class="small">${esc(x.desc)}</p><p class="as-hint">Ra hạng D hoặc C ngẫu nhiên</p>
-      ${qtyRow(api,'jrAsWingQty',{k:x.id},wq(st,x.id,cap),cap,x.price)}
-      ${btn(`Mua${wq(st,x.id,cap)>1?` ×${wq(st,x.id,cap)}`:''} · ${fmt(x.price*wq(st,x.id,cap))} xu`,'jrAsWingBuy',{k:x.id},'primary small',busy||own.length>=c.own_max)}</div></article>`).join('');
-  return `${wingReveal(api,st)}<section class="jr-card wd-stage"><div class="wd-mirror">${mirror}</div><div class="wd-side">${side}</div></section>${forge}${tiles}<div class="as-shelf">${shelf}</div>${wingTable(c)}`;
-}
 /** ⚒️ Cường hóa's 🪽 shelf: ⚡ Cường hóa nhanh, the wings to pick, the fusion picked, what each tier gives. */
 function wingForge(env,st){
   const {api}=env,c=WC(api);if(!c)return `<p class="muted">Cánh đang về hàng, lát nữa quay lại nhé.</p>`;
@@ -342,40 +207,18 @@ function wingForge(env,st){
 }
 
 const wq=(st,k,cap)=>Math.max(1,Math.min(st.wq?.[k]||1,cap));
+/** For 🛍️ Cửa hàng's sheet (v4/shop-shelves.js). */
+export {S,PT,PET,W,btn,attrs,fmt,busy,qtyRow,cartBar,cartToggle,inCart,cartLook,CL,CL_EMOJI,WC,wingsOf,ownWings,styleOf,wName,badge,wingTile,sortWings,wingReveal,wingTable,wq,moreList,petTabs};
 
 /* ---- 🏠 Nhà & xe: the other things bought in the game, each in its own screen (a card that opens it) ---- */
 const MORE=[['garage','🚗','Xe & phương tiện','Xe máy, ô tô, du thuyền, máy bay riêng, biển số.'],['gadgets','📱','Điện thoại & đồ công nghệ','Điện thoại, máy ảnh, đồng hồ…'],
   ['jrEnterHome','🛋️','Đồ trong nhà','Nội thất, trang trí, sửa chữa nhà.'],['spendStyle','🎨','Phong cách','Màu tên của bạn trong tuần.'],
   ['lux','💎','Mua sắm cao cấp','Du lịch, đồ sưu tầm, dinh thự, tiệc…'],['auction','🔨','Nhà đấu giá','Đồ độc bản, biển số đẹp.']];
 const moreList=api=>MORE.filter(([a])=>townServiceAvailable(a,api.state,api.content,{}));
-function moreShelf(env){
-  const list=moreList(env.api);
-  return `<p class="wd-note">Những món này có quầy riêng: chạm để tới đó.</p><div class="as-shelf">${list.map(([a,e,name,desc])=>`<button type="button" class="jr-card as-kind as-more" data-action="${a}"><span class="as-kind-art" aria-hidden="true">${e}</span><span class="as-kind-text"><b>${esc(name)}</b><small>${esc(desc)}</small></span></button>`).join('')}</div>`;
-}
-
 /* ---- the sheet ---- */
-const GROUPS=[['me','👤','Cho bạn'],['pet','🐾','Thú cưng'],['more','🏠','Nhà & xe']];
-const groupOf=tab=>PET.some(x=>x[0]===tab)?'pet':tab==='more'?'more':'me';
 function head(api,eyebrow,title){
   return `<header class="sheet-head jr-head"><button type="button" class="btn ghost small jr-back" data-action="jrView" data-view="home" aria-label="Quay lại">${icon('back',18)}</button><div class="grow"><span class="eyebrow">${eyebrow}</span><h2>${title}</h2></div></header>`;
 }
-export function accShopView(env){
-  const {api,ui}=env,c=W(api),st=S(ui);
-  const top=head(api,'MUA SẮM',`🛍️ ${SHOP_NAME}`);
-  if(!c||!api.state.journey?.gender)return top+`<div class="sheet-body jr-body"><p class="muted">Cửa hàng đang bày hàng, lát nữa quay lại nhé.</p></div>`;
-  const by={me:meTabs(c),pet:petTabs(api),more:moreList(api).length?[['more','🔗','Nơi mua khác']]:[]},all=[...by.me,...by.pet,...by.more];
-  if(!all.some(x=>x[0]===st.tab))st.tab='acc';
-  const cur=groupOf(st.tab),n=waiting(api),shown=GROUPS.filter(([g])=>by[g].length);
-  const groups=shown.length>1?`<nav class="as-groups" role="tablist" aria-label="Nhóm hàng" style="--n:${shown.length}">${shown.map(([g,e,label])=>{const on=g===cur;
-    return `<button type="button" role="tab" class="as-group${on?' active':''}" aria-selected="${on}" data-action="jrAsGroup" data-group="${g}"><span aria-hidden="true">${e}</span>${label}${g==='me'&&n&&!on?`<i class="as-badge" aria-label="${n} món quà đang chờ">${n}</i>`:''}</button>`;}).join('')}</nav>`:'';
-  const tabs=by[cur].length>1?`<nav class="wd-tabs" role="tablist" aria-label="Quầy hàng">${by[cur].map(([id,e,label])=>`<button type="button" role="tab" class="wd-tab${st.tab===id?' active':''}" aria-selected="${st.tab===id}" data-action="jrAsTab" data-tab="${id}"><span aria-hidden="true">${e}</span>${label}${id==='pair'&&n?`<i class="as-badge" aria-label="${n} món quà đang chờ">${n}</i>`:''}</button>`).join('')}</nav>`:'';
-  const body=cur==='pet'?petShelf(env,st):cur==='more'?moreShelf(env):st.tab==='acc'?accShelf(env,st):st.tab==='wing'?wingShelf(env,st):st.tab==='wear'?wearShelf(env,st):pairShelf(env,st);
-  return top+`<div class="sheet-body jr-body wd as">
-    ${groups}${tabs}
-    ${body}
-  </div>`;
-}
-
 /* ---- ⚒️ Cường hóa (owner 23/10): every "ghép / nâng hạng" of the game in one place, each with ⚡ Cường hóa nhanh. The
  * 🐾 shelves are v4/pets.js (lab, ward, gear bag) drawn here; the pets' dialog keeps its own tabs too. ---- */
 const FORGE=[['wing','🪽','Cánh'],['plab','🧬','Ghép thú','lab'],['pward','👗','Đồ thú cưng','ward'],['pgear','🧰','Linh kiện thú','gearup']];
@@ -455,56 +298,56 @@ async function post(env,op,body){
   finally{busy=false;env.renderSheet();}
 }
 
+/** A purchase done (owner 23/10 "gọn"): a short toast of what came; ⚒️ Đi cường hóa when it can now be ghép. */
+const got=(env,text,forge='')=>env.toast(text,'good',forge&&env.act?{action:{label:'⚒️ Đi cường hóa',run:()=>env.act('jrForge',{tab:forge})}}:{});
+
 export async function accShopAction(action,data,el,env){
   const {api,ui,cmd,renderSheet,confirmAction}=env,st=S(ui),c=W(api);
   if(!c)return false;
+  if(await shopAction(action,data,el,env))return true;   // tabs, filters, the detail sheet (v4/shop-shelves.js)
   switch(action){
-    case'jrAsTab':st.tab=shopTabs(api).includes(data.tab)?data.tab:'acc';(st.last??={})[groupOf(st.tab)]=st.tab;renderSheet(false);return true;
-    case'jrAsGroup':{const ok=shopTabs(api),g=GROUPS.some(x=>x[0]===data.group)?data.group:'me',last=st.last?.[g],list=ok.filter(id=>groupOf(id)===g);
-      st.tab=list.includes(last)?last:list[0]||'acc';renderSheet(false);return true;}
     case'jrAsForgeTab':st.ftab=forgeTabs(api).includes(data.tab)?data.tab:'wing';renderSheet(false);return true;
     // 👕 Quần áo (game/wardrobe.py jr_wd_buy / jr_wd_wear, as in Tủ đồ)
     case'jrAsClSlot':st.cslot=CL.includes(data.slot)?data.slot:'top';renderSheet();return true;
     case'jrAsClTry':{const it=data.item&&wdItem(api,data.item);
       if(st.multi&&it&&CL.includes(it.slot)&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.cdraft=inCart(st,it.id)?it.id:null;renderSheet();return true;}
-      st.cdraft=it&&CL.includes(it.slot)&&st.cdraft!==it.id?it.id:null;renderSheet();return true;}
+      st.cdraft=it&&CL.includes(it.slot)&&st.cdraft!==it.id?it.id:null;renderSheet();if(st.cdraft)focusDetail();return true;}
     case'jrAsClBuy':{const it=wdItem(api,data.item),stt=it&&wdStatus(api,it);if(!stt?.buy||busy)return true;
-      const how=await confirmPurchase(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(stt.price)} xu${stt.price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. Mua xong mặc luôn, đổi màu trong Tủ đồ.`,label:`Mua · ${fmt(stt.price)} xu`,cost:stt.price});
+      const how=await buyPayment(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(stt.price)} xu${stt.price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. Mua xong mặc luôn, đổi màu trong Tủ đồ.`,label:`Mua · ${fmt(stt.price)} xu`,cost:stt.price});
       if(!how)return true;
-      busy=true;const ok=await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how});busy=false;if(ok)st.cdraft=null;
+      busy=true;renderSheet();const ok=await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how},{quiet:true});busy=false;if(ok){st.cdraft=null;got(env,`👕 +1 ${it.name} · đã mặc`);}
       renderSheet();return true;}
     case'jrAsClOn':{const it=wdItem(api,data.item);if(!it||!CL.includes(it.slot)||wdStatus(api,it)||busy)return true;
       busy=true;const ok=await cmd('jr_wd_wear',{look:{[it.slot]:it.id}});busy=false;if(ok)st.cdraft=null;renderSheet();return true;}
     case'jrAsTry':{const it=wdItem(api,data.item);if(!it||it.slot!=='acc')return true;
       if(st.multi&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.draft=inCart(st,it.id)?it.id:null;renderSheet();return true;}
-      st.draft=st.draft===it.id?null:it.id;renderSheet();return true;}
+      st.draft=st.draft===it.id?null:it.id;renderSheet();if(st.draft)focusDetail();return true;}
     // 🧺 several pieces at once (jr_wd_buy items: one price, all or none)
     case'jrAsMulti':if(data.off||st.multi){st.multi=false;st.cart=[];}else{st.multi=true;st.cart=[];}renderSheet();return true;
     case'jrAsBuyMany':{const xs=cartOf(api,st);if(!xs.length||busy)return true;
       const sum=xs.reduce((a,it)=>a+wdStatus(api,it).price,0),slots=xs.map(it=>it.slot),wear=new Set(slots).size===slots.length;
-      const how=await confirmPurchase(env,{title:`Mua ${xs.length} món?`,message:`${xs.map(it=>`${it.name} (${fmt(wdStatus(api,it).price)} xu)`).join(', ')}. Tổng ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không món nào. ${wear?'Mua xong mặc luôn.':'Mua xong cất vào tủ (có món cùng chỗ).'}`,label:`Mua ${xs.length} món · ${fmt(sum)} xu`,cost:sum});
+      const how=await buyPayment(env,{title:`Mua ${xs.length} món?`,message:`${xs.map(it=>`${it.name} (${fmt(wdStatus(api,it).price)} xu)`).join(', ')}. Tổng ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không món nào. ${wear?'Mua xong mặc luôn.':'Mua xong cất vào tủ (có món cùng chỗ).'}`,label:`Mua ${xs.length} món · ${fmt(sum)} xu`,cost:sum});
       if(!how)return true;
-      busy=true;const ok=await cmd('jr_wd_buy',{items:xs.map(it=>it.id),wear,pay:how});busy=false;
-      if(ok){st.cart=[];st.multi=false;st.draft=null;st.cdraft=null;}renderSheet();return true;}
+      busy=true;renderSheet();const ok=await cmd('jr_wd_buy',{items:xs.map(it=>it.id),wear,pay:how},{quiet:true});busy=false;
+      if(ok){st.cart=[];st.multi=false;st.draft=null;st.cdraft=null;got(env,`🧺 +${xs.length} món: ${xs.map(it=>it.name).join(', ')}`);}renderSheet();return true;}
     case'jrAsPairQty':{const n=Math.max(1,Math.min(Number(data.n)||1,10));(st.pq??={})[data.kind]=n;renderSheet();return true;}
     case'jrAsWingQty':{const n=Math.max(1,Math.min(Number(data.n)||1,WC(api)?.qty_max||1));(st.wq??={})[data.k]=n;renderSheet();return true;}
-    case'jrAsReset':st.draft=null;renderSheet();return true;
     case'jrAsBuy':{const it=wdItem(api,data.item),stt=it&&wdStatus(api,it);if(!stt?.buy||busy)return true;
-      const how=await confirmPurchase(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(stt.price)} xu${stt.price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. Mua xong đeo luôn, đổi màu trong Tủ đồ.`,label:`Mua · ${fmt(stt.price)} xu`,cost:stt.price});
+      const how=await buyPayment(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(stt.price)} xu${stt.price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. Mua xong đeo luôn, đổi màu trong Tủ đồ.`,label:`Mua · ${fmt(stt.price)} xu`,cost:stt.price});
       if(!how)return true;
-      if(await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how}))st.draft=null;
+      busy=true;renderSheet();const ok=await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how},{quiet:true});busy=false;if(ok){st.draft=null;got(env,`🎀 +1 ${it.name} · đã đeo`);}
       renderSheet();return true;}
     case'jrAsWearAcc':{const it=wdItem(api,data.item);if(!it||wdStatus(api,it))return true;
       if(await cmd('jr_wd_wear',{look:{acc:it.id}}))st.draft=null;renderSheet();return true;}
     case'jrAsPairBuy':{const k=kindOf(api,data.kind);if(!k||busy)return true;
       const who=st.to&&api.charmView?.friends?.find(f=>f.code===st.to)?.name;
       const v=api.charmView,room=v?Math.max(1,(v.box_max||10)-v.box.length-v.sent.length):1,q=Math.max(1,Math.min(st.pq?.[k.id]||1,room)),sum=k.price*q;
-      const how=await confirmPurchase(env,{title:`Mua cặp ${k.name}${q>1?` ×${q}`:''}?`,message:`${k.item}, hai chiếc một cặp. ${q>1?`${q} cặp × ${fmt(k.price)} xu = ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không cặp nào.`:`Giá ${fmt(k.price)} xu.`} ${who?`Bạn giữ một chiếc, chiếc còn lại gửi tới ${who}${q>1?', các cặp kia nằm trong hộp quà':''}.`:'Bạn giữ một chiếc, tặng chiếc còn lại cho một người bạn.'}`,label:`Mua · ${fmt(sum)} xu`,cost:sum});
+      const how=await buyPayment(env,{title:`Mua cặp ${k.name}${q>1?` ×${q}`:''}?`,message:`${k.item}, hai chiếc một cặp. ${q>1?`${q} cặp × ${fmt(k.price)} xu = ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không cặp nào.`:`Giá ${fmt(k.price)} xu.`} ${who?`Bạn giữ một chiếc, chiếc còn lại gửi tới ${who}${q>1?', các cặp kia nằm trong hộp quà':''}.`:'Bạn giữ một chiếc, tặng chiếc còn lại cho một người bạn.'}`,label:`Mua · ${fmt(sum)} xu`,cost:sum});
       if(!how)return true;
       const to=st.to&&api.charmView?.friends?.find(f=>f.code===st.to);
       // one request id per purchase: a retry pays nothing (game/friend_charms.py _buy)
       const done=await post(env,'charm_buy',{kind:k.id,pay:how,rid:rid(),...(q>1?{qty:q}:{}),...(to?{code:to.code}:{})});
-      if(done){if(to)st.to='';if(st.pq)delete st.pq[k.id];}renderSheet();return true;}
+      if(done){if(to)st.to='';if(st.pq)delete st.pq[k.id];st.psel=null;}renderSheet();return true;}
     case'jrAsTo':st.to=typeof data.code==='string'?data.code:'';renderSheet();return true;
     case'jrAsGive':{const sel=document.getElementById(`as-to-${data.id}`),code=sel?.value||st.to;
       if(!code){env.toast('Chọn một người bạn để tặng nhé.','hint');sel?.focus?.();return true;}
@@ -524,14 +367,15 @@ export async function accShopAction(action,data,el,env){
     case'jrAsBondOff':{if(!await confirmAction('Về lại bạn bè?','Quan hệ đang đặt sẽ bỏ, hai bạn vẫn là bạn bè và vẫn giữ phụ kiện đôi.','Về bạn bè'))return true;
       await post(env,'charm_bond_off',{id:data.id});return true;}
     // 🪽 Cánh (game/wings.py)
-    case'jrAsWingTry':st.wtry=data.k&&WC(api)?.styles?.some(x=>x.id===data.k)?(st.wtry===data.k?null:data.k):null;renderSheet();return true;
+    case'jrAsWingTry':st.wtry=data.k&&WC(api)?.styles?.some(x=>x.id===data.k)?(st.wtry===data.k?null:data.k):null;st.reveal=null;renderSheet();if(st.wtry)focusDetail();return true;
     case'jrAsWingReveal':st.reveal=null;renderSheet();return true;
     case'jrAsWingBuy':{const x=styleOf(api,data.k),c2=WC(api);if(!x||busy||!c2)return true;
       const q=wq(st,x.id,Math.max(1,Math.min(c2.qty_max||1,c2.own_max-ownWings(api).length))),sum=x.price*q;
-      if(!await confirmAction(`Mua ${x.name}${q>1?` ×${q}`:''}?`,`${q>1?`${q} đôi × ${fmt(x.price)} xu = ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không đôi nào. Mỗi đôi`:`Giá ${fmt(x.price)} xu. Mở hộp`} ra hạng D hoặc C ngẫu nhiên, ghép ba đôi ở ⚒️ Cường hóa để lên hạng.`,`🪽 Mua · ${fmt(sum)} xu`,{cost:sum}))return true;
+      if(askBuy(api.state.journey,sum)&&!await confirmAction(`Mua ${x.name}${q>1?` ×${q}`:''}?`,`${q>1?`${q} đôi × ${fmt(x.price)} xu = ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không đôi nào. Mỗi đôi`:`Giá ${fmt(x.price)} xu. Mở hộp`} ra hạng D hoặc C ngẫu nhiên, ghép ba đôi ở ⚒️ Cường hóa để lên hạng.`,`🪽 Mua · ${fmt(sum)} xu`,{cost:sum}))return true;
       // the request id (game/wings.py RQ_KEEP): a retry answers the same wings and pays nothing
-      busy=true;const r=await cmd('jr_pet_wing_buy',{style:x.id,...(q>1?{qty:q}:{}),rid:rid().replace(/[^A-Za-z0-9_.:-]/g,'').slice(0,64),confirm:true});busy=false;
-      if(r?.wings?.length){st.reveal=r.wings.map(w=>({k:w.k,r:w.r}));st.wtry=null;if(st.wq)delete st.wq[x.id];}renderSheet();return true;}
+      busy=true;renderSheet();const r=await cmd('jr_pet_wing_buy',{style:x.id,...(q>1?{qty:q}:{}),rid:rid().replace(/[^A-Za-z0-9_.:-]/g,'').slice(0,64),confirm:true},{quiet:true});busy=false;
+      // the detail stays open on this style with the reveal; ⚒️ when three of a tier can go up now (owner 23/10)
+      if(r?.wings?.length){st.reveal=r.wings.map(w=>({k:w.k,r:w.r}));st.wtry=x.id;if(st.wq)delete st.wq[x.id];got(env,`🪽 +${r.wings.length} ${x.name}`,wingsReady(api)&&'wing');}renderSheet();return true;}
     case'jrAsWingWear':if(busy)return true;busy=true;await cmd('jr_pet_wing_wear',{id:data.id||null});busy=false;renderSheet();return true;
     case'jrAsWingDrop':{const x=wingsOf(api)?.own?.find(o=>o.id===data.id);if(!x||busy)return true;
       if(!await confirmAction(`Bỏ ${wName(api,x)}?`,'Đôi cánh này sẽ mất hẳn, không lấy lại được.','Bỏ cánh'))return true;

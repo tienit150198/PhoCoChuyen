@@ -42,7 +42,6 @@ html[data-layout="phone"] .as-shelf{grid-template-columns:1fr;gap:10px}
 html[data-layout="phone"] .as-kind{grid-template-columns:84px minmax(0,1fr);padding:12px}
 html[data-layout="phone"] .as-kind-art{width:84px;height:84px}
 html[data-layout="phone"] .as-kind-art svg{width:76px;height:76px}
-.as .wd-tab{display:inline-flex;flex-direction:row;white-space:nowrap}
 /* 💞 Quan hệ (v4/charms.js relChip, relControls) */
 .as-pair-rel{display:flex;margin-top:2px}
 .as-rel{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-pill);background:var(--surface-2);font-size:.78rem;font-weight:700;color:var(--muted)}
@@ -91,13 +90,8 @@ html[data-layout="phone"] .as-kind-art svg{width:76px;height:76px}
 .wd-wings-row{align-items:center;flex-wrap:nowrap}
 .wd-wings-row .grow{min-width:0;flex:1}
 html[data-layout="phone"] .wg-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-/* 🛍️ Cửa hàng (owner 23/10): 👤 Cho bạn / 🐾 Thú cưng / 🏠 Nhà & xe, then the group's shelves; the pets' shelves are
-   v4/pets.js markup (pets.css) drawn in the sheet (.pt-embed), its main button sticky at the bottom as in its dialog. */
-.as-groups{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:4px;padding:4px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
-.as-group{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 10px;border:0;border-radius:14px;background:transparent;color:var(--ink-2);font:inherit;font-weight:800;cursor:pointer}
-.as-group>span{font-size:1.15rem}
-.as-group.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 -3px 0 var(--accent)}
-.as-group:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* 🛍️ Cửa hàng and ⚒️ Cường hóa: the pets' shelves are v4/pets.js markup (pets.css) drawn in the sheet (.pt-embed), its
+   main button sticky at the bottom as in its dialog (the shop's grid and detail sheet: the end of this file). */
 .as-chips .chip{min-height:40px}
 .pt-embed{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-height:0;min-width:0}
 /* a long option (a pet's name, a set) never widens the sheet: every block of ⚒️ stays the sheet's width (seen 23/10, 33 pets) */
@@ -106,9 +100,6 @@ html[data-layout="phone"] .wg-grid{grid-template-columns:repeat(3,minmax(0,1fr))
 .pt-embed .pt-flash:empty{display:none}
 .pt-embed .pt-bar{margin:4px -6px 0;border-radius:16px 16px 0 0;box-shadow:0 -6px 14px color-mix(in srgb,var(--ink) 8%,transparent)}
 .pt-none .pt-chip{min-height:40px}
-html[data-layout="phone"] .as .wd-tabs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-html[data-layout="phone"] .as .wd-tab{flex-direction:column;white-space:normal;text-align:center;padding:4px 2px}
-html[data-layout="phone"] .as-group{font-size:.9rem;padding:6px 4px;gap:4px}
 /* 🏠 Nhà & xe: a card per screen that sells the rest */
 .as-more{font:inherit;color:inherit;text-align:left;cursor:pointer;align-items:center;border:1px solid var(--line)}
 .as-more .as-kind-art{font-size:2.6rem}
@@ -168,6 +159,7 @@ span.wg-pick{cursor:default}
 .as-qty-chips{display:flex;flex-wrap:wrap;gap:6px}
 .as-qty-chips .as-qty-b{min-height:36px;font-size:.85rem}
 .as-qty-sum{color:var(--ink-2)}
+.as-detail :is(.as-qty-sum,.pt-qty-sum){display:none}
 .as-multi .chip{min-height:40px}
 .as-cart{display:grid;gap:6px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
 .as-cart-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -187,3 +179,133 @@ html[data-layout="phone"] .fg-kinds{grid-template-columns:repeat(2,minmax(0,1fr)
 .wg-group{display:grid;gap:6px;margin-top:8px}
 .wg-group-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0}
 .wg-group-head .wg-tier{position:static}
+/* ==========================================================================
+   🛍️ Cửa hàng, gọn như các game khác (v4/shop-shelves.js, owner 23/10): one row of tabs, a filter bar, one grid of
+   cards (border by rarity --rc, a corner badge), the detail sheet docked at the bottom (sticky), ☑️ Không hỏi lại.
+   ========================================================================== */
+:is(.as-card,.as-gem,.as-detail).t0{--rc:#9aa0a6}
+:is(.as-card,.as-gem,.as-detail).t1{--rc:#3fae5a}
+:is(.as-card,.as-gem,.as-detail).t2{--rc:#3d8bfd}
+:is(.as-card,.as-gem,.as-detail).t3{--rc:#a259ff}
+:is(.as-card,.as-gem,.as-detail).t4{--rc:#e5a91a}
+:is(.as-card,.as-gem,.as-detail).t5{--rc:#ef4444}
+.as-v2{gap:12px;min-width:0}
+/* the one row of tabs: scrolls sideways on a phone */
+.as-tabs{display:flex;gap:4px;padding:4px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;min-width:0}
+.as-tabs::-webkit-scrollbar{display:none}
+.as-tab{position:relative;flex:1 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 14px;border:0;border-radius:14px;background:transparent;color:var(--ink-2);font:inherit;font-weight:800;white-space:nowrap;cursor:pointer;scroll-snap-align:start}
+.as-tab>span{font-size:1.1rem}
+.as-tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 -3px 0 var(--accent)}
+.as-tab:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:-3px}
+.as-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0;min-width:0}
+.as-cats::-webkit-scrollbar{display:none}
+.as-cats .chip{flex:none;min-height:40px;white-space:nowrap}
+/* the filter bar */
+.as-fbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.as-fb,.as-fbar .btn.as-fb{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--radius-pill,999px);background:var(--surface);color:var(--ink-2);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap;list-style:none;box-shadow:none}
+.as-fb b{color:var(--ink)}
+.as-fb.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--ink)}
+.as-fb:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:2px}
+.as-dd{position:relative}
+.as-dd>summary::-webkit-details-marker{display:none}
+.as-dd>summary::after{content:"▾";font-size:.75rem;color:var(--muted)}
+.as-dd-list{position:absolute;top:calc(100% + 4px);left:0;z-index:9;display:grid;gap:2px;min-width:180px;padding:6px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+.as-dd-o{display:flex;align-items:center;gap:8px;min-height:40px;padding:6px 10px;border:0;border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:.9rem;font-weight:600;text-align:left;cursor:pointer}
+.as-dd-o.on{background:var(--accent-soft);font-weight:800}
+.as-dd-o:hover{background:var(--surface-2)}
+.as-dd-o:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:-2px}
+.as-gem{display:inline-block;flex:none;width:10px;height:10px;border-radius:2px;transform:rotate(45deg);background:var(--rc);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--rc) 35%,transparent)}
+.as-gem.tx{background:conic-gradient(#9aa0a6,#3fae5a,#3d8bfd,#a259ff,#e5a91a,#ef4444,#9aa0a6)}
+/* the grid of cards */
+.as-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;min-width:0}
+.as-cell{display:grid;min-width:0}
+.as-card{position:relative;display:grid;grid-template-rows:auto auto 1fr;justify-items:center;align-content:start;gap:3px;min-width:0;padding:12px 6px 10px;
+  border:2px solid color-mix(in srgb,var(--rc) 60%,var(--line));border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 16%,var(--surface)) 0,var(--surface) 62%);color:var(--ink);font:inherit;text-align:center;cursor:pointer;box-shadow:var(--shadow-sm)}
+.as-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--rc)}
+.as-card.t5{box-shadow:var(--shadow-sm),0 0 0 1px color-mix(in srgb,var(--rc) 40%,transparent),0 4px 14px -6px var(--rc)}
+.as-card-art{display:grid;place-items:center;width:72px;height:72px}
+.as-card-art svg{display:block;max-width:72px;max-height:72px}
+.as-card-name{max-width:100%;font-size:.82rem;font-weight:800;line-height:1.2;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.as-card-price{font-size:.78rem;font-weight:700;color:var(--ink-2);line-height:1.25;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.as-card-price s{color:var(--muted);font-weight:500}
+.as-card-badge{position:absolute;top:9px;right:5px;max-width:calc(100% - 10px);padding:2px 6px;border-radius:var(--radius-pill,999px);background:var(--ink-2);color:var(--surface);font-size:.64rem;font-weight:800;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as-card-badge.on{background:var(--good)}
+.as-card.sel{outline:3px solid var(--accent);outline-offset:2px}
+.as-card.in-cart{outline:3px dashed var(--accent);outline-offset:2px}
+.as-card.locked .as-card-art{opacity:.55;filter:grayscale(.4)}
+.as-card.locked .as-card-price{font-size:.7rem;font-weight:600}
+div.as-card{cursor:default}
+.as-card:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:2px}
+@media (hover:hover){button.as-card:hover{border-color:var(--rc);transform:translateY(-1px)}}
+.as-card .as-incart{top:auto;bottom:6px;right:6px}
+.as-emoji{font-size:2.6rem;line-height:1}
+.as-emoji.big{font-size:5rem}
+.as-none{display:grid;justify-items:center;gap:8px;padding:20px 12px;color:var(--muted);text-align:center}
+.as-none p{margin:0}
+.as-sub{margin:6px 0 0;font-size:.95rem}
+.as-own>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.as-own[open]>summary{margin-bottom:8px}
+.as-foot .btn{min-height:36px}
+/* the detail sheet: docked at the bottom of the shop while the grid scrolls behind it */
+.as-detail{position:sticky;bottom:0;z-index:7;display:grid;gap:10px;margin-top:4px;padding:10px 16px calc(14px + var(--safe-b,0px));max-height:min(56vh,500px);overflow-y:auto;overscroll-behavior:contain;
+  border-top:4px solid var(--rc);border-radius:22px 22px 0 0;background:var(--surface);box-shadow:0 -14px 34px -6px color-mix(in srgb,var(--ink) 28%,transparent),0 0 0 1px var(--line);animation:as-up .22s var(--ease,ease-out)}
+.as-detail:focus{outline:none}
+.as-detail:focus-visible{box-shadow:0 0 0 3px var(--focus,var(--accent)),0 -14px 34px -6px color-mix(in srgb,var(--ink) 28%,transparent)}
+@keyframes as-up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.as-detail{animation:none}}
+.as-d-grip{justify-self:center;width:44px;height:5px;border-radius:999px;background:var(--line-strong)}
+.as-d-x{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.as-d-x:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:2px}
+.as-d-main{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:center}
+.as-d-stage{display:grid;place-items:end center;min-height:170px;border-radius:20px;background:radial-gradient(ellipse at 50% 72%,color-mix(in srgb,var(--rc) 26%,transparent),transparent 70%),var(--surface-2)}
+.as-d-stage>svg,.as-d-stage>.as-emoji{display:block;max-width:100%;height:auto;margin:6px auto}
+.as-d-stage>.as-emoji{align-self:center}
+.as-d-info{display:grid;gap:4px;min-width:0;padding-right:40px}
+.as-d-info h3{margin:0;font-size:1.2rem;line-height:1.25;overflow-wrap:anywhere}
+.as-d-info p{margin:0;line-height:1.45}
+.as-d-tier{display:inline-flex;align-items:center;gap:7px;font-size:.74rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:color-mix(in srgb,var(--rc) 55%,var(--ink))}
+.as-d-price{font-size:1.05rem}
+.as-d-price s{color:var(--muted);font-size:.9rem}
+.as-d-gives{display:grid;gap:2px;margin:2px 0;padding:0;list-style:none;font-size:.86rem}
+.as-d-note{font-size:.84rem;color:var(--ink-2)}
+.as-d-note.good{color:var(--good);font-weight:700}
+.as-d-forge.btn{min-height:38px;padding:4px 14px;font-weight:800;border-color:var(--accent);color:var(--accent-text,var(--accent))}
+.as-d-own>summary{cursor:pointer;min-height:38px;display:flex;align-items:center;font-weight:700}
+.as-d-own .wg-grid{margin-top:6px}
+.as-detail .wg-reveal{margin:0}
+.as-d-buy{display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.as-d-buy .as-qty{margin:0}
+.as-d-btns{display:flex;gap:8px;flex-wrap:wrap}
+.as-d-btns .btn{min-height:46px}
+.as-detail .as-qty{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.as-d-go.btn{flex:1 1 180px;min-height:50px;font-size:1rem;font-weight:800}
+.as-d-who{display:grid;gap:4px;min-width:0}
+.as-d-who-l{font-size:.84rem;font-weight:700;color:var(--ink-2)}
+.as-d-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.as-d-chips .chip{flex:none;min-height:38px}
+.as-noask{display:inline-flex;align-items:center;gap:8px;justify-self:start;min-height:40px;padding:0 4px;font-size:.88rem;font-weight:700;color:var(--ink-2);cursor:pointer}
+.as-noask input{width:20px;height:20px;margin:0;accent-color:var(--accent);cursor:pointer}
+.as-noask.on{color:var(--ink)}
+/* the pets' detail parts (v4/pets.js petShopModel) inside the sheet: its chips, quantity and main button, not sticky */
+.as-ptd.pt-embed{gap:8px}
+.as-ptd.pt-embed .pt-bar{position:static;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:none}
+.as-ptd .pt-main{width:100%;min-height:50px}
+.as-ptd .pt-qty{margin:0}
+/* 🧺 the cart, docked at the bottom like the detail */
+.as-cart-dock{position:sticky;bottom:0;z-index:6;display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px calc(10px + var(--safe-b,0px));
+  border-radius:20px 20px 0 0;background:var(--surface);box-shadow:0 -10px 28px -8px color-mix(in srgb,var(--ink) 26%,transparent),0 0 0 1px var(--line)}
+.as-cart-dock .as-cart{padding:0;background:none;box-shadow:none;border:0}
+.as-cart-fig{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--surface-2)}
+html[data-layout="phone"] .as-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+html[data-layout="phone"] .as-card{padding:11px 4px 8px;border-radius:14px}
+html[data-layout="phone"] .as-card-art{width:64px;height:64px}
+html[data-layout="phone"] .as-card-art svg{max-width:64px;max-height:64px}
+html[data-layout="phone"] .as-emoji{font-size:2.2rem}
+html[data-layout="phone"] .as-tab{padding:6px 12px;font-size:.92rem}
+html[data-layout="phone"] .as-detail{margin-left:-4px;margin-right:-4px;padding:8px 12px calc(12px + var(--safe-b,0px));max-height:72vh}
+html[data-layout="phone"] .as-d-main{grid-template-columns:112px minmax(0,1fr);gap:12px;align-items:start}
+html[data-layout="phone"] .as-d-stage{min-height:132px}
+html[data-layout="phone"] .as-d-stage>svg{width:104px;height:auto}
+html[data-layout="phone"] .as-emoji.big{font-size:3.6rem}
+html[data-layout="phone"] .as-d-info h3{font-size:1.05rem}

@@ -90,9 +90,14 @@ test('🛍️ Tiệm phụ kiện: the accessory shelf sells, the pair shelf lis
   const env={api,ui,renderSheet(){},renderMain(){},toast(){}};
   ui.as={tab:'acc',draft:'kinh_tron',to:''};
   const acc=accShopView(env);
-  assert.match(acc,/Tiệm phụ kiện Hạt Cườm/);assert.match(acc,/data-action="jrAsBuy" data-item="kinh_tron"/);assert.match(acc,/Mua Kính tròn · 90 xu/);
+  assert.match(acc,/Tiệm phụ kiện Hạt Cườm/);assert.match(acc,/data-action="jrAsBuy" data-item="kinh_tron"/);assert.match(acc,/Mua · 90 xu/);
+  // 🛍️ v2 (owner 23/10 "gọn"): a card per piece, the picked one in the detail sheet with the try-on and ☑️ Không hỏi lại
+  assert.match(acc,/data-action="jrAsTry" data-item="kinh_tron" aria-pressed="true" class="as-card t\d sel"/);
+  assert.match(acc,/class="as-detail t\d" role="dialog"[^>]*data-as-detail data-key="kinh_tron"/);assert.match(acc,/data-action="jrAsClose"/);
+  assert.match(acc,/<label class="as-noask"><input type="checkbox" data-action="jrAsNoAsk"><span>Không hỏi lại<\/span><\/label>/);
+  assert.match(acc,/data-action="jrAsF" data-key="acc" data-k="sort" data-v="asc"/);assert.match(acc,/data-k="miss" data-v="1"/);
   assert.doesNotMatch(acc,/data-item="pk_khong"/,'nothing to sell in "Không đeo gì"');
-  ui.as={tab:'pair',draft:null,to:'PCC-MAI'};
+  ui.as={tab:'pair',draft:null,to:'PCC-MAI',psel:'chi_cot'};
   assert.match(accShopView(env),/Đang mở hộp quà/,'the view is read on first sight');
   adopt(api,{charms:{box:[{id:'fc1',kind:'tri_ki',price:130,sell:104}],sent:[{id:'fc2',kind:'chi_cot',name:'Bảo',at:1}],incoming:[{id:'fc3',kind:'ban_than',name:'Mai',at:1}],
     pairs:[{id:'fc4',kind:'tri_ki',name:'Châu',on:true,since:1,mine:true},{id:'fc5',kind:'tri_ki',name:'Mai',on:false,since:2,mine:false}],worn:{tri_ki:1},
@@ -101,20 +106,26 @@ test('🛍️ Tiệm phụ kiện: the accessory shelf sells, the pair shelf lis
   assert.equal(waiting(api),1);
   const pair=accShopView(env);
   assert.match(pair,/Quà đang chờ bạn/);assert.match(pair,/data-action="jrAsAnswer" data-id="fc3" data-answer="accept"/);
-  assert.match(pair,/Đang chọn quà cho <b>Mai<\/b>/);assert.match(pair,/Mua &amp; tặng · 220 xu|Mua & tặng · 220 xu/);
+  assert.match(pair,/Quà cho <b>Mai<\/b>/);assert.match(pair,/Mua &amp; tặng · 220 xu|Mua & tặng · 220 xu/);
   assert.match(pair,/data-action="jrAsGive" data-id="fc1"/);assert.match(pair,/Bán lại · 104 xu/);
   assert.match(pair,/data-action="jrAsCancel" data-id="fc2"/);
   assert.match(pair,/với Châu/);assert.match(pair,/với Mai/);
   assert.equal((pair.match(/data-action="jrAsWear"/g)||[]).length,2,'each pair its own switch, no limit');
   assert.match(pairsCard(env),/đang đeo 1\/2/);
   // 🛒 owner 23/10 "mua thì cho mua nhiều cái 1 lần": a quantity per kind (the box's room), one charm_buy with qty
-  assert.match(pair,/data-action="jrAsPairQty" data-kind="tri_ki" data-n="2"/);
-  ui.as={tab:'pair',draft:null,to:'',pq:{tri_ki:3}};assert.match(accShopView(env),/Mua cặp ×3 · 390 xu/);
+  assert.match(pair,/data-action="jrAsPairPick" data-kind="tri_ki"[^>]*>[\s\S]*?Đang dùng/,'a pair worn: Đang dùng in the corner');
+  ui.as={tab:'pair',draft:null,to:'',psel:'tri_ki'};
+  assert.match(accShopView(env),/data-action="jrAsPairQty" data-kind="tri_ki" data-n="2"/);
+  ui.as={tab:'pair',draft:null,to:'',pq:{tri_ki:3},psel:'tri_ki'};assert.match(accShopView(env),/Mua cặp ×3 · 390 xu/);
   // 🧺 several accessories at once: the cart and its sum (jr_wd_buy items)
   ui.as={tab:'acc',draft:null,to:'',multi:true,cart:['kinh_tron']};
   const cart=accShopView(env);
   assert.match(cart,/🧺 Giỏ · 1 món/);assert.match(cart,/data-action="jrAsBuyMany"/);assert.match(cart,/Mua cả giỏ · 90 xu/);
-  assert.match(cart,/class="wd-item in-cart" data-action="jrAsTry" data-item="kinh_tron" aria-pressed="true"/);
+  assert.match(cart,/data-action="jrAsTry" data-item="kinh_tron" aria-pressed="true" class="as-card t\d in-cart"/);
+  assert.doesNotMatch(cart,/data-as-detail/,'choosing many: no detail sheet, the cart is docked instead');
+  // the filter bar: "Chưa có" hides what is owned (Kẹp tóc is free), the price sorts
+  ui.as={tab:'acc',f:{acc:{r:-1,sort:'desc',miss:true,g:''}}};
+  const f=accShopView(env);assert.doesNotMatch(f,/data-item="kep_toc"/);assert.ok(f.indexOf('data-item="mu_len"')<f.indexOf('data-item="kinh_tron"'),'dearest first');
   setPairs(null);
 });
 
@@ -149,10 +160,11 @@ test('🛍️ Cửa hàng: 👤 Cho bạn, 🐾 Thú cưng and 🏠 Nhà & xe sh
   const env={api,ui,renderSheet(){},renderMain(){},toast(){}};
   ui.as={tab:'wear',cdraft:'ao_len'};
   const wear=accShopView(env);
-  assert.match(wear,/🛍️ Cửa hàng/);assert.match(wear,/data-action="jrAsGroup" data-group="pet"/);assert.match(wear,/data-action="jrAsGroup" data-group="more"/);
+  assert.match(wear,/🛍️ Cửa hàng/);assert.match(wear,/data-action="jrAsTab" data-tab="pet"/);assert.match(wear,/data-action="jrAsTab" data-tab="more"/);
+  assert.doesNotMatch(wear,/jrAsGroup/,'one row of tabs (owner 23/10)');
   assert.match(wear,/data-tab="wear"><span aria-hidden="true">👕<\/span>Trang phục/);
-  assert.match(wear,/data-action="jrAsClBuy" data-item="ao_len"/);assert.match(wear,/Mua Áo len · 88 xu/);
-  assert.match(wear,/class="wd-item on" data-action="jrAsClTry" data-item="ao_len"/,'the piece sent from Tủ đồ is on the mirror');
+  assert.match(wear,/data-action="jrAsClBuy" data-item="ao_len"/);assert.match(wear,/Mua · 88 xu/);
+  assert.match(wear,/data-action="jrAsClTry" data-item="ao_len" aria-pressed="true" class="as-card t\d sel"/,'the piece sent from Tủ đồ is open, on the mirror');
   assert.match(wear,/class="chip active" aria-pressed="true" data-action="jrAsClSlot" data-slot="top"/,'on its own rack');
   // the pet shelf is v4/pets.js, loaded on first sight (lazy.js: a stylesheet link and an event)
   globalThis.document??={querySelector:()=>null,createElement:()=>({dataset:{},addEventListener(){}}),head:{append(){}},dispatchEvent(){},addEventListener(){}};
@@ -166,7 +178,7 @@ test('🛍️ Cửa hàng: 👤 Cho bạn, 🐾 Thú cưng and 🏠 Nhà & xe sh
   // 🏠 Nhà & xe: a card for each screen that sells the rest, only those this save has
   ui.as.tab='more';const more=accShopView(env);
   assert.match(more,/class="jr-card as-kind as-more" data-action="garage"/);assert.match(more,/data-action="gadgets"/);
-  assert.doesNotMatch(more,/data-action="lux"/,'no 💎 on this save');assert.doesNotMatch(more,/data-action="jrAsTab"/,'one shelf: no tabs');
+  assert.doesNotMatch(more,/data-action="lux"/,'no 💎 on this save');assert.match(more,/data-tab="more" data-action|data-action="jrAsTab" data-tab="more"/);
   // v4/pets.js draws its own shelf in the sheet: same picks (data-pt), same main button, the way to a pet first
   const {petEmbedHTML}=await import('../public/js/v4/pets.js');
   api.content.journey.pets.toys=[{id:'bong',emoji:'🎾',name:'Bóng nảy',price:30}];
@@ -224,8 +236,11 @@ test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh fuses aga
   // the shop's Cánh shelf buys and wears; the ghép is a way to ⚒️
   ui.as.tab='wing';const shelf=accShopView(env);
   assert.match(shelf,/data-action="jrForge" data-tab="wing"/);assert.doesNotMatch(shelf,/jrAsWingPick|jrAsWingFuse|jrAsWingAuto/);
-  assert.match(shelf,/data-action="jrAsWingQty" data-k="buom" data-n="2"/,'🛒 a quantity per style');
-  ui.as.wq={rong:3};assert.match(accShopView(env),/Mua ×3 · 108\.000 xu/);
+  ui.as.wtry='buom';
+  assert.match(accShopView(env),/data-action="jrAsWingQty" data-k="buom" data-n="2"/,'🛒 a quantity per style, in its detail sheet');
+  ui.as.wq={rong:3};ui.as.wtry='rong';const rong=accShopView(env);assert.match(rong,/Mua ×3 · 108\.000 xu/);
+  assert.match(rong,/data-action="jrForge" data-tab="wing"[^>]*>⚒️ Đi cường hóa/,'three of a tier: the way to ⚒️ in the sheet');
+  assert.match(rong,/Đã có ×2/);
   // every pets' ghép shelf has its ⚡ card (v4/pets.js autoCard in lab, ward, the gear bag), one command each
   const pj=readFileSync(new URL('../public/js/v4/pets.js',import.meta.url),'utf8');
   assert.equal((pj.match(/autoCard\('(lab|ward|gear)'\)/g)||[]).length,3);
