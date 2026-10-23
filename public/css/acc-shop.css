@@ -112,11 +112,42 @@ html[data-layout="phone"] .as-group{font-size:.9rem;padding:6px 4px;gap:4px}
 .as-more .as-kind-text small{color:var(--ink-2);line-height:1.4}
 .as-more:hover{border-color:var(--accent)}
 .as-more:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-/* ⚒️ Cường hóa (forgeView): ⚡ Cường hóa nhanh on top of every shelf, what it picked under the button */
+/* ⚒️ Cường hóa (forgeView): ⚡ Cường hóa nhanh on top of every shelf (owner 23/10 "nó giống ghép tự động của áo quần"):
+ * the pickers, what it finds, the most to spend, the button; the last run's summary above it */
 .fg-intro{margin:0}
-.fg-quick,.pt-quick{display:grid;gap:6px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
-.fg-quick .btn,.pt-quick .btn{width:100%;min-height:46px;font-weight:800}
+.fg-quick,.pt-quick{display:grid;gap:8px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.fg-quick h3{margin:0}
+.fg-quick>p{margin:0;line-height:1.45}
+.fg-quick .btn.fg-ago,.pt-quick .btn.pt-autogo{width:100%;min-height:48px;font-weight:800}
 .fg-quick small,.pt-quick small{color:var(--ink-2);line-height:1.45}
+.fg-afields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,9em);gap:8px}
+.fg-afield{display:grid;gap:3px;min-width:0;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.fg-afield select{min-height:44px;font-size:.95rem;color:var(--ink)}
+.fg-astats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.fg-astats.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.fg-astats div{display:grid;place-items:center;gap:1px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:center}
+.fg-astats b{font-size:1.15rem;line-height:1.15;color:var(--ink);overflow-wrap:anywhere}
+.fg-astats small{font-size:.74rem;font-weight:600;color:var(--ink-2);line-height:1.2}
+.fg-astats .good b{color:var(--good)}
+.fg-asets{display:flex;flex-wrap:wrap;gap:5px}
+.fg-aset{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:2px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);font-size:.82rem;font-weight:700}
+.fg-abud{padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);justify-items:center;text-align:center}
+.fg-abud-l{font-weight:800;color:var(--ink)}
+.fg-abud .as-qty-step input.qty-in{min-height:40px;border:1px solid var(--field-line,var(--line));border-radius:12px;background:var(--surface);text-align:center;font-weight:800}
+.fg-abud .as-qty-chips{justify-content:center}
+.fg-awarn{margin:0;padding:6px 10px;border-radius:10px;background:#fff1e6;color:#9a3412;font-size:.82rem;font-weight:700}
+html[data-theme="dem"] .fg-awarn{background:#4a2410;color:#ffd6b8}
+.fg-ares{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--accent)}
+.fg-ares-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.fg-ares-h h3,.fg-ares h4{margin:0}
+.fg-ares-h .btn{min-width:44px}
+.fg-ares-best{display:grid;justify-items:center;gap:4px;position:relative}
+.fg-ares-best b{font-size:.95rem}
+.fg-center{margin:0;text-align:center}
+.fg-amade{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.fg-amade li{display:grid;justify-items:center;gap:2px;padding:6px;border-radius:12px;background:var(--surface-2);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--wt) 45%,transparent)}
+.fg-amade small{font-size:.72rem;color:var(--ink-2)}
+@media (max-width:360px){.fg-astats.four{grid-template-columns:repeat(2,minmax(0,1fr))}.fg-afields{grid-template-columns:1fr}}
 .fg-empty{display:grid;gap:8px;padding:14px}
 .fg-empty h3{margin:0}
 .fg-empty .btn{justify-self:start}

@@ -176,37 +176,56 @@ test('🛍️ Cửa hàng: 👤 Cho bạn, 🐾 Thú cưng and 🏠 Nhà & xe sh
   assert.doesNotMatch(toy,/data-pt="kind"/,'the shop\'s tabs pick the shelf, not the dialog\'s chips');
 });
 
-test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh picks a valid set and never the worn wing',async()=>{
-  const {wingQuick,forgeView,forgeTabs}=await import('../public/js/v4/acc-shop.js');
+test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh fuses again and again (one command), never the worn wing',async()=>{
+  const {wingSets,wingPlan,forgeView,forgeTabs}=await import('../public/js/v4/acc-shop.js');
   const wings={styles:[{id:'buom',emoji:'🦋',name:'Cánh bướm',price:8800,desc:''},{id:'rong',emoji:'🐉',name:'Cánh rồng',price:36000,desc:''}],
-    earn:[2,4,6,8,11,15,20,25],battle:[1,1,2,2,3,4,5,6],fee:[500,2000,10000,50000,300000,2e7,2e8],own_max:40,qty_max:20,lose_from:4};
+    earn:[2,4,6,8,11,15,20,25],battle:[1,1,2,2,3,4,5,6],fee:[500,2000,10000,50000,300000,2e7,2e8],own_max:40,qty_max:20,lose_from:4,auto_max:50};
   const own=[{id:'w1',k:'buom',r:0},{id:'w2',k:'rong',r:0},{id:'w3',k:'buom',r:0},{id:'w4',k:'buom',r:1},{id:'w5',k:'buom',r:1},{id:'w6',k:'rong',r:1},{id:'w7',k:'buom',r:0}];
   const api={content:{journey:{wardrobe:{...content.journey.wardrobe,wings}}},state:{...state,journey:{...state.journey,wings:{own,on:'w5'}}}};
-  // tier C has three: the main is the one worn (w5), the others the cheapest, never the worn one
-  assert.deepEqual(wingQuick(api).map(x=>x.id),['w5','w4','w6']);
+  // as game/wings.py sets: the lowest tier first; the main one the worn wing, else the dearest style; the others the
+  // cheapest, never the worn one
+  const ids=api=>wingSets(api).map(x=>x.set.map(w=>w.id));
+  assert.deepEqual(ids(api),[['w2','w1','w3'],['w5','w4','w6']]);
   api.state.journey.wings={own,on:null};
-  assert.deepEqual(wingQuick(api).map(x=>x.id),['w6','w4','w5'],'nothing worn: the dearest style is the main one');
-  api.state.journey.wings={own:own.filter(x=>x.r===0),on:'w2'};
-  assert.deepEqual(wingQuick(api).map(x=>x.id),['w2','w1','w3']);
-  api.state.journey.wings={own:own.slice(0,2),on:null};assert.equal(wingQuick(api),null,'two wings: nothing to ghép');
+  assert.deepEqual(ids(api)[1],['w6','w4','w5'],'nothing worn: the dearest style is the main one');
+  api.state.journey.wings={own,on:'w1'};
+  assert.deepEqual(ids(api)[0],['w1','w3','w7'],'the worn one is the main one, never an ingredient');
+  assert.deepEqual(wingSets(api,'rong'),[],'one style: only its wings');
+  assert.deepEqual(wingSets(api,'all',1).map(x=>x.r),[0],'ghép tới hạng C: only D → C');
+  api.state.journey.wings={own:own.slice(0,2),on:null};assert.equal(wingPlan(api).n,0,'two wings: nothing to ghép');
   api.state.journey.wings={own,on:'w5'};
+  assert.deepEqual(wingPlan(api),{...wingPlan(api),n:2,est:2500,min:500});
   assert.deepEqual(forgeTabs(api),['wing'],'no pets on this server: wings only');
   const ui={as:{tab:'acc',wfz:[]}},env={api,ui,renderSheet(){},renderMain(){},toast(){}};
   const fg=forgeView(env);
-  assert.match(fg,/⚒️ Cường hóa/);assert.match(fg,/data-action="jrAsWingQuick"/);assert.match(fg,/Cánh bướm C \+ Cánh bướm C \+ Cánh rồng C → hạng B · 2\.000 xu/);
-  assert.match(fg,/data-action="jrAsWingPick" data-id="w1"/,'or pick three by hand');
+  assert.match(fg,/⚒️ Cường hóa/);assert.match(fg,/data-action="jrAsWingAuto"/);assert.match(fg,/⚡ Cường hóa nhanh · tiêu tối đa 2\.500 xu/);
+  assert.match(fg,/data-as-sel="wascope"/);assert.match(fg,/data-as-sel="watop"/);assert.match(fg,/<option value="7" selected>🌟 Huyền thoại<\/option>/);
+  assert.match(fg,/data-action="jrAsWingBud" data-n="5000"[^>]*>×2</,'the budget chips: Vòng đầu / ×2 / ×5 (within the money)');
+  assert.match(fg,/⚠️ Từ hạng S trở lên: trượt thì mất hai đôi phụ/,'up to Huyền thoại: what a miss may lose');
+  ui.as.watop=4;assert.doesNotMatch(forgeView(env),/⚠️ Từ hạng S/,'up to S only: nothing is ever lost');ui.as.watop=7;
+  assert.match(fg,/data-action="jrAsWingPick" data-id="w1"/,'Tự chọn: pick three by hand, below');
+  assert.ok(fg.indexOf('jrAsWingAuto')<fg.indexOf('jrAsWingPick'),'⚡ first, Tự chọn below');
+  // the last run's summary above the card: turns, successes, misses, xu spent, the wings that went up (the best big)
+  ui.as.wres={n:5,ok:3,spent:4500,stop:'budget',used:6,made:[{id:'w4',k:'buom',r:2,z:1}],left:1};
+  const res=forgeView(env);
+  assert.match(res,/⚡ Kết quả cường hóa nhanh/);assert.match(res,/<b>5<\/b><small>lượt ghép/);assert.match(res,/<b>3<\/b><small>thành công/);
+  assert.match(res,/<b>2<\/b><small>trượt/);assert.match(res,/<b>4\.500<\/b><small>xu đã tiêu/);assert.match(res,/Dừng vì chạm số xu đã đặt\. Còn 1 bộ ba\./);
+  assert.match(res,/class="fg-ares-best"/);assert.match(res,/data-action="jrAsWingRes"/);
+  delete ui.as.wres;
   // owner 23/10 "ghép thì đưa vào mục riêng": what is owned by kind, counted, ⚡ when a set is ready; the wings by tier
   assert.match(fg,/class="fg-kind active"[^>]*data-tab="wing"><span class="fg-kind-e" aria-hidden="true">🪽<\/span><b>Cánh<\/b><small>7 đôi · C×3 D×4<\/small><i class="fg-ready"/);
   assert.match(fg,/<b>Hạng C<\/b> · 3 đôi <small class="muted">· ghép được 1 lần/);assert.match(fg,/<b>Hạng D<\/b> · 4 đôi/);
   assert.doesNotMatch(fg,/tỉ lệ|tỷ lệ|%<\/small>/,'no odds (owner 19/10)');
   // the shop's Cánh shelf buys and wears; the ghép is a way to ⚒️
   ui.as.tab='wing';const shelf=accShopView(env);
-  assert.match(shelf,/data-action="jrForge" data-tab="wing"/);assert.doesNotMatch(shelf,/jrAsWingPick|jrAsWingFuse/);
+  assert.match(shelf,/data-action="jrForge" data-tab="wing"/);assert.doesNotMatch(shelf,/jrAsWingPick|jrAsWingFuse|jrAsWingAuto/);
   assert.match(shelf,/data-action="jrAsWingQty" data-k="buom" data-n="2"/,'🛒 a quantity per style');
   ui.as.wq={rong:3};assert.match(accShopView(env),/Mua ×3 · 108\.000 xu/);
-  // every pets' ghép shelf has its ⚡ (v4/pets.js quickBtn in lab, ward, the gear bag)
+  // every pets' ghép shelf has its ⚡ card (v4/pets.js autoCard in lab, ward, the gear bag), one command each
   const pj=readFileSync(new URL('../public/js/v4/pets.js',import.meta.url),'utf8');
-  assert.equal((pj.match(/quickBtn\(\)\+/g)||[]).length,3);
-  assert.match(pj,/case'quick':return quick\(\);/);
+  assert.equal((pj.match(/autoCard\('(lab|ward|gear)'\)/g)||[]).length,3);
+  for(const c of ['jr_pet_wfuse_auto','jr_pet_fuse_auto','jr_pet_gear_auto'])assert.match(pj,new RegExp(`cmd='${c}'`));
+  assert.match(pj,/case'auto':return runAuto\(data\.kind\);/);
+  assert.doesNotMatch(pj,/jrAsWingQuick|case'quick'|pt-autobtn|S\.sub==='wauto'/,'the one-fusion ⚡ and the 🤖 sub view are gone');
   assert.equal((pj.match(/forgeLink\('p(lab|ward|gear)'\)\+/g)||[]).length,3,'the ghép shelves of the dialog link to ⚒️ Cường hóa');
 });

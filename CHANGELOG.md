@@ -1,3 +1,24 @@
+# 2.5.6 — 24/10/2026
+
+⚡ Cường hóa nhanh tự ghép liên tục (chủ game 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần", "nó giống ghép tự động của áo quần ấy"). Trước đây ⚡ chọn một bộ rồi ghép đúng một lần; giờ mỗi quầy của ⚒️ Cường hóa có một thẻ như 🤖 Ghép tự động của đồ thú cưng: chọn loại, "Ghép tới hạng", "Tiêu tối đa" (Vòng đầu / ×2 / ×5 hoặc gõ số), hỏi lại một lần (nói rõ điều có thể mất khi trượt), một lệnh server ghép đi ghép lại, rồi thẻ kết quả (lượt ghép, thành công, trượt, xu đã tiêu, món lên hạng, món tốt nhất vẽ to). Không hiện tỉ lệ (luật 19/10). "Tự chọn" vẫn ở dưới.
+
+## Server: ba lệnh mới, mỗi bước là đúng bước của lệnh đơn
+- Chung: hạng thấp trước (món vừa lên hạng ghép tiếp được), trượt thì thử lại khi còn đủ nguyên liệu; dừng khi hết bộ (`done`), tới hạng đặt (`top`), lượt kế vượt số xu đặt (`budget`), hết tiền (`money`), đủ số lượt tối đa (`cap`). Trả một lần sau cùng (ví trước, thiếu lấy tài khoản), một lần lưu, kết quả `auto` {n, ok, spent, used, made, stop, left}. Không thêm khóa save (2.5.5 và 2.5.4.3 đọc được save sau khi chạy: tests/test_forge_auto.py Live).
+- 🪽 `jr_pet_wing_fuse_auto` {budget, top 1..7 (7 = Huyền thoại), scope kiểu cánh | all, rid, confirm} (game/wings.py `_auto`, `sets`): ba đôi cùng hạng; cánh chính là đôi đang đeo nếu có trong nhóm, không thì kiểu đắt nhất (giữ kiểu); hai đôi phụ là kiểu rẻ nhất, không bao giờ là đôi đang đeo. Phí, tỉ lệ, luật mất (từ S trượt mất hai đôi phụ) là của `_fuse_three`, cũng là phần lõi của jr_pet_wing_fuse. `rid` lưu trong `rq` như lệnh mua: gửi lại trả kết quả cũ, không trừ tiền lần hai. AUTO_MAX 50.
+- 🧬 `jr_pet_fuse_auto` {budget, top 1..7 (7 = 🌟), scope all | dog | cat, confirm} (game/pet_tiers.py `_fuse_auto`, `fuse_sets`): luật chọn của ⚡ cũ (bé chính là bé đang dắt hoặc bé mạnh nhất, giữ giống, không lai; bé nguyên liệu không bao giờ là bé đang dắt, ở trại nuôi / ở quê trước rồi mới ở nhà, yếu trước); không bao giờ dùng bé 🌟 huyền thoại hay bé đang buồn. Mỗi lượt là `_fuse_check` + `_fuse_roll` (tách từ jr_pet_fuse, cùng phí, tỉ lệ, 📺 quảng cáo, về quê / mất từ S). Dừng khi có ✨ thần thú (`myth`) để người chơi trả lời trước. Tin "ghép ra SS / huyền thoại" trên phố vẫn chạy (command_commit). AUTO_MAX 50.
+- 🧰 `jr_pet_gear_auto` {budget, top 1..6, scope all | loại linh kiện, confirm} (`_gear_auto`, `gear_step`): ba món cùng loại cùng hạng (hai món chưa gắn), món chính (đang gắn trước, rồi cộng cao nhất) cường hóa lên +10 rồi lên hạng với hai món chưa gắn cộng thấp nhất; hết bộ ba thì cường hóa món đang gắn lên +10. Mỗi bước là `_gear_up_roll` / `_gear_fuse_roll` (tách từ jr_pet_gear_up / jr_pet_gear_fuse). GEAR_AUTO_MAX 100.
+- 👗 Đồ thú cưng dùng `jr_pet_wfuse_auto` có sẵn.
+- content: wings `auto_max`, tiers.limits `auto_max`, `gear_auto_max`.
+
+## Client
+- v4/acc-shop.js: 🪽 thẻ ⚡ (wingSets / wingPlan theo đúng `sets` của server, wingAuto, wingResult; chọn kiểu và hạng bằng select, số xu bằng qtyBox); bỏ jrAsWingQuick.
+- v4/pets.js: autoCard / autoResult / runAuto cho 🧬 lab, 👗 ward, 🧰 gear (labPlan, gearPlan, autoPlan); ⚡ một lần ghép (quick, quickBtn) và màn 🤖 Ghép tự động riêng của tủ đồ được thay bằng thẻ này (đặt ngay đầu quầy, cả hộp thoại Thú cưng); ✨ thần thú hiện cả trong ⚒️ Cường hóa.
+- Vẽ lại giữ chỗ cuộn (env.renderSheet(), không renderSheet(false) trừ khi đổi quầy).
+
+## Kiểm thử
+- tests/test_forge_auto.py: mỗi lệnh bằng đúng chuỗi lệnh đơn cùng xúc xắc; ngân sách, tiền, giới hạn lượt, lý do dừng; trượt chỉ mất như lệnh đơn; cánh đang đeo / bé đang dắt / bé huyền thoại / bé buồn / linh kiện đang gắn không bao giờ làm nguyên liệu; rid; gửi lại qua Store; lệnh đơn (cánh, thú, linh kiện) cho kết quả y như 2.5.5; save đọc được trên 2.5.5 và 2.5.4.3.
+- tests/forge-auto.mjs (thẻ ⚡ của thú cưng vẽ từ save thật), tests/friend-charms.mjs (thẻ ⚡ cánh).
+
 # 2.5.5 — 23/10/2026
 
 🛍️ Cửa hàng và ⚒️ Cường hóa (chủ game 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi, xong thú cưng hay người gì trong đó cả", "cửa hàng hoặc shop đều là 1 đó nhé, mua gì nằm đó hết cho dễ"). Thêm (chủ game 23/10): "mua thì cho mua nhiều cái 1 lần", "ghép thì đưa vào mục riêng, hiện tại khó ghép quá". Không đổi giá, tỉ lệ, phí, schema hay save; server chỉ nhận thêm số lượng ở ba lệnh mua cũ (rollback về 2.5.4.1 an toàn: dữ liệu không đổi dạng). Mọi lệnh ghép là lệnh cũ (jr_pet_wing_fuse, jr_pet_fuse, jr_pet_wfuse, jr_pet_gear_*). Có gì mới 2.5.5 (4 dòng).

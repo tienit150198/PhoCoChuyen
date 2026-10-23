@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.6", date="2026-10-24", items=(   # owner 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần"
+        dict(emoji='⚡', text="Cường hóa nhanh tự ghép liên tục như Ghép tự động: chọn tới hạng nào, tiêu tối đa bao nhiêu.",
+             go=dict(action='jrForge')),
+        dict(emoji='🪽', text="Cánh, thú cưng, đồ cho bé, linh kiện đều ghép được một lần bấm; cánh đang đeo và bé đang dắt luôn được giữ."),
+    )),
     dict(version="2.5.5", date="2026-10-23", items=(   # owner 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi"
         dict(emoji='🛍️', text="Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.",
              go=dict(action='jrAccShop')),

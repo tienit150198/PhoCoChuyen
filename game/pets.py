@@ -779,7 +779,7 @@ def command_commit(db, sid: str, action: str, after: dict) -> None:
         wings.commit(db, sid, after)   # 🪽 the worn wing others see (wing_worn, live/wings.py)
     from . import pet_arena
     pet_arena.on_pet_commit(db, sid, after)   # ⚔️ the arena lineup's snapshot follows the pets (a player who set one)
-    if action == 'jr_pet_fuse':
+    if action in ('jr_pet_fuse', 'jr_pet_fuse_auto'):   # ⚡ Cường hóa nhanh's fusions too
         _fuse_news(db, sid, after)
     row = board_row(after)
     if not row:
