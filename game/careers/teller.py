@@ -626,8 +626,9 @@ def shift_steps(day: int, part: str, mgr: int = 0) -> tuple[list, dict]:
     steps = [_step('close', 'pending', 'choice', 'Tìm giao dịch treo', 'Khớp biên nhận trong khay với từng dòng sổ giao dịch: dòng nào không có biên nhận?', shown,
                    rows=tray),
              _step('close', 'action', 'choice', 'Xử lý giao dịch treo', 'Khách đã ký phiếu rút nhưng chưa nhận tiền, đã về.', _opts(r, tc.PENDING_OPTS)),
+             # feedback #495 (2.5.4): the day's book again beside the sum, the first step's list is gone by now
              _step('close', 'cash', 'number', 'Tiền quầy phải có', f'Quỹ đầu ca {money_text(float_total)}. Cộng tiền gửi vào, trừ tiền đã chi; khoản treo chưa chi thì không trừ.',
-                   unit='nghìn')]
+                   unit='nghìn', rows=[x['label'] for x in shown])]
     key = {'close.pending': pending, 'close.action': 'log', 'close.cash': cash}
     if mgr >= 1:
         steps.append(_step('close', 'roster', 'choice', 'Xếp ca ngày mai (quản lý)', tc.ROSTER_RULES,
