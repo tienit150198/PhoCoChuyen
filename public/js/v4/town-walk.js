@@ -66,7 +66,8 @@ function landmarkOn(lm){
     case'gadgets':return !!(J.story&&J.gadgets);   // 📱 v4/gadgets.js
     case'pets':return !!(J.story&&J.pets);   // 🐾 v4/pets.js
     case'quan':case'spa':case'rap':case'congduc':case'style':return !!(J.story&&J.spend);   // ☕ v4/spend.js
-    case'travel':case'hanghieu':case'mtq':case'dinhthu':return !!(J.story&&J.lux);   // 🛍️ v4/lux.js
+    case'travel':return !!(J.story&&(J.travel||J.lux));   // ✈️ v4/travel.js (#464)
+    case'hanghieu':case'mtq':case'dinhthu':return !!(J.story&&J.lux);   // 🛍️ v4/lux.js
     case'duhoc':return !!(J.story&&J.abroad);   // ✈️🌏 v4/abroad.js
     case'daugia':case'danhthang':return !!(J.story&&api.content.journey?.auction);   // 🔨 v4/auction.js
     case'fair':return !!s.fair?.show;

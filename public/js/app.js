@@ -393,6 +393,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.pets){items.push(['pets','paw','Thú cưng']);}   // 21/10: Đấu trường pet only from ⚔️ Bang  // 🐾 v4/pets.js, ⚔️ v4/pet-arena.js (own dialogs): only once the server has pets; 🛑 MNL_PET_ARENA_OFF hides the arena
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
+  if(api.state?.journey?.story&&api.state.journey.travel){const tv=api.state.journey.travel;items.push(['travel','globe','Du lịch',tv.trip||tv.book?.left===0?'dot':0]);}  // ✈️ #464 vé máy bay, chuyến bay, tham quan (v4/travel.js, own dialog): a dot on the flight's day and while away
   if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm'],['luxFw','sparkle','Bắn pháo hoa']);  // 🎆 #274 "bắn pháo hoa chỗ nào": one tap from Khu phố
   if(api.state?.journey?.story&&api.content?.journey?.lixi)items.push(['lixi','gift','Lì xì']);  // 🧧 phát & giật lì xì (v4/lixi.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.marriage?.spouse)items.push(['wedInvite','mail','Thiệp mời cưới']);  // 💌 thiệp mời cưới cả phố (v4/wedinvite.js): engaged or married
@@ -447,7 +448,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over)||(x[0]==='townFair'&&fairNow()?.state==='open')||(x[0]==='halloween'&&hwNow()?.state==='open');   // 🎃 in sight while candy is earned
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
+  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1788,6 +1789,7 @@ async function handleAction(action,data,el){
       if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
       if(SPEND_OPEN.has(action)){await (await import('./v4/spend.js')).spendAction(action,data,el,env());break;}  // ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách: lazy
       if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
+      if(action==='travel'){await (await import('./v4/travel.js')).travelAction(action,data,el,env());break;}  // ✈️ Du lịch trải nghiệm (#464): lazy
       if(action==='moneyHeld'){toast(`🔒 ${fmt(Number(data.held)||0)} xu đang giữ cho đấu giá. Có người trả cao hơn thì tiền về lại ngay; thắng phiên thì dùng để trả.`,false,{action:{label:'Xem',run:()=>handleAction('auction',{},null)}});break;}  // 🔒 the money chip's escrow (F#465)
       if(AUC_OPEN.has(action)){await (await import('./v4/auction.js')).auctionAction(action,data,el,env());break;}  // 🔨 Nhà đấu giá: lazy
       if(action==='townProjects'){await (await import('./v4/town-projects.js')).openTownProjects(env(),data);break;}  // 🏗️ Công trình của phố: lazy

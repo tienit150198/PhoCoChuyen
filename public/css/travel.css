@@ -1,0 +1,196 @@
+/* ==========================================================================
+   ✈️ Du lịch trải nghiệm (public/js/v4/travel.js, game/travel.py; feedback #464).
+   Rides on spend.css (sd-*). Theme tokens for the sheet; each place paints its art bands with its own colours
+   (--tv-sky, --tv-land, --tv-accent from content.journey.travel.dests). Phone first (390px), 44px targets.
+   ========================================================================== */
+.tv-sheet{--tv-sky:#cfe6f7;--tv-land:#8fb98a;--tv-accent:var(--accent)}
+.tv-tabs button{display:flex;align-items:center;justify-content:center;gap:6px;font-size:1.15rem;position:relative}
+.tv-tabs button small{font-size:.86rem;font-weight:800;color:var(--ink-2)}
+.tv-tabs button.tv-dot::after{content:'';position:absolute;top:7px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--bad)}
+.tv-h{margin:12px 0 8px;font-size:1rem}
+.tv-tip{margin:0 0 10px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:.9rem;line-height:1.45;color:var(--ink-2)}
+.tv-tip.good{background:var(--good-soft);color:var(--good);font-weight:700}
+.tv-muted{color:var(--muted);font-weight:600}
+.tv-small{font-size:.82rem;line-height:1.45;margin:8px 0 0}
+.tv-ok{margin:6px 0 0;font-size:.88rem;color:var(--good);font-weight:700}
+.tv-warn{margin:6px 0 0;font-size:.88rem;color:var(--warn);font-weight:700}
+.tv-inline{display:inline;margin:0;min-height:0;padding:0 4px}
+.tv-back{margin:0 0 6px;padding:0;text-align:left}
+.tv-meta{margin:0;font-size:.86rem;color:var(--ink-2);font-weight:700}
+.tv-big{display:inline-block;font-size:2.6rem;line-height:1}
+
+/* 🗺️ the places: a 2-column grid of postcards */
+.tv-places{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tv-place{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:132px;padding:0 0 8px;overflow:hidden;
+  border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;box-shadow:var(--shadow-sm)}
+.tv-place:active{transform:scale(.98)}
+.tv-place-art{display:block;align-self:stretch;height:58px;margin:0 0 6px;position:relative;
+  background:linear-gradient(180deg,var(--tv-sky) 0 62%,var(--tv-land) 62% 100%)}
+.tv-place-art .tv-skyline{position:absolute;left:0;right:0;bottom:6px;font-size:1.25rem}
+.tv-place b,.tv-place small,.tv-place em{padding:0 10px}
+.tv-place b{font-size:.98rem}
+.tv-place small{font-size:.78rem;color:var(--muted);font-weight:700}
+.tv-place em{margin-top:auto;font-style:normal;font-weight:800;font-size:.86rem;color:var(--accent-text)}
+.tv-been,.tv-visa{position:absolute;top:6px;font-style:normal;font-size:.75rem;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.9);color:#2d5a2d}
+.tv-been{right:6px}.tv-visa{left:6px}
+.tv-skyline{display:flex;justify-content:space-around;align-items:flex-end;letter-spacing:2px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+
+/* the hero of a place */
+.tv-hero{position:relative;overflow:hidden;min-height:168px;margin:0 0 10px;border-radius:18px;color:#1d2433;
+  background:linear-gradient(180deg,var(--tv-sky) 0 58%,var(--tv-land) 58% 100%);box-shadow:var(--shadow-sm)}
+.tv-hero-sky{position:absolute;inset:0}
+.tv-sun{position:absolute;top:14px;right:22px;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,#fff6c9,#ffd36b);box-shadow:0 0 22px #ffe08a}
+.tv-cloud{position:absolute;font-style:normal;font-size:1.6rem;opacity:.9;animation:tv-drift 18s linear infinite}
+.tv-cloud.c1{top:12px;left:-12%}.tv-cloud.c2{top:40px;left:-30%;font-size:1.2rem;animation-duration:26s;animation-delay:-9s}.tv-cloud.c3{top:70px;left:-20%;font-size:1.4rem;animation-duration:14s;animation-delay:-4s}
+@keyframes tv-drift{to{transform:translateX(130vw)}}
+.tv-hero .tv-skyline{position:absolute;left:0;right:0;top:72px;font-size:2rem}
+.tv-hero-txt{position:relative;margin-top:112px;padding:8px 12px 10px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.88) 30%)}
+.tv-hero-txt h3{margin:0;font-size:1.2rem}
+.tv-hero-txt p{margin:2px 0 0;font-size:.88rem;line-height:1.4;font-weight:600}
+.tv-spots{margin:8px 0 0;font-size:1.5rem;letter-spacing:6px}
+
+/* 📅 days and fares */
+.tv-days{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tv-day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:62px;padding:6px 2px;
+  border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.tv-day small{font-size:.72rem;font-weight:700;color:var(--muted)}
+.tv-day b{font-size:.92rem}
+.tv-day i{font-style:normal;font-size:.66rem;font-weight:800;padding:0 6px;border-radius:999px;background:var(--bad-soft);color:var(--bad)}
+.tv-day.good i{background:var(--good-soft);color:var(--good)}
+.tv-day.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent)}
+.tv-day.novisa{opacity:.55}
+
+/* 🎫 the boarding pass */
+.tv-pass{position:relative;margin:0 0 10px;border-radius:18px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.tv-pass header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;color:#fff;background:var(--tv-accent);font-size:.9rem}
+.tv-route{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px 6px}
+.tv-route div{display:flex;flex-direction:column;min-width:0}
+.tv-route div:last-child{text-align:right}
+.tv-route small{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase}
+.tv-route b{font-size:1.05rem}
+.tv-route>span{font-size:1.4rem;color:var(--tv-accent)}
+.tv-pass dl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:0;padding:6px 14px 10px;border-bottom:2px dashed var(--line)}
+.tv-pass dt{font-size:.7rem;color:var(--muted);font-weight:700}
+.tv-pass dd{margin:0;font-weight:800}
+.tv-pass footer{padding:6px 14px 8px;font-size:1.1rem;letter-spacing:-1px;color:var(--ink);opacity:.7;overflow:hidden;white-space:nowrap}
+
+/* 🧳 the airport */
+.tv-airport{display:flex;flex-direction:column;gap:10px}
+.tv-steps{display:flex;gap:6px;margin:0;padding:0;list-style:none}
+.tv-steps li{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:12px;background:var(--surface-2);font-size:.75rem;font-weight:700;color:var(--muted);text-align:center}
+.tv-steps li span{font-size:1.1rem}
+.tv-steps li.on{background:var(--accent-soft);color:var(--accent-text)}
+.tv-steps li.done{color:var(--good)}
+.tv-desk{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 12px;border-radius:18px;text-align:center;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--tv-sky) 55%,var(--surface)),var(--surface));border:1px solid var(--line)}
+.tv-desk h3{margin:0;font-size:1.05rem}
+.tv-desk p{margin:0;font-size:.9rem;color:var(--ink-2)}
+.tv-bob{animation:tv-bob 1.6s ease-in-out infinite}
+@keyframes tv-bob{50%{transform:translateY(-6px)}}
+
+/* 🛫 the cabin */
+.tv-cabin{margin:0 0 10px;padding:10px;border-radius:18px;background:linear-gradient(180deg,#e9eef5,#d9e0ea);border:1px solid var(--line)}
+.tv-cabin.biz{background:linear-gradient(180deg,#f3ead9,#e3d3b5)}
+.tv-window{position:relative;height:120px;margin:0 auto 10px;max-width:260px;border-radius:60px;overflow:hidden;border:8px solid #f7f9fb;
+  box-shadow:inset 0 0 0 2px #b9c4d2,0 2px 6px rgba(0,0,0,.12);background:linear-gradient(180deg,#5aa6e8,color-mix(in srgb,var(--tv-sky) 70%,#ffffff))}
+.tv-window .tv-cloud{animation-duration:7s}.tv-window .tv-cloud.c2{animation-duration:11s}.tv-window .tv-cloud.c3{animation-duration:5s}
+.tv-wing{position:absolute;left:-10px;bottom:16px;width:70%;height:18px;border-radius:0 40px 10px 0;background:linear-gradient(180deg,#f4f6f9,#b8c2cf);transform:skewX(-25deg)}
+.tv-track{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:800;color:#41506a}
+.tv-track span{position:relative;flex:1 1 auto;height:2px;background:repeating-linear-gradient(90deg,#8090a8 0 6px,transparent 6px 10px)}
+.tv-plane{position:absolute;top:-12px;left:0;font-style:normal;font-size:1.2rem;animation:tv-fly 9s ease-in-out infinite alternate}
+@keyframes tv-fly{from{left:0}to{left:calc(100% - 22px)}}
+.tv-cabin .tv-meta{margin-top:6px;text-align:center;color:#41506a}
+.tv-bubble{position:relative;margin:0 0 10px;padding:10px 12px;border-radius:14px 14px 14px 4px;background:var(--accent-soft);color:var(--ink);font-size:.92rem;line-height:1.45}
+.tv-menu .sd-chip{font-size:1.05rem;display:inline-flex;align-items:center;gap:6px}
+.tv-menu .sd-chip small{font-size:.8rem;font-weight:700}
+.tv-crew .sd-chip{font-size:.86rem}
+
+/* 🗺️ at the place */
+.tv-stats{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.tv-stats span{padding:4px 10px;border-radius:999px;background:var(--surface-2);font-size:.85rem;font-weight:800;color:var(--ink-2)}
+.tv-spots-list{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.tv-spot{display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.tv-spot>div{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.tv-spot b{font-size:.95rem}
+.tv-spot small{font-size:.78rem;color:var(--muted);font-weight:700}
+.tv-spot-ico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface);font-size:1.5rem}
+.tv-spot .btn{flex:none;min-height:40px;min-width:56px}
+.tv-spot.done{opacity:.75}
+.tv-buy{width:100%;margin-top:8px}
+.tv-check{flex:none;width:32px;text-align:center;font-weight:900;color:var(--good);font-size:1.2rem}
+
+/* the spot scenes */
+.tv-mini{text-align:center}
+.tv-mini h3{margin:0}
+.tv-mini .btn.big{width:100%;min-height:48px;margin-top:10px}
+.tv-mini-foot{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.tv-finder,.tv-bar-game{position:relative;height:120px;margin:10px 0 0;border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,var(--tv-sky) 0 60%,var(--tv-land) 60% 100%)}
+.tv-bar-game{height:84px;background:linear-gradient(180deg,var(--tv-sky),color-mix(in srgb,var(--tv-land) 80%,#fff))}
+.tv-mover{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);will-change:left}
+.tv-frame{position:absolute;top:14px;bottom:14px;left:50%;width:74px;transform:translateX(-50%);border:3px solid #fff;border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.18)}
+.tv-target{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.2rem;opacity:.85}
+.tv-dish{padding:16px 0 4px}
+.tv-dish .tv-big{font-size:3.4rem;transition:transform .25s}
+.tv-dish p{margin:6px 0 0;font-weight:800}
+.tv-breathe{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 0 6px;margin-top:8px;border-radius:16px;background:linear-gradient(180deg,var(--tv-sky),transparent)}
+.tv-breathe .tv-big{animation:tv-breathe 2.4s ease-in-out infinite}
+.tv-breathe p{margin:0;font-weight:800}
+@keyframes tv-breathe{50%{transform:scale(1.25)}}
+
+/* 💌 a postcard */
+.tv-postcard{margin:4px 4px 12px;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);animation:tv-pop .35s ease-out}
+.tv-postcard-art{position:relative;height:120px;display:grid;place-items:center;background:linear-gradient(180deg,var(--tv-sky) 0 60%,var(--tv-land) 60% 100%)}
+.tv-postcard-art .tv-skyline{position:absolute;left:0;right:0;bottom:6px;font-size:1.2rem;opacity:.7}
+.tv-postcard-art .tv-big{font-size:3.2rem;filter:drop-shadow(0 3px 2px rgba(0,0,0,.2))}
+.tv-postcard-txt{padding:10px 14px 4px}
+.tv-postcard-txt small{font-weight:800;color:var(--tv-accent)}
+.tv-postcard-txt h3{margin:2px 0 4px;font-size:1.05rem}
+.tv-postcard-txt p{margin:0;font-size:.9rem;line-height:1.45;color:var(--ink-2)}
+.tv-postcard>.btn{display:flex;margin:10px auto 12px}
+.tv-stars{margin:6px 0 0 !important;color:#e0a800 !important;font-size:1.2rem !important;letter-spacing:2px}
+@keyframes tv-pop{from{transform:scale(.9);opacity:0}}
+
+/* 🛂 the passport stamp on landing */
+.tv-stampfx{position:fixed;inset:0;z-index:20;overflow:hidden;display:grid;place-items:center;pointer-events:none;background:rgba(0,0,0,.12);animation:tv-fade 1.6s ease-in forwards}
+.tv-stampfx span{display:flex;flex-direction:column;align-items:center;justify-content:center;width:150px;height:150px;border-radius:50%;
+  border:5px double var(--tv-accent);color:var(--tv-accent);background:rgba(255,255,255,.92);transform:rotate(-12deg);animation:tv-thump .45s cubic-bezier(.2,1.6,.4,1)}
+.tv-stampfx b{font-size:2.6rem;line-height:1.1}
+.tv-stampfx small{font-weight:900;text-transform:uppercase;letter-spacing:1px;font-size:.8rem}
+@keyframes tv-thump{from{transform:scale(2.2) rotate(-30deg);opacity:0}}
+@keyframes tv-fade{0%,75%{opacity:1}to{opacity:0}}
+.tv-sheet .sd-root{position:relative}
+
+/* 🏠 the summary */
+.tv-summary ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.tv-summary li{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-weight:700}
+.tv-summary li b{color:var(--accent-text)}
+
+/* 📕 Sổ du lịch */
+.tv-passport{background:linear-gradient(180deg,color-mix(in srgb,#2e4a7a 10%,var(--surface)),var(--surface))}
+.tv-stamps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tv-stamp{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:1;border-radius:50%;
+  border:3px double var(--tv-accent);color:var(--tv-accent);background:var(--surface);transform:rotate(-8deg);text-align:center;padding:4px}
+.tv-stamp:nth-child(2n){transform:rotate(6deg)}
+.tv-stamp b{font-size:1.6rem;line-height:1.1}
+.tv-stamp small{font-size:.66rem;font-weight:900;text-transform:uppercase;line-height:1.1}
+.tv-stamp i{position:absolute;bottom:2px;right:6px;font-style:normal;font-size:.7rem;font-weight:900}
+.tv-stamp.empty{border:2px dashed var(--line-strong,var(--line));color:var(--muted);transform:none;opacity:.7}
+.tv-pc-row h4{margin:8px 0 6px}
+.tv-pcs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.tv-pc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;padding:4px 2px;border-radius:10px;font-size:1.4rem;
+  background:linear-gradient(180deg,var(--tv-sky) 0 60%,var(--tv-land) 60% 100%);border:2px solid #fff;box-shadow:var(--shadow-sm);text-align:center}
+.tv-pc small{font-size:.56rem;font-weight:800;line-height:1.1;color:#1d2433;background:rgba(255,255,255,.8);border-radius:4px;padding:0 2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv-pc.empty{background:var(--surface-2);border:2px dashed var(--line);color:var(--muted);box-shadow:none;font-size:1rem}
+.tv-gifts{display:flex;flex-wrap:wrap;gap:6px}
+.tv-gift{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;width:76px;padding:6px 4px;border-radius:12px;background:var(--surface-2);font-size:1.5rem;text-align:center}
+.tv-gift small{font-size:.66rem;font-weight:700;line-height:1.15;color:var(--ink-2)}
+.tv-gift i{position:absolute;top:2px;right:4px;font-style:normal;font-size:.68rem;font-weight:900;color:var(--accent-text)}
+.tv-log{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.tv-log li{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:6px 10px;border-radius:10px;background:var(--surface-2);font-weight:700}
+.tv-log small{color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){
+  .tv-cloud,.tv-plane,.tv-bob,.tv-breathe .tv-big,.tv-postcard,.tv-stampfx,.tv-stampfx span{animation:none}
+}
+@media (max-width:360px){.tv-days{grid-template-columns:repeat(3,minmax(0,1fr))}.tv-pcs{grid-template-columns:repeat(4,minmax(0,1fr))}}
