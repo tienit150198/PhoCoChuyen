@@ -574,9 +574,9 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     served = st.get('served', 0)
     if st.get('cert'):
         from . import certificates as ct
-        from . import abroad
-        rows.append(dict(id='certificate_or_served', met=bool(ct.held_for(s, career) or abroad.degrees(s) or _served(c) >= served),
-                         label=f'🎓 Chứng chỉ nhóm nghề, bằng du học hoặc {served} lượt khách'))
+        from . import abroad, school
+        rows.append(dict(id='certificate_or_served', met=bool(ct.held_for(s, career) or abroad.degrees(s) or school.degree_for(s, career) or _served(c) >= served),
+                         label=f'🎓 Chứng chỉ nhóm nghề, bằng đại học, bằng du học hoặc {served} lượt khách'))
     elif served:
         rows.append(dict(id='served', met=_served(c) >= served, label=f'{served} lượt khách ({_served(c)} rồi)'))
     if st.get('rating'):

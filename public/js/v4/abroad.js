@@ -51,7 +51,9 @@ function studyPage(env,A,K){
     return `<article class="ab-card"><p class="ab-eyebrow">${d.flag} ${esc(d.name)} · ${esc(d.city)}</p><h3>${esc(pr.course)}</h3><p class="small muted">${esc(pr.school)} · ${pr.lessons} buổi · ${fmt(pr.fee)} xu</p>${btn}</article>`;
   }).join('');
   const done=!st&&env.ui.abLast?`<p class="ab-last ${env.ui.abLast.ok?'good':''}">${esc(env.ui.abLast.text)}</p>`:'';   // the last lesson's line (and the degree) once the course is over
-  return `${done}${st?lessonCard(env,A,K):''}${degs}${perk}<div class="ab-list">${cards}</div>`;
+  // 🏫 the real term abroad (v4/school.js, game/school.py): a semester, 5 countries with Trung Quốc; these stay the short course
+  const real=env.api.content.journey?.school?`<button type="button" class="ab-card ab-real" data-action="school" data-tab="abroad"><span class="ab-eyebrow">MỚI · HỌC THẬT MỘT HỌC KỲ</span><b>🏫 Du học thật: hồ sơ, visa, bay sang, lên lớp, làm thêm</b><small>${env.api.content.journey.school.terms.map(t=>t.flag).join(' ')} có cả Trung Quốc ${icon('arrow',14)}</small></button><h3 class="ab-sub">⚡ Khóa ngắn hạn 4 buổi</h3>`:'';
+  return `${done}${st?lessonCard(env,A,K):''}${degs}${perk}${real}<div class="ab-list">${cards}</div>`;
 }
 
 /* ------------------------------------------------------------------ 🌏 Làm việc ở nước ngoài */

@@ -97,8 +97,13 @@ def _story(s: dict) -> bool:
 
 # ---------------------------------------------------------------- what the rest of the game reads
 def degrees(s: dict) -> int:
-    b = get(s) if _story(s) else None
-    return len(b.get('deg') or {}) if b else 0
+    """Degrees of ✈️ Du học, by country: a short course here, and a 🏫 term abroad (game/school.py) of a country not
+    already counted."""
+    if not _story(s):
+        return 0
+    b = get(s)
+    from . import school
+    return len(set((b or {}).get('deg') or {}) | school.abroad_countries(s))
 
 
 def degree_pct(s: dict) -> int:
