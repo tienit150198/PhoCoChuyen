@@ -118,39 +118,133 @@ function membrane(c,K,T,p,r,trim,s,{dragon=false}={}){
 }
 const DRAW={buom:butterfly,tien:fairy,doi:(c,K,T,p,r,t,s)=>membrane(c,K,T,p,r,t,s),thien_than:(c,K,T,p,r,t,s)=>feathered(c,K,T,p,r,t,s),
   rong:(c,K,T,p,r,t,s)=>membrane(c,K,T,p,r,t,s,{dragon:true}),phuong:(c,K,T,p,r,t,s)=>feathered(c,K,T,p,r,t,s,{fire:true})};
-/** The tier behind both wings: a glow from S, a rainbow for SSS, gold for Huyền thoại (centred between the roots). */
-function auraBack(c,K,x,y,r,s){
-  if(r<4)return;
-  if(r===TOP){K.glow(c,x,y-30*s,70*s,56*s,'#ffd24a',.55);K.glow(c,x,y-34*s,46*s,36*s,'#fff3b0',.5);return;}
-  if(r===6){RB.forEach((col,i)=>K.glow(c,x+(i-2.5)*9*s,y-30*s,44*s,44*s,col,.22));return;}
-  K.glow(c,x,y-28*s,58*s,46*s,WING_TIER_COLOR[r],r>=5?.45:.32);
+/* ---- ✨ the motion and the light (owner 22/10 "cánh có hoạt họa, có tia sáng này kia nhé") ----
+ * Every place gets the same beat from the same numbers, so the classic street, the workplace, the shop's SVG and the 2.5D
+ * map flap alike:
+ *   flapAt(k, t)   the flap -1…1 at t seconds: a sine of the style's own beat, butterfly and fairy quick and light, bat and
+ *                  dragon slow and heavy, the two sides mirrored by the frame (side ±1)
+ *   wingMotes(wg)  the sparkles drifting off the wings, a fixed list per tier (few D–A, more from S, a burst of gold or
+ *                  rainbow motes for SSS / Huyền thoại); moteAt(m, t) where one is at t (a pure function: no state, no
+ *                  timers, the 2.5D map moves its pooled images with it)
+ *   wingPulse(t)   the glow's breath, raysAt(r, t) the slow turn of the light rays from S, burstAt(t) the ring of SSS / HT
+ * A canvas pen draws a frame at `t`; the SVG pen (K.anim) writes SMIL animations once and the browser plays them. Reduced
+ * motion (the setting, html / body .reduce-motion, prefers-reduced-motion): still wings, the glow and rays still, no motes. */
+export const WING_BEAT=Object.freeze({buom:1.3,tien:1.5,doi:2.4,thien_than:2,rong:2.6,phuong:1.8});
+const AMP={buom:1,tien:.9,doi:.75,thien_than:.8,rong:.7,phuong:.85};
+const MOTES=[2,2,3,3,5,6,8,9],RAYS=[0,0,0,0,6,8,10,10];
+const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+/** True while the player wants still pictures. */
+export function stillMotion(){const d=globalThis.document;return !!(RM?.matches||d?.documentElement?.classList?.contains('reduce-motion')||d?.body?.classList?.contains('reduce-motion'));}
+export function flapAt(k,t){return (AMP[k]||.8)*Math.sin(2*Math.PI*t/(WING_BEAT[k]||2));}
+export const wingPulse=t=>.78+.22*Math.sin(2*Math.PI*t/2.2);
+export const raysAt=(r,t)=>r>=4?{n:RAYS[r],rot:t*.22,a:.8+.2*Math.sin(2*Math.PI*t/2.2+1)}:null;
+/** The ring of light SSS / Huyền thoại send out every 2.6 s: grow 0…1 and fade (null between two). */
+export const burstAt=t=>{const ph=((t/2.6)%1+1)%1;return ph<.6?{ph:ph/.6,a:.6*(1-ph/.6)}:null;};
+const moteCol=(r,i)=>r===TOP?(i%2?'#fff3b0':'#ffd24a'):r===6?RB[i%6]:r===5?(i%2?'#ffffff':WING_TIER_COLOR[5]):r>=1&&i%3===2?WING_TIER_COLOR[r]:'#ffffff';
+/** The sparkles of a wing, in the wings' frame (the roots' centre at 0,0, up negative, before the scale): each starts at
+ * (x, y), drifts (dx, dy) over `life` seconds from its offset `off` (0…1), `sz` its size; `burst` the SSS / HT motes that
+ * fly out of the centre with the ring. */
+export function wingMotes(wg){
+  const w=cleanWing(wg);if(!w)return [];const r=w.r,out=[];
+  for(let i=0;i<MOTES[r];i++){const side=i%2?1:-1,u=(i*.381966)%1,v=(i*.618034)%1;
+    out.push({x:side*(28+u*34),y:-82+v*72,dx:side*(6+u*10),dy:-(16+((i*.7)%1)*16),life:1.5+((i*.437)%1)*1.1,off:(i*.723)%1,sz:(r>=6?3.2:r>=4?2.8:2.3)*(i%3?1:1.3),col:moteCol(r,i),star:i%3!==1});}
+  if(r>=6)for(let i=0;i<8;i++){const a=i/8*Math.PI*2+.3;out.push({x:Math.cos(a)*10,y:-34+Math.sin(a)*8,dx:Math.cos(a)*64,dy:Math.sin(a)*50-8,life:2.6,off:0,sz:2.3,col:r===TOP?(i%2?'#ffe58a':'#fffbe0'):RB[i%6],star:false,burst:true});}
+  return out;
 }
-/** Sparkles over the wings: from SS; a shower of rainbow stars for SSS; gold motes for Huyền thoại. */
+/** Where mote `m` is at t: {x, y} in the wings' frame, `a` its opacity 0…1. */
+export function moteAt(m,t){
+  const ph=((t/m.life+m.off)%1+1)%1,a=m.burst?(ph<.6?Math.sin(Math.PI*Math.min(1,ph/.3)/2)*(1-ph/.6):0):Math.sin(Math.PI*ph);
+  const k=m.burst?Math.min(1,ph/.6):ph;return {x:m.x+m.dx*k,y:m.y+m.dy*k,a};
+}
+const hexA=(col,a)=>col+Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+/** The light rays behind the wings from S (centred above the roots), turned by `rot`, faded by `k`. */
+export function drawRays(c,K,r,x,y,s,rot=0,k=1){
+  if(r<4)return;const n=RAYS[r],L=(r>=6?92:r===5?78:64)*s,w=(r>=6?7:6)*s,cy=y-32*s;
+  for(let i=0;i<n;i++){const a=rot+i/n*Math.PI*2,dx=Math.cos(a),dy=Math.sin(a),col=r===TOP?'#ffe9a0':r===6?RB[i%6]:i%2?'#ffffff':WING_TIER_COLOR[r];
+    const d=`M${n1(x-dy*w)} ${n1(cy+dx*w)}L${n1(x+dx*L)} ${n1(cy+dy*L)}L${n1(x+dy*w)} ${n1(cy-dx*w)}Z`;K.pathG(c,d,hexA(col,(r>=6?.5:.38)*k),hexA(col,0),x,cy,x+dx*L,cy+dy*L);}
+}
+/** The ring of SSS / Huyền thoại at burst progress `ph`, opacity `a`. */
+export function drawRing(c,K,r,x,y,s,ph,a){if(r<6||a<=0)return;const col=r===TOP?'#ffe58a':'#ffffff';K.ring(c,x,y-32*s,(16+ph*74)*s,hexA(col,a),(2.6-ph*1.6)*s);K.ring(c,x,y-32*s,(12+ph*60)*s,hexA(r===TOP?'#ffd24a':RB[Math.floor(ph*6)%6],a*.6),1.2*s);}
+function mote(c,K,m,x,y,s,a){const col=hexA(m.col,a),z=m.sz*s*(.6+.4*a);if(m.star)star(c,K,x,y,z*1.4,col);else{K.E(c,x,y,z*1.6,z*1.6,hexA(m.col,a*.25));K.E(c,x,y,z*.7,z*.7,col);}}
+/** The motes of `wg` at t, over the wings rooted at (x, y), scale s; `burst` true only the burst (drawn behind the body:
+ * they leave from its centre), false only the drifting ones (over it), null all. */
+export function drawMotes(c,K,wg,x,y,s,t,burst=null){for(const m of wingMotes(wg)){if(burst!=null&&!!m.burst!==burst)continue;const p=moteAt(m,t);if(p.a>.04)mote(c,K,m,x+p.x*s,y+p.y*s,s,p.a);}}
+/** The tier behind both wings: a glow from S, a rainbow for SSS, gold for Huyền thoại (centred between the roots); `k`
+ * the breath (wingPulse). */
+function auraBack(c,K,x,y,r,s,k=1){
+  if(r<4)return;
+  if(r===TOP){K.glow(c,x,y-30*s,70*s,56*s,'#ffd24a',.55*k);K.glow(c,x,y-34*s,46*s,36*s,'#fff3b0',.5*k);return;}
+  if(r===6){RB.forEach((col,i)=>K.glow(c,x+(i-2.5)*9*s,y-30*s,44*s,44*s,col,.22*k));return;}
+  K.glow(c,x,y-28*s,58*s,46*s,WING_TIER_COLOR[r],(r>=5?.45:.32)*k);
+}
+/** Still sparkles over the wings (a still picture: the 2.5D stamp, reduced motion): from SS. */
 function auraFront(c,K,x,y,r,s,side=1){
   if(r<5)return;
   const pts=[[-40,-70],[42,-58],[-30,-30],[36,-16],[-46,-48],[24,-84]];
   pts.slice(0,r>=6?6:3).forEach(([px,py],i)=>{const col=r===TOP?(i%2?'#fff3b0':'#ffd24a'):r===6?RB[i%6]:'#ffffff';star(c,K,x+side*px*s,y+py*s,(i%3?2:3)*s,col);});
   if(r===TOP)for(const [px,py] of [[-20,-96],[18,-100],[0,-108]])K.E(c,x+px*s,y+py*s,1.6*s,1.6*s,'#ffe58a');
 }
-/** Both wings of `wg` with their roots at (x, y) (the shoulder blades' centre), `gap` apart, scale `s`, flap `flap` -1…1;
- * `aura` the glow behind them, `body` the wings themselves, `sparkle` the sparkles over them. */
-export function drawWings(c,K,wg,x,y,{s=1,gap=6,flap=0,sparkle=true,tall=1,spread=0,aura=true,body=true}={}){
+/* SMIL for the SVG pen: written once, played by the browser (no script per frame). */
+const SPL='calcMode="spline" keyTimes="0;.5;1" keySplines=".45 0 .55 1;.45 0 .55 1"';
+const rep=(dur,begin=0)=>`dur="${n1(dur*100)/100}s" begin="${n1(begin*100)/100}s" repeatCount="indefinite"`;
+function svgFlap(k,side,ox,oy){const a=9*(AMP[k]||.8),b=WING_BEAT[k]||2,v=d=>`${n1(side*d)} ${n1(ox)} ${n1(oy)}`;return `<g><animateTransform attributeName="transform" type="rotate" values="${v(-a)};${v(a)};${v(-a)}" ${SPL} ${rep(b,-b/4)}/>`;}
+function svgMote(c,K,m,x,y,s){
+  const begin=-m.off*m.life,op=m.burst?'values="0;1;0;0" keyTimes="0;.15;.6;1"':'values="0;1;0" keyTimes="0;.5;1"',dx=m.dx*s,dy=m.dy*s;
+  const tr=m.burst?`values="0 0;${n1(dx)} ${n1(dy)};${n1(dx)} ${n1(dy)}" keyTimes="0;.6;1"`:`values="0 0;${n1(dx)} ${n1(dy)}"`;
+  c.push(`<g opacity="0"><animateTransform attributeName="transform" type="translate" ${tr} ${rep(m.life,begin)}/><animate attributeName="opacity" ${op} ${rep(m.life,begin)}/>`);mote(c,K,m,x+m.x*s,y+m.y*s,s,1);c.push('</g>');
+}
+function svgLights(c,K,w,x,y,s,front){
+  const r=w.r;
+  if(!front){
+    if(r>=4){c.push(`<g><animate attributeName="opacity" values=".72;1;.72" ${SPL} ${rep(2.2)}/>`);auraBack(c,K,x,y,r,s);c.push('</g>');
+      c.push(`<g><animateTransform attributeName="transform" type="rotate" values="0 ${n1(x)} ${n1(y-32*s)};360 ${n1(x)} ${n1(y-32*s)}" ${rep(28)}/><animate attributeName="opacity" values=".6;1;.6" ${SPL} ${rep(2.2,-1)}/>`);drawRays(c,K,r,x,y,s);c.push('</g>');}
+    for(const m of wingMotes(w))if(m.burst)svgMote(c,K,m,x,y,s);
+    if(r>=6){const col=r===TOP?'#ffe58a':'#ffffff';c.push(`<circle cx="${n1(x)}" cy="${n1(y-32*s)}" r="${n1(16*s)}" fill="none" stroke="${col}" stroke-width="${n1(2*s)}" opacity="0"><animate attributeName="r" values="${n1(16*s)};${n1(90*s)};${n1(90*s)}" keyTimes="0;.6;1" ${rep(2.6)}/><animate attributeName="opacity" values=".6;0;0" keyTimes="0;.6;1" ${rep(2.6)}/></circle>`);}
+    return;
+  }
+  for(const m of wingMotes(w))if(!m.burst)svgMote(c,K,m,x,y,s);
+}
+/** Both wings of `wg` with their roots at (x, y) (the shoulder blades' centre), `gap` apart, scale `s`; `aura` the glow
+ * behind them, `body` the wings themselves, `sparkle` the sparkles over them. `t` (seconds) draws a canvas frame of the
+ * motion (flap, breathing glow, turning rays, drifting motes); `flap` forces a flap instead; the SVG pen animates by
+ * itself unless `anim` is false or the player wants stillness. */
+export function drawWings(c,K,wg,x,y,{s=1,gap=6,flap=null,sparkle=true,tall=1,spread=0,aura=true,body=true,t=null,anim=true}={}){
   const w=cleanWing(wg);if(!w)return;
-  const p=PAL[w.k],r=w.r,trim=WING_TIER_COLOR[r],ss=s*(.94+.018*r);
-  if(aura)auraBack(c,K,x,y,r,ss);
-  if(body)for(const side of [-1,1]){const T=frame(x+side*gap*s,y,ss,side,flap,tall,spread);DRAW[w.k](c,K,T,p,r,trim,ss);}
-  if(sparkle)auraFront(c,K,x,y,r,ss);
+  const p=PAL[w.k],r=w.r,trim=WING_TIER_COLOR[r],ss=s*(.94+.018*r),still=stillMotion();
+  const live=!!K.anim&&anim&&!still,tt=t!=null&&!still&&!live?t:null,f=flap??(tt!=null?flapAt(w.k,tt):0);
+  if(aura){if(live)svgLights(c,K,w,x,y,ss,false);
+    else{auraBack(c,K,x,y,r,ss,tt!=null?wingPulse(tt):1);const ry=tt!=null?raysAt(r,tt):null;if(ry)drawRays(c,K,r,x,y,ss,ry.rot,ry.a);
+      const b=tt!=null?burstAt(tt):null;if(b)drawRing(c,K,r,x,y,ss,b.ph,b.a);if(tt!=null&&r>=6)drawMotes(c,K,w,x,y,ss,tt,true);}}
+  if(body)for(const side of [-1,1]){const ox=x+side*gap*s,T=frame(ox,y,ss,side,live?0:f,tall,spread);if(live)c.push(svgFlap(w.k,side,ox,y));DRAW[w.k](c,K,T,p,r,trim,ss);if(live)c.push('</g>');}
+  if(sparkle){if(live)svgLights(c,K,w,x,y,ss,true);else if(tt!=null)drawMotes(c,K,w,x,y,ss,tt,false);else auraFront(c,K,x,y,r,ss);}
 }
-/** The sparkles alone (the 2.5D stamp draws its wings behind the chibi, then these over it). */
-export function wingSparkles(c,K,wg,x,y,{s=1}={}){const w=cleanWing(wg);if(w)auraFront(c,K,x,y,w.r,s*(.94+.018*w.r));}
+/** The sparkles alone (the 2.5D stamp draws its wings behind the chibi, then these over it); `t` animates them. */
+export function wingSparkles(c,K,wg,x,y,{s=1,t=null}={}){const w=cleanWing(wg);if(!w)return;const ss=s*(.94+.018*w.r);if(t!=null&&!stillMotion())drawMotes(c,K,w,x,y,ss,t,false);else auraFront(c,K,x,y,w.r,ss);}
+/** The wings' scale for `s` (each tier a touch larger). */
+export const wingScale=(wg,s=1)=>{const w=cleanWing(wg);return w?s*(.94+.018*w.r):s;};
 /** On the classic character (origin at the feet; paintPlayer, boba-world.js): roots behind the shoulders. F.L.wg the
- * wing, F.wf the flap (-1…1, set by an animated scene). */
-export function paintWings(c,F,K,{at=null,s=1.12,flap=null,tall=1.45,spread=.1}={}){
+ * wing; `t` a canvas scene's clock (boba-world.js: flaps, breathes, sparkles), `flap` a fixed flap. */
+export const CLASSIC_WING=Object.freeze({at:[0,-46],s:1.12,gap:6,tall:1.45,spread:.1});
+export function paintWings(c,F,K,{at=null,s=CLASSIC_WING.s,flap=null,tall=CLASSIC_WING.tall,spread=CLASSIC_WING.spread,t=null,sparkle=true,aura=true,body=true}={}){
   const w=cleanWing(F?.L?.wg);if(!w)return;
-  const [x,y]=at||[0,-46];
-  drawWings(c,K,w,x,y,{s,gap:6,tall,spread,flap:flap??(Number(F?.wf)||0)});
+  const [x,y]=at||CLASSIC_WING.at;
+  drawWings(c,K,w,x,y,{s,gap:CLASSIC_WING.gap,tall,spread,t,sparkle,aura,body,flap:flap??(t==null&&F?.wf!=null?Number(F.wf)||0:null)});
 }
-/** The tips peeking behind the round bust (80×80, drawn first). */
-export function wingsBust(c,K,wg){const w=cleanWing(wg);if(!w)return;drawWings(c,K,w,40,70,{s:.62,gap:10,sparkle:false});}
-/** A pair large, centred in a -30…30 box (the shop's tiles). */
+/** The tips peeking behind the round bust (80×80, drawn first): still, a portrait is everywhere. */
+export function wingsBust(c,K,wg){const w=cleanWing(wg);if(!w)return;drawWings(c,K,w,40,70,{s:.62,gap:10,sparkle:false,anim:false});}
+/** A pair large, centred in a -30…30 box (the shop's tiles): flapping and sparkling in SVG. */
 export function wingIcon(c,K,wg){const w=cleanWing(wg);if(!w)return;drawWings(c,K,w,0,14,{s:.62,gap:3});}
+/* ---- cached bitmaps for canvases that redraw often (the classic street, the 2.5D map): the wings at a few flaps ---- */
+export const FLAP_STEPS=Object.freeze([-1,-.75,-.5,-.25,0,.25,.5,.75,1]);
+/** The nearest cached flap to f. */
+export const flapStep=f=>FLAP_STEPS.reduce((a,b)=>Math.abs(b-f)<Math.abs(a-f)?b:a,0);
+const BITMAPS=new Map();
+/** The wings alone (no glow, no motes) at flap step `f` on a canvas: `opts` drawWings' (s, gap, tall, spread), `box`
+ * [w, h, ox, oy] the canvas in the wings' units with the roots at (ox, oy), `px` pixels per unit. Kept (at most 160). */
+export function wingBitmap(K,wg,f,opts,box,px=1,tag=''){
+  const w=cleanWing(wg),doc=globalThis.document;if(!w||!doc?.createElement)return null;
+  const key=JSON.stringify([tag,w.k,w.r,f,px,box,opts]);let hit=BITMAPS.get(key);if(hit){BITMAPS.delete(key);BITMAPS.set(key,hit);return hit;}
+  const cv=doc.createElement('canvas');cv.width=Math.ceil(box[0]*px);cv.height=Math.ceil(box[1]*px);const q=cv.getContext?.('2d');if(!q)return null;
+  q.setTransform(px,0,0,px,box[2]*px,box[3]*px);drawWings(q,K,w,0,0,{...opts,flap:f,aura:false,sparkle:false,anim:false});
+  hit={canvas:cv,ox:box[2],oy:box[3],w:box[0],h:box[1]};BITMAPS.set(key,hit);if(BITMAPS.size>160)BITMAPS.delete(BITMAPS.keys().next().value);return hit;
+}

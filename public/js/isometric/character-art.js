@@ -1,6 +1,6 @@
 /** Reference-matched chibi atlas: four views × idle/two walking poses, cached by saved wardrobe. */
 import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,cleanWing,CANVAS,topColour,hairColour} from '../v4/look.js';
-import {drawWings,wingSparkles} from '../v4/wings-art.js';
+import {drawWings,wingSparkles,wingBitmap,wingScale,drawRays,cleanWing as wingOf} from '../v4/wings-art.js';
 
 const WIDTH=120,HEIGHT=160,FOOT=156;
 const atlases=new Map(),stamps=new Map(),MAX_STAMPS=160;
@@ -195,8 +195,9 @@ export function paintWardrobeOverlay(c,options={},box,alignment={}){
  * back, leaning out past its big head so both wings show. Facing us (se, sw) they go behind it (destination-over, the
  * sparkles then over it); seen from the back (nw, ne) they lie over the back. Inside the 120×160 stamp: every consumer
  * keeps its size and feet. */
+export const STAMP_WING=Object.freeze({front:Object.freeze({dy:22,s:.86,gap:8,tall:1.35,spread:.42}),back:Object.freeze({dy:6,s:.86,gap:6,tall:1.1,spread:.5})});
 function paintStampWings(c,o,[tx,ty]){
-  const back=o.direction==='nw'||o.direction==='ne',[x,y]=[tx,ty+(back?6:22)],opts={s:back?.86:.86,gap:back?6:8,tall:back?1.1:1.35,spread:back?.5:.42,sparkle:false};
+  const back=o.direction==='nw'||o.direction==='ne',v=back?STAMP_WING.back:STAMP_WING.front,[x,y]=[tx,ty+v.dy],opts={s:v.s,gap:v.gap,tall:v.tall,spread:v.spread,sparkle:false,anim:false};
   const doc=globalThis.document,layer=doc?.createElement?.('canvas'),q=layer?.getContext?.('2d');
   const paint=(k,o2)=>drawWings(k,CANVAS,o.look.wg,x,y,{...opts,...o2});
   if(!q){c.save();c.globalCompositeOperation='destination-over';paint(c,{body:!back});c.restore();if(back)paint(c,{aura:false});wingSparkles(c,CANVAS,o.look.wg,x,y,{s:opts.s});return;}
@@ -226,5 +227,24 @@ export function getCharacterStamp(options={}){
   c.putImageData(pixels,x,y);
   if(o.look.wg)paintStampWings(c,o,top);
   paintWardrobeOverlay(c,o,{x,y,w,h},alignment);
-  return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:true});
+  return remember(key,{canvas,width:WIDTH,height:HEIGHT,ready:true,top:[top[0],top[1]]});   // top: where wings drawn apart take root (stampWingFrame)
 }
+/* 🪽 The wings apart from the chibi, so the 2.5D map can move them (owner 22/10 "cánh có hoạt họa, có tia sáng này kia nhé";
+ * client/isometric/wing-rigs.ts). The stamp is then drawn without them (its look without `wg`); its `top` plus
+ * STAMP_WING[view].dy is the roots, the same place paintStampWings draws still wings for the other islands. Every canvas
+ * here is shared by everyone wearing that wing: a few flaps (FLAP_STEPS), the glow, the rays, the ring, one mote. */
+export const RIG_BOX=Object.freeze([180,172,90,130]);   // the wing canvases: w, h, the roots at (90, 130)
+/** The pair at flap step f (no glow, no motes), facing us (back false) or seen from behind. */
+export function stampWingFrame(wg,back,f){const v=back?STAMP_WING.back:STAMP_WING.front;return wingBitmap(CANVAS,wg,f,{s:v.s,gap:v.gap,tall:v.tall,spread:v.spread},RIG_BOX,1,'iso');}
+const LIGHTS=new Map();
+function lightCanvas(key,w,h,draw){let cv=LIGHTS.get(key);if(cv)return cv;const doc=globalThis.document;cv=doc?.createElement?.('canvas');const q=cv?.getContext?.('2d');if(!q)return null;cv.width=w;cv.height=h;draw(q);LIGHTS.set(key,cv);if(LIGHTS.size>48)LIGHTS.delete(LIGHTS.keys().next().value);return cv;}
+/** A light of the tier on its own canvas: 'glow' (RIG_BOX, around the roots), 'rays' (200×200, centred: turn it),
+ * 'ring' (100×100, radius 44: scale it). Null below S (D–A have only motes). */
+export function stampWingLight(kind,wg,back=false){
+  const w=wingOf(wg);if(!w||w.r<4||kind==='ring'&&w.r<6)return null;const v=back?STAMP_WING.back:STAMP_WING.front,ss=wingScale(w,v.s);
+  if(kind==='glow')return {canvas:lightCanvas(`glow|${w.k}|${w.r}|${back}`,RIG_BOX[0],RIG_BOX[1],q=>drawWings(q,CANVAS,w,RIG_BOX[2],RIG_BOX[3],{s:v.s,gap:v.gap,tall:v.tall,spread:v.spread,body:false,sparkle:false,anim:false})),ox:RIG_BOX[2],oy:RIG_BOX[3]};
+  if(kind==='rays')return {canvas:lightCanvas(`rays|${w.r}|${back}`,200,200,q=>drawRays(q,CANVAS,w.r,100,100+32*ss,ss)),cy:32*ss};
+  return {canvas:lightCanvas(`ring|${w.r}`,100,100,q=>{q.strokeStyle=w.r===7?'#ffe58a':'#ffffff';q.lineWidth=3;q.beginPath();q.arc(50,50,44,0,Math.PI*2);q.stroke();q.strokeStyle=w.r===7?'#ffd24a99':'#ff8fd099';q.lineWidth=1.4;q.beginPath();q.arc(50,50,38,0,Math.PI*2);q.stroke();}),cy:32*ss};
+}
+/** One mote (16×16, centred): a four-point star or a soft dot of `col`. */
+export function stampMote(col,starLike){return lightCanvas(`mote|${col}|${starLike}`,16,16,q=>{if(starLike){q.fillStyle=col;q.beginPath();const r=7;for(const [x,y] of [[0,-r],[r*.3,-r*.3],[r,0],[r*.3,r*.3],[0,r],[-r*.3,r*.3],[-r,0],[-r*.3,-r*.3]])q.lineTo(8+x,8+y);q.closePath();q.fill();}else{const g=q.createRadialGradient(8,8,0,8,8,8);g.addColorStop(0,col);g.addColorStop(.35,col);g.addColorStop(1,col+'00');q.fillStyle=g;q.fillRect(0,0,16,16);}});}

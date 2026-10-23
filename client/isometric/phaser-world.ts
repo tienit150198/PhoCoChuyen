@@ -28,6 +28,7 @@ import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
 import {insideIsland,islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
 import {TextureFrames} from './texture-frames';
+import {WingRigs,LIVE as WING_LIVE,MAX_MOTES,WING_FPS,wingsAvailable,wornWing} from './wing-rigs';
 import {facadeTextLines,FACADE_SIGNS} from './building-art';
 import {ISOMETRIC_ASSETS as ASSETS} from './asset-manifest';
 import {careerFacadeTextureKey,careerFacadeSize,drawCareerFacade} from './career-facade';
@@ -114,6 +115,7 @@ export class PhaserWorld {
   private movementInput:Point={x:0,y:0};
   private remoteSignature='';
   private speechTimer:ReturnType<typeof setTimeout>|null=null;
+  private wingTimer:ReturnType<typeof setTimeout>|null=null;
   private _fx:any=null;
   private fxCanvas:HTMLCanvasElement;
   private fxContext:CanvasRenderingContext2D;
@@ -292,14 +294,17 @@ export class PhaserWorld {
     stage.bobParked(this.time);
     stage.positionPlayer(moving);
     const fading=stage.updateOcclusion(dt);
-    const remoteMoving=stage.stepRemotePlayers(this.time),petMoving=!!stage.stepPets?.(dt);
+    const remoteMoving=stage.stepRemotePlayers(this.time),petMoving=!!stage.stepPets?.(dt),wingsLive=!!stage.stepWings?.();
     const ev=this._fx?.ev,effect=effectFrameState(ev,this.time,this.reduced);
     if(effect.clear){this._fx?.clear?.();this.paintFx();}
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
     const active=fading||moving||remoteMoving||petMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
-    if(!active&&stage.settle())this.engine.loop.sleep();
+    if(!active&&stage.settle()){this.engine.loop.sleep();if(wingsLive)this.wingTick();}
   }
+  /** 🪽 Moving wings in view (wing-rigs.ts) and nothing else moving: one frame ~WING_FPS times a second, never the full
+   * 60 (the scene sleeps between two). */
+  private wingTick(){if(this.wingTimer)return;this.wingTimer=setTimeout(()=>{this.wingTimer=null;if(this.destroyed||!this.engine||this.shouldSleep())return;this.engine.loop.wake();},1000/WING_FPS);}
   private paintFx(){const ctx=this.fxContext;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,this.fxCanvas.width,this.fxCanvas.height);ctx.setTransform(.5,0,0,.5,425,125);this._fx?.draw?.(this);this.fxPaintAt=this.time;this.stage?.refreshFx(this.fxCanvas);}
   private local(e:PointerEvent|WheelEvent):Point{const r=this.canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
   private worldPoint(p:Point):Point{return cameraWorldPoint(p,this.stage!.cameras.main);}
@@ -313,7 +318,7 @@ export class PhaserWorld {
   private keydown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase(),target=e.target as HTMLElement|null;if(target?.matches('input,textarea,select,[contenteditable="true"]')||this.shouldSleep())return;if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(key)){e.preventDefault();this.keys.add(key);this.wake();}if(key==='e'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!this.blockingDialog()&&this.stage){e.preventDefault();const h=nearestReachableHotspot(this.stage.navigation,this.player,this.hotspots);if(h){this.stage.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));}this.wake();}if(key==='home'){e.preventDefault();this.resetCamera();}};
   private keyup=(e:KeyboardEvent)=>{this.keys.delete(e.key.toLowerCase());this.wake();};
   private tap(point:Point){if(this.mode==='town'&&this.socialEnabled){const pid=this.stage!.hitRemote(point);if(pid){window.dispatchEvent(new CustomEvent('mnl:town-peer',{detail:{pid}}));return;}}if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
-  destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
+  destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);if(this.wingTimer)clearTimeout(this.wingTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
   private disposeObservers(){this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
 }
 
@@ -370,6 +375,25 @@ class DioramaScene extends Phaser.Scene {
   private previousCareer='';
   private remoteActors=new Map<string,RemoteActor>();
   private pets=new PetWalkers(this,()=>{this.requestRender();this.owner.wake();});
+  private wings=new WingRigs(this);
+  /** 🪽 The wings of me and the players on screen (wing-rigs.ts): WING_LIVE of them move (me first, then the nearest),
+   * the others wear them still; never on a ride (the ride's own picture keeps them still). True while one moves. */
+  stepWings(){
+    if(!this.sys.isActive()||!wingsAvailable()||!this.cameras?.main)return false;
+    const t=performance.now()/1000,still=this.owner.reduced,keep=new Set<string>(),top=(key:string)=>key&&this.textures.exists(key)?(this.textures.get(key) as any).customData?.wingTop||null:null;
+    let budget=MAX_MOTES,live=0;
+    if(this.actor){keep.add('me');const wg=wornWing(this.owner.state),show=!!wg&&this.actor.visible&&!this.riding,on=show&&!still;
+      budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on},t,budget);if(on)live++;}
+    const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,shown:RemoteActor[]=[];
+    for(const actor of this.remoteActors.values())if(actor.look?.wg&&actor.image.visible&&!actor.ride&&this.owner.mode==='town')shown.push(actor);
+    shown.sort((a,b)=>Math.hypot(a.image.x-cx,a.image.y-cy)-Math.hypot(b.image.x-cx,b.image.y-cy));
+    const moving=new Set(shown.slice(0,Math.max(0,WING_LIVE-live)));
+    for(const actor of this.remoteActors.values()){const id='peer:'+actor.peer.pid;keep.add(id);
+      const show=shown.includes(actor),on=show&&!still&&moving.has(actor);if(on)live++;
+      budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on},t,Math.max(0,budget));}
+    this.wings.keepOnly(keep);
+    return live>0;
+  }
   private remoteVisualRevision=0;
   private riding=false;
   private parked:Phaser.GameObjects.Image[]=[];
@@ -993,11 +1017,14 @@ class DioramaScene extends Phaser.Scene {
   }
   private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);this.textures.addCanvas(key,c)!.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
   private characterTexture(prefix:string,look:any,gender:string,direction:Facing,uniformColor:string,walkFrame=0){
+    // 🪽 the stamp without its wings: they are a rig of their own that moves (stepWings, wing-rigs.ts)
+    if(look?.wg){const {wg:_,...bare}=look;look=bare;}
     return this.characterFrames.get(prefix,JSON.stringify([look,gender,uniformColor,this.characterRevision]),direction+':'+walkFrame,key=>{
       const stamp=getCharacterStamp({look,gender,direction,uniformColor,walkFrame,onReady:this.charactersReady});
       // Stamps are immutable. CanvasTexture would read back and retain a second
       // RGBA buffer for every outfit/pose, although we never edit that texture.
       const texture=this.textures.create(key,stamp.canvas)!;texture.add('__BASE',0,0,0,stamp.canvas.width,stamp.canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+      const custom=(texture as any).customData;if(custom)custom.wingTop=stamp.top||null;   // 🪽 where the rig's wings take root
     });
   }
   socialAnchor(pid:string|null){

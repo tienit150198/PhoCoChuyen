@@ -267,6 +267,7 @@ let GID=0;   // SVG gradient ids, unique in the page
 const n1=v=>Math.round(v*10)/10;
 /** SVG pen: `c` is an array of markup strings. */
 export const SVG={
+  anim:true,   // 🪽 the wings write their own SMIL animations (v4/wings-art.js); a canvas pen draws frames instead
   R:(c,x,y,w,h,fill,r=12,stroke=null,lw=2)=>c.push(`<rect x="${n1(x)}" y="${n1(y)}" width="${n1(w)}" height="${n1(h)}" rx="${n1(Math.min(r,w/2,h/2))}" fill="${fill}"${stroke?` stroke="${stroke}" stroke-width="${lw}"`:''}/>`),
   E:(c,x,y,rx,ry,fill)=>c.push(`<ellipse cx="${n1(x)}" cy="${n1(y)}" rx="${n1(rx)}" ry="${n1(ry)}" fill="${fill}"/>`),
   L:(c,x,y,x2,y2,col,w=2)=>c.push(`<line x1="${n1(x)}" y1="${n1(y)}" x2="${n1(x2)}" y2="${n1(y2)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`),

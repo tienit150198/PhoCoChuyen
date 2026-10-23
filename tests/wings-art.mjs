@@ -5,7 +5,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {defaultLook,lookOf,figure,figureOf,figureSVG,portrait,myPortrait,paintPlayer,SVG,CANVAS,wingIcon,withWings,withPairs,cleanPairs,cleanWing,wingOfState,WING_STYLES,WING_TIERS,WING_TIER_COLOR} from '../public/js/v4/look.js';
-import {characterKey} from '../public/js/isometric/character-art.js';
+import {characterKey,STAMP_WING,stampWingFrame} from '../public/js/isometric/character-art.js';
+import {flapAt,WING_BEAT,wingMotes,moteAt,raysAt,burstAt,drawWings,stillMotion,flapStep,FLAP_STEPS} from '../public/js/v4/wings-art.js';
 
 const py=readFileSync(new URL('../game/wings_content.py',import.meta.url),'utf8');
 
@@ -56,6 +57,52 @@ test('walkers bring their wings on both maps, the workplace scene flaps them',()
   assert.match(readFileSync(new URL('../client/isometric/model.ts',import.meta.url),'utf8'),/look\.wg=\{k:/);
   assert.match(readFileSync(new URL('../public/js/isometric/phaser-world.js',import.meta.url),'utf8'),/\.wg=\{k:\w+\.wg\.k\.slice/,'the bundle is rebuilt');
   const walk=readFileSync(new URL('../public/js/v4/walk.js',import.meta.url),'utf8');
-  assert.match(walk,/e\.k==='wg'/);assert.match(walk,/withWings\(withPairs\(p\.lk,p\.pr\),p\.wg\)/);
-  assert.match(readFileSync(new URL('../public/js/boba-world.js',import.meta.url),'utf8'),/paintWings\(c,F,CANVAS,\{flap:/);
+  assert.match(walk,/e\.k==='wg'/);
+  assert.match(readFileSync(new URL('../public/js/boba-world.js',import.meta.url),'utf8'),/paintWings\(c,F,CANVAS,\{t:this\.reduced\?null:this\.time\}\)/);
+});
+
+// ✨ owner 22/10 "cánh có hoạt họa, có tia sáng này kia nhé": the same beat everywhere, light by tier, stillness respected
+test('each style its own beat: butterfly and fairy quick, bat and dragon slow, all within 1.3–2.6 s',()=>{
+  for(const k of WING_STYLES){assert.ok(WING_BEAT[k]>=1.3&&WING_BEAT[k]<=2.6,k);for(let t=0;t<3;t+=.1)assert.ok(Math.abs(flapAt(k,t))<=1);}
+  assert.ok(WING_BEAT.buom<WING_BEAT.thien_than&&WING_BEAT.tien<WING_BEAT.thien_than);
+  assert.ok(WING_BEAT.rong>WING_BEAT.thien_than&&WING_BEAT.doi>WING_BEAT.thien_than);
+  assert.equal(flapAt('rong',0),0);assert.ok(Math.abs(flapAt('buom',WING_BEAT.buom/4))>Math.abs(flapAt('rong',WING_BEAT.rong/4)),'a dragon beats heavier, smaller');
+  assert.deepEqual(FLAP_STEPS.map(flapStep),[...FLAP_STEPS]);assert.equal(flapStep(.6),.5);
+});
+
+test('light by tier: a few motes D–A, more from S, rays from S, the ring and a burst of motes for SSS and Huyền thoại',()=>{
+  const n=r=>wingMotes({k:'thien_than',r}).filter(m=>!m.burst).length,burst=r=>wingMotes({k:'thien_than',r}).filter(m=>m.burst).length;
+  for(const r of [0,1,2,3])assert.ok(n(r)>=2&&n(r)<=3,`tier ${r}`);
+  assert.ok(n(4)>n(3)&&n(5)>=n(4)&&n(6)>n(5)&&n(7)>=n(6));
+  for(const r of [0,1,2,3,4,5])assert.equal(burst(r),0);assert.ok(burst(6)>0&&burst(7)>0);
+  for(const r of [0,1,2,3])assert.equal(raysAt(r,1),null);for(const r of [4,5,6,7])assert.ok(raysAt(r,1).n>=6);
+  assert.ok(raysAt(7,1).n>raysAt(4,1).n);
+  for(const m of wingMotes({k:'phuong',r:7}))for(let t=0;t<5;t+=.13){const p=moteAt(m,t);assert.ok(p.a>=0&&p.a<=1&&Number.isFinite(p.x)&&Number.isFinite(p.y));assert.deepEqual(moteAt(m,t),p,'a pure function of the time');}
+  const seen=new Set();for(let t=0;t<2.6;t+=.05){const b=burstAt(t);seen.add(!!b);if(b)assert.ok(b.ph>=0&&b.ph<=1&&b.a>=0&&b.a<=.6);}assert.deepEqual([...seen].sort(),[false,true]);
+});
+
+test('the SVG pen animates by itself (SMIL), a canvas frame moves with t, reduced motion keeps it all still',()=>{
+  const ht=wingIcon({k:'phuong',r:7},56),d=wingIcon({k:'buom',r:0},56);
+  assert.match(ht,/<animateTransform attributeName="transform" type="rotate"/);assert.match(ht,/attributeName="r"/,'the ring');
+  assert.ok((ht.match(/type="translate"/g)||[]).length>(d.match(/type="translate"/g)||[]).length,'more motes at HT');
+  assert.ok((d.match(/type="translate"/g)||[]).length>=2,'a D wing still twinkles');assert.doesNotMatch(d,/attributeName="r"/);
+  assert.doesNotMatch(portrait({...defaultLook('male'),wg:{k:'rong',r:7}},'male',56),/<animate/,'portraits stay still');
+  const at=t=>{const o=[];drawWings(o,SVG,{k:'rong',r:5},0,0,{t,anim:false});return o.join('').replace(/wg\d+/g,'id');};
+  assert.notEqual(at(0),at(.4),'a frame at t differs');assert.equal(at(.4),at(.4));
+  const saved=globalThis.document;globalThis.document={documentElement:{classList:{contains:()=>false}},body:{classList:{contains:c=>c==='reduce-motion'}}};
+  try{assert.ok(stillMotion());assert.doesNotMatch(wingIcon({k:'phuong',r:7},56),/<animate/);assert.equal(at(0),at(.4),'still: no flap, no motes');}
+  finally{if(saved===undefined)delete globalThis.document;else globalThis.document=saved;}
+});
+
+test('the classic street draws the wings apart and moves them; the 2.5D map rigs them (the bundle is rebuilt)',()=>{
+  const walk=readFileSync(new URL('../public/js/v4/walk.js',import.meta.url),'utf8');
+  assert.match(walk,/const F=figureOf\(withPairs\(p\.lk,p\.pr\),p\.g\)/,'the sprite without wings');
+  assert.match(walk,/wingsBack\(c,p,p\.x,p\.y\+bob,sec,calm\);/);assert.match(walk,/wingsFront\(c,p,p\.x,p\.y\+bob,sec,calm\);/);
+  assert.match(walk,/S\.wingsOn\?66:120/);
+  assert.deepEqual(Object.keys(STAMP_WING),['front','back']);assert.equal(stampWingFrame({k:'rong',r:1},false,0),null,'no canvas in node');
+  const ts=readFileSync(new URL('../client/isometric/phaser-world.ts',import.meta.url),'utf8');
+  assert.match(ts,/if\(look\?\.wg\)\{const \{wg:_,\.\.\.bare\}=look;look=bare;\}/,'the 2.5D stamp without wings');
+  assert.match(ts,/if\(wingsLive\)this\.wingTick\(\)/);
+  const bundle=readFileSync(new URL('../public/js/isometric/phaser-world.js',import.meta.url),'utf8');
+  assert.match(bundle,/wg-f:/);assert.match(bundle,/wingTop/);
 });

@@ -45,6 +45,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing} from './look.js';
+import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING} from './wings-art.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
@@ -714,10 +715,10 @@ function background(){
 }
 function sprite(p){
   const key=`${S.k}|${S.dpr}`;if(p.sp&&p.spk===key)return p.sp;
-  const hw=p.wg?72:55;p.hw=hw;   // 🪽 wings reach past the shoulders: a wider sprite
+  const hw=55;p.hw=hw;   // 🪽 the wings are drawn apart (wingsBack / wingsFront): they move
   const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(2*hw*s);cv.height=Math.ceil(160*s);
   const c=cv.getContext('2d');c.setTransform(s,0,0,s,hw*s,150*s);
-  try{const F=figureOf(withWings(withPairs(p.lk,p.pr),p.wg),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
+  try{const F=figureOf(withPairs(p.lk,p.pr),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
   p.sp=cv;p.spk=key;return cv;
 }
 /* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop; on a vehicle it rides along
@@ -730,6 +731,20 @@ function drawPet(c,p,cat){
   if(p.petx!=null&&Math.abs(p.x-p.petx)>.3)p.pdir=p.x>p.petx?1:-1;p.petx=p.x;const dir=p.pdir||1,pose=p.moving?'walk':'sit',im=petImg(cat,p.pt,pose);if(!im)return;
   const B=refBox(cat,p.pt,pose),w=(pose==='walk'?38:32)*B.w/B.base*B.k,h=w*B.h/B.w,foot=B.foot;   // 🐶 bigger dogs, 🏅 the aura's room
   c.save();c.translate(p.x-24*dir,p.y+3);if(dir<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();}
+/* 🪽 A walker's wings, apart from their sprite so they move (owner 22/10 "cánh có hoạt họa, có tia sáng này kia nhé",
+ * v4/wings-art.js): behind, the tier's breathing glow, turning rays and ring, then the wings themselves from a few cached
+ * flap bitmaps (wingBitmap, shared by every walker in that wing); in front, the drifting motes. Each walker its own phase.
+ * Still (reduced motion): the wings still, the glow still, the sparkles still. (x, y) the feet. */
+const WBOX=[200,190,100,128];
+const wingT=(p,sec,calm)=>calm?null:sec+(p.wph??=((p.pid||'').length*1.37)%3);
+function wingsBack(c,p,x,y,sec,calm){
+  const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at,o={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread};
+  c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(AV,AV);drawWings(c,CANVAS,w,0,0,{...o,body:false,sparkle:false,t});
+  const bm=wingBitmap(CANVAS,w,t==null?0:flapStep(flapAt(w.k,t)),o,WBOX,AV*S.k*S.dpr,'walk');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);
+  c.restore();}
+function wingsFront(c,p,x,y,sec,calm){
+  const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at;
+  c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(AV,AV);if(t==null)wingSparkles(c,CANVAS,w,0,0,{s:CLASSIC_WING.s});else drawMotes(c,CANVAS,w,0,0,wingScale(w,CLASSIC_WING.s),t,false);c.restore();}
 const npcs=new Map();   // the wedding show's characters (./wedfeast.js), cached like the players' sprites
 function npcSprite(id,lk,g){let p=npcs.get(id);if(!p||p.lk!==lk){p={lk,g,sp:null,spk:''};npcs.set(id,p);}return sprite(p);}
 function loop(){if(!S.raf&&S.dlg?.open)S.raf=requestAnimationFrame(frame);}
@@ -738,7 +753,7 @@ function frame(ts){
   if(document.visibilityState!=='visible'){S.raf=requestAnimationFrame(frame);return;}
   const t=nowS(),busy=!S.room||[...S.people.values()].some(p=>p.bub||p.emo||posAt(p.p,p.at,t,p.v)[2]||p.rv.turn<1)||S.hap||S.envl||S.floaters.length||spots.size;
   const show=S.wed&&!S.ended&&feast.lively(t-S.wed.at);   // the party's lights and dancers: ~25 fps is plenty
-  if(busy||(show&&ts-S.lastDraw>38)||ts-S.lastDraw>120){S.lastDraw=ts;draw(ts,t);}
+  if(busy||(show&&ts-S.lastDraw>38)||ts-S.lastDraw>(S.wingsOn?66:120)){S.lastDraw=ts;draw(ts,t);}   // 🪽 wings in sight: ~15 fps
   S.raf=requestAnimationFrame(frame);
 }
 function draw(ts,t){
@@ -767,7 +782,7 @@ function draw(ts,t){
     p.x=x;p.y=y;p.moving=moving;list.push(p);}
   for(const p of list){const d=p.b&&pill.get(p.b)===p?S.people.get(p.b):null;p.on=d||null;if(d){p.x=d.x;p.y=d.y-.01;}}
   for(const q of parked)list.push({parked:q,y:q.y});
-  list.sort((a,b)=>a.y-b.y);
+  list.sort((a,b)=>a.y-b.y);S.wingsOn=!calm&&list.some(p=>p.wg&&!p.parked&&!(p.ride&&!p.s));
   for(const p of list){
     if(p.parked){p.parked.draw();continue;}
     if(p.on)continue;   // 💑 drawn behind the driver
@@ -782,9 +797,11 @@ function draw(ts,t){
       c.save();c.translate(p.x,p.y);
       if(!calm)c.rotate(side*Math.sin(ph*Math.PI)*.11);
       if(spin<1.3)c.scale(Math.cos(spin/1.3*Math.PI*4),1);
-      c.drawImage(sp,-(p.hw||55)*AV,-150*AV-Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6),2*(p.hw||55)*AV,160*AV);c.restore();continue;}
+      const up=Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6);wingsBack(c,p,0,-up,sec,calm);
+      c.drawImage(sp,-(p.hw||55)*AV,-150*AV-up,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,0,-up,sec,calm);c.restore();continue;}
     const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
-    c.drawImage(sp,p.x-(p.hw||55)*AV,p.y-150*AV+bob,2*(p.hw||55)*AV,160*AV);
+    wingsBack(c,p,p.x,p.y+bob,sec,calm);
+    c.drawImage(sp,p.x-(p.hw||55)*AV,p.y-150*AV+bob,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,p.x,p.y+bob,sec,calm);
     if(p.pt)drawPet(c,p,ct?.journey?.pets);
   }
   const h=S.hap;
