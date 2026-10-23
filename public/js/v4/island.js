@@ -13,6 +13,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {layout} from '../island-layout.js';
 import {HOUSES,splitKind,previewHouse} from '../house-art.js';
+import {previewBuilding} from '../island-decor-art.js';
 
 const ALL_TABS=[['buy','🏝️','Mua đảo'],['go','🛥️','Ra đảo'],['build','🏗️','Xây'],['inv','🌍','Ghé đảo']];
 // 🛑 MNL_ISLAND_BUILD_OFF (content.journey.island.build_off): the 🏗️ Xây tab hides; buildings already there still show
@@ -128,6 +129,7 @@ function render(){
   const y=S.dlg.querySelector('.sd-body')?.scrollTop;
   S.dlg.querySelector('.sd-root').innerHTML=page();
   for(const cv of S.dlg.querySelectorAll('canvas[data-house]'))previewHouse(cv,cv.dataset.house,Number(cv.dataset.lv)||1,Number(cv.dataset.look)||0);
+  for(const cv of S.dlg.querySelectorAll('canvas[data-bmodel]'))previewBuilding(cv,cv.dataset.bmodel);   // 🏝️ the first eight, drawn too
   if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
@@ -257,7 +259,7 @@ function build(c){
   const busy=Object.values(plots).filter(e=>busyNow(e,now)).length;
   const facts=[`📐 ${dc?.tiers?.[t]?.name||''}`,`✨ ${fmt(dz?.pts||0)} điểm trang trí`,`🌴 ${(dz?.d||[]).length} món trang trí`,...(kho?[`📦 ${kho} món trong kho`]:[]),
     `👷 ${busy}/${bc.crews} đội thợ đang làm`,...(next?[`🌊 Lấn biển tiếp: ${fmt(dc.expand?.[i.id]?.[t]||0)} xu`]:[])];
-  const entry=`<section class="sd-card isl-ed-entry"><button type="button" class="btn primary isl-ed-go" data-is="editor">🛠️ Chế độ xây</button>
+  const entry=`<section class="sd-card isl-ed-entry"><h3>🛠️ ${esc(i.name)}</h3>
     <p class="lx-sub">Xây nhà, đặt hồ bơi, trồng cây ở bất cứ đâu trên đảo. Kéo để dời, xoay, cất kho tùy ý.</p><ul class="isl-ed-facts">${facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></section>`;
   const list=keys.length?`<section class="sd-card"><h3>Công trình trên đảo</h3><div class="isl-blist">${keys.map(n=>{const e=plots[n],k=KIND(e.k),lv=lvlNow(e,now),work=busyNow(e,now);
     return row('plot',String(n),work?'🏗️':k?.emoji||'❔',k?.name||'',work?`⏳ ${esc(hoursLeft(e.t-now))}`:stars(lv),n===S.plot);}).join('')}</div></section>`:'';
@@ -272,6 +274,11 @@ function build(c){
   }
   return chips+entry+detail+list+`<p class="lx-sub">Công trình và đồ trang trí không kiếm tiền: để ở, để chơi và khoe với bạn bè (🏝️ Đảo đẹp). Phá bỏ công trình nhận lại ${bc.salvage_pct}%.</p>`;
 }
+/** Both crews at work: how long until one is free (seconds), else 0. */
+function crewWait(plots){
+  const now=serverNow(),busy=Object.values(plots).filter(e=>busyNow(e,now));
+  return busy.length>=(BC()?.crews||2)?Math.min(...busy.map(e=>e.t-now)):0;
+}
 /** 🛠️ The build mode of island `iid` over everything; closing it comes back to the 🏗️ Xây tab when it was opened from
  * there (`back`). */
 async function openEditor(env,iid,back){
@@ -279,9 +286,9 @@ async function openEditor(env,iid,back){
   const {openIslandEditor}=await import('./island-editor.js');
   return openIslandEditor(env,iid,{skew:S.skew,openDetail:plot=>openBuild(env,iid,plot),onClose:back?()=>{if(!S.dlg?.open)openIsland(env,'build');}:null});
 }
-/** A drawn house (house-art.js) or, for the first buildings, their icon. */
+/** A drawn house (house-art.js) or one of the first buildings (island-decor-art.js). */
 const thumb=(k,lv,look,cls='isl-thumb')=>HOUSES[k.id]?`<canvas class="${cls}" data-house="${esc(k.id)}" data-lv="${lv}" data-look="${look}" aria-hidden="true"></canvas>`
-  :`<span class="${cls} isl-thumb-e" aria-hidden="true">${k.emoji}</span>`;
+  :`<canvas class="${cls}" data-bmodel="${esc(k.id)}" aria-hidden="true"></canvas>`;
 /** The chosen building big: its levels (⭐ preview), its colours, what each level adds. `own`: a built one ({look, lv}). */
 function showcase(k,pv,look,own){
   const art=HOUSES[k.id],lv=Math.max(1,Math.min(3,pv)),pals=art?.pals||[];

@@ -198,6 +198,6 @@ dialog.isl-ed[open]{display:flex;flex-direction:column}
 .isl-ed-btns .btn{flex:1;min-width:84px;min-height:46px;font-weight:700}
 .isl-ed-btns .btn[disabled]{opacity:.5}
 /* 🏗️ Xây: the way in, what stands on the island */
-.isl-ed-entry .isl-ed-go{display:block;width:100%;min-height:52px;font-size:17px;font-weight:800}
+.isl-ed-entry h3{margin:0 0 4px}
 .isl-ed-facts{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;font-weight:600}
 .isl-blist{display:grid;gap:6px}

@@ -165,6 +165,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     if(a>=1&&!arrived){arrived=true;view.arrived?.();}
     if(arrived)walk(dt,t);
     const list=people(t);
+    if(trip.mine&&globalThis.document?.querySelector?.('dialog.isl-ed[open]'))return;   // 🛠️ the build mode covers the island: draw nothing under it
     renderer.frame({people:list,vehicle:vehicleAt(route,a),focus:[me.x,me.y]},t);
     const head=renderer.personHeight||90;
     view.tags(list.filter(p=>!p.hidden).map(p=>{const s=renderer.toScreen(p.x,p.y);return s&&{...p,sx:s[0],sy:s[1]-head-(p.pose==='swim'?-head*.35:0)};}).filter(Boolean));
