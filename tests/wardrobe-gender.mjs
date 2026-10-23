@@ -81,3 +81,38 @@ test('Cửa hàng 👕 Trang phục and 🎀 Phụ kiện: the same tidy shelf, 
   const {ui:u2,env:e2}=mk('female');u2.as={tab:'wear'};const f=accShopView(e2);
   assert.match(f,/data-item="dam_maxi"/);assert.doesNotMatch(f,/jrAsAll/,'nothing hidden for her here: no switch');
 });
+
+// 👔 owner 24/10: 28 more pieces for men (game/wardrobe.py MENSWEAR), each drawn in every painter.
+const MEN={hair:['toc_re_ngoi','toc_mohican','toc_vuot','toc_dau_dinh','toc_dai_buoc'],
+  top:['ao_dai_nam_lam','ao_dai_nam_be','vest_den','vest_xam','so_mi_ke','ao_len_co_lo','ao_khoac_da','ao_ba_ba_nam','ao_gile'],
+  bottom:['quan_au_den','quan_kaki_be','quan_short_tt','quan_jean_den'],shoes:['giay_tay_den','giay_luoi_nau','dep_quai_hau','giay_vai'],
+  acc:['dong_ho_da','ca_vat','no_co','that_lung','kinh_phi_cong','mu_fedora']};
+test('every menswear piece has its own drawing: the mirror, the bust, the town chibi, the chat face',async()=>{
+  const {ART,defaultLook,figureSVG,portrait}=await import('../public/js/v4/look.js');
+  const {paintWardrobeOverlay}=await import('../public/js/isometric/character-art.js');
+  const {autoFace}=await import('../public/js/v4/face-code.js');
+  const base=defaultLook('male');
+  assert.equal(Object.values(MEN).flat().length,28);
+  for(const [slot,ids] of Object.entries(MEN)){
+    const figs=new Set([figureSVG(base,'male')]),busts=new Set([portrait(base,'male',80,'')]);
+    for(const id of ids){
+      assert.ok(ART[slot][id],`${id}: art`);
+      const L={...base,[slot]:id};
+      figs.add(figureSVG(L,'male'));if(slot!=='bottom'&&slot!=='shoes')busts.add(portrait(L,'male',80,''));
+      if(slot==='acc'){
+        const calls=[],ctx=new Proxy({createLinearGradient(){return {addColorStop(){}};}},{get:(o,k)=>k in o?o[k]:(...a)=>calls.push([k,...a]),set(o,k,v){calls.push(['set',k,v]);o[k]=v;return true;}});
+        paintWardrobeOverlay(ctx,{gender:'male',direction:'se',look:{...L,tint:{[id]:'mint'}}},{x:10,y:8,w:100,h:148});
+        assert.ok(calls.some(c=>c.includes('#8fd5c0')),`${id}: drawn on the town chibi in its colour`);
+      }
+      if(slot==='hair')assert.notEqual(autoFace({journey:{gender:'male'},wardrobe:{look:L}}).hair,undefined);
+    }
+    assert.equal(figs.size,ids.length+1,`${slot}: each piece changes the mirror`);
+    if(slot!=='bottom'&&slot!=='shoes')assert.equal(busts.size,ids.length+1,`${slot}: each piece changes the bust`);
+  }
+  // tie and bow tie are seen from the front only; the fedora from every side
+  for(const [id,back] of [['ca_vat',false],['mu_fedora',true]]){
+    const calls=[],ctx=new Proxy({createLinearGradient(){return {addColorStop(){}};}},{get:(o,k)=>k in o?o[k]:(...a)=>calls.push([k,...a]),set(o,k,v){calls.push(['set',k,v]);o[k]=v;return true;}});
+    paintWardrobeOverlay(ctx,{gender:'male',direction:'nw',look:{...base,acc:id}},{x:10,y:8,w:100,h:148});
+    assert.equal(calls.some(c=>c[0]==='fill'),back,`${id} from the back`);
+  }
+});

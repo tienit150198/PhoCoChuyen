@@ -30,7 +30,7 @@ class Tags(unittest.TestCase):
         for it in wd.ITEMS:
             name = it['name']
             if name.startswith(('Đầm', 'Váy', 'Chân váy', 'Áo dài', 'Giày búp bê', 'Giày Mary Jane', 'Bông tai', 'Khuyên tai',
-                                'Nơ', 'Kẹp tóc', 'Tóc búi', 'Tóc dài', 'Áo croptop', 'Áo baby tee')):
+                                'Nơ cài', 'Nơ lụa', 'Kẹp tóc', 'Tóc búi', 'Tóc dài thả', 'Áo croptop', 'Áo baby tee')) and ' nam' not in name:
                 self.assertEqual(g[it['id']], 'female', name)
             if it['slot'] in ('shade', 'skin'):
                 self.assertEqual(g[it['id']], 'unisex', name)
@@ -55,6 +55,57 @@ class Tags(unittest.TestCase):
         # The wedding pair: the bride sees the áo dài cưới, the groom the vest.
         self.assertEqual([x['id'] for x in wd.ITEMS if x['need'] == 'married' and x['g'] in ('female', 'unisex')], ['ao_cuoi'])
         self.assertEqual([x['id'] for x in wd.ITEMS if x['need'] == 'married' and x['g'] in ('male', 'unisex')], ['vest_cuoi'])
+
+
+class Menswear(unittest.TestCase):
+    """👔 owner 24/10: ~25 more pieces for men, in every slot but colours, sold like the 1.9.2 pieces."""
+
+    def test_counts_and_slots(self):
+        self.assertEqual(len(wd.MENSWEAR), 28)
+        self.assertEqual(len(set(wd.MENSWEAR)), 28)
+        for iid in wd.MENSWEAR:
+            it = wd.INDEX[iid]
+            self.assertEqual(it['g'], 'male', iid)
+            self.assertTrue(it.get('plus'), f'{iid}: saved in wardrobe_plus (an older worker never meets it)')
+            self.assertEqual(it['need'], wd.OPEN_SHOP, iid)
+            self.assertGreater(it['price'], 0, iid)
+        n = {k: sum(1 for x in wd.ITEMS if x['g'] == k) for k in wd.GENDERS}
+        self.assertEqual(n, dict(male=32, female=49, unisex=62))
+        for slot, want in dict(hair=8, top=10, bottom=4, shoes=4, acc=6).items():
+            self.assertEqual(sum(1 for x in wd.ITEMS if x['slot'] == slot and x['g'] == 'male'), want, slot)
+
+    def test_prices_sit_with_similar_pieces(self):
+        from game import price_index as pi
+        base = {'toc_mohican': 60, 'toc_dau_dinh': 40, 'ao_dai_nam_lam': 160, 'vest_den': 180, 'so_mi_ke': 70,
+                'ao_khoac_da': 170, 'quan_au_den': 80, 'giay_tay_den': 100, 'dep_quai_hau': 45, 'mu_fedora': 75}
+        for iid, p in base.items():
+            self.assertEqual(wd.INDEX[iid]['price'], pi.price(p), iid)
+        self.assertEqual(wd.INDEX['ao_dai_nam_lam']['price'], wd.INDEX['ao_dai']['price'], 'áo dài nam = áo dài lụa')
+
+    def test_buy_wear_colour_and_rollback_shape(self):
+        from tests.test_wardrobe_plus import player
+        s = player('male')   # chapter 3: Tiệm Áo Chỉ Mây is open
+        for iid in ('ao_dai_nam_lam', 'quan_au_den', 'giay_tay_den', 'ca_vat', 'toc_mohican'):
+            slot = wd.INDEX[iid]['slot']
+            s, _ = act(s, 'jr_wd_buy', item=iid)
+            self.assertEqual(wd.worn(s)[slot], iid)
+            self.assertEqual(s['wardrobe']['look'][slot], wd.default_look('male')[slot], 'an older build sees the default')
+        s, _ = act(s, 'jr_wd_color', item='ca_vat', color='navy', buy=True)
+        self.assertEqual(wd.look_of(s)['tint']['ca_vat'], 'navy')
+        validate_state(s)
+        m = migrate_state(s)
+        self.assertEqual(wd.worn(m)['top'], 'ao_dai_nam_lam')
+
+    def test_live_street_and_art_know_every_piece(self):
+        from pathlib import Path
+        from live import street_data as sd
+        js = (Path(__file__).resolve().parents[1] / 'public' / 'js' / 'v4' / 'look.js').read_text(encoding='utf-8')
+        for iid in wd.MENSWEAR:
+            slot = wd.INDEX[iid]['slot']
+            self.assertIn(iid, sd.LOOK_IDS[slot], iid)
+            self.assertIn(f'{iid}:{{', js, iid)
+            if slot == 'acc':
+                self.assertIn(iid, sd.TINTABLE)
 
 
 class Engaged(unittest.TestCase):

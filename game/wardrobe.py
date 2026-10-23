@@ -224,7 +224,41 @@ ITEMS = [
     _n('vong_hoa', 'acc', 'Vòng hoa cài đầu', 60),
     _n('khau_trang', 'acc', 'Khẩu trang vải', 30),
     _n('khan_choang', 'acc', 'Khăn choàng dài', 65),
+    # 👔 Đồ nam (owner 24/10: only 4 pieces were cut for men): sold by Tiệm Áo Chỉ Mây like the 1.9.2 pieces (saved in
+    # s['wardrobe_plus'], so an older worker never meets their ids), drawn by public/js/v4/look.js.
+    _n('toc_re_ngoi', 'hair', 'Tóc rẽ ngôi lệch', 50),
+    _n('toc_mohican', 'hair', 'Tóc mohican', 60),
+    _n('toc_vuot', 'hair', 'Tóc vuốt dựng', 50),
+    _n('toc_dau_dinh', 'hair', 'Tóc đầu đinh', 40),
+    _n('toc_dai_buoc', 'hair', 'Tóc dài buộc sau', 55),
+    _n('ao_dai_nam_lam', 'top', 'Áo dài nam xanh lam', 160, 'Áo dài nam'),
+    _n('ao_dai_nam_be', 'top', 'Áo dài nam vàng be', 160, 'Áo dài nam'),
+    _n('vest_den', 'top', 'Vest đen dự tiệc', 180, 'Vest dự tiệc'),
+    _n('vest_xam', 'top', 'Vest xám công sở', 150, 'Vest công sở'),
+    _n('so_mi_ke', 'top', 'Sơ mi kẻ sọc xanh', 70, 'Sơ mi kẻ sọc'),
+    _n('ao_len_co_lo', 'top', 'Áo len cổ lọ xám', 95, 'Áo len cổ lọ'),
+    _n('ao_khoac_da', 'top', 'Áo khoác da đen', 170, 'Áo khoác da'),
+    _n('ao_ba_ba_nam', 'top', 'Áo bà ba nâu', 80, 'Áo bà ba'),
+    _n('ao_gile', 'top', 'Áo gile len nâu', 90, 'Áo gile len'),
+    _n('quan_au_den', 'bottom', 'Quần âu đen', 80, 'Quần âu'),
+    _n('quan_kaki_be', 'bottom', 'Quần kaki be', 70, 'Quần kaki'),
+    _n('quan_short_tt', 'bottom', 'Quần short thể thao đen', 45, 'Quần short thể thao'),
+    _n('quan_jean_den', 'bottom', 'Quần jean đen ống đứng', 60, 'Quần jean ống đứng'),
+    _n('giay_tay_den', 'shoes', 'Giày tây đen bóng', 100, 'Giày tây'),
+    _n('giay_luoi_nau', 'shoes', 'Giày lười da nâu', 90, 'Giày lười da'),
+    _n('dep_quai_hau', 'shoes', 'Dép quai hậu', 45),
+    _n('giay_vai', 'shoes', 'Giày vải bata trắng', 40, 'Giày vải bata'),
+    _n('dong_ho_da', 'acc', 'Đồng hồ dây da', 90),
+    _n('ca_vat', 'acc', 'Cà vạt đỏ đô', 50, 'Cà vạt'),
+    _n('no_co', 'acc', 'Nơ cổ đen', 45, 'Nơ cổ'),
+    _n('that_lung', 'acc', 'Thắt lưng da', 55),
+    _n('kinh_phi_cong', 'acc', 'Kính râm phi công', 70),
+    _n('mu_fedora', 'acc', 'Nón fedora', 75),
 ]
+MENSWEAR = ('toc_re_ngoi', 'toc_mohican', 'toc_vuot', 'toc_dau_dinh', 'toc_dai_buoc', 'ao_dai_nam_lam', 'ao_dai_nam_be',
+            'vest_den', 'vest_xam', 'so_mi_ke', 'ao_len_co_lo', 'ao_khoac_da', 'ao_ba_ba_nam', 'ao_gile', 'quan_au_den',
+            'quan_kaki_be', 'quan_short_tt', 'quan_jean_den', 'giay_tay_den', 'giay_luoi_nau', 'dep_quai_hau', 'giay_vai',
+            'dong_ho_da', 'ca_vat', 'no_co', 'that_lung', 'kinh_phi_cong', 'mu_fedora')   # 👔 24/10
 # 👫 Who a piece is cut for (owner 24/10). Rule: dresses, skirts, áo dài nữ, heels and flats, croptops, hair buns and long
 # hair, earrings, bows and hair clips → nữ; the groom's suit and the men's cuts → nam; T-shirts, shirts, jeans, trousers,
 # hoodies, jackets, sneakers, boots, hats, glasses, bags for both, hair and skin colours → unisex. Only a list to browse:
@@ -240,7 +274,7 @@ FOR_FEMALE = frozenset({
     'no_toc', 'tui_xach', 'bong_tai', 'khan_lua', 'kinh_mat_meo', 'kep_toc', 'no_lua', 'khuyen_tron', 'vuong_mien',
     'bang_do_tai_meo', 'vong_hoa',
 })
-FOR_MALE = frozenset({'toc_ngan', 'toc_undercut', 'toc_mai_bay', 'vest_cuoi'})
+FOR_MALE = frozenset({'toc_ngan', 'toc_undercut', 'toc_mai_bay', 'vest_cuoi', *MENSWEAR})
 GENDERS = ('male', 'female', 'unisex')
 for _x in ITEMS:
     _x['g'] = 'female' if _x['id'] in FOR_FEMALE else 'male' if _x['id'] in FOR_MALE else 'unisex'

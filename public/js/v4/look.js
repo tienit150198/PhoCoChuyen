@@ -29,7 +29,9 @@ const DEFAULTS={"male":{"hair":"toc_ngan","shade":"mau_nau","skin":"da_sang","to
 export const ART={
   hair:{toc_ngan:{},toc_bui:{long:1},toc_dai:{long:1},toc_bob:{},toc_duoi_ngua:{},toc_xoan:{},toc_bui_cao:{},toc_bui_doi:{},toc_bui_thap:{},
     // 1.9.2 (góp ý #200): worn from state.wardrobe_plus (lookOf)
-    toc_song_dai:{long:1},toc_bob_mai:{},toc_duoi_cao:{},toc_bui_tron:{},toc_wolf:{},toc_undercut:{},toc_mai_bay:{},toc_tet:{}},
+    toc_song_dai:{long:1},toc_bob_mai:{},toc_duoi_cao:{},toc_bui_tron:{},toc_wolf:{},toc_undercut:{},toc_mai_bay:{},toc_tet:{},
+    // 👔 đồ nam (owner 24/10)
+    toc_re_ngoi:{},toc_mohican:{},toc_vuot:{},toc_dau_dinh:{},toc_dai_buoc:{}},
   shade:{mau_nau:{c:'#5b4436'},mau_den:{c:'#2f2826'},mau_mat_ong:{c:'#9a6a3f'},mau_hong:{c:'#d98fa3'},mau_xanh_khoi:{c:'#6f8ea8'},mau_bach_kim:{c:'#e3d5b8'}},
   skin:{da_sang:{c:'#f5cfae',neck:'#e6b692',face:'#f8dcc2',ear:'#f3ceb1',hand:'#f5d5ba'},da_hong:{c:'#f8d8c6',neck:'#eab9a3',face:'#fbe2d4',ear:'#f2c9b6',hand:'#f7dccb'},
     da_trung:{c:'#e3b389',neck:'#c9966d',face:'#ebbf98',ear:'#dcaa80',hand:'#e6b890'},da_ngam:{c:'#c48d64',neck:'#a8744e',face:'#cc976e',ear:'#b9825b',hand:'#c79168'}},
@@ -50,12 +52,21 @@ export const ART={
     ao_ba_lo:{c:'#f2efe6',d:'tank',x:'#cfc8bb',tx:'d'},dam_suong:{c:'#7fa88f',d:'tee',dress:'shift',x:'#f3ead2',tx:'l'},
     vay_maxi_hoa:{c:'#f0b9a4',d:'gala',dress:'maxi',x:'#fff3d6'},dam_so_mi:{c:'#9ec1dc',d:'collar',dress:'shirt',x:'#f7f4ec',tx:'l'},
     vay_yem_jean:{c:'#6f8fb8',d:'pinafore',dress:'pinafore',x:'#d9c38a',tx:'l'},dam_hoa_nhi:{c:'#f6d7a7',d:'princess',dress:'princess',x:'#e58fa6',dots:1},
-    dam_kim_sa:{c:'#9b7cc9',d:'gala',dress:'gala',x:'#fff6d0',sparkle:1}},
+    dam_kim_sa:{c:'#9b7cc9',d:'gala',dress:'gala',x:'#fff6d0',sparkle:1},
+    // 👔 đồ nam (owner 24/10): áo dài nam (stand collar, buttons on the side), vests with a tie, striped shirt, turtleneck,
+    // leather jacket, áo bà ba, a knit waistcoat over a white shirt (x: the shirt)
+    ao_dai_nam_lam:{c:'#2f5fa0',d:'aodainam',x:'#e8c66a',long:1},ao_dai_nam_be:{c:'#d9b56a',d:'aodainam',x:'#8a5a2b',long:1},
+    vest_den:{c:'#26242a',d:'suit',x:'#8e2437',ps:1},vest_xam:{c:'#7a7f8a',d:'suit',x:'#2f4f7a'},
+    so_mi_ke:{c:'#dfe9f5',d:'stripes',x:'#5b82b6',tx:'d'},ao_len_co_lo:{c:'#8e8f96',d:'turtle',x:'#74757c',tx:'d'},
+    ao_khoac_da:{c:'#2b2627',d:'leather',x:'#c7ccd4'},ao_ba_ba_nam:{c:'#8a5a3c',d:'baba',x:'#e8d3a8',tx:'l'},
+    ao_gile:{c:'#8a6440',d:'gile',x:'#f7f4ec'}},
   bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'},vay_chu_a:{c:'#2d2a2e',skirt:'flare'},
     quan_ong_rong:{c:'#e6d3b3',wide:1},quan_cargo:{c:'#6b7350',cargo:1},vay_tennis:{c:'#f7f4ec',skirt:'pleat'},quan_jogger:{c:'#34313a',cuff:1},
-    quan_short_jean:{c:'#6f8fb8',short:1,stitch:1},chan_vay_jean:{c:'#6f8fb8',skirt:'flare',stitch:1},vay_xep_ly_dai:{c:'#d9a6b5',skirt:'long',pleats:1}},
+    quan_short_jean:{c:'#6f8fb8',short:1,stitch:1},chan_vay_jean:{c:'#6f8fb8',skirt:'flare',stitch:1},vay_xep_ly_dai:{c:'#d9a6b5',skirt:'long',pleats:1},
+    quan_au_den:{c:'#2a282d',crease:1},quan_kaki_be:{c:'#cbb48a',roll:1},quan_short_tt:{c:'#2b2a30',short:1,stripe:1},quan_jean_den:{c:'#3b3d46',stitch:1}},
   shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1},sandal_nau:{c:'#8a5a3b',flat:1},
-    sneaker_chunky:{c:'#f4f1ea',line:'#cfc8bb',chunky:1},giay_mary_jane:{c:'#2d2a2e',strap:1},boot_co_ngan:{c:'#8a5a3b',ankle:1},dep_quai_ngang:{c:'#3d3533',flat:1,slide:1}},
+    sneaker_chunky:{c:'#f4f1ea',line:'#cfc8bb',chunky:1},giay_mary_jane:{c:'#2d2a2e',strap:1},boot_co_ngan:{c:'#8a5a3b',ankle:1},dep_quai_ngang:{c:'#3d3533',flat:1,slide:1},
+    giay_tay_den:{c:'#1f1c1e',shine:1},giay_luoi_nau:{c:'#7a4a2c',loafer:1},dep_quai_hau:{c:'#5a4636',flat:1,heel:1},giay_vai:{c:'#f4f1ea',line:'#cfc8bb',toe:1}},
   // Each accessory's own colours ("Màu gốc"): c main, d the darker part (frame, band, knot, strap), l the light part.
   acc:{pk_khong:{},kinh_tron:{c:'#6b4f3f',d:'#6b4f3f'},kinh_ram:{c:'#3a3230',d:'#3a3230'},non_la:{c:'#ecd394',d:'#c9a95e',line:'#d6b86f',brim:'#d9bb72'},
     mu_len:{c:'#d8736a',d:'#b95a52',l:'#f3e6d6'},no_toc:{c:'#e0708a',d:'#c85873'},tui_cheo:{c:'#b07a4f',d:'#8a5a3c',l:'#d9a878'},
@@ -67,7 +78,11 @@ export const ART={
     mu_beret:{c:'#bd716b',d:'#8d4d4e',l:'#f0b5a3',anchor:'head',back:1},mu_cao_boi:{c:'#c39761',d:'#785439',l:'#ead2a0',anchor:'head',back:1},
     tai_nghe:{c:'#60799f',d:'#36455f',l:'#c1d8ee',anchor:'head',back:1},vuong_mien:{c:'#dab04d',d:'#94702d',l:'#fff0ba',anchor:'head',back:1},
     bang_do_tai_meo:{c:'#9c879e',d:'#665468',l:'#e3b9cd',anchor:'head',back:1},vong_hoa:{c:'#e69eb4',d:'#71855c',l:'#fff3ce',anchor:'head',back:1},
-    khau_trang:{c:'#a4cbbd',d:'#648d7d',l:'#e3f3ec',anchor:'head',back:1},khan_choang:{c:'#c58363',d:'#895638',l:'#efd2ab',anchor:'body',back:1}},
+    khau_trang:{c:'#a4cbbd',d:'#648d7d',l:'#e3f3ec',anchor:'head',back:1},khan_choang:{c:'#c58363',d:'#895638',l:'#efd2ab',anchor:'body',back:1},
+    // 👔 đồ nam (owner 24/10). Kính phi công: c the gold frame, d the lenses.
+    dong_ho_da:{c:'#7a4a2c',d:'#4f2f1c',l:'#f3efe6'},ca_vat:{c:'#7d1f2c',d:'#4f1019',l:'#c9a0a8'},no_co:{c:'#26242a',d:'#111014',l:'#5b5860'},
+    that_lung:{c:'#5a3a26',d:'#3a2418',l:'#d9b25a'},kinh_phi_cong:{c:'#c9a24a',d:'#2f3a44',l:'#ffffff'},
+    mu_fedora:{c:'#5b5148',d:'#2f2925',l:'#a89a88',anchor:'head',back:1}},
 };
 /* Bảng màu (1.3.1 accessories, góp ý #70; then clothes, shoes and furniture): look.tint = {item id: colour id};
  * ids, names and prices in game/wardrobe.py COLORS. c main, d darker, l lighter. Furniture: v4/deco-art.js tint.
@@ -140,6 +155,7 @@ function hairBack(h,c){
     case'toc_duoi_cao':return `<path d="M50 12Q72 6 70 34Q68 52 60 50Q66 34 54 20Z" fill="${c}"/>`;
     case'toc_bui_tron':return `<g fill="${c}"><circle cx="25" cy="13" r="9"/><circle cx="55" cy="13" r="9"/></g>`;
     case'toc_wolf':return `<path d="M19 40Q14 52 20 58L24 50L27 58L30 48M61 40Q66 52 60 58L56 50L53 58L50 48" fill="${c}"/>`;
+    case'toc_dai_buoc':return `<path d="M54 40Q67 48 62 66Q58 71 56 62Q60 52 52 46Z" fill="${c}"/><path d="M53 45l5 3" stroke="#3a3230" stroke-width="2.4"/>`;
     case'toc_tet':return `<g fill="${c}"><circle cx="58" cy="52" r="5"/><circle cx="60" cy="60" r="4.8"/><circle cx="61" cy="68" r="4.5"/><circle cx="62" cy="75" r="4.2"/></g><circle cx="62" cy="79" r="2" fill="#e0708a"/>`;
   }
   return '';
@@ -160,6 +176,11 @@ function hairFront(h,c){
     case'toc_wolf':return `<path d="M20 38Q16 12 40 12Q64 12 60 38L56 28L52 33L49 24Q40 30 31 24L28 33L24 28Z" fill="${c}"/>`;
     case'toc_undercut':return `<path d="M22 32Q24 12 42 12Q60 13 58 30Q50 22 40 22Q30 22 22 32Z" fill="${c}"/><path d="M20 36V44M60 36V44" stroke="${c}" stroke-opacity=".45" stroke-width="3"/>`;
     case'toc_tet':return `<path d="M21 37Q21 15 40 15Q59 15 59 37Q50 26 40 24Q30 26 21 37Z" fill="${c}"/>`;
+    case'toc_re_ngoi':return `<path d="M20 37Q18 13 40 12Q62 13 60 37Q58 24 50 21Q38 25 27 22Q22 28 20 37Z" fill="${c}"/><path d="M30 14Q32 19 29 23" fill="none" stroke="#00000035" stroke-width="1.4"/>`;
+    case'toc_mohican':return `<path d="M24 34Q22 18 40 17Q58 18 56 34Q50 27 40 27Q30 27 24 34Z" fill="${c}" fill-opacity=".45"/><path d="M34 26L33 9L37 12L40 3L43 12L47 9L46 26Z" fill="${c}"/>`;
+    case'toc_vuot':return `<path d="M20 36Q18 17 26 15L28 6L34 12L40 3L46 12L52 6L54 15Q62 17 60 36Q52 24 40 24Q28 24 20 36Z" fill="${c}"/>`;
+    case'toc_dau_dinh':return `<path d="M21 33Q21 15 40 15Q59 15 59 33Q50 26 40 26Q30 26 21 33Z" fill="${c}" fill-opacity=".85"/><path d="M30 19v3M36 17v3M42 17v3M48 18v3" stroke="#00000030" stroke-width="1.2"/>`;
+    case'toc_dai_buoc':return `<path d="M21 38Q20 15 40 14Q60 15 59 38Q55 26 41 22Q28 26 21 38Z" fill="${c}"/>`;
   }
   return `<path d="M21 38Q21 15 40 15Q59 15 59 38Q52 25 41 22Q31 26 21 38Z" fill="${c}"/>`;
 }
@@ -183,7 +204,13 @@ export function topDetail(t,sk){
     case'aodai':return `<rect x="33" y="57" width="14" height="6" rx="2.5" fill="${x}"/><path d="M40 63Q48 66 55 73" fill="none" stroke="${x}" stroke-width="1.8"/><g fill="${x}"><circle cx="24" cy="72" r="1.4"/><circle cx="30" cy="77" r="1.4"/><circle cx="56" cy="77" r="1.4"/></g>`;
     case'logo':return `<path d="M50 70c-3-3-6 0-3 3l3 3 3-3c3-3 0-6-3-3z" fill="${x}"/><path d="M33 61q7 5 14 0" fill="none" stroke="#d98d96" stroke-width="2.2"/>`;
     case'flowers':return `<g fill="${x}"><circle cx="22" cy="73" r="2.2"/><circle cx="31" cy="68" r="1.8"/><circle cx="52" cy="69" r="2.2"/><circle cx="59" cy="76" r="1.8"/><circle cx="44" cy="77" r="1.8"/></g><path d="M31 60L40 66L35 70ZM49 60L40 66L45 70Z" fill="#6aaab2"/>`;
-    case'suit':return `<path d="M33 60H47L40 76Z" fill="#f7f4ec"/><path d="M33 60L40 76M47 60L40 76" stroke="#00000030" stroke-width="1.2"/>`+
+    case'aodainam':return `<rect x="33" y="56" width="14" height="7" rx="2" fill="${x}"/><path d="M40 63Q47 66 52 72" fill="none" stroke="${x}" stroke-width="1.6"/><g fill="${x}"><circle cx="44" cy="65" r="1.1"/><circle cx="48" cy="68" r="1.1"/><circle cx="51" cy="71" r="1.1"/></g>`;
+    case'stripes':return `<g stroke="${x}" stroke-width="1.6"><path d="M24 66V80M31 64V80M49 64V80M56 66V80"/></g><path d="M31 60L40 66L35 71ZM49 60L40 66L45 71Z" fill="#f7f4ec"/><circle cx="40" cy="72" r="1.1" fill="#bdb5a3"/><circle cx="40" cy="77" r="1.1" fill="#bdb5a3"/>`;
+    case'turtle':return `<rect x="29" y="55" width="22" height="10" rx="4" fill="${x}"/><path d="M31 59H49M31 62H49" stroke="#00000022" stroke-width="1"/>`;
+    case'leather':return `<path d="M31 60L38 70L34 74ZM49 60L42 70L46 74Z" fill="#00000045"/><path d="M41 64V80" stroke="${x}" stroke-width="1.4"/><path d="M24 74h8M48 74h8" stroke="${x}" stroke-width="1.2"/>`;
+    case'baba':return `<path d="M33 60q7 5 14 0" fill="none" stroke="${x}" stroke-width="2"/><g fill="${x}"><circle cx="40" cy="68" r="1.3"/><circle cx="40" cy="74" r="1.3"/></g><path d="M24 72h8v6h-8zM48 72h8v6h-8z" fill="none" stroke="${x}" stroke-width="1.2"/>`;
+    case'gile':return `<path d="M32 59H48L40 77Z" fill="${x}"/><path d="M32 59L40 77L48 59" fill="none" stroke="#00000033" stroke-width="1.2"/><path d="M34 59l6 5 6-5" fill="${x}" stroke="#00000022" stroke-width=".8"/><circle cx="40" cy="79" r="1" fill="#00000055"/>`;
+    case'suit':return `<path d="M33 60H47L40 76Z" fill="#f7f4ec"/><path d="M33 60L40 76M47 60L40 76" stroke="#00000030" stroke-width="1.2"/>`+(t.ps?`<path d="M51 68h5l-1 3h-4z" fill="#f7f4ec"/>`:'')+
       (t.bow?`<path d="M40 64l-6-3.5v7zM40 64l6-3.5v7z" fill="${x}"/><circle cx="40" cy="64" r="1.7" fill="${x}"/><circle cx="54" cy="69" r="2.6" fill="#f4a6b8"/><circle cx="54" cy="69" r="1" fill="#f3d590"/>`
         :`<path d="M39 62h2l1.2 9L40 74l-2.2-3z" fill="${x}"/>`);
   }
@@ -211,6 +238,11 @@ export function accBust(a,k){
     case'khuyen_tron':return `<g fill="none" stroke="${k.c}" stroke-width="1.5"><circle cx="21" cy="52" r="3.6"/><circle cx="59" cy="52" r="3.6"/></g>`;
     case'khan_bandana':return `<path d="M20 26Q40 14 60 26L60 31Q40 20 20 31Z" fill="${k.c}"/><path d="M59 28l9 6-6 3z" fill="${k.d}"/><g fill="${k.l}"><circle cx="32" cy="24" r="1"/><circle cx="40" cy="22" r="1"/><circle cx="48" cy="24" r="1"/></g>`;
     case'balo_mini':return `<path d="M25 62L27 80M55 62L53 80" stroke="${k.d}" stroke-width="3" stroke-linecap="round"/><rect x="62" y="64" width="10" height="14" rx="3" fill="${k.c}"/>`;
+    case'dong_ho_da':return `<rect x="62" y="72" width="9" height="5" rx="2" fill="${k.c}"/><circle cx="66.5" cy="74.5" r="2.3" fill="${k.l}" stroke="${k.d}" stroke-width=".8"/>`;
+    case'ca_vat':return `<path d="M38 60h4l1 3-1.5 2 2.5 12-4 3-4-3 2.5-12-1.5-2z" fill="${k.c}"/><path d="M38 60h4l1 3h-6z" fill="${k.d}"/><path d="M38.5 70l3 1.5M38 74l4 1.5" stroke="${k.l}" stroke-width=".8"/>`;
+    case'no_co':return `<path d="M40 61l-6-3.5v7zM40 61l6-3.5v7z" fill="${k.c}"/><circle cx="40" cy="61" r="1.6" fill="${k.d}"/>`;
+    case'that_lung':return `<rect x="14" y="76.5" width="52" height="3.5" fill="${k.c}"/><rect x="37" y="75.5" width="6" height="4.5" rx="1" fill="none" stroke="${k.l}" stroke-width="1.2"/>`;
+    case'kinh_phi_cong':return `<g fill="${k.d}" fill-opacity=".88" stroke="${k.c}" stroke-width="1.2"><path d="M26 36H38Q39 44 33 46Q26 46 26 36Z"/><path d="M54 36H42Q41 44 47 46Q54 46 54 36Z"/></g><path d="M38 36.5Q40 35 42 36.5" fill="none" stroke="${k.c}" stroke-width="1.2"/><path d="M29 38.5h4" stroke="${k.l}" stroke-opacity=".6" stroke-width="1.1"/>`;
     case'kep_toc':return `<g transform="rotate(-20 55 22)"><rect x="49" y="18" width="13" height="7" rx="3" fill="${k.c}"/><path d="M51 25v3M54.5 25v3M58 25v3" stroke="${k.d}" stroke-width="1.4"/></g>`;
   }
   return '';
@@ -295,7 +327,7 @@ export function rankRef(state){
   if(!o?.grade?.id||!o.org||lookOf(state).uniform===false)return null;
   return {o:o.org,g:o.grade.id};
 }   // 📱 held: the phone in use (game/gadgets.py); never in lookOf (live frames refuse unknown keys)
-const SHORT_HAIR=new Set(['toc_ngan','toc_wolf','toc_undercut']);
+const SHORT_HAIR=new Set(['toc_ngan','toc_wolf','toc_undercut','toc_re_ngoi','toc_mohican','toc_vuot','toc_dau_dinh']);
 export function figureOf(Lk,g){
   const top=art(Lk,'top');
   // The default shade keeps the two browns the scene always used.
@@ -503,6 +535,15 @@ export function paintLegs(c,F,step,K=CANVAS){
   if(s.chunky){K.R(c,-22,-1+step,21,5,'#e3dccd',3);K.R(c,2,-1-step,21,5,'#e3dccd',3);}
   K.R(c,-21,(s.flat?-4:-7)+step,19,s.flat?7:10,s.c,5,s.line||null,1.2);K.R(c,3,(s.flat?-4:-7)-step,19,s.flat?7:10,s.c,5,s.line||null,1.2);
   if(s.strap){K.L(c,-19,-5+step,-5,-5+step,'#fbf7ee',1.4);K.L(c,5,-5-step,19,-5-step,'#fbf7ee',1.4);}
+  // 👔 đồ nam: polished dress shoes, the loafers' band, the strap-back sandals' heel strap, the canvas shoes' toe cap;
+  // trousers with a crease, rolled chinos, sports shorts with a side stripe
+  if(s.shine){K.E(c,-14,-4+step,3.2,1.4,'#ffffff66');K.E(c,10,-4-step,3.2,1.4,'#ffffff66');}
+  if(s.loafer){K.R(c,-17,-6+step,11,2.6,'#00000045',1);K.R(c,7,-6-step,11,2.6,'#00000045',1);}
+  if(s.heel){K.L(c,-20,-10+step,-20,-3+step,s.c,2.6);K.L(c,22,-10-step,22,-3-step,s.c,2.6);K.L(c,-19,-8+step,-5,-8+step,s.c,1.8);K.L(c,5,-8-step,19,-8-step,s.c,1.8);}
+  if(s.toe){K.R(c,-21,-3+step,7,5,'#ffffff',2,s.line,1);K.R(c,15,-3-step,7,5,'#ffffff',2,s.line,1);K.L(c,-14,-6+step,-9,-6+step,s.line,1);K.L(c,9,-6-step,14,-6-step,s.line,1);}
+  if(b.crease){K.L(c,-11.5,-19,-11.5,-3,'#ffffff30',1);K.L(c,11.5,-19,11.5,-3,'#ffffff30',1);}
+  if(b.roll&&!s.tall){K.R(c,-19,-8,15,4,'#ffffff45',2);K.R(c,4,-8,15,4,'#ffffff45',2);}
+  if(b.stripe){K.L(c,-19.5,-21,-19.5,-12,'#f8f4ec',1.6);K.L(c,19.5,-21,19.5,-12,'#f8f4ec',1.6);}
   if(s.slide){K.R(c,-21,-4+step,19,3,'#ffffff55',1.5);K.R(c,3,-4-step,19,3,'#ffffff55',1.5);}
   if(b.wide){K.P(c,[[-19,-20],[-3,-20],[-1,-2],[-23,-2]],b.c);K.P(c,[[3,-20],[19,-20],[23,-2],[1,-2]],b.c);}
   if(b.dress)paintDress(c,F,K);
@@ -525,6 +566,7 @@ export function paintHairBack(c,F,K=CANVAS){
   else if(h==='toc_duoi_cao'){K.E(c,24,-116,9,9,col);K.E(c,36,-96,8,22,col);K.E(c,38,-76,6,9,col);}
   else if(h==='toc_wolf'){K.R(c,-31,-96,62,34,col,14);for(const s of [-1,1])K.P(c,[[s*31,-80],[s*37,-62],[s*24,-70]],col);}
   else if(h==='toc_tet')for(const [x,y,r] of [[26,-62,6],[28,-52,5.8],[29,-42,5.5],[29,-33,5]])K.E(c,x,y,r,r,col);
+  else if(h==='toc_dai_buoc'){K.E(c,24,-60,7,16,col);K.R(c,19,-74,10,5,'#3a3230',2);}
   if(h==='toc_song_dai')for(const s of [-1,1])for(const [y,r] of [[-48,8],[-38,8],[-30,7]])K.E(c,s*28,y,r,r,col);
 }
 /** What the character wears on the torso when the work layer is off. */
@@ -541,13 +583,19 @@ export function paintTop(c,F,K=CANVAS){
     case'aodai':K.R(c,-7,-56,14,6,x,3);K.L(c,0,-50,14,-40,x,1.8);K.E(c,-12,-30,1.8,1.8,x);K.E(c,10,-26,1.8,1.8,x);break;
     case'logo':K.heart(c,9,-32,.26,x);break;
     case'flowers':for(const [px,py] of [[-13,-42],[10,-45],[-6,-28],[13,-27],[1,-36]])K.bloom(c,px,py,4,x);break;
-    case'suit':K.P(c,[[-8,-52],[8,-52],[0,-32]],'#f7f4ec');if(t.bow){K.P(c,[[0,-47],[-7,-51],[-7,-43]],x);K.P(c,[[0,-47],[7,-51],[7,-43]],x);K.E(c,13,-40,3,3,'#f4a6b8');}else K.P(c,[[-2,-49],[2,-49],[3,-37],[0,-33],[-3,-37]],x);break;
+    case'suit':K.P(c,[[-8,-52],[8,-52],[0,-32]],'#f7f4ec');if(t.bow){K.P(c,[[0,-47],[-7,-51],[-7,-43]],x);K.P(c,[[0,-47],[7,-51],[7,-43]],x);K.E(c,13,-40,3,3,'#f4a6b8');}else K.P(c,[[-2,-49],[2,-49],[3,-37],[0,-33],[-3,-37]],x);if(t.ps)K.R(c,11,-42,6,4,'#f7f4ec',1);break;
     case'crop':K.R(c,-21,-27,42,10,F.skin.c,4);K.L(c,-21,-28,21,-28,x,2.5);K.L(c,-8,-51,8,-51,x,2.5);break;
     case'babytee':K.L(c,-8,-51,8,-51,x,3);K.P(c,[[0,-42],[2,-38],[6,-38],[3,-35],[4,-31],[0,-33],[-4,-31],[-3,-35],[-6,-38],[-2,-38]],x);break;
     case'bomber':K.L(c,-21,-19,21,-19,x,4);K.stroke(c,'M-10 -51Q0 -44 10 -51',x,3);K.L(c,0,-47,0,-20,'#e8e2d4',1.4);K.E(c,13,-42,2,2,x);break;
     case'overshirt':K.P(c,[[-7,-52],[7,-52],[6,-18],[-6,-18]],x);K.R(c,-24,-22,48,9,t.c,4);K.P(c,[[-10,-52],[-3,-44],[-8,-41]],'#00000022');K.P(c,[[10,-52],[3,-44],[8,-41]],'#00000022');break;
     case'denim':K.P(c,[[-10,-52],[0,-44],[-5,-40]],x);K.P(c,[[10,-52],[0,-44],[5,-40]],x);K.R(c,-17,-42,9,7,'#00000022',2);K.R(c,8,-42,9,7,'#00000022',2);K.E(c,0,-36,1.4,1.4,'#e8e2d4');K.E(c,0,-28,1.4,1.4,'#e8e2d4');break;
     case'tank':K.R(c,-23,-52,46,12,F.skin.c,12);K.R(c,-14,-52,7,10,t.c,2);K.R(c,7,-52,7,10,t.c,2);K.stroke(c,'M-8 -45Q0 -40 8 -45',x,2);break;
+    case'aodainam':K.R(c,-7,-57,14,7,x,3);K.stroke(c,'M0 -50Q8 -46 13 -38',x,1.6);for(const [px,py] of [[5,-47],[9,-43],[12,-39]])K.E(c,px,py,1.4,1.4,x);break;
+    case'stripes':for(const px of [-16,-8,8,16])K.L(c,px,-48,px,-18,x,1.6);K.P(c,[[-10,-52],[0,-44],[10,-52]],'#f7f4ec');K.E(c,0,-38,1.5,1.5,'#bdb5a3');K.E(c,0,-29,1.5,1.5,'#bdb5a3');break;
+    case'turtle':K.R(c,-11,-58,22,9,x,4);K.L(c,-10,-54,10,-54,'#00000022',1.2);K.L(c,-21,-27,21,-27,x,3);break;
+    case'leather':K.P(c,[[-10,-52],[-2,-40],[-6,-36]],'#00000045');K.P(c,[[10,-52],[2,-40],[6,-36]],'#00000045');K.L(c,1,-46,1,-18,x,1.4);K.L(c,-18,-26,-10,-26,x,1.2);K.L(c,10,-26,18,-26,x,1.2);break;
+    case'baba':K.stroke(c,'M-8 -51Q0 -45 8 -51',x,2);K.E(c,0,-38,1.6,1.6,x);K.E(c,0,-29,1.6,1.6,x);K.R(c,-18,-30,9,7,'#00000000',2,x,1.2);K.R(c,9,-30,9,7,'#00000000',2,x,1.2);break;
+    case'gile':K.P(c,[[-9,-52],[9,-52],[0,-30]],x);K.stroke(c,'M-9 -52L0 -30L9 -52','#00000033',1.2);K.E(c,0,-26,1.4,1.4,'#00000055');K.E(c,0,-20,1.4,1.4,'#00000055');break;
     case'slip':K.R(c,-23,-52,46,14,F.skin.c,12);K.L(c,-10,-51,-10,-38,x,1.5);K.L(c,10,-51,10,-38,x,1.5);K.stroke(c,'M-14 -39Q0 -33 14 -39',t.c,3);break;
   }
   if(t.os&&t.d==='hood')K.R(c,-25,-22,50,9,t.c,4);   // oversize: the hem falls over the hips
@@ -566,6 +614,11 @@ export function paintHairFront(c,F,K=CANVAS){
   else if(h==='toc_wolf')for(const x of [-14,-2,10])K.P(c,[[x-5,-112],[x+5,-112],[x+1,-100]],F.hair);
   else if(h==='toc_undercut'){K.E(c,4,-117,22,9,F.hair);for(const s of [-1,1])K.R(c,s>0?24:-33,-96,9,16,F.skin.ear,4);}
   else if(h==='toc_tet')K.E(c,29,-29,3.4,3.4,'#e0708a');
+  // 👔 đồ nam (owner 24/10)
+  else if(h==='toc_re_ngoi'){K.stroke(c,'M-8 -116Q10 -114 26 -98',F.hair,7);K.stroke(c,'M-12 -117Q-14 -108 -18 -100','#00000033',1.4);}
+  else if(h==='toc_mohican'){K.R(c,-7,-132,14,30,F.hair,6);K.P(c,[[-7,-126],[0,-142],[7,-126]],F.hair);}
+  else if(h==='toc_vuot')for(const x of [-18,-6,6,18])K.P(c,[[x-7,-110],[x+1,-129],[x+7,-110]],F.hair);
+  else if(h==='toc_dau_dinh')for(const x of [-16,-8,0,8,16])K.L(c,x,-114,x,-108,'#00000026',1.4);
 }
 /** The one accessory (last, over the face and hair). */
 export function paintAcc(c,F,K=CANVAS,direction='se'){
@@ -591,6 +644,11 @@ export function paintAcc(c,F,K=CANVAS,direction='se'){
     case'khuyen_tron':K.ring(c,-29,-58,4.2,k.c,1.6);K.ring(c,29,-58,4.2,k.c,1.6);break;
     case'khan_bandana':K.R(c,-31,-112,62,10,k.c,5);K.P(c,[[26,-108],[38,-100],[33,-96]],k.d);K.E(c,-14,-107,1.4,1.4,k.l);K.E(c,0,-108,1.4,1.4,k.l);K.E(c,14,-107,1.4,1.4,k.l);break;
     case'balo_mini':K.R(c,-33,-48,10,22,k.c,5);K.R(c,23,-48,10,22,k.c,5);K.L(c,-15,-52,-17,-30,k.d,3);K.L(c,15,-52,17,-30,k.d,3);K.E(c,-28,-36,1.6,1.6,k.l);break;
+    case'dong_ho_da':K.R(c,19,-42,12,5,k.c,2);K.E(c,25,-39.5,3,3,k.l);K.ring(c,25,-39.5,3,k.d,1);break;
+    case'ca_vat':K.P(c,[[-3,-52],[3,-52],[4,-48],[2,-46],[5,-28],[0,-24],[-5,-28],[-2,-46],[-4,-48]],k.c);K.P(c,[[-3,-52],[3,-52],[4,-48],[-4,-48]],k.d);K.L(c,-2,-40,3,-38,k.l,1);K.L(c,-3,-33,4,-31,k.l,1);break;
+    case'no_co':K.P(c,[[0,-50],[-8,-54],[-8,-46]],k.c);K.P(c,[[0,-50],[8,-54],[8,-46]],k.c);K.E(c,0,-50,2.2,2.2,k.d);break;
+    case'that_lung':K.R(c,-23,-21,46,5,k.c,1);K.R(c,-4,-22,8,7,'#00000000',1.5,k.l,1.6);break;
+    case'kinh_phi_cong':K.P(c,[[-21,-85],[-3,-85],[-4,-77],[-10,-73],[-18,-75]],k.d);K.P(c,[[21,-85],[3,-85],[4,-77],[10,-73],[18,-75]],k.d);K.L(c,-21,-85,21,-85,k.c,1.6);K.L(c,-16,-82,-11,-82,'#ffffff70',1.3);break;
     case'kep_toc':K.R(c,17,-113,13,7,k.c,3);K.L(c,20,-106,20,-103,k.d,1.4);K.L(c,24,-106,24,-103,k.d,1.4);K.L(c,28,-106,28,-103,k.d,1.4);break;
   }
 }
@@ -622,6 +680,10 @@ function paintAccessoryShape(c,id,k,K,direction='se'){
     case'khau_trang':
       for(const s of [-1,1]){K.L(c,s*20,-70,s*31,-77,k.c,2);K.L(c,s*20,-60,s*31,-67,k.c,2);}
       if(!back){K.P(c,[[-23,-75],[0,-78],[23,-75],[20,-57],[0,-53],[-20,-57]],k.c);K.L(c,-16,-67,16,-67,k.l,1.2);K.L(c,-14,-61,14,-61,k.d,1);}break;
+    case'mu_fedora':   // 👔 owner 24/10: the brim, a pinched crown, the band (a small feather in front)
+      K.P(c,[[-44,-104],[-30,-98],[30,-98],[44,-104],[30,-109],[-30,-109]],k.c);
+      K.P(c,[[-24,-106],[-22,-128],[-8,-135],[0,-130],[8,-135],[22,-128],[24,-106]],k.c);
+      K.R(c,-24,-115,48,7,k.d,2);if(!back)K.P(c,[[side*14,-113],[side*22,-124],[side*19,-112]],k.l);break;
     case'khan_choang':
       K.P(c,[[-20,-55],[20,-55],[22,-43],[10,-39],[-20,-44]],k.c);
       if(back){K.P(c,[[-12,-44],[3,-43],[8,-13],[-6,-11]],k.d);K.P(c,[[2,-44],[14,-44],[18,-21],[7,-18]],k.c);}

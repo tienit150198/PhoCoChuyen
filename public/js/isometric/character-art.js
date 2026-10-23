@@ -124,10 +124,11 @@ function extractView(entry,direction,walkFrame=0){
   const view={cv,x:x0,y:y0,w:Math.max(1,x1-x0+1),h:Math.max(1,y1-y0+1),rect};entry.views.set(key,view);return view;
 }
 function fallback(canvas,o){const c=canvas.getContext('2d');c.translate(WIDTH/2,FOOT-3);c.scale(.9,.9);paintPlayer(c,figureOf(o.look,o.gender),CANVAS);}
-const GLASSES=new Set(['kinh_tron','kinh_ram','kinh_mat_meo','kinh_can']);
-const BODY_ITEMS=new Set(['tui_cheo','tui_xach','khan_lua','vong_co','dong_ho','balo_mini','khan_choang']);
-const COVERING_HATS=new Set(['non_la','mu_len','mu_bucket','mu_luoi_trai','mu_beret','mu_cao_boi']);
-const REAR_ITEMS=new Set(['non_la','mu_len','no_toc','no_lua','kep_toc','mu_bucket','mu_luoi_trai','khan_bandana',...BODY_ITEMS]);
+const GLASSES=new Set(['kinh_tron','kinh_ram','kinh_mat_meo','kinh_can','kinh_phi_cong']);
+const BODY_ITEMS=new Set(['tui_cheo','tui_xach','khan_lua','vong_co','dong_ho','balo_mini','khan_choang','dong_ho_da','ca_vat','no_co','that_lung']);
+const NECKWEAR=new Set(['ca_vat','no_co']);   // 👔 a tie or a bow tie: seen from the front only
+const COVERING_HATS=new Set(['non_la','mu_len','mu_bucket','mu_luoi_trai','mu_beret','mu_cao_boi','mu_fedora']);
+const REAR_ITEMS=new Set(['non_la','mu_len','no_toc','no_lua','kep_toc','mu_bucket','mu_luoi_trai','khan_bandana',...[...BODY_ITEMS].filter(x=>!NECKWEAR.has(x))]);
 const HALO='rgba(43,29,26,.88)',HALO_R=1.6;
 /** Owner 22/10 ("mặc vào thì thấy tốt hơn, nhìn rõ"): what is worn over the illustrated chibi gets a thin dark outline, so
  * a cap, a bag or a pair's charm stays readable over any shirt at a phone's normal zoom (≈0.42 of the stamp). Drawn on a
