@@ -18,7 +18,8 @@ const now=()=>globalThis.performance?.now?.()??Date.now();
  * refresh); nothing at all while the tab is hidden, the canvas is off screen or a sheet covers it. */
 const FULL=1000/60,AMBIENT=100,IDLE=200,STILL=500,LONG_IDLE=20000,TOUCH=1500,SLACK=4;
 /* Slow drawing (23/10 lag): ambient frames keep to ≤ 1/AMBIENT_SHARE of the time (a 40 ms frame waits 160 ms, not 100);
- * small screens step 2× → 1.5× → 1.25× pixels while frames stay slow (cost EMA over 30 drawn frames). */
+ * small screens step 2× → 1.5× → 1.25× pixels while frames stay slow (cost EMA over 30 drawn frames); light mode
+ * (perf-mode.js) halves the ambient / idle rates (bobbing and blinking at 5 fps). */
 const AMBIENT_SHARE=4,SLOW_15=12,SLOW_125=22;
 function rounded(c,x,y,w,h,r=8){c.beginPath();c.roundRect(x,y,w,h,r);}
 function rr(c,x,y,w,h,fill,r=8,stroke){rounded(c,x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1.4;c.stroke();}}
@@ -263,7 +264,7 @@ export class World {
       this.next(walking&&!this.paused?0:1000);
       return;}
     const still=this.paused||this.reduced;this.longIdle=t-this.lastActive>LONG_IDLE;
-    const gap=(motion&&!this.paused)||touched?FULL:Math.max(still?STILL:this.longIdle?IDLE:AMBIENT,(this.cost||0)*AMBIENT_SHARE);
+    const gap=(motion&&!this.paused)||touched?FULL:Math.max((still?STILL:this.longIdle?IDLE:AMBIENT)*(lowEnd()?2:1),(this.cost||0)*AMBIENT_SHARE);
     if(this.dirty||t-this.lastDraw>=gap-SLACK)this.paint(t);
     this.next(gap===FULL?0:Math.max(1,this.lastDraw+gap-now()-SLACK));
   }
