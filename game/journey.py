@@ -599,6 +599,8 @@ def upgrade(j: dict) -> None:
     isl.upgrade(j)   # 🏝️
     from . import island_build
     island_build.upgrade(j)   # 🏗️ journey['islb']: buildings on the islands
+    from . import island_design
+    island_design.upgrade(j)   # 🏝️ journey['isld']: the islands' grid, size and decorations
     auc.upgrade(j)   # 🔨
     from . import town_projects
     town_projects.upgrade(j)   # 🏗️
@@ -1220,6 +1222,7 @@ def public(s: dict) -> dict:
         **({'quay': qy.public(s)} if qy.visible(s) else {}),   # 🏪 only once a save reaches it (state size)
         **({'island': ip} if (ip := isl.public(s)) else {}),   # 🏝️ only once an island was bought (state size)
         **({'islb': ibp} if (ibp := _islb_public(s)) else {}),   # 🏗️ only once something was built (state size)
+        **({'isld': idp} if (idp := _isld_public(s)) else {}),   # 🏝️ only once an island was designed (state size)
         **({'abroad': a} if (a := ab.public(s)) else {}),   # ✈️🌏 story mode
         **({'remote': rm} if (rm := _remote_public(s)) else {}),   # 📲 khép ca từ xa: open shifts, the device (game/remote_close.py)
         **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
@@ -1264,6 +1267,11 @@ def _remote_public(s: dict) -> dict | None:
 def _islb_public(s: dict) -> dict | None:
     from . import island_build
     return island_build.public(s)
+
+
+def _isld_public(s: dict) -> dict | None:
+    from . import island_design
+    return island_design.public(s)
 
 
 def _tile_public(s: dict) -> dict:
@@ -1431,6 +1439,8 @@ def validate(s: dict) -> None:
     isl.validate(s)   # 🏝️ journey['island'] (optional)
     from . import island_build
     island_build.validate(s)   # 🏗️ journey['islb'] (optional)
+    from . import island_design
+    island_design.validate(s)   # 🏝️ journey['isld'] (optional)
     auc.validate(s)   # 🔨 journey['uniq'] (optional)
     auc.x_validate(s)   # 🔨 journey['uniq_x'] (optional): vehicles, registrations, yacht names won; plates attached
     auc.y_validate(s)   # 🔨 journey['uniq_y'] (optional, 20/10): furniture, pet pieces, signature tools won

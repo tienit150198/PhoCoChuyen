@@ -6,6 +6,10 @@ yet. Names follow the boards' privacy (game/leaderboard.py _VISIBLE). Its weekly
 game/lb_titles.py BOARD_TITLES['island']) are taken once a day like the other boards, from the same standings, and
 frozen on Monday: a title, never xu (no building and no board pays anything).
 
+🏝️ 24/10 (Thiết kế đảo, game/island_design.py): an island's decorations and lấn biển add their points (island_layout.pts,
+written with the save) to its buildings' — never taking any away: an island's points before 24/10 are what its
+buildings give, the same as before. An island with decorations and no building is on the board too.
+
 Nothing is stored here and the `leaderboard` table is not touched: one read of the 'up' rows (few: islands cost 30M+)
 per process every CACHE_SECONDS.
 """
@@ -20,28 +24,35 @@ CACHE_SECONDS = 30.0
 _SELECT = ('SELECT b.owner AS sid, b.island, b.kind, b.lvl, b.next_lvl, b.ready_at, b.at, a.display, p.name AS gname, '
            'a.uid IS NOT NULL AS acct FROM island_builds b LEFT JOIN accounts a ON a.sid=b.owner '
            "LEFT JOIN leaderboard_players p ON p.sid=b.owner WHERE b.status='up'")
+_LSELECT = ('SELECT l.owner AS sid, l.island, l.pts, l.at, a.display, p.name AS gname, a.uid IS NOT NULL AS acct '
+            "FROM island_layout l LEFT JOIN accounts a ON a.sid=l.owner LEFT JOIN leaderboard_players p ON p.sid=l.owner "
+            "WHERE l.status='up' AND l.pts>0")
 
 
 def now() -> float:
     return time.time()
 
 
-def _ranked(rows, t: float) -> list:
-    """[(sid, score, island, built, reached, row)] best island per player, best first (a tie: who got there first)."""
+def _ranked(rows, t: float, lays=()) -> list:
+    """[(sid, score, island, built, reached, row)] best island per player, best first (a tie: who got there first).
+    `lays`: island_layout rows (🏝️ the decorations' and lấn biển's points, added to the buildings')."""
     from . import island_build as ib
     by: dict = {}
     for r in rows:
-        if r['kind'] not in ib.BUILD:
+        if not ib.known(r['kind']):
             continue
         e = dict(k=r['kind'], l=int(r['lvl']), b=int(r['next_lvl']), t=float(r['ready_at']))
-        by.setdefault((r['sid'], r['island']), dict(rows=[], row=r))['rows'].append(e)
+        by.setdefault((r['sid'], r['island']), dict(rows=[], row=r, extra=0, at=0.0))['rows'].append(e)
+    for r in lays:
+        x = by.setdefault((r['sid'], r['island']), dict(rows=[], row=r, extra=0, at=0.0))
+        x['extra'], x['at'] = int(r['pts']), float(r['at'])
     best: dict = {}
     for (sid, iid), x in by.items():
-        sc = ib.score(x['rows'], t)
+        sc = ib.score(x['rows'], t) + x['extra']
         if sc <= 0:
             continue
         built = sum(1 for e in x['rows'] if ib.standing(e, t))
-        reached = max((e['t'] if e['b'] and e['t'] <= t else 0.0) for e in x['rows']) or float(x['row']['at'])
+        reached = max([x['at'], *((e['t'] if e['b'] and e['t'] <= t else 0.0) for e in x['rows'])]) or float(x['row']['at'])
         cand = (sid, sc, iid, built, reached, x['row'])
         if sid not in best or (sc, -reached) > (best[sid][1], -best[sid][4]):
             best[sid] = cand
@@ -53,10 +64,17 @@ def _rows(db, visible: bool) -> list:
     return db.execute(_SELECT + (f' AND {_VISIBLE}' if visible else '')).fetchall()
 
 
+def _lays(db, visible: bool, sid: str | None = None) -> list:
+    """🏝️ island_layout rows with points (game/island_design.py)."""
+    from .leaderboard import _VISIBLE
+    sql = _LSELECT + (f' AND {_VISIBLE}' if visible else '') + (' AND l.owner=?' if sid else '')
+    return db.execute(sql, (sid,) if sid else ()).fetchall()
+
+
 def standings(db, n: int, t: float | None = None) -> list:
     """[(board, rank, sid, score)] of the top `n` now (game/lb_titles.py)."""
     t = now() if t is None else t
-    return [(BOARD, i + 1, c[0], c[1]) for i, c in enumerate(_ranked(_rows(db, True), t)[:n])]
+    return [(BOARD, i + 1, c[0], c[1]) for i, c in enumerate(_ranked(_rows(db, True), t, _lays(db, True))[:n])]
 
 
 _cache: dict = {}
@@ -85,7 +103,7 @@ def _board(store) -> list:
         if hit and mono - hit[0] < CACHE_SECONDS:
             return hit[1]
     with store.connect() as db:
-        ranked = _ranked(_rows(db, True), now())
+        ranked = _ranked(_rows(db, True), now(), _lays(db, True))
     out = [(c[0], c[1], _public_row(c)) for c in ranked]
     with _lock:
         if len(_cache) > 8:
@@ -114,7 +132,7 @@ def view(store, limit: int, token: str | None = None) -> dict:
     if sid:
         with store.connect() as db:
             me = _privacy(db, sid)
-            own = _ranked(db.execute(_SELECT + ' AND b.owner=?', (sid,)).fetchall(), now())
+            own = _ranked(db.execute(_SELECT + ' AND b.owner=?', (sid,)).fetchall(), now(), _lays(db, False, sid))
         if own:
             ahead = sum(1 for s_, sc, _ in board if s_ != sid and sc > own[0][1])
             me.update(score=own[0][1], rank=1 + ahead, **{k: v for k, v in _public_row(own[0]).items() if k in ('built', 'island')})
