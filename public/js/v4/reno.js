@@ -801,8 +801,8 @@ async function onClick(op,data){
     case'bbCare':{S.dlg.close();if(data.baby==='child')S.env.openSheet?.('home',{jrView:'household'});else S.env.act?.('marriage',{tab:'family',section:'children'});return;}
     case'relax':{const a=(V()?.relax||[]).find(x=>x.id===data.act);if(!a||!a.ok)return;
       const r=await send('jr_relax_do',{act:a.id},{loud:true});if(r)sfx('chime');return;}
-    case'fix':{const r=R();const all=data.part==='all',p=r.parts.find(x=>x.id===data.part),cost=all?r.fix_all:p?.fix;if(!cost)return;
-      const what=all?'Sửa cả nhà?':`Sửa ${low(PART(p.id).name)}?`,body=all?r.parts.filter(x=>x.fix).map(x=>`${PART(x.id).name} ${xu(x.fix)}`).join(' · '):`${condWord(p.c,p.id)} (${p.c}%) → như mới.`;
+    case'fix':{const r=R();const all=data.part==='all',p=r.parts.find(x=>x.id===data.part),cost=all?r.fix_all:p?.fix;if(all?!r.parts.some(x=>due(r,x)):!p||!due(r,p))return;
+      const what=all?'Sửa cả nhà?':`Sửa ${low(PART(p.id).name)}?`,body=all?r.parts.filter(x=>due(r,x)).map(x=>`${PART(x.id).name} ${xu(x.fix)}`).join(' · '):`${condWord(p.c,p.id)} (${p.c}%) → như mới.${insLine(r,p)}`;
       if(await ask(what,body,`Sửa · ${xu(cost)}`,cost)){const res=await send('jr_reno_fix',{part:data.part,cost,confirm:true});if(res)sfx('success');}return;}
     case'up':{const r=R(),p=r.parts.find(x=>x.id===data.part);if(!p?.up)return;
       if(await ask(`${p.up.name}?`,`${PART(p.id).name} như mới, bền hơn. Ấm cúng +${CR().cozy_lv}.`,`Làm · ${xu(p.up.cost)}`,p.up.cost)){const res=await send('jr_reno_up',{part:p.id,lv:p.up.lv,cost:p.up.cost,confirm:true});if(res)sfx('success');}return;}
@@ -1430,6 +1430,18 @@ function photoView(){
 }
 
 /* ---- 🛠️ Sửa nhà (a home you own) ---- */
+/* 🛡️ Feedback #313: a sự cố left for later (game/rui.py) is priced here after the home insurance (r.incident: part →
+ * cover %, so a part can cost 0 xu); wear and upgrades are never insured, and the card says so. */
+const due=(r,p)=>p.fix>0||(r.incident||{})[p.id]!=null;
+const insLine=(r,p)=>{const c=(r.incident||{})[p.id];return c?` Bảo hiểm nhà trả ${c}% sự cố.`:'';};
+function insNote(r){
+  const i=r.insure;
+  const text=!i?'🛡️ Chưa có bảo hiểm nhà. Bảo hiểm chỉ trả sự cố (dột, vỡ ống, chập điện, cháy, ngập). Hao mòn và nâng cấp ở đây tự trả.'
+    :i.wait&&i.now?`🛡️ Bảo hiểm nhà ${i.pct}%: đang chờ hiệu lực (còn ${i.wait} ngày), giờ trả ${i.now}%. Hao mòn và nâng cấp ở đây tự trả.`
+    :i.wait?`🛡️ Bảo hiểm nhà ${i.pct}%: đang chờ hiệu lực (còn ${i.wait} ngày). Hao mòn và nâng cấp ở đây tự trả.`
+    :`🛡️ Bảo hiểm nhà ${i.pct}%: trả sự cố (dột, vỡ ống, chập điện, cháy, ngập). Hao mòn và nâng cấp ở đây tự trả.`;
+  return `<p class="bk-hint rn-ins">${esc(text)}</p>`;
+}
 function condCard(r){
   const worn=r.parts.filter(p=>p.worn);
   return `<section class="bk-card"><h3>Tình trạng nhà · ${r.cond}%</h3><div class="bk-bar ${tone(r.cond)}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${r.cond}" aria-label="Tình trạng nhà"><i style="width:${r.cond}%"></i></div>
@@ -1437,12 +1449,13 @@ function condCard(r){
     <dl class="hs-facts rn-facts"><div><dt>Đồ đạc</dt><dd>${r.count} món</dd></div><div><dt>Đã chi cho nhà</dt><dd>${xu(r.spent)}</dd></div></dl></section>`;
 }
 function fixPanel(r){
-  const need=r.parts.filter(p=>p.fix),ready=r.ready;
+  const need=r.parts.filter(p=>due(r,p)),ready=r.ready;
   const short=n=>n>ready?' disabled':'';
   const all=need.length>1?`<div class="bk-actions rn-fixall">${btn(`🛠️ Sửa hết · ${xu(r.fix_all)}`,'fix',{part:'all'},'primary',short(r.fix_all))}</div>`:'';
   const rows=r.parts.map(p=>{const m=PART(p.id);
     return `<li class="rn-part ${tone(p.c)}"><div class="rn-part-top"><span class="rn-part-ico" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(condWord(p.c,p.id))} · ${p.c}%</small></div><span class="rn-lv" aria-label="Nâng cấp ${p.lv}/2">${'★'.repeat(p.lv)}${'☆'.repeat(2-p.lv)}</span></div>
       <div class="bk-bar ${tone(p.c)}" aria-hidden="true"><i style="width:${p.c}%"></i></div>
-      <div class="rn-part-go">${p.fix?btn(`Sửa · ${xu(p.fix)}`,'fix',{part:p.id},'ghost',short(p.fix)):''}${p.up?btn(`⬆ ${esc(p.up.name)} · ${xu(p.up.cost)}`,'up',{part:p.id},'ghost',short(p.up.cost)):'<span class="rn-max">Đã nâng cấp hết</span>'}</div></li>`;}).join('');
-  return `<section class="bk-card"><h3>Sửa nhà</h3><p class="bk-hint">Có ${xu(ready)} (tài khoản + ví). Mỗi nâng cấp: ấm cúng +${CR().cozy_lv}.</p>${all}<ul class="rn-parts">${rows}</ul></section>`;
+      ${(r.incident||{})[p.id]!=null?`<p class="rn-inc">🛡️ ${esc((r.incident[p.id]?`Có sự cố: bảo hiểm trả ${r.incident[p.id]}%`:'Có sự cố: chưa có bảo hiểm trả'))}</p>`:''}
+      <div class="rn-part-go">${due(r,p)?btn(`Sửa · ${xu(p.fix)}`,'fix',{part:p.id},'ghost',short(p.fix)):''}${p.up?btn(`⬆ ${esc(p.up.name)} · ${xu(p.up.cost)}`,'up',{part:p.id},'ghost',short(p.up.cost)):'<span class="rn-max">Đã nâng cấp hết</span>'}</div></li>`;}).join('');
+  return `<section class="bk-card"><h3>Sửa nhà</h3><p class="bk-hint">Có ${xu(ready)} (tài khoản + ví). Mỗi nâng cấp: ấm cúng +${CR().cozy_lv}.</p>${insNote(r)}${all}<ul class="rn-parts">${rows}</ul></section>`;
 }

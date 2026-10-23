@@ -54,6 +54,8 @@ function tvBack(){
 const flash=()=>S.flash?`<p class="rui-flash ${S.flash.kind}" role="status">${esc(S.flash.text)}</p>`:'';
 
 /* ---- the card (a warning or an event) ---- */
+/* 🛡️ The policy of this kind is on but still waiting (game/rui.py _pol_wait). */
+const polWait=v=>`<span class="rui-chip">${esc(`🛡️ Bảo hiểm ${v.pol_pct}% đang chờ hiệu lực (còn ${v.pol_wait} ngày)`)}</span>`;
 function popHTML(){
   if(S.done)return head(S.done.emoji,S.done.title)+`<div class="wn-body"><p class="rui-line">${esc(S.done.text)}</p>${tvBack()?`<p class="rui-chips">${tvBack()}</p>`:''}</div><footer class="wn-foot"><button type="button" class="btn primary big full" data-rui="close">Xong</button></footer>`;
   const r=R(),c=r?.card,w=!c&&r?.warn;
@@ -62,12 +64,13 @@ function popHTML(){
     if(c.loss)chips.push(`<span class="rui-chip out">${c.kind==='hack'?`−${xu(c.loss)} trong tài khoản`:`−${xu(c.loss)} tiền mặt`}</span>`);
     if(c.loss&&tvBack())chips.push(tvBack());
     if(c.cover)chips.push(`<span class="rui-chip good">🛡️ Bảo hiểm trả ${c.cover}%</span>`);
+    if(c.pol_wait)chips.push(polWait(c));
     return head(c.emoji,c.title,c.left?`Chọn trong ${c.left} ngày`:'')+`<div class="wn-body">${flash()}<p class="rui-line">${esc(c.text)}</p>${chips.length?`<p class="rui-chips">${chips.join('')}</p>`:''}`+
       `<div class="rui-opts">${c.opts.map((o,i)=>optBtn(o,i,'choose',{id:c.id,choice:o.id})).join('')}</div>`+
       help(['Chuyện đời ai cũng có lúc gặp.',c.kind==='hack'?'Bảo hiểm hiện tại không bồi thường vụ hack tài khoản.':'Có bảo hiểm thì trả ít hơn.',`Không chọn sau ${CAT().rules.card_days||3} ngày: tự chọn cách nhẹ nhất.`,'Không bao giờ bị nợ vì chuyện này.'])+`</div>`;
   }
   if(w){
-    return head(w.emoji,w.title,w.days?`Còn ${w.days} ngày`:'Sắp xảy ra')+`<div class="wn-body">${flash()}<p class="rui-line">${esc(w.text)}</p>`+
+    return head(w.emoji,w.title,w.days?`Còn ${w.days} ngày`:'Sắp xảy ra')+`<div class="wn-body">${flash()}<p class="rui-line">${esc(w.text)}</p>${w.pol_wait?`<p class="rui-chips">${polWait(w)}</p>`:''}`+
       `<div class="rui-opts">${w.opts.map((o,i)=>optBtn(o,i,'prevent',{opt:o.id})).join('')}</div>`+
       help(['Phòng trước thì chuyện không xảy ra.','Ngân hàng tránh mất tiền mặt do móc túi; tài khoản vẫn có rủi ro bị hack.','Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.'])+`</div>`+
       `<footer class="wn-foot"><button type="button" class="btn ghost full" data-rui="close">Để sau</button></footer>`;
@@ -91,14 +94,16 @@ function polRow(p){
   const c=CAT().policies.find(x=>x.id===p.id)||{name:p.id,emoji:'🛡️',what:'',cover:80,full:100};
   const notes=[];
   if(!p.on&&!p.can&&!p.company)notes.push('Chưa có gì để bảo hiểm');
-  if(p.on&&p.wait)notes.push(`Có hiệu lực sau ${p.wait} ngày`);
-  else if(p.on&&p.wait_full)notes.push(`Gói 100% có hiệu lực sau ${p.wait_full} ngày, giờ vẫn trả ${c.cover}%`);
+  if(p.on&&p.wait)notes.push(`Đang chờ hiệu lực (còn ${p.wait} ngày)`);
+  else if(p.on&&p.wait_full)notes.push(`Gói 100% đang chờ hiệu lực (còn ${p.wait_full} ngày), giờ vẫn trả ${c.cover}%`);
   const stop=p.on?`<button type="button" class="btn ghost small" data-rui="pol" data-id="${p.id}" data-on="0"${S.busy?' disabled':''}>Ngưng</button>`:'';
   return `<li class="rui-pol${p.on?' on':''}"><div class="rui-row"><span class="rui-ico" aria-hidden="true">${c.emoji}</span><span class="grow"><b>${esc(c.name)}${p.on?' ✓':''}</b><small>${esc(c.what)}</small>${notes.map(n=>`<em class="rui-wait">${esc(n)}</em>`).join('')}</span>${stop}</div>`+
     (p.on||p.can||p.company?`<div class="rui-tiers" role="group" aria-label="${esc(c.name)}">${tierBtn(p,c,false)}${tierBtn(p,c,true)}</div>`:'')+'</li>';
 }
-function gearRow(g,have){
-  const btn=have?'<span class="rui-have">✓ Đã có</span>':`<button type="button" class="btn small" data-rui="gear" data-id="${g.id}"${S.busy?' disabled':''}>Mua · ${xu(g.price)}</button>`;
+/* `g.up`: an upgrade (game/rui.py GEAR, max 80 %, #364): bought after its base gear. */
+function gearRow(g,have,owned=[]){
+  const base=g.up&&!owned.includes(g.up)?CAT().gear.find(x=>x.id===g.up):null;
+  const btn=have?'<span class="rui-have">✓ Đã có</span>':base?`<span class="rui-have">${esc(`Cần ${base.name.toLowerCase()} trước`)}</span>`:`<button type="button" class="btn small" data-rui="gear" data-id="${g.id}"${S.busy?' disabled':''}>${g.up?'Nâng cấp':'Mua'} · ${xu(g.price)}</button>`;
   return `<li class="rui-row${have?' on':''}"><span class="rui-ico" aria-hidden="true">${g.emoji}</span><span class="grow"><b>${esc(g.name)}</b><small>${esc(g.what)}</small></span>${btn}</li>`;
 }
 function ruiPage(){
@@ -112,11 +117,13 @@ function ruiPage(){
   const broken=(r.broken||[]).length?`<h3 class="rui-h">🔧 Đang hỏng</h3><ul class="rui-list">${r.broken.map(b=>`<li class="rui-row"><span class="rui-ico" aria-hidden="true">${b.kind==='xe'?'🚗':'🏠'}</span><span class="grow"><b>${esc(b.name)}</b></span><button type="button" class="btn primary small" data-rui="fix" data-kind="${b.kind}" data-ref="${esc(b.ref)}"${S.busy?' disabled':''}>Sửa · ${xu(b.cost)}</button><button type="button" class="btn ghost small" data-rui="restore" data-kind="${b.kind}" data-ref="${esc(b.ref)}" title="Nhờ một người chơi làm Thợ phục chế"${S.busy?' disabled':''}>🧰 Nhờ thợ</button></li>`).join('')}</ul>`:'';
   return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${wealthNote}${pending}${broken}`+
     `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list rui-pols">${(r.pol||[]).map(polRow).join('')}</ul>`+
-    `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
+    `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id),r.gear||[])).join('')}</ul>`+
     help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Tổng ví, tài khoản, tiết kiệm và vàng dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
       `Trộm/hack: tối đa 1% số dư bị ảnh hưởng và 1.000 xu mỗi vụ. Phạt tiền: tối đa 2% ví và 2.000 xu. Luôn giữ lại 100 xu, hoặc toàn bộ số dư nếu đang dưới 100 xu. Các sự cố sửa chữa và sức khỏe: mỗi lần tối đa ${rules.event_pct||8}%, mỗi tháng tối đa ${rules.month_pct||12}% phần tài sản trên ${fmt(rules.floor||300)} xu.`,
       `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,
-      `Gói trọn 100%: giá gấp ${rules.full_x||2} gói thường, trả hết tiền sửa, tiền khám.`,
+      `Gói trọn 100%: giá gấp ${rules.full_x||2} gói thường, trả hết tiền sửa sự cố, tiền khám.`,
+      'Bảo hiểm nhà trả sự cố (dột, vỡ ống, chập điện, cháy, ngập), cả khi sửa ở Sửa nhà. Không trả hao mòn, nâng cấp, phí bảo trì nhà.',
+      `Đồ chống móc túi, chống hack giảm tối đa ${rules.guard_max||80}%, không có loại 100%.`,
       `Đổi gói lúc nào cũng được: giá mới tính từ hôm nay. Lên 100% thì sau ${rules.wait||3} ngày mới trả đủ, trong lúc chờ vẫn trả 80%.`,
       'Hack chỉ trừ tài khoản thanh toán; trộm chỉ trừ tiền mặt. Tiết kiệm, đầu tư và quỹ nơi làm việc được giữ nguyên.',
       ...(rules.wealth_bands||[]).filter(b=>b.threshold).map(b=>`Từ ${xu(b.threshold)} tài sản: khả năng trộm/hack gấp ${fmt(b.odds_pct/100)} lần; giới hạn thiệt hại nhỏ vẫn giữ nguyên.`),

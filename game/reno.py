@@ -130,6 +130,19 @@ def fix_cost(kind: str, part: str, cond: int) -> int:
     return max(FIX_MIN, -(-PARTS[part]['fix'] * (100 - cond) * size(kind) // 10000))
 
 
+def fix_price(s: dict, own: dict, part: str, cond: int) -> tuple[int, dict | None]:
+    """What fixing `part` of the home you live in costs now, and the 🛡️ sự cố on it (game/rui.py home_incident) or None.
+    Wear is never insured; a sự cố left for later is (feedback #313): when a policy pays for it, that part costs at most
+    what Bảo hiểm & rủi ro would charge after the insurance (0 with the gói trọn 100 %), never more than the plain
+    repair. Without insurance the price is the plain repair, as before."""
+    cost = fix_cost(own['kind'], part, cond)
+    if not cost:
+        return 0, None
+    from . import rui
+    inc = rui.home_incident(s, own['id'], part)
+    return (min(cost, inc['cost']) if inc and inc['cover'] else cost), inc
+
+
 def up_cost(kind: str, part: str, lv: int) -> int:
     """Price of upgrade level `lv` (1 or 2)."""
     return -(-PARTS[part]['up'][lv - 1][1] * size(kind) // 1000) * 10
@@ -400,16 +413,25 @@ def apply(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_reno_fix':
         todo = [x for x in (PART_IDS if part == 'all' else (part,)) if r['parts'][x]['c'] < 100]
         need(todo, 'Nhà đang như mới, chưa cần sửa gì.' if part == 'all' else f'{PARTS[part]["name"]} đang như mới rồi.', 'nothing')
-        cost = sum(fix_cost(kind, x, r['parts'][x]['c']) for x in todo)
+        prices = {x: fix_price(s, own, x, r['parts'][x]['c']) for x in todo}
+        cost = sum(v[0] for v in prices.values())
         need(p.get('cost') == cost, 'Giá sửa vừa thay đổi. Xem lại rồi sửa nhé.', 'stale_quote')
         what = 'Sửa cả nhà' if len(todo) > 1 else f'Sửa {PARTS[todo[0]]["name"].lower()}'
-        _pay(s, cost, f'{what} · {home}', day)
+        if cost:
+            _pay(s, cost, f'{what} · {home}', day)
         for x in todo:
             r['parts'][x]['c'] = 100
+        from . import rui
+        covered = 0
+        for x, (pay, inc) in prices.items():
+            if inc:   # 🛡️ the sự cố on this part is closed too (no second bill in Bảo hiểm & rủi ro)
+                rui.home_fixed(s, own['id'], x, pay, day)
+                covered = max(covered, inc['cover'])
         r['stats']['fixed'] += len(todo)
         r['spent'] += cost
         hs._log(h, day, f'{what}: {", ".join(PARTS[x]["name"].lower() for x in todo)}.', -cost)
-        return dict(message=f'{what} xong, {hs._fmt(cost)} xu. Nhà sáng sủa hẳn!', cozy=cozy_total(s))
+        ins = f' Bảo hiểm nhà trả {covered}% phần sự cố.' if covered else ''
+        return dict(message=f'{what} xong, {hs._fmt(cost)} xu.{ins} Nhà sáng sủa hẳn!', cozy=cozy_total(s))
     x = r['parts'][part]
     lv = p.get('lv')
     need(x['lv'] < LV_MAX, f'{PARTS[part]["name"]} đã nâng cấp hết mức rồi.', 'nothing')
@@ -450,17 +472,28 @@ def public(s: dict) -> dict | None:
     kind = own['kind']
     H = hs.HOMES[kind]
     parts = []
+    incident = {}   # 🛡️ part: % the home insurance pays for the sự cố left on it (game/rui.py home_incident)
     for p in PART_IDS:
         x = r['parts'][p]
         lv = x['lv']
-        parts.append(dict(id=p, c=x['c'], lv=lv, fix=fix_cost(kind, p, x['c']), worn=x['c'] < WORN_AT,
+        fix, inc = fix_price(s, own, p, x['c'])
+        if inc:
+            incident[p] = inc['cover']
+        parts.append(dict(id=p, c=x['c'], lv=lv, fix=fix, worn=x['c'] < WORN_AT,
                           up=dict(lv=lv + 1, name=PARTS[p]['up'][lv][0], cost=up_cost(kind, p, lv + 1)) if lv < LV_MAX else None))
     pts, avg = cozy_total(s), cond_avg(r)
     late = _late(s)
     have = hs._have(s)
     return dict(home=dict(kind=kind, name=H['name'], emoji=H['emoji'], group=H['group']), rooms=rooms(kind), parts=parts,
                 fix_all=sum(x['fix'] for x in parts), cozy=pts, cond=avg, perk=perk_of(pts), perk_on=avg >= COZY_COND and not late, late=late,
-                ready=have['wallet'] + have['balance'], spent=r['spent'], count=len(r['items']))
+                ready=have['wallet'] + have['balance'], spent=r['spent'], count=len(r['items']),
+                incident=incident, insure=_insure(s))
+
+
+def _insure(s: dict) -> dict | None:
+    """🛡️ Bảo hiểm nhà for the Sửa nhà tab (game/rui.py policy_status: pct, now, wait) or None when it is off."""
+    from . import rui
+    return rui.policy_status(s, 'nha')
 
 
 # ---------------------------------------------------------------- validation

@@ -22,8 +22,11 @@ draft, but fair:
   kind 'upkeep'): 🩺 BHYT, 🚗 xe (a share of the motor vehicles' price), 🏠 nhà (a share of the homes' price). Each pays
   COVER % of what its kind costs (prevention included) for an event first warned at least WAIT life days after it was
   switched on. A bill the wallet and the account cannot pay switches the policies off (never a debt).
-* Đồ phòng thân (`gear`, bought once): 👜 túi đeo chéo (móc túi ×½), 🔐 khóa chống trộm (trộm ×0,4), 🗄️ két sắt
-  (a burglary takes a quarter), 🧯 bình chữa cháy (a kitchen fire costs a third).
+* Đồ phòng thân (`gear`, bought once): 👜 túi đeo chéo (móc túi ×½; its upgrade 🎒 túi khóa ×⅕), 🔐 khóa chống trộm
+  (trộm ×0,4), 🗄️ két sắt (a burglary takes a quarter), 🧯 bình chữa cháy (a kitchen fire costs a third), 🔑 bảo mật hai
+  lớp (hack ×0,4; its upgrade 🛡️ nâng cao ×⅕). Never more than THEFT_GUARD_MAX % (80) off a theft or a hack (#364).
+* 🏠 Bảo hiểm nhà pays the sự cố (NHA_SUBS), also when one left for later is fixed in Sửa nhà (home_incident, #313);
+  the wear and the upgrades of game/reno.py and the month's phí bảo trì nhà (game/upkeep.py) are not insured.
 * Integration with the month's bills (game/upkeep.py): a vehicle or a home whose bill could not be paid (waived) is
   twice as likely to break for 10 life days; a home in poor repair (game/reno.py, condition < WORN_AT) twice, a home
   with every part upgraded half. Repairing a home part brings it back to 100; leaving it lowers it (reno shows the
@@ -116,7 +119,7 @@ WALLET = dict(xe='life', nha='home', om='life', moc='life', trom='incident', pha
 POLICIES = {
     'yte': dict(emoji='🩺', name='Bảo hiểm y tế', what='Ốm đau, khám bệnh', cover=80, flat=3, bp=3, most=60),
     'xe': dict(emoji='🚗', name='Bảo hiểm xe', what='Xe hỏng, sửa xe', cover=80, bp=25),
-    'nha': dict(emoji='🏠', name='Bảo hiểm nhà', what='Dột, vỡ ống, chập điện, cháy, ngập', cover=80, bp=8),
+    'nha': dict(emoji='🏠', name='Bảo hiểm nhà', what='Sự cố: dột, vỡ ống, chập điện, cháy, ngập. Không trả hao mòn, nâng cấp', cover=80, bp=8),
 }
 POLICIES['dn'] = dict(emoji='💡', name='Bảo hiểm điện nước', what='Máy bơm, bình nóng lạnh, tủ lạnh, chập điện, vỡ ống', cover=80,
                       flat=2, bp=1, most=20, hbp=3)   # a few xu (by means), + basis points of the homes owned (vỡ ống, chập điện)
@@ -125,16 +128,22 @@ OLD_POL = ('yte', 'xe', 'nha')    # stored in `pol` (the 1.9.20 validator allows
 FULL, FULL_X = 100, 2             # the gói trọn: pays 100 %, costs exactly twice the gói thường
 DN_POWER = ('ong', 'dien')        # the home mishaps the điện nước insurance covers too (reno part 'power')
 
+# `up`: an upgrade of that gear (bought after it, replaces its effect). Owner 23/10 (feedback #364, "bảo hiểm chống
+# móc/hack... giảm còn loại 80% thôi chứ k có loại 100%"): the strongest protection against a pickpocket or a bank hack is
+# 80 %; there is no 100 % tier for theft, ever (a test keeps it so).
 GEAR = {
     'tui': dict(emoji='👜', name='Túi đeo chéo', price=40, what='Móc túi giảm một nửa'),
+    'tui_khoa': dict(emoji='🎒', name='Túi khóa chống móc', price=120, what='Móc túi giảm 80% (thay mức một nửa)', up='tui'),
     'khoa': dict(emoji='🔐', name='Khóa chống trộm', price=150, what='Trộm vào nhà giảm 60%'),
     'ket': dict(emoji='🗄️', name='Két sắt mini', price=500, what='Trộm chỉ lấy được 1/4'),
     'binh': dict(emoji='🧯', name='Bình chữa cháy', price=120, what='Cháy bếp chỉ thiệt 1/3'),
     'hai_lop': dict(emoji='🔑', name='Bảo mật ngân hàng hai lớp', price=1200, what='Giảm 60% khả năng bị hack tài khoản'),
+    'hai_lop_80': dict(emoji='🛡️', name='Bảo mật ngân hàng nâng cao', price=1500, what='Giảm 80% khả năng bị hack (thay mức 60%)', up='hai_lop'),
     'diet_virus': dict(emoji='💻', name='Phần mềm diệt virus', price=1800, what='Giảm một nửa số xu mất khi bị hack, trước giới hạn chung'),
     'bao_dong': dict(emoji='🚨', name='Chuông báo trộm', price=900, what='Giảm một nửa khả năng trộm vào nhà; dùng cùng khóa và két sắt'),
 }
 pi.index(GEAR)   # 💹 07/10 (game/price_index.py)
+THEFT_GUARD_MAX = 80              # % : no gear cuts a theft or a hack by more (owner 23/10, #364)
 
 # ---------------------------------------------------------------- odds and costs
 XE_P = (1200, 360)                # per 10 000 after an actual outing: displayed vehicle / another vehicle
@@ -555,7 +564,7 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
     exposure = wealth_risk(s)['odds_pct']
     if cash >= FLOOR + 100:
         p = MOC_P * (3 if cash > MOC_RICH else 2) // 2 * exposure // 100
-        out.append((p // 2 if 'tui' in r['gear'] else p, 'moc', '', None))
+        out.append((p // 5 if 'tui_khoa' in r['gear'] else p // 2 if 'tui' in r['gear'] else p, 'moc', '', None))
     if cash >= TROM_CASH and _where(s) in ('own', 'rent', 'shared'):
         p = TROM_P * exposure // 100
         if 'khoa' in r['gear']:
@@ -567,7 +576,7 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
         out.append((PHAT_P, 'phat', '', ride))
     if len(r.get('hack_back', [])) < HACK_CASES_MAX and _projected(s, r, 'hack', 'account', None) >= MIN_COST:
         p = HACK_P * exposure // 100
-        out.append((p * 2 // 5 if 'hai_lop' in r['gear'] else p, 'hack', 'account', None))
+        out.append((p // 5 if 'hai_lop_80' in r['gear'] else p * 2 // 5 if 'hai_lop' in r['gear'] else p, 'hack', 'account', None))
     if day < EASE_DAY or wealth(s) < EASE_W:
         out = [(p // 2, k, sub, ref) for p, k, sub, ref in out]
     return [x for x in out if x[0] > 0]
@@ -956,7 +965,7 @@ def warn_options(s: dict, r: dict) -> list[dict]:
     if k == 'hack':
         return [o('secure', '🔐', 'Đổi mã bảo mật & khóa phiên lạ')]
     if k in ('moc', 'trom'):
-        g = 'tui' if k == 'moc' else 'khoa'
+        g = ('tui_khoa' if 'tui' in r['gear'] else 'tui') if k == 'moc' else 'khoa'
         out = []
         if w['sub'] == 'dt':
             out.append(o('can', '📵', 'Cất máy, đi đường cẩn thận'))
@@ -1251,9 +1260,54 @@ def _ensure(s: dict) -> dict:
     return get(s)
 
 
+def _broken_cover(s: dict, r: dict, kind: str, b: dict) -> int:
+    """% the insurance pays to fix what was left broken (a home's điện nước part: the better of nhà and điện nước)."""
+    return cover(s, r, kind, b['d'], 'dien' if kind == 'nha' and b.get('p') == 'power' else '')
+
+
 def fix_cost(s: dict, r: dict, kind: str, ref) -> int:
     b = r['broken'][kind].get(ref)
-    return _part(b['c'], cover(s, r, kind, b['d'], 'dien' if kind == 'nha' and b.get('p') == 'power' else '')) if b else 0
+    return _part(b['c'], _broken_cover(s, r, kind, b)) if b else 0
+
+
+def home_incident(s: dict, hid, part: str) -> dict | None:
+    """🏚️ A sự cố left for later on `part` of home `hid` ({cost: what fixing it costs the player after the insurance,
+    cover: %}; None: none). Feedback #313: game/reno.py Sửa nhà prices that part with it, so a home insured at 100 %
+    never pays an incident there either (before 2.5.10 Sửa nhà charged the full wear price and the insurance was lost)."""
+    r = get(s)
+    b = r['broken']['nha'].get(hid) if r else None
+    if not b or b.get('p') != part:
+        return None
+    cov = _broken_cover(s, r, 'nha', b)
+    return dict(cost=_part(b['c'], cov), cover=cov)
+
+
+def home_fixed(s: dict, hid, part: str, paid: int, day: int) -> None:
+    """game/reno.py fixed `part` of home `hid`: the sự cố on it is closed now (Ấm cúng back at once)."""
+    r = get(s)
+    b = r['broken']['nha'].get(hid) if r else None
+    if not b or b.get('p') != part:
+        return
+    cov = _broken_cover(s, r, 'nha', b)
+    r['broken']['nha'].pop(hid)
+    _stat(r, 'paid', paid)
+    _stat(r, 'covered', b['c'] * cov // 100)
+    if cov:
+        _log(r, day, f'Sửa sự cố nhà · bảo hiểm trả {cov}%', -paid)
+
+
+def policy_status(s: dict, pid: str) -> dict | None:
+    """Policy `pid` for the screens (None: off): pct (its tier), now (% it pays an event warned today), wait (life days
+    until it pays its tier; 0: in force)."""
+    r = get(s)
+    start = started(r, pid) if r else None
+    if start is None:
+        return None
+    day = s['journey']['life_day']
+    full = is_full(r, pid)
+    pct = FULL if full else POLICIES[pid]['cover']
+    since = max(start, r['full'][pid]) if full else start
+    return dict(pct=pct, now=policy_cover(s, r, pid, day), wait=max(0, since + WAIT - day))
 
 
 def action(s: dict, name: str, p: dict) -> dict:
@@ -1365,6 +1419,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         g = GEAR[gid]
         if gid in r['gear']:
             return dict(message=f'Bạn đã có {_lname(g["name"])} rồi.', duplicate=True)
+        need(not g.get('up') or g['up'] in r['gear'], f'Cần có {_lname(GEAR[g.get("up") or gid]["name"])} trước.', 'needs_base')
         need(_have(s) >= g['price'], f'Cần {_fmt(g["price"])} xu.', 'not_enough')
         got = _take(s, g['price'], WALLET['gear'], f'Mua {_lname(g["name"])}')
         r['gear'].append(gid)
@@ -1378,6 +1433,7 @@ def action(s: dict, name: str, p: dict) -> dict:
             return dict(message='Đã sửa xong rồi.', duplicate=True)
         pay = fix_cost(s, r, kind, ref)
         need(_have(s) >= pay, f'Cần {_fmt(pay)} xu để sửa.', 'not_enough')
+        cov = _broken_cover(s, r, kind, b)
         if kind == 'xe':
             from . import garage as gr
             label = f'Sửa xe · {gr.VEHICLES.get(ref, {"name": "xe"})["name"]}'
@@ -1388,7 +1444,6 @@ def action(s: dict, name: str, p: dict) -> dict:
             if rp:
                 rp['c'] = 100
         got = _take(s, pay, WALLET[kind], label) if pay > 0 else 0
-        cov = cover(s, r, kind, b['d'], 'dien' if kind == 'nha' and b.get('p') == 'power' else '')
         r['broken'][kind].pop(ref)
         _stat(r, 'paid', got)
         _stat(r, 'covered', b['c'] - pay)
@@ -1434,8 +1489,10 @@ def warn_view(s: dict, r: dict) -> dict | None:
         emoji, title, text = '🔐', 'Đăng nhập ngân hàng bất thường', 'Có phiên đăng nhập lạ. Khóa ngay miễn phí để tránh mất xu trong tài khoản thanh toán.'
     elif k == 'phat':
         emoji, title, text = '🚧', 'Phường dẹp lòng đường', 'Đỗ xe dưới đường dễ bị phạt.'
-    return dict(kind=k, sub=sub, ref=ref, emoji=emoji, title=title, text=text,
-                days=max(0, w['day'] - s['journey']['life_day']), opts=warn_options(s, r))
+    out = dict(kind=k, sub=sub, ref=ref, emoji=emoji, title=title, text=text,
+               days=max(0, w['day'] - s['journey']['life_day']), opts=warn_options(s, r))
+    _pol_wait(s, out, k)
+    return out
 
 
 def card_view(s: dict, r: dict) -> dict | None:
@@ -1465,8 +1522,17 @@ def card_view(s: dict, r: dict) -> dict | None:
         text = 'Kẻ gian đã chuyển mất một phần xu trong tài khoản thanh toán. Tiết kiệm và quỹ chung không bị trừ.'
     elif k == 'phat':
         text = 'Lần đầu, chú công an chỉ nhắc nhở.' if sub == 'nhac' else 'Đỗ xe dưới lòng đường, bị dán giấy phạt.'
-    return dict(id=c['id'], kind=k, sub=sub, ref=ref, emoji=emoji, title=title, text=text, loss=c['loss'],
-                cover=c['cover'], left=max(0, c['day'] + CARD_DAYS - s['journey']['life_day']), opts=options(s, r))
+    out = dict(id=c['id'], kind=k, sub=sub, ref=ref, emoji=emoji, title=title, text=text, loss=c['loss'],
+               cover=c['cover'], left=max(0, c['day'] + CARD_DAYS - s['journey']['life_day']), opts=options(s, r))
+    _pol_wait(s, out, k)
+    return out
+
+
+def _pol_wait(s: dict, view: dict, kind: str) -> None:
+    """🛡️ The kind's policy is on but still in its waiting days: say so on the card (pol_wait: life days left, pol_pct)."""
+    st = policy_status(s, POLICY_OF[kind]) if kind in POLICY_OF else None
+    if st and st['wait']:
+        view.update(pol_wait=st['wait'], pol_pct=st['pct'])
 
 
 def public(s: dict) -> dict | None:
@@ -1519,7 +1585,7 @@ def catalogue() -> dict:
                 gear=[dict(id=k, **v) for k, v in GEAR.items()],
                 rules=dict(floor=FLOOR, event_pct=EVENT_PCT, month_pct=MONTH_PCT, wait=WAIT, start_day=START_DAY,
                            start_chapter=START_CHAPTER, prevent_pct=PREVENT_PCT, card_days=CARD_DAYS,
-                           hack_pct=THEFT_PCT, hack_max=THEFT_MAX, full_x=FULL_X,
+                           hack_pct=THEFT_PCT, hack_max=THEFT_MAX, full_x=FULL_X, guard_max=THEFT_GUARD_MAX,
                            fine_pct=FINE_PCT, fine_max=FINE_MAX, loss_reserve=RESERVE,
                            wealth_bands=[dict(threshold=t, odds_pct=p, cap_pct=c) for t, p, c in WEALTH_BANDS]))
 
