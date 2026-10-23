@@ -107,6 +107,33 @@ class HomeCoop(Base):
         self.assertTrue(again['duplicate'])
         self.assertEqual(len(self.get(self.a, 'log')['log']), 1)
 
+    def test_friend_turns_and_puts_away_the_owners_furniture_only_with_the_grant(self):
+        """↻ góp ý #330: a housemate or friend the owner allowed turns the owner's sofa a quarter and puts it away again;
+        without the grant (or once revoked) nothing moves."""
+        uid = next(b['id'] for b in self.state(self.a)['journey']['reno']['items'] if b['k'] == 'sofa')
+        room = next(r for r in dc.layout(self.state(self.a))['rooms'] if r['type'] in dc.ITEMS['sofa']['rooms'])['id']
+        body = dict(code=self.codes[self.a], action='put', uid=uid, r=room, x=0, y=0, f=0, rot=1)
+        before = copy.deepcopy(self.state(self.a))
+        for token in (self.b, self.c):                         # no grant yet: neither friend can turn it
+            with self.assertRaises(mr.MarriageError):
+                hg.post(self.store, token, self.state(token), 'deco/act', body)
+        self.assertEqual(self.state(self.a), before)
+        self.grant()
+        out = hg.post(self.store, self.b, self.state(self.b), 'deco/act', body)
+        self.assertEqual(dc.layout(self.state(self.a))['pos'][uid]['rot'], 1)
+        self.assertEqual(next(p for p in out['view']['deco']['items'] if p['id'] == uid)['rot'], 1)
+        body2 = dict(body, rot=2)
+        hg.post(self.store, self.b, self.state(self.b), 'deco/act', body2)
+        self.assertIn('đã xoay', self.get(self.a, 'log')['log'][0]['text'])
+        with self.assertRaises(mr.MarriageError):              # the other friend still has no grant
+            hg.post(self.store, self.c, self.state(self.c), 'deco/act', dict(body, rot=3))
+        for bad in (5, '1', 1.5):
+            with self.subTest(rot=bad), self.assertRaises(Exception):
+                hg.post(self.store, self.b, self.state(self.b), 'deco/act', dict(body, rot=bad))
+        hg.post(self.store, self.b, self.state(self.b), 'deco/act', dict(code=self.codes[self.a], action='pick', uid=uid))
+        self.assertNotIn(uid, dc.layout(self.state(self.a))['pos'])
+        self.assertIn(uid, {b['id'] for b in bag_items(self.state(self.a))})   # back in the owner's own bag
+
     def test_only_moves_no_buying_selling_or_paint(self):
         self.grant()
         uid, room = self.spot()

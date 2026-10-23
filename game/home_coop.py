@@ -37,7 +37,7 @@ LOG_SHOW = 12
 UNDO_MAX = 20
 LAYOUT_MAX = 40
 ACTS = {'put': 'jr_deco_put', 'pick': 'jr_deco_pick', 'layout': 'jr_deco_layout'}
-PUT_KEYS = {'uid', 'r', 'x', 'y', 'f', 'on', 'z', 'face'}
+PUT_KEYS = {'uid', 'r', 'x', 'y', 'f', 'on', 'z', 'face', 'rot'}
 
 
 class Same(Exception):
@@ -236,7 +236,7 @@ def _text(L0, L1, action, payload, was, now) -> str:
     if (a['x'], a['y'], a.get('on', '')) == (b['x'], b['y'], b.get('on', '')):
         if a.get('f', 0) != b.get('f', 0):
             return f'đã lật {name}'
-        if a.get('face', 'front') != b.get('face', 'front'):
+        if a.get('rot', 0) != b.get('rot', 0) or a.get('face', 'front') != b.get('face', 'front'):
             return f'đã xoay {name}'
         if a.get('z', 0) != b.get('z', 0):
             return f'đã đổi lớp {name}'

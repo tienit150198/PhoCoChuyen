@@ -95,6 +95,19 @@ FACING_ITEMS = FACES_OLD + (
     'dao_bep', 'leu_choi', 'nha_cho')
 FACES_VERSION = 1
 TURN_VERSION = 1
+# ↻ Xoay 90° (owner 23/10, góp ý #358 / #330: "chỉ lật chứ không quay ngang được"): a floor piece or a rug turns a
+# quarter at a time, `rot` 0 front, 1 its front to the right, 2 its back to you, 3 its front to the left; at 1 and 3
+# its footprint turns too (w × h swap: zone, fixtures, what stands on it). A piece remembers its turn in the bag, like
+# its facing: journey.decor_rot {v, items {uid: 1|2|3}}. A FACING_ITEMS piece turned round (2) keeps its 'back' in
+# decor_faces / decor_turn instead (what an older build reads), never in decor_rot. The layout blocks an older build
+# validates hold each piece at its spot with the footprint that build knows; a piece that only fits there turned (and
+# what stands on it) rides in journey.decor_spin {v, at, items}, which an older build ignores (its bag shows it).
+# Missing everywhere: the piece stands as it always did (rot 0).
+TURNS = ('floor', 'rug')
+ROT_VERSION = 1
+SPIN_KEYS = {'v', 'at', 'items'}
+SPIN_VERSION = 1
+ROT_WORDS = ('mặt trước', 'quay sang phải', 'mặt sau', 'quay sang trái')
 # Room cap (góp ý #192, chat 06/10): a room takes ROOM_GROW × what 1.7.15 allowed (old_cap). journey.decor and
 # journey.decor_new keep at most old_cap pieces a room (exactly what a 1.7.15 build's checks accept, so a rolling
 # deploy or a rollback never refuses the save); the pieces past it ride in journey.decor_more {v, at, items}, which
@@ -194,6 +207,24 @@ def get_wide(s: dict) -> dict | None:
     j = s.get('journey')
     X = j.get('decor_wide') if isinstance(j, dict) else None
     return X if isinstance(X, dict) else None
+
+
+def get_spin(s: dict) -> dict | None:
+    """journey.decor_spin: the pieces that only stand where they are turned a quarter (see TURNS); absent when none."""
+    j = s.get('journey')
+    X = j.get('decor_spin') if isinstance(j, dict) else None
+    return X if isinstance(X, dict) else None
+
+
+def turns(k: str) -> bool:
+    """A piece of kind `k` may turn a quarter at a time (a floor piece or a rug)."""
+    return k in ITEMS and (ITEMS[k]['spot'] in TURNS or k in FACING_ITEMS)
+
+
+def size(k: str, rot=0) -> tuple[int, int]:
+    """The footprint (w, h) in cells of a piece of kind `k` turned `rot` quarters."""
+    it = ITEMS[k]
+    return (it['h'], it['w']) if rot in (1, 3) else (it['w'], it['h'])
 
 
 def grid_rooms(key: str, rooms: list) -> list:
@@ -447,11 +478,13 @@ def room_cap(room: dict) -> int:
     return old_cap(room) * ROOM_GROW[0] // ROOM_GROW[1]
 
 
-def zone(room: dict, k: str) -> tuple[int, int] | None:
-    """The largest x and y a piece of kind `k` may take on its own (not on a surface) in `room`; None: no room for it."""
+def zone(room: dict, k: str, rot=0) -> tuple[int, int] | None:
+    """The largest x and y a piece of kind `k` (turned `rot`) may take on its own (not on a surface) in `room`; None: no
+    room for it."""
     it = ITEMS[k]
     rows = room['wrows'] if it['spot'] == 'wall' else room['frows']
-    xm, ym = room['cols'] * U - it['w'] * U, rows * U - it['h'] * U
+    w, h = size(k, rot)
+    xm, ym = room['cols'] * U - w * U, rows * U - h * U
     return (xm, ym) if rows and xm >= 0 and ym >= 0 else None
 
 
@@ -459,11 +492,11 @@ def _ov(a0: int, a1: int, b0: int, b1: int) -> int:
     return max(0, min(a1, b1) - max(a0, b0))
 
 
-def blocked(room: dict, k: str, x: int, y: int) -> str:
-    """The fixture a piece at (x, y) would cover (more than half a cell both ways), or ''."""
+def blocked(room: dict, k: str, x: int, y: int, rot=0) -> str:
+    """The fixture a piece at (x, y) (turned `rot`) would cover (more than half a cell both ways), or ''."""
     it = ITEMS[k]
     layer = 'wall' if it['spot'] == 'wall' else 'floor'
-    w, h = it['w'] * U, it['h'] * U
+    w, h = (n * U for n in size(k, rot))
     for f in fixtures(room):
         P = _ff(f)
         if f['layer'] != layer or not P.get('block') or (it['spot'] == 'rug' and P.get('rug')) or set(P.get('allow', ())) & set(it['tags']):
@@ -489,7 +522,8 @@ def host_of(room: dict, on: str, pos: dict, kinds: dict) -> dict | None:
         return None
     it = ITEMS[kinds[on]]
     if it['spot'] == 'floor' and it['surface']:
-        return dict(w=it['w'] * U, d=it['h'] * U, cap=it['w'] * it['h'] * 2, wall=False)
+        w, h = size(kinds[on], q.get('rot', 0))   # a turned table: its top turns with it
+        return dict(w=w * U, d=h * U, cap=w * h * 2, wall=False)
     if it['spot'] == 'wall' and it['ledge']:
         return dict(w=it['w'] * U, d=0, cap=it['w'] * 2, wall=True)
     return None
@@ -501,7 +535,9 @@ def check(room: dict, k: str, q: dict, pos: dict, kinds: dict, cap=room_cap) -> 
     it = ITEMS[k]
     if room['type'] not in it['rooms']:
         return ('type', '')
-    x, y, on = q['x'], q['y'], q.get('on') or ''
+    x, y, on, rot = q['x'], q['y'], q.get('on') or '', q.get('rot', 0)
+    if rot and not turns(k):
+        return ('bounds', '')
     if on:
         if it['spot'] != 'top':
             return ('support', '')
@@ -513,12 +549,12 @@ def check(room: dict, k: str, q: dict, pos: dict, kinds: dict, cap=room_cap) -> 
         if sum(1 for v in pos.values() if v.get('on') == on and v['r'] == room['id']) >= h['cap']:
             return ('host_full', on if on[0] != '#' else on)
     else:
-        z = zone(room, k)
+        z = zone(room, k, rot)
         if z is None:
             return ('nowall' if it['spot'] == 'wall' and not room['wrows'] else 'bounds', '')
         if not (0 <= x <= z[0] and 0 <= y <= z[1]):
             return ('bounds', '')
-        b = blocked(room, k, x, y)
+        b = blocked(room, k, x, y, rot)
         if b:
             return ('fixture', '#' + b)
     if sum(1 for v in pos.values() if v['r'] == room['id']) >= cap(room):
@@ -557,7 +593,7 @@ def riders(pos: dict, uid: str) -> list:
     return [u for u, v in pos.items() if v.get('on') == uid]
 
 
-def _q(r: str, x: int, y: int, f: int, on: str = '', z: int = 0, face: str = 'front') -> dict:
+def _q(r: str, x: int, y: int, f: int, on: str = '', z: int = 0, face: str = 'front', rot: int = 0) -> dict:
     q = dict(r=r, x=int(x), y=int(y), f=int(f))
     if on:
         q['on'] = on
@@ -565,6 +601,38 @@ def _q(r: str, x: int, y: int, f: int, on: str = '', z: int = 0, face: str = 'fr
         q['z'] = int(z)
     if face == 'back':
         q['face'] = 'back'
+    if rot in (1, 2, 3):
+        q['rot'] = int(rot)
+    return q
+
+
+def _rots(j: dict) -> dict:
+    """journey.decor_rot's turns {uid: 1|2|3} (a piece in the bag keeps its own)."""
+    b = j.get('decor_rot') if isinstance(j, dict) else None
+    items = b.get('items') if isinstance(b, dict) else None
+    return {u: v for u, v in items.items() if type(v) is int and v in (1, 2, 3)} if isinstance(items, dict) else {}
+
+
+def rot_of(k: str, face: str | None, rot) -> int:
+    """A piece's turn from its saved facing and decor_rot entry: a FACING_ITEMS piece is turned round (2) exactly when
+    its facing says 'back' (the facing an older build may have changed since wins over a side turn)."""
+    r = rot if type(rot) is int and rot in (1, 2, 3) and turns(k) else 0
+    if k in FACING_ITEMS:
+        if face == 'back':
+            return 2
+        if r == 2:
+            return 0
+    return r
+
+
+def _turn(q: dict, k: str, rot: int) -> dict:
+    """Set `q`'s turn (and the facing an older reader derives from it) in place."""
+    q.pop('face', None)
+    q.pop('rot', None)
+    if rot:
+        q['rot'] = rot
+        if rot == 2 and k in FACING_ITEMS:
+            q['face'] = 'back'
     return q
 
 
@@ -692,12 +760,36 @@ def layout(s: dict, pl: dict | None = None) -> dict:
     W = get_wide(s)
     if W is not None and W['at'] == pl['key']:   # 🏰 the pieces only Sông Hồng's grown rooms take (WIDE_KEYS)
         pos.update({u: dict(v) for u, v in W['items'].items() if u in kinds and u not in pos})
-    faces = _faces(j)
+    P = get_spin(s)
+    if P is not None and P['at'] == pl['key']:   # ↻ the pieces that only stand there turned (SPIN_KEYS)
+        pos.update({u: dict(v) for u, v in P['items'].items() if u in kinds and u not in pos})
+    faces, rots = _faces(j), _rots(j)
+    pos = settle_turned(rooms, kinds, pos, order, faces, rots)
+    return dict(place=pl, rooms=rooms, kinds=kinds, order=order, pos=pos, skins=skins, faces=faces, rots=rots, journey=j)
+
+
+def settle_turned(rooms: list, kinds: dict, pos: dict, order: list, faces: dict, rots: dict) -> dict:
+    """settle_free with each piece turned as saved (rot_of). A piece an older build placed since, where it only fits
+    unturned, keeps its spot and stands unturned (its turn is dropped by the next _store) rather than going to the bag."""
     for u, q in pos.items():
-        if faces.get(u) == 'back' and kinds.get(u) in FACING_ITEMS:
-            q['face'] = 'back'
-    pos, _ = settle_free(rooms, kinds, pos, order)
-    return dict(place=pl, rooms=rooms, kinds=kinds, order=order, pos=pos, skins=skins, faces=faces, journey=j)
+        k = kinds.get(u)
+        _turn(q, k, rot_of(k, faces.get(u), rots.get(u)) if k in ITEMS else 0)
+    kept, out = settle_free(rooms, kinds, pos, order)
+    redo = [u for u in out if pos[u].get('rot', 0) in (1, 3)]
+    if redo:
+        for u in redo:
+            _turn(pos[u], kinds[u], 0)
+        kept, out = settle_free(rooms, kinds, pos, order)
+    return kept
+
+
+def rot_in(L: dict, uid: str) -> int:
+    """The turn of `uid` in layout `L`: where it stands, else as it waits in the bag."""
+    q = L['pos'].get(uid)
+    if q is not None:
+        return q.get('rot', 0)
+    k = L['kinds'].get(uid)
+    return rot_of(k, L.get('faces', {}).get(uid), L.get('rots', {}).get(uid)) if k in ITEMS else 0
 
 
 def _faces(j: dict) -> dict:
@@ -833,7 +925,7 @@ def guest(s: dict, L: dict, total: int, day: int) -> dict | None:
 
 
 # ---------------------------------------------------------------- the daily tick
-_LAYOUT_BLOCKS = ('decor', 'decor_new', 'decor_more', 'decor_wide')
+_LAYOUT_BLOCKS = ('decor', 'decor_new', 'decor_more', 'decor_wide', 'decor_spin')
 
 
 def _away(j: dict) -> list:
@@ -884,10 +976,8 @@ def _move(s: dict, pl: dict) -> list[str]:
         L = layout(s, pl)
         rs = {x['id'] for x in L['rooms']}
         pos = {u: dict(v) for u, v in back['items'].items() if u in L['kinds'] and isinstance(v, dict) and _piece_ok(v)}
-        for u, q in pos.items():   # a piece turned round there comes back turned round (its facing waited in the bag)
-            if L['faces'].get(u) == 'back' and L['kinds'][u] in FACING_ITEMS:
-                q['face'] = 'back'
-        kept, _out = settle_free(L['rooms'], L['kinds'], pos, L['order'])
+        # a piece turned there comes back turned (its facing and its turn waited in the bag)
+        kept = settle_turned(L['rooms'], L['kinds'], pos, L['order'], L['faces'], L['rots'])
         D['skins'] = {rm: dict(v) for rm, v in (back.get('skins') or {}).items() if rm in rs}
         L['skins'] = D['skins']
         _store(d, D, L, kept)
@@ -992,7 +1082,27 @@ def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
         else:
             j.pop(key, None)
     L['faces'] = faces
-    saved = {u: {k: v for k, v in q.items() if k != 'face'} for u, q in pos.items()}
+    rots = {u: v for u, v in _rots(j).items() if u in L['kinds']}   # a piece in the bag keeps its turn
+    for u, q in pos.items():
+        r = q.get('rot', 0)
+        if r in (1, 3) or (r == 2 and L['kinds'][u] not in FACING_ITEMS):
+            rots[u] = r
+        else:
+            rots.pop(u, None)
+    if rots:
+        j['decor_rot'] = dict(v=ROT_VERSION, items={u: rots[u] for u in L['order'] if u in rots})
+    else:
+        j.pop('decor_rot', None)
+    L['rots'] = rots
+    saved = {u: {k: v for k, v in q.items() if k not in ('face', 'rot')} for u, q in pos.items()}
+    spin: set = set()
+    if any(q.get('rot', 0) in (1, 3) for q in pos.values()):   # ↻ what only stands there turned: journey.decor_spin
+        spin = set(settle_free(L['rooms'], L['kinds'], saved, L['order'])[1])
+    if spin:
+        j['decor_spin'] = dict(v=SPIN_VERSION, at=L['place']['key'], items={u: saved[u] for u in L['order'] if u in spin})
+        saved = {u: q for u, q in saved.items() if u not in spin}
+    else:
+        j.pop('decor_spin', None)
     R = grid_rooms(L['place']['key'], L['rooms'])   # 🏰 what an older build checks these blocks against
     wide: set = set()
     if R is not L['rooms']:   # a piece only the grown rooms take (or one standing on it): journey.decor_wide
@@ -1076,12 +1186,14 @@ def _grid_q(L: dict, k: str, room: dict, x: int, y: int, f: int, skip: str = '')
         q = from_grid(L['rooms'], {**L['kinds'], '\x00': k}, {**{u: g[u] for u in g if ITEMS[L['kinds'][u]]['spot'] == 'floor'},
                                                                '\x00': (room['id'], x, y, f)})
         return q.get('\x00') or _q(room['id'], x * U, y * U, f)
-    return _q(room['id'], x * U, y * U, f, face=L.get('faces', {}).get(skip, 'front'))
+    return _turn(_q(room['id'], x * U, y * U, f), k, rot_in(L, skip) if skip else 0)
 
 
 def _fine(p: dict, L: dict, k: str, uid: str = '') -> dict:
-    """A free spot from a command {r, x, y, f[, on][, z]}: shapes checked, numbers clamped into the zone (a drag may
-    end a little outside); the rules are checked by _put."""
+    """A free spot from a command {r, x, y, f[, on][, z][, face][, rot]}: shapes checked, numbers clamped into the zone
+    (a drag may end a little outside); the rules are checked by _put. `rot` (0..3, a floor piece or a rug) is the turn;
+    a page from before it sends `face` front/back only: back is a half turn, front keeps a side turn; neither keeps the
+    piece's own turn."""
     need = _core().need
     rs = {r['id']: r for r in L['rooms']}
     need(p.get('r') in rs, 'Chọn phòng muốn đặt đồ nhé.')
@@ -1091,18 +1203,25 @@ def _fine(p: dict, L: dict, k: str, uid: str = '') -> dict:
     need(f in (0, 1), 'Hướng đặt không hợp lệ.')
     need(isinstance(on, str) and (not on or (_ON.match(on) and on != uid)), 'Chỗ này không đặt đồ được.')
     need(z is None or (type(z) is int and 0 <= z <= Z_MAX), 'Thứ tự không hợp lệ.')
-    face = p.get('face', L.get('faces', {}).get(uid, 'front'))
-    need(isinstance(face, str) and face in ('front', 'back') and (face == 'front' or k in FACING_ITEMS),
-         'Hướng nhìn không hợp lệ.')
+    cur_rot = rot_in(L, uid) if uid else 0
+    rot = p.get('rot', cur_rot)
+    need(type(rot) is int and 0 <= rot <= 3 and (rot == 0 or turns(k)), 'Hướng xoay không hợp lệ.')
+    if 'face' in p:   # an older page sends only `face`; a copy of a layout sends both: `face` decides front or back
+        face = p['face']
+        need(isinstance(face, str) and face in ('front', 'back') and (face == 'front' or k in FACING_ITEMS),
+             'Hướng nhìn không hợp lệ.')
+        if (face == 'back') != (rot == 2):
+            rot = 2 if face == 'back' else (0 if rot == 2 else rot)
     it = ITEMS[k]
     if on:
+        need(rot == 0, 'Đồ đặt trên bàn, kệ không xoay được.')
         others = {u: v for u, v in L['pos'].items() if u != uid}
         h = host_of(room, on, others, L['kinds'])
         need(h is not None and it['spot'] == 'top', why('support', k, room, on, L['kinds']), 'bad_spot')
         x = max(0, min(x, max(0, h['w'] - it['w'] * U)))
         y = max(0, min(y, max(0, h['d'] - it['h'] * U)))
     else:
-        zn = zone(room, k)
+        zn = zone(room, k, rot)
         if zn is not None and room['type'] in it['rooms']:
             x, y = max(0, min(x, zn[0])), max(0, min(y, zn[1]))
     cur = L['pos'].get(uid)
@@ -1112,7 +1231,7 @@ def _fine(p: dict, L: dict, k: str, uid: str = '') -> dict:
         else:
             zs = [v.get('z', 0) for u, v in L['pos'].items() if u != uid and v['r'] == room['id']]
             z = min(Z_MAX, max(zs) + 1) if zs else 0
-    return _q(room['id'], x, y, f, on, z, face)
+    return _turn(_q(room['id'], x, y, f, on, z), k, rot)
 
 
 def _put(L: dict, uid: str, q: dict) -> tuple[dict, list, list]:
@@ -1134,13 +1253,16 @@ def _put(L: dict, uid: str, q: dict) -> tuple[dict, list, list]:
     pos[uid] = q
     moved, dropped = [], []
     flip = bool(cur) and cur['f'] != q['f']
+    w, h = size(k, q.get('rot', 0))   # ↻ a table turned: what stands on it stays on its (turned) top
     for u in ride:
         v = dict(L['pos'][u])
         if room['type'] in ITEMS[kinds[u]]['rooms']:
             v['r'] = room['id']
             if flip:
-                v['x'] = max(0, ITEMS[k]['w'] * U - ITEMS[kinds[u]]['w'] * U - v['x'])
+                v['x'] = max(0, w * U - ITEMS[kinds[u]]['w'] * U - v['x'])
                 v['f'] = 1 - v['f']
+            v['x'] = max(0, min(v['x'], (w - ITEMS[kinds[u]]['w']) * U))
+            v['y'] = max(0, min(v['y'], (h - ITEMS[kinds[u]]['h']) * U))
             pos[u] = v
             moved.append(u)
         else:
@@ -1180,6 +1302,9 @@ def _placed_msg(L: dict, it: dict, was: dict | None, q: dict, room: dict) -> str
         return f'Đã đặt {lname(it["name"])} lên {_host_name(L, room, on)}.' if on else f'Đã đặt {lname(it["name"])} ở {lname(room["name"])}.'
     if _same(was, q):
         return f'Đã đưa {lname(it["name"])} lên trên.' if q.get('z', 0) > was.get('z', 0) else f'Đã đưa {lname(it["name"])} xuống dưới.'
+    if was.get('rot', 0) != q.get('rot', 0) and {k: v for k, v in was.items() if k not in ('rot', 'face', 'z')} == \
+            {k: v for k, v in q.items() if k not in ('rot', 'face', 'z')}:
+        return f'Đã xoay {lname(it["name"])}: {ROT_WORDS[q.get("rot", 0)]}.'
     if was.get('face', 'front') != q.get('face', 'front'):
         return f'Đã xoay hướng {lname(it["name"])}: {"mặt sau" if q.get("face") == "back" else "mặt trước"}.'
     if {k: v for k, v in was.items() if k not in ('f', 'z')} == {k: v for k, v in q.items() if k not in ('f', 'z')}:
@@ -1265,15 +1390,21 @@ def apply(s: dict, name: str, p: dict) -> dict:
                 grid[uid] = tuple(v)
                 pos.pop(uid, None)
             else:
-                need(isinstance(v, dict) and _piece_ok(v) and v['r'] in rs, 'Không hoàn tác được.')
-                need(v.get('face', 'front') == 'front' or L['kinds'][uid] in FACING_ITEMS, 'Hướng nhìn không hợp lệ.')
-                pos[uid] = _q(v['r'], v['x'], v['y'], v['f'], v.get('on', ''), v.get('z', 0), v.get('face', 'front'))
+                need(isinstance(v, dict), 'Không hoàn tác được.')
+                k, rot = L['kinds'][uid], v.get('rot')
+                v = {kk: vv for kk, vv in v.items() if kk != 'rot'}
+                need(_piece_ok(v) and v['r'] in rs, 'Không hoàn tác được.')
+                need(v.get('face', 'front') == 'front' or k in FACING_ITEMS, 'Hướng nhìn không hợp lệ.')
+                if rot is None:   # a page from before ↻ Xoay 90°: its facing only
+                    rot = 2 if v.get('face') == 'back' else 0
+                need(type(rot) is int and 0 <= rot <= 3 and (rot == 0 or turns(k)), 'Hướng xoay không hợp lệ.')
+                pos[uid] = _turn(_q(v['r'], v['x'], v['y'], v['f'], v.get('on', ''), v.get('z', 0)), k, rot)
         if grid:
             g = grid_guess(L['rooms'], L['kinds'], {u: v for u, v in pos.items() if ITEMS[L['kinds'][u]]['spot'] == 'floor'})
             pos.update({u: q for u, q in from_grid(L['rooms'], L['kinds'], {**g, **grid}).items() if u in grid})
             for u in grid:
-                if u in pos and L['faces'].get(u) == 'back':
-                    pos[u]['face'] = 'back'
+                if u in pos:
+                    _turn(pos[u], L['kinds'][u], rot_in(L, u))
         kept, out = settle_free(L['rooms'], L['kinds'], pos, L['order'])
         need(not out, 'Không hoàn tác được: chỗ cũ giờ không đặt được nữa.', 'taken')
         _store(d, D, L, kept)
@@ -1302,8 +1433,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
                 q = {k2: v for k2, v in q.items() if k2 != 'z' or v}
         else:
             q = _fine(p, L, kinds[uid], uid)
-        if was:   # a piece's own looks (optional keys besides on / z) stay with it when it moves
-            q.update({k2: was[k2] for k2 in PIECE_OPT if k2 not in ('on', 'z') and k2 in was and k2 not in p})
+        if was:   # a piece's own looks (optional keys besides on / z; its facing and turn: _fine) stay with it when it moves
+            q.update({k2: was[k2] for k2 in PIECE_OPT if k2 not in ('on', 'z', 'face') and k2 in was and k2 not in p})
         if was == q:
             return dict(message=f'{it["name"]} đang ở đây rồi.', duplicate=True)
         room = next(x for x in L['rooms'] if x['id'] == q['r'])
@@ -1518,10 +1649,15 @@ def public(s: dict) -> dict | None:
         placed.append(dict(id=u, k=L['kinds'][u], r=q['r'], x=g[1], y=g[2], f=q['f'], fx=q['x'], fy=q['y'], on=q.get('on', ''), z=q.get('z', 0)))
         if q.get('face') == 'back':
             placed[-1]['face'] = 'back'
+        if q.get('rot'):
+            placed[-1]['rot'] = q['rot']   # ↻ a page from before ignores it (and draws the piece as it always did)
     bag = [dict(id=it['id'], k=it['k']) for it in (r['items'] if r else []) if it['id'] not in L['pos'] and it['k'] in ITEMS]
     for it in bag:
         if L['faces'].get(it['id']) == 'back':
             it['face'] = 'back'
+        rot = rot_in(L, it['id'])
+        if rot:
+            it['rot'] = rot
     have = hs._have(s)
     g = guest(s, L, total, j['life_day'])
     stats = dict(d['stats']) if d else {k: 0 for k in STATS}
@@ -1561,7 +1697,7 @@ def upgrade(j: dict) -> None:
     r = j.get('reno') if isinstance(j, dict) else None
     items = r.get('items') if isinstance(r, dict) else None
     kinds = {it['id']: it['k'] for it in items if isinstance(it, dict) and isinstance(it.get('id'), str)} if isinstance(items, list) else {}
-    for key in ('decor_faces', 'decor_turn'):
+    for key in ('decor_faces', 'decor_turn', 'decor_rot'):
         F = j.get(key) if isinstance(j, dict) else None
         if isinstance(F, dict) and isinstance(F.get('items'), dict):
             for u in [u for u in F['items'] if u not in kinds]:
@@ -1623,6 +1759,20 @@ def upgrade(j: dict) -> None:
                 W['items'].pop(u)
         if not W['items']:
             j.pop('decor_wide')
+    P = j.get('decor_spin') if isinstance(j, dict) else None   # ↻ as decor_wide
+    if isinstance(P, dict) and isinstance(P.get('items'), dict):
+        placed = set()
+        for B in (D, X, M, W):
+            if isinstance(B, dict) and isinstance(B.get('items'), dict):
+                placed |= set(B['items'])
+        for u in [u for u in P['items'] if u not in kinds or u in placed]:   # sold, or placed by an older build since
+            P['items'].pop(u)
+        hosts = placed | set(P['items'])
+        for u, v in list(P['items'].items()):
+            if isinstance(v, dict) and isinstance(v.get('on'), str) and v['on'] and v['on'][0] != '#' and v['on'] not in hosts:
+                P['items'].pop(u)
+        if not P['items']:
+            j.pop('decor_spin')
     A = j.get('decor_away') if isinstance(j, dict) else None   # a place left: pieces sold since leave its layout
     if isinstance(A, dict) and isinstance(A.get('places'), list):
         for x in A['places']:
@@ -1646,7 +1796,8 @@ def _v2_fit(j: dict, kinds: dict) -> None:
         every = {u: v for _n, B in blocks if B['at'] == at for u, v in B['items'].items()}
         if not rooms or not all(kinds.get(u) in ITEMS and isinstance(v, dict) and _piece_ok(v) for u, v in every.items()):
             continue
-        _kept, out = settle_free(rooms, kinds, every, list(kinds))
+        kept = settle_turned(rooms, kinds, {u: dict(v) for u, v in every.items()}, list(kinds), _faces(j), _rots(j))
+        out = [u for u in every if u not in kept]   # ↻ each piece as it stands, turned or not
         if not out:
             continue
         sys.stderr.write(f"[deco-v2] {len(out)} piece(s) to the bag at {at}: {', '.join(f'{u}:{kinds.get(u)}' for u in out)}\n")
@@ -1753,6 +1904,12 @@ def validate(s: dict) -> None:
         # a newer build may turn a piece this one does not know; a known piece must be one that turns
         need(all(u in kinds and (kinds[u] in FACING_ITEMS or kinds[u] not in ITEMS) and kinds[u] not in FACES_OLD
                  and isinstance(v, str) and v == 'back' for u, v in F['items'].items()), bad, 'invalid_save')
+    if j.get('decor_rot') is not None:   # ↻ (a newer build may turn a piece this one does not know)
+        F = j['decor_rot']
+        bad = 'Hướng xoay đồ đạc trong bản lưu không hợp lệ.'
+        need(isinstance(F, dict) and set(F) == {'v', 'items'} and type(F['v']) is int and F['v'] == ROT_VERSION
+             and isinstance(F['items'], dict) and bool(F['items']), bad, 'invalid_save')
+        need(all(u in kinds and type(v) is int and v in (1, 2, 3) for u, v in F['items'].items()), bad, 'invalid_save')
     if j.get('deco') is not None:
         d = j['deco']
         bad = 'Dữ liệu bày trí phòng không hợp lệ.'
@@ -1847,6 +2004,19 @@ def validate(s: dict) -> None:
         if rooms is not None and all(kinds[u] in ITEMS for u in every):   # the whole place, at today's cap
             _kept, out = settle_free(rooms, kinds, every, list(kinds))
             need(not out, bad)
+    if j.get('decor_spin') is not None:   # ↻ the pieces that stand there turned (shape: layout() settles them turned)
+        P = j['decor_spin']
+        bad = 'Dữ liệu bày trí phòng không hợp lệ.'
+        need(isinstance(P, dict) and set(P) == SPIN_KEYS and P['v'] == SPIN_VERSION, bad, 'invalid_save')
+        need(isinstance(P['at'], str) and _KEY.match(P['at']), bad)
+        need(isinstance(P['items'], dict) and bool(P['items']), bad)
+        others = set()
+        for key in ('decor', 'decor_new', 'decor_more', 'decor_wide'):
+            B = j.get(key)
+            if isinstance(B, dict) and B.get('at') == P['at']:
+                others |= set(B['items'])
+        for uid, v in P['items'].items():
+            need(uid in kinds and uid not in others and _piece_ok(v), bad)
     if j.get('decor_stay') is not None:   # 🏡 F#307 (shape only: a newer build's home kind is kept, not lived in)
         st = j['decor_stay']
         bad = 'Dữ liệu ở chung trong bản lưu không hợp lệ.'

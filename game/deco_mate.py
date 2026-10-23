@@ -77,7 +77,7 @@ def _dhome(d: dict, couple: int) -> tuple | None:
 
 # ---------------------------------------------------------------- what is drawn from a save, cached by revision
 def _raw(state: dict) -> list:
-    """Every placed piece of a save, ids as saved: [{u, k, r, x, y, f, on, z[, face][, c]}]."""
+    """Every placed piece of a save, ids as saved: [{u, k, r, x, y, f, on, z[, face][, rot][, c]}]."""
     from . import wardrobe as wd
     L = dc.layout(state)
     out = []
@@ -87,6 +87,8 @@ def _raw(state: dict) -> list:
         p = dict(u=u, k=L['kinds'][u], r=q['r'], x=q['x'], y=q['y'], f=q['f'], on=q.get('on', ''), z=q.get('z', 0))
         if q.get('face') == 'back':
             p['face'] = 'back'
+        if q.get('rot'):
+            p['rot'] = q['rot']   # ↻ turned a quarter (deco.TURNS)
         c = wd.deco_color(state, u)
         if c != wd.GOC:
             p['c'] = c
@@ -168,7 +170,7 @@ def resident(store, sid):
 
 
 def pieces_of(d: dict, rooms: set, prefix: str = PREFIX, name: str = '') -> list:
-    """A digest's placed pieces as the page draws them: {id, k, r, fx, fy, f, on, z[, face][, c][, n]} (ids prefixed;
+    """A digest's placed pieces as the page draws them: {id, k, r, fx, fy, f, on, z[, face][, rot][, c][, n]} (ids prefixed;
     `n`: whose they are, when the home has more than one other resident)."""
     keep = {p['u']: p for p in d.get('pieces') or () if p['r'] in rooms}
     # a small thing whose surface did not make it stays out too
@@ -182,6 +184,8 @@ def pieces_of(d: dict, rooms: set, prefix: str = PREFIX, name: str = '') -> list
             x['n'] = name
         if p.get('face'):
             x['face'] = p['face']
+        if p.get('rot'):
+            x['rot'] = p['rot']
         if p.get('c'):
             x['c'] = p['c']
         out.append(x)
@@ -198,7 +202,7 @@ def _with_pieces(L: dict, items: list) -> dict:
     out = dict(L, pos=dict(L['pos']), kinds=dict(L['kinds']), _use_verified=True)
     for p in items:
         out['kinds'][p['id']] = p['k']
-        out['pos'][p['id']] = dc._q(p['r'], p['fx'], p['fy'], p['f'], p.get('on', ''), p.get('z', 0), p.get('face', 'front'))
+        out['pos'][p['id']] = dc._q(p['r'], p['fx'], p['fy'], p['f'], p.get('on', ''), p.get('z', 0), p.get('face', 'front'), p.get('rot', 0))
     return out
 
 

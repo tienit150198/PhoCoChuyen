@@ -83,6 +83,25 @@ class Rooms(HomeCase):
             await b.send(t='home_reply',id=event['id'],answer='decline')
             await self.event(a,'ended');await self.event(b,'ended')
 
+    async def test_a_pose_at_a_piece_reaches_the_room_and_a_newcomer(self):
+        """🪑 sitting on the sofa (góp ý #372): the others see it; a move without `a` stands up; junk is refused."""
+        a = await self.join()
+        b = await self.join(self.tb)
+        await self.event(a, 'in')
+        await a.send(t='home_mv', p=[[.3, .7], [.3, .7]], ms=0, a='sit')
+        self.assertEqual((await self.event(b, 'mv'))['a'], 'sit')
+        await self.event(a, 'mv')
+        await a.send(t='home_mv', p=[[.3, .7], [.3, .7]], ms=0, a='dance')    # (the rate limit allows one more now)
+        self.assertEqual((await a.expect('error'))['code'], 'bad')
+        await b.send(t='home_out')
+        await b.expect('home_left')
+        await self.event(a, 'out')
+        b = await self.join(self.tb)
+        self.assertEqual(next(p for p in b.room['people'] if p['pid'] == a.pid).get('a'), 'sit')
+        await self.event(a, 'in')
+        await a.send(t='home_mv', p=[[.3, .7], [.5, .8]], ms=400)
+        self.assertNotIn('a', await self.event(b, 'mv'))
+
     async def test_physical_rooms_are_isolated(self):
         a = await self.join()
         b = await self.join(self.tb, 'bed')
