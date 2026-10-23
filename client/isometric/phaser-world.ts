@@ -24,6 +24,16 @@ const RIDE_RAMP=.7;
 const easeOut=(t:number)=>1-(1-t)*(1-t);
 // @ts-ignore The catalogue scene family mapping remains the source of truth.
 import {kindOf,wordsFor} from '/js/scenes/vocabulary.js';
+// @ts-ignore ⚡ the shared light mode (public/js/perf-mode.js): measured slow → 30 fps here, lighter classic canvas.
+// A namespace import, like vehicle-art: a test double without it keeps the full rate.
+import * as PerfMode from '/js/perf-mode.js';
+const PM:any=PerfMode;
+const lowEnd=():boolean=>!!PM.lowEnd?.();
+const markLowEnd=(why:string)=>PM.markLowEnd?.(why);
+const onLowEnd=(fn:()=>void):()=>void=>PM.onLowEnd?.(fn)||(()=>{});
+/* Frame watch (23/10 lag): while something moves, an average frame interval over SLOW_MS for SLOW_FRAMES frames means
+ * this device cannot hold 60: cap the loop at LOW_FPS (even 30 instead of a jittery 35–45, half the drawing). */
+const SLOW_MS=30,SLOW_FRAMES=120,LOW_FPS=32;
 import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,landmarkSpritePlacement,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
 import {insideIsland,islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
@@ -123,6 +133,9 @@ export class PhaserWorld {
   private cachedPreview=new Map<string,string>();
   private lastInput=0;
   private fxPaintAt=-Infinity;
+  private slowEma=0;
+  private slowFrames=0;
+  private offLow:()=>void=noOp;
   residentShops:Array<{id:string;name:string;kind?:string;target?:string;ownerName?:string;career?:string}>=[];
   townDistricts(){return townDistricts();}
   townAmenities(){return townAmenities();}
@@ -170,6 +183,7 @@ export class PhaserWorld {
     this.listen(window,'blur',()=>{this.clearMovementControls();this.pointers.clear();this.pinch=null;this.wake();});
     this.listen(document,'visibilitychange',()=>this.wake());
     this.listen(document,'close',()=>this.wake(),true);
+    if(lowEnd())this.capFps();else this.offLow=onLowEnd(()=>this.capFps());
     this.listen(window,'pagehide',()=>{this.clearMovementControls();this.engine.loop.sleep();});
     this.listen(window,'pageshow',()=>this.wake());
     if(new URLSearchParams(location.search).has('isometricdebug')){(window as any).__isoWorld=this;this.listeners.push(installPerformanceProbe(this.engine,canvas,()=>this.debug()));}
@@ -276,7 +290,18 @@ export class PhaserWorld {
     const image=out.toDataURL('image/webp',.8);this.cachedPreview.set(career,image);return image;
   }
   wake(){if(this.destroyed||!this.engine)return;if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}this.stage?.requestRender();this.engine.loop.wake();}
-  private blockingDialog(allowDrawer=false){return !!document.querySelector('dialog[open]'+(allowDrawer?':not(.drawer)':'')+(this.canvas?.closest?.('dialog[data-shared-island]')?':not([data-shared-island])':''));}
+  /** An open dialog over the map. Asked several times a frame (step, wake, keys): the page's live dialog list (a handful),
+   * not a selector query over the whole DOM each time (~1.5% of a phone's walking frame). */
+  private blockingDialog(allowDrawer=false){const own=!!this.canvas?.closest?.('dialog[data-shared-island]'),doc:any=document;
+    if(typeof doc.getElementsByTagName!=='function')return !!doc.querySelector('dialog[open]'+(allowDrawer?':not(.drawer)':'')+(own?':not([data-shared-island])':''));
+    for(const d of doc.getElementsByTagName('dialog'))if(d.open&&!(allowDrawer&&d.classList.contains('drawer'))&&!(own&&d.hasAttribute('data-shared-island')))return true;
+    return false;}
+  /** ⚡ Light mode: the loop runs at most LOW_FPS frames a second (Phaser's own limiter, rebound on wake). */
+  private capFps(){const loop:any=this.engine?.loop;if(!loop||loop.fpsLimit===LOW_FPS)return;loop.fpsLimit=LOW_FPS;loop.hasFpsLimit=true;loop._limitRate=1000/LOW_FPS;if(loop.running){loop.sleep();loop.wake();}}
+  private watchFrames(active:boolean){
+    if(lowEnd()){this.slowFrames=0;return;}
+    const raw=(this.engine.loop as any).rawDelta||0;if(!active||raw>250){this.slowFrames=0;this.slowEma=0;return;}
+    this.slowEma=this.slowEma?this.slowEma*.95+raw*.05:raw;if(++this.slowFrames>=SLOW_FRAMES&&this.slowEma>SLOW_MS)markLowEnd('iso');}
   shouldSleep(){return this._paused||document.hidden||!this.visible||this.blockingDialog(true);}
   step(dt:number){
     if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}
@@ -300,6 +325,7 @@ export class PhaserWorld {
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
     const active=fading||moving||remoteMoving||petMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
+    this.watchFrames(active);
     if(!active&&stage.settle()){this.engine.loop.sleep();if(wingsLive)this.wingTick();}
   }
   /** 🪽 Moving wings in view (wing-rigs.ts) and nothing else moving: one frame ~WING_FPS times a second, never the full
@@ -322,7 +348,7 @@ export class PhaserWorld {
   private followAgain(){const s=this.stage;if(s&&s.cameraMode==='browse'&&!s.islandOverview&&this.pointers.size<2)s.cameraMode='follow';}  // not mid-pinch
   private tap(point:Point){if(this.mode==='town'&&this.socialEnabled){const pid=this.stage!.hitRemote(point);if(pid){window.dispatchEvent(new CustomEvent('mnl:town-peer',{detail:{pid}}));return;}}if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.followAgain();this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.followAgain();this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
   destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);if(this.wingTimer)clearTimeout(this.wingTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
-  private disposeObservers(){this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
+  private disposeObservers(){this.offLow();this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
 }
 
 class DioramaScene extends Phaser.Scene {
@@ -1018,7 +1044,9 @@ class DioramaScene extends Phaser.Scene {
     const source=this.textures.get('art-'+kind).getSourceImage() as HTMLImageElement|HTMLCanvasElement,size=careerFacadeSize(source);
     return this.textureObject(key,size.width,size.height,ctx=>drawCareerFacade(ctx,source,career,kind));
   }
-  private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);this.textures.addCanvas(key,c)!.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
+  private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);
+    // Drawn once, never edited: a plain texture (addCanvas' CanvasTexture reads back a full RGBA copy, ~10% of a phone's town build).
+    const texture=this.textures.create(key,c)!;texture.add('__BASE',0,0,0,width,height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
   private characterTexture(prefix:string,look:any,gender:string,direction:Facing,uniformColor:string,walkFrame=0){
     // 🪽 the stamp without its wings: they are a rig of their own that moves (stepWings, wing-rigs.ts)
     if(look?.wg){const {wg:_,...bare}=look;look=bare;}

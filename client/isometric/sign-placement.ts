@@ -13,7 +13,16 @@ function edges(trails:Trail[]){
     for(let i=1;i<points.length;i++)rows!.push({a:points[i-1],b:points[i],radius:Math.max(points[i-1].radius,points[i].radius)+.13});
   });roadCache.set(trails,rows);}return rows;
 }
+// Clearance per probed point, kept with the (fixed) road list: every town rebuild (start-up, back from work) probes
+// the same verges for the same signs (~1/3 of a phone's town build before).
+const clearCache=new WeakMap<RoadEdge[],Map<string,number>>();
 function roadClearance(p:Point,roads:RoadEdge[]){
+  let memo=clearCache.get(roads);if(!memo){memo=new Map();clearCache.set(roads,memo);}
+  const key=p.x+','+p.y,hit=memo.get(key);if(hit!==undefined)return hit;
+  if(memo.size>50000)memo.clear();
+  const d=roadGap(p,roads);memo.set(key,d);return d;
+}
+function roadGap(p:Point,roads:RoadEdge[]){
   let distance=Infinity;
   for(const {a,b,radius} of roads){
     const dx=b.x-a.x,dy=b.y-a.y,length=dx*dx+dy*dy,t=length?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/length)):0;

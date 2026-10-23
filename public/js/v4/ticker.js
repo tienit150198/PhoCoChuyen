@@ -9,7 +9,7 @@ import {language} from './i18n.js';
 const SEEN='mnl.newsSeen',NOTE='mnl.mrNotice',GOLD='mnl.goldenSeen',EVENT='mnl.eventSeen',TFAIR='mnl.tfairSeen',PAYWEEK='mnl.payweekSeen',POLL_MS=60000,PASSES=3,STILL_MS=9000;
 const read=k=>{try{return Number(localStorage.getItem(k))||0;}catch{return 0;}};
 const write=(k,v)=>{try{localStorage.setItem(k,String(v));}catch{/* storage blocked */}};
-let getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
+let lastPoll=0,getEnv=null,timer=0,since=0,queue=[],bar=null,playing=false,booted=false,inflight=false,hold=0;
 // 📻 Players' ads and songs on air (game/radio_station.py ticker: at most a few at once, each with its end time): a line plays
 // once when it shows up, then at most every `replay` seconds on this device while it is on air; one pass, not three.
 const AIRED=new Map(),AIRED_MAX=32;
@@ -20,14 +20,15 @@ const songEn=text=>{if(language()!=='en')return null;const m=SONG.exec(text);ret
 
 export function tickerBoot(envFn){
   if(booted)return;booted=true;getEnv=envFn;since=read(SEEN);
-  document.addEventListener('visibilitychange',()=>{clearTimeout(timer);if(!document.hidden)timer=setTimeout(poll,1500);});
+  // Back to the tab: the next poll 1.5 s on, or when the last one is 30 s old (a phone flipping between apps, 23/10 lag).
+  document.addEventListener('visibilitychange',()=>{clearTimeout(timer);if(!document.hidden)timer=setTimeout(poll,Math.max(1500,lastPoll+30000-Date.now()));});
   timer=setTimeout(poll,4000);  // after the first paint
 }
 
 async function poll(){
   clearTimeout(timer);
   if(document.hidden||inflight)return;
-  inflight=true;
+  inflight=true;lastPoll=Date.now();
   try{
     const r=await fetch(`/api/news?since=${since}`,{credentials:'same-origin',cache:'no-store'});
     if(r.ok)handle(await r.json());

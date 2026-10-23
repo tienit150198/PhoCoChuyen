@@ -10,6 +10,7 @@
  * spots on its facing side. `?navdebug=1` draws the grid (off by default).
  */
 import {World} from './world.js';
+import {lowEnd} from './perf-mode.js';
 import {t as tr} from './v4/i18n.js';
 import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
 import {sceneFor,wordsFor} from './scenes/index.js';
@@ -48,8 +49,10 @@ function segHitsRect(A,B,x0,y0,x1,y1){let t0=0,t1=1;const dx=B.x-A.x,dy=B.y-A.y;
 /** Does segment AB come strictly inside the ellipse at o with radii rx, ry? */
 function segHitsEllipse(A,B,o,rx,ry){const u0=(A.x-o.x)/rx,v0=(A.y-o.y)/ry,du=(B.x-A.x)/rx,dv=(B.y-A.y)/ry,len=du*du+dv*dv;
   const t=len?Math.max(0,Math.min(1,-(u0*du+v0*dv)/len)):0,u=u0+t*du,v=v0+t*dv;return u*u+v*v<1;}
-/** Seconds between redraws of a time-animated room backdrop (its slow ambience runs at ~10 fps). */
-const ROOM_TICK=.1;
+/** Seconds between redraws of a time-animated room backdrop (its slow ambience runs at ~10 fps). Where repainting
+ * the room is slow (a phone: 25–60 ms), it waits ROOM_SHARE× its own cost (at most ROOM_MAX s), so the room's
+ * clouds and steam never take more than ~1/8 of the time (23/10 lag: the room repainted on every ambient frame). */
+const ROOM_TICK=.1,ROOM_LOW=.25,ROOM_SHARE=8,ROOM_MAX=.5;
 // Android Chrome drops a backgrounded tab's canvas memory: the cached room comes back black (an alpha:false layer) while
 // furniture and people, drawn every frame, still show (player 23/10, Đại lý xe). Back on the page, or a lost layer: repaint.
 let shown=0;globalThis.document?.addEventListener?.('visibilitychange',()=>{if(!globalThis.document.hidden)shown++;});
@@ -459,10 +462,12 @@ export class BobaWorld extends World {
    if(!L||L.canvas.width!==cv.width||L.canvas.height!==cv.height){const canvas=globalThis.document.createElement('canvas');canvas.width=cv.width;canvas.height=cv.height;L=this.layer={canvas,ctx:canvas.getContext('2d',{alpha:false}),key:null};const L2=L;canvas.addEventListener?.('contextrestored',()=>{L2.key=null;});}
    if(L.ctx.isContextLost?.()){this.paintBackdrop();return;}   // lost and not back yet: the room straight onto the stage
    if(L.key===key&&L.rev!==this.rev&&L.reads?.same(this)){L.rev=this.rev;if(CHECK)this.checkBackdrop(L);}   // a new state, nothing the room shows changed
-   if(L.key!==key||L.rev!==this.rev||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=ROOM_TICK){
+   if(L.key!==key||L.rev!==this.rev||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=Math.min(ROOM_MAX,Math.max(lowEnd()?ROOM_LOW:ROOM_TICK,(L.cost||0)*ROOM_SHARE/1000))){
      // Same pen state as painting straight onto the stage would have had, in and out.
+     const t0=performance.now();
      copyPen(main,L.ctx);this.ctx=L.ctx;this.timeRead=false;this.ambience=[];const reads=watch(this,['c','state','game']);
      try{this.paintBackdrop();}finally{this.ctx=main;reads.stop();L.ambience=this.ambience;this.ambience=null;}
+     const ms=performance.now()-t0;L.cost=L.cost==null?ms:L.cost*.8+ms*.2;
      L.key=key;L.rev=this.rev;L.reads=reads;L.animated=this.timeRead;L.at=this.time;}
    main.setTransform(1,0,0,1,0,0);main.drawImage(L.canvas,0,0);copyPen(L.ctx,main);
    for(const [m,draw] of L.ambience){main.save();main.setTransform(m);try{draw(main);}finally{main.restore();}}}
