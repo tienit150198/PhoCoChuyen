@@ -14,7 +14,14 @@ Save: one root key ``s['wardrobe']`` = {v, look, owned}
 Items: a few free basics for everyone; the rest are bought with the wallet through bank.pay (cash, or
 the card when the player prefers it), one wallet row "Mua sắm quần áo · …" (kind 'life'). Having worked
 at Tiệm Áo Chỉ Mây (career ``clothing``) gives the staff price (−20 %) and opens the shop's own tee.
-Some items are unlocked instead of bought: a maturity level, a title, or being married.
+Some items are unlocked instead of bought: a maturity level, a title, or a ring on the finger: the wedding pair (need
+'married', the id kept for older clients) opens from the engagement (đính hôn, owner 24/10), not only after the wedding.
+A wedding piece worn once stays the player's (listed in s['wardrobe_plus']['owned'], see KEEP_NEEDS), even if the
+engagement or the marriage ends: nothing a player had is taken away.
+
+👫 Nam · Nữ (owner 24/10 "đồ k phân biệt nam nữ à, sao đồ lộn xộn thế"): every item has ``g`` 'male', 'female' or 'unisex'
+(FOR_MALE, FOR_FEMALE, the rest unisex). Tủ đồ and Cửa hàng show the character's gender and the unisex pieces first, the
+others behind "Xem cả đồ khác"; anyone may still wear anything (a tidy list, not a rule).
 
 Art lives in public/js/v4/look.js under the same ids (tests/test_wardrobe.py checks the lists match).
 Commands (routed by journey.action, so journey.after + validate_state run as for every jr_* command):
@@ -88,7 +95,7 @@ def _n(iid, slot, name, price, plain=None):
 OPEN_SHOP = 'open:clothing'
 
 
-# need: None | 'shop' (sold only at Tiệm Áo Chỉ Mây, to its staff) | 'married' | 'level:N' | 'title:<id>'
+# need: None | 'shop' (sold only at Tiệm Áo Chỉ Mây, to its staff) | 'married' (engaged or married) | 'level:N' | 'title:<id>'
 ITEMS = [
     # Kiểu tóc
     _i('toc_ngan', 'hair', 'Tóc ngắn gọn gàng'),
@@ -217,7 +224,60 @@ ITEMS = [
     _n('vong_hoa', 'acc', 'Vòng hoa cài đầu', 60),
     _n('khau_trang', 'acc', 'Khẩu trang vải', 30),
     _n('khan_choang', 'acc', 'Khăn choàng dài', 65),
+    # 👔 Đồ nam (owner 24/10: only 4 pieces were cut for men): sold by Tiệm Áo Chỉ Mây like the 1.9.2 pieces (saved in
+    # s['wardrobe_plus'], so an older worker never meets their ids), drawn by public/js/v4/look.js.
+    _n('toc_re_ngoi', 'hair', 'Tóc rẽ ngôi lệch', 50),
+    _n('toc_mohican', 'hair', 'Tóc mohican', 60),
+    _n('toc_vuot', 'hair', 'Tóc vuốt dựng', 50),
+    _n('toc_dau_dinh', 'hair', 'Tóc đầu đinh', 40),
+    _n('toc_dai_buoc', 'hair', 'Tóc dài buộc sau', 55),
+    _n('ao_dai_nam_lam', 'top', 'Áo dài nam xanh lam', 160, 'Áo dài nam'),
+    _n('ao_dai_nam_be', 'top', 'Áo dài nam vàng be', 160, 'Áo dài nam'),
+    _n('vest_den', 'top', 'Vest đen dự tiệc', 180, 'Vest dự tiệc'),
+    _n('vest_xam', 'top', 'Vest xám công sở', 150, 'Vest công sở'),
+    _n('so_mi_ke', 'top', 'Sơ mi kẻ sọc xanh', 70, 'Sơ mi kẻ sọc'),
+    _n('ao_len_co_lo', 'top', 'Áo len cổ lọ xám', 95, 'Áo len cổ lọ'),
+    _n('ao_khoac_da', 'top', 'Áo khoác da đen', 170, 'Áo khoác da'),
+    _n('ao_ba_ba_nam', 'top', 'Áo bà ba nâu', 80, 'Áo bà ba'),
+    _n('ao_gile', 'top', 'Áo gile len nâu', 90, 'Áo gile len'),
+    _n('quan_au_den', 'bottom', 'Quần âu đen', 80, 'Quần âu'),
+    _n('quan_kaki_be', 'bottom', 'Quần kaki be', 70, 'Quần kaki'),
+    _n('quan_short_tt', 'bottom', 'Quần short thể thao đen', 45, 'Quần short thể thao'),
+    _n('quan_jean_den', 'bottom', 'Quần jean đen ống đứng', 60, 'Quần jean ống đứng'),
+    _n('giay_tay_den', 'shoes', 'Giày tây đen bóng', 100, 'Giày tây'),
+    _n('giay_luoi_nau', 'shoes', 'Giày lười da nâu', 90, 'Giày lười da'),
+    _n('dep_quai_hau', 'shoes', 'Dép quai hậu', 45),
+    _n('giay_vai', 'shoes', 'Giày vải bata trắng', 40, 'Giày vải bata'),
+    _n('dong_ho_da', 'acc', 'Đồng hồ dây da', 90),
+    _n('ca_vat', 'acc', 'Cà vạt đỏ đô', 50, 'Cà vạt'),
+    _n('no_co', 'acc', 'Nơ cổ đen', 45, 'Nơ cổ'),
+    _n('that_lung', 'acc', 'Thắt lưng da', 55),
+    _n('kinh_phi_cong', 'acc', 'Kính râm phi công', 70),
+    _n('mu_fedora', 'acc', 'Nón fedora', 75),
 ]
+MENSWEAR = ('toc_re_ngoi', 'toc_mohican', 'toc_vuot', 'toc_dau_dinh', 'toc_dai_buoc', 'ao_dai_nam_lam', 'ao_dai_nam_be',
+            'vest_den', 'vest_xam', 'so_mi_ke', 'ao_len_co_lo', 'ao_khoac_da', 'ao_ba_ba_nam', 'ao_gile', 'quan_au_den',
+            'quan_kaki_be', 'quan_short_tt', 'quan_jean_den', 'giay_tay_den', 'giay_luoi_nau', 'dep_quai_hau', 'giay_vai',
+            'dong_ho_da', 'ca_vat', 'no_co', 'that_lung', 'kinh_phi_cong', 'mu_fedora')   # 👔 24/10
+# 👫 Who a piece is cut for (owner 24/10). Rule: dresses, skirts, áo dài nữ, heels and flats, croptops, hair buns and long
+# hair, earrings, bows and hair clips → nữ; the groom's suit and the men's cuts → nam; T-shirts, shirts, jeans, trousers,
+# hoodies, jackets, sneakers, boots, hats, glasses, bags for both, hair and skin colours → unisex. Only a list to browse:
+# anyone may wear anything.
+FOR_FEMALE = frozenset({
+    'toc_bui', 'toc_dai', 'toc_bob', 'toc_duoi_ngua', 'toc_bui_cao', 'toc_bui_doi', 'toc_bui_thap',
+    'toc_song_dai', 'toc_bob_mai', 'toc_duoi_cao', 'toc_bui_tron', 'toc_tet',
+    'ao_dai', 'ao_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem', 'dam_maxi', 'vay_babydoll',
+    'ao_croptop', 'ao_baby_tee', 'vay_hai_day', 'ao_dai_cach_tan', 'dam_suong', 'vay_maxi_hoa', 'dam_so_mi',
+    'vay_yem_jean', 'dam_hoa_nhi', 'dam_kim_sa',
+    'vay_xoe', 'vay_dai', 'vay_chu_a', 'vay_tennis', 'chan_vay_jean', 'vay_xep_ly_dai',
+    'giay_do', 'sandal_nau', 'giay_mary_jane',
+    'no_toc', 'tui_xach', 'bong_tai', 'khan_lua', 'kinh_mat_meo', 'kep_toc', 'no_lua', 'khuyen_tron', 'vuong_mien',
+    'bang_do_tai_meo', 'vong_hoa',
+})
+FOR_MALE = frozenset({'toc_ngan', 'toc_undercut', 'toc_mai_bay', 'vest_cuoi', *MENSWEAR})
+GENDERS = ('male', 'female', 'unisex')
+for _x in ITEMS:
+    _x['g'] = 'female' if _x['id'] in FOR_FEMALE else 'male' if _x['id'] in FOR_MALE else 'unisex'
 INDEX = {x['id']: x for x in ITEMS}
 PLUS = frozenset(x['id'] for x in ITEMS if x.get('plus'))      # 1.9.2 pieces (s['wardrobe_plus'])
 BASE_INDEX = {k: v for k, v in INDEX.items() if k not in PLUS}  # what s['wardrobe'] may hold (1.9.1 knows these)
@@ -279,7 +339,7 @@ PAIRS = frozenset(f'{i}:{c}' for i in BASE_TINTABLE for c in COLOR_INDEX)
 BLOCK_KEYS = frozenset({'v', 'look', 'owned'})
 # 1.9.2: the new pieces' own root key. look = {slot: [piece id, the id s['wardrobe'] wore in that slot when it was put
 # on]} (a 1.9.1 build that changes the slot makes the entry stale: it is then ignored and dropped), owned = the
-# pieces bought, wear = {piece id: colour id}. A 1.9.1 build never reads it and keeps it untouched (validate_state
+# pieces bought (+ the wedding pieces kept once worn, 24/10: _keep), wear = {piece id: colour id}. A 1.9.1 build never reads it and keeps it untouched (validate_state
 # lists no root keys), while s['wardrobe'] only ever holds ids 1.9.1 knows (the slot's default under a new piece).
 PLUS_KEY = 'wardrobe_plus'
 PLUS_VERSION = 1
@@ -717,9 +777,26 @@ def price(s: dict, iid: str) -> int:
     return p - p * STAFF_OFF // 100 if p and staff(s) else p
 
 
+KEEP_NEEDS = ('married',)   # unlocks that stay once the piece was worn (the wedding pair after a break-up)
+
+
 def _married(s: dict) -> bool:
+    """Engaged (đính hôn) or married: the wedding pair is open (owner 24/10: from the engagement on)."""
     sp = (s.get('marriage') or {}).get('spouse') if isinstance(s.get('marriage'), dict) else None
-    return isinstance(sp, dict) and sp.get('status') == 'married'
+    return isinstance(sp, dict) and sp.get('status') in ('engaged', 'married')
+
+
+def _kept(s: dict, iid: str) -> bool:
+    """A wedding piece worn once: it stays the player's (in s['wardrobe_plus']['owned'], which keeps any id)."""
+    return iid in _part(_plus(s), 'owned', list)
+
+
+def _keep(s: dict, iid: str) -> None:
+    """Remember a wedding piece put on while it is open, so a broken engagement or a divorce never takes it away."""
+    if INDEX[iid]['need'] in KEEP_NEEDS and not _kept(s, iid):
+        b = _plusbox(s)
+        if len(b['owned']) < PLUS_MAX:
+            b['owned'].append(iid)
 
 
 def _level(s: dict) -> int:
@@ -743,8 +820,8 @@ def locked(s: dict, iid: str) -> str | None:
         tid = need[6:]
         if tid not in (s['journey'].get('titles') or {}):
             return f'{it["name"]} mở khi bạn có danh hiệu “{jr.TITLE_INDEX[tid]["name"]}”.'
-    elif need == 'married' and not _married(s):
-        return f'{it["name"]} dành cho người đã về chung một nhà.'
+    elif need == 'married' and not _married(s) and not _kept(s, iid):
+        return f'{it["name"]} mở khi bạn đính hôn.'
     if it['price'] and iid not in _box_owned(s):
         acc = it['slot'] == 'acc'   # 🛍️ accessories are sold at Tiệm phụ kiện (owner 22/10)
         if need == OPEN_SHOP and not shop_open(s):
@@ -769,7 +846,11 @@ def shop_open(s: dict) -> bool:
 
 def _wear_slot(s: dict, slot: str, iid: str) -> None:
     """Put `iid` on in `slot`. A 1.9.2 piece goes in s['wardrobe_plus'] over the slot's default in s['wardrobe'] (what
-    a 1.9.1 build shows); any other piece goes in s['wardrobe'] and takes the 1.9.2 piece off."""
+    a 1.9.1 build shows); any other piece goes in s['wardrobe'] and takes the 1.9.2 piece off.
+    A wedding piece going on, or coming off, stays the player's (_keep): a divorce never takes back what was worn."""
+    for x in (worn(s).get(slot), iid):
+        if isinstance(x, str) and x in INDEX:
+            _keep(s, x)
     w = _box(s)
     if iid in PLUS:
         base = default_look(_gender(s))[slot]
@@ -937,7 +1018,7 @@ def action(s: dict, name: str, p: dict) -> dict:
 def content() -> dict:
     """Static list for the client (bootstrap content, cached): names, prices and unlocks by id."""
     from . import avatar, friend_charms, wings
-    return dict(slots=[dict(id=k, name=SLOT_NAMES[k]) for k in SLOTS], items=[dict(x) for x in ITEMS],
+    return dict(slots=[dict(id=k, name=SLOT_NAMES[k]) for k in SLOTS], items=[dict(x) for x in ITEMS],   # each with g (👫)
                 defaults={k or 'none': v for k, v in DEFAULTS.items()}, staff_off=STAFF_OFF, shop=SHOP, shop_name=SHOP_NAME,
                 colors=[dict(x) for x in COLORS], tintable=list(TINTABLE), clothes=list(CLOTHES),
                 match={k: list(v) for k, v in MATCH.items()}, avatar_presets=avatar.presets(),

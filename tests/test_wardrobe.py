@@ -154,12 +154,14 @@ class Wear(unittest.TestCase):
                              spouse=dict(name='Minh', status='married', since=2, wed=5, date='2026-09-01'))
         s, _ = act(s, 'jr_wd_wear', look={'top': 'ao_cuoi'})
         self.assertEqual(s['wardrobe']['look']['top'], 'ao_cuoi')
-        # After a divorce the wedding outfit stays on until changed, but cannot be put back on.
+        # After a divorce the wedding outfit worn stays the player's (24/10: nothing is taken away); the other piece,
+        # never worn, closes again.
         s['marriage']['spouse'] = None
         s, _ = act(s, 'jr_wd_wear', look={'top': 'ao_cuoi', 'hair': 'toc_dai'})
         s, _ = act(s, 'jr_wd_wear', look={'top': 'ao_quen'})
+        s, _ = act(s, 'jr_wd_wear', look={'top': 'ao_cuoi'})
         with self.assertRaises(GameError):
-            act(s, 'jr_wd_wear', look={'top': 'ao_cuoi'})
+            act(s, 'jr_wd_wear', look={'top': 'vest_cuoi'})
         # Maturity level 3 opens the sunglasses.
         for cid in list(s['careers'])[:1]:
             s['careers'][cid]['xp'] = 400

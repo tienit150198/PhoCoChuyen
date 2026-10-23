@@ -144,29 +144,35 @@ LOOK_SLOTS = ('hair', 'shade', 'skin', 'top', 'bottom', 'shoes', 'acc')
 LOOK_IDS = {
     'hair': ('toc_ngan', 'toc_bui', 'toc_dai', 'toc_bob', 'toc_duoi_ngua', 'toc_xoan', 'toc_bui_cao', 'toc_bui_doi',
             'toc_bui_thap', 'toc_song_dai', 'toc_bob_mai', 'toc_duoi_cao', 'toc_bui_tron', 'toc_wolf',
-            'toc_undercut', 'toc_mai_bay', 'toc_tet'),
+            'toc_undercut', 'toc_mai_bay', 'toc_tet', 'toc_re_ngoi', 'toc_mohican',
+            'toc_vuot', 'toc_dau_dinh', 'toc_dai_buoc'),
     'shade': ('mau_nau', 'mau_den', 'mau_mat_ong', 'mau_hong', 'mau_xanh_khoi', 'mau_bach_kim'),
     'skin': ('da_sang', 'da_hong', 'da_trung', 'da_ngam'),
     'top': ('ao_quen', 'ao_thun_kem', 'ao_thun_xanh', 'ao_so_mi', 'ao_len', 'ao_hoodie', 'ao_dai', 'ao_chi_may',
             'ao_hoa', 'ao_vest', 'ao_cuoi', 'vest_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem', 'dam_maxi',
             'vay_babydoll', 'ao_blazer', 'ao_cardigan', 'ao_polo', 'ao_croptop', 'ao_baby_tee', 'ao_bomber',
             'ao_hoodie_os', 'ao_so_mi_os', 'ao_khoac_jean', 'vay_hai_day', 'ao_dai_cach_tan', 'ao_ba_lo',
-            'dam_suong', 'vay_maxi_hoa', 'dam_so_mi', 'vay_yem_jean', 'dam_hoa_nhi', 'dam_kim_sa'),
+            'dam_suong', 'vay_maxi_hoa', 'dam_so_mi', 'vay_yem_jean', 'dam_hoa_nhi', 'dam_kim_sa',
+            'ao_dai_nam_lam', 'ao_dai_nam_be', 'vest_den', 'vest_xam', 'so_mi_ke',
+            'ao_len_co_lo', 'ao_khoac_da', 'ao_ba_ba_nam', 'ao_gile'),
     'bottom': ('quan_kem', 'quan_xam', 'quan_jean', 'quan_short', 'vay_xoe', 'vay_dai', 'vay_chu_a', 'quan_ong_rong',
-            'quan_cargo', 'vay_tennis', 'quan_jogger', 'quan_short_jean', 'chan_vay_jean', 'vay_xep_ly_dai'),
+            'quan_cargo', 'vay_tennis', 'quan_jogger', 'quan_short_jean', 'chan_vay_jean', 'vay_xep_ly_dai',
+            'quan_au_den', 'quan_kaki_be', 'quan_short_tt', 'quan_jean_den'),
     'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den', 'sandal_nau', 'sneaker_chunky',
-            'giay_mary_jane', 'boot_co_ngan', 'dep_quai_ngang'),
+            'giay_mary_jane', 'boot_co_ngan', 'dep_quai_ngang', 'giay_tay_den', 'giay_luoi_nau', 'dep_quai_hau', 'giay_vai'),
     'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai',
             'khan_lua', 'kinh_mat_meo', 'mu_bucket', 'mu_luoi_trai', 'vong_co', 'dong_ho', 'kep_toc', 'kinh_can',
             'no_lua', 'khuyen_tron', 'khan_bandana', 'balo_mini', 'mu_beret', 'mu_cao_boi', 'tai_nghe',
-            'vuong_mien', 'bang_do_tai_meo', 'vong_hoa', 'khau_trang', 'khan_choang'),
+            'vuong_mien', 'bang_do_tai_meo', 'vong_hoa', 'khau_trang', 'khan_choang', 'dong_ho_da', 'ca_vat', 'no_co',
+            'that_lung', 'kinh_phi_cong', 'mu_fedora'),
 }
 # Bảng màu (1.3.1 accessories, then clothes and shoes): look['tint'] = {worn item id: colour id}
 # (game/wardrobe.py TINTABLE, CLOTHES, TINT_SLOTS and COLORS). Hair keeps its own shades.
 TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua',
             'kinh_mat_meo', 'mu_bucket', 'mu_luoi_trai', 'vong_co', 'dong_ho', 'kep_toc', 'kinh_can', 'no_lua',
             'khuyen_tron', 'khan_bandana', 'balo_mini', 'mu_beret', 'mu_cao_boi', 'tai_nghe', 'vuong_mien',
-            'bang_do_tai_meo', 'vong_hoa', 'khau_trang', 'khan_choang')
+            'bang_do_tai_meo', 'vong_hoa', 'khau_trang', 'khan_choang', 'dong_ho_da', 'ca_vat', 'no_co',
+            'that_lung', 'kinh_phi_cong', 'mu_fedora')
 TINT_SLOTS = ('top', 'bottom', 'shoes', 'acc')
 PAINTABLE = frozenset(TINTABLE + LOOK_IDS['top'] + LOOK_IDS['bottom'] + LOOK_IDS['shoes'])
 TINT_MAX = 8      # entries a client may send (it sends at most one per slot in TINT_SLOTS)

@@ -155,7 +155,7 @@ class Save(unittest.TestCase):
             self.assertTrue(all(look[k] in wd.BASE_INDEX for k in wd.SLOTS), it)
             self.assertTrue(set(s['wardrobe']['owned']) <= wd.BASE_BUYABLE)
         validate_state(s)
-        self.assertLess(len(json.dumps(s['wardrobe_plus'])), 1200)
+        self.assertLess(len(json.dumps(s['wardrobe_plus'])), 2000)   # every piece bought (73 since the 👔 đồ nam, 24/10): still small
         self.assertEqual(public_state(s)['wardrobe_plus'], s['wardrobe_plus'])
 
 
