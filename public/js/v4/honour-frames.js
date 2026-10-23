@@ -22,7 +22,8 @@ const TIERS={all:['25','26','27'],titles:['36','35','34'],certs:['31','32','33']
  * look alike (tests/honour_frames_508.mjs), and an everyday frame has neither halo nor medal. */
 const LOOK={all:[0,'#f2b632'],titles:[0,'#b46cff'],certs:[0,'#3d7bff'],wealth:[0,'#25b86a'],collection:[0,'#d4a017'],
   online:[0,'#6a5cff'],pets:[0,'#ff7eb6'],island:[0,'#18c3c9'],wings:[200,'#7fd3ff'],arena:[330,'#ff5a4e'],pet_cup:[300,'#ff4fa3'],
-  pet_war:[150,'#00b894'],race_drag_bike:[40,'#ff9f1c'],race_drag_car:[100,'#9bd832'],race_deo_bike:[160,'#2ec4b6'],race_deo_car:[230,'#c77dff']};
+  pet_war:[150,'#00b894'],race_drag_bike:[40,'#ff9f1c'],race_drag_car:[100,'#9bd832'],race_deo_bike:[160,'#2ec4b6'],race_deo_car:[230,'#c77dff'],
+  wedding:[0,'#ff8fb1']};
 const METAL=['g','s','b'];   // the medal of a rank tier: gold, silver, bronze
 // 🏆 Trùm <nghề>: the workplace's own art; the others wear "Top tổng hợp nghề" with the workplace's icon
 const CAREER={milk_tea:'37',clothing:'38',pharmacy:'39',accounting:'40',pilot:'41',grocery:'42',police:'43',flight_attendant:'44',
@@ -77,9 +78,14 @@ const ORN={
   beam:'<path d="M-2.5 6L0-8L2.5 6Z" fill="L"/>',
   bean:'<ellipse rx="3.5" ry="5.5" fill="M" stroke="L" stroke-width="1.2"/><path d="M0-5Q-1.5 0 0 5" stroke="D" fill="none"/>',
   gem:'<path d="M0-6L5 0L0 6L-5 0Z" fill="L" stroke="D" stroke-width="1"/>',
+  heart:'<path d="M0 6C-6 1-6-5-2.5-5C-1-5 0-4 0-3C0-4 1-5 2.5-5C6-5 6 1 0 6Z" fill="M" stroke="L" stroke-width="1"/>',
+  ring:'<circle cy="1" r="4.2" fill="none" stroke="L" stroke-width="2"/><path d="M-2.2-3.5L0-7L2.2-3.5Z" fill="M" stroke="L" stroke-width=".8"/>',
 };
+/* 💒 Boards with a frame drawn for them, not cut from the art pack: [top 1, top 2–3] like an auction title's row plus
+ * the ribbon's text (game/lb_titles.py WEDDING, owner 23/10 "cái đám cưới nữa, mình cho danh hiệu với khung riêng"). */
+const DRAWN={wedding:[['💒','#fff4f7','#f7a8c4','#a8556f','heart',12,'TOP 1'],['💐','#fffaf0','#f1d39a','#9a6b3c','ring',10,'TOP 3']]};
 /** The tables, for tests/honour_frames_508.mjs. */
-export const TABLES={TIERS,LOOK,FREE,UQ,CAREER,WORN};
+export const TABLES={TIERS,LOOK,FREE,UQ,CAREER,WORN,DRAWN};
 const UQ_AV=[180,180,90,90,60,0];   // the drawn frame's box, like the art's (honour-frames-data.js av)
 const UQ_RE=/^dh_[a-z0-9_]{1,40}$/;
 /** [emoji, light, main, deep, ornament, count] of an auction title's frame. */
@@ -91,9 +97,12 @@ export function uqSpec(id){
 }
 const UQ_SVG=new Map();
 /** The frame of an auction title as an svg data url: a ring in its colours, its ornaments, a crest on top, "01/01" below. */
-export function uqSvg(id){
-  let u=UQ_SVG.get(id);if(u)return u;
-  const [,L,M,D,orn,n]=uqSpec(id),C={L,M,D},shape=ORN[orn].replace(/"([LMD])"/g,(_,k)=>`"${C[k]}"`);
+export function uqSvg(id){return drawSvg(`uq:${id}`,uqSpec(id));}
+/** 💒 The drawn frame of a board's tier (DRAWN), or ''. */
+export function drawnSvg(board,tier){const d=DRAWN[board]?.[tier];return d?drawSvg(`dr:${board}:${tier}`,d):'';}
+function drawSvg(key,spec){
+  let u=UQ_SVG.get(key);if(u)return u;
+  const [,L,M,D,orn,n,tag='01/01']=spec,C={L,M,D},shape=ORN[orn].replace(/"([LMD])"/g,(_,k)=>`"${C[k]}"`);
   let o='';
   for(let i=0;i<n;i++){const a=(i+.5)*360/n;if(a<24||a>336||Math.abs(a-180)<34)continue;   // clear of the crest and the ribbon
     o+=`<g transform="rotate(${Math.round(a*10)/10} 90 90) translate(90 22) scale(1.3)">${shape}</g>`;}
@@ -101,8 +110,8 @@ export function uqSvg(id){
     `<circle cx="90" cy="90" r="68" fill="none" stroke="url(#g)" stroke-width="15"/><circle cx="90" cy="90" r="76" fill="none" stroke="${D}" stroke-width="2.5"/><circle cx="90" cy="90" r="60.8" fill="none" stroke="${L}" stroke-width="2"/>`+
     `<circle cx="90" cy="90" r="68" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="1 6"/>${o}`+
     `<path d="M90 2L108 18L90 34L72 18Z" fill="url(#g)" stroke="${L}" stroke-width="2"/><path d="M48 150H132L124 160L132 170H48L56 160Z" fill="${D}" stroke="${L}" stroke-width="1.5"/>`+
-    `<text x="90" y="164" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" letter-spacing="1" fill="${L}">01/01</text></svg>`;
-  u=`data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g,'%27')}`;UQ_SVG.set(id,u);return u;
+    `<text x="90" y="164" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" letter-spacing="1" fill="${L}">${tag}</text></svg>`;
+  u=`data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g,'%27')}`;UQ_SVG.set(key,u);return u;
 }
 
 /** {n, tier, …} of one honour id: n the art, tier the chip's colour (0 top 1, 1 top 2–3, 2 top 4–10, 3 trùm, 4 độc bản);
@@ -112,17 +121,22 @@ export function ofId(id){
   if(id.startsWith('dh_'))return UQ_RE.test(id)?{n:null,tier:4,uq:id}:null;
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]);
+  if(DRAWN[b]){const t=tierOf(r,b);return DRAWN[b][t]?{n:null,tier:t,board:b,rank:r,drawn:true}:{n:undefined,tier:t,board:b,rank:r};}   // 💒 top 3 only
   if(TIERS[b])return {n:TIERS[b][tierOf(r,b)],tier:tierOf(r,b),board:b,rank:r};
   if(r!==1||b==='pagoda')return null;   // a workplace: its top 1 only; nobody is the boss of a pagoda
   return {n:CAREER[b]||CAREER_ANY,tier:3,career:b};
 }
-const geo=f=>f?.uq?UQ_AV:FRAMES[f?.n]?.av;
+const geo=f=>f?.uq||f?.drawn?UQ_AV:FRAMES[f?.n]?.av;
+const spec=f=>f.uq?uqSpec(f.uq):DRAWN[f.board][f.tier];   // a drawn frame's row
+const svgOf=f=>f.uq?uqSvg(f.uq):drawnSvg(f.board,f.tier);
 const has=f=>Boolean(f&&geo(f));
 /** 🏅 How a frame shows it is an honour (#508): {fx: the art's filter, cls, medal: the text on its medal (a board's rank)},
  * or null: an everyday frame and a town project's stay as drawn. */
 export function look(f){
   if(!f)return null;
   if(f.uq){const [,,M]=uqSpec(f.uq);return {fx:`drop-shadow(0 0 4px ${M})`,cls:' hf-uq',medal:''};}
+  if(f.drawn){const [,,M]=spec(f),halo=LOOK[f.board]?.[1]||M;   // 💒 its ribbon says TOP 1 / TOP 3: no medal
+    return {fx:`drop-shadow(0 0 4px ${halo})`,cls:' hf-uq hf-top',medal:'',hue:0,halo,metal:METAL[f.tier]||'b',drawn:true};}
   if(f.board&&LOOK[f.board]){const [hue,halo]=LOOK[f.board],m=METAL[f.tier]||'b';
     return {fx:`${hue?`hue-rotate(${hue}deg) `:''}drop-shadow(0 0 3px ${halo})`,cls:` hf-top hf-m${m}`,medal:f.board==='pet_war'?String(f.tier+1):String(f.rank),hue,halo,metal:m};}
   if(f.tier===3)return {fx:'drop-shadow(0 0 3px #f2b632)',cls:' hf-top',medal:''};   // 🏆 Trùm: the art itself says TRÙM
@@ -161,7 +175,7 @@ export function choices(api){
 function wrap(f,cls=''){
   const d=geo(f);if(!d)return null;ensureCss();
   const [w,h,cx,cy,r,sq]=d,box=2*r*PAD,lk=look(f);
-  return {lk,cls:`hf-av${lk?lk.cls:''}${cls}`,style:`--hf-img:url('${f.uq?uqSvg(f.uq):`${DIR}${f.n}_av.webp`}');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}${lk?`;--hf-fx:${lk.fx}`:''}`};
+  return {lk,cls:`hf-av${lk?lk.cls:''}${cls}`,style:`--hf-img:url('${f.uq||f.drawn?svgOf(f):`${DIR}${f.n}_av.webp`}');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}${lk?`;--hf-fx:${lk.fx}`:''}`};
 }
 const badge=(f,inner,cls='')=>{const a=wrap(f,` hf-logo${cls}`);return a?`<span class="${a.cls}" aria-hidden="true" style="${a.style}"><b>${inner}</b></span>`:'';};
 /** 👑 An auction title's own frame around its emoji (the lot card, Của tôi), or ''. */
@@ -217,7 +231,7 @@ html[data-theme="dem"] .hn-chip.hn-t4{--hn-bg:linear-gradient(120deg,#1f5563,#4a
 .hf-mb{--hf-metal:radial-gradient(circle at 35% 30%,#ffe6cc,#d38b4f 45%,#8a4a1c);--hf-metal-ink:#3a1604}
 .ch-bub.hf-uq{position:relative;margin-top:10px;padding:11px 16px 7px!important;border:2.5px solid transparent!important;border-radius:16px!important;color:#3d2a1e!important;background:linear-gradient(var(--uq-paper,#fffaf2),var(--uq-paper,#fffaf2)) padding-box,linear-gradient(135deg,var(--uq-a),var(--uq-b) 40%,var(--uq-c) 72%,var(--uq-a)) border-box!important;box-shadow:0 0 9px -1px var(--uq-b)!important}
 .ch-bub.hf-uq::before{content:var(--uq-emo);position:absolute;top:-12px;left:12px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:12px;line-height:1;background:linear-gradient(135deg,var(--uq-a),var(--uq-b));box-shadow:0 0 0 2px var(--uq-c),0 1px 3px rgba(0,0,0,.3);pointer-events:none}
-.ch-bub.hf-uq::after{content:'01/01';position:absolute;top:-8px;right:12px;padding:1px 7px;border-radius:999px;font:800 9px/1.5 system-ui,sans-serif;letter-spacing:.06em;color:var(--uq-a);background:var(--uq-c);box-shadow:0 0 0 1.5px var(--uq-a);pointer-events:none}
+.ch-bub.hf-uq::after{content:var(--uq-tag,'01/01');position:absolute;top:-8px;right:12px;padding:1px 7px;border-radius:999px;font:800 9px/1.5 system-ui,sans-serif;letter-spacing:.06em;color:var(--uq-a);background:var(--uq-c);box-shadow:0 0 0 1.5px var(--uq-a);pointer-events:none}
 .ch-msg.mine .ch-bub.hf-uq::before{left:auto;right:12px}.ch-msg.mine .ch-bub.hf-uq::after{right:auto;left:12px}
 .ch-bub.hf-uq time{color:#7a6252!important;opacity:1}.ch-bub.hf-uq a.ch-link{color:#9a3412!important}
 html[data-theme="dem"] .ch-bub.hf-uq{--uq-paper:#2a2233;color:#f6efff!important}html[data-theme="dem"] .ch-bub.hf-uq time{color:#cbbfd9!important}html[data-theme="dem"] .ch-bub.hf-uq a.ch-link{color:#ffc58a!important}
@@ -241,7 +255,7 @@ const PAD=1.08;   // the picture is a little bigger than the window, so the fram
 export function avatar(tt,st,html,api=null){
   const f=pick(tt,st),a=wrap(f);if(!a)return html;
   // the crest: the workplace's emoji on the shared "Trùm" frame, the title's own on an auction frame
-  const icon=f.uq?(auctionEmoji(api,f.uq)||uqSpec(f.uq)[0]):f.career&&!CAREER[f.career]?careerIcon(api,f.career):'';
+  const icon=f.uq?(auctionEmoji(api,f.uq)||uqSpec(f.uq)[0]):f.drawn?spec(f)[0]:f.career&&!CAREER[f.career]?careerIcon(api,f.career):'';
   const medal=a.lk?.medal;
   return `<span class="${a.cls}" style="${a.style}"${icon?` data-hf-icon="${esc(icon)}"`:''}${medal?` data-hf-rank="${esc(medal)}"`:''}>${html}</span>`;
 }
@@ -257,8 +271,8 @@ const cssStr=v=>`'${String(v).replace(/[\'"<>&\n]/g,'')}'`;
  * title's bubble (` hf-uq`) is drawn in its own colours with its crest and "01/01"; a top board's wears its medal. */
 export function bubble(tt,st){
   const f=pick(tt,st);
-  if(f?.uq){ensureCss();const [emo,L,M,D]=uqSpec(f.uq);
-    return {cls:' hf-uq',attrs:` style="--uq-a:${L};--uq-b:${M};--uq-c:${D};--uq-emo:${cssStr(emo)}"`};}
+  if(f?.uq||f?.drawn){ensureCss();const [emo,L,M,D,,,tag]=spec(f);
+    return {cls:' hf-uq',attrs:` style="--uq-a:${L};--uq-b:${M};--uq-c:${D};--uq-emo:${cssStr(emo)}${tag?`;--uq-tag:${cssStr(tag)}`:''}"`};}
   const d=f&&FRAMES[f.n]?.chat;if(!d)return {cls:'',attrs:''};ensureCss();
   const [w,h,x0,y0,x1,y1]=d,ry=Math.min(.32*(y1-y0),40),rx=Math.min(ry,.2*(x1-x0));
   // the cuts: from the data (scripts/build_honour_frames.py slices(): only a plain strip of the rim stretches), else the rim

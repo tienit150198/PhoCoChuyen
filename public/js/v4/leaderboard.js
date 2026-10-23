@@ -176,8 +176,10 @@ function holdersText(list){
   const shown=list.slice(0,3).map(h=>h.me?'<b>Bạn</b>':`<span data-no-translate>${esc(h.name)}</span>`).join(', ');
   return list.length>3?`${shown} <i>+${list.length-3} người</i>`:shown;
 }
-function tierRows(tiers,board){
-  return tiers.map(t=>`<li class="${t.holders.some(h=>h.me)?'me':''}"><span class="lb-week-emoji" aria-hidden="true">${(board&&hfLogo(board,t.lo).replace(/<b>\d+<\/b>/,`<b>${esc(t.emoji)}</b>`))||esc(t.emoji)}</span><span class="lb-week-who"><b>${esc(t.name)}</b><small>${esc(t.label)} · ${holdersText(t.holders)}</small></span></li>`).join('');
+// 🏆 Thưởng top tuần (game/lb_titles.py WEEKLY_REWARD): what each holder of a tier gets when the week is frozen
+const rewardLine=t=>t.reward>0?`<small class="lb-week-reward">🎁 Thưởng tuần: ${fmt(t.reward)} xu</small>`:'';
+function tierRows(tiers,board,reward=false){
+  return tiers.map(t=>`<li class="${t.holders.some(h=>h.me)?'me':''}"><span class="lb-week-emoji" aria-hidden="true">${(board&&hfLogo(board,t.lo).replace(/<b>\d+<\/b>/,`<b>${esc(t.emoji)}</b>`))||esc(t.emoji)}</span><span class="lb-week-who"><b>${esc(t.name)}</b><small>${esc(t.label)} · ${holdersText(t.holders)}</small>${reward?rewardLine(t):''}</span></li>`).join('');
 }
 function weeklyHTML(w,board){
   if(!w)return '';
@@ -185,7 +187,7 @@ function weeklyHTML(w,board){
   const when=w.updated?`Cập nhật hằng ngày · lần cuối ${vnTime(w.updated)}`:'Cập nhật hằng ngày';
   const last=w.last?`<details class="lb-week-last"><summary>Tuần trước</summary><ul class="lb-week-tiers">${tierRows(w.last.tiers,board)}</ul></details>`:'';
   return `<section class="lb-week" aria-label="Danh hiệu tuần này"><div class="lb-week-head"><b>🏅 Danh hiệu tuần này</b><small>${esc(when)} · chốt sau ${left} ngày</small></div>
-    <ul class="lb-week-tiers">${tierRows(w.tiers,board)}</ul>${last}</section>`;
+    <ul class="lb-week-tiers">${tierRows(w.tiers,board,true)}</ul>${last}</section>`;
 }
 
 /** 🦉 The own card before the name is on the online board (F#434): the time is counted, this much more puts it up. */
@@ -262,7 +264,8 @@ function wedBody(env){
   const row=r=>`<li class="lb-row${r.me?' me':''}${r.rank<=3?` top top${r.rank}`:''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:`<b>${r.rank}</b>`}</span>
     <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.me?'<span class="tag blue">Bạn</span>':''}</span></span>
     <span class="lb-score"><b>${fmt(r.n)}</b><small>đám cưới</small></span></li>`;
-  const prizes=`<p class="lb-rule">🥇 ${fmt(d.prizes[0].xu)} xu + ${esc(d.prizes[0].title)} · 🥈🥉 ${fmt(d.prizes[1].xu)} xu + ${esc(d.prizes[1].title)}. Bằng nhau thì ai đạt trước đứng trên. Còn ${left} ngày.</p>`;
+  const prizes=`<p class="lb-rule">🥇 ${fmt(d.prizes[0].xu)} xu + ${esc(d.prizes[0].title)} · 🥈🥉 ${fmt(d.prizes[1].xu)} xu + ${esc(d.prizes[1].title)}. Bằng nhau thì ai đạt trước đứng trên. Còn ${left} ngày.</p>`
+    +(d.weekly?weeklyHTML(d.weekly,'wedding'):'');   // 💒 its weekly titles, frames and 🏆 rewards (game/lb_titles.py WEDDING)
   const mine=d.mine!=null?`<p class="lb-me-note">Tuần này bạn đã dự ${fmt(d.mine)} đám cưới.</p>`:'';
   const last=d.last?.winners?.length?`<h3 class="space-top">Tuần trước</h3><ol class="lb-list">${d.last.winners.map(w=>`<li class="lb-row${w.me?' me':''}"><span class="lb-rank"><span class="lb-medal" aria-hidden="true">${MEDALS[w.rank-1]}</span></span><span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(w.name)}</b></span><small>${esc(w.title)}</small></span><span class="lb-score"><b>${fmt(w.n)}</b><small>đám cưới</small></span></li>`).join('')}</ol>`:'';
   return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Dự một đám cưới để có tên.</p></div>`)+last;

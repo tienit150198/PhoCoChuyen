@@ -32,6 +32,19 @@ for(const k of Object.keys(FREE)){const f=pick([k],{});assert.equal(f.tier,6);as
 assert.match(avatar(['lb_wealth_1'],{},'<i></i>'),/class="hf-av hf-top hf-mg" .*data-hf-rank="1"/);
 assert.match(bubble(['lb_titles_3'],{}).cls,/ hf hf-top hf-ms/);assert.match(bubble(['lb_titles_3'],{}).attrs,/data-hf-rank="3"/);
 assert.match(logo('wings',1),/hue-rotate\(200deg\)/);   // 🪽 shares the 🏅 board's art, recoloured
+// 💒 the wedding board (owner 23/10 "đám cưới … danh hiệu với khung riêng"): two drawn frames of its own, top 1 / top 2–3
+const {DRAWN}=TABLES;
+assert.ok(DRAWN.wedding&&LOOK.wedding&&!TIERS.wedding);
+const wd=[1,2,3].map(r=>ofId(`lb_wedding_${r}`));
+assert.deepEqual(wd.map(f=>[f.tier,f.drawn]),[[0,true],[1,true],[1,true]]);
+assert.equal(ofId('lb_wedding_4').n,undefined);assert.equal(pick(['lb_wedding_4'],{}),null);
+const wa=[1,2].map(r=>avatar([`lb_wedding_${r}`],{},'<i></i>'));
+assert.notEqual(wa[0],wa[1]);assert.match(wa[0],/hf-uq hf-top/);assert.match(wa[0],/data-hf-icon="💒"/);assert.doesNotMatch(wa[0],/\/icons\/frames\//);
+assert.ok(!Object.values(UQ).some(u=>DRAWN.wedding.some(d=>d.slice(1,4).join()===u.slice(1,4).join())),'never an auction title colours');
+assert.match(bubble(['lb_wedding_1'],{}).attrs,/--uq-tag:'TOP 1'/);assert.match(bubble(['lb_wedding_3'],{}).attrs,/--uq-tag:'TOP 3'/);
+assert.match(logo('wedding',2),/hf-logo/);assert.equal(logo('wedding',4),'');
+assert.equal(look(wd[0]).halo,LOOK.wedding[1]);
+assert.ok(!halos.has(LOOK.wedding[1]),'the wedding halo is its own');
 
 // 2. 👑 an auction title's frame is its own: drawn, never an art file, no two alike, the same every time
 const ids=Object.keys(UQ),svgs=ids.map(uqSvg);

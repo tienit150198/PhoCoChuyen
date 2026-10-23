@@ -148,6 +148,7 @@ html[data-layout="phone"] .lb-me{padding:12px;gap:10px}
 .lb-week-who b{font-size:.92rem;color:var(--ink)}
 .lb-week-who small{font-size:.8rem;line-height:1.4;color:var(--ink-2);overflow-wrap:anywhere}
 .lb-week-who small i{font-style:normal;color:var(--muted)}
+.lb-week-who small.lb-week-reward{color:var(--good,#2f7d4f);font-weight:700}
 .lb-week-last summary{min-height:36px;display:flex;align-items:center;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer}
 .lb-week-last[open] summary{margin-bottom:6px}
 .lb-held{justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 8px;border-radius:var(--radius-pill);

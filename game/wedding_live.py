@@ -458,8 +458,13 @@ def race_view(store, sid: str | None) -> dict:
         for w in json.loads(prev['top']) if prev else []:
             winners.append(dict(rank=w['rank'], name=_public_name(db, w['sid'], sid), n=w['n'], title=TITLE_NAMES.get(w['title'], ''), me=w['sid'] == sid))
     ends = week_start(t) + 7 * 86400
+    try:   # 💒 the board's weekly titles, frames and 🏆 rewards (game/lb_titles.py WEDDING, owner 23/10)
+        from . import lb_titles
+        weekly = lb_titles.board_view(store, lb_titles.WEDDING, sid)
+    except Exception:  # noqa: BLE001 - the race shows without it
+        weekly = None
     return dict(week=week, top=top, mine=mine, ends=ends, last=dict(week=last_week, winners=winners),
-                prizes=[dict(rank=r, xu=x, title=TITLE_NAMES[tid]) for r, x, tid in RACE])
+                prizes=[dict(rank=r, xu=x, title=TITLE_NAMES[tid]) for r, x, tid in RACE], weekly=weekly)
 
 
 def _public_name(db, sid: str, viewer: str | None) -> str:

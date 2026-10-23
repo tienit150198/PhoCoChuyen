@@ -1,5 +1,11 @@
 {
   "strings": {
+    "Vua ăn cưới của tuần": "Wedding King of the week",
+    "Khách mời vàng của tuần": "Golden guest of the week",
+    "💒 Vua ăn cưới của tuần": "💒 Wedding King of the week",
+    "💐 Khách mời vàng của tuần": "💐 Golden guest of the week",
+    "🏆 Thưởng top tuần": "🏆 Weekly top reward",
+    "Khách mời": "Guests",
     "🖼️ Khung avatar và khung chat": "🖼️ Avatar and chat frame",
     "Khung avatar và khung chat": "Avatar and chat frame",
     "Khung hiện quanh avatar và tin nhắn của bạn ở Cả phố, khi đi dạo. Danh hiệu top và độc bản có khung riêng, có huy hiệu; khung thường thì ai cũng chọn được. Không thích thì bỏ khung.": "The frame shows around your avatar and your messages in Town chat and on walks. Top and one-of-a-kind titles have their own frames with a badge; everyday frames are open to everyone. Don't like it? Turn the frame off.",
@@ -44546,6 +44552,10 @@
     "Hội chắp cánh": "Winged Club"
   },
   "patterns": {
+    "🎁 Thưởng tuần: $1 xu": "🎁 Weekly reward: $1 xu",
+    "Top $1 Khách mời": "Top $1 Guests",
+    "Top $1 Khách mời · tuần này": "Top $1 Guests · this week",
+    "Tuần $1 bạn giữ danh hiệu “$2” ($3). Phố gửi bạn $4 xu thưởng top tuần. Tuần này giữ phong độ nha!": "In week $1 you held the title “$2” ($3). The town sends you $4 xu as a weekly top reward. Keep it up this week!",
     "Chưa có món nào cường hóa được: cần ba món cùng mẫu, cùng hạng (hai món chưa gắn) hoặc một món đang gắn chưa tới +$1.": "Nothing to upgrade yet: you need three pieces of the same model and rank (two not equipped) or an equipped piece below +$1.",
     "Chưa có món nào cường hóa được: cần 3 món cùng mẫu, cùng hạng (2 món chưa gắn), hoặc một món đang gắn chưa tới +$1.": "Nothing to upgrade yet: you need 3 pieces of the same model and rank (2 not equipped), or an equipped piece below +$1.",
     "Màn $1": "Level $1",
