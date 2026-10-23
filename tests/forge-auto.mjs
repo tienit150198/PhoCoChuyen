@@ -38,6 +38,8 @@ const settle=()=>new Promise(r=>setTimeout(r,0));
 test('🧬 lab: one card, one question, ONE jr_pet_fuse_auto, its summary above the card',async()=>{
   let html=petEmbedHTML(env,'lab'),c=card(html);
   assert.match(c,/⚡ Cường hóa nhanh/);
+  assert.match(c,/<option value="4" selected>/,'🎯 up to S by default (owner 23/10)');assert.match(c,/<b>2<\/b><small>bộ ba bé/,'not the S three');
+  fire('change',{ptSel:'latop'},{value:'7'});html=petEmbedHTML(env,'lab');c=card(html);
   assert.match(c,/data-pt-sel="lascope"/);assert.match(c,/<option value="7" selected>🌟 Huyền thoại<\/option>/);
   assert.match(c,/<b>3<\/b><small>bộ ba bé ghép được ngay/,'D, C and S each have three');
   const est=pets.tiers.ranks[0].fee+pets.tiers.ranks[1].fee+pets.tiers.ranks[4].fee;
@@ -224,7 +226,7 @@ test('⚒️ v2: Cường hóa tối đa = the kind\'s ⚡ pinned on the piece, 
   fg.answers.push({message:'⚡',auto:{n:3,ok:2,spent:4500,stop:'done',used:4,made:[{id:'w9',k:'buom',r:2,z:1}],left:0}});
   await go('jrFgMax',{id:'w9'});
   const [a,p]=fg.sent[0];assert.equal(a,'jr_pet_wing_fuse_auto');
-  assert.equal(p.pin,'w9');assert.equal(p.top,7);assert.equal(p.scope,'all');assert.equal(p.budget,est);assert.equal(p.confirm,true);assert.ok(p.rid);
+  assert.equal(p.pin,'w9');assert.equal(p.top,4,'⚡ goes up to S by default');assert.equal(p.scope,'all');assert.equal(p.budget,est);assert.equal(p.confirm,true);assert.ok(p.rid);
   assert.match(fg.asked[0].msg,/🔒 Món khóa không bị dùng/);
   html=view();assert.match(html,/<b>3<\/b><small>lượt/);assert.match(html,/<b>2<\/b><small>thành công/);assert.match(html,/<b title="4\.500 xu">4\.500<\/b>/);
   await go('jrFgRes');
@@ -276,6 +278,21 @@ test('⚒️ v2: ⚡ Ghép tất cả runs each kind\'s ⚡ in turn, one questio
   setNoAsk(false);
   await go('jrFgAllX',{x:'5'});assert.match(view(),/data-x="5" aria-pressed="true"/);await go('jrFgAllX',{x:'1'});
   await go('jrFgRes');delete globalThis.localStorage;
+});
+
+test('⚒️ v2: 🎯 Tới S by default (owner 23/10), this device may raise it (mnl.forgeTop): the ⚡ commands carry it',async()=>{
+  fgReset();globalThis.localStorage=fakeStorage;store.clear();
+  assert.equal(FG.autoTop(),4);assert.match(view(),/data-action="jrFgTop" data-top="4" aria-pressed="true">S</);
+  fg.answers.push({message:'⚡',auto:{n:0,ok:0,spent:0,stop:'done',used:0,made:[],left:0}});
+  await go('jrFgMax',{id:'w9'});assert.equal(fg.sent[0][1].top,4);
+  await go('jrFgTop',{top:'6'});assert.equal(store.get('mnl.forgeTop'),'6');assert.equal(FG.autoTop(),6);
+  assert.match(view(),/data-top="6" aria-pressed="true">SSS</);
+  fg.answers.push({message:'⚡',auto:{n:0,ok:0,spent:0,stop:'done',used:0,made:[],left:0}});
+  await go('jrFgMax',{id:'w9'});assert.equal(fg.sent[1][1].top,6);
+  await go('jrFgTop',{top:'9'});assert.equal(FG.autoTop(),4,'nonsense: back to S');assert.equal(store.has('mnl.forgeTop'),false);
+  globalThis.localStorage={getItem(){throw new Error('blocked');},setItem(){throw new Error('blocked');},removeItem(){throw new Error('blocked');}};
+  assert.equal(FG.autoTop(),4,'no storage: S');FG.setAutoTop(7);
+  delete globalThis.localStorage;await go('jrFgRes');
 });
 
 test('⚒️ v2: ⏩ Bỏ qua hiệu ứng (localStorage mnl.forgeFast, try/catch): no animation, no wait',async()=>{

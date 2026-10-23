@@ -52,6 +52,11 @@ def clear_cache():
         _views.clear()
 
 
+def clear_views():
+    with _lock:
+        _views.clear()
+
+
 def _shared(key, make):
     """What every viewer sees alike (the top rows, the total, the crowning), cached lb.CACHE_SECONDS per process."""
     mono = time.monotonic()

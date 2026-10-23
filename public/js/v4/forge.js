@@ -30,6 +30,11 @@ const xu=n=>Number(n)>=1e5?shortNum(n):fmt(n);
 export const FAST_KEY='mnl.forgeFast';
 export function fastFx(){try{return globalThis.localStorage?.getItem(FAST_KEY)==='1';}catch{return false;}}
 export function setFastFx(on){try{if(on)globalThis.localStorage?.setItem(FAST_KEY,'1');else globalThis.localStorage?.removeItem(FAST_KEY);}catch{/* it keeps the effects */}}
+/* ---- 🎯 Ghép tới: how high ⚡ goes, this device's choice (owner 23/10 after SS pets lost in one tap: "mặc định là để ghép tới
+ * bậc S thôi còn mọi người tự chỉnh lên tiếp các mức trên"). S by default: no ⚡ fusion then risks the two others. ---- */
+export const TOP_KEY='mnl.forgeTop',AUTO_TOPS=[4,5,6,7];
+export function autoTop(){try{const n=Number(globalThis.localStorage?.getItem(TOP_KEY));return AUTO_TOPS.includes(n)?n:4;}catch{return 4;}}
+export function setAutoTop(n){try{if(AUTO_TOPS.includes(n)&&n!==4)globalThis.localStorage?.setItem(TOP_KEY,String(n));else globalThis.localStorage?.removeItem(TOP_KEY);}catch{/* S */}}
 /** How long the ⚒️ hammer shows before a result (no wait with ⏩ or reduced motion). */
 export const FX={wait:650};
 const calm=()=>{try{return !!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;}catch{return false;}};
@@ -153,10 +158,10 @@ export function gearPlan(api,scope='all',top=6,pin=null){
     min:sets.length?sets[0].first:worn.length?up(worn[0].r,worn[0].lv):0};
 }
 /** {n, est the first round's fees, min the first fee} of a kind's ⚡ (scope, pin). */
-export function planOf(api,kind,scope='all',pin=null){
-  if(kind==='gear')return gearPlan(api,scope,6,pin);
+export function planOf(api,kind,scope='all',pin=null,top=autoTop()){
+  if(kind==='gear')return gearPlan(api,scope,Math.min(top,6),pin);
   const fee=kind==='wing'?r=>Number(WC(api)?.fee?.[r])||0:kind==='pet'?r=>Number(TT(api)?.ranks?.[r]?.fee)||0:r=>Number(WD(api)?.fee?.[r])||0;
-  const sets=kind==='wing'?wingSets(api,scope,7,pin):kind==='pet'?petSets(api,scope,7,pin):wardSets(api,scope,6);
+  const sets=kind==='wing'?wingSets(api,scope,top,pin):kind==='pet'?petSets(api,scope,top,pin):wardSets(api,scope,6);   // 👗 never loses: all the way
   return {sets,n:sets.reduce((a,x)=>a+x.t,0),est:sets.reduce((a,x)=>a+x.t*fee(x.r),0),min:sets.length?fee(sets[0].r):0};
 }
 const autoMax=(api,kind)=>kind==='wing'?WC(api)?.auto_max:kind==='ward'?WD(api)?.auto_max:kind==='gear'?TT(api)?.limits?.gear_auto_max:TT(api)?.limits?.auto_max;
@@ -329,7 +334,8 @@ export function forgeView(env){
   const plan=allPlan(api,st),sum=plan.reduce((a,x)=>a+x.b,0);
   const all=`<div class="fv-all">${btn(running==='all'?`⚒️ ${st.allAt||''}`:'⚡ Ghép tất cả','jrFgAll',{},'primary fv-allgo',busy||!plan.length)}
     <span class="fv-allx" role="group" aria-label="Tiêu tối đa">${[1,2,5].map(m=>`<button type="button" class="fv-qb${(st.allx||1)===m?' on':''}" data-action="jrFgAllX" data-x="${m}" aria-pressed="${(st.allx||1)===m}">×${m}</button>`).join('')}</span>
-    <small class="fv-allsum">${plan.length?`≤ <b title="${fmt(sum)} xu">${shortNum(sum)}</b> xu`:'—'}</small></div>`;
+    <small class="fv-allsum">${plan.length?`≤ <b title="${fmt(sum)} xu">${shortNum(sum)}</b> xu`:'—'}</small>
+    <span class="fv-allx fv-top" role="group" aria-label="Ghép tới hạng"><small>Tới</small>${AUTO_TOPS.map(n=>`<button type="button" class="fv-qb${autoTop()===n?' on':''}" data-action="jrFgTop" data-top="${n}" aria-pressed="${autoTop()===n}">${TIERS[n]}</button>`).join('')}</span></div>`;
   const sel=st.sel&&items.find(x=>x.id===st.sel);
   const grid=items.length?`<ul class="fv-grid" aria-label="${esc(KINDS.find(x=>x[0]===as.ftab)[2])}">${items.map(x=>tile(api,st,x)).join('')}</ul>`
     :`<div class="fv-empty"><p>${NONE[kind]}</p>${btn('🛍️ Cửa hàng','jrAccShop',{tab:{wing:'wing',pet:'pbuy',ward:'pwear',gear:'pgear'}[kind]},'small')}</div>`;
@@ -359,11 +365,11 @@ async function anon(env,on){
 }
 const rid=()=>(globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`).replace(/[^A-Za-z0-9_.:-]/g,'').slice(0,64);
 /** The ⚡ command of a kind: [action, payload]. */
-function autoCmd(kind,scope,pin,budget){
-  if(kind==='wing')return ['jr_pet_wing_fuse_auto',{budget,top:7,scope,...(pin?{pin}:{}),rid:rid(),confirm:true}];
-  if(kind==='pet')return ['jr_pet_fuse_auto',{budget,top:7,scope,...(pin?{pin}:{}),confirm:true}];
+function autoCmd(kind,scope,pin,budget,top=autoTop()){
+  if(kind==='wing')return ['jr_pet_wing_fuse_auto',{budget,top,scope,...(pin?{pin}:{}),rid:rid(),confirm:true}];
+  if(kind==='pet')return ['jr_pet_fuse_auto',{budget,top,scope,...(pin?{pin}:{}),confirm:true}];
   if(kind==='ward')return ['jr_pet_wfuse_auto',{budget,max_rank:6,scope,confirm:true}];
-  return ['jr_pet_gear_auto',{budget,top:6,scope,...(pin?{pin}:{}),confirm:true}];
+  return ['jr_pet_gear_auto',{budget,top:Math.min(top,6),scope,...(pin?{pin}:{}),confirm:true}];
 }
 const ask=(env,title,msg,label,cost)=>noAsk()?Promise.resolve(true):env.confirmAction(title,msg,label,cost?{cost}:undefined);
 const focusPanel=()=>{if(typeof document==='undefined')return;const p=document.getElementById?.('fv-panel');if(!p)return;
@@ -432,6 +438,7 @@ export async function forgeAction(action,data,el,env){
       const ps=picksOf(api,st,x).map(y=>y?.id);ps[i]=data.id;st.picks[x.id]=ps;st.slot=-1;env.renderSheet();return true;}
     case'jrFgBud':{if(data.id)st.bud[data.id]=Math.max(1,Number(data.n)||0);afterTap(()=>env.renderSheet());return true;}
     case'jrFgAllX':st.allx=[1,2,5].includes(Number(data.x))?Number(data.x):1;env.renderSheet();return true;
+    case'jrFgTop':setAutoTop(Number(data.top));env.renderSheet();return true;
     case'jrFgRes':st.res=null;env.renderSheet();return true;
     case'jrFgOne':{const x=find(data.id);if(x)await runOne(env,st,x);return true;}
     case'jrFgMax':{const x=find(data.id);if(x)await runMax(env,st,x);return true;}

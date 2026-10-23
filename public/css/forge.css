@@ -20,6 +20,7 @@
 .fv-all{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;border-radius:18px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,var(--line))}
 .fv-all .fv-allgo{flex:1 1 150px;min-height:48px;font-weight:800;font-size:1rem}
 .fv-allx{display:inline-flex;gap:4px}
+.fv-top{flex-wrap:wrap;align-items:center}.fv-top small{font-weight:700;color:var(--muted);margin-right:2px}
 .fv-allsum{flex:none;color:var(--ink-2);font-size:.82rem;white-space:nowrap}
 .fv-allsum b{color:var(--ink)}
 .fv-qb{min-width:40px;min-height:40px;padding:0 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;font-size:.85rem;cursor:pointer}

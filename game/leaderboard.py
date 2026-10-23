@@ -50,6 +50,7 @@ never usernames, save ids or IPs. Everyone can hide their name again.
 from __future__ import annotations
 
 import functools
+import sys
 import threading
 import time
 from collections import OrderedDict
@@ -411,6 +412,9 @@ def clear_cache() -> None:
     with _cache_lock:
         _cache.clear()
         _ahead.clear()
+    fl = sys.modules.get(__package__ + '.fair_loss')   # 🏆 Top lỗ / Top lời keep their own top (game/fair_loss.py _shared)
+    if fl is not None:
+        fl.clear_views()
 
 
 def ahead_of(db, key: tuple, sql: str, args: tuple) -> int:
