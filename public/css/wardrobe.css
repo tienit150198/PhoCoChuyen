@@ -21,6 +21,8 @@
 .wd-tab.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .wd-dot{position:absolute;top:4px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--second)}
 .wd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+/* 👫 owner 24/10: the other gender's pieces behind one switch under the grid */
+.wd-others{display:flex;margin:10px auto 0}
 .wd-item{display:grid;justify-items:center;align-content:start;gap:4px;min-height:136px;padding:10px 8px;border-radius:16px;
   background:var(--surface);border:1.5px solid var(--line);text-align:center;transition:transform .12s,border-color .12s}
 .wd-item:hover{transform:translateY(-1px)}

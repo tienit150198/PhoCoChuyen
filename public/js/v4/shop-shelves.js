@@ -15,7 +15,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {lookOf,figureSVG,portrait,pairIcon,myPairs,wingIcon,wingOfState,WING_TIERS} from './look.js';
 import {kinds,kindOf,pairRows,waiting,relOf,refreshCharms,SHOP_NAME} from './charms.js';
-import {wdStatus,wdItem,wdThumb} from './wardrobe.js';
+import {wdStatus,wdItem,wdThumb,arrange} from './wardrobe.js';
 import {skeleton} from '../lazy.js';
 import {noAsk,setNoAsk} from './no-ask.js';
 import {S,PT,PET,W,btn,attrs,fmt,busy,qtyRow,cartBar,cartToggle,inCart,cartLook,CL,CL_EMOJI,WC,wingsOf,ownWings,styleOf,wName,badge,
@@ -82,6 +82,8 @@ const mirror=(api,look,label)=>{const pr=myPairs();return figureSVG(pr&&!look.pr
 const staffNote=(api,c,always=false)=>!c.staff_off?'':api.state.careers?.[c.shop]?.started?`<p class="as-d-note good">🏷️ Giá nhân viên ${esc(c.shop_name)}: −${c.staff_off}%</p>`
   :always?`<p class="as-d-note">🏷️ Làm ở ${esc(c.shop_name)}: giảm ${c.staff_off}%</p>`:'';
 const multiBtn=st=>btn(st.multi?'✓ Đang chọn nhiều':'🧺 Chọn nhiều','jrAsMulti',{},`as-fb as-multi-b${st.multi?' on':''}`);
+/** 👫 owner 24/10: a shelf shows the character's gender and unisex first; this switch shows the other pieces too. */
+const othersBtn=(st,hidden)=>!st.gall&&!hidden?'':btn(st.gall?'👫 Hợp với bạn':`👀 Đồ khác (${hidden})`,'jrAsAll',{},`as-fb${st.gall?' on':''}`);
 /** The 🧺 cart, docked at the bottom while there is no detail open: what is in it on the character, the sum, one buy. */
 function cartDock(api,st){
   const bar=cartBar(api,st);if(!bar)return '';
@@ -92,10 +94,11 @@ function cartDock(api,st){
 /* ---- 🎀 Phụ kiện ---- */
 function accShelf(env,st){
   const {api}=env,c=W(api),g=api.state.journey.gender,saved=lookOf(api.state);
-  const list=byPrice(c.items.filter(x=>x.slot==='acc'&&x.id!=='pk_khong').map(it=>{const s=wdStatus(api,it);
+  const tidy=arrange(api,c.items.filter(x=>x.slot==='acc'&&x.id!=='pk_khong'),{all:st.gall,keep:[saved.acc,st.draft]});
+  const list=byPrice(tidy.list.map(it=>{const s=wdStatus(api,it);
     return {id:it.id,art:portrait({...saved,acc:it.id},g,64,''),name:it.name,price:s?.buy?s.price:it.price,was:s?.buy?it.price:0,own:s?0:1,on:saved.acc===it.id,
       lock:s?.lock||'',note:s?.lock?`🔒 ${esc(s.lock)}`:s?undefined:it.price?'Đã có':'Miễn phí',sel:!st.multi&&st.draft===it.id,cart:inCart(st,it.id),action:'jrAsTry',data:{item:it.id}};}));
-  const body=`${grid('acc',list,st,{extra:multiBtn(st)})}
+  const body=`${grid('acc',list,st,{extra:multiBtn(st)+othersBtn(st,tidy.hidden)})}
     <p class="wd-note as-foot">🎀 ${esc(c.acc_shop?.title||'Tiệm phụ kiện')} ${btn('👗 Tủ đồ','jrWardrobe',{},'ghost small')}</p>`;
   const x=!st.multi&&list.find(x=>x.id===st.draft);
   return {body,detail:x?wdDetail(api,st,x,'acc'):cartDock(api,st)};
@@ -120,10 +123,11 @@ function wearShelf(env,st){
   const it=st.cdraft&&wdItem(api,st.cdraft);
   if(!slots.some(x=>x.id===st.cslot))st.cslot=it&&CL.includes(it.slot)?it.slot:slots[0]?.id||'top';   // from Tủ đồ: the piece's own rack
   const chips=slots.map(x=>`<button type="button" class="chip${st.cslot===x.id?' active':''}" aria-pressed="${st.cslot===x.id}" data-action="jrAsClSlot" data-slot="${esc(x.id)}">${CL_EMOJI[x.id]||''} ${esc(x.name)}</button>`).join('');
-  const list=byPrice(c.items.filter(x=>x.slot===st.cslot&&x.price).map(x=>{const s=wdStatus(api,x);
+  const tidy=arrange(api,c.items.filter(x=>x.slot===st.cslot&&x.price),{all:st.gall,keep:[saved[st.cslot],st.cdraft]});
+  const list=byPrice(tidy.list.map(x=>{const s=wdStatus(api,x);
     return {id:x.id,art:wdThumb({...saved,[x.slot]:x.id},g,x.slot),name:x.name,price:s?.buy?s.price:x.price,was:s?.buy?x.price:0,own:s?0:1,on:saved[x.slot]===x.id,
       lock:s?.lock||'',note:s?.lock?`🔒 ${esc(s.lock)}`:s?undefined:'Đã có',sel:!st.multi&&st.cdraft===x.id,cart:inCart(st,x.id),action:'jrAsClTry',data:{item:x.id}};}));
-  const body=`<div class="as-cats" role="group" aria-label="Loại đồ">${chips}</div>${grid('wear',list,st,{extra:multiBtn(st)})}
+  const body=`<div class="as-cats" role="group" aria-label="Loại đồ">${chips}</div>${grid('wear',list,st,{extra:multiBtn(st)+othersBtn(st,tidy.hidden)})}
     <p class="wd-note as-foot">${btn('👗 Tủ đồ','jrWardrobe',{},'ghost small')}</p>`;
   const x=!st.multi&&list.find(x=>x.id===st.cdraft);
   return {body,detail:x?wdDetail(api,st,x,'wear'):cartDock(api,st)};

@@ -311,6 +311,7 @@ export async function accShopAction(action,data,el,env){
     case'jrAsForgeTab':st.ftab=forgeTabs(api).includes(data.tab)?data.tab:'wing';renderSheet(false);return true;
     // 👕 Quần áo (game/wardrobe.py jr_wd_buy / jr_wd_wear, as in Tủ đồ)
     case'jrAsClSlot':st.cslot=CL.includes(data.slot)?data.slot:'top';renderSheet();return true;
+    case'jrAsAll':st.gall=!st.gall;renderSheet();return true;   // 👫 the other gender's pieces too (v4/shop-shelves.js)
     case'jrAsClTry':{const it=data.item&&wdItem(api,data.item);
       if(st.multi&&it&&CL.includes(it.slot)&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.cdraft=inCart(st,it.id)?it.id:null;renderSheet();return true;}
       st.cdraft=it&&CL.includes(it.slot)&&st.cdraft!==it.id?it.id:null;renderSheet();if(st.cdraft)focusDetail();return true;}

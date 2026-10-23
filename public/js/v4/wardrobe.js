@@ -7,7 +7,10 @@
  * unlocked once for every item (v4/palette.js, jr_wd_unlock), then switching is free. A recoloured item is named
  * without its colour word: "Áo hoodie · Xanh navy".
  * 🛍️ Owner 22/10: accessories are bought at Tiệm phụ kiện (v4/acc-shop.js), no longer here; a missing one tried on points
- * there. Worn ones, their colours and the 🤝 phụ kiện đôi switches (v4/charms.js) stay on the Phụ kiện tab. */
+ * there. Worn ones, their colours and the 🤝 phụ kiện đôi switches (v4/charms.js) stay on the Phụ kiện tab.
+ * 👫 Nam · Nữ (owner 24/10): each item has g 'male' | 'female' | 'unisex' (game/wardrobe.py FOR_MALE / FOR_FEMALE). A tab
+ * shows the character's gender and unisex first (plus anything worn or bought), owned first then by price and level
+ * (arrange); "Xem cả đồ khác" shows the rest. Anyone may still wear anything. The wedding pair opens from the engagement. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {confirmPurchase} from './payment.js';
 import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf,cozyActive,wingOfState,wingIcon,WING_TIERS,WING_TIER_COLOR} from './look.js';
@@ -31,6 +34,22 @@ const shopOpen=api=>{const J=api.state.journey||{};return J.story===false||(J.un
 /** The mirror turns (2.5D only: the island chibi has four facings). */
 const FACINGS=['se','sw','nw','ne'];
 const itemOf=(api,id)=>C(api).items.find(x=>x.id===id);
+
+/* ---- 👫 nam · nữ, tidy order ---- */
+/** Cut for this character: their gender's piece or a unisex one (no tag, or no gender yet: for everyone). */
+export const forGender=(it,gender)=>!it?.g||it.g==='unisex'||(gender!=='male'&&gender!=='female')||it.g===gender;
+const levelOf=it=>String(it.need||'').startsWith('level:')?Number(it.need.slice(6))||0:0;
+/** A slot's pieces, tidy: {list} owned / free / opened first, then to buy, then locked; each group by price, then level.
+ * Unless `all`, only the character's gender and unisex (+ what is worn, tried on or bought); `hidden` counts the rest. */
+export function arrange(api,items,{all=false,keep=[]}={}){
+  const g=api.state.journey?.gender,mine=new Set([...owned(api),...keep].filter(Boolean));
+  const rank=it=>{const s=status(api,it);return s?.lock?2:s?.buy?1:0;};
+  const ok=items.filter(it=>all||forGender(it,g)||mine.has(it.id));
+  const list=ok.map((it,i)=>({it,i,r:rank(it)})).sort((a,b)=>a.r-b.r||(a.it.price||0)-(b.it.price||0)||levelOf(a.it)-levelOf(b.it)||a.i-b.i).map(x=>x.it);
+  return {list,hidden:items.length-ok.length};
+}
+/** "Xem cả đồ khác (n)" / "Chỉ đồ hợp với bạn": the switch under a tab's grid (nothing when nothing is hidden). */
+export const otherToggle=(all,hidden,action)=>!all&&!hidden?'':`<button type="button" class="btn ghost small wd-others" data-action="${action}" aria-pressed="${!!all}">${all?'👫 Chỉ đồ hợp với bạn':`👀 Xem cả đồ khác (${hidden})`}</button>`;
 
 /* ---- bảng màu ---- */
 /** Can this item take a colour? Accessories as in 1.3.1 (not "Không đeo gì"), every top, bottom and pair of shoes. */
@@ -58,7 +77,7 @@ function status(api,it){
   const J=api.state.journey,need=it.need||'';
   if(need.startsWith('level:')){const n=Number(need.slice(6));if((J.maturity?.level||1)<n)return {lock:`Mở ở Trưởng thành cấp ${n}`};}
   else if(need.startsWith('title:')){const tid=need.slice(6);if(!(J.titles||[]).some(t=>t[0]===tid)){const t=api.content.journey.titles.find(x=>x.id===tid);return {lock:`Mở khi có danh hiệu “${t?.name||'đặc biệt'}”`};}}
-  else if(need==='married'&&api.state.marriage?.spouse?.status!=='married')return {lock:'Mở sau đám cưới'};
+  else if(need==='married'&&!['engaged','married'].includes(api.state.marriage?.spouse?.status)&&!owned(api).includes(it.id))return {lock:'Mở khi đính hôn'};
   if(it.price&&!owned(api).includes(it.id)){
     if(need==='shop'&&!staff(api))return {lock:`Chỉ bán cho người làm ở ${C(api).shop_name}`};
     if(need.startsWith('open:')&&!shopOpen(api))return {lock:it.slot==='acc'?`Bán ở ${SHOP_NAME}, có hàng từ chương 3`:`Bán ở ${C(api).shop_name}, mở từ chương 3`};
@@ -165,7 +184,8 @@ export function wardrobeView(env){
     :`<p class="wd-note">🏷️ Làm ở ${esc(c.shop_name)}: giảm ${c.staff_off}%</p>`;
   const dot=id=>look[id]!==saved[id]||recolor.includes(id);
   const tabs=c.slots.map(s=>`<button type="button" role="tab" class="wd-tab${st.tab===s.id?' active':''}" aria-selected="${st.tab===s.id}" data-action="jrWdTab" data-tab="${s.id}"><span aria-hidden="true">${TAB_EMOJI[s.id]||'•'}</span>${esc(s.name)}${dot(s.id)?'<i class="wd-dot" aria-label="đang thử"></i>':''}</button>`).join('');
-  const grid=c.items.filter(x=>x.slot===st.tab).map(it=>tile(api,st,it,look,saved,g)).join('');
+  const {list,hidden}=arrange(api,c.items.filter(x=>x.slot===st.tab),{all:st.all,keep:[saved[st.tab],look[st.tab]]});
+  const grid=list.map(it=>tile(api,st,it,look,saved,g)).join('');
   const facing=FACINGS.includes(st.facing)?st.facing:'se',turn=cozyActive()?`<button type="button" class="wd-turn" data-action="jrWdTurn" aria-label="Xoay người mẫu để xem các phía" title="Xoay">↻</button>`:'';
   const paint=TINT_SLOTS.includes(st.tab)&&c.colors?colorPanel(api,st,look,st.tab):'';
   globalThis.requestAnimationFrame?.(stick);
@@ -175,7 +195,7 @@ export function wardrobeView(env){
       <div class="wd-side"><h3>${esc(api.state.name)}</h3>${shop}<div class="wd-actions" aria-live="polite">${actions(api,st,look,saved)}</div></div>
     </section>
     <nav class="wd-tabs" role="tablist" aria-label="Loại đồ">${tabs}</nav>
-    ${paint}<div class="wd-grid">${grid}</div>
+    ${paint}<div class="wd-grid">${grid}</div>${otherToggle(st.all,hidden,'jrWdAll')}
     ${st.tab==='acc'?`<p class="wd-note as-foot">🛍️ Mua thêm phụ kiện: ${btn(SHOP_NAME,'jrAccShop',{tab:'acc'},'ghost small')}</p>${wingsCard(api)}${pairsCard(env)}`:''}
     <section class="jr-card wd-work"><label class="switch-row"><span class="grow"><b>Mặc đồ làm việc khi vào ca</b><small class="muted block">Tạp dề, áo blouse, yếm… theo nơi làm.</small></span><input type="checkbox" role="switch" data-action="jrWdUniform" ${saved.uniform?'checked':''}><i aria-hidden="true"></i></label></section>
     <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAccShop" data-tab="wear">🛍️ ${SHOP_NAME}</button><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
@@ -197,6 +217,7 @@ export async function wardrobeAction(action,data,el,env){
   if(!c)return false;
   switch(action){
     case'jrWdTab':st.tab=SLOTS.includes(data.tab)?data.tab:'top';renderSheet();return true;
+    case'jrWdAll':st.all=!st.all;renderSheet();return true;
     case'jrWdTurn':{const cur=FACINGS.includes(st.facing)?st.facing:'se';st.facing=FACINGS[(FACINGS.indexOf(cur)+1)%FACINGS.length];renderSheet();return true;}
     case'jrWdTry':{const it=itemOf(api,data.item);if(!it)return true;
       if(lookOf(api.state)[it.slot]===it.id)delete st.draft[it.slot];else st.draft[it.slot]=it.id;renderSheet();return true;}
