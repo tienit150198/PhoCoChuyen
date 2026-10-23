@@ -4,6 +4,7 @@ import {setup} from '../public/js/v4/home-walk.js';
 import {readFile} from 'node:fs/promises';
 import * as art from '../public/js/v4/deco-art.js';
 import {escapeHTML,icon} from '../public/js/icons.js';
+import {zoomer} from '../public/js/v4/home-zoom.js';
 globalThis.location={search:''};
 const {homeGuestsView}=await import('../public/js/v4/home-guests.js');
 
@@ -56,7 +57,7 @@ assert.ok(html.includes('Vào chơi trong 2 giờ kể từ khi đồng ý.'),'t
 globalThis.document={body:{classList:{contains:()=>true}}};
 globalThis.window={matchMedia:()=>({matches:false})};
 const source=(await readFile(new URL('../public/js/v4/reno.js',import.meta.url),'utf8')).replace(/^import .*;.*\r?\n/gm,'').replace(/^export /gm,'');
-const renderer=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound',source+'\nreturn {S,page,onClick,send,guest,loadMate,tintOf};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class {});
+const renderer=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','zoomer',source+'\nreturn {S,page,onClick,send,guest,loadMate,tintOf};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class {},zoomer);
 const remote={owner:{code:'A',name:'An'},access:{kind:'stay'},deco:{place:{key:'house-A',where:'own',name:'Nhà phố',emoji:'🏡',repairs:false},rooms:[{...room,name:'Phòng ngủ',emoji:'🛏️',wrows:3,skin:{},cap:30}],more:[],items:[]},reno:{parts:[]},mate:{},colors:{deco:{}}};
 Object.assign(renderer.S,{env:{api:{state,content:{journey:{deco:{items:[]}}},command:(...args)=>commands.push(args)}},remote,dlg:{querySelector:()=>null},room:'bed'});
 const screen=renderer.page();

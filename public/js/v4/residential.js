@@ -24,7 +24,7 @@ export async function openResidential(env,group='rent'){
   }
   try{
     await env.api.more?.();
-    const [module,rentals]=await Promise.all([import('./home-3d-scene.js'),env.api.json('/api/rentals',{retry:false}).catch(()=>null)]);
+    const [module,rentals]=await Promise.all([import('./district-3d-scene.js'),env.api.json('/api/rentals',{retry:false}).catch(()=>null)]);
     if(dead)return;
     const homes=module.districtHomes(group,env.api.content,env.api.state,rentals);
     const list=dialog.querySelector('.residential-list');list.innerHTML=homes.map((h,i)=>`<button type="button" data-house="${i}"><b>${esc(h.name)}</b><small>${esc(h.label)}</small></button>`).join('')+(rentals?.next_offset!=null?'<button type="button" data-more-rentals>Xem thêm trong chợ thuê nhà →</button>':'');
