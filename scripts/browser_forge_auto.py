@@ -1,15 +1,17 @@
-"""⚡ Cường hóa nhanh, auto (2.5.6, owner 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần",
-"nó giống ghép tự động của áo quần ấy"): a browser walk-through (dev tool, needs playwright + chromium).
+"""⚒️ Cường hóa v2 (owner 23/10: "gọn và dễ dùng như các game khác"): a browser walk-through (dev tool, needs playwright +
+chromium). Before it, the 2.5.6 ⚡ card walk-through (git history of this file).
 
 Runs the real app on a throwaway story-mode server and seeds one save per run straight in its database (a named
 character with 50 triệu xu, a bank account, seven Samoyeds of ranks D and C, twelve wings of tiers D, C and S, six
-pet clothes and three pet gear pieces). For the classic interface and the new map at 390x844:
-- the "Có gì mới" card of 2.5.6;
-- ⚒️ Cường hóa → 🪽: the ⚡ card (kind, "Ghép tới hạng", "Tiêu tối đa", the button); a budget chip and a rank picked
-  redraw the sheet where it was (no jump to the top, owner 23/10); one question (no odds), ONE command, the summary;
-- 🧬 Ghép thú, 👗 Đồ thú cưng, 🧰 Linh kiện thú: the same card, question and summary;
-- the pets' dialog shows the card too (👗).
-Fails on any console error or page error.
+pet clothes and four pet gear pieces, one wing 🔒 locked). At 390x844 and 1280x800, light and dark (mnl.theme 'dem'):
+- ⚒️ Cường hóa: the kind tabs, the grid (rank colours, ⚡ dots, 🔒), ⚡ Ghép tất cả, the three short ticks; no sideways
+  scroll;
+- a tap on a wing: the panel (rank → next rank, what changes, the slots 3/3, the fee, Cường hóa / Cường hóa tối đa);
+  the sheet stays where it was (no jump to the top);
+- Cường hóa: one question, ONE command, the result card; 🔒 Khóa / Mở khóa (the save's forge_locks);
+- ⚡ Ghép tất cả: one question, every kind's ⚡ in turn, one result card (lượt, thành công, trượt, xu đã tiêu);
+- ⏩ Bỏ qua hiệu ứng (mnl.forgeFast), 🕶️ Ẩn tên (settings forgeAnon).
+Fails on any console error or page error. Screenshots in out_dir.
 
     TEST_DATABASE_URL=postgresql://… python scripts/browser_forge_auto.py [out_dir]
 """
@@ -21,15 +23,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_gadgets_classic import server, ROOT, PY  # noqa: E402
 
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'output' / 'playwright' / 'forge_auto'
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else ROOT / 'output' / 'playwright' / 'forge_v2'
 
 SEED = r'''
 import sys
+from game import whats_new
 from game import bank as bk
 from game import marriage as mr
 from game import pets, pet_tiers as px, wings as W
 from game.storage import Store
-db, token, new = sys.argv[1], sys.argv[2], sys.argv[3] == '1'
+db, token, new, big, dark = sys.argv[1], sys.argv[2], sys.argv[3] == '1', sys.argv[4] == '1', sys.argv[5] == '1'
 store = Store(db, story=True)
 def fn(s):
     j = s['journey']
@@ -37,7 +40,9 @@ def fn(s):
     j.update(gender='female', intro=True, life_day=20)
     j['wallet'] = 50000000
     j['stats']['max_wallet'] = 50000000
-    s['settings']['whatsNewSeen'] = '2.5.5'
+    s['settings']['whatsNewSeen'] = whats_new.LATEST
+    if dark:
+        s['settings']['uiTheme'] = 'dem'   # 🌙 the save's theme (v4/shell.js), html[data-theme="dem"]
     j['interface'] = dict(newInterface=new, interfacePromptSeen=True)
     bk.apply(s, 'jr_bk_open', {})
     bk.apply(s, 'jr_bk_deposit', {'amount': 1000})
@@ -49,12 +54,25 @@ def fn(s):
     for i, x in enumerate(W.get(s)['own']):
         x['r'] = 0 if i < 6 else 1 if i < 9 else 4
     pets.action(s, 'jr_pet_wbuy', {'id': 'no_hong', 'qty': 6, 'confirm': True})
-    pets.action(s, 'jr_pet_gear_buy', {'slot': 'giay', 'model': 0, 'rank': 0, 'qty': 3, 'confirm': True})
+    pets.action(s, 'jr_pet_gear_buy', {'slot': 'giay', 'model': 0, 'rank': 0, 'qty': 4, 'confirm': True})
+    pets.action(s, 'jr_pet_lock', {'ids': [W.get(s)['own'][5]['id']], 'on': True})
+    if big:   # 2.5.6.1: a big save (33 pets with long names, 30+ wings, many gear) must not widen the sheet
+        pets.action(s, 'jr_pet_adopt', {'from': 'shop', 'breed': 'meo_muop', 'coat': 0, 'nick': 'Mèo mướp ta', 'qty': 26, 'confirm': True})
+        for i, p in enumerate(px.all_pets(s)):
+            px._record(s, p)['r'] = i % 6
+        for k in ('tien', 'buom'):
+            pets.action(s, 'jr_pet_wing_buy', {'style': k, 'qty': 12, 'confirm': True})
+        for i, x in enumerate(W.get(s)['own']):
+            x['r'] = i % 7
+        for sl in ('giap', 'dau', 'pk'):
+            pets.action(s, 'jr_pet_gear_buy', {'slot': sl, 'model': 0, 'rank': 0, 'qty': 8, 'confirm': True})
+        pets.action(s, 'jr_pet_wbuy', {'id': 'vong_chuong', 'qty': 12, 'confirm': True})
 mr._mutate(store, {store.key(token): fn})
 store.close_pool()
 '''
 WIDE = "document.documentElement.scrollWidth-document.documentElement.clientWidth"
-WALLET = "(async()=>{const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'});const d=await r.json();return (Number(d.state?.journey?.wallet)||0)+(Number(d.state?.journey?.bank?.balance)||0)})()"
+STATE = "(async()=>{const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'});return (await r.json()).state})()"
+WALLET = f"{STATE}.then(s=>(Number(s?.journey?.wallet)||0)+(Number(s?.journey?.bank?.balance)||0))"
 REGISTER = """async ([u, pw]) => {
   const boot = await fetch('/api/bootstrap?lite=1').then(r => r.json());
   const r = await fetch('/api/account/register', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Game-CSRF': boot.csrf},
@@ -62,13 +80,14 @@ REGISTER = """async ([u, pw]) => {
   return r.status;
 }"""
 CLICK = "(([a,d])=>{const b=document.createElement('button');b.dataset.action=a;Object.assign(b.dataset,d);b.hidden=true;document.body.append(b);b.click();b.remove();})"
-# the sheet's scrolling box (the one around the ⚡ card) and where it is
+# the sheet's scrolling box and where it is
 SCROLLER = """(sel)=>{let el=document.querySelector(sel);while(el&&el!==document.body){const st=getComputedStyle(el);
   if(/(auto|scroll)/.test(st.overflowY)&&el.scrollHeight>el.clientHeight+4)return el;el=el.parentElement;}return null;}"""
 GET_Y = f"(sel)=>{{const el=({SCROLLER})(sel);return el?el.scrollTop:-1;}}"
+# the sheet's own box: it clips its overflow, so the page-level WIDE misses a child wider than the sheet
+SHEET_WIDE = "(()=>{const b=document.querySelector('#sheet .sheet-body');return b?b.scrollWidth-b.clientWidth:-1})()"
 SET_Y = f"([sel,y])=>{{const el=({SCROLLER})(sel);if(el)el.scrollTop=y;return el?el.scrollTop:-1;}}"
-# a chip brought to the middle of the sheet (so the click needs no scrolling), then where the sheet is
-CENTER = f"([sel,chip])=>{{const c=[...document.querySelectorAll(sel)].find(b=>b.textContent.trim()===chip);if(c)c.scrollIntoView({{block:'center'}});const el=({SCROLLER})(sel);return el?el.scrollTop:-1;}}"
+RUNS = [('new', 390, 844, 'light')] if '--one' in sys.argv else [('big', 390, 844, 'light'), ('big', 360, 740, 'dark'), ('big', 1280, 800, 'light'), ('new', 390, 844, 'light'), ('new', 390, 844, 'dark'), ('classic', 390, 844, 'light'), ('new', 1280, 800, 'light'), ('new', 1280, 800, 'dark')]
 
 
 async def main():
@@ -81,166 +100,183 @@ async def main():
         if not ok:
             fails.append(what)
 
-    with server() as (base, db):
-        async with async_playwright() as pw:
-            browser = await pw.chromium.launch()
-            for mode in ('classic', 'new'):
-                w, h = 390, 844
-                tag = f'{mode}-{w}x{h}'
-                ctx = await browser.new_context(viewport=dict(width=w, height=h), device_scale_factor=2, has_touch=True, is_mobile=True)
-                await ctx.add_init_script("try{localStorage.setItem('mnl.tut.done','1');localStorage.setItem('mnl.tut.tips','done')}catch(e){}")
-                page = await ctx.new_page()
-                page.on('console', lambda m, t=tag: m.type == 'error' and errors.append(f'{t}: {m.text}'))
-                page.on('pageerror', lambda e, t=tag: errors.append(f'{t}: {e}'))
-                await page.goto(base)
-                await page.wait_for_selector('#app:not([hidden])', timeout=30000)
-                status = await page.evaluate(REGISTER, [f'forge{mode}', 'matkhau-dai-lam'])
-                check(status == 200, f'{tag}: an account (status {status})')
-                token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
-                subprocess.run([PY, '-c', SEED, db, token, '1' if mode == 'new' else '0'], cwd=ROOT, check=True)
-                await page.reload()
-                await page.wait_for_selector('#app:not([hidden])', timeout=30000)
-                await page.wait_for_timeout(2500)
+    for part in range(0, len(RUNS), 3):
+        with server() as (base, db):   # a server per three runs (the sign-up limit per address)
+            async with async_playwright() as pw:
+                browser = await pw.chromium.launch()
+                for n, (mode, w, h, theme) in enumerate(RUNS[part:part + 3], part):
+                    tag = f'{mode}-{w}x{h}-{theme}'
+                    phone = w < 600
+                    ctx = await browser.new_context(viewport=dict(width=w, height=h), device_scale_factor=2 if phone else 1,
+                                                    has_touch=phone, is_mobile=phone)
+                    await ctx.add_init_script("try{localStorage.setItem('mnl.tut.done','1');localStorage.setItem('mnl.tut.tips','done');"
+                                              + ("localStorage.setItem('mnl.theme','dem')" if theme == 'dark' else "localStorage.removeItem('mnl.theme')")
+                                              + "}catch(e){}")
+                    page = await ctx.new_page()
+                    page.on('console', lambda m, t=tag: m.type == 'error' and errors.append(f'{t}: {m.text}'))
+                    page.on('pageerror', lambda e, t=tag: errors.append(f'{t}: {e}'))
+                    await page.goto(base)
+                    await page.wait_for_selector('#app:not([hidden])', timeout=30000)
+                    status = await page.evaluate(REGISTER, [f'forge{n}{mode}', 'matkhau-dai-lam'])
+                    check(status == 200, f'{tag}: an account (status {status})')
+                    token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
+                    subprocess.run([PY, '-c', SEED, db, token, '0' if mode == 'classic' else '1', '1' if mode == 'big' else '0', '1' if theme == 'dark' else '0'], cwd=ROOT, check=True)
+                    await page.reload()
+                    await page.wait_for_selector('#app:not([hidden])', timeout=30000)
+                    await page.wait_for_timeout(3000)
+                    got = await page.evaluate("document.documentElement.dataset.theme||''")
+                    check((got == 'dem') == (theme == 'dark'), f'{tag}: the theme ({got})')
 
-                async def clear():
-                    await page.evaluate("document.querySelectorAll('dialog[open]:not(#sheet):not(#confirmDialog)').forEach(d=>d.close())")
+                    async def clear():
+                        await page.evaluate("document.querySelectorAll('dialog[open]:not(#sheet):not(#confirmDialog)').forEach(d=>d.close())")
 
-                async def shot(name):
-                    await page.wait_for_timeout(500)
-                    if not name.endswith('confirm') and not name.startswith('0-'):
-                        await clear()
-                    await page.screenshot(path=str(OUT / f'{tag}-{name}.png'))
+                    async def shot(name):
+                        await page.wait_for_timeout(450)
+                        if not name.endswith('confirm'):
+                            await clear()
+                        await page.screenshot(path=str(OUT / f'{tag}-{name}.png'))
 
-                async def confirm(name):
-                    await page.wait_for_selector('#confirmDialog[open]', timeout=8000)
-                    text = await page.inner_text('#confirmDialog')
-                    await shot(name)
-                    await page.click('#confirmDialog [data-action="confirmYes"]')
-                    await page.wait_for_timeout(1500)
-                    return text
+                    async def confirm(name=None):
+                        await page.wait_for_selector('#confirmDialog[open]', timeout=8000)
+                        text = await page.inner_text('#confirmDialog')
+                        if name:
+                            await shot(name)
+                        await page.wait_for_timeout(500)   # the button wakes up a moment later (double tap guard)
+                        await page.click('#confirmDialog [data-action="confirmYes"]')
+                        return text
 
-                async def wallet():
-                    return await page.evaluate(WALLET)
-
-                try:
-                    await page.wait_for_selector('#wnDialog[open]', timeout=8000)
-                    await shot('0-whatsnew')
-                    card = await page.inner_text('#wnDialog')
-                    check('Cường hóa nhanh tự ghép liên tục' in card, f'{tag}: Có gì mới 2.5.6 tells about ⚡')
-                except Exception:  # noqa: BLE001
-                    check(False, f'{tag}: Có gì mới 2.5.6 shown')
-                for _ in range(6):   # close it as a player does (marks it read), then any other first-visit card
-                    b = page.locator('#wnDialog[open] [data-wn="close"].btn, [data-wn="close"]:visible, [data-action="jrSceneClose"]:visible')
-                    if not await b.count():
-                        break
-                    await page.wait_for_timeout(600)   # a tap in the card's first 450 ms is ignored
-                    await b.first.click()
-                    await page.wait_for_timeout(500)
-                await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
-                await page.wait_for_timeout(500)
-
-                async def forge(t):
-                    await clear()
-                    await page.evaluate(CLICK, ['jrForge', {'tab': t}])
-                    await page.wait_for_selector('#sheet[open] .fg .fg-kinds', timeout=15000)
-                    await page.wait_for_selector(f'#sheet [data-action="jrAsForgeTab"][data-tab="{t}"][aria-selected="true"]', timeout=10000)
-
-                # ---- 🪽 wings ----
-                await forge('wing')
-                await page.wait_for_selector('#sheet .fg-auto', timeout=15000)
-                await shot('1-wing-card')
-                check(await page.evaluate(WIDE) <= 0, f'{tag}: 🪽 no sideways scroll')
-                go = page.locator('#sheet [data-action="jrAsWingAuto"]')
-                label = (await go.inner_text()).strip()
-                check(await go.is_enabled() and 'tiêu tối đa' in label, f'{tag}: 🪽 the button says the most to spend ({label})')
-                body = await page.inner_text('#sheet .fg-auto')
-                check('%' not in body and 'tỉ lệ' not in body, f'{tag}: 🪽 no odds on the card')
-                prefs = ' '.join((await page.inner_text('#sheet .fg-prefs')).split())
-                check(prefs == 'Không hỏi lại Ẩn tên', f'{tag}: two short ticks, no help text ({prefs})')
-                check(await page.locator('#sheet .fg-intro').count() == 0, f'{tag}: no long intro')
-                # no jump: scroll a bit, pick a chip and a rank; the sheet stays where it was
-                await page.wait_for_timeout(2500)   # first-visit cards (🔥 x3 của tuần) open late
-                await clear()
-                y0 = await page.evaluate(CENTER, ['#sheet .fg-auto [data-action="jrAsWingBud"]', '×2'])
-                await page.locator('#sheet .fg-auto [data-action="jrAsWingBud"]', has_text='×2').first.click()
-                await page.wait_for_timeout(600)
-                y1 = await page.evaluate(GET_Y, '#sheet .fg-auto')
-                check(y0 > 0 and abs(y1 - y0) <= 2, f'{tag}: 🪽 a budget chip keeps the scroll ({y0} → {y1})')
-                await page.select_option('#sheet [data-as-sel="watop"]', '4')
-                await page.wait_for_timeout(600)
-                y2 = await page.evaluate(GET_Y, '#sheet .fg-auto')
-                body = await page.inner_text('#sheet .fg-auto')
-                check(abs(y2 - y0) <= 2, f'{tag}: 🪽 "Ghép tới hạng" keeps the scroll ({y0} → {y2})')
-                check('⚠️' not in body, f'{tag}: 🪽 up to S: no loss warning')
-                await shot('2-wing-to-S')
-                await page.select_option('#sheet [data-as-sel="watop"]', '7')
-                await page.wait_for_timeout(600)
-                check('⚠️' in await page.inner_text('#sheet .fg-auto'), f'{tag}: 🪽 up to Huyền thoại: the loss warning')
-                await page.evaluate(SET_Y, ['#sheet .fg-auto', 0])
-                before = await wallet()
-                await clear()
-                await go.click()
-                text = await confirm('3-wing-confirm')
-                check('Tiêu tối đa' in text and 'trượt' in text.lower() and '%' not in text, f'{tag}: 🪽 one question, what a miss loses, no odds')
-                await page.wait_for_selector('#sheet .fg-ares', timeout=15000)
-                res = await page.inner_text('#sheet .fg-ares')
-                check('lượt ghép' in res and 'xu đã tiêu' in res, f'{tag}: 🪽 the summary ({" ".join(res.split())[:120]})')
-                check(await wallet() < before, f'{tag}: 🪽 paid once')
-                await shot('4-wing-result')
-
-                # ---- 🧬 🧰 👗 ----
-                for t, name in (('plab', 'lab'), ('pward', 'ward'), ('pgear', 'gear')):
-                    await forge(t)
-                    await page.wait_for_selector('#sheet .pt-embed .pt-auto', timeout=15000)
-                    await shot(f'5-{name}-card')
-                    check(await page.evaluate(WIDE) <= 0, f'{tag}: {name} no sideways scroll')
-                    go = page.locator(f'#sheet .pt-embed [data-pt="auto"][data-kind="{name}"]')
-                    check(await go.count() == 1 and await go.is_enabled(), f'{tag}: {name} ⚡ ready')
-                    await clear()
-                    y0 = await page.evaluate(CENTER, ['#sheet .pt-auto [data-pt="abud"]', '×2'])
-                    await page.locator('#sheet .pt-auto [data-pt="abud"]', has_text='×2').first.click()
-                    await page.wait_for_timeout(600)
-                    y1 = await page.evaluate(GET_Y, '#sheet .pt-auto')
-                    check(y0 > 0 and abs(y1 - y0) <= 2, f'{tag}: {name} a budget chip keeps the scroll ({y0} → {y1})')
-                    await page.evaluate(SET_Y, ['#sheet .pt-auto', 0])
-                    before = await wallet()
-                    await clear()
-                    if name == 'ward':   # ☑️ Không hỏi lại: ticked, the tap acts at once
-                        await page.locator('#sheet [data-as-noask]').check()
+                    for _ in range(6):   # any first-visit card
+                        b = page.locator('[data-wn="close"]:visible, [data-action="jrSceneClose"]:visible')
+                        if not await b.count():
+                            break
+                        await page.wait_for_timeout(600)
+                        await b.first.click()
                         await page.wait_for_timeout(500)
-                        check(await page.evaluate("localStorage.getItem('mnl.noAsk')") == '1', f'{tag}: Không hỏi lại stored (mnl.noAsk)')
-                        await go.click()
-                        await page.wait_for_timeout(1200)
-                        check(await page.locator('#confirmDialog[open]').count() == 0, f'{tag}: ward Không hỏi lại: no question')
-                        await page.wait_for_selector('#sheet .pt-embed .pt-ares', timeout=15000)
+                    await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+
+                    if mode == 'big':   # every kind tab, its first and last piece open, the swap list open: never wider
+                        await page.evaluate(CLICK, ['jrForge', {'tab': 'wing'}])
+                        await page.wait_for_selector('#sheet[open] .fv .fv-kinds', timeout=15000)
+                        await page.wait_for_timeout(2500)
+                        for t in ('wing', 'plab', 'pward', 'pgear'):
+                            await clear()
+                            await page.click(f'#sheet .fv-kind[data-tab="{t}"]', timeout=8000)
+                            await page.wait_for_selector(f'#sheet .fv-kind.on[data-tab="{t}"]', timeout=8000)
+                            check(await page.evaluate(SHEET_WIDE) == 0, f'{tag}: {t} the sheet is not wider ({await page.evaluate(SHEET_WIDE)})')
+                            tiles = page.locator('#sheet .fv-tile')
+                            for i in (0, await tiles.count() - 1):
+                                await clear()
+                                await tiles.nth(i).click()
+                                await page.wait_for_selector('#fv-panel', timeout=8000)
+                                if await page.locator('#fv-panel [data-action="jrFgSlot"]').count():
+                                    await page.locator('#fv-panel [data-action="jrFgSlot"]').first.click()
+                                    await page.wait_for_timeout(300)
+                                check(await page.evaluate(SHEET_WIDE) == 0, f'{tag}: {t} piece {i} open: the sheet is not wider ({await page.evaluate(SHEET_WIDE)})')
+                                check(await page.evaluate(WIDE) <= 0, f'{tag}: {t} piece {i}: no sideways scroll')
+                            await page.evaluate(SET_Y, ['#sheet .fv-grid', 0])
+                            await shot(f'b-{t}')
+                        await ctx.close()
+                        continue
+
+                    # ---- the overview ----
+                    await page.evaluate(CLICK, ['jrForge', {'tab': 'wing'}])
+                    await page.wait_for_selector('#sheet[open] .fv .fv-kinds', timeout=15000)
+                    await page.wait_for_selector('#sheet .fv-kind.on[data-tab="wing"]', timeout=10000)
+                    await page.wait_for_timeout(2500)   # first-visit cards (🔥 x3 của tuần) open late
+                    await shot('1-overview')
+                    check(await page.evaluate(WIDE) <= 0, f'{tag}: no sideways scroll')
+                    prefs = ' '.join((await page.inner_text('#sheet .fv-prefs')).split())
+                    check(prefs == 'Không hỏi lại Ẩn tên Bỏ qua hiệu ứng', f'{tag}: three short ticks ({prefs})')
+                    check(await page.locator('#sheet .fv-tile').count() == 12, f'{tag}: a tile per wing')
+                    check(await page.locator('#sheet .fv-tile .fv-dot').count() > 0, f'{tag}: ⚡ dots')
+                    check(await page.locator('#sheet .fv-tile .fv-lk').count() == 1, f'{tag}: 🔒 on the locked wing')
+                    check(await page.locator('#sheet [data-action="jrFgAll"]').is_enabled(), f'{tag}: ⚡ Ghép tất cả ready')
+                    body = await page.inner_text('#sheet .fv')
+                    check('tỉ lệ' not in body and 'tỷ lệ' not in body, f'{tag}: no odds')
+
+                    # ---- a tap: the panel; the sheet stays where it was ----
+                    tiles = page.locator('#sheet .fv-tile')
+                    last = tiles.nth(await tiles.count() - 1)
+                    await last.scroll_into_view_if_needed()
+                    y0 = await page.evaluate(GET_Y, '#sheet .fv-grid')
+                    await last.click()
+                    await page.wait_for_selector('#fv-panel', timeout=8000)
+                    await page.wait_for_timeout(700)
+                    y1 = await page.evaluate(GET_Y, '#sheet .fv-grid')
+                    check(y1 > 0 or y0 <= 0, f'{tag}: the panel opens without jumping to the top ({y0} → {y1})')
+                    panel = ' '.join((await page.inner_text('#fv-panel')).split())
+                    check('3/3' in panel and 'Phí' in panel and 'Cường hóa' in panel, f'{tag}: the panel ({panel[:120]})')
+                    check(await page.evaluate("document.activeElement?.id") == 'fv-ptitle', f'{tag}: focus on the panel title')
+                    await page.evaluate(SET_Y, ['#sheet .fv-grid', 0])
+                    await shot('2-panel')
+                    check(await page.evaluate(WIDE) <= 0, f'{tag}: panel: no sideways scroll')
+
+                    # ---- Cường hóa: one question, one command, the result card ----
+                    before = await page.evaluate(WALLET)
+                    await page.click('#fv-panel [data-action="jrFgOne"]')
+                    text = await confirm('3-one-confirm' if n == 0 else None)
+                    check('Phí' in text and '%' not in text, f'{tag}: one question, no odds')
+                    await page.wait_for_selector('#sheet .fv-res', timeout=15000)
+                    check(await page.evaluate(WALLET) < before, f'{tag}: paid once')
+                    res = ' '.join((await page.inner_text('#sheet .fv-res')).split())
+                    check('lượt' in res and 'xu đã tiêu' in res, f'{tag}: the result ({res[:100]})')
+                    await page.evaluate(SET_Y, ['#sheet .fv-res', 0])
+                    await shot('4-one-result')
+
+                    # ---- 🔒 Khóa ----
+                    await page.click('#sheet [data-action="jrFgRes"]')
+                    await page.wait_for_timeout(300)
+                    if not await page.locator('#fv-panel').count():
+                        await page.locator('#sheet .fv-tile').first.click()
+                        await page.wait_for_selector('#fv-panel', timeout=8000)
+                    was = len((await page.evaluate(STATE)).get('journey', {}).get('forge_locks') or [])
+                    await page.click('#fv-panel [data-action="jrFgLock"]')
+                    await page.wait_for_timeout(1200)
+                    now = len((await page.evaluate(STATE)).get('journey', {}).get('forge_locks') or [])
+                    check(now == was + 1 or now == was - 1, f'{tag}: 🔒 saved ({was} → {now})')
+                    check(await page.locator('#fv-panel .fv-lock[aria-pressed="true"]').count() == (1 if now > was else 0), f'{tag}: the button says it')
+                    await page.evaluate(SET_Y, ['#sheet .fv-grid', 0])
+                    await shot('5-lock')
+
+                    # ---- ⚡ Ghép tất cả ----
+                    await page.evaluate(SET_Y, ['#sheet .fv-grid', 0])
+                    before = await page.evaluate(WALLET)
+                    await page.click('#sheet [data-action="jrFgAll"]')
+                    text = await confirm('6-all-confirm' if n == 0 else None)
+                    check('Tiêu tối đa' in text and '🔒' in text, f'{tag}: Ghép tất cả: one question ({" ".join(text.split())[:100]})')
+                    await page.wait_for_selector('#sheet .fv-res', timeout=30000)
+                    await page.wait_for_function("!document.querySelector('#sheet [data-action=\"jrFgAll\"]')?.textContent.includes('⚒️')", timeout=30000)
+                    res = ' '.join((await page.inner_text('#sheet .fv-res')).split())
+                    check('lượt' in res and 'thành công' in res and 'trượt' in res and 'xu đã tiêu' in res, f'{tag}: one result card ({res[:120]})')
+                    check(await page.evaluate(WALLET) < before, f'{tag}: Ghép tất cả paid')
+                    await page.evaluate(SET_Y, ['#sheet .fv-res', 0])
+                    await shot('7-all-result')
+                    check(await page.evaluate(WIDE) <= 0, f'{tag}: result: no sideways scroll')
+
+                    # ---- the ticks ----
+                    await page.locator('#sheet [data-fv-pref="fast"]').check()
+                    await page.wait_for_timeout(400)
+                    check(await page.evaluate("localStorage.getItem('mnl.forgeFast')") == '1', f'{tag}: Bỏ qua hiệu ứng stored')
+                    await page.locator('#sheet [data-fv-pref="anon"]').check()
+                    await page.wait_for_timeout(1500)
+                    anon = (await page.evaluate(STATE)).get('settings', {}).get('forgeAnon')
+                    check(anon is True, f'{tag}: Ẩn tên saved ({anon})')
+                    for t in ('plab', 'pward', 'pgear'):
                         await clear()
-                        await page.locator('#sheet [data-as-noask]').uncheck(timeout=8000)
-                        await page.wait_for_timeout(400)
-                        check(await page.evaluate("localStorage.getItem('mnl.noAsk')") is None, f'{tag}: unticked, it asks again')
-                    else:
-                        await go.click()
-                        text = await confirm(f'6-{name}-confirm')
-                        check('Tiêu tối đa' in text and '%' not in text, f'{tag}: {name} one question, no odds')
-                    await page.wait_for_selector('#sheet .pt-embed .pt-ares', timeout=15000)
-                    res = await page.inner_text('#sheet .pt-embed .pt-ares')
-                    check('xu đã tiêu' in res, f'{tag}: {name} the summary ({" ".join(res.split())[:120]})')
-                    check(await wallet() < before, f'{tag}: {name} paid once')
-                    await shot(f'7-{name}-result')
-
-                # 🕶️ Ẩn tên: the save's setting (forgeAnon)
-                await page.locator('#sheet [data-as-fzanon]').check()
-                await page.wait_for_timeout(1500)
-                anon = await page.evaluate("fetch('/api/state',{cache:'no-store'}).then(r=>r.json()).then(d=>d.state?.settings?.forgeAnon)")
-                check(anon is True, f'{tag}: Ẩn tên saved ({anon})')
-                await shot('7b-ticks')
-
-                # the pets' dialog: the same card
-                await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
-                await page.evaluate(CLICK, ['pets', {'tab': 'gear'}])
-                await page.wait_for_selector('.pt-sheet[open] .pt-auto', timeout=10000)
-                await shot('8-dialog-gear')
-                await ctx.close()
-            await browser.close()
+                        try:
+                            await page.click(f'#sheet .fv-kind[data-tab="{t}"]', timeout=8000)
+                        except Exception:  # noqa: BLE001
+                            await page.screenshot(path=str(OUT / f'{tag}-x-tab-{t}.png'))
+                            raise
+                        await page.wait_for_selector(f'#sheet .fv-kind.on[data-tab="{t}"]', timeout=8000)
+                        check(await page.locator('#sheet .fv-tile').count() > 0, f'{tag}: {t} tiles')
+                        if t == 'pgear':
+                            await page.locator('#sheet .fv-tile').first.click()
+                            await page.wait_for_selector('#fv-panel', timeout=8000)
+                            await shot('8-gear-panel')
+                        check(await page.evaluate(WIDE) <= 0, f'{tag}: {t} no sideways scroll')
+                    await ctx.close()
+                await browser.close()
     for e in errors:
         print('ERROR', e)
     if errors or fails:

@@ -5,7 +5,10 @@ by one (same rolls, same things, same money), keeps within the budget, the money
 nothing a single step would not (from S a miss loses the two others, below S nothing), never uses the worn wing, the pet
 walked, a legendary, a sad pet or a worn gear as an ingredient, refuses clearly with nothing to do, is paid once from the
 wallet then the account, answers a retried wing request id without paying again, and its saves load on the live release
-and the one before (no new save key). The single commands still give exactly what the live release gives."""
+and the one before (no new save key). The single commands still give exactly what the live release gives.
+🔒 Khóa món (⚒️ Cường hóa v2, game/forge_locks.py): a locked piece is never an ingredient of a run or a fusion, `pin`
+keeps one piece the main one of a run; with nothing locked every command is 2.5.6's; the optional journey key `fzl` is
+kept by 2.5.6 and 2.5.5, which load, play and save such a save (Live)."""
 import copy
 import io
 import json
@@ -20,16 +23,18 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from game import forge_locks as fl
 from game import pet_tiers as px
+from game import pet_wardrobe as pw
 from game import pets as pt
 from game import wings as W
 from game import wings_content as WC
-from game.engine import GameError, validate_state
+from game.engine import GameError, public_state, validate_state
 from tests.test_bank import act, story
 from tests.test_pet_tiers import get as get_pet
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASES = {'2.5.5': '207854b7', '2.5.4.3': '07b0db0f'}   # live when this was written, and the one before
+RELEASES = {'2.5.6': '7e7431ab', '2.5.5': '207854b7'}   # live when ⚒️ v2 (🔒 Khóa món) was written, and the one before
 NOW = 1792800000.0
 
 
@@ -503,6 +508,231 @@ class GearAuto(unittest.TestCase):
 
 
 # ---------------------------------------------------------------- the live release
+# ---------------------------------------------------------------- 🔒 Khóa món (game/forge_locks.py)
+def lock(s, *ids, on=True):
+    s, r = act(s, 'jr_pet_lock', ids=list(ids), on=on)
+    validate_state(s)
+    return s, r
+
+
+def no_myth():
+    """No thần thú offer (it would stop a pets' run early)."""
+    return mock.patch.object(pw, 'MYTH_BP', {})
+
+
+def code_of(test, s, name, **p):
+    before = copy.deepcopy(s)
+    with test.assertRaises(GameError) as cm:
+        act(s, name, **p)
+    test.assertEqual(s, before)
+    return cm.exception.code, str(cm.exception)
+
+
+class Locks(unittest.TestCase):
+    """⚒️ Cường hóa v2 (owner-approved 23/10): a 🔒 locked piece is never an ingredient of ⚡, Ghép tất cả or a fusion; a
+    `pin` keeps one piece the main one of a run; the lock lives in an optional journey key (older builds keep it)."""
+
+    def test_the_command_and_the_save(self):
+        s2 = wings(10**9, ('buom', 0, 3))
+        w = [x['id'] for x in Wg(s2)['own']]
+        s2, r = lock(s2, w[0], w[2])
+        self.assertEqual(s2['journey'][fl.KEY], dict(v=1, ids=[w[0], w[2]]))
+        self.assertEqual(r['locks'], [w[0], w[2]])
+        self.assertEqual(public_state(s2)['journey']['forge_locks'], [w[0], w[2]])
+        self.assertTrue(fl.locked(s2, w[0]) and not fl.locked(s2, w[1]))
+        s2, _ = lock(s2, w[0], w[1])                                          # locking again: no doubles, order kept
+        self.assertEqual(s2['journey'][fl.KEY]['ids'], [w[0], w[2], w[1]])
+        s2, r = lock(s2, w[0], w[1], w[2], on=False)
+        self.assertNotIn(fl.KEY, s2['journey'], 'nothing locked leaves no key')
+        self.assertNotIn('forge_locks', public_state(s2)['journey'])
+        self.assertIn('mở khóa 3 món', r['message'])
+        # every kind at once: wings, pets, clothes, gear
+        s, pid = gear(('giay', 0, 0, False))
+        s, _ = act(s, 'jr_pet_wbuy', id='no_hong', qty=2, confirm=True)
+        s, _ = act(s, 'jr_pet_wing_buy', style='buom', confirm=True)
+        o = pw.get(s)['it'][0]['id']
+        g = X(s)['gear'][0]['id']
+        s, _ = lock(s, pid, o, g, Wg(s)['own'][0]['id'])
+        self.assertEqual(len(fl.ids(s)), 4)
+        # refusals: what is not owned, a bad shape
+        for bad in (dict(ids=['w999'], on=True), dict(ids=['p999'], on=True), dict(ids=[], on=True), dict(ids=[g, g], on=True),
+                    dict(ids=['x1'], on=True), dict(ids=[g], on=1), dict(ids=[g], on='yes'), dict(ids=g, on=True),
+                    dict(ids=[g]), dict(ids=[g], on=True, extra=1), dict(ids=[5], on=True)):
+            with self.subTest(bad=str(bad)):
+                refused(self, s, 'jr_pet_lock', **bad)
+        # a piece gone (thrown out after unlocking it) leaves the list at the next change
+        s, _ = lock(s, g, on=False)
+        s, _ = lock(s, g)
+        X(s)['gear'].clear()                                                  # as an older build might use it up
+        validate_state(s)
+        s, _ = lock(s, pid, on=False)
+        self.assertNotIn(g, fl.ids(s))
+        # the save's block: strict
+        for bad in (dict(v=2, ids=[g]), dict(v=1, ids=[]), dict(v=1, ids='g1'), dict(v=1, ids=['g1', 'g1']), dict(v=1, ids=['zz']),
+                    dict(v=1, ids=['g1'], x=1), [], 'x', dict(v=1, ids=['g1'] * 0 + [f'g{i}' for i in range(fl.MAX + 1)])):
+            t = copy.deepcopy(s)
+            t['journey'][fl.KEY] = bad
+            with self.subTest(block=str(bad)[:40]), self.assertRaises(GameError):
+                validate_state(t)
+
+    def test_wings_auto_and_one_shot(self):
+        # 🪽 three C: the locked one is the main one (it goes up, never away)
+        s = wings(10**9, ('buom', 1, 3))
+        w = [x['id'] for x in Wg(s)['own']]
+        Wg(s)['on'] = None
+        s, _ = lock(s, w[2])
+        self.assertEqual([x['id'] for x in W.sets(Wg(s), locks=fl.ids(s))[0][1]], [w[2], w[0], w[1]])
+        with always(W, 0):
+            t, r = act(s, 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True)
+        self.assertEqual([(x['id'], x['r']) for x in Wg(t)['own']], [(w[2], 2)])
+        # two locked of three: nothing to do; the refusal says so
+        s, _ = lock(s, w[1])
+        self.assertEqual(W.sets(Wg(s), locks=fl.ids(s)), [])
+        self.assertIn('Chưa có ba đôi', refused(self, s, 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True))
+        # many seeds, from S (a miss loses the two others): the locked and the worn wings always stay
+        for seed in range(10):
+            s = wings(10**9, ('rong', 4, 7), ('buom', 0, 6), on=8)
+            keep = [Wg(s)['own'][i]['id'] for i in (1, 3, 9)]
+            s, _ = lock(s, *keep)
+            with seeded(W, seed):
+                t, r = act(s, 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True)
+            left = {x['id'] for x in Wg(t)['own']}
+            self.assertTrue(set(keep) <= left, seed)
+            self.assertIn(Wg(s)['on'], left)
+            self.assertEqual(Wg(t)['on'], Wg(s)['on'])
+            validate_state(t)
+        # `pin`: that wing is the main one even when it is not the dearest nor worn; one style's run
+        s = wings(10**9, ('buom', 0, 4), ('rong', 0, 2))
+        Wg(s)['on'] = None
+        pin = Wg(s)['own'][3]['id']
+        self.assertEqual(W.sets(Wg(s), 'buom', pin=pin)[0][1][0]['id'], pin)
+        self.assertNotEqual(W.sets(Wg(s), 'buom')[0][1][0]['id'], pin, 'without the pin another one is the main one')
+        with always(W, 0):
+            t, r = act(s, 'jr_pet_wing_fuse_auto', scope='buom', pin=pin, budget=10**9, confirm=True)
+        self.assertIn((pin, 1), [(x['id'], x['r']) for x in Wg(t)['own']])
+        for bad in ('x', 5, 'w1;', ''):
+            refused(self, s, 'jr_pet_wing_fuse_auto', pin=bad, budget=10**9, confirm=True)
+        # one shot: a locked ingredient refused (state unchanged), a locked main one fine; throwing away refused
+        s = wings(10**9, ('buom', 0, 3))
+        w = [x['id'] for x in Wg(s)['own']]
+        s, _ = lock(s, w[1])
+        c, msg = code_of(self, s, 'jr_pet_wing_fuse', wings=w, confirm=True)
+        self.assertEqual(c, 'locked')
+        self.assertIn('đang khóa', msg)
+        with always(W, 0):
+            t, r = act(s, 'jr_pet_wing_fuse', wings=[w[1], w[0], w[2]], main=w[1], confirm=True)
+        self.assertEqual([(x['id'], x['r']) for x in Wg(t)['own']], [(w[1], 1)])
+        self.assertEqual(code_of(self, s, 'jr_pet_wing_drop', id=w[1], confirm=True)[0], 'locked')
+        t, _ = act(s, 'jr_pet_wing_drop', id=w[0], confirm=True)
+        self.assertEqual(len(Wg(t)['own']), 2)
+
+    def test_pets_auto_and_one_shot(self):
+        s, ids = pets(0, 0, 0, 0, 0, 0)
+        s, _ = lock(s, ids[1], ids[4])
+        sets = px.fuse_sets(s, locks=fl.ids(s))
+        walk = s['journey']['pets']['walk']
+        self.assertEqual(sets[0][2], 1, "three kept (walked, two locked), three free: one set")
+        for _, trio, _ in sets:
+            self.assertFalse(set(trio[1:]) & {ids[1], ids[4], walk})
+        for seed in range(8):
+            with seeded(px, seed), no_myth():
+                t, r = act(s, 'jr_pet_fuse_auto', budget=10**9, confirm=True)
+            left = {q['id'] for q in px.all_pets(t)}
+            self.assertTrue({ids[1], ids[4], walk} <= left, seed)
+            validate_state(t)
+        # `pin`: the main one of the run
+        s, ids = pets(0, 0, 0)
+        s['journey']['pets']['walk'] = None
+        self.assertEqual(px.fuse_sets(s, pin=ids[2])[0][1][0], ids[2])
+        with always(px, 0), no_myth():
+            t, r = act(s, 'jr_pet_fuse_auto', pin=ids[2], budget=10**9, confirm=True)
+        self.assertEqual([q['id'] for q in px.all_pets(t)], [ids[2]], 'the pinned pet went up, the two others retired')
+        # one shot: a locked ingredient refused, a locked main one fine
+        s, ids = pets(0, 0, 0)
+        s, _ = lock(s, ids[2])
+        self.assertEqual(code_of(self, s, 'jr_pet_fuse', pets=ids, main=ids[0], confirm=True)[0], 'locked')
+        with always(px, 0), no_myth():
+            t, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[2], confirm=True)
+        self.assertTrue(r['fuse']['ok'])
+        self.assertEqual([q['id'] for q in px.all_pets(t)], [ids[2]])
+
+    def test_clothes_and_gear(self):
+        # 👗 four no_hong D, one locked: ⚡ and the one-shot use the three others; three with one locked: refused
+        s, _ = pets(0)
+        s, _ = act(s, 'jr_pet_wbuy', id='no_hong', qty=4, confirm=True)
+        o = [i['id'] for i in pw.get(s)['it']]
+        s, _ = lock(s, o[0])
+        with always(px, 0), always(pw, 0):
+            t, r = act(s, 'jr_pet_wfuse', k='no_hong', r=0, confirm=True)
+        self.assertIn(o[0], [i['id'] for i in pw.get(t)['it']])
+        with always(pw, 0):
+            t, r = act(s, 'jr_pet_wfuse_auto', budget=10**9, confirm=True)
+        self.assertEqual(r['auto']['n'], 1)
+        self.assertIn(o[0], [i['id'] for i in pw.get(t)['it']])
+        s, _ = lock(s, o[1])
+        self.assertEqual(code_of(self, s, 'jr_pet_wfuse', k='no_hong', r=0, confirm=True)[0], 'locked')
+        self.assertIn('Không còn ba món', refused(self, s, 'jr_pet_wfuse_auto', budget=10**9, confirm=True))
+        t, _ = act(s, 'jr_pet_wdrop', k='no_hong', r=0, confirm=True)       # an unlocked one goes
+        self.assertTrue({o[0], o[1]} <= {i['id'] for i in pw.get(t)['it']})
+        t, _ = lock(t, *[i['id'] for i in pw.get(t)['it'] if i['id'] not in fl.ids(t)])
+        self.assertEqual(code_of(self, t, 'jr_pet_wdrop', k='no_hong', r=0, confirm=True)[0], 'locked')
+        # 🧰 gear: a locked one is never a mate; a locked +10 is the main one; one shot refused; throwing away refused
+        s, _ = gear(('giay', 0, 10, False), ('giay', 0, 10, False), ('giay', 0, 0, False), ('giay', 0, 0, False))
+        g = [x['id'] for x in X(s)['gear']]
+        s, _ = lock(s, g[1])
+        step = px.gear_step(s, X(s), locks=fl.ids(s))
+        self.assertEqual((step[0], step[1]['id'], [x['id'] for x in step[2]]), ('fuse', g[1], [g[2], g[3]]))
+        with always(px, 0):
+            t, r = act(s, 'jr_pet_gear_auto', budget=10**9, confirm=True)
+        self.assertIn(g[1], [x['id'] for x in X(t)['gear']])
+        self.assertEqual(code_of(self, s, 'jr_pet_gear_fuse', gears=[g[0], g[1], g[2]], confirm=True)[0], 'locked')
+        self.assertEqual(code_of(self, s, 'jr_pet_gear_drop', gear=g[1], confirm=True)[0], 'locked')
+        self.assertEqual(px.gear_step(s, X(s), pin=g[0])[1]['id'], g[0], 'the pinned gear is the main one')
+        with always(px, 0):
+            t, r = act(s, 'jr_pet_gear_auto', pin=g[0], budget=10**9, confirm=True)
+        self.assertIn(g[0], [x['id'] for x in X(t)['gear']])
+        self.assertIn(g[1], [x['id'] for x in X(t)['gear']])
+
+    def test_pin_is_cường_hóa_tối_đa_of_one_piece(self):
+        """`pin` (⚒️ "Cường hóa tối đa" on one piece): the tiers below build its ingredients, nothing above it is touched,
+        the pinned one is the main one; a gear with no mates is strengthened to +10; a Huyền thoại / 🌟 has nothing to do."""
+        s = wings(10**9, ('buom', 0, 6), ('rong', 1, 1), ('tien', 4, 3))
+        Wg(s)['on'] = None
+        pin = next(x['id'] for x in Wg(s)['own'] if x['k'] == 'rong')
+        s_ids = {x['id'] for x in Wg(s)['own'] if x['r'] == 4}
+        self.assertEqual([r for r, _, _ in W.sets(Wg(s), pin=pin)], [0], 'only below the pinned C (the S are left alone)')
+        with always(W, 0):
+            t, r = act(s, 'jr_pet_wing_fuse_auto', pin=pin, budget=10**9, confirm=True)
+        own = {x['id']: x for x in Wg(t)['own']}
+        self.assertEqual(own[pin]['r'], 2, 'six D → two C, then the pinned C and the two → B')
+        self.assertTrue(s_ids <= set(own), 'the S wings untouched')
+        self.assertEqual(r['auto']['n'], 3)
+        top = wings(10**9, ('buom', 7, 1), ('rong', 0, 3))
+        self.assertEqual(W.sets(Wg(top), pin=Wg(top)['own'][0]['id']), [], 'a Huyền thoại pinned: nothing')
+        # 🧬 pets: only up to the pinned pet's rank
+        s, ids = pets(0, 0, 0, 2, 2, 2)
+        s['journey']['pets']['walk'] = None
+        self.assertEqual([r for r, _, _ in px.fuse_sets(s, pin=ids[0])], [0])
+        self.assertEqual([r for r, _, _ in px.fuse_sets(s, pin=ids[3])], [0, 2])
+        # 🧰 gear: an unworn one with no mates goes to +10 (the worn ones after it); only its slot and up to its rank
+        s, _ = gear(('giay', 1, 3, False), ('giay', 2, 0, False), ('giay', 2, 0, False), ('giay', 2, 0, False), ('giap', 0, 0, True))
+        g = X(s)['gear'][0]['id']
+        self.assertEqual(px.gear_step(s, X(s), pin=g)[1]['id'], g)
+        with always(px, 0):
+            t, r = act(s, 'jr_pet_gear_auto', pin=g, budget=10**9, confirm=True)
+        got = {x['id']: x for x in X(t)['gear']}
+        self.assertEqual((got[g]['r'], got[g]['lv']), (1, 10))
+        self.assertEqual(sorted((x['r'], x['lv']) for x in X(t)['gear'] if x['s'] == 'giay' and x['id'] != g), [(2, 0)] * 3,
+                         'the B above it untouched')
+        self.assertEqual(next(x for x in X(t)['gear'] if x['s'] == 'giap')['lv'], 0, 'another slot untouched')
+
+    def test_nothing_locked_is_the_live_pick(self):
+        """No lock, no pin: the sets are those of 2.5.6 (Live checks the commands against the release itself)."""
+        s = wings(10**9, ('buom', 0, 7), ('rong', 0, 2), ('tien', 1, 4), on=3)
+        self.assertEqual(W.sets(Wg(s)), W.sets(Wg(s), locks=frozenset(), pin=None))
+        self.assertEqual([k for _, _, k in W.sets(Wg(s))], [3, 1])
+
+
 SINGLE = '''import json,sys
 from unittest import mock
 from game import pet_tiers as px, pets as pt, wings as W
@@ -518,11 +748,11 @@ with mock.patch.object(px,'roll',lambda n:rng.randrange(n)), mock.patch.object(W
     for name,p,fix in json.loads(sys.argv[1]):
         if fix:
             for kind,i,k,v in fix:
-                rows=s['journey']['wings']['own'] if kind=='w' else s['journey']['petx']['gear']
+                rows={'w':lambda:s['journey']['wings']['own'],'g':lambda:s['journey']['petx']['gear'],'o':lambda:s['journey']['petw']['it']}[kind]()
                 for x in ([x for x in rows if x['id']==i] if isinstance(i,str) else [rows[i]]):
                     x[k]=v
         try:
-            s,r=apply_action(s,None,name,p);out.append([r.get('message'),r.get('ok'),r.get('fuse'),r.get('gear'),r.get('lost')])
+            s,r=apply_action(s,None,name,p);out.append([r.get('message'),r.get('ok'),r.get('fuse'),r.get('gear'),r.get('lost'),r.get('auto')])
         except Exception as e:
             out.append(['ERR',str(e)])
 print(json.dumps([s['journey'],out],sort_keys=True,ensure_ascii=False))
@@ -550,8 +780,8 @@ class Live(unittest.TestCase):
         return out.stdout.strip().splitlines()[-1]
 
     def test_single_commands_are_the_live_ones(self):
-        """jr_pet_wing_fuse, jr_pet_fuse, jr_pet_gear_up and jr_pet_gear_fuse after the refactor: the journey and the answers
-        the live release gives (same save, rolls, clock)."""
+        """jr_pet_wing_fuse, jr_pet_fuse, jr_pet_gear_up, jr_pet_gear_fuse and the four ⚡ runs with nothing 🔒 locked (and
+        no pin): the journey and the answers the live release gives (same save, rolls, clock)."""
         adopt = lambda n: ['jr_pet_adopt', dict({'from': 'shop'}, breed='meo_mun', coat=0, nick=n, confirm=True), None]   # noqa: E731
         cmds = [['jr_pet_wing_buy', dict(style='buom', qty=12, confirm=True), None]]
         cmds += [['jr_pet_wing_fuse', dict(wings=[f'w{a}', f'w{b}', f'w{c}'], confirm=True), None]
@@ -569,14 +799,26 @@ class Live(unittest.TestCase):
                   + [('g', 'g10', 'lv', 10)]] for _ in range(2)]
         cmds += [['jr_pet_gear_fuse', dict(gears=['g13', 'g14', 'g15'], confirm=True), [('g', f'g{i}', 'r', 1) for i in (13, 14, 15)]
                   + [('g', 'g13', 'lv', 10)]]]
+        # ⚡ the four runs, nothing locked: what 2.5.6 does
+        cmds += [['jr_pet_wing_buy', dict(style='tien', qty=15, confirm=True), None],
+                 ['jr_pet_wing_fuse_auto', dict(budget=10**8, confirm=True), None]]
+        cmds += [adopt(f'Ba {i}') for i in range(6)] + [['jr_pet_fuse_auto', dict(budget=10**8, confirm=True), None]]
+        cmds += [['jr_pet_gear_buy', dict(slot='giap', model=0, rank=0, qty=9, confirm=True), None],
+                 ['jr_pet_gear_auto', dict(budget=10**8, scope='giap', confirm=True), None]]
+        cmds += [['jr_pet_wbuy', dict(id='no_hong', qty=9, confirm=True), None], ['jr_pet_wfuse_auto', dict(budget=10**8, confirm=True), None]]
         for seed in ('1', '6'):
             with self.subTest(seed=seed):
-                old = json.loads(self.run_in(self.tree(RELEASES['2.5.5']), SINGLE, json.dumps(cmds), seed))
+                old = json.loads(self.run_in(self.tree(RELEASES['2.5.6']), SINGLE, json.dumps(cmds), seed))
                 new = json.loads(self.run_in(ROOT, SINGLE, json.dumps(cmds), seed))
                 self.assertEqual(old, new)
                 played = [c[0] for c, o in zip(cmds, new[1]) if o[0] != 'ERR']
                 for name in ('jr_pet_wing_fuse', 'jr_pet_fuse', 'jr_pet_gear_up', 'jr_pet_gear_fuse'):
                     self.assertGreaterEqual(played.count(name), 3, name)
+                for name in ('jr_pet_wing_fuse_auto', 'jr_pet_fuse_auto', 'jr_pet_gear_auto', 'jr_pet_wfuse_auto'):
+                    self.assertIn(name, played)
+                autos = [o[5] for o in new[1] if o[0] != 'ERR' and o[5]]
+                self.assertEqual(len(autos), 4)
+                self.assertTrue(all(a['n'] > 0 for a in autos), autos)
 
     def test_auto_saves_load_on_the_live_releases(self):
         saves = []
@@ -584,33 +826,40 @@ class Live(unittest.TestCase):
         with seeded(W, 4):
             s, _ = act(s, 'jr_pet_wing_fuse_auto', budget=10**9, rid='forge-live-0001', confirm=True)
         s, _ = act(s, 'settings', forgeAnon=True)   # 📣 🕶️ an optional journey key (game/forge_news.py)
+        s, _ = act(s, 'jr_pet_lock', ids=[x['id'] for x in Wg(s)['own'][:2]], on=True)   # 🔒 another (game/forge_locks.py)
         saves.append(s)
         s, _ = pets(*([0] * 9 + [4] * 3))
         with seeded(px, 4):
             s, _ = act(s, 'jr_pet_fuse_auto', budget=10**9, confirm=True)
         s, _ = act(s, 'jr_pet_gear_buy', slot='giay', model=0, rank=0, qty=6, confirm=True)
+        s, _ = act(s, 'jr_pet_lock', ids=[X(s)['gear'][1]['id'], px.all_pets(s)[0]['id']], on=True)
         with seeded(px, 4):
-            s, r = act(s, 'jr_pet_gear_auto', budget=10**9, confirm=True)
+            s, r = act(s, 'jr_pet_gear_auto', budget=10**9, pin=X(s)['gear'][0]['id'], confirm=True)
         self.assertGreater(r['auto']['n'], 5)
         saves.append(s)
         for x in saves:
             validate_state(x)
         self.assertEqual(set(Wg(saves[0])), W.BLOCK_KEYS, 'no new save key')
         self.assertEqual(set(X(saves[1])), px.BLOCK_KEYS)
-        prog = ('import json,sys;from game.engine import validate_state,migrate_state,public_state\n'
+        # each save loads there, shows, and a command played there saves it with the 🔒 block untouched
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state,public_state,apply_action\n'
                 'out=[]\n'
                 'for s in json.load(sys.stdin):\n'
                 ' validate_state(s);s=migrate_state(s);validate_state(s);public_state(s)\n'
-                ' out.append({k:s["journey"].get(k) for k in ("wings","petx","pets","fzn")})\n'
+                ' s,_=apply_action(s,None,"jr_pet_wing_wear" if s["journey"].get("wings") else "jr_pet_kennel",{"id":None} if s["journey"].get("wings") else {"pet":s["journey"]["pets"]["list"][-1]["id"],"to":"ken"});validate_state(s)\n'
+                ' out.append({k:s["journey"].get(k) for k in ("wings","petx","pets","fzn","fzl")})\n'
                 'print(json.dumps(out))')
         for label, rev in RELEASES.items():
             with self.subTest(release=label):
                 got = json.loads(self.run_in(self.tree(rev), prog, stdin=json.dumps(saves)))
                 for back, mine in zip(got, saves):
-                    self.assertEqual(back['wings'], mine['journey'].get('wings'))
-                    self.assertEqual(back['petx'], mine['journey'].get('petx'))
                     self.assertEqual(back['fzn'], mine['journey'].get('fzn'))
+                    self.assertEqual(back['fzl'], mine['journey'].get('fzl'), '🔒 kept by the older build')
+                    self.assertTrue(back['fzl'])
                 self.assertEqual(got[0]['fzn'], dict(v=1, anon=True), '🕶️ kept by the older build')
+                self.assertEqual([x['id'] for x in got[0]['wings']['own']], [x['id'] for x in Wg(saves[0])['own']])
+                self.assertIsNone(got[0]['wings']['on'], 'the command played there (wings put away)')
+                self.assertEqual(got[1]['petx']['gear'], X(saves[1])['gear'])
 
 
 if __name__ == '__main__':

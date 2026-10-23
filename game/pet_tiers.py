@@ -638,6 +638,10 @@ def action(s: dict, name: str, p: dict) -> dict:
         # owner 19/10: "bắt buộc cộng 10 rồi mới cho lên bậc": the first one is the one that goes up, at +GLV_MAX
         _need(main['lv'] >= GLV_MAX, f'Cường hóa {gear_name(main, s)} lên +{GLV_MAX} trước rồi mới lên hạng nhé.', 'level')
         _need(not any(_wearer(x, g['id']) for g in others), 'Tháo hai món nguyên liệu khỏi các bé trước khi ghép nhé.', 'worn')
+        from . import forge_locks   # 🔒 a locked gear is never an ingredient (it may be the one that goes up)
+        for g in others:
+            if forge_locks.locked(s, g['id']):
+                forge_locks.refuse(gear_name(g, s))
         fee = GFUSE_FEE[r]
         _confirm(p, f'Xác nhận ghép ba {GSLOTS[GSLOT_IDS.index(main["s"])][2].lower()} hạng {RANKS[r]} ({_fmt(fee)} xu).')
         how = pt._pay(s, fee, f'Ghép linh kiện {RANKS[r]}')
@@ -671,6 +675,8 @@ def action(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_pet_gear_drop':
         pt._keys(p, {'gear', 'confirm'}, {'gear', 'confirm'})
         g = _gear(x, p['gear'])
+        from . import forge_locks
+        _need(not forge_locks.locked(s, g['id']), f'🔒 {gear_name(g, s)} đang khóa. Mở khóa rồi hẵng bỏ nhé.', 'locked')
         _confirm(p, f'Xác nhận bỏ {gear_name(g, s)}.')
         for r in x['t'].values():
             for k, v in r['g'].items():
@@ -717,8 +723,8 @@ def _gear_fuse_roll(s: dict, x: dict, main: dict, others: list) -> bool:
 
 
 def _auto_args(p: dict, scopes, top_max: int, scope_msg: str) -> tuple:
-    """The common fields of a ⚡ Cường hóa nhanh command: (scope, top, budget)."""
-    _pt()._keys(p, {'budget', 'top', 'scope', 'confirm'}, {'budget', 'confirm'})
+    """The common fields of a ⚡ Cường hóa nhanh command: (scope, top, budget); `pin` read by the caller."""
+    _pt()._keys(p, {'budget', 'top', 'scope', 'pin', 'confirm'}, {'budget', 'confirm'})
     scope = p.get('scope', 'all')
     _need(scope == 'all' or (isinstance(scope, str) and scope in scopes), scope_msg)
     top = p.get('top', top_max)
@@ -734,18 +740,21 @@ AUTO_STOP = {'done': ' Hết bộ ba để ghép.', 'top': ' Đã tới hạng �
 
 
 # ---------------------------------------------------------------- ⚡ Cường hóa nhanh: pets
-def fuse_sets(s: dict, scope: str = 'all', top: int = TOP + 1) -> list:
+def fuse_sets(s: dict, scope: str = 'all', top: int = TOP + 1, locks=frozenset(), pin=None) -> list:
     """⚡ What Cường hóa nhanh may fuse now: [(rank, [main, a, b] pet ids, how many sets of that rank)], the lowest rank
     first, for every rank with three pets that may join (no 🌟 legendary, no sad pet at home; `scope` 'dog' / 'cat' one
     kind) whose result is at most `top` (TOP + 1: 🌟). The quick pick's rule (v4/pets.js quickLab): the 👑 main one the pet
-    walked when it is among them, else the strongest; the two others never the pet walked, those in the kennel or at
-    the grandparents' first, then the weakest."""
+    pinned (`pin`, ⚒️ Cường hóa tối đa of one pet), else the pet walked when it is among them, else a 🔒 locked one
+    (game/forge_locks.py), else the strongest; the two others never the pinned, walked or locked ones, those in the
+    kennel or at the grandparents' first, then the weakest. With a pin only the ranks up to the pinned pet's own."""
     pt = _pt()
     b = pt.get(s)
     if not b:
         return []
     walk = b['walk']
     day = s['journey']['life_day']
+    pinned = _where(s, pin)[1] if pin else None
+    cap = (-1 if is_legend(pinned, s) else rec_of(s, pinned)['r']) if pinned else TOP + 1   # a 🌟: nothing
     groups: dict = {}
     for p in all_pets(s):
         br = C.BREEDS.get(p['b'])
@@ -757,20 +766,21 @@ def fuse_sets(s: dict, scope: str = 'all', top: int = TOP + 1) -> list:
             if pt.mood(n) == 'buon':
                 continue
         r = rec_of(s, p)['r']
-        if r + 1 > top:
+        if r + 1 > top or r > cap:
             continue
         groups.setdefault(r, []).append((p, where, power(s, p)))
+    keep = set(locks) | {i for i in (pin, walk) if i}
     out = []
     for r in sorted(groups):
         g = groups[r]
-        if len(g) < 3:
+        free = [q for q in g if q[0]['id'] not in keep]
+        k = min(len(free) // 2, len(g) // 3)   # each set: two free pets and a main one (a kept one, else a free one)
+        if k < 1:
             continue
-        main = next((q for q in g if q[0]['id'] == walk), None) or max(g, key=lambda q: (q[2], q[0]['id']))
-        rest = sorted((q for q in g if q is not main and q[0]['id'] != walk),
-                      key=lambda q: (q[1] == 'home', q[2], q[0]['id']))
-        if len(rest) < 2:
-            continue
-        out.append((r, [main[0]['id'], rest[0][0]['id'], rest[1][0]['id']], len(g) // 3))
+        main = (next((q for q in g if q[0]['id'] == pin), None) or next((q for q in g if q[0]['id'] == walk), None)
+                or max(g, key=lambda q: (q[0]['id'] in keep, q[2], q[0]['id'])))
+        rest = sorted((q for q in free if q is not main), key=lambda q: (q[1] == 'home', q[2], q[0]['id']))
+        out.append((r, [main[0]['id'], rest[0][0]['id'], rest[1][0]['id']], k))
     return out
 
 
@@ -778,8 +788,10 @@ def _fuse_auto(s: dict, p: dict) -> dict:
     """⚡ jr_pet_fuse_auto: see the module's doc."""
     pt = _pt()
     scope, top, budget = _auto_args(p, ('dog', 'cat'), TOP + 1, 'Chọn chó, mèo hoặc tất cả nhé.')
-    first = fuse_sets(s, scope, top)
-    above = top <= TOP and bool(fuse_sets(s, scope))
+    from . import forge_locks   # 🔒 locked pets are never used up; `pin` the main one of this run
+    pin, locks = forge_locks.pin_of(p), forge_locks.ids(s)
+    first = fuse_sets(s, scope, top, locks, pin)
+    above = top <= TOP and bool(fuse_sets(s, scope, TOP + 1, locks, pin))
     _need(bool(first), f'Đã tới hạng {RANKS[top]} rồi: chọn hạng cao hơn nhé.' if above
           else 'Chưa có ba bé cùng hạng (vui vẻ, không phải huyền thoại) để ghép.', 'not_owned')
     fee0 = FUSE_FEE[first[0][0]]
@@ -792,9 +804,9 @@ def _fuse_auto(s: dict, p: dict) -> dict:
     stop = 'done'
     myth = None
     while True:
-        left = fuse_sets(s, scope, top)
+        left = fuse_sets(s, scope, top, locks, pin)
         if not left:
-            stop = 'top' if top <= TOP and fuse_sets(s, scope) else 'done'
+            stop = 'top' if top <= TOP and fuse_sets(s, scope, TOP + 1, locks, pin) else 'done'
             break
         if n >= AUTO_MAX:
             stop = 'cap'
@@ -826,31 +838,36 @@ def _fuse_auto(s: dict, p: dict) -> dict:
     from . import forge_news   # 📣 one line for the run: the highest rank reached
     return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
                                 auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, myth=myth,
-                                          left=sum(k for _, _, k in fuse_sets(s, scope, top)))),
+                                          left=sum(k for _, _, k in fuse_sets(s, scope, top, locks, pin)))),
                            'pet', [dict(id=q['id'], r=q['r'], n=C.BREEDS.get(q['b'], {}).get('name', 'thú cưng'), lg=q['legend'])
                                    for q in made])
 
 
 # ---------------------------------------------------------------- ⚡ Cường hóa nhanh: gear
-def gear_step(s: dict, x: dict, scope: str = 'all', top: int = TOP) -> tuple | None:
+def gear_step(s: dict, x: dict, scope: str = 'all', top: int = TOP, locks=frozenset(), pin=None) -> tuple | None:
     """⚡ The next step of Cường hóa nhanh linh kiện: ('up', gear) a +1, ('fuse', main, [a, b]) a rank up, or None.
     Three of one slot and rank whose result is at most `top`, the lowest rank first (then the slots' order): the main one
-    the gear worn (then the highest level), strengthened to +GLV_MAX then ranked up with the two free ones (not worn) of
-    the lowest levels. With none of those: the gear worn below +GLV_MAX, the highest rank first."""
-    bag = [g for g in x['gear'] if scope == 'all' or g['s'] == scope]
+    the gear pinned (`pin`, ⚒️ Cường hóa tối đa of one gear), else the gear worn, else a 🔒 locked one
+    (game/forge_locks.py), then the highest level, strengthened to +GLV_MAX then ranked up with the two free ones (not
+    worn, not locked, not pinned) of the lowest levels. With none of those: the gear pinned, then the gear worn, below
+    +GLV_MAX, the highest rank first. With a pin only its slot, up to its rank."""
+    pinned = next((g for g in x['gear'] if g['id'] == pin), None) if pin else None
+    bag = [g for g in x['gear'] if (scope == 'all' or g['s'] == scope) and (not pinned or (g['s'] == pinned['s'] and g['r'] <= pinned['r']))]
     worn = {g['id'] for g in bag if _wearer(x, g['id'])}
+    keep = worn | set(locks) | ({pin} if pin else set())
     groups: dict = {}
     for g in bag:
         if g['r'] < min(top, TOP):
             groups.setdefault((g['r'], GSLOT_IDS.index(g['s'])), []).append(g)
     for key in sorted(groups):
         gs = groups[key]
-        main = max(gs, key=lambda g: (g['id'] in worn, g['lv'], -int(g['id'][1:])))
-        mates = sorted((g for g in gs if g is not main and g['id'] not in worn), key=lambda g: (g['lv'], int(g['id'][1:])))
+        main = max(gs, key=lambda g: (g['id'] == pin, g['id'] in worn, g['id'] in keep, g['lv'], -int(g['id'][1:])))
+        mates = sorted((g for g in gs if g is not main and g['id'] not in keep), key=lambda g: (g['lv'], int(g['id'][1:])))
         if len(mates) < 2:
             continue
         return ('up', main) if main['lv'] < GLV_MAX else ('fuse', main, mates[:2])
-    on = sorted((g for g in bag if g['id'] in worn and g['lv'] < GLV_MAX), key=lambda g: (-g['r'], -g['lv'], int(g['id'][1:])))
+    on = sorted((g for g in bag if (g['id'] in worn or g['id'] == pin) and g['lv'] < GLV_MAX),
+                key=lambda g: (g['id'] != pin, -g['r'], -g['lv'], int(g['id'][1:])))
     return ('up', on[0]) if on else None
 
 
@@ -859,14 +876,15 @@ def _step_fee(step: tuple) -> int:
     return GUP_FEE[g['r']] * (g['lv'] + 1) if step[0] == 'up' else GFUSE_FEE[g['r']]
 
 
-def _gear_left(x: dict, scope: str, top: int) -> int:
+def _gear_left(x: dict, scope: str, top: int, locks=frozenset(), pin=None) -> int:
     """How many rank ups are still possible (three of a slot and rank, two of them free, the result at most `top`)."""
-    bag = [g for g in x['gear'] if scope == 'all' or g['s'] == scope]
+    pinned = next((g for g in x['gear'] if g['id'] == pin), None) if pin else None
+    bag = [g for g in x['gear'] if (scope == 'all' or g['s'] == scope) and (not pinned or (g['s'] == pinned['s'] and g['r'] <= pinned['r']))]
     n = 0
     for r in range(min(top, TOP)):
         for sl in GSLOT_IDS:
             gs = [g for g in bag if g['s'] == sl and g['r'] == r]
-            free = [g for g in gs if not _wearer(x, g['id'])]
+            free = [g for g in gs if not _wearer(x, g['id']) and g['id'] not in locks and g['id'] != pin]
             if len(gs) >= 3 and len(free) >= 2:
                 n += min(len(gs) // 3, len(free) // 2)
     return n
@@ -876,8 +894,10 @@ def _gear_auto(s: dict, p: dict) -> dict:
     """⚡ jr_pet_gear_auto: see the module's doc."""
     pt = _pt()
     scope, top, budget = _auto_args(p, GSLOT_IDS, TOP, 'Chọn một loại linh kiện hoặc tất cả nhé.')
+    from . import forge_locks   # 🔒 locked gear is never used up; `pin` the main one of this run
+    pin, locks = forge_locks.pin_of(p), forge_locks.ids(s)
     x = get(s)
-    first = gear_step(s, x, scope, top) if x else None
+    first = gear_step(s, x, scope, top, locks, pin) if x else None
     _need(first is not None, 'Chưa có món nào cường hóa được: cần ba món cùng loại, cùng hạng (hai món chưa gắn) '
           'hoặc một món đang gắn chưa tới +' + str(GLV_MAX) + '.', 'not_owned')
     fee0 = _step_fee(first)
@@ -889,7 +909,7 @@ def _gear_auto(s: dict, p: dict) -> dict:
     n = won = ups = spent = 0
     stop = 'done'
     while True:
-        step = gear_step(s, x, scope, top)
+        step = gear_step(s, x, scope, top, locks, pin)
         if step is None:
             break
         if n >= GEAR_AUTO_MAX:
@@ -916,7 +936,7 @@ def _gear_auto(s: dict, p: dict) -> dict:
     from . import forge_news   # 📣 one line for the run: the highest rank reached (a +1 is no rank)
     return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
                                 auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made, fuses=ups,
-                                          left=_gear_left(x, scope, top))),
+                                          left=_gear_left(x, scope, top, locks, pin))),
                            'gear', [dict(id=g['id'], r=g['r'], n=g['name']) for g in made if g['r'] > before[g['id']][0]])
 
 
@@ -991,6 +1011,14 @@ def _fuse_check(s: dict, p: dict) -> dict:
         if f[2] == 'home':
             n = pt.needs_at(q, day) if q['t'] < day else {k: q[k] for k in pt.NEEDS}
             _need(pt.mood(n) != 'buon', f'{q["n"]} đang buồn, chăm bé vui đã rồi hẵng ghép.', 'sad')
+    from . import forge_locks   # 🔒 a locked pet is never an ingredient: the two others (and a hybrid's main one)
+    locks = forge_locks.ids(s)
+    if locks:
+        low0 = min(TOP if is_legend(q, s) else rec_of(s, q)['r'] for q in pets)
+        trio = p.get('mix') is True and low0 < TOP and tuple(sorted(q['b'] for q in pets)) in RECIPES
+        for q in pets:
+            if q['id'] in locks and (q['id'] != main_id or trio):
+                forge_locks.refuse(q['n'])
     x = _ensure(s)
     recs = [_record(s, q) for q in pets]
     ranks = [6 if is_legend(q, s) else r['r'] for q, r in zip(pets, recs)]

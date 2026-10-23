@@ -424,6 +424,9 @@ def action(s: dict, name: str, p: dict) -> dict:
     from . import wings as wg
     if name in wg.COMMANDS:   # 🪽 Cánh (game/wings.py): jr_pet_* so command_commit refreshes the battle snapshots
         return wg.action(s, name, p)
+    from . import forge_locks
+    if name == forge_locks.COMMAND:   # 🔒 Khóa món (⚒️ Cường hóa): a locked piece is never an ingredient
+        return forge_locks.action(s, p)
     need(name in COMMANDS or name in px.COMMANDS or name in pw.COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     day = j['life_day']
     b0 = get(s)

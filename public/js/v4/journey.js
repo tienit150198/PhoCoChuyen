@@ -35,6 +35,9 @@ const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css','/css/acc-sh
 // 🛍️ Cửa hàng and ⚒️ Cường hóa (v4/acc-shop.js, owner 22/10, 23/10): accessories, 🤝 phụ kiện đôi, wings, clothes, the pets'
 // shelves; every ghép / nâng hạng. Likewise loaded on first sight.
 const AS=lazy(()=>import('./acc-shop.js'),{css:['/css/wardrobe.css','/css/acc-shop.css']});
+// ⚒️ Cường hóa v2 (v4/forge.js, owner 23/10 "gọn và dễ dùng như các game khác"): one grid per kind, the upgrade panel,
+// ⚡ Ghép tất cả, 🔒 Khóa. Likewise loaded on first sight.
+const FG=lazy(()=>import('./forge.js'),{css:['/css/pets.css','/css/forge.css']});
 // 🙂 Ảnh đại diện khi chat (v4/avatar.js): likewise.
 const AV=lazy(()=>import('./avatar.js'),{css:['/css/avatar.css']});
 // 🗺️ Bản đồ phố (v4/town-walk.js): the home as a town to walk, loaded the first time it shows.
@@ -124,7 +127,7 @@ export function journeyHome(env){
   if(ui.jrView==='certs')return certsView(env);
   if(ui.jrView==='wardrobe'){const m=WD.use();return m?m.wardrobeView(env):head('Tủ đồ','',{back:true})+skeleton();}
   if(ui.jrView==='accshop'){const m=AS.use();return m?m.accShopView(env):head('🛍️ Cửa hàng','',{back:true,eyebrow:'MUA SẮM'})+skeleton();}
-  if(ui.jrView==='forge'){const m=AS.use();return m?m.forgeView(env):head('⚒️ Cường hóa','',{back:true,eyebrow:'NÂNG CẤP'})+skeleton();}
+  if(ui.jrView==='forge'){const m=FG.use();return m?m.forgeView(env):head('⚒️ Cường hóa','',{back:true,eyebrow:'NÂNG CẤP'})+skeleton();}
   if(ui.jrView==='avatar'){const m=AV.use();return m?m.avatarView(env):head('Ảnh đại diện','',{back:true})+skeleton();}
   return homeMain(env);
 }
@@ -664,7 +667,7 @@ export async function journeyAction(action,data,el,env){
   // 🛍️ Cửa hàng (v4/acc-shop.js): `tab` a shelf (acc, pair, wing, wear; pbuy, pwear, pwing, ptoy, pgear for the pets; more; one
   // this save lacks falls back to 🎀), `code` a friend to give to (v4/marriage.js friend card: 🤝), `item` an accessory to try
   // (or, with tab wear, a piece of clothing: Tủ đồ's buy buttons). ⚒️ Cường hóa (jrForge): `tab` wing, plab, pward or pgear.
-  if(action==='jrAccShop'||action==='jrForge'){AS.use();const st=env.ui.as??={tab:'acc',draft:null,to:'',wfz:[],reveal:null,wtry:null};
+  if(action==='jrAccShop'||action==='jrForge'){if(action==='jrForge')FG.use();else AS.use();const st=env.ui.as??={tab:'acc',draft:null,to:'',wfz:[],reveal:null,wtry:null};
     const tab=typeof data.tab==='string'&&/^[a-z]{2,8}$/.test(data.tab)?data.tab:'',view=action==='jrForge'?'forge':'accshop';
     if(view==='forge'){if(tab)st.ftab=tab;}
     else{
@@ -676,6 +679,7 @@ export async function journeyAction(action,data,el,env){
     const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
     if(open){env.ui.jrView=view;env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:view});return true;}
   if(action.startsWith('jrAs'))return (await AS.get()).accShopAction(action,data,el,env);
+  if(action.startsWith('jrFg'))return (await FG.get()).forgeAction(action,data,el,env);
   if(action==='jrAvatar'){AV.use();const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
     if(open){env.ui.jrView='avatar';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'avatar'});return true;}
   if(action.startsWith('jrAv'))return (await AV.get()).avatarAction(action,data,el,env);
