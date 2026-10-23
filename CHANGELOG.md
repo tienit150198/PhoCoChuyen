@@ -1,6 +1,6 @@
 # 2.6.0 — 24/10/2026
 
-Bản lớn gom 12 nhánh (chủ game 23–24/10 + góp ý #508 #313 #364 #315 #322 #464 #358 #330 #372 #510). Schema 92 (bảng mới `island_layout`, chỉ thêm). Có gì mới 2.6.0.
+Bản lớn gom 12 nhánh (chủ game 23–24/10 + góp ý #508 #313 #364 #315 #322 #464 #358 #330 #372 #271 #510). Schema 92 (bảng mới `island_layout`, chỉ thêm). Có gì mới 2.6.0.
 
 ## 🏝️ Đảo to hơn, 🛠️ Chế độ xây (feat/island-build-v2)
 - server: game/island_design_content.py (lưới 60×60, bậc kích thước: bậc 0 miễn phí = +15 %, 🌊 lấn biển 20/30/40/50 % giá đảo, 64 món trang trí có giá, điểm, kích thước) và game/island_design.py (đặt trên lưới: biên, bờ/biển, địa hình cố định, chồng lấn, giới hạn; 📦 Kho; dời/xoay; công trình đặt theo lưới; nâng cấp bản lưu; đồng bộ bảng `island_layout`; điểm thiết kế cộng vào bảng 🏝️ Đảo đẹp; góc nhìn cho chủ và khách). Đảo cũ vào ở bậc 0, mọi công trình giữ ô cũ (ô ven biển được đẩy ra bờ), điểm công trình giữ nguyên, chỉ cộng thêm điểm thiết kế. Bản lưu: khóa tùy chọn journey.isld.
@@ -14,7 +14,7 @@ Chủ game 23/10: "xóa cái nhà 3d đi… chỉ cần nhà bình thường… 
 - 🪑 Dùng đồ thật (v4/home-pose.js): ngồi ghế/sofa, nằm giường (ngủ khi tối), đọc sách, xem TV, tập, nấu, ngâm bồn, chơi; người cùng phòng thấy tư thế (live home_mv `a`, không lưu). Bạn ở ghép được chủ nhà cho 🎨 Sắp đồ thì dời/xoay/cất đồ của chủ qua đường coop.
 - 🏋️ 📚 9 món mới (🆕 Mới về): thảm yoga, giá tạ tay, bao cát, xe đạp tập, ghế đẩy tạ; tủ sách cửa kính, bàn đọc đèn xanh, thang thư viện, giá báo gỗ.
 
-## 🗺️ Tổng quan nhà, 🚘 Hầm xe, 🧹 Việc nhà, 🏖️ Chơi trên đảo (feat/villa-overview)
+## 🗺️ Tổng quan nhà, 🚘 Hầm xe, 🧹 Việc nhà, 🏖️ Chơi trên đảo (feat/villa-overview, góp ý #271)
 - game/home_overview.py: sơ đồ từng tầng cho mọi kiểu nhà (gác mái, phòng thuê, nhà ở, 6 biệt thự), đồ và Ấm cúng từng phòng, ai đang ở nhà, các nhà khác đang sở hữu; không lưu gì. Chạm một phòng mở thẳng phòng đó trong trình trang trí 2D (reno 'room:<id>').
 - game/villa_garage.py (journey.hamxe, tùy chọn): chỗ đậu theo nơi ở (hầm biệt thự 4–12 chỗ, hầm chung, bãi hẻm), thuyền ở bến, máy bay ở sân đỗ; 🫧 rửa xe mỗi xe một lần mỗi ngày (+1 tinh thần lần đầu), chọn chỗ đậu.
 - game/home_chores.py (journey.chores): 5 việc nhà mỗi ngày theo những gì nhà có; +1 tinh thần ×2, xong 3 việc có ít xu, chuỗi 7 ngày có thưởng.
@@ -63,6 +63,8 @@ Chủ game 24/10: "áo quần khi có đính hôn thì mở luôn", "đồ k ph�
 ## Ghép bản
 - i18n: overrides gộp từ mọi nhánh, public/i18n/en.json build lại; bỏ ghi đè "😊 Tinh thần" → "Spirit" của nhánh du lịch (giữ "Mood" như cả game).
 - Bundle Phaser (public/js/isometric/phaser-world.js) build lại từ client/isometric/*.ts sau khi gộp cánh bay + đảo.
+- Test: insure_ui.mjs nạp zoomer cho reno.js (nhà 2D); kiểm kê 2.5D (docs/qa/isometric-feature-parity.json) có ✈️ Du lịch thay luxTrip. Gợi ý "Chạm sàn để đi" của phòng nằm cạnh thanh 🔍, không bị che (390 px).
+- ⚠️ Quay lui về 2.5.9.1: bản lưu đã có danh hiệu trường học (h_bachelor, h_double, h_top, h_overseas), nhân viên ứng viên mới (#510) hoặc 🎒 Túi khóa chống móc / 🛡️ Bảo mật nâng cao bị bản cũ từ chối (validate). Khóa mới khác (school, travel, hamxe, chores, beach, isld, decor_rot) và bảng island_layout bản cũ bỏ qua. Có lỗi thì sửa tới, đừng quay lui.
 
 # 2.5.9.1 — 23/10/2026
 
