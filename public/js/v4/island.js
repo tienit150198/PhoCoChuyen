@@ -4,13 +4,14 @@
  * trips (GET /api/island), sends `jr_island_buy` / `jr_island_sell` and POST /api/island/<op>. Being on the island is
  * v4/island-scene.js (both interfaces). Opened with data-action="island" (data-tab) and islandInvites; the invitation
  * card comes from the live socket (island_ping, welcome isl_inv). Styles: /css/spend.css + /css/island.css.
- * 🏗️ Xây (game/island_build.py): the plots of an island on a small map, build / upgrade / phá dỡ (jr_isle_build,
- * jr_isle_up, jr_isle_raze; api.state.journey.islb). 🌍 Ghé đảo: invitations, then the islands open to everyone (GET
+ * 🏗️ Xây (game/island_build.py): what stands on an island, upgrade / sơn / phá dỡ (jr_isle_up, jr_isle_paint,
+ * jr_isle_raze; api.state.journey.islb); building, decorating, moving and 🌊 lấn biển happen in 🛠️ the build mode
+ * (v4/island-editor.js, game/island_design.py, api.state.journey.isld). 🌍 Ghé đảo: invitations, then the islands open to everyone (GET
  * /api/island?public=1, POST visit / leave); the owner opens or closes theirs (POST public). No time limit since 19/10.
  * 🏡 20/10: the house styles (public/js/house-art.js) in a phone-first picker: 🏠 Nhà ở / 🎡 Vui chơi, the tiers, cards with
  * a drawn preview; the chosen one big, its three levels and colours (`look` of jr_isle_build), 🎨 sơn lại (jr_isle_paint). */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {layout,PLOT_W} from '../island-layout.js';
+import {layout} from '../island-layout.js';
 import {HOUSES,splitKind,previewHouse} from '../house-art.js';
 
 const ALL_TABS=[['buy','🏝️','Mua đảo'],['go','🛥️','Ra đảo'],['build','🏗️','Xây'],['inv','🌍','Ghé đảo']];
@@ -18,7 +19,7 @@ const ALL_TABS=[['buy','🏝️','Mua đảo'],['go','🛥️','Ra đảo'],['bu
 const tabsOn=()=>ALL_TABS.filter(t=>t[0]!=='build'||!CAT()?.build_off);
 export const ACTIONS={island:'',islandInvites:'inv',islandBuild:'build',islandOpen:'inv'};
 const S={dlg:null,env:null,tab:'buy',pick:'',isle:'',ride:'',sel:new Set(),list:null,listAt:0,skew:0,busy:false,flash:null,listening:false,seq:0,plot:-1,kind:'',
-  cat:'home',tier:0,look:0,pv:1,paint:-1};
+  look:0,pv:1,paint:-1};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().island||null;
@@ -99,7 +100,7 @@ export async function openIsland(env,tab){
   S.env=env;
   if(!S.listening){
     S.listening=true;let seen='';
-    env.api.addEventListener('state',()=>{const key=JSON.stringify([J().wallet,J().island,J().islb,J().bank?.balance]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy)render();});
+    env.api.addEventListener('state',()=>{const key=JSON.stringify([J().wallet,J().island,J().islb,J().isld,J().bank?.balance]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy)render();});
   }
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
@@ -114,9 +115,11 @@ export async function islandAction(action,data,el,env){
   if(!(action in ACTIONS))return false;
   await openIsland(env,ACTIONS[action]||data?.tab);return true;
 }
-/** 🏗️ From the island itself (the owner taps a plot or 🏗️): the build tab of that island, that plot. */
+/** 🏗️ From the island itself: a building's sheet (the owner taps a site), 🛠️ the build mode (🏗️, plot −1). */
 export async function openBuild(env,iid,plot=-1){
-  S.isle=iid;if(plot>=0){S.plot=plot;S.kind='';}
+  S.isle=iid;S.env=env;
+  if(plot<0){await ensureCss();return openEditor(env,iid,false);}
+  S.plot=plot;S.kind='';
   await openIsland(env,'build');
 }
 
@@ -166,9 +169,8 @@ function main(c){
   if(S.tab==='build'){
     const i=myIsle(c),bc=BC();if(!i||!bc)return ['🏝️ Xem các hòn đảo','shop',''];
     const plots=plotsOf(i.id),e=plots[S.plot],now=serverNow(),money=(n)=>readyWhy(n,cash(),Number(J().bank?.balance)||0);
+    if(!e)return ['🛠️ Chế độ xây','editor',''];   // 🏝️ 24/10: building, decorating, moving: on the map itself
     const wait=crewWait(plots),crews=wait?`Cả ${bc.crews} đội thợ đang bận, rảnh sau ${hoursLeft(wait)}`:'';
-    if(!e){const shown=visible(bc),k=KIND(S.kind)||shown.find(x=>!buildWhy(c,i,x,plots))||shown[0];if(!k)return ['Chưa xây được','',' '];
-      S.kind=k.id;const why=buildWhy(c,i,k,plots)||crews||money(k.levels[0].price);return [`${k.emoji} Xây · ${fmt(k.levels[0].price)} xu`,'build',why];}
     if(busyNow(e,now))return [`⏳ Xong sau ${hoursLeft(e.t-now)}`,'',' '];
     const k=KIND(e.k),lv=lvlNow(e,now),next=k?.levels[lv];
     if(!next)return ['🏝️ Ra đảo ngắm','goto',''];
@@ -243,80 +245,39 @@ function inv(){
     +`<section class="sd-card"><h3>🌍 Đảo đang mở cửa</h3>${pub}</section>`;
 }
 
-/* ---- 🏗️ Xây: the plots of one island on a small map, then the chosen plot ---- */
-/** The part of the island the plots cover (a margin around them), so the squares are big enough to tap. */
-function plotBox(spots,L){
-  const v=L.villa,xs=[...spots.map(p=>p[0]),v.x-v.w/2,v.x+v.w/2],ys=[...spots.map(p=>p[1]),v.y-v.h/2,v.y+v.h/2],pad=PLOT_W*.9;
-  let x0=Math.min(...xs)-pad,x1=Math.max(...xs)+pad,y0=Math.min(...ys)-pad,y1=Math.max(...ys)+pad;
-  const want=1.25;   // not taller than wide, not much wider than 16:10
-  if((x1-x0)/(y1-y0)<want){const d=(want*(y1-y0)-(x1-x0))/2;x0-=d;x1+=d;}
-  if((x1-x0)/(y1-y0)>1.7){const d=((x1-x0)/1.7-(y1-y0))/2;y0-=d;y1+=d;}
-  return {x:x0,y:y0,w:x1-x0,h:y1-y0};
-}
-/** The island under the plots, as on both interfaces' maps (public/js/island-layout.js): sea, sand, grass, the villa, the pier. */
-function miniMap(look,box){
-  const L=layout(look),cx=L.shore.reduce((a,p)=>a+p[0],0)/L.shore.length,cy=L.shore.reduce((a,p)=>a+p[1],0)/L.shore.length;
-  const inset=by=>L.shore.map(([x,y])=>{const d=Math.hypot(x-cx,y-cy)||1,k=Math.max(0,1-by/d);return `${(cx+(x-cx)*k).toFixed(4)},${(cy+(y-cy)*k).toFixed(4)}`;}).join(' ');
-  const r=(o,fill)=>`<rect x="${o.x-o.w/2}" y="${o.y-o.h/2}" width="${o.w}" height="${o.h}" fill="${fill}"/>`;
-  const v=L.villa;
-  return `<svg class="isl-mini" viewBox="${box.x} ${box.y} ${box.w} ${box.h}" preserveAspectRatio="none" aria-hidden="true">
-    <rect x="-1" y="-1" width="3" height="3" fill="${L.sea}"/><polygon points="${inset(-.012)}" fill="#ffffff80"/><polygon points="${inset(0)}" fill="${L.sand}"/><polygon points="${inset(L.sandWidth)}" fill="${L.grass}"/>
-    ${r(L.dock,'#b5844f')}${(L.walk||[]).map(w=>r(w,'#b5844f')).join('')}${r({x:v.x,y:v.y,w:v.w,h:v.h},v.roof)}
-    ${L.palms.map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".012" fill="#3f8a3e"/>`).join('')}</svg>`;
-}
-function buildWhy(c,i,kind,plots){
-  const bc=BC(),pl=bc.plots[i.id]?.[S.plot],now=serverNow();
-  if(kind.coast&&!pl?.[2])return 'Cần ô sát biển ⚓';
-  if(kind.big&&i.price<bc.big_from)return 'Chỉ đảo lớn';
-  if(kind.max&&Object.values(plots).filter(e=>splitKind(String(e.k))[0]===kind.id).length>=kind.max)return `Mỗi đảo ${kind.max}`;
-  void now;return '';
-}
-/** Both crews at work: how long until one is free (seconds), else 0. */
-function crewWait(plots){
-  const now=serverNow(),busy=Object.values(plots).filter(e=>busyNow(e,now));
-  return busy.length>=(BC()?.crews||2)?Math.min(...busy.map(e=>e.t-now)):0;
-}
+/* ---- 🏗️ Xây: 🛠️ the build mode (v4/island-editor.js) and what stands on the island, then the chosen building ---- */
 function build(c){
   const bc=BC();if(!bc)return `<p class="sd-empty">⏳</p>`;
   const i=myIsle(c);
-  if(!i)return `<section class="sd-card"><p class="sd-empty">Mua một hòn đảo rồi xây nhà, hồ bơi, công viên… trên đó nhé.</p></section>`;
+  if(!i)return `<section class="sd-card"><p class="sd-empty">Mua một hòn đảo rồi xây nhà, hồ bơi, trồng cây… trên đó nhé.</p></section>`;
   const ids=ownIds(),chips=ids.length>1?`<div class="sd-chips">${c.islands.filter(x=>ids.includes(x.id)).map(x=>chip('isle',x.id,x.emoji,x.id===i.id,x.name)).join('')}</div>`:'';
-  const plots=plotsOf(i.id),spots=bc.plots[i.id]||[],now=serverNow();
-  if(S.plot<0||S.plot>=spots.length){const free=spots.findIndex((_,n)=>!plots[n]);S.plot=free>=0?free:0;}
-  const busy=Object.values(plots).filter(e=>busyNow(e,now)).length,box=plotBox(spots,layout(i.look));
-  const tiles=spots.map(([x,y,coast],n)=>{const e=plots[n],k=e&&KIND(e.k),lv=e?lvlNow(e,now):0,work=e&&busyNow(e,now);
-    const face=!e?(coast?'⚓':'＋'):work?'🏗️':k?.emoji||'❔',sub=!e?'':work?hoursLeft(e.t-now).split(' ')[0]:String(lv);
-    const label=!e?`Ô ${n+1} trống${coast?', sát biển':''}`:`Ô ${n+1}: ${k?.name||''}${work?', đang xây':`, cấp ${lv}`}`;
-    return `<button type="button" class="isl-plot${e?' built':''}${work?' work':''}${n===S.plot?' on':''}" style="left:${((x-box.x)/box.w*100).toFixed(2)}%;top:${((y-box.y)/box.h*100).toFixed(2)}%;width:${(PLOT_W*.94/box.w*100).toFixed(2)}%;height:${(PLOT_W*.94/box.h*100).toFixed(2)}%" data-is="plot" data-id="${n}" aria-pressed="${n===S.plot}" aria-label="${esc(label)}"><span>${face}</span>${sub?`<small>${esc(sub)}</small>`:''}</button>`;}).join('');
-  const map=`<div class="isl-map" style="aspect-ratio:${(box.w/box.h).toFixed(3)}" role="group" aria-label="Ô đất trên ${esc(i.name)}">${miniMap(i.look,box)}${tiles}</div>
-    <p class="lx-sub isl-crews">👷 ${busy}/${bc.crews} đội thợ đang làm · ${Object.keys(plots).length}/${spots.length} ô đã dùng</p>`;
-  const e=plots[S.plot],pl=spots[S.plot]||[0,0,0];
-  let detail;
-  if(!e){
-    const shown=visible(bc);
-    if(!KIND(S.kind)||!shown.some(k=>k.id===S.kind)){const k=shown.find(x=>!buildWhy(c,i,x,plots))||shown[0];S.kind=k?.id||'';S.look=0;S.pv=1;}
-    const sel=KIND(S.kind);
-    const cats=`<div class="sd-chips isl-cats">${chip('cat','home','🏠 Nhà ở',S.cat==='home')}${chip('cat','fun','🎡 Vui chơi',S.cat==='fun')}</div>`;
-    const tiers=S.cat==='home'&&bc.tiers?.length?`<div class="sd-chips isl-tiers">${chip('tier','0','Tất cả',!S.tier)}${bc.tiers.map(([n,l])=>chip('tier',String(n),esc(l),S.tier===n)).join('')}</div>`:'';
-    const cards=shown.map(k=>{const why=buildWhy(c,i,k,plots),[l1]=k.levels,on=S.kind===k.id;
-      return `<button type="button" class="isl-hcard${on?' on':''}${why?' off':''}" data-is="kind" data-id="${esc(k.id)}" aria-pressed="${on}"${why?' aria-disabled="true"':''}>${thumb(k,1,on?S.look:0)}<b>${esc(k.name)}</b><small>${fmt(l1.price)} xu</small>${why?`<i class="isl-why">${esc(why)}</i>`:k.tier?`<i class="isl-tier">${'◆'.repeat(k.tier)}</i>`:''}</button>`;}).join('');
-    detail=`<h3>Ô ${S.plot+1}${pl[2]?' · ⚓ sát biển':''}</h3>${cats}${tiers}${sel?showcase(sel,S.pv,S.look,null):''}<div class="isl-hgrid">${cards}</div>`;
-  }else{
+  const plots=plotsOf(i.id),now=serverNow(),keys=Object.keys(plots).map(Number).sort((a,b)=>a-b);
+  if(!plots[S.plot])S.plot=-1;
+  const dz=J().isld?.i?.[i.id]||null,dc=bc.design,t=Number(dz?.t)||0,next=dc?.tiers?.[t+1],kho=Object.values(J().isld?.inv||{}).reduce((a,v)=>a+(Number(v)||0),0);
+  const busy=Object.values(plots).filter(e=>busyNow(e,now)).length;
+  const facts=[`📐 ${dc?.tiers?.[t]?.name||''}`,`✨ ${fmt(dz?.pts||0)} điểm trang trí`,`🌴 ${(dz?.d||[]).length} món trang trí`,...(kho?[`📦 ${kho} món trong kho`]:[]),
+    `👷 ${busy}/${bc.crews} đội thợ đang làm`,...(next?[`🌊 Lấn biển tiếp: ${fmt(dc.expand?.[i.id]?.[t]||0)} xu`]:[])];
+  const entry=`<section class="sd-card isl-ed-entry"><button type="button" class="btn primary isl-ed-go" data-is="editor">🛠️ Chế độ xây</button>
+    <p class="lx-sub">Xây nhà, đặt hồ bơi, trồng cây ở bất cứ đâu trên đảo. Kéo để dời, xoay, cất kho tùy ý.</p><ul class="isl-ed-facts">${facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></section>`;
+  const list=keys.length?`<section class="sd-card"><h3>Công trình trên đảo</h3><div class="isl-blist">${keys.map(n=>{const e=plots[n],k=KIND(e.k),lv=lvlNow(e,now),work=busyNow(e,now);
+    return row('plot',String(n),work?'🏗️':k?.emoji||'❔',k?.name||'',work?`⏳ ${esc(hoursLeft(e.t-now))}`:stars(lv),n===S.plot);}).join('')}</div></section>`:'';
+  const e=plots[S.plot];let detail='';
+  if(e){
     const k=KIND(e.k),lv=lvlNow(e,now),work=busyNow(e,now),look=lookOf(e.k);
     if(S.kind!==k?.id){S.kind=k?.id||'';S.pv=Math.max(1,lv);S.paint=-1;}
-    detail=`<h3>${k?.emoji||''} ${esc(k?.name||'')} ${stars(lv)}</h3>${k?showcase(k,S.pv,S.paint>=0?S.paint:look,{look,lv}):''}
+    detail=`<section class="sd-card"><h3>${k?.emoji||''} ${esc(k?.name||'')} ${stars(lv)}</h3>${k?showcase(k,S.pv,S.paint>=0?S.paint:look,{look,lv}):''}
       ${work?`<p class="lx-sub">🏗️ Đang xây cấp ${e.b} · còn ${hoursLeft(e.t-now)}</p>`:''}
-      <button type="button" class="sd-link" data-is="raze">${work&&!lv?'Hủy xây':'Phá bỏ'} · nhận lại ${fmt(e.back)} xu</button>`;
+      <div class="isl-actions"><button type="button" class="btn" data-is="editor">✥ Dời, xoay trong chế độ xây</button></div>
+      <button type="button" class="sd-link" data-is="raze">${work&&!lv?'Hủy xây':'Phá bỏ'} · nhận lại ${fmt(e.back)} xu</button></section>`;
   }
-  return chips+`<section class="sd-card isl-build">${map}</section><section class="sd-card">${detail}</section>
-    <p class="lx-sub">Công trình không kiếm tiền: chỉ để ở, để chơi và khoe với bạn bè. Phá bỏ nhận lại ${bc.salvage_pct}%.</p>`;
+  return chips+entry+detail+list+`<p class="lx-sub">Công trình và đồ trang trí không kiếm tiền: để ở, để chơi và khoe với bạn bè (🏝️ Đảo đẹp). Phá bỏ công trình nhận lại ${bc.salvage_pct}%.</p>`;
 }
-
-/** The buildings of the chosen group (🏠 homes of a tier, 🎡 the rest), homes cheapest first. */
-function visible(bc){
-  const all=bc.buildings||[];
-  if(S.cat!=='home')return all.filter(k=>k.cat!=='home');
-  return all.filter(k=>k.cat==='home'&&(!S.tier||(k.tier||1)===S.tier)).sort((a,b)=>a.levels[0].price-b.levels[0].price);
+/** 🛠️ The build mode of island `iid` over everything; closing it comes back to the 🏗️ Xây tab when it was opened from
+ * there (`back`). */
+async function openEditor(env,iid,back){
+  S.dlg?.close();
+  const {openIslandEditor}=await import('./island-editor.js');
+  return openIslandEditor(env,iid,{skew:S.skew,openDetail:plot=>openBuild(env,iid,plot),onClose:back?()=>{if(!S.dlg?.open)openIsland(env,'build');}:null});
 }
 /** A drawn house (house-art.js) or, for the first buildings, their icon. */
 const thumb=(k,lv,look,cls='isl-thumb')=>HOUSES[k.id]?`<canvas class="${cls}" data-house="${esc(k.id)}" data-lv="${lv}" data-look="${look}" aria-hidden="true"></canvas>`
@@ -342,9 +303,7 @@ async function onClick(op,data){
     case'pick':S.pick=data.id;render();return;
     case'isle':S.isle=data.id;S.plot=-1;S.kind='';render();return;
     case'plot':S.plot=Number(data.id);S.kind='';S.look=0;S.pv=1;S.paint=-1;S.flash=null;render();return;
-    case'kind':if(S.kind!==data.id){S.kind=data.id;S.look=0;S.pv=1;}render();return;
-    case'cat':S.cat=data.id;S.tier=0;S.kind='';render();return;
-    case'tier':S.tier=Number(data.id)||0;S.kind='';render();return;
+    case'editor':{const i=myIsle(c);if(i)openEditor(S.env,i.id,true);return;}
     case'pv':S.pv=Number(data.id)||1;render();return;
     case'look':{const i=myIsle(c),e=i&&plotsOf(i.id)[S.plot],n=Number(data.id)||0;if(e)S.paint=n;else S.look=n;render();return;}
     case'paint':{
@@ -379,13 +338,10 @@ async function onClick(op,data){
     case'go':{
       const [,what]=main(c);
       if(what==='goto'){S.isle=S.tab==='build'?(myIsle(c)?.id||''):island(c).id;S.tab='go';S.flash=null;render();load();}
-      else if(what==='build'||what==='up'){
+      else if(what==='editor'){const i=myIsle(c);if(i)openEditor(S.env,i.id,true);}
+      else if(what==='up'){
         const i=myIsle(c),bc=BC();if(!i||!bc)return;const e=plotsOf(i.id)[S.plot];
-        if(what==='build'){const k=KIND(S.kind);if(!k)return;const [l1]=k.levels;
-          if(!await S.env.confirmAction(`Xây ${k.name}?`,`${fmt(l1.price)} xu, trả từ ví rồi tới tài khoản. Xong sau ${l1.hours} giờ, trong lúc đó có giàn giáo.`,'Xây'))return;
-          const look=k.looks?.length>1&&S.look>0&&S.look<k.looks.length?S.look:0;
-          await command('jr_isle_build',{island:i.id,plot:S.plot,kind:k.id,...(look?{look}:{}),confirm:true});}
-        else if(e){const k=KIND(e.k),lv=lvlNow(e),next=k?.levels[lv];if(!next)return;
+        if(e){const k=KIND(e.k),lv=lvlNow(e),next=k?.levels[lv];if(!next)return;
           if(!await S.env.confirmAction(`Nâng ${k.name} lên cấp ${lv+1}?`,`${fmt(next.price)} xu. Xong sau ${next.hours} giờ.`,'Nâng cấp'))return;
           await command('jr_isle_up',{island:i.id,plot:S.plot,confirm:true});}
       }

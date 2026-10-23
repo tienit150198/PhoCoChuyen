@@ -50,7 +50,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   /** 🏝️ The island's design: the owner's own save (fresh after every change in the build mode), else the trip's. */
   const iid=trip.island?.id;
   const designOf=()=>(trip.mine&&iid&&env.api.state?.journey?.isld?.i?.[iid])||trip.design||null;
-  let design=designOf(),base=withDesign(layout(trip.island?.look),design),paths=footpaths(base);
+  let design=designOf(),base=withDesign(layout(trip.island?.look),design),paths=footpaths(base),pathKey=JSON.stringify(paths);
   const kind=trip.visit?'solo':trip.kind||'solo',route=vehicleRoute(base,kind,!trip.visit&&(trip.seats||0)>=12),[sx,sy]=landing(base,kind);
   /** The server's unix time (the buildings' hours are the server's). */
   const serverNow=()=>wall()+skew;
@@ -99,6 +99,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     const now=serverNow(),key=JSON.stringify(builds.map(b=>[b.p,b.k,b.l,b.b,workAt(b,now)]));
     if(key===buildKey)return;buildKey=key;
     L=withBuilds(base,builds,now);renderer?.setBuilds?.(L.built);view.spots?.(chips(L.spots));
+    const next=footpaths(L),pk=JSON.stringify(next);if(pk!==pathKey){pathKey=pk;paths=next;renderer?.setLayout?.(base,paths);}   // 🛤️ to the homes' doors too
     if(!walkable(L,me.x,me.y)){const [x,y]=nearestWalkable(L,me.x,me.y);me.x=x;me.y=y;}
   }
   /** 🏝️ The island's design changed (the owner built, moved, lấn biển): the map, the spots, the footpaths. */

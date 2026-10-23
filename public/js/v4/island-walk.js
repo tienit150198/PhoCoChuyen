@@ -9,7 +9,7 @@ import {inPoly,turn} from '../island-layout.js';
 import {createBuildArt} from './island-build-art.js';
 import {paintDecorItem,decorFx} from '../island-decor-art.js';
 
-const FLAT=.64;   // the map's y is squashed: a three-quarter view from above
+export const FLAT=.64;   // the map's y is squashed: a three-quarter view from above
 const FIG_H=160,FIG_W=110;
 
 function inset(shore,by){
@@ -180,15 +180,18 @@ export function createWalkRenderer(canvas,L0){
   return {
     ready:Promise.resolve(),
     get personHeight(){return 150*cam.fs;},
+    get size(){return [w,h];},
     frame(model,t=performance.now()){
       if(destroyed)return;
-      if(model.focus){focus=model.focus;cam=walkCamera(w,h,focus,bounds);}
+      if(model.camera)cam={...model.camera,fs:model.camera.S/1400};   // 🛠️ the build mode moves and zooms the map itself
+      else if(model.focus){focus=model.focus;cam=walkCamera(w,h,focus,bounds);}
       ctx.setTransform(dpr,0,0,dpr,0,0);ground(t);
       const list=standing(t);
       for(const p of model.people)list.push([p.y,()=>person(p,t)]);
       if(model.vehicle)list.push([model.vehicle.y+.001,()=>vehicle(model.vehicle,t)]);
       list.sort((a,b)=>a[0]-b[0]);for(const [,draw] of list)draw();
       sky(t);
+      model.overlay?.(ctx,P,cam,t);   // 🛠️ the build mode's grid and the thing being placed, over everything
     },
     toMap(clientX,clientY){const r=canvas.getBoundingClientRect(),x=(clientX-r.left-cam.ox)/cam.S,y=(clientY-r.top-cam.oy)/(cam.S*FLAT),[lo,hi]=bounds;return x>=lo-.1&&x<=hi+.1&&y>=lo-.1&&y<=hi+.1?[x,y]:null;},
     toScreen(x,y,lift=0){const [a,b]=P(x,y);return [a,b-lift*cam.S/900];},
