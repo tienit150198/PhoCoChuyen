@@ -34,6 +34,29 @@ export function flyLift(wg,t=null){
   const w=cleanWing(wg);if(!w)return 0;const base=24+2*w.r;
   return t==null?base:base+4*Math.sin(2*Math.PI*t/((WING_BEAT[w.k]||2)*.7));
 }
+/** 🪽 Owner 24/10 "bay thì cho cánh to hơn nha, cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)": in the
+ * air the pair opens FLY_WING times its size on the ground, so it spans wider than the flyer is tall (the classic
+ * character ~122 units, the 2.5D chibi ~150 px): about 1.75× at D to 2.1× at Huyền thoại (tierScale grows it by tier).
+ * On the ground the wings keep their size. */
+export const FLY_WING=1.3;
+/** How far a flyer leans into the way they go (radians, at full speed). */
+export const FLY_LEAN=.08;
+/** 🪽 A flyer's motion at `t` seconds (null: still pictures): no steps, a hover. `o` the flyer's own little state (kept by
+ * the caller: {ph, at, m}) so a change of pace never jumps: the beat's phase goes on, only its speed changes, and `m`
+ * eases between gliding (0) and moving (1). Gliding: a slow, majestic stroke (1.3 beats of the style); moving: a quicker
+ * one (.55 beat). The body rises as the wings come down (the lift in the classic character's units, like flyLift).
+ * Returns {flap: -1…1 for wingBitmap / flapStep, lift, lean: 0…1 (× FLY_LEAN toward the way they face)}. */
+export function flyMotion(o,wg,t,moving=false){
+  const w=cleanWing(wg);if(!w)return {flap:0,lift:0,lean:0};
+  const base=24+2*w.r;
+  if(t==null||!Number.isFinite(t)){o.at=null;o.m=0;return {flap:0,lift:base,lean:0};}
+  const dt=o.at==null?0:Math.max(0,Math.min(.25,t-o.at));o.at=t;
+  const m=o.m=(Number(o.m)||0)+((moving?1:0)-(Number(o.m)||0))*Math.min(1,dt*5);
+  const period=(WING_BEAT[w.k]||2)*(1.3-.75*m);
+  o.ph=((Number(o.ph)||0)+dt/period)%1;
+  const s=Math.sin(2*Math.PI*o.ph);
+  return {flap:(AMP[w.k]||.8)*s,lift:base+(4-1.5*m)*s,lean:m};
+}
 /** The flyer's shadow on the ground: smaller and fainter the higher they are ({rx, ry, a} at lift `h`, scale s). */
 export const flyShadow=(h,s=1)=>({rx:Math.max(10,26-h*.18)*s,ry:Math.max(3.5,7.5-h*.05)*s,a:Math.max(.12,.32-h*.004)});
 const RIM='#2b1d1a',GOLD_RIM='#6b4210';

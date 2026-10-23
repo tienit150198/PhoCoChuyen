@@ -136,6 +136,36 @@ class Town(unittest.IsolatedAsyncioTestCase):
         moves = [e for f in self.frames[a.ws] if f['t'] == 'town' for e in f.get('ev', []) if e['k'] == 'mv']
         self.assertIsNone(moves[-1]['fl'])
 
+    async def test_others_see_a_flyer_take_off_hover_and_land(self):
+        """Owner 24/10 "bay thì cho cánh to hơn nha ... người k cần di chuyển nữa": every client draws a flyer with the
+        larger pair and no steps from `fl` alone, so the others must get it: on joining, when they take off, while they
+        move (kept, never dropped by a plain move) and when they land."""
+        a, b = self.player('a'), self.player('b')
+        wear(self.app, a.player.pid, r=5)
+        await self.join(a)
+        await self.join(b)
+        room = self.hub.rooms[a.ext['town']]
+
+        def seen():
+            if room.data['h']:
+                room.data['h'].cancel()
+            self.town._flush(room)
+            out = [e for f in self.frames[b.ws] if f['t'] == 'town' for e in f.get('ev', [])
+                   if e['k'] == 'mv' and e.get('pid') == a.player.pid]
+            self.frames[b.ws].clear()
+            return out
+
+        seen()
+        await self.mv(a, fl=True)
+        self.assertEqual([e['fl'] for e in seen() if 'fl' in e], [5], 'taking off reaches the others')
+        await self.mv(a)
+        self.assertEqual(self.me(a).fl, 5, 'moving keeps them in the air')
+        self.assertTrue(all(e.get('fl', 5) == 5 for e in seen()))
+        snap = await self.town.town_in(self.player('c'), dict(map=MAP_ID, x=6, y=6, direction='se', look={}))
+        self.assertEqual({p['pid']: p.get('fl') for p in snap['people']}[a.player.pid], 5, 'a newcomer sees them flying')
+        await self.mv(a, fl=False)
+        self.assertEqual([e['fl'] for e in seen() if 'fl' in e], [None], 'landing too')
+
     async def test_a_yacht_waits_at_its_harbour_while_flying(self):
         a = self.player('a')
         wear(self.app, a.player.pid, r=1)

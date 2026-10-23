@@ -19,7 +19,7 @@
  * (its toggle lands first, taking off sends it home). No parking at a door: they fly to it. */
 import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
 import {figure,paintPlayer,CANVAS,lookOf,myPairs,wingOfState} from './look.js';
-import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,flyLift,flyShadow,CLASSIC_WING,WING_BOX} from './wings-art.js';   // 🪽 Bay
+import {drawWings,drawMotes,wingBitmap,flapStep,wingScale,flyMotion,flyShadow,FLY_WING,FLY_LEAN,CLASSIC_WING,WING_BOX} from './wings-art.js';   // 🪽 Bay
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
@@ -503,17 +503,21 @@ function draw(){
   if(text!==W.whereText){W.whereText=text;W.where.textContent=text;}
 }
 
-/** 🪽 The player in flight: their shadow on the ground, the wings apart at their full stroke (a cached flap: wings-art.js
- * wingBitmap), the sprite lifted over them by flyLift, the sparkles over it. */
-const WBOX=WING_BOX.map(v=>v*CLASSIC_WING.s);
+/** 🪽 The player in flight (owner 24/10 "bay thì cho cánh to hơn nha, cánh to hơn người và người k cần di chuyển nữa"):
+ * their shadow on the ground; no steps, no hop: the standing sprite hovers (wings-art.js flyMotion: a float with the beat,
+ * slow and wide gliding, quicker on the way), leaning a little into the way they go; the wings FLY_WING times their
+ * ground size behind it (a cached flap: wingBitmap, drawn at its own pixel size), the sparkles over it. */
+const WBOX=WING_BOX.map(v=>v*CLASSIC_WING.s),FLY_STATE={};
 function flyer(c,sp,m,k,d,world){
-  const wg=wingOfState(S()),t=still()?null:W.time,lift=flyLift(wg,t)*ME,o=flyShadow(lift/ME,ME);
+  const wg=wingOfState(S()),t=still()?null:W.time,fm=flyMotion(FLY_STATE,wg,t,!!m.path?.length),lift=fm.lift*ME,o=flyShadow(fm.lift,ME);
   world();c.fillStyle=`rgba(40,30,25,${o.a.toFixed(2)})`;c.beginPath();c.ellipse(m.x,m.y+1,o.rx,o.ry,0,0,Math.PI*2);c.fill();
-  const [ax,ay]=CLASSIC_WING.at,wo={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread};
-  if(wg){c.save();c.translate(m.x+ax*ME,m.y-lift+ay*ME);c.scale(ME,ME);drawWings(c,CANVAS,wg,0,0,{...wo,body:false,sparkle:false,t});
-    const bm=wingBitmap(CANVAS,wg,t==null?0:flapStep(flapAt(wg.k,t,true)),wo,WBOX,ME*k*d,'town');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);c.restore();}
-  c.drawImage(sp,m.x-W.spriteFoot[0]/(k*d),m.y-lift-W.spriteFoot[1]/(k*d),sp.width/(k*d),sp.height/(k*d));
-  if(wg&&t!=null){c.save();c.translate(m.x+ax*ME,m.y-lift+ay*ME);c.scale(ME,ME);drawMotes(c,CANVAS,wg,0,0,wingScale(wg,CLASSIC_WING.s),t,false);c.restore();}
+  const [ax,ay]=CLASSIC_WING.at,wo={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread},z=ME*FLY_WING;
+  c.save();c.translate(m.x,m.y-lift);c.rotate(fm.lean*FLY_LEAN*(PET.face||1));   // the body and its wings lean together
+  if(wg){c.save();c.translate(ax*ME,ay*ME);c.scale(z,z);drawWings(c,CANVAS,wg,0,0,{...wo,body:false,sparkle:false,t});
+    const bm=wingBitmap(CANVAS,wg,t==null?0:flapStep(fm.flap),wo,WBOX,z*k*d,'town');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);c.restore();}
+  c.drawImage(sp,-W.spriteFoot[0]/(k*d),-W.spriteFoot[1]/(k*d),sp.width/(k*d),sp.height/(k*d));
+  if(wg&&t!=null){c.save();c.translate(ax*ME,ay*ME);c.scale(z,z);drawMotes(c,CANVAS,wg,0,0,wingScale(wg,CLASSIC_WING.s),t,false);c.restore();}
+  c.restore();
 }
 
 /* ---- test hooks (scratch browser checks) ---- */

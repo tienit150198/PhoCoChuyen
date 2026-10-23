@@ -118,3 +118,68 @@ test('the maps and the live presence carry it',()=>{
   const en=JSON.parse(read('../public/i18n/en.json')),strings=en.strings??en;
   for(const vi of ['🪽 Bay','🪽 Hạ cánh',R.FLY_TOAST.off,R.FLY_TOAST.land,'Đeo cánh rồi mới bay được nhé.','Ở đây đi bộ thôi, không bay được.'])assert.ok(strings[vi],`EN: ${vi}`);
 });
+
+// 🪽 Owner 24/10 "bay thì cho cánh to hơn nha, cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)": in the
+// air the pair opens wider than the flyer is tall and the flyer hovers (no walking cycle), on every map.
+const BODY=122;   // the classic character's height (v4/look.js paintPlayer: the feet at 0, the hair's top at -119)
+test('in the air the wings span wider than the flyer is tall (about 1.6–2.2×), a little more each tier',()=>{
+  assert.ok(WA.FLY_WING>1.2&&WA.FLY_WING<1.6,'larger in the air, never huge');
+  const C=WA.CLASSIC_WING,styles=WA.WING_STYLES,avg=r=>styles.reduce((a,k)=>{const e=extent({k,r},{s:C.s*WA.FLY_WING,gap:C.gap,tall:C.tall,spread:C.spread,flap:0});return a+(e.x1-e.x0);},0)/styles.length/BODY;
+  for(const k of styles)for(let r=0;r<8;r++){
+    const e=extent({k,r},{s:C.s*WA.FLY_WING,gap:C.gap,tall:C.tall,spread:C.spread,flap:0}),ratio=(e.x1-e.x0)/BODY;
+    assert.ok(ratio>1.45&&ratio<2.6,`${k} ${r}: wingspan ${ratio.toFixed(2)}× the body`);
+    const ground=extent({k,r},{s:C.s,gap:C.gap,tall:C.tall,spread:C.spread,flap:0});
+    assert.ok(e.x1-e.x0>(ground.x1-ground.x0)*1.2,`${k} ${r}: larger than on the ground`);
+  }
+  assert.ok(avg(0)>=1.6&&avg(0)<1.9,`D: ${avg(0).toFixed(2)}×`);
+  assert.ok(avg(7)>2&&avg(7)<=2.2,`Huyền thoại: ${avg(7).toFixed(2)}×`);
+  for(let r=1;r<8;r++)assert.ok(avg(r)>avg(r-1),'a little more each tier');
+});
+
+test('the hover: slow and wide gliding, quicker moving, no jump when the pace changes, a float with the beat',()=>{
+  const wg={k:'rong',r:3},base=24+2*3,dt=1/30;
+  const run=(o,from,to,moving)=>{const out=[];for(let t=from;t<to-1e-9;t+=dt)out.push({t,...WA.flyMotion(o,wg,t,moving)});return out;};
+  // gliding: the beat is 1.3 of the style's own (rồng 2.6 s → 3.38 s), the full stroke; the float follows the flap
+  const glide=run({},0,10,false),cross=a=>a.slice(1).filter((p,i)=>a[i].flap<0&&p.flap>=0).map(p=>p.t);
+  const gc=cross(glide),gp=(gc.at(-1)-gc[0])/(gc.length-1);
+  assert.ok(Math.abs(gp-WA.WING_BEAT.rong*1.3)<.1,`gliding beat ${gp.toFixed(2)} s`);
+  assert.ok(Math.max(...glide.map(p=>p.flap))>.65,'the full stroke');
+  for(const p of glide){assert.ok(Math.abs(p.lift-base)<=4.0001);assert.equal(p.lean,0);assert.ok(Math.sign(p.lift-base)===Math.sign(p.flap)||Math.abs(p.flap)<1e-9,'rises as the wings come down');}
+  // moving: a quicker beat (.55), the lean eases in
+  const o={},mv=run(o,0,12,true),mc=cross(mv.slice(90)),mp=(mc.at(-1)-mc[0])/(mc.length-1);
+  assert.ok(Math.abs(mp-WA.WING_BEAT.rong*.55)<.1,`moving beat ${mp.toFixed(2)} s`);
+  assert.ok(mv[1].lean<.3&&mv.at(-1).lean>.99,'leaning in, eased');
+  // starting / stopping: the flap and the float never jump
+  const s={},seq=[...run(s,0,3,false),...run(s,3,6,true),...run(s,6,9,false)];
+  for(let i=1;i<seq.length;i++){assert.ok(Math.abs(seq[i].flap-seq[i-1].flap)<.25,`flap jump at ${seq[i].t.toFixed(2)}`);assert.ok(Math.abs(seq[i].lift-seq[i-1].lift)<1.2,'float jump');}
+  assert.ok(seq.at(-1).lean<.01,'upright again, gliding');
+  // still pictures: the wings still, no lean, the hover height
+  assert.deepEqual(WA.flyMotion({},wg,null,true),{flap:0,lift:base,lean:0});
+  assert.deepEqual(WA.flyMotion({},null,1,true),{flap:0,lift:0,lean:0});
+  assert.ok(WA.FLY_LEAN>0&&WA.FLY_LEAN<.15,'a slight lean');
+});
+
+test('no steps in the air, on every map; the larger pair behind the body; others see it (fl)',()=>{
+  const world=read('../client/isometric/phaser-world.ts'),rigs=read('../client/isometric/wing-rigs.ts'),classic=read('../public/js/v4/town-walk.js'),walk=read('../public/js/v4/walk.js'),
+    bundle=read('../public/js/isometric/phaser-world.js');
+  // 2.5D: me on the standing frame (no walking pose), others too; the hover's lean and lift; the wings at the hover's flap
+  assert.match(world,/const pose=flying\?\{frame:0,lean:0,squash:1\}:walkingPose\(/);
+  assert.match(world,/walkFrame=moving&&!this\.owner\.reduced&&actor\.fly==null\?/);
+  assert.match(world,/fly,flap:fly\?this\.myFly\.flap:null/);assert.match(world,/fly,flap:fly\?actor\.fp\?\.flap\?\?0:null/);
+  assert.match(world,/setRotation\(flying\?leanOf\(this\.myFly\.lean/);
+  assert.match(rigs,/big=h\.fly\?flyWing\(\):1,sc=host\.scaleX\*big/);assert.match(rigs,/setRotation\(rot\)/);
+  assert.match(rigs,/depth\+\(back\?\.001:-\.001\)/,'behind the body facing us, over its back from behind');
+  // a player leaving while their sparkles were over the budget (a hole in the motes list) never breaks the scene
+  assert.match(rigs,/for\(const m of rig\.motes\)m\?\.destroy\(\)/);assert.match(rigs,/for\(const m of rig\.motes\)m\?\.setVisible\(false\)/);assert.match(rigs,/rig\.motes\[i\]\?\.setVisible\(false\)/);
+  assert.match(bundle,/flyMotion/,'the built scene carries it (npm run build:isometric)');
+  // classic town: no hop, the larger pair, the lean
+  const fl=classic.slice(classic.indexOf('function flyer('),classic.indexOf('/* ---- test hooks'));
+  assert.match(fl,/flyMotion\(FLY_STATE/);assert.match(fl,/z=ME\*FLY_WING/);assert.doesNotMatch(fl,/hop/);
+  // strolls: the flyer's sprite without the walking bob; the wing bitmap really drawn (2.6.0 lost it in a comment)
+  assert.match(walk,/z=AV\*\(p\.flying\?FLY_WING:1\)/);
+  const back=walk.slice(walk.indexOf('function wingsBack('),walk.indexOf('function wingsFront('));
+  assert.match(back,/\n[^/\n]*if\(bm\)c\.drawImage\(bm\.canvas/,'the wings drawn, not commented out');
+  assert.match(walk,/const bob=p\.moving\?/,'the walking bob only on foot');
+  // live: town and street carry the flyer's tier
+  assert.match(read('../public/js/isometric-town.js'),/flyOf\(e\.fl\)/);assert.match(walk,/p\.fl=q\.fl/);
+});

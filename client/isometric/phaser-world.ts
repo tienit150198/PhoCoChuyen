@@ -24,7 +24,15 @@ const faceOfDir=(d:string):number=>VA.faceOf?VA.faceOf(d):(d==='se'||d==='ne'?1:
 // with the beat), a soft shadow on the ground under them, the wings at their full stroke, faster by the tier
 // (vehicle-art.js townFly: its speed eases in like a ride's). Others flying (`fl`, live/town.py) are drawn the same way.
 const townFly=(state:any)=>VA.townFly?VA.townFly(state):null;
-const flyHeight=(wg:any,t:number|null):number=>VA.flyHeight?VA.flyHeight(wg,t):0;
+// 🪽 Owner 24/10 "bay thì cho cánh to hơn nha, cánh to hơn người và người k cần di chuyển nữa (k cần bước đi)": in the air
+// no steps (the standing frame, legs together, no walking sway), a hover instead: a float with the wings' beat
+// (wing-rigs.ts flyMotion: slow and wide gliding, quicker moving), a slight lean into the way they go, the larger pair.
+type FlyPose={flap:number;lift:number;lean:number};
+const NO_FLY:FlyPose={flap:0,lift:0,lean:0};
+/** The hover of a flyer wearing `wg` (`o` its own state), the lift in world px (the classic units × the island's scale). */
+const hover=(o:any,wg:any,t:number|null,moving:boolean):FlyPose=>{const m=flyMotion(o,wg,t,moving);return {flap:m.flap,lift:m.lift*(VA.RIDE_SCALE||.78),lean:m.lean};};
+/** The body's turn for a lean 0…1 facing `direction` (forward: toward the side it faces on screen). */
+const leanOf=(lean:number,direction:string)=>lean*flyLean()*faceOfDir(direction);
 const flyShadowOf=(h:number,s:number)=>VA.flyShadow?VA.flyShadow(h,s):{rx:20*s,ry:6*s,a:.25};
 // 🛵 Owner 17/10 "cảm giác lái": a ride starts at walking pace and reaches its speed over RIDE_RAMP s (eased).
 const RIDE_RAMP=.7;
@@ -45,7 +53,7 @@ import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
 import {insideIsland,islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
 import {TextureFrames} from './texture-frames';
-import {WingRigs,LIVE as WING_LIVE,MAX_MOTES,WING_FPS,wingsAvailable,wornWing} from './wing-rigs';
+import {WingRigs,LIVE as WING_LIVE,MAX_MOTES,WING_FPS,wingsAvailable,wornWing,flyMotion,flyLean} from './wing-rigs';
 import {facadeTextLines,FACADE_SIGNS} from './building-art';
 import {ISOMETRIC_ASSETS as ASSETS} from './asset-manifest';
 import {careerFacadeTextureKey,careerFacadeSize,drawCareerFacade} from './career-facade';
@@ -70,7 +78,7 @@ export type WorldMode = 'town' | 'work';
 type StaticVisual=Phaser.GameObjects.Image|Phaser.GameObjects.Text|Phaser.GameObjects.Container;
 // mask: filled when first needed (maskOf) or in idle time (warmMasks), from the frame the image had when registered
 type Occluder=Omit<OccludingShape,'mask'>&{mask?:AlphaMask|null;maskKey:string;maskFrame:Phaser.Textures.Frame;image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
-type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string;fly?:number|null;shadow?:Phaser.GameObjects.Image|null};
+type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string;fly?:number|null;shadow?:Phaser.GameObjects.Image|null;fm?:any;fp?:FlyPose};
 interface Hotspot extends Point {id:string;label:string;approach:Point;interactionPoint?:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
@@ -432,14 +440,14 @@ class DioramaScene extends Phaser.Scene {
     const t=performance.now()/1000,still=this.owner.reduced,keep=new Set<string>(),top=(key:string)=>key&&this.textures.exists(key)?(this.textures.get(key) as any).customData?.wingTop||null:null;
     let budget=MAX_MOTES,live=0;
     if(this.actor){keep.add('me');const wg=wornWing(this.owner.state),show=!!wg&&this.actor.visible&&!this.riding,on=show&&!still;
-      budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on,walk:this.playerMoving||this.flying},t,budget);if(on)live++;}
+      const fly=this.flying;budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on,walk:this.playerMoving,fly,flap:fly?this.myFly.flap:null},t,budget);if(on)live++;}
     const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,shown:RemoteActor[]=[];
     for(const actor of this.remoteActors.values())if(actor.look?.wg&&actor.image.visible&&!actor.ride&&this.owner.mode==='town')shown.push(actor);
     shown.sort((a,b)=>Math.hypot(a.image.x-cx,a.image.y-cy)-Math.hypot(b.image.x-cx,b.image.y-cy));
     const moving=new Set(shown.slice(0,Math.max(0,WING_LIVE-live)));
     for(const actor of this.remoteActors.values()){const id='peer:'+actor.peer.pid;keep.add(id);
       const show=shown.includes(actor),on=show&&!still&&moving.has(actor);if(on)live++;
-      budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on,walk:actor.path.length>0||actor.fly!=null},t,Math.max(0,budget));}
+      const fly=actor.fly!=null;budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on,walk:actor.path.length>0,fly,flap:fly?actor.fp?.flap??0:null},t,Math.max(0,budget));}
     this.wings.keepOnly(keep);
     return live>0;
   }
@@ -1189,15 +1197,18 @@ class DioramaScene extends Phaser.Scene {
         continue;
       }
       active||=moving;
-      const walkFrame=moving&&!this.owner.reduced?1+Math.floor(now*7)%2:0,pose=actor.peer.direction+':'+walkFrame;
+      const walkFrame=moving&&!this.owner.reduced&&actor.fly==null?1+Math.floor(now*7)%2:0,pose=actor.peer.direction+':'+walkFrame;   // 🪽 no steps in the air
       if(pose!==actor.pose||actor.artRevision!==this.characterRevision){
         const key=actor.ride?this.rideTexture('iso-ride-peer-'+actor.peer.pid,actor.look,actor.peer.gender,actor.ride,actor.peer.direction,walkFrame):this.characterTexture('iso-peer-'+actor.peer.pid,actor.look,actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);
         if(key!==actor.texture){actor.image.setTexture(key);actor.texture=key;this.remoteVisualRevision++;
           if(actor.ride)actor.image.setOrigin(rideOrigin().x,rideOrigin().y).setScale(1/rideRes());else actor.image.setOrigin(.5,1).setScale(CHARACTER_SCALE);}
         actor.pose=pose;actor.artRevision=this.characterRevision;
       }
-      const lift=actor.fly!=null?flyHeight(actor.look?.wg,this.owner.reduced?null:now+(actor.peer.pid.length%7)*.37):0,iy=point.y-lift;   // 🪽 up in the air
+      // 🪽 up in the air: the hover (its own beat, from a phase of its own), the lean, the shadow below
+      if(actor.fly!=null){if(!actor.fm)actor.fm={ph:(actor.peer.pid.length%7)*.137};actor.fp=hover(actor.fm,actor.look?.wg,this.owner.reduced?null:performance.now()/1000,moving);}else if(actor.fm){actor.fm=undefined;actor.fp=undefined;}
+      const fp=actor.fp||NO_FLY,lift=fp.lift,iy=point.y-lift,turn=actor.ride?0:leanOf(fp.lean,actor.peer.direction);
       if(lift)this.flyShadow(actor,point,lift);else if(actor.shadow?.visible)actor.shadow.setVisible(false);
+      if(actor.image.rotation!==turn){actor.image.setRotation(turn);this.remoteVisualRevision++;}
       if(actor.image.x!==point.x||actor.image.y!==iy){actor.image.setPosition(point.x,iy);this.remoteVisualRevision++;}
       if(actor.image.depth!==point.y+.5)actor.image.setDepth(point.y+.5);
       if(actor.tag.x!==point.x||actor.tag.y!==iy-112)actor.tag.setPosition(point.x,iy-112);
@@ -1389,9 +1400,21 @@ class DioramaScene extends Phaser.Scene {
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
   private playerMoving=false;   // 🪽 the wings' walking stroke
-  positionPlayer(moving:boolean){this.playerMoving=moving;const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player),lift=!riding&&this.flying?flyHeight(this.owner.flight?.wg,this.owner.reduced?null:this.owner.time):0;   // 🪽 up in the air, its shadow below
+  /** 🪽 My hover's state (flyMotion) and its pose this frame. */
+  private myFlyState:any={};
+  myFly:FlyPose=NO_FLY;
+  positionPlayer(moving:boolean){
+    this.playerMoving=moving;const riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,flying=!riding&&this.owner.mode==='town'&&!!this.owner.flight;
+    // 🪽 in the air: the standing frame (legs together), never the walking cycle
+    const pose=flying?{frame:0,lean:0,squash:1}:walkingPose(this.owner.walkDistance,moving,this.owner.reduced),frame=riding?this.riderFrame(moving):pose.frame;
+    if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;
+    this.myFly=flying?hover(this.myFlyState,this.owner.flight?.wg,this.owner.reduced?null:performance.now()/1000,moving):(this.myFlyState={},NO_FLY);
+    const f=px(this.owner.player),lift=this.myFly.lift;   // 🪽 up in the air, its shadow below
     if(lift)this.flyShadow(this.myShadow,f,lift);else if(this.myShadow.shadow?.visible)this.myShadow.shadow.setVisible(false);
-    if(this.actor.x!==f.x||this.actor.y!==f.y-lift)this.actor.setPosition(f.x,f.y-lift);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.rideMotion(f,moving);else this.actor.setRotation(lift?0:pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*(lift?1:pose.squash));if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138-lift};this.speech.setPosition(at.x,at.y);} }
+    if(this.actor.x!==f.x||this.actor.y!==f.y-lift)this.actor.setPosition(f.x,f.y-lift);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);
+    if(riding)this.rideMotion(f,moving);else this.actor.setRotation(flying?leanOf(this.myFly.lean,this.owner.direction):pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);
+    if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138-lift};this.speech.setPosition(at.x,at.y);}
+  }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.alpha>.6&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y||Number(b.hotspot.id.startsWith('treasure:'))-Number(a.hotspot.id.startsWith('treasure:')));return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

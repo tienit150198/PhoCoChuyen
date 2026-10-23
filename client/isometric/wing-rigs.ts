@@ -26,8 +26,15 @@ export const wornWing=(state:any)=>typeof W.wingOfState==='function'?W.wingOfSta
  * first, then the nearest), the rest wear still wings; MAX_MOTES sparkles in all. Reduced motion: still wings, the
  * glow and rays still, no motes, no ring. */
 export const LIVE=8,MAX_MOTES=48,WING_FPS=15;
-type Rig={wg:string;glow?:Phaser.GameObjects.Image;rays?:Phaser.GameObjects.Image;ring?:Phaser.GameObjects.Image;wing:Phaser.GameObjects.Image;motes:Phaser.GameObjects.Image[];phase:number};
-export type WingHost={image:Phaser.GameObjects.Image;wg:any;direction:string;top:[number,number]|null;show:boolean;live:boolean;walk?:boolean};
+/** 🪽 In the air (owner 24/10 "bay thì cho cánh to hơn nha, cánh to hơn người"): the pair FLY_WING times its ground size
+ * (v4/wings-art.js: wider than the flyer is tall), the same cached canvases only scaled (no new texture). */
+export const flyWing=():number=>Number(W.FLY_WING)>0?Number(W.FLY_WING):1;
+export const flyLean=():number=>Number(W.FLY_LEAN)||0;
+/** A flyer's hover (v4/wings-art.js flyMotion: the flap, the lift in the classic units, the lean 0…1); `o` its state. */
+export const flyMotion=(o:any,wg:any,t:number|null,moving:boolean):{flap:number;lift:number;lean:number}=>typeof W.flyMotion==='function'?W.flyMotion(o,wg,t,moving):{flap:0,lift:typeof W.flyLift==='function'?W.flyLift(wg,null):0,lean:0};
+type Rig={wg:string;glow?:Phaser.GameObjects.Image;rays?:Phaser.GameObjects.Image;ring?:Phaser.GameObjects.Image;wing:Phaser.GameObjects.Image;motes:(Phaser.GameObjects.Image|undefined)[];phase:number};
+/** `fly`: in the air: the larger pair at `flap` (flyMotion; null: still), turned with the body's lean. */
+export type WingHost={image:Phaser.GameObjects.Image;wg:any;direction:string;top:[number,number]|null;show:boolean;live:boolean;walk?:boolean;fly?:boolean;flap?:number|null};
 export class WingRigs{
   private rigs=new Map<string,Rig>();
   constructor(private scene:Phaser.Scene){}
@@ -41,12 +48,14 @@ export class WingRigs{
     const sig=w.k+':'+w.r;let rig=this.rigs.get(id);
     if(rig&&rig.wg!==sig){this.drop(id);rig=undefined;}
     if(!rig){rig={wg:sig,wing:this.scene.add.image(0,0,'__DEFAULT'),motes:[],phase:(id.length*1.37+[...id].reduce((a,c)=>a+c.charCodeAt(0),0)*.071)%3};this.rigs.set(id,rig);}
-    const back=h.direction==='nw'||h.direction==='ne',v=back?C.STAMP_WING.back:C.STAMP_WING.front,host=h.image,sc=host.scaleX,depth=host.depth;
-    const rx=host.x+(h.top[0]-60)*sc,ry=host.y+(h.top[1]+v.dy-160)*sc,still=!h.live||W.stillMotion(),tt=t+rig.phase,ss=W.wingScale(w,v.s);
-    // the wing: a cached flap
-    const f=still?0:W.flapStep(W.flapAt(w.k,tt,!!h.walk)),frame=C.stampWingFrame(w,back,f),cy=(W.LIGHT_Y??32)*ss*sc;
+    const back=h.direction==='nw'||h.direction==='ne',v=back?C.STAMP_WING.back:C.STAMP_WING.front,host=h.image,depth=host.depth,big=h.fly?flyWing():1,sc=host.scaleX*big;
+    // the roots on the shoulders, turned with the body (a flyer leans into the way it goes)
+    const rot=host.rotation||0,ox=(h.top[0]-60)*host.scaleX,oy=(h.top[1]+v.dy-160)*host.scaleY,co=Math.cos(rot),si=Math.sin(rot);
+    const rx=host.x+ox*co-oy*si,ry=host.y+ox*si+oy*co,still=!h.live||W.stillMotion(),tt=t+rig.phase,ss=W.wingScale(w,v.s);
+    // the wing: a cached flap (in the air: the flyer's own beat, flyMotion)
+    const f=still?0:W.flapStep(h.fly&&h.flap!=null?h.flap:W.flapAt(w.k,tt,!!h.walk)),frame=C.stampWingFrame(w,back,f),cy=(W.LIGHT_Y??32)*ss*sc;
     const key=this.texture(`wg-f:${w.k}:${w.r}:${f}`,frame?.canvas);
-    if(key){if(rig.wing.texture.key!==key)rig.wing.setTexture(key);rig.wing.setOrigin(frame.ox/frame.w,frame.oy/frame.h).setScale(sc).setPosition(rx,ry).setDepth(depth+(back?.001:-.001)).setVisible(true);}else rig.wing.setVisible(false);
+    if(key){if(rig.wing.texture.key!==key)rig.wing.setTexture(key);rig.wing.setOrigin(frame.ox/frame.w,frame.oy/frame.h).setScale(sc).setRotation(rot).setPosition(rx,ry).setDepth(depth+(back?.001:-.001)).setVisible(true);}else rig.wing.setVisible(false);
     // the light behind: glow, rays, ring (from S)
     if(w.r>=4){
       if(!rig.glow){const g=C.stampWingLight('glow',w,back),k=this.texture(`wg-g:${w.k}:${w.r}`,g?.canvas);if(k)rig.glow=this.scene.add.image(0,0,k).setOrigin(g.ox/g.canvas.width,g.oy/g.canvas.height);}
@@ -70,11 +79,12 @@ export class WingRigs{
       const z=m.sz*ss*(.6+.4*p.a)*(m.star?1.4:1.6)/7;
       img.setPosition(rx+p.x*ss*sc,ry+p.y*ss*sc).setScale(z*sc*1.6).setAlpha(p.a).setDepth(depth+(m.burst?-.0012:.002)).setVisible(true);used++;   // a burst leaves from behind the body
     });
-    for(let i=motes.length;i<rig.motes.length;i++)rig.motes[i].setVisible(false);
+    for(let i=motes.length;i<rig.motes.length;i++)rig.motes[i]?.setVisible(false);
     return used;
   }
-  private hide(rig:Rig){rig.wing.setVisible(false);rig.glow?.setVisible(false);rig.rays?.setVisible(false);rig.ring?.setVisible(false);for(const m of rig.motes)m.setVisible(false);}
-  drop(id:string){const rig=this.rigs.get(id);if(!rig)return;rig.wing.destroy();rig.glow?.destroy();rig.rays?.destroy();rig.ring?.destroy();for(const m of rig.motes)m.destroy();this.rigs.delete(id);}
+  // the motes are made as needed (a mote over the budget is skipped): the list may have holes
+  private hide(rig:Rig){rig.wing.setVisible(false);rig.glow?.setVisible(false);rig.rays?.setVisible(false);rig.ring?.setVisible(false);for(const m of rig.motes)m?.setVisible(false);}
+  drop(id:string){const rig=this.rigs.get(id);if(!rig)return;rig.wing.destroy();rig.glow?.destroy();rig.rays?.destroy();rig.ring?.destroy();for(const m of rig.motes)m?.destroy();this.rigs.delete(id);}
   /** Forget the ones not in `keep` (players who left). */
   keepOnly(keep:Set<string>){for(const id of [...this.rigs.keys()])if(!keep.has(id))this.drop(id);}
   clear(){for(const id of [...this.rigs.keys()])this.drop(id);}

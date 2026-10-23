@@ -50,7 +50,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing} from './look.js';
-import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING,WING_BOX,flyLift,flyShadow} from './wings-art.js';
+import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING,WING_BOX,flyMotion,flyShadow,FLY_WING,FLY_LEAN} from './wings-art.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
@@ -115,7 +115,7 @@ export const walk={
   spot(name){const s=S.geo?.spots?.[name];return s?{x:s[0],y:s[1]}:null;},
   on(k,fn){hooks[k]?.add(fn);return ()=>hooks[k]?.delete(fn);},
   state(){const t=nowS();return {open:Boolean(S.dlg?.open),place:S.room?.place||null,room:S.room?.room||null,me:S.room?.me||null,
-    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t,p.v);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null,ride:p.r?.v||null,b:p.b||null,bb:p.bb||null};}),co:S.dlg?.querySelector(".rd-co")?.hidden===false?S.dlg.querySelector(".rd-co").textContent:null,
+    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t,p.v);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null,ride:p.r?.v||null,fl:p.fl??null,b:p.b||null,bb:p.bb||null};}),co:S.dlg?.querySelector(".rd-co")?.hidden===false?S.dlg.querySelector(".rd-co").textContent:null,
     tables:S.tables.map(tb=>({seats:tb.seats,topic:tb.topic})),happening:S.hap?.k||null,envelope:S.envl?{id:S.envl.id,x:S.envl.x,y:S.envl.y}:null,
     view:{k:S.k,ox:S.ox,oy:S.oy}};},
   moveTo(x,y){go(x,y);},
@@ -749,14 +749,17 @@ function drawPet(c,p,cat){
  * Still (reduced motion): the wings still, the glow still, the sparkles still. (x, y) the feet. */
 const WBOX=WING_BOX.map(v=>v*CLASSIC_WING.s);
 const wingT=(p,sec,calm)=>calm?null:sec+(p.wph??=((p.pid||'').length*1.37)%3);
+// 🪽 In the air (owner 24/10 "bay thì cho cánh to hơn nha, cánh to hơn người"): the pair FLY_WING times its ground size
+// (wider than the flyer is tall), at the flyer's own beat (p.fp: wings-art.js flyMotion), the bitmap at its own pixel size.
 function wingsBack(c,p,x,y,sec,calm){
-  const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at,o={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread};
-  c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(AV,AV);drawWings(c,CANVAS,w,0,0,{...o,body:false,sparkle:false,t});
-  const bm=wingBitmap(CANVAS,w,t==null?0:flapStep(flapAt(w.k,t,!!(p.moving||p.flying))),o,WBOX,AV*S.k*S.dpr,'walk');   // 🪽 flying: the full strokeif(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);
+  const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at,o={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread},z=AV*(p.flying?FLY_WING:1);
+  c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(z,z);drawWings(c,CANVAS,w,0,0,{...o,body:false,sparkle:false,t});
+  const f=t==null?0:flapStep(p.flying?p.fp?.flap??0:flapAt(w.k,t,!!p.moving));
+  const bm=wingBitmap(CANVAS,w,f,o,WBOX,z*S.k*S.dpr,'walk');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);
   c.restore();}
 function wingsFront(c,p,x,y,sec,calm){
-  const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at;
-  c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(AV,AV);if(t==null)wingSparkles(c,CANVAS,w,0,0,{s:CLASSIC_WING.s});else drawMotes(c,CANVAS,w,0,0,wingScale(w,CLASSIC_WING.s),t,false);c.restore();}
+  const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at,z=AV*(p.flying?FLY_WING:1);
+  c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(z,z);if(t==null)wingSparkles(c,CANVAS,w,0,0,{s:CLASSIC_WING.s});else drawMotes(c,CANVAS,w,0,0,wingScale(w,CLASSIC_WING.s),t,false);c.restore();}
 const npcs=new Map();   // the wedding show's characters (./wedfeast.js), cached like the players' sprites
 function npcSprite(id,lk,g){let p=npcs.get(id);if(!p||p.lk!==lk){p={lk,g,sp:null,spk:''};npcs.set(id,p);}return sprite(p);}
 function loop(){if(!S.raf&&S.dlg?.open)S.raf=requestAnimationFrame(frame);}
@@ -791,6 +794,7 @@ function draw(ts,t){
     if(p.ride===undefined)p.ride=p.r&&!S.room.private?fromWire(p.r,ct):null;
     if(p.ride){const dt=Math.min(.1,Math.max(0,(ts-(p.lt||ts))/1000));if(p.lx!=null)steer(p.rv,x-p.lx,Math.abs(x-p.lx)/AV,dt,calm);p.lx=x;p.lt=ts;
       if(p.s&&p.p?.length)parked.push({y:p.p[0][1],draw:()=>drawRide(c,{x:p.p[0][0],y:p.p[0][1],s:AV,px:dpr*S.k,v:p.ride,r:{face:p.rv.face,from:p.rv.face,turn:1,ang:0}})});}   // at a table: it waits where they got off
+    if(Number.isFinite(p.x)&&Math.abs(x-p.x)>.3)p.face=x>p.x?1:-1;   // 🪽 the way a flyer leans
     p.x=x;p.y=y;p.moving=moving;list.push(p);}
   for(const p of list){const d=p.b&&pill.get(p.b)===p?S.people.get(p.b):null;p.on=d||null;if(d){p.x=d.x;p.y=d.y-.01;}}
   for(const q of parked)list.push({parked:q,y:q.y});
@@ -811,10 +815,14 @@ function draw(ts,t){
       if(spin<1.3)c.scale(Math.cos(spin/1.3*Math.PI*4),1);
       const up=Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6);wingsBack(c,p,0,-up,sec,calm);
       c.drawImage(sp,-(p.hw||55)*AV,-150*AV-up,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,0,-up,sec,calm);c.restore();continue;}
-    // 🪽 flying: up in the air (a bob with the beat), the shadow on the ground under them
-    p.flying=p.fl!=null&&!!p.wg&&!p.s;p.lift=p.flying?flyLift(p.wg,calm?null:sec+(p.wph??0)):0;
-    if(p.flying){const o=flyShadow(p.lift,AV);c.fillStyle=`rgba(40,30,25,${o.a.toFixed(2)})`;c.beginPath();c.ellipse(p.x,p.y+2,o.rx,o.ry,0,0,Math.PI*2);c.fill();}
-    const bob=p.flying?-p.lift*AV:p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
+    // 🪽 flying (owner 24/10 "người k cần di chuyển nữa (k cần bước đi)"): no walking bob, a hover up in the air (a float
+    // with the wings' beat, wings-art.js flyMotion), leaning a little into the way they go; the shadow on the ground
+    p.flying=p.fl!=null&&!!p.wg&&!p.s;p.fp=p.flying?flyMotion(p.fm??={ph:((p.pid||'').length*.137)%1},p.wg,calm?null:sec,!!p.moving):null;if(!p.flying)p.fm=undefined;p.lift=p.fp?.lift||0;
+    if(p.flying){const o=flyShadow(p.lift,AV);c.fillStyle=`rgba(40,30,25,${o.a.toFixed(2)})`;c.beginPath();c.ellipse(p.x,p.y+2,o.rx,o.ry,0,0,Math.PI*2);c.fill();
+      c.save();c.translate(p.x,p.y-p.lift*AV);c.rotate(p.fp.lean*FLY_LEAN*(p.face||1));
+      wingsBack(c,p,0,0,sec,calm);c.drawImage(sp,-(p.hw||55)*AV,-150*AV,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,0,0,sec,calm);c.restore();
+      if(p.pt)drawPet(c,p,ct?.journey?.pets);continue;}
+    const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
     wingsBack(c,p,p.x,p.y+bob,sec,calm);
     c.drawImage(sp,p.x-(p.hw||55)*AV,p.y-150*AV+bob,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,p.x,p.y+bob,sec,calm);
     if(p.pt)drawPet(c,p,ct?.journey?.pets);
