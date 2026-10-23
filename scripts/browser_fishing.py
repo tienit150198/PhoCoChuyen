@@ -52,6 +52,16 @@ def seed(s):
     j.update(gender='female', intro=True, wallet=2_000_000)
 
 
+def carry_seed(s):
+    from game import fishing as F
+    from game import fishing_content as C
+    d = F.ensure(s)
+    sp = next(x for x in C.SPECIES.values() if x['r'] == 4)
+    d['seq'] += 1
+    d['bag'].append(dict(i=d['seq'], s=sp['id'], g=int(sp['w'][1] * 900), d=F.vn_day(F.now()), p=0, k=1, o=0, od=0))
+    d['carry'] = d['seq']
+
+
 async def main() -> int:
     from playwright.async_api import async_playwright
     OUT.mkdir(parents=True, exist_ok=True)
@@ -213,6 +223,16 @@ async def main() -> int:
             board = await page.inner_text('dialog.fs-sheet[open] .fs-panel')
             check('1.000.000' in board and ('Lan' in board or 'Câu một con' in board or 'Bạn: hạng' in board), f'the 🐋 board with its weekly rewards: {board[:160]!r}')
             await shot('12-board')
+            # 💪 a 🟠 fish carried: drawn in the hands of my character in the town (v4/look.js figure: journey.fish.wear)
+            await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+            mutate(db, token, carry_seed)
+            await page.reload()
+            await page.wait_for_selector('#app:not([hidden])', timeout=60000)
+            await page.wait_for_timeout(2500)
+            await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+            await shot('13-carry', 800)
+            errs = [p for p in problems if 'look' in p or 'fish' in p]
+            check(not errs, f'the town draws my carried fish (13-carry.jpg) {errs[:1]}')
             await browser.close()
     for p in problems:
         print('PROBLEM', p)

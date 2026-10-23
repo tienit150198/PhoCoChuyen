@@ -216,9 +216,9 @@ function paintStampWings(c,o,[tx,ty]){
 /** 🎣 The carried fish held across the chibi's belly, facing the way it walks (rarer and heavier = longer); from the
  * back (nw, ne) it shows past both sides of the body. */
 function paintStampFish(c,o,[tx,ty],[,hy]){
-  const fh=o.look.fh,len=carrySize(fh.r,fh.kg)*2.2,y=ty+(hy-ty)*.55,left=o.direction==='sw'||o.direction==='nw';
-  drawFish(c,{...fh,id:fh.sp},tx,y,len,{flip:left,angle:left?.08:-.08});
-  const hand=art(o.look,'skin').c;c.fillStyle=hand;for(const dx of [-len*.27,len*.3]){c.beginPath();c.arc(tx+(left?-dx:dx),y+2,3.4,0,Math.PI*2);c.fill();}
+  const fh=o.look.fh,len=Math.min(WIDTH-14,carrySize(fh.r,fh.kg)*3.1),y=ty+(hy-ty)*.5,left=o.direction==='sw'||o.direction==='nw';
+  drawFish(c,{...fh,id:fh.sp},tx,y,len,{flip:left,angle:left?.2:-.2});
+  const hand=art(o.look,'skin').c;c.fillStyle=hand;for(const dx of [-len*.27,len*.3]){c.beginPath();c.arc(tx+(left?-dx:dx),y+2-dx*.2,4,0,Math.PI*2);c.fill();}
 }
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */
 export function getCharacterStamp(options={}){
