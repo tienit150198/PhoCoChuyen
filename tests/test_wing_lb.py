@@ -27,7 +27,7 @@ from tests.test_lb_titles import SUN, with_titles
 from tests.test_wings import owned, rolls
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = '7e7431ab'   # 2.5.6, the release live before this board (schema 90, no wing_board)
+RELEASE = '40d43f6d'   # 2.5.6.1, the release live before this board (schema 90, no wing_board)
 
 
 def wing_save(*tiers, on=None, style='thien_than'):
@@ -351,7 +351,7 @@ print(json.dumps(out))
 
 
 class Rollback(M.Base):
-    """2.5.6 (`git archive 7e7431ab`) on a database at SCHEMA_VERSION 91: its startup runs no DDL and never lowers the
+    """2.5.6.1 (`git archive 40d43f6d`) on a database at SCHEMA_VERSION 91: its startup runs no DDL and never lowers the
     version, its wing commands work and leave wing_board as it was (it never reads or writes it), and back on this
     build the player's next pet command heals the row."""
 
@@ -389,7 +389,7 @@ class Rollback(M.Base):
                            encoding='utf-8', timeout=300)
         self.assertEqual(r.returncode, 0, r.stderr[-3000:])
         got = json.loads(r.stdout.strip().splitlines()[-1])
-        self.assertEqual(got['version'], '2.5.6')
+        self.assertEqual(got['version'], '2.5.6.1')
         self.assertEqual(int(got['v']), pg_schema.SCHEMA_VERSION)
         self.assertEqual(self.catalog(), before, 'no table or index changed by the old startup')
         with self.store.connect() as db:
