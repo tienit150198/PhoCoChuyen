@@ -120,7 +120,7 @@ function updateNotice(data,env){
 export function homeGuestsBoot(env){
   if(N.env)return;N.env=env;styles();const b=document.createElement('button');b.type='button';b.className='btn cream hg-notice';b.hidden=true;b.addEventListener('click',()=>openHomeGuests(env));document.body.append(b);N.button=b;
   const read=async()=>{if(document.hidden||N.reading)return;const account=env.api.account?.username||'';if(account!==N.account){N.account=account;N.seen.clear();N.decoTop=null;env.api.homeGuests=null;b.hidden=true;}if(!account)return;N.reading=true;
-    try{const data=await env.api.json('/api/home-guests');if(account!==env.api.account?.username)return;env.api.homeGuests=data;updateNotice(data,env);
+    try{const data=await env.api.json('/api/home-guests?poll=1');if(account!==env.api.account?.username)return;env.api.homeGuests=data;updateNotice(data,env);
       const top=data?.deco?.log?.[0]?.id??0;if(N.decoTop!==null&&top!==N.decoTop)env.api.refresh?.().catch(()=>{});N.decoTop=top;}catch{/* Opening the sheet offers a retry. */}finally{N.reading=false;}};
   live.on('home_guests_changed',()=>{read();if(S.dlg?.open&&!S.busy)refresh();});
   live.on('home_changed',()=>{read();if(S.dlg?.open&&!S.busy)refresh();});

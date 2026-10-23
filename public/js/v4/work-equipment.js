@@ -53,14 +53,15 @@ export function hasWorkingStaff(state){return Object.values(state?.careers||{}).
 
 export function staffRefreshPaused(ui,counterOpen=false,fairOpen=false){return !!(ui.busy||ui.ivBusy||ui.view==='home'&&ui.jrView==='invest'||counterOpen||fairOpen);}
 
-export function staffRefresh({state,refresh,busy,visible=()=>!document.hidden,interval=30000,lastSync=()=>0,now=()=>Date.now()}){
+// 60 s (was 30 s): each tick is a full GET /api/state + business_sync of a multi-MB save; the money waits a little longer, taps get the CPU (23/10 lag).
+export function staffRefresh({state,refresh,busy,visible=()=>!document.hidden,interval=60000,lastSync=()=>0,now=()=>Date.now()}){
  let stopped=false,pending=false;
  const timer=setInterval(async()=>{if(stopped||pending||busy()||!visible()||now()-lastSync()<interval||!hasWorkingStaff(state()))return;pending=true;try{await refresh();}catch{/* next visible tick retries */}finally{pending=false;}},interval);
  return ()=>{stopped=true;clearInterval(timer);};
 }
 
 /* The open sheet while the player scrolls it (BACKLOG #12: review lists and details "jump back", decor items move away
- * before a tap lands). A background answer (the 30 s staff refresh, a minute's money, a friend's event) used to redraw
+ * before a tap lands). A background answer (the 60 s staff refresh, a minute's money, a friend's event) used to redraw
  * the sheet in the middle of a fling: the scroll was read and written back, which stops the fling, and an inner list
  * written anew started again from the top. scrollGuard() watches the sheet: while a finger is down or it scrolled in
  * the last `quiet` ms, busy() is true and later(fn) waits (the newest fn wins, once); restore() puts back the scroll

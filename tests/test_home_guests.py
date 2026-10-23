@@ -413,3 +413,36 @@ class HomeGuests(Base):
 
 
 VILLA = 'bt_vuon_da_lat'
+
+class Poll(Base):
+    """23/10 lag: the page's background check (?poll=1) reads no save and writes nothing, and says what the
+    full listing says about invitations waiting for me."""
+    post, listing, invite = HomeGuests.post, HomeGuests.listing, HomeGuests.invite
+
+    def setUp(self):
+        super().setUp()
+        from game import home_guests
+        self.hg = home_guests
+        self.a, self.b = [self.user(n, 10000) for n in ('host', 'guest')]
+        self.codes = {t: self.code(t) for t in (self.a, self.b)}
+        self.befriend(self.sid(self.a), self.sid(self.b))
+        mr._mutate(self.store, {self.sid(self.a): lambda s: s.update(buy(s, 'tap_the')[0])})
+
+    def poll(self, token):
+        return self.hg.get(self.store, token, None, '', {'poll': '1'})
+
+    def test_poll_matches_the_listing_for_incoming_and_reads_no_save(self):
+        self.assertEqual(self.poll(self.b), dict(incoming=[], deco=dict(log=[])))
+        self.invite('visit')
+        full = self.listing(self.b)['incoming']
+        with patch.object(self.store, 'transaction', side_effect=AssertionError('poll writes nothing')), \
+             patch.object(self.store, 'parse_state', side_effect=AssertionError('poll parses no save')):
+            out = self.poll(self.b)
+        self.assertEqual(out['incoming'], full)
+        self.assertEqual(self.poll(self.a)['incoming'], [], 'the host has nothing incoming')
+
+    def test_poll_drops_an_expired_invitation_and_answers_guests(self):
+        ident = self.invite('visit')
+        self.store.transaction(lambda db: db.execute('UPDATE home_guest_invites SET expires_at=? WHERE id=?', (self.clock.t - 1, ident)))
+        self.assertEqual(self.poll(self.b)['incoming'], [])
+        self.assertEqual(self.hg.poll(self.store, None), dict(incoming=[], deco=dict(log=[])))

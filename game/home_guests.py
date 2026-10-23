@@ -398,10 +398,30 @@ def _projection(db, row, access, code):
                 access=dict(code=code, kind=access['kind']), live=dict(code=code))
 
 
+def poll(store, token):
+    """GET /api/home-guests?poll=1: the background check of every open page (once a minute, on tab focus, on live
+    events; 36.7k a day on 23/10). Only what that check reads: invitations waiting for me and the newest Cho trang trí
+    change. No save is read or parsed, nothing is written; the full answer (with the sweep) is for the open sheet."""
+    sid, display = mr.whoami(store, token)
+    if not sid or not display:
+        return dict(incoming=[], deco=dict(log=[]))
+    from . import home_coop
+    t = mr.now()
+    with store.connect() as db:
+        incoming = [dict(id=r['id'], kind=r['kind'], status=r['status'], **_person(db, r['owner']),
+                         home=_home(dict(id=r['home_id'], kind=r['home_kind'])), mine=False, expires_at=r['expires_at'])
+                    for r in mr._rows(db, "SELECT * FROM home_guest_invites WHERE guest=? AND status='pending' ORDER BY created_at,id", (sid,))
+                    if r['expires_at'] is None or r['expires_at'] > t]
+        top = home_coop._log_rows(db, sid, limit=1)
+    return dict(incoming=incoming, deco=dict(log=[dict(id=top[0]['id'])] if top else []))
+
+
 def get(store, token, state, sub, query):
     from . import home_coop
     if isinstance(sub, str) and sub.startswith('deco/'):   # 🎨 Cho trang trí: deco/view, deco/log
         return home_coop.get(store, token, state, sub[5:], query)
+    if sub in ('', None) and (query or {}).get('poll') == '1':
+        return poll(store, token)
     sid = _actor(store, token)
     from . import friends
     friends.ensure_codes(store, sid)

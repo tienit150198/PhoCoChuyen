@@ -111,7 +111,7 @@ research_lab.install()
 from game import radio_station  # 📻 Đài Sóng Mây for players: ads and songs on the town ticker (game/radio_station.py: /api/radio/…)
 radio_station.install()  # 📢 quảng cáo and 🎵 tặng bài into Phố dịch vụ (game/service_market.py register)
 from game.content import public_content,content_parts,CAREERS
-from game.engine import GameError,public_state
+from game.engine import GameError,needs_migration,public_state,stamped
 from game.storage import Store,Conflict
 from game import db as dbm
 from game import fastjson as fj
@@ -254,6 +254,14 @@ def _log_invalid_data(route:str,data,err:BaseException)->None:
     d=data if isinstance(data,dict) else {}
     frames=" < ".join(f"{os.path.basename(f.filename)}:{f.lineno}:{f.name}" for f in reversed(traceback.extract_tb(err.__traceback__)[-4:]))
     sys.stderr.write(f"[cmd-400] {route} action={clip(d.get('action','-'))} career={clip(d.get('career') or '-')} {type(err).__name__} @ {frames}\n")
+
+
+def fresh_view(state:dict)->dict:
+    """public_state of a save Store.read just parsed (private to this request, nothing changes it afterwards).
+    A save this build stamped and that needs no migration is what migrate_state would return as it is, so the
+    defensive whole-save copy (tree_copy: ~0.5 s for a 10 MB save, on every /api/state and bootstrap) is skipped;
+    public_state never changes what it is given. Anything else still goes through migrate_state's copy."""
+    return public_state(state,migrated=stamped(state) and not needs_migration(state))
 
 
 def client_outdated(data:dict,game_page:bool,minimum:str|None=None,server:str=__version__)->bool:
@@ -742,7 +750,7 @@ class Handler(BaseHTTPRequestHandler):
                         if paid:state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
-                view=public_state(state)
+                view=fresh_view(state)
                 ranks=[]
                 if not created:
                     try:  # 🏅 the weekly leaderboard titles this save holds now (game/lb_titles.py), for its own name card
@@ -771,7 +779,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/state":
                 token,state,revision,_=self.require_session()
                 settled=business.on_load_result(self.server.store,token,state,own=True)  # a sync starts from this read's parse (game/storage.py `own`)
-                view=settled['state'] if settled is not None else public_state(state)
+                view=settled['state'] if settled is not None else fresh_view(state)
                 if settled is not None:revision=settled['revision']
                 self.json(200,dict(state=view,revision=revision),known=FULL);return
             if route=="/api/save/export":
@@ -898,13 +906,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("quay-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=quay_hire.get(self.server.store,token,state)
                 if live_effects.on_load(self.server.store,token,state):out["changed"]=True   # the counter's money that arrived
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/bank/xfer":  # 💸 Chuyển khoản: friends who can receive, today's room, recent transfers (game/bank_xfer.py)
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("xfer-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=bank_xfer.get(self.server.store,token,state)
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/family/baby":  # 👶 the shared child and custody copies as the home room draws them (game/family.py babies)
                 token,state,_,_=self.require_session(light=True)  # 2.4.15: the save is not read here (light: no parse of a 10 MB save per poll)
@@ -1003,7 +1011,7 @@ class Handler(BaseHTTPRequestHandler):
                 out=photo_studio.get(self.server.store,token,state,sub,{k:v[0] for k,v in parse_qs(split.query).items()})
                 if sub=="album" and photo_studio.refund_waiting(self.server.store,token):  # 📸 a refund waiting: paid now, the album answer carries the new state
                     st,_,_=self.server.store.read(token)
-                    if live_effects.on_load(self.server.store,token,st):st,rev,_=self.server.store.read(token);out.update(state=public_state(st),revision=rev)
+                    if live_effects.on_load(self.server.store,token,st):st,rev,_=self.server.store.read(token);out.update(state=fresh_view(st),revision=rev)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/work-visits/"):
                 token,state,_,_=self.require_session(light=True)
@@ -1290,7 +1298,7 @@ class Handler(BaseHTTPRequestHandler):
                 if what not in ("queue","tip"):self.error(404,"Không có API này.");return
                 if not self.server.rate_limit("karapay:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=(karaoke.queue if what=="queue" else karaoke.tip)(self.server.store,token,data)
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/admin/auction":  # 🔨 add a lot (game/auction.py admin_add): a catalogue item or an operator's plate/phone number
                 if not self.server.rate_limit("admin-auc:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1328,7 +1336,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("wedinv:"+token,30):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 if route=="/api/wedinvite/seen":self.json(200,wed_invite.seen(self.server.store,self.server.store.key(token),data));return
                 out=wed_invite.send(self.server.store,token,data)
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/gift/seen":  # 🎁 the player pressed "Nhận quà" on a gift card: it never shows again (game/system_gift.py)
                 if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
@@ -1337,7 +1345,7 @@ class Handler(BaseHTTPRequestHandler):
                 env=route=="/api/marriage/envelope"   # 🧧 "cho gửi thoải mái": only an anti-flood (5 a second), not the 60 a minute
                 if not (self.server.rate_limit("wedenv:"+token,10,2) if env else self.server.rate_limit("marriage:"+token,60)):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data,ip=self.client_ip())  # 🏥 the address: a player birth room's anti-laundering (game/birth.py)
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 if not out.pop("quiet",False):out["view"]=marriage.view(self.server.store,token,state)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/rentals/"):
@@ -1347,18 +1355,18 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/lixi/grab":  # 🧧 giật một bao lì xì (game/lixi.py grab): the amount under the packet's lock, paid now through live_effects
                 if not self.server.rate_limit("lixi-grab:"+token,30):self.error(429,"Từ từ thôi, bao nào cũng có phần mà!","rate_limited");return
                 out=lixi.grab(self.server.store,token,data,state,self.client_ip())
-                if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/quay/"):  # 💼 post / cancel / accept / decline / quit / flush (game/quay_hire.py)
                 if not self.server.rate_limit("quay:"+token,30):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=quay_hire.act(self.server.store,token,route[len("/api/quay/"):],data)
                 if live_effects.on_load(self.server.store,token,state):out["changed"]=True
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/bank/xfer/"):  # 💸 send / receive (game/bank_xfer.py)
                 if not self.server.rate_limit("xfer:"+token,20):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=bank_xfer.act(self.server.store,token,route[len("/api/bank/xfer/"):],data)
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/bang/"):  # ⚔️ join, leave, invite, roles, build, shop, Giờ vàng… (game/bang.py; database only, no save)
                 if not self.server.rate_limit("bang:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1390,7 +1398,7 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/halloween/"):  # 🎃 checkin / guess / walk / giant / knock / buy (game/halloween.py); an exchange is paid into the save at once
                 if not self.server.rate_limit("hween:"+token,40):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=halloween.post(self.server.store,token,route[len("/api/halloween/"):],data,ip=self.client_ip())
-                if route=="/api/halloween/buy" and live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if route=="/api/halloween/buy" and live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/townfair/"):  # 🎪 open / pct / close / show / moment / watch / claim (game/town_fair.py; orders go through /api/svc/)
                 if not self.server.rate_limit("tfair:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1423,7 +1431,7 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/radio/"):  # 📻 air (take + deliver an order with the DJ's pick: game/radio_station.py, the market pays), hide a line
                 if not self.server.rate_limit("radio:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=radio_station.post(self.server.store,token,state,route[len("/api/radio/"):],data,ip=self.client_ip())
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/admin/radio":  # 📻 hide / show a player's line on the ticker; admin only
                 if not self.server.rate_limit("admin-radio:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -1432,14 +1440,14 @@ class Handler(BaseHTTPRequestHandler):
             if route.startswith("/api/photo/"):  # 📸 order / cancel / accept / decline / shot / deliver / studio / pfp / hang / folio (game/photo_studio.py: reads and writes the saves itself)
                 if not self.server.rate_limit("photo:"+token,90):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=photo_studio.post(self.server.store,token,state,route[len("/api/photo/"):],data,self.client_ip())
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/race/"):  # 🏁 home / trial / challenge / accept / cancel / replay (game/racing.py: reads and writes the saves itself)
                 op=route[len("/api/race/"):]
                 if not self.server.rate_limit("race:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 if op in ("trial","challenge","accept") and not self.server.rate_limit("race-run:"+token,10):self.error(429,"Xe cần nghỉ một chút, chạy lại sau nhé.","rate_limited");return
                 out=racing.post(self.server.store,token,op,data,self.client_ip())
-                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=fresh_view(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/arena/"):  # 🐾 Đấu trường pet (game/pet_arena.py act): the battle resolves here, in one request; never a save write
                 op=route[len("/api/arena/"):]

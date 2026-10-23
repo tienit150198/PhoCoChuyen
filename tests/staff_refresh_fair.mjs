@@ -3,7 +3,7 @@ import test from 'node:test';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 
-const equipment=readFileSync(new URL('../public/js/v4/work-equipment.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'').replace(/export /g,'');
+const equipment=readFileSync(new URL('../public/js/v4/work-equipment.js',import.meta.url),'utf8').replace(/^import .*;.*\r?\n/gm,'').replace(/export /g,'');
 const app=readFileSync(new URL('../public/js/app.js',import.meta.url),'utf8');
 const wiring=app.match(/^const stopStaffRefresh=staffRefresh\(.*\);$/m)?.[0];
 assert.ok(wiring,'exercise the actual app staff-refresh wiring');
@@ -18,7 +18,7 @@ function fixture(){
 }
 
 test('app staff refresh pauses throughout the open fair and resumes after it closes',async()=>{
- const f=fixture();assert.equal(f.interval(),30000);
+ const f=fixture();assert.equal(f.interval(),60000);
  await f.tick();assert.equal(f.calls(),1);
  f.open.add('dialog.fh-sheet[open]');await f.tick();await f.tick();assert.equal(f.calls(),1,'open fair suppresses background full-state refresh');
  f.open.delete('dialog.fh-sheet[open]');await f.tick();assert.equal(f.calls(),2,'the next due tick resumes after the fair closes');

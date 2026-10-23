@@ -12,7 +12,7 @@ import weakref
 from collections import OrderedDict
 
 from game import business, quay, quay_business, workplace_business
-from game.engine import GameError, migrate_state
+from game.engine import GameError, migrate_state, needs_migration, stamped
 
 _TTL = 30
 _MAX_ENTRIES = 32
@@ -42,8 +42,11 @@ def quay_snapshot(store, token):
         cache.pop(sid, None)
 
     state, revision, _ = store.read(token)
+    # A save this build stamped comes back from migrate_state untouched: a due sync then starts from this very parse
+    # (Store.command `own`) instead of reading and parsing the save a second time (23/10 lag).
+    fresh = stamped(state) and not needs_migration(state)
     state = migrate_state(state, owned=True)
-    settled = business.on_load_result(store, token, state)
+    settled = business.on_load_result(store, token, state, own=fresh)
     if settled is not None:
         # The command already projected its committed state. Never read again:
         # that could combine one revision's money with another revision's Quay.

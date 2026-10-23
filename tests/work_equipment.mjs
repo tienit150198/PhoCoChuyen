@@ -13,13 +13,13 @@ assert.match(html,/📦 Gộp thùng tự đặt/,'the other shops still sell th
 assert.equal(hasWorkingStaff({careers:{x:{ops:{business:{status:'paused'}}}}}),false);
 assert.equal(hasWorkingStaff({careers:{x:{summary:true,business_running:true}}}),true,'Other careers continue refreshing');
 let tick,cleared=false,calls=0,resolve,hidden=false,busy=false,at=100000,synced=0;
-globalThis.setInterval=(fn,ms)=>{assert.equal(ms,30000);tick=fn;return 1;};globalThis.clearInterval=id=>{assert.equal(id,1);cleared=true;};
+globalThis.setInterval=(fn,ms)=>{assert.equal(ms,60000);tick=fn;return 1;};globalThis.clearInterval=id=>{assert.equal(id,1);cleared=true;};
 const state={careers:{x:{ops:{business:{status:'running'}}}}};
 const stop=staffRefresh({state:()=>state,refresh:()=>{calls++;return new Promise(r=>resolve=r);},busy:()=>busy,visible:()=>!hidden,lastSync:()=>synced,now:()=>at});
 const pending=tick();await tick();assert.equal(calls,1,'Only one refresh may be in flight');resolve();await pending;
 hidden=true;await tick();assert.equal(calls,1);hidden=false;busy=true;await tick();assert.equal(calls,1);
 busy=false;synced=at-1000;await tick();assert.equal(calls,1,'Recent commands already synchronized income');
-synced=at-31000;const next=tick();assert.equal(calls,2);resolve();await next;
+synced=at-61000;const next=tick();assert.equal(calls,2);resolve();await next;
 assert.equal(staffRefreshPaused({view:'home',jrView:'invest'}),true);
 assert.equal(staffRefreshPaused({view:'home',jrView:'wallet'}),false);
 assert.equal(staffRefreshPaused({view:'job',busy:true}),true);
