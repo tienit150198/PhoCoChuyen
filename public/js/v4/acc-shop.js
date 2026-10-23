@@ -169,7 +169,7 @@ function friendPick(v,st,id){
 }
 function pairShelf(env,st){
   const {api}=env,v=api.charmView,list=kinds(api);
-  refreshCharms(env,15000)?.then(x=>{if(x)env.renderSheet(false);});   // a gift may have come in since
+  refreshCharms(env,15000)?.then(x=>{if(x)env.renderSheet();});   // a gift may have come in since
   const canBuy=!v||v.can_buy!==false,toName=st.to&&v?.friends?.find(f=>f.code===st.to)?.name;
   const room=v?Math.max(0,(v.box_max||10)-v.box.length-v.sent.length):1,pq=st.pq||{};
   const forWho=toName?`<p class="jr-card as-for">🎁 <span class="grow">Đang chọn quà cho <b>${esc(toName)}</b>: mua xong là gửi luôn.</span>${btn('Bỏ chọn','jrAsTo',{code:''},'ghost small')}</p>`:'';
@@ -355,14 +355,14 @@ export function forgeView(env){
 
 async function post(env,op,body){
   const {api,toast}=env;
-  busy=true;env.renderSheet(false);
+  busy=true;env.renderSheet();
   try{
     const d=await api.json(`/api/marriage/${op}`,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify(body)});
     adopt(api,d,()=>env.renderMain?.());
     if(d?.message)toast(d.message,'good');
     return d;
   }catch(e){toast(e.message||'Chưa làm được. Thử lại nhé.',true);return null;}
-  finally{busy=false;env.renderSheet(false);}
+  finally{busy=false;env.renderSheet();}
 }
 
 export async function accShopAction(action,data,el,env){
@@ -374,38 +374,38 @@ export async function accShopAction(action,data,el,env){
       st.tab=list.includes(last)?last:list[0]||'acc';renderSheet(false);return true;}
     case'jrAsForgeTab':st.ftab=forgeTabs(api).includes(data.tab)?data.tab:'wing';renderSheet(false);return true;
     // 👕 Quần áo (game/wardrobe.py jr_wd_buy / jr_wd_wear, as in Tủ đồ)
-    case'jrAsClSlot':st.cslot=CL.includes(data.slot)?data.slot:'top';renderSheet(false);return true;
+    case'jrAsClSlot':st.cslot=CL.includes(data.slot)?data.slot:'top';renderSheet();return true;
     case'jrAsClTry':{const it=data.item&&wdItem(api,data.item);
-      if(st.multi&&it&&CL.includes(it.slot)&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.cdraft=inCart(st,it.id)?it.id:null;renderSheet(false);return true;}
-      st.cdraft=it&&CL.includes(it.slot)&&st.cdraft!==it.id?it.id:null;renderSheet(false);return true;}
+      if(st.multi&&it&&CL.includes(it.slot)&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.cdraft=inCart(st,it.id)?it.id:null;renderSheet();return true;}
+      st.cdraft=it&&CL.includes(it.slot)&&st.cdraft!==it.id?it.id:null;renderSheet();return true;}
     case'jrAsClBuy':{const it=wdItem(api,data.item),stt=it&&wdStatus(api,it);if(!stt?.buy||busy)return true;
       const how=await confirmPurchase(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(stt.price)} xu${stt.price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. Mua xong mặc luôn, đổi màu trong Tủ đồ.`,label:`Mua · ${fmt(stt.price)} xu`,cost:stt.price});
       if(!how)return true;
       busy=true;const ok=await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how});busy=false;if(ok)st.cdraft=null;
-      renderSheet(false);return true;}
+      renderSheet();return true;}
     case'jrAsClOn':{const it=wdItem(api,data.item);if(!it||!CL.includes(it.slot)||wdStatus(api,it)||busy)return true;
-      busy=true;const ok=await cmd('jr_wd_wear',{look:{[it.slot]:it.id}});busy=false;if(ok)st.cdraft=null;renderSheet(false);return true;}
+      busy=true;const ok=await cmd('jr_wd_wear',{look:{[it.slot]:it.id}});busy=false;if(ok)st.cdraft=null;renderSheet();return true;}
     case'jrAsTry':{const it=wdItem(api,data.item);if(!it||it.slot!=='acc')return true;
-      if(st.multi&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.draft=inCart(st,it.id)?it.id:null;renderSheet(false);return true;}
-      st.draft=st.draft===it.id?null:it.id;renderSheet(false);return true;}
+      if(st.multi&&wdStatus(api,it)?.buy){cartToggle(st,it.id);st.draft=inCart(st,it.id)?it.id:null;renderSheet();return true;}
+      st.draft=st.draft===it.id?null:it.id;renderSheet();return true;}
     // 🧺 several pieces at once (jr_wd_buy items: one price, all or none)
-    case'jrAsMulti':if(data.off||st.multi){st.multi=false;st.cart=[];}else{st.multi=true;st.cart=[];}renderSheet(false);return true;
+    case'jrAsMulti':if(data.off||st.multi){st.multi=false;st.cart=[];}else{st.multi=true;st.cart=[];}renderSheet();return true;
     case'jrAsBuyMany':{const xs=cartOf(api,st);if(!xs.length||busy)return true;
       const sum=xs.reduce((a,it)=>a+wdStatus(api,it).price,0),slots=xs.map(it=>it.slot),wear=new Set(slots).size===slots.length;
       const how=await confirmPurchase(env,{title:`Mua ${xs.length} món?`,message:`${xs.map(it=>`${it.name} (${fmt(wdStatus(api,it).price)} xu)`).join(', ')}. Tổng ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không món nào. ${wear?'Mua xong mặc luôn.':'Mua xong cất vào tủ (có món cùng chỗ).'}`,label:`Mua ${xs.length} món · ${fmt(sum)} xu`,cost:sum});
       if(!how)return true;
       busy=true;const ok=await cmd('jr_wd_buy',{items:xs.map(it=>it.id),wear,pay:how});busy=false;
-      if(ok){st.cart=[];st.multi=false;st.draft=null;st.cdraft=null;}renderSheet(false);return true;}
-    case'jrAsPairQty':{const n=Math.max(1,Math.min(Number(data.n)||1,10));(st.pq??={})[data.kind]=n;renderSheet(false);return true;}
-    case'jrAsWingQty':{const n=Math.max(1,Math.min(Number(data.n)||1,WC(api)?.qty_max||1));(st.wq??={})[data.k]=n;renderSheet(false);return true;}
-    case'jrAsReset':st.draft=null;renderSheet(false);return true;
+      if(ok){st.cart=[];st.multi=false;st.draft=null;st.cdraft=null;}renderSheet();return true;}
+    case'jrAsPairQty':{const n=Math.max(1,Math.min(Number(data.n)||1,10));(st.pq??={})[data.kind]=n;renderSheet();return true;}
+    case'jrAsWingQty':{const n=Math.max(1,Math.min(Number(data.n)||1,WC(api)?.qty_max||1));(st.wq??={})[data.k]=n;renderSheet();return true;}
+    case'jrAsReset':st.draft=null;renderSheet();return true;
     case'jrAsBuy':{const it=wdItem(api,data.item),stt=it&&wdStatus(api,it);if(!stt?.buy||busy)return true;
       const how=await confirmPurchase(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(stt.price)} xu${stt.price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. Mua xong đeo luôn, đổi màu trong Tủ đồ.`,label:`Mua · ${fmt(stt.price)} xu`,cost:stt.price});
       if(!how)return true;
       if(await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how}))st.draft=null;
-      renderSheet(false);return true;}
+      renderSheet();return true;}
     case'jrAsWearAcc':{const it=wdItem(api,data.item);if(!it||wdStatus(api,it))return true;
-      if(await cmd('jr_wd_wear',{look:{acc:it.id}}))st.draft=null;renderSheet(false);return true;}
+      if(await cmd('jr_wd_wear',{look:{acc:it.id}}))st.draft=null;renderSheet();return true;}
     case'jrAsPairBuy':{const k=kindOf(api,data.kind);if(!k||busy)return true;
       const who=st.to&&api.charmView?.friends?.find(f=>f.code===st.to)?.name;
       const v=api.charmView,room=v?Math.max(1,(v.box_max||10)-v.box.length-v.sent.length):1,q=Math.max(1,Math.min(st.pq?.[k.id]||1,room)),sum=k.price*q;
@@ -414,8 +414,8 @@ export async function accShopAction(action,data,el,env){
       const to=st.to&&api.charmView?.friends?.find(f=>f.code===st.to);
       // one request id per purchase: a retry pays nothing (game/friend_charms.py _buy)
       const done=await post(env,'charm_buy',{kind:k.id,pay:how,rid:rid(),...(q>1?{qty:q}:{}),...(to?{code:to.code}:{})});
-      if(done){if(to)st.to='';if(st.pq)delete st.pq[k.id];}renderSheet(false);return true;}
-    case'jrAsTo':st.to=typeof data.code==='string'?data.code:'';renderSheet(false);return true;
+      if(done){if(to)st.to='';if(st.pq)delete st.pq[k.id];}renderSheet();return true;}
+    case'jrAsTo':st.to=typeof data.code==='string'?data.code:'';renderSheet();return true;
     case'jrAsGive':{const sel=document.getElementById(`as-to-${data.id}`),code=sel?.value||st.to;
       if(!code){env.toast('Chọn một người bạn để tặng nhé.','hint');sel?.focus?.();return true;}
       st.to=code;await post(env,'charm_offer',{id:data.id,code});return true;}
@@ -434,29 +434,29 @@ export async function accShopAction(action,data,el,env){
     case'jrAsBondOff':{if(!await confirmAction('Về lại bạn bè?','Quan hệ đang đặt sẽ bỏ, hai bạn vẫn là bạn bè và vẫn giữ phụ kiện đôi.','Về bạn bè'))return true;
       await post(env,'charm_bond_off',{id:data.id});return true;}
     // 🪽 Cánh (game/wings.py)
-    case'jrAsWingTry':st.wtry=data.k&&WC(api)?.styles?.some(x=>x.id===data.k)?(st.wtry===data.k?null:data.k):null;renderSheet(false);return true;
-    case'jrAsWingReveal':st.reveal=null;renderSheet(false);return true;
+    case'jrAsWingTry':st.wtry=data.k&&WC(api)?.styles?.some(x=>x.id===data.k)?(st.wtry===data.k?null:data.k):null;renderSheet();return true;
+    case'jrAsWingReveal':st.reveal=null;renderSheet();return true;
     case'jrAsWingBuy':{const x=styleOf(api,data.k),c2=WC(api);if(!x||busy||!c2)return true;
       const q=wq(st,x.id,Math.max(1,Math.min(c2.qty_max||1,c2.own_max-ownWings(api).length))),sum=x.price*q;
       if(!await confirmAction(`Mua ${x.name}${q>1?` ×${q}`:''}?`,`${q>1?`${q} đôi × ${fmt(x.price)} xu = ${fmt(sum)} xu, trả một lần, mua đủ cả hoặc không đôi nào. Mỗi đôi`:`Giá ${fmt(x.price)} xu. Mở hộp`} ra hạng D hoặc C ngẫu nhiên, ghép ba đôi ở ⚒️ Cường hóa để lên hạng.`,`🪽 Mua · ${fmt(sum)} xu`,{cost:sum}))return true;
       // the request id (game/wings.py RQ_KEEP): a retry answers the same wings and pays nothing
       busy=true;const r=await cmd('jr_pet_wing_buy',{style:x.id,...(q>1?{qty:q}:{}),rid:rid().replace(/[^A-Za-z0-9_.:-]/g,'').slice(0,64),confirm:true});busy=false;
-      if(r?.wings?.length){st.reveal=r.wings.map(w=>({k:w.k,r:w.r}));st.wtry=null;if(st.wq)delete st.wq[x.id];}renderSheet(false);return true;}
-    case'jrAsWingWear':if(busy)return true;busy=true;await cmd('jr_pet_wing_wear',{id:data.id||null});busy=false;renderSheet(false);return true;
+      if(r?.wings?.length){st.reveal=r.wings.map(w=>({k:w.k,r:w.r}));st.wtry=null;if(st.wq)delete st.wq[x.id];}renderSheet();return true;}
+    case'jrAsWingWear':if(busy)return true;busy=true;await cmd('jr_pet_wing_wear',{id:data.id||null});busy=false;renderSheet();return true;
     case'jrAsWingDrop':{const x=wingsOf(api)?.own?.find(o=>o.id===data.id);if(!x||busy)return true;
       if(!await confirmAction(`Bỏ ${wName(api,x)}?`,'Đôi cánh này sẽ mất hẳn, không lấy lại được.','Bỏ cánh'))return true;
-      busy=true;await cmd('jr_pet_wing_drop',{id:x.id,confirm:true});busy=false;st.wfz=st.wfz.filter(id=>id!==x.id);renderSheet(false);return true;}
-    case'jrAsWingPick':{if(!data.id){st.wfz=[];renderSheet(false);return true;}
-      const i=st.wfz.indexOf(data.id);if(i>=0)st.wfz.splice(i,1);else if(st.wfz.length<3)st.wfz.push(data.id);else st.wfz=[...st.wfz.slice(0,2),data.id];renderSheet(false);return true;}
+      busy=true;await cmd('jr_pet_wing_drop',{id:x.id,confirm:true});busy=false;st.wfz=st.wfz.filter(id=>id!==x.id);renderSheet();return true;}
+    case'jrAsWingPick':{if(!data.id){st.wfz=[];renderSheet();return true;}
+      const i=st.wfz.indexOf(data.id);if(i>=0)st.wfz.splice(i,1);else if(st.wfz.length<3)st.wfz.push(data.id);else st.wfz=[...st.wfz.slice(0,2),data.id];renderSheet();return true;}
     case'jrAsWingQuick':case'jrAsWingFuse':{if(busy||!WC(api))return true;
       const own=ownWings(api),xs=action==='jrAsWingQuick'?wingQuick(api):st.wfz.map(id=>own.find(x=>x.id===id)).filter(Boolean);if(xs?.length!==3)return true;
-      if(action==='jrAsWingQuick'){st.wfz=xs.map(x=>x.id);renderSheet(false);}   // ⚡ the pick shows in the panel too
+      if(action==='jrAsWingQuick'){st.wfz=xs.map(x=>x.id);renderSheet();}   // ⚡ the pick shows in the panel too
       const f=wingFuseOf(api,xs),[m,a,b]=xs,top=WING_TIERS.length-1;if(m.r>=top)return true;
       const what=`Dùng: ${wName(api,m)} (cánh chính, giữ kiểu${m.id===wingsOf(api)?.on?', đang đeo':''}), ${wName(api,a)}, ${wName(api,b)}.`;
       if(!await confirmAction(action==='jrAsWingQuick'?'⚡ Cường hóa nhanh cánh?':'Ghép ba đôi cánh?',`${what} Thành công: ${styleOf(api,m.k)?.name||'Cánh'} ${f.to>m.r?'lên':'giữ'} hạng ${tierName(f.to)}, hai đôi kia dùng hết. Trượt: ${f.lose?'⚠️ hai đôi kia sẽ mất':'ba đôi vẫn còn'}. Phí ${fmt(f.fee)} xu, thành hay trượt đều mất phí.`,`🧬 Ghép · ${fmt(f.fee)} xu`,{cost:f.fee}))return true;
       busy=true;const r=await cmd('jr_pet_wing_fuse',{wings:xs.map(x=>x.id),main:m.id,confirm:true});busy=false;
       if(r?.fuse){const lost=r.fuse.lost||[];st.wfz=r.fuse.ok?[]:st.wfz.filter(id=>!lost.includes(id));if(r.fuse.ok){const mm=ownWings(api).find(x=>x.id===r.fuse.main);if(mm)st.reveal=[{k:mm.k,r:mm.r}];}}
-      renderSheet(false);return true;}
+      renderSheet();return true;}
   }
   return false;
 }

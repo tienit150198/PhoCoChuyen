@@ -403,7 +403,7 @@ async function go(){
 /* ---- rendering ---- */
 const top=()=>S.host?document.querySelector('#sheet .pt-embed')?.scrollIntoView?.({block:'start'}):S.dlg?.querySelector('.pt-body')?.scrollTo?.(0,0);
 function render(){
-  if(S.host){if(document.querySelector('#sheet .pt-embed'))S.env?.renderSheet?.(false);return;}   // 🛍️ ⚒️ inside the sheet: the sheet redraws
+  if(S.host){if(document.querySelector('#sheet .pt-embed'))S.env?.renderSheet?.();return;}   // 🛍️ ⚒️ inside the sheet: the sheet redraws where the player is (owner 23/10: no jump to the top)
   if(!S.dlg)return;
   const root=S.dlg.querySelector('.pt-root'),html=page();
   S.dlg.setAttribute('aria-busy',String(S.busy));
