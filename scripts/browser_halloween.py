@@ -104,7 +104,6 @@ def sql(db: str, q: str, args=()):
 
 async def phone(browser):
     ctx = await browser.new_context(viewport=dict(width=390, height=844), device_scale_factor=2, has_touch=True, is_mobile=True)
-    await ctx.add_init_script("try{localStorage.setItem('mnl.ev2010.seen','1')}catch(e){}")   # the 20/10 card of the real calendar
     return ctx, await ctx.new_page()
 
 

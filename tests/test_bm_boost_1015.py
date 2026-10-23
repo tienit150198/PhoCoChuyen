@@ -58,11 +58,6 @@ class Gone(On):
             self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=10**6), .43)
             self.assertEqual(fh.luck_p({}, None, game, OPEN, stake=49_999), .60)
 
-    def test_golden_days_event_is_not_lowered(self):
-        fh.golden._starts.set(int(OPEN))
-        self.addCleanup(fh.golden.clear)
-        self.assertEqual(fh.luck_p({}, None, 'xd', OPEN, stake=20), .70)
-
     def test_seeded_first_rounds(self):
         rng = random.Random(1016)
         won, n = 0, 20_000

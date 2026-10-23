@@ -891,10 +891,8 @@ def news(store, since, token: str | None = None) -> dict:
                 out['golden'] = dict(text=bang.news_line(bg), ends=int(bg['ends']), bang=1)
         except Exception:  # noqa: BLE001 - the ticker never fails for this
             pass
-    from . import event2010   # 💐 Thiệp 20/10 while writing is open: once a day on a device (an older page ignores it)
-    out['event'] = event2010.news_line(t)
     from . import halloween   # 🎃 Lễ hội Ma Phố (26–31/10): its line once a day (and once more at the night), its status for the menu
-    out['event'] = out['event'] or halloween.news_line(t)
+    out['event'] = halloween.news_line(t)   # a season's {text, key} (public/js/v4/ticker.js plays it once per key on a device)
     out['hween'] = halloween.hint(t)
     from . import pay_boost   # 🎉 Tuần lễ tay nghề while its window is open: once a day on a device (an older page ignores it)
     out['payweek'] = pay_boost.news_line(t)

@@ -1,3 +1,12 @@
+# Unreleased — dọn dẹp 23/10
+
+Chủ game 23/10: "xóa bỏ cái thiệp 20/10 đi nhé, với coi cái nào out date xóa đi" (feat/cleanup-2310).
+
+- 💐 Gỡ hẳn sự kiện Thiệp 20/10: game/event2010.py, trang /2010 (HTML, JS, CSS, ảnh, font 2010), thẻ mở một lần, dòng ở Hành trình, nút Tiện ích, mục admin "Thiệp 20/10", dòng ticker, deep link ?account= của trang thiệp, test và script trình duyệt. Link cũ /2010, /2010/c/… trả 410 với một trang nhỏ "Sự kiện Thiệp 20/10 đã kết thúc" + "Về Phố Có Chuyện"; /api/2010/* và /api/admin/2010 trả 410 {code: event_over}. Giữ bảng ev2010_* (bản cũ vẫn tìm thấy, lịch sử quà đã trả); xóa tài khoản vẫn xóa thiệp của người đó (server.py ev2010_forget). Giữ chữ quà "Quà thiệp 20/10 💐" / "Thu hồi quà thiệp 20/10" (dòng quà cũ vẫn hiện). Có gì mới 2.4.26 giữ chữ, bỏ nút "Thử ngay".
+- 🎁 Quà cả phố hết hạn: bỏ all1004, fair1005, wheel2010 khỏi system_gift.BROADCASTS (rỗng; cơ chế và scripts/grant_town_broadcast.py giữ nguyên). Thẻ quà 🎡 wheel2010 chưa xem vẫn quay (WHEEL_PAST). Test dùng broadcast mẫu riêng (TownWide 100 xu hết lỗi "hết hạn").
+- 🎪 Chợ đen 2 ngày vàng (11–13/10) gỡ hẳn: game/fair_golden_days.py, scripts/activate_fair_golden_days.py, scripts/publish_major_release.py (thông báo 2.0 đã đăng), test của chúng; fair.loc_prepare không còn đọc mnl_meta mỗi ván, fair.public bỏ `golden_days` (client không đọc). Save còn khóa `fair_golden_days` vẫn hợp lệ (tests/test_fair_golden_days_gone.py).
+- 🐕 Kéo co chó sủa: bỏ lời gọi dọn vé mỗi 30 s (mở một giao dịch ghi mỗi lần, vé cũ đã trả hết); apply_fx / fx_commit / forget giữ nguyên.
+
 # 2.5.8 — 23/10/2026
 
 - 🧩 Ghép ba Phố Mây màn 201–300 (feat/tile-300, owner 23/10 "thêm mở tới màn 300, khó hơn, có item ẩn, học candy fruits"): 100 màn mới khó dần (40→48 loại, băng 30→40, khóa 12→16, khay 6 ở màn 225/250/275/300), mỗi màn giải được theo cách dựng và được bộ giải độc lập kiểm; màn 1–200 giữ nguyên từng bit. Ô mới 🎁 hộp ẩn, 🌈 cầu vồng, ⛓️ xích, 💣 bom (thẻ giới thiệu, server replay kiểm, bản JS kiểm từng chạm). ⭐ 1–3 sao mỗi màn (tile_st), bản đồ màn tới 300, 🎁 rương mỗi 10 màn sau 200 (×2 ở 250/300). Phúc lợi +0,1 % mỗi màn sau 200, +40 % ở 300. Tiến độ sau 200 ở khóa mới tile_hi2 (bản cũ giữ khóa, chơi tiếp ở màn 200).

@@ -152,21 +152,12 @@ def validate(j: dict) -> None:
 # server k giới hạn"): every save that loads before `until` (guest or account, old or new) gets 100 xu once. No mass
 # insert is needed for lazy grants: the save's own row (id prefix + its sid's hash) is queued the first time, then the usual pending →
 # applied → seen path pays it once and shows the card. MNL_BROADCAST_OFF=1 (tests/__init__.py) turns it off.
-# The fair1005 grant is also prequeued by scripts/grant_town_broadcast.py for all
-# existing saves, so offline players retain their pending gift beyond the window.
-BROADCASTS = (
-    dict(prefix='all1004', coins=100, until=1791727200,   # until 11/10 21:00 (VN)
-         title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
-    dict(prefix='fair1005', coins=300, until=1791727200,
-         title='300 xu chơi chợ đen 🎪', text='Phố gửi bạn 300 xu vào ví để vui chợ đen! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛'),
-    # 🎡 20/10 (owner 19/10 "vòng quay từ 100k -> 1m … mốc 666k 888k, 1314, 520 cho có ý nghĩa", "tài khoản mới/cũ,
-    # miễn sao trong 20/10 vào là được tặng"): every save that loads on 20/10 (VN) gets one spin. The server draws
-    # the slot (WHEEL, by weight, from the save's own hash: the same save always lands on the same slot), pays it
-    # like any gift, and the card (v4/gift.js) spins the wheel onto it before "Nhận quà". Mean ≈ 360k.
-    dict(prefix='wheel2010', since=1792429200, until=1792515600,   # 20/10 00:00 → 21/10 00:00 (VN)
-         wheel=True, title='Vòng quay mừng 20/10 🎡',
-         text='Chúc mừng ngày Phụ nữ Việt Nam 20/10! Phố Có Chuyện gửi bạn một lượt quay may mắn. Chúc bạn và những người phụ nữ bạn thương luôn vui, khỏe và thật nhiều niềm vui 💐'),
-)
+# scripts/grant_town_broadcast.py can also prequeue one for every existing save, so offline players keep it past the window.
+# Entry: dict(prefix, coins, until[, since], title, text[, wheel=True: coins drawn from WHEEL]). Empty between gifts: the
+# ended ones (all1004 100 xu and fair1005 300 xu to 11/10, wheel2010 🎡 on 20/10) were removed 23/10; their rows stay.
+BROADCASTS: tuple = ()
+# 🎡 wheels that ended: a gift row of theirs (applied, not seen yet) still opens its card on the wheel (wheel_of)
+WHEEL_PAST = ('wheel2010',)
 # 🎡 the wheel's slots (coins, weight, the meaning under the number), in the wheel's order
 WHEEL = (
     (100_000, 30, 'Lộc đầu tuần'),
@@ -227,7 +218,7 @@ def wheel_slot(prefix: str, sid: str) -> int:
 
 def wheel_of(gid: str) -> dict | None:
     """The card's wheel for a wheel gift id ({slots: [{coins, note}], wish}), None for any other gift."""
-    if not any(b.get('wheel') and gid.startswith(b['prefix'] + '-') for b in BROADCASTS):
+    if not (gid.startswith(tuple(p + '-' for p in WHEEL_PAST)) or any(b.get('wheel') and gid.startswith(b['prefix'] + '-') for b in BROADCASTS)):
         return None
     return dict(slots=[dict(coins=c, note=t) for c, _, t in WHEEL], wish=wish_of(gid))
 

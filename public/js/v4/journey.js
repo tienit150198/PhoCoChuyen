@@ -27,7 +27,6 @@ import {fundMoveHTML,shortNum} from './wealth.js';
 import {chooser as hfChooser} from './honour-frames.js';   // 🖼️ Khung danh hiệu: which frame to wear (owner 18/10)
 import {typingNow} from '../typing-tap.js';
 import {pickView,pickAction,lockOf} from './career-pick.js';   // 🔎 Đổi nghề: search, chips, why a place is shut (owner 23/10)
-import {ev2010Open} from '../isometric/town-utilities.js';   // 💐 Thiệp 20/10 (game/event2010.py)   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
@@ -327,13 +326,6 @@ function lockedTile(env,cid,hidden){
     <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')} · 🔒 ${esc(when)}</small>${L?.how?`<small class="jr-lock-how">${esc(L.how)}</small>`:''}</div></article>`;
 }
 
-/** 💐 Thiệp 20/10 (/2010, its own page; game/event2010.py): one line while writing is open, from day 2. */
-function ev2010Card(env){
-  const J=env.api.state.journey||{};if(!ev2010Open())return '';
-  const gift=env.api.account&&(!J.story||Number(J.life_day)>=3)?'Gửi tấm đầu tiên, Phố tặng 100.000 xu':'Viết vài dòng, gửi link cho người thương';
-  return `<a class="jr-card jr-2010" href="/2010"><span class="jr-2010-ico" aria-hidden="true">💐</span><span class="grow"><b>Mùa thiệp 20/10</b><small>${gift}</small></span>${icon('arrow',16)}</a>`;
-}
-
 /** 🔥 Today's x3 careers (game/x3_week.py); the week's list opens from here (v4/x3week.js). */
 function x3Banner(env){
   const x=env.api.state.x3;if(!x?.today?.length)return '';
@@ -380,7 +372,7 @@ function homeMain(env){
   // house, the fair, the board, abroad and the stories join from day 2.
   const fresh=firstDay(api.state);
   const more=fresh?'':`${stickerCard(env)}${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${remoteEntry(env)}${abroadEntry(env)}${storiesCard(env)}`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${fresh?'':ev2010Card(env)}${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${fresh?'':certsEntry(env)}${meCard(env)}${J.story&&!fresh?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
 /* 📲 Đóng ca từ xa (v4/remote-close.js, game/remote_close.py): one line while a shift is open somewhere else. */

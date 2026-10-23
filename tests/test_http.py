@@ -34,6 +34,13 @@ class HTTPTests(unittest.TestCase):
         for path in ('/server.py','/.env','/storage/game.db','/../server.py','/%2e%2e/server.py','/reference/data/npcs_24.json'):
             self.assertEqual(self.req(path)[0],404)
     def test_host_validation(self):self.assertEqual(self.req(headers={'Host':'evil.example'})[0],403)
+    def test_2010_event_is_over(self):  # 💐 Thiệp 20/10 removed 23/10: old links and cached pages get a clear 410
+        for path in ('/2010','/2010/','/2010/c/abcdefghijkl'):
+            status,h,body=self.req(path);page=body.decode('utf-8');self.assertEqual(status,410);self.assertIn('text/html',h['Content-Type'])
+            self.assertIn('Sự kiện Thiệp 20/10 đã kết thúc',page);self.assertIn('href="/"',page);self.assertNotIn('<script',page)
+        for path,method in (('/api/2010/me','GET'),('/api/2010/card?id=x','GET'),('/api/2010/cards','POST'),('/api/2010/heart','POST'),('/api/admin/2010','GET')):
+            status,_,body=self.req(path,method,{} if method=='POST' else None);self.assertEqual(status,410)
+            d=json.loads(body);self.assertEqual((d['error'],d['code']),('Sự kiện đã kết thúc.','event_over'))
     def test_state_requires_session(self):self.assertEqual(self.req('/api/state')[0],401)
     def test_write_requires_csrf(self):
         self.bootstrap();self.csrf='wrong';self.assertEqual(self.command()[0],403)

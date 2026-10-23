@@ -41,7 +41,7 @@ function handle(d){
   for(const it of d.items)if(it&&typeof it.text==='string'&&!queue.some(q=>q.id===it.id))queue.push({id:Number(it.id)||0,text:it.text.slice(0,200)});
   // ⏰ Giờ vàng / 🌟 Ngày vàng (game/golden_hour.py): its line plays once a window on this device (id 0: not a news row)
   const g=d.golden;if(g&&typeof g.text==='string'&&Number(g.ends)>read(GOLD)){write(GOLD,Number(g.ends));queue.unshift({id:0,text:g.text.slice(0,200)});}
-  // 💐 a season's line (game/event2010.py news_line: Thiệp 20/10): once per key (a day) on this device
+  // a season's line (game/marriage.py news `event`: 🎃 game/halloween.py news_line): once per key on this device
   const ev=d.event;if(ev&&typeof ev.text==='string'&&typeof ev.key==='string'){let k='';try{k=localStorage.getItem(EVENT)||'';}catch{k=ev.key;}
     if(k!==ev.key){write(EVENT,ev.key);queue.push({id:0,text:ev.text.slice(0,200)});}}
   // 🎉 Tuần lễ tay nghề (game/pay_boost.py news_line): once per key (a day) on this device

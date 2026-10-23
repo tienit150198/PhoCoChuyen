@@ -419,12 +419,21 @@ class LargeGift(unittest.TestCase):
         self.assertIn('--large', r.stderr + r.stdout)
 
 
+# Town-wide gifts as they were (game/system_gift.py BROADCASTS is empty between gifts since 23/10; the machinery stays)
+TOWN = dict(prefix='all1004', coins=100, until=1791727200,   # until 11/10 21:00 (VN)
+            title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛')
+FAIR = dict(prefix='fair1005', coins=300, until=1791727200,
+            title='300 xu chơi chợ đen 🎪', text='Phố gửi bạn 300 xu vào ví để vui chợ đen! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛')
+WHEEL2010 = dict(prefix='wheel2010', since=1792429200, until=1792515600,   # 20/10 00:00 → 21/10 00:00 (VN)
+                 wheel=True, title='Vòng quay mừng 20/10 🎡', text='Chúc mừng ngày Phụ nữ Việt Nam 20/10!')
+
+
 class TownWide(Base):
     """Owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server", "tất cả người chơi k giới hạn": every save, once."""
 
     def setUp(self):
         super().setUp()
-        broadcast = patch.object(sg, 'BROADCASTS', (sg.BROADCASTS[0],))
+        broadcast = patch.object(sg, 'BROADCASTS', (dict(TOWN, until=4102444800),))   # still open
         broadcast.start()
         self.addCleanup(broadcast.stop)
         h = patch.dict(os.environ, {'MNL_BROADCAST_OFF': '0'})
@@ -485,7 +494,7 @@ class Wheel2010(Base):
 
     def setUp(self):
         super().setUp()
-        self.b = next(b for b in sg.BROADCASTS if b['prefix'] == 'wheel2010')
+        self.b = WHEEL2010
         for p in (patch.object(sg, 'BROADCASTS', (self.b,)), patch.dict(os.environ, {'MNL_BROADCAST_OFF': '0'})):
             p.start()
             self.addCleanup(p.stop)
@@ -516,6 +525,15 @@ class Wheel2010(Base):
             self.assertTrue(100_000 <= c <= 1_314_000)
             self.assertAlmostEqual(got.count(i) / len(got), w / total, delta=0.015)
         self.assertIsNone(sg.wheel_of('all1004-abc'))
+
+
+class EndedWheel(unittest.TestCase):
+    def test_an_ended_wheel_s_card_still_spins(self):
+        """wheel2010 left BROADCASTS (23/10): a gift row of it not seen yet still opens on the wheel."""
+        self.assertEqual(sg.BROADCASTS, ())
+        w = sg.wheel_of('wheel2010-abc')
+        self.assertEqual([x['coins'] for x in w['slots']], [x[0] for x in sg.WHEEL])
+        self.assertTrue(w['wish'])
         wishes = {sg.wish_of(f'wheel2010-{i}') for i in range(500)}
         self.assertGreater(len(wishes), 400)
 

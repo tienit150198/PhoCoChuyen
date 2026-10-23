@@ -5,9 +5,9 @@ saves already written by 2.4.15 and older need, so nothing a player owns is lost
 * A `live_effects` row of kind 'bark' (a pot won, a draw's or a cancel's stake back) still pays once (apply_fx, called
   by game/live_effects.py) and its row flips pending → applied in the save's own transaction (fx_commit, called by
   game/storage.py for every live_fx), exactly as in 2.4.15.
-* Housekeeping (server.py, every 30 s; one indexed query on the open-ticket partial index): a ticket still open after
-  WAIT_MAX / STUCK_MAX (no live service plays it any more) is given back under the same guarded UPDATE, once, with its
-  one 'bark' payout row: what 2.4.15 did with a stale ticket.
+* housekeeping(): a ticket still open after WAIT_MAX / STUCK_MAX (no live service plays it any more) is given back under
+  the same guarded UPDATE, once, with its one 'bark' payout row. server.py ran it every 30 s until 23/10 (every stale
+  ticket was back by then: the empty write transaction is gone); call it by hand if an old ticket ever shows up.
 * forget: a player who erases their data loses their ticket rows (as before).
 
 The table `bark_tickets` (game/pg_schema.py, SCHEMA_VERSION 34/35) and every row in it stay: never dropped. No save key
@@ -98,17 +98,6 @@ def housekeeping(store, t: float | None = None) -> int:
             'ORDER BY created LIMIT 200 FOR UPDATE SKIP LOCKED', (t - WAIT_MAX, t - STUCK_MAX)).fetchall()]
         return refund_rows(db, rows, t, 'stale')
     return store.transaction(run)
-
-
-def run_housekeeping(store) -> None:
-    """server.py maintenance (every 30 s). Never raises."""
-    import sys
-    try:
-        n = housekeeping(store)
-        if n:
-            sys.stderr.write(f'[dog_bark] refunded {n} stale tickets\n')
-    except Exception as e:  # noqa: BLE001 - housekeeping never takes the server down
-        sys.stderr.write(f'[dog_bark] housekeeping: {type(e).__name__}\n')
 
 
 def forget(db, sid: str) -> None:
