@@ -1,3 +1,7 @@
+# 2.5.6.1 — 23/10/2026
+
+- ⚒️ Cường hóa → 🧬 Ghép thú: với nhiều bé (33 bé, video của người chơi 23/10) ô chọn "Bé" của ⚡ có tên dài làm cả sheet rộng ~1900px: thẻ lệch phải, nút ⚡ mất chữ. Ô chọn giờ vừa khung (width 100%, ellipsis), các khối của ⚒️ / .pt-embed là minmax(0,1fr) nên không gì nới rộng sheet nữa.
+
 # 2.5.6 — 23/10/2026
 
 ⚡ Cường hóa nhanh tự ghép liên tục (chủ game 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần", "nó giống ghép tự động của áo quần ấy"). Trước đây ⚡ chọn một bộ rồi ghép đúng một lần; giờ mỗi quầy của ⚒️ Cường hóa có một thẻ như 🤖 Ghép tự động của đồ thú cưng: chọn loại, "Ghép tới hạng", "Tiêu tối đa" (Vòng đầu / ×2 / ×5 hoặc gõ số), hỏi lại một lần (nói rõ điều có thể mất khi trượt), một lệnh server ghép đi ghép lại, rồi thẻ kết quả (lượt ghép, thành công, trượt, xu đã tiêu, món lên hạng, món tốt nhất vẽ to). Không hiện tỉ lệ (luật 19/10). "Tự chọn" vẫn ở dưới.
