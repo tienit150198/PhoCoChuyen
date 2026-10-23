@@ -252,7 +252,7 @@ class Schema(M.Base):
     def test_91_is_a_new_table_and_an_index_idempotent(self):
         import re
         self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 91)
-        self.assertIn('SCHEMA_VERSION = 91  # 91: 🪽 wing_board', open(pg_schema.__file__, encoding='utf-8').read())
+        self.assertRegex(open(pg_schema.__file__, encoding='utf-8').read(), r'SCHEMA_VERSION = 9\d  # .*91: 🪽 wing_board')   # 92+ keep 91's note (2.6.0: 92 island_layout)
         names = [t['name'] for t in pg_schema.TABLES]
         self.assertLess(names.index('wing_board'), names.index('mnl_meta'))
         ddl = pg_schema.TABLES_DDL
@@ -393,7 +393,7 @@ class Rollback(M.Base):
         self.assertEqual(int(got['v']), pg_schema.SCHEMA_VERSION)
         self.assertEqual(self.catalog(), before, 'no table or index changed by the old startup')
         with self.store.connect() as db:
-            self.assertEqual(pg_schema.installed_version(db), 91, 'never lowered')
+            self.assertEqual(pg_schema.installed_version(db), pg_schema.SCHEMA_VERSION, 'never lowered')
             self.assertEqual(tuple(db.execute('SELECT pts, best, k, n, at FROM wing_board WHERE sid=?', (sid,)).fetchone()), row,
                              'untouched by 2.5.6')
         s = self.store.read(tok)[0]
