@@ -493,9 +493,15 @@ def _auto(s: dict, x: dict, p: dict) -> dict:
         msg += f' 💎 Ra {lux} món dòng sang!'
     msg += {'done': ' Hết bộ ba để ghép.', 'budget': ' Dừng vì chạm ngân sách.', 'money': ' Dừng vì hết tiền.',
             'cap': f' Mỗi lần tối đa {AUTO_MAX} lượt.'}[stop]
-    return dict(message=f'{msg} ({how})', ok=won > 0,
-                auto=dict(n=n, ok=won, lux=lux, spent=spent, stop=stop, used=used, made=made,
-                          left=len(triples(x, scope, top, keep))))
+    from . import forge_news   # 📣 one line for the run: the highest rank reached
+    return forge_news.mark(dict(message=f'{msg} ({how})', ok=won > 0,
+                                auto=dict(n=n, ok=won, lux=lux, spent=spent, stop=stop, used=used, made=made,
+                                          left=len(triples(x, scope, top, keep)))), 'ward', [_fz(i) for i in made])
+
+
+def _fz(i: dict) -> dict:
+    """A piece as game/forge_news.py marks it."""
+    return dict(id=i['id'], r=i['r'], n=W.ITEM[i['k']]['name'])
 
 
 def action(s: dict, name_: str, p: dict) -> dict:
@@ -566,7 +572,8 @@ def action(s: dict, name_: str, p: dict) -> dict:
         if i is None:
             return dict(message=f'💨 Ghép trượt, ba món vẫn còn nguyên. ({how})', ok=False)
         msg = (f'💎 Ghép ra món DÒNG SANG: {name(i)}!' if lux else f'🎉 Ghép thành công: {name(i)}!')
-        return dict(message=f'{msg} ({how})', ok=True, item=i['id'], lux=lux)
+        from . import forge_news   # 📣 SS and up: one line on the street's ticker
+        return forge_news.mark(dict(message=f'{msg} ({how})', ok=True, item=i['id'], lux=lux), 'ward', [_fz(i)])
     if name_ == 'jr_pet_wfuse_auto':
         return _auto(s, x, p)
     if name_ == 'jr_pet_wdrop':

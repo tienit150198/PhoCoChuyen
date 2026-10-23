@@ -1,5 +1,6 @@
 /** One explicit source per purchase; changing it here never changes the saved bank preference. */
 import {personalPayment,paymentText,paymentMoney} from './money.js';
+import {noAsk} from './no-ask.js';
 export function paymentChoices(J,cost,joint=null,{noJoint=false,noCredit=false,extraSources=[]}={}){
   const b=J?.bank,c=b?.card;
   const option=(id,label,balance,exists=true,why='')=>({id,label,balance:Number(balance)||0,ok:exists&&!why&&(!(cost>0)||Number(balance)>=cost),why:why||(!exists?'Chưa có nguồn tiền này.':cost>0&&Number(balance)<cost?'Chưa đủ số dư.':''),text:paymentText(id)});
@@ -29,11 +30,8 @@ export async function confirmPurchase(env,{title,message='',label='Thanh toán',
 export const BIG_BUY_SHARE=0.2;
 export const spendable=J=>Math.max(0,Number(J?.wallet)||0)+(J?.bank?.open?Math.max(0,Number(J.bank.balance)||0):0);
 export const bigBuy=(J,cost)=>!(cost>0)?false:cost>=spendable(J)*BIG_BUY_SHARE;
-/** ☑️ "Không hỏi lại: bấm là mua luôn" (owner 23/10): the player's tick in the shop's detail sheet (and in ⚒️ Cường hóa,
- * the same key), kept on this device only; a ticked box skips the question of any size. Default: ask. */
-export const NO_ASK_KEY='mnl.noAsk';
-export function noAsk(){try{return globalThis.localStorage?.getItem(NO_ASK_KEY)==='1';}catch{return false;}}
-export function setNoAsk(on){try{if(on)globalThis.localStorage?.setItem(NO_ASK_KEY,'1');else globalThis.localStorage?.removeItem(NO_ASK_KEY);}catch{/* private mode: asks as before */}}
+/** ☑️ Không hỏi lại (v4/no-ask.js, the same 'mnl.noAsk' tick as ⚒️ Cường hóa): a ticked box skips the question of any size. */
+export {noAsk,setNoAsk,NO_ASK_KEY} from './no-ask.js';
 /** Ask before this purchase? Not when the box is ticked; else only a big one. */
 export const askBuy=(J,cost)=>!noAsk()&&bigBuy(J,cost);
 /** The source to pay a small purchase (or any, with ☑️ Không hỏi lại) with, as confirmPurchase would pick it (no joint fund: that one always asks);

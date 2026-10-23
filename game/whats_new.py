@@ -17,6 +17,13 @@ When the owner asks for a notice, add it at the top of ENTRIES (newest first):
   presses the game's own control with that data-action; it only shows when
   such a control exists on the page, so a route that is not built yet is
   simply left out.
+  Optional thanks=("Lụm", "ẩn danh") (F#503) credits the players whose Góp ý
+  idea this bullet is: a small line "💡 Cảm ơn Lụm và một bạn chơi ẩn danh đã
+  góp ý tưởng" under it. 1 to MAX_THANKS character names, each 1-24 plain
+  characters. Write a name ONLY when that player ticked "ghi tên nhân vật" on
+  their idea (the admin inbox shows "🙋 Muốn ghi tên: <tên>"); otherwise, or
+  when unsure, write ANON ("ẩn danh"), once per anonymous player. Names are
+  never translated; the line's words are (public/js/v4/whatsnew.js).
 Then run `python -m game.whats_new` to rewrite public/js/v4/whatsnew-data.js
 (the copy the browser loads lazily, so the first load does not grow).
 
@@ -32,6 +39,17 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.6", date="2026-10-23", items=(   # owner 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ sao lại cường hóa từng lần"
+        dict(emoji='⚡', text="Cường hóa nhanh tự ghép liên tục như Ghép tự động: chọn tới hạng nào, tiêu tối đa bao nhiêu.",
+             go=dict(action='jrForge')),
+        dict(emoji='🪽', text="Cánh, thú cưng, đồ cho bé, linh kiện đều ghép được một lần bấm; cánh đang đeo và bé đang dắt luôn được giữ."),
+        dict(emoji='📣', text="Lên hạng SS trở lên: cả phố được báo. Muốn giấu tên thì tích “Ẩn tên” ở Cường hóa.",
+             go=dict(action='jrForge')),
+        dict(emoji='☑️', text="Cường hóa có ô “Không hỏi lại”.",
+             go=dict(action='jrForge')),
+        dict(emoji='💡', text="Gửi ý tưởng có thể tích ghi tên: ý được làm sẽ có lời cảm ơn kèm tên bạn ở đây.",
+             thanks=("ẩn danh",)),
+    )),
     dict(version="2.5.5", date="2026-10-23", items=(   # owner 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi"
         dict(emoji='🛍️', text="Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.",
              go=dict(action='jrAccShop')),
@@ -924,6 +942,8 @@ ENTRIES = (
 
 MAX_ITEMS = 18
 MAX_TEXT = 130
+MAX_THANKS, MAX_NAME = 5, 24   # F#503: thanks=(names…) under a bullet
+ANON = "ẩn danh"               # an idea whose player did not ask to be named
 VERSION = re.compile(r"\d{1,3}(?:\.\d{1,3}){1,2}")
 DATE = re.compile(r"20\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])")
 ACTION = re.compile(r"[A-Za-z][A-Za-z0-9:_-]{0,31}")
@@ -970,8 +990,8 @@ def validate(entries=ENTRIES) -> None:
         if not isinstance(items, (list, tuple)) or not 1 <= len(items) <= MAX_ITEMS:
             raise ValueError(f"{where}: 1 to {MAX_ITEMS} items")
         for it in items:
-            if not isinstance(it, dict) or not {"emoji", "text"} <= set(it) <= {"emoji", "text", "go"}:
-                raise ValueError(f"{where}: an item needs emoji and text (go is optional)")
+            if not isinstance(it, dict) or not {"emoji", "text"} <= set(it) <= {"emoji", "text", "go", "thanks"}:
+                raise ValueError(f"{where}: an item needs emoji and text (go and thanks are optional)")
             if not isinstance(it["emoji"], str) or not 1 <= len(it["emoji"]) <= 8 or any(c.isalnum() for c in it["emoji"]):
                 raise ValueError(f"{where}: emoji {it['emoji']!r}")
             t = it["text"]
@@ -983,6 +1003,12 @@ def validate(entries=ENTRIES) -> None:
                         or not isinstance(go.get("data", {}), dict)
                         or not all(isinstance(k, str) and re.fullmatch(r"[a-z][a-zA-Z0-9]{0,23}", k) and isinstance(x, str) for k, x in go.get("data", {}).items())):
                     raise ValueError(f"{where}: go must be dict(action=..., data={{str: str}})")
+            if "thanks" in it:
+                th = it["thanks"]
+                if (not isinstance(th, tuple) or not 1 <= len(th) <= MAX_THANKS
+                        or not all(isinstance(n, str) and 1 <= len(n) <= MAX_NAME and n == n.strip() and "<" not in n and n.isprintable() for n in th)
+                        or len({n for n in th if n != ANON}) != sum(n != ANON for n in th)):
+                    raise ValueError(f"{where}: thanks must be a tuple of 1-{MAX_THANKS} different plain names (1-{MAX_NAME} chars) or {ANON!r}: {th!r}")
 
 
 validate()
@@ -990,8 +1016,9 @@ LATEST = ENTRIES[0]["version"]
 
 
 def public() -> list[dict]:
-    """JSON-ready copy for the browser."""
-    return [dict(version=e["version"], date=e["date"], items=[dict(it) for it in e["items"]]) for e in ENTRIES]
+    """JSON-ready copy for the browser (thanks as a list)."""
+    item = lambda it: dict(it, thanks=list(it["thanks"])) if "thanks" in it else dict(it)
+    return [dict(version=e["version"], date=e["date"], items=[item(it) for it in e["items"]]) for e in ENTRIES]
 
 
 def render_js() -> str:

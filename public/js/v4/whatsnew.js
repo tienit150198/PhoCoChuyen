@@ -76,10 +76,24 @@ function when(date){
 const stamp=n=>`<span>Bản ${esc(n.version)}</span><span aria-hidden="true"> · </span>${when(n.date)}`;
 /** A "Thử ngay" target is live when the game shows a control with that action somewhere (rail, menu, sheet). */
 const control=go=>go?.action?document.querySelector(`[data-action="${CSS.escape(go.action)}"]`):null;
+/** F#503: the players whose idea a bullet is (game/whats_new.py thanks=): "Cảm ơn Lụm và một bạn chơi ẩn danh đã góp
+ * ý tưởng". Names are the players' own, never translated, so the line is written here in the reader's language and
+ * kept away from the pack (data-no-translate). */
+export const ANON='ẩn danh';
+export function thanksLine(list,en=language()==='en'){
+  const names=(list||[]).filter(n=>typeof n==='string'&&n&&n!==ANON),k=(list||[]).filter(n=>n===ANON).length;
+  const who=[...names];
+  if(k)who.push(en?(k>1?`${k} anonymous players`:'an anonymous player'):(k>1?`${k} bạn chơi ẩn danh`:'một bạn chơi ẩn danh'));
+  if(!who.length)return '';
+  const and=en?' and ':' và ',joined=who.length<2?who[0]:who.slice(0,-1).join(', ')+and+who[who.length-1];
+  return en?`Thanks to ${joined} for the idea`:`Cảm ơn ${joined} đã góp ý tưởng`;
+}
 function items(n,ni){
   return `<ul class="wn-list">${n.items.map((it,i)=>{
     const tryIt=control(it.go)?`<button type="button" class="btn small wn-try" data-wn-go="${ni}:${i}">Thử ngay</button>`:'';
-    return `<li class="wn-item"><span class="wn-emoji" aria-hidden="true">${esc(it.emoji)}</span><div class="wn-line"><p>${esc(it.text)}</p>${tryIt}</div></li>`;
+    const thanks=Array.isArray(it.thanks)?thanksLine(it.thanks):'';
+    const copy=thanks?`<div class="wn-copy"><p>${esc(it.text)}</p><p class="wn-thanks" data-no-translate><span aria-hidden="true">💡</span> ${esc(thanks)}</p></div>`:`<p>${esc(it.text)}</p>`;
+    return `<li class="wn-item"><span class="wn-emoji" aria-hidden="true">${esc(it.emoji)}</span><div class="wn-line">${copy}${tryIt}</div></li>`;
   }).join('')}</ul>`;
 }
 function html(){

@@ -660,6 +660,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s['journey'].setdefault('interface',{})[k]=v
             elif k=="tutorialDone":
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
+            elif k=="forgeAnon":  # 📣 🕶️ the SS+ ticker lines without my name: an optional journey key (game/forge_news.py)
+                need(type(v) is bool,"Thiết lập không hợp lệ.");from . import forge_news;forge_news.set_hidden(s,v)
             elif k=="notesSeen":s["settings"][k]=notes_seen(v)  # announcements already shown ("guide-v1,…")
             elif k=="whatsNewSeen":  # "Có gì mới" read up to this release; never goes back down
                 need(wn.valid_seen(v),"Thiết lập không hợp lệ.");s["settings"][k]=wn.newer(s["settings"].get(k,""),v)
@@ -1393,7 +1395,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     focus=full or s.get("current") or jr.default_career(s)
     v={k:(None if k in _PUBLIC_OWN else x) for k,x in s.items() if k not in ("careers","check")}
     preferences=s['journey'].get('interface',{})
-    v['settings']=dict(s['settings'],**{k:preferences.get(k,default) for k,default in INTERFACE_DEFAULTS.items()})
+    from . import forge_news
+    v['settings']=dict(s['settings'],**{k:preferences.get(k,default) for k,default in INTERFACE_DEFAULTS.items()},forgeAnon=forge_news.hidden(s))
     v["careers"]={cid:({k:(None if k in _FOCUS_OWN else x) for k,x in c.items()} if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)

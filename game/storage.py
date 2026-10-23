@@ -758,7 +758,7 @@ class Store:
                     live_chat.honours_commit(db,sid,action,result)  # 🏅 a title shown beside the name in chat
                 if action.startswith('jr_pet_'):
                     from . import pets
-                    pets.command_commit(db,sid,action,current)  # 🐾 Bé cưng của tuần (pet_board)
+                    pets.command_commit(db,sid,action,current,result)  # 🐾 Bé cưng của tuần (pet_board)
                 from . import jail
                 jail.mark_commit(db,sid,before,current)  # 🚔 jail_marks follows the save (the live server's cheap check)
                 from . import cand_roster
@@ -874,7 +874,7 @@ class Store:
                 live_chat.honours_commit(db,sid,action,result)  # 🏅 a title shown beside the name in chat
             if action.startswith('jr_pet_'):
                 from . import pets
-                pets.command_commit(db,sid,action,raw)  # 🐾 Bé cưng của tuần (pet_board)
+                pets.command_commit(db,sid,action,raw,result)  # 🐾 Bé cưng của tuần (pet_board)
             from . import jail
             jail.mark_commit(db,sid,before,raw)  # 🚔 jail_marks follows the save (the live server's cheap check)
             if action=='jail_end':

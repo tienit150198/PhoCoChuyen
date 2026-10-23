@@ -2,7 +2,7 @@
 // waiting. Run by tests/test_whats_new.py (node tests/whats_new.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
 import NOTES from '../public/js/v4/whatsnew-data.js';
-import {compare,due,seenVersion,blocker,LATEST} from '../public/js/v4/whatsnew.js';
+import {compare,due,seenVersion,blocker,LATEST,thanksLine,ANON} from '../public/js/v4/whatsnew.js';
 import {want} from '../public/js/v4/break-gate.js';
 
 assert.equal(LATEST,NOTES[0].version);
@@ -61,5 +61,17 @@ assert.equal(blocker(env(null),doc()),'loading');
 assert.equal(blocker(env(st('',{story:true,intro:false,life_day:1})),doc()),'intro');
 assert.equal(blocker(env(st('',{story:true,intro:true,life_day:1})),doc()),'','the first day: the notes show');
 assert.equal(blocker(env(st('',{story:false,intro:false,life_day:1})),doc()),'','a save without the story has no intro');
+
+// F#503: the thank-you line under an idea's bullet (names only with the player's consent, else "ẩn danh").
+assert.equal(thanksLine(['Lụm'],false),'Cảm ơn Lụm đã góp ý tưởng');
+assert.equal(thanksLine(['Lụm','Bơ'],false),'Cảm ơn Lụm và Bơ đã góp ý tưởng');
+assert.equal(thanksLine(['Lụm','Bơ','Na'],false),'Cảm ơn Lụm, Bơ và Na đã góp ý tưởng');
+assert.equal(thanksLine([ANON],false),'Cảm ơn một bạn chơi ẩn danh đã góp ý tưởng');
+assert.equal(thanksLine(['Lụm',ANON],false),'Cảm ơn Lụm và một bạn chơi ẩn danh đã góp ý tưởng');
+assert.equal(thanksLine([ANON,'Lụm',ANON],false),'Cảm ơn Lụm và 2 bạn chơi ẩn danh đã góp ý tưởng');
+assert.equal(thanksLine(['Lụm',ANON],true),'Thanks to Lụm and an anonymous player for the idea');
+assert.equal(thanksLine([ANON,ANON],true),'Thanks to 2 anonymous players for the idea');
+assert.equal(thanksLine([],false),'');
+assert.equal(thanksLine(['Lụm']),'Cảm ơn Lụm đã góp ý tưởng','Vietnamese by default');
 
 console.log('whats_new.mjs: ok');

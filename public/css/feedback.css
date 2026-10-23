@@ -88,3 +88,13 @@
   .fb-admin-item summary{grid-template-columns:auto auto minmax(0,1fr) auto}
   .fb-sum-who{grid-column:auto}
 }
+
+/* 💡 F#503: "ghi tên nhân vật" on an idea (player form), its badge in the inbox; ✅ Ghi nhận (owner 23/10) */
+.fb-credit{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--ink);font-size:.938rem;line-height:1.45;cursor:pointer}
+.fb-credit input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:var(--accent);cursor:pointer}
+.fb-credit small{display:block;margin-top:2px;font-size:.833rem}
+.fb-credit-name{font-weight:700;overflow-wrap:anywhere}
+.fb-credit-note{margin:4px 0 0}
+.fb-admin-item summary .fb-credit-tag{grid-column:1/-1;justify-self:start;max-width:100%;overflow-wrap:anywhere}
+.fb-ack-row{margin-top:8px}
+.fb-ack-done{margin:8px 0 0;font-weight:700;color:var(--good)}

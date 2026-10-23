@@ -17,7 +17,7 @@ import {lookOf,figureSVG,portrait,pairIcon,myPairs,wingIcon,wingOfState,WING_TIE
 import {kinds,kindOf,pairRows,waiting,relOf,refreshCharms,SHOP_NAME} from './charms.js';
 import {wdStatus,wdItem,wdThumb} from './wardrobe.js';
 import {skeleton} from '../lazy.js';
-import {noAsk,setNoAsk} from './payment.js';
+import {noAsk,setNoAsk} from './no-ask.js';
 import {S,PT,PET,W,btn,attrs,fmt,busy,qtyRow,cartBar,cartToggle,inCart,cartLook,CL,CL_EMOJI,WC,wingsOf,ownWings,styleOf,wName,badge,
   wingTile,sortWings,wingReveal,wingTable,wq,moreList,shopTabs,petTabs} from './acc-shop.js';
 
