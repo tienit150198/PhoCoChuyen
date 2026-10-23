@@ -64,7 +64,20 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     if(said)env.toast?.(said);
     onClose(reason);
   }
-  function onState(){if(env.api.state?.jail)close();}
+  function onState(){if(env.api.state?.jail)close();else view.fun?.(funList());}
+  /** 🏖️ Chơi trên đảo (game/island_fun.py): the beach activities and the daily chest, done ones marked. */
+  function funList(){
+    const B=env.api.content?.journey?.homelife?.beach,done=env.api.state?.journey?.homelife?.beach||{};
+    if(!B||!actions.fun)return [];
+    return [...(actions.chest?[{id:'chest',emoji:'🎁',name:'Rương báu',done:Boolean(done.chest),chest:true}]:[]),
+      ...(B.acts||[]).map(a=>({...a,done:(done.did||[]).includes(a.id)}))];
+  }
+  let funBusy=false;
+  async function fun(id,quiet=false){
+    if(funBusy||closed)return '';funBusy=true;
+    try{const line=await (id==='chest'?actions.chest?.():actions.fun?.(id));if(line&&!quiet&&!closed)view.notice(line);return line||'';}
+    finally{funBusy=false;}
+  }
   const go=(x,y,spot=null)=>{
     if(!arrived)return;
     const [tx,ty]=nearestWalkable(L,x,y),path=findPath(L,[me.x,me.y],[tx,ty]);   // around the houses and the sites
@@ -86,6 +99,8 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     if(s.home){me.pose=null;view.inside?.({kind:s.build.kind,tier:s.build.art.tier||0,level:s.build.level,name:s.build.art.name,emoji:s.build.art.emoji,owner:trip.owner?.name||'',mine:Boolean(trip.mine)});return;}
     me.pose=s.pose;
     view.notice(`${s.emoji} ${spotLine(s,Math.floor(clock()/1000))}`);presence?.act(s.id);
+    const act=!s.build&&env.api.content?.journey?.homelife?.beach?.spots?.[s.id];   // 🏖️ the campfire, the reef…: its activity, once a day
+    if(act&&!(env.api.state?.journey?.homelife?.beach?.did||[]).includes(act))fun(act,true).then(line=>{if(line&&!closed)view.notice(line);}).catch(()=>{});
     if(s.build)Promise.resolve(actions.use?.(s.build.plot)).then(line=>{if(line&&!closed)view.notice(`${s.emoji} ${spotLine(s,Math.floor(clock()/1000))} ${line}`);}).catch(()=>{});
   }
   /** 🏗️ The buildings changed (a new list from the server, or a construction's hour is over): the map, the spots. */
@@ -166,6 +181,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   view.onSay(text=>{const ok=presence?.say(text);if(!ok)view.notice('Chưa nói được: đang mất kết nối, thử lại sau nhé.');return ok;});
   view.onEnd?.(async()=>{try{if(await actions.end?.()===false)return;close('ended');}catch(e){view.notice(e.message||'Chưa kết thúc được chuyến này.');}});
   view.onBuild?.(()=>actions.build?.(-1));
+  view.onFun?.(id=>{fun(id).catch(()=>{});});
 
   async function start(){
     if(started||closed)return;
@@ -175,7 +191,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     env.closeSheet?.();env.api.addEventListener?.('state',onState);view.open(L,trip);
     try{
       renderer=await loadRenderer(view);if(closed){renderer?.destroy();renderer=null;return;}
-      renderer.setBuilds?.(L.built);view.spots?.(L.spots);buildKey='';rebuild();
+      renderer.setBuilds?.(L.built);view.spots?.(L.spots);view.fun?.(funList());buildKey='';rebuild();
       view.ready();
       const live=await loadLive().catch(()=>null);if(closed)return;
       if(live?.on)pingOff=live.on('island_ping',f=>{if(f.trip===trip.id&&f.why==='seat')reload();});   // 🏗️ the owner built or razed something
@@ -216,7 +232,7 @@ export function createView(){
   const previous=document.activeElement,dialog=document.createElement('dialog');
   dialog.className='isl-scene';dialog.setAttribute('data-island-scene','');dialog.setAttribute('aria-labelledby','islSceneTitle');
   const listeners=[],on=(t,n,fn,o)=>{t.addEventListener(n,fn,o);listeners.push(()=>t.removeEventListener(n,fn,o));};
-  const cb={close:()=>{},tap:()=>{},key:()=>false,spot:()=>{},emote:()=>{},say:()=>true,end:null,build:null};
+  const cb={close:()=>{},tap:()=>{},key:()=>false,spot:()=>{},emote:()=>{},say:()=>true,end:null,build:null,fun:()=>{}};
   let tagCache=new Map(),signCache=new Map(),noticeTimer=0;
   const release=()=>{for(const c of ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'])cb.key(c,false);};
   function bind(canvas){
@@ -229,7 +245,7 @@ export function createView(){
   }
   const view={
     canvas:null,dialog,
-    onClose:fn=>{cb.close=fn;},onTap:fn=>{cb.tap=fn;},onKey:fn=>{cb.key=fn;},onSpot:fn=>{cb.spot=fn;},onEmote:fn=>{cb.emote=fn;},onSay:fn=>{cb.say=fn;},onEnd:fn=>{cb.end=fn;},onBuild:fn=>{cb.build=fn;},
+    onClose:fn=>{cb.close=fn;},onTap:fn=>{cb.tap=fn;},onKey:fn=>{cb.key=fn;},onSpot:fn=>{cb.spot=fn;},onEmote:fn=>{cb.emote=fn;},onSay:fn=>{cb.say=fn;},onEnd:fn=>{cb.end=fn;},onBuild:fn=>{cb.build=fn;},onFun:fn=>{cb.fun=fn;},
     open(L,trip){
       const owner=trip.mine;
       dialog.innerHTML=`<div class="isl-layout">
@@ -239,6 +255,7 @@ export function createView(){
           <div class="isl-tags" aria-hidden="true"></div><p class="isl-loading" role="status">${esc(trip.kind==='heli'?'🚁 Trực thăng đang hạ cánh…':trip.kind==='plane'?'✈️ Máy bay đang hạ cánh…':'🛥️ Thuyền đang cập bến…')}</p>
           <p class="isl-notice" role="status" aria-live="polite" hidden></p></div>
         <footer class="isl-bar">
+          <div class="isl-row isl-fun" role="group" aria-label="Chơi trên đảo" hidden></div>
           <div class="isl-row isl-spots" role="group" aria-label="Chỗ chơi trên đảo">${spotChips(L.spots)}</div>
           <div class="isl-row isl-emotes" role="group" aria-label="Biểu cảm">${EMOTES.map(([id,e,name])=>`<button type="button" class="isl-emo" data-emote="${id}" aria-label="${esc(name)}" title="${esc(name)}">${e}</button>`).join('')}</div>
           <form class="isl-say"><input type="text" maxlength="120" autocomplete="off" enterkeyhint="send" placeholder="Nói gì đó với mọi người…" aria-label="Nói với mọi người trên đảo"><button type="submit" class="btn primary">Gửi</button></form>
@@ -249,12 +266,16 @@ export function createView(){
       on(dialog,'click',e=>{const b=e.target.closest('button');if(!b)return;
         if(b.hasAttribute('data-out')){view.inside(null);return;}
         if(b.hasAttribute('data-close'))cb.close();else if(b.hasAttribute('data-end'))cb.end?.();else if(b.hasAttribute('data-build'))cb.build?.();
-        else if(b.dataset.spot)cb.spot(b.dataset.spot);else if(b.dataset.emote)cb.emote(b.dataset.emote);});
+        else if(b.dataset.spot)cb.spot(b.dataset.spot);else if(b.dataset.emote)cb.emote(b.dataset.emote);else if(b.dataset.fun)cb.fun(b.dataset.fun);});
       on(dialog,'submit',e=>{e.preventDefault();const text=input.value.trim();if(text&&cb.say(text)!==false)input.value='';});
       bind(canvas);
       on(window,'pagehide',()=>cb.close());
       document.body.append(dialog);dialog.showModal();
     },
+    /** 🏖️ The beach activities and the chest (game/island_fun.py), done ones faded. */
+    fun(list){const row=dialog.querySelector('.isl-fun');if(!row)return;
+      const html=list.map(a=>`<button type="button" class="isl-chip${a.chest?' chest':''}${a.done?' done':''}" data-fun="${esc(a.id)}"${a.done?' aria-pressed="true"':''}>${esc(a.emoji)} ${esc(a.name)}${a.done?' ✓':''}</button>`).join('');
+      if(row._html!==html){row.innerHTML=html;row._html=html;}row.hidden=!list.length;},
     /** 🏗️ The spot buttons again (a building finished, was built or razed). */
     spots(list){const row=dialog.querySelector('.isl-spots');const html=spotChips(list);if(row&&row._html!==html){row.innerHTML=html;row._html=html;}},
     /** ⏳ The construction sites' time left, under each one. */

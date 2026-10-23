@@ -151,3 +151,8 @@ dialog.isl-scene{position:fixed;inset:0;margin:0;padding:0;width:100vw;max-width
 .isl-inside-bar .btn{min-height:44px}
 @media(max-height:500px){.isl-inside{gap:8px;padding:8px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left))}.isl-room{width:min(520px,100%,calc((100vh - 96px) * 1.6))}}
 @media(prefers-reduced-motion:reduce){.isl-inside{animation:none}}
+
+/* 🏖️ Chơi trên đảo (game/island_fun.py): the beach activities and the daily chest, a row of chips over the spots */
+.isl-fun .isl-chip{background:#f3fbff;border-color:#9ccbe0;color:#163b4d}
+.isl-fun .isl-chip.done{opacity:.55}
+.isl-fun .isl-chip.chest{border-color:#d4a838;background:#fff6d5;color:#4a3606;font-weight:700}

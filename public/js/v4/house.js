@@ -189,6 +189,8 @@ async function onClick(op,data){
     case'leaveEstate':await send('jr_lux_live',{id:null});return;   // 🏰 out of the villa, back to the home in journey.home
     case'inside':S.dlg.close();(await import('./reno.js')).openReno(S.env,data.mode);return;   // 🛠️ Trong nhà: xem, sửa, trang trí
     case'garage':S.dlg.close();(await import('./garage.js')).openGarage(S.env);return;   // 🚗 the vehicle parked out front
+    case'overview':S.dlg.close();(await import('./home-overview.js')).openOverview(S.env);return;   // 🗺️ Tổng quan nhà
+    case'hamxe':S.dlg.close();(await import('./villa-garage.js')).openVillaGarage(S.env);return;   // 🚘 Hầm để xe
     case'wardrobe':S.dlg.close();S.env.openSheet('home',{jrView:'wardrobe'});return;   // 👗 Tủ đồ (v4/wardrobe.js)
     case'family':S.dlg.close();S.env.openSheet('home',{jrView:'household'});return;
     case'homeGuests':S.dlg.close();S.env.act('homeGuests',{});return;
@@ -352,12 +354,19 @@ function placeCard(v){
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn(stay?'🚪 Vào nhà bạn':'🚪 Vào nhà','inside',{},'primary')}${worn&&!stay?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;
   if(p.where_id==='lease')actions+=`<div class="bk-actions">${btn('Hợp đồng & gia hạn','rentals',{},'ghost')}</div>`;
-  actions+=parked();
+  actions+=parked()+overviewRow();
   actions+=clean()?`<div class="bk-actions hs-fam-row">${btn('🏡 Gia đình','sharedFamily',{},'cream',' aria-label="Nhà & Gia đình (cả mục Con chung)"')}${btn('👥 Mời bạn','homeGuests',{},'cream',' aria-label="Mời bạn về nhà"')}</div>`
     :`<div class="bk-actions">${btn('🏡 Nhà & Gia đình','sharedFamily',{},'cream')}${btn('Mời bạn về nhà','homeGuests',{},'cream')}${btn('👶 Con chung','sharedFamily',{section:'children'},'cream')}</div>`;
   const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
   return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow">${clean()?'':'<small>Nơi bạn đang ở</small>'}<h3>${esc(p.name)}</h3>${clean()?tip(esc(p.where||''),esc(p.name||'')):`<small>${esc(p.where||'')}</small>`}</div></div>
     ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk&&!bed?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
+}
+
+/* 🗺️ Tổng quan nhà and 🚘 Hầm để xe (game/home_overview.py, game/villa_garage.py; absent: an older server). */
+function overviewRow(){
+  const hl=J().homelife;if(!hl?.ov?.kind)return '';
+  const hx=hl.hamxe,ham=hx?.style==='ham',cars=J().garage?.cars?.length||0;
+  return `<div class="bk-actions hs-fam-row">${btn('🗺️ Tổng quan nhà','overview',{},'cream')}${hx&&(ham||cars)?btn(ham?`🚘 Hầm xe · ${hx.park.length}/${hx.slots}`:'🅿️ Chỗ để xe','hamxe',{},'cream'):''}</div>`;
 }
 
 /* 🚗 The vehicle the player rides (game/garage.py), parked out front: one line, a tap opens the garage. */
