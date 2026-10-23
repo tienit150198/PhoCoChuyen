@@ -694,7 +694,7 @@ function frame(now){
   const raw=F.last?now-F.last:0;F.last=now;
   F.raf=requestAnimationFrame(frame);F.seenCheck++;
   lessonTick();
-  if(F.lessonPaused){draw();return;}
+  if(F.lessonPaused){if(!(now-(F.pausedDraw||0)<250))F.pausedDraw=now;else return;draw();return;}   // 23/10 lag: nothing moves under the lesson card; 4 redraws a second keep a resize or view switch fresh
   const dt=Math.min(.05,Math.max(0,raw/1000));
   F.time+=dt;
   measure(raw,now);

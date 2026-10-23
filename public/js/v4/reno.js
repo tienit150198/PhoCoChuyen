@@ -223,7 +223,7 @@ function refreshMate(){
 async function loadMate(){
   clearTimeout(S.mateTimer);S.mateTimer=0;
   if(S.remote){
-    try{if(await guest.refresh(readGuest)&&S.dlg?.open&&!S.drag&&!S.press&&!S.gesture3d)render();}
+    try{const was=JSON.stringify(S.remote);if(await guest.refresh(readGuest)&&JSON.stringify(S.remote)!==was&&S.dlg?.open&&!S.drag&&!S.press&&!S.gesture3d)render();}   // 23/10 lag: the 5 s visit poll redraws the whole room (every piece and figure) only when the host's home changed
     catch(e){
       if([401,403,404,409,410].includes(e.status)){S.dlg?.close();S.env.toast?.(e.message||'Lời mời vào nhà đã hết hiệu lực.','hint');return;}
     }

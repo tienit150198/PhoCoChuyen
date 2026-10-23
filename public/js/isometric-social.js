@@ -71,7 +71,8 @@ export function createTownSocial(envGetter,options={}){
       if(now()>=b.until||!eligible(pid)){drop(pid);continue;}
       const point=w?.getSocialAnchor?.(pid===snapshot.me?null:pid);
       const visible=point&&Number.isFinite(point.x)&&Number.isFinite(point.y)&&(!rect||(point.x>=rect.left&&point.x<=rect.right&&point.y>=rect.top&&point.y<=rect.bottom));
-      b.node.hidden=!visible;if(visible){b.node.style.left=`${point.x}px`;b.node.style.top=`${point.y}px`;}
+      // 23/10 lag: written only when they change (each write after the canvas measure forced a layout per bubble per frame)
+      if(b.node.hidden!==!visible)b.node.hidden=!visible;if(visible&&(b.x!==point.x||b.y!==point.y)){b.x=point.x;b.y=point.y;b.node.style.left=`${point.x}px`;b.node.style.top=`${point.y}px`;}
     }
     if(bubbles.size)raf=events?.requestAnimationFrame?.(frame)||0;
   }

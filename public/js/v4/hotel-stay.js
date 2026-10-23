@@ -55,7 +55,7 @@ async function load(quiet=false){
   const seq=++S.seq;if(!quiet){S.loading=true;render();}
   try{const v=await api().json('/api/hotel/view');if(seq!==S.seq)return;S.v=v;S.skew=(Number(v.now)||Date.now()/1000)-Date.now()/1000;pickTab(v);}
   catch(e){if(seq===S.seq)S.flash={kind:'bad',text:e.message||'Chưa tải được. Thử lại nhé.'};}
-  finally{if(seq===S.seq){S.loading=false;render();}}
+  finally{if(seq===S.seq){S.loading=false;render(quiet);}}   // 23/10 lag: a background poll redraws only when the page changed
 }
 async function post(route,body){
   if(S.busy)return null;S.busy=true;S.flash=null;render();
@@ -97,10 +97,10 @@ async function click(op,d){
 }
 
 /* ---------------------------------------------------------------- views */
-function render(){
+function render(same=false){
   if(!S.dlg)return;
-  const root=S.dlg.querySelector('.sd-root'),top=S.dlg.scrollTop;
-  root.innerHTML=page();S.dlg.scrollTop=top;
+  const root=S.dlg.querySelector('.sd-root'),top=S.dlg.scrollTop,html=page();
+  if(!(same&&root._h===html)){root.innerHTML=html;root._h=html;S.dlg.scrollTop=top;}
   S.dlg.setAttribute('aria-busy',String(!!(S.busy||S.loading)));
 }
 function page(){

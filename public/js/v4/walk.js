@@ -790,7 +790,7 @@ function draw(ts,t){
     if(p.ride&&!p.s){p.fig??=figureOf(withPairs(p.lk,p.pr),p.g);const q=pill.get(p.pid);if(q)q.fig??=figureOf(withPairs(q.lk,q.pr),q.g);
       if(q?.pid===myPid){c.fillStyle=dark?'rgba(255,170,130,.38)':'rgba(196,75,48,.25)';c.beginPath();c.ellipse(p.x,p.y+2,36,8,0,0,Math.PI*2);c.fill();}
       const pt=p.pt||q?.pt,pet=pt?petImg(ct?.journey?.pets,pt,'sit'):null;   // 🐾 the pet rides along in the basket (góp ý #413)
-      drawRide(c,{x:p.x,y:p.y,s:AV,px:dpr*S.k,F:p.fig,fkey:'w'+JSON.stringify([p.lk,p.g]),F2:q?.fig||null,fkey2:q?'w'+JSON.stringify([q.lk,q.g]):'',v:p.ride,r:p.rv,pet,pkey:pet?JSON.stringify([pt.b,pt.c,pt.a]):''});continue;}
+      drawRide(c,{x:p.x,y:p.y,s:AV,px:dpr*S.k,F:p.fig,fkey:p.fkey??='w'+JSON.stringify([p.lk,p.g]),F2:q?.fig||null,fkey2:q?q.fkey??='w'+JSON.stringify([q.lk,q.g]):'',v:p.ride,r:p.rv,pet,pkey:pet?JSON.stringify([pt.b,pt.c,pt.a]):''});continue;}
     const sp=sprite(p);
     if(fx&&!p.moving&&!p.s&&onStage(p.x,p.y)){   // 💃 on the dance floor: bob and sway on the beat, a spin on 💃
       const ph=fx.bt.ph,side=fx.bt.n%2?1:-1,spin=p.emo?.e==='💃'&&!calm?(now-p.emo.t0)/1000:9;
@@ -861,18 +861,20 @@ function coupleTags(c,list,pids,sx,sy){
   out.set(a.pid,la);out.set(b.pid,lb);return out;
 }
 function wedTagW(c,p){
-  c.font='800 14px "Trebuchet MS",sans-serif';const nw=c.measureText(`👰 ${p.name}`).width;
-  let tw=0;if(p.ti){c.font='700 10.5px "Trebuchet MS",sans-serif';tw=c.measureText(p.ti).width;}
+  const nw=textW(c,'800 14px "Trebuchet MS",sans-serif',`👰 ${p.name}`);
+  const tw=p.ti?textW(c,'700 10.5px "Trebuchet MS",sans-serif',p.ti):0;
   return Math.max(nw,tw)+20;
 }
+/** A text's width in a font, measured once (23/10 lag: every name tag was measured again on every frame). */
+const WIDTHS=new Map();
+function textW(c,font,text){const key=font+'|'+text;let w=WIDTHS.get(key);if(w==null){c.font=font;w=c.measureText(text).width;WIDTHS.set(key,w);if(WIDTHS.size>600)WIDTHS.delete(WIDTHS.keys().next().value);}return w;}
 /** A name tag above someone. wed: the bride ('f'), the groom ('m') or either ('x') at their wedding: a bigger gold and
  * rose pill with 👰/🤵, the same on light and dark (dark text on a light pill). */
 function tag(c,x,y,name,title,mine,dark,wed,st=null){
   c.textAlign='center';c.textBaseline='bottom';
   if(wed){
     const label=`${wed==='f'?'👰':wed==='m'?'🤵':'💍'} ${name}`;
-    c.font='800 14px "Trebuchet MS",sans-serif';const nw=c.measureText(label).width;
-    let tw=0;if(title){c.font='700 10.5px "Trebuchet MS",sans-serif';tw=c.measureText(title).width;}
+    const nw=textW(c,'800 14px "Trebuchet MS",sans-serif',label),tw=title?textW(c,'700 10.5px "Trebuchet MS",sans-serif',title):0;
     const w=Math.max(nw,tw)+20,h=title?34:22,g=c.createLinearGradient(x-w/2,0,x+w/2,0);
     g.addColorStop(0,'#ffe08a');g.addColorStop(.5,'#ffd1dc');g.addColorStop(1,'#f7a8c4');
     c.shadowColor='rgba(120,30,60,.35)';c.shadowBlur=6;c.shadowOffsetY=1.5;
@@ -882,8 +884,7 @@ function tag(c,x,y,name,title,mine,dark,wed,st=null){
     if(title){c.font='700 10.5px "Trebuchet MS",sans-serif';c.fillStyle='#9a4a12';c.fillText(title,x,y-3);}
     return;
   }
-  c.font='700 11.5px "Trebuchet MS",sans-serif';const nw=c.measureText(name).width;
-  let tw=0;if(title){c.font='600 9.5px "Trebuchet MS",sans-serif';tw=c.measureText(title).width;}
+  const nw=textW(c,'700 11.5px "Trebuchet MS",sans-serif',name),tw=title?textW(c,'600 9.5px "Trebuchet MS",sans-serif',title):0;
   const w=Math.max(nw,tw)+12,hgt=title?28:17,sp=st?stPaint(S.env?.api,st,dark):null;
   c.fillStyle=dark?'rgba(24,24,34,.78)':'rgba(255,253,248,.86)';c.beginPath();c.roundRect(x-w/2,y-hgt,w,hgt,8);c.fill();
   if(sp?.ring){c.strokeStyle=sp.ring;c.lineWidth=2;c.stroke();}   // 🎨 a frame of the week: the pill's border

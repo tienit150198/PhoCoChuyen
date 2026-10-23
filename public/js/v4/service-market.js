@@ -78,7 +78,7 @@ async function load(quiet=false){
     else if(S.tab==='mine'){S.mine=await api().json('/api/svc/mine');}
     if(seq!==S.seq)return;
   }catch(e){if(seq===S.seq)S.flash={kind:'bad',text:e.message||'Chưa tải được. Thử lại nhé.'};}
-  finally{if(seq===S.seq){S.loading=false;render();}}
+  finally{if(seq===S.seq){S.loading=false;render(quiet);}}   // 23/10 lag: a background poll redraws only when the page changed
 }
 
 async function openProvider(pid,data={}){
@@ -201,11 +201,14 @@ function ownSetting(m){
 const unit=(m,mult)=>Math.max(m.lo,Math.min(m.hi,m.base*mult));
 
 /* ---------------------------------------------------------------- views */
-function render(){
+function render(same=false){
   if(!S.dlg)return;
-  const root=S.dlg.querySelector('.sd-root'),top=S.dlg.scrollTop,focus=focusSnapshot(document.activeElement?.closest?.('.svc-sheet')?document.activeElement:null);
-  root.innerHTML=page();
-  S.dlg.scrollTop=top;if(focus?.id)restoreInputFocus(root,focus);
+  const html=page(),root=S.dlg.querySelector('.sd-root');
+  if(!(same&&root._h===html)){
+    const top=S.dlg.scrollTop,focus=focusSnapshot(document.activeElement?.closest?.('.svc-sheet')?document.activeElement:null);
+    root.innerHTML=html;root._h=html;
+    S.dlg.scrollTop=top;if(focus?.id)restoreInputFocus(root,focus);
+  }
   S.dlg.setAttribute('aria-busy',String(!!(S.busy||S.loading)));
 }
 function page(){

@@ -344,10 +344,14 @@ export function setup(ctx){
     c.save();c.translate(m.x,m.y);c.scale(s,s);
     if(m.path?.length&&!still())c.translate(0,-Math.abs(Math.sin(m.step))*3);
     try{
-      const me=myFig(),px=Math.max(.1,W.dpr*W.k*s),key=`${me.fk}|${Math.round(px*100)}`;
+      // 23/10 lag: the scale follows the depth (y), so the 1/100 key changed every few steps and repainted the whole figure
+      // on a new canvas while walking up or down; now its pixels are rounded up to 1/8 (≤ 6% drawn down) and the last few kept
+      const me=myFig(),px=Math.ceil(Math.max(.1,W.dpr*W.k*s)*8)/8,key=`${me.fk}|${px}`;
       if(W.avatar?.key!==key){
-        const cv=document.createElement('canvas');cv.width=Math.ceil(110*px);cv.height=Math.ceil(160*px);
-        const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);paintPlayer(q,me.F,CANVAS);W.avatar={key,cv};
+        const A=W.avatars?.fk===me.fk?W.avatars:(W.avatars={fk:me.fk,at:new Map()});let cv=A.at.get(px);
+        if(!cv){cv=document.createElement('canvas');cv.width=Math.ceil(110*px);cv.height=Math.ceil(160*px);
+          const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);paintPlayer(q,me.F,CANVAS);A.at.set(px,cv);if(A.at.size>4)A.at.delete(A.at.keys().next().value);}
+        W.avatar={key,cv};
       }
       c.drawImage(W.avatar.cv,-55,-150,110,160);
     }catch{/* look not ready */}

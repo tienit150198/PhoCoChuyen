@@ -32,12 +32,20 @@ const themes={
 };
 const HEX=/^#[0-9a-f]{6}$/i;
 const mix=(a,b,t)=>{const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+// 23/10 lag: palette() runs for every person, label and prop on every frame; a career's theme (five colour mixes) is kept
+// by everything it is made of, all still read each time (the room watch sees them; a late English dictionary too)
+const THEMES=new Map();
 /** Scene palette for plugin careers, derived from their catalogue colours. */
 function pluginTheme(m){
+  const motto=String(m.tagline||'').split(/[.!]/)[0],sub=[tr(m.short||''),tr(motto)].filter(Boolean).join(' · ').toUpperCase();
+  const key=[m.color,m.light,m.place,m.short,m.station,m.work,sub].join('|');let hit=THEMES.get(key);
+  if(!hit){hit=pluginThemeOf(m,sub);THEMES.set(key,hit);if(THEMES.size>64)THEMES.delete(THEMES.keys().next().value);}
+  return hit;
+}
+function pluginThemeOf(m,sub){
   const col=HEX.test(m.color||'')?m.color:'#cf839c',light=HEX.test(m.light||'')?m.light:mix(col,'#ffffff',.88);
-  const motto=String(m.tagline||'').split(/[.!]/)[0];
   return {primary:col,dark:mix(col,'#000000',.32),light,mint:mix(col,'#a8d8c8',.65),wall:mix(light,'#fff8ee',.45),awning:mix(col,'#ffffff',.38),
-    title:m.place||m.short||'',sub:[tr(m.short||''),tr(motto)].filter(Boolean).join(' · ').toUpperCase(),shelves:[m.station||m.short||'',m.work||'']};
+    title:m.place||m.short||'',sub,shelves:[m.station||m.short||'',m.work||'']};
 }
 /* ------------------------------------------------------------ Floor plan */
 const CLEAR={x:22,y:7};          // walker's own half-size around footprints

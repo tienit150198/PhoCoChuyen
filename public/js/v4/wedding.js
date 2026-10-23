@@ -42,8 +42,9 @@ export async function openWeddings(env){
 
 function render(){
   const body=S.dlg?.querySelector('.wd-body');if(!body)return;
-  if(live.state!=='open'&&!S.list){body.innerHTML=`<p class="wd-empty">${icon('refresh',16)} Đang kết nối…</p>`;return;}
-  if(!S.list){body.innerHTML='<div class="mnl-skel" role="status" aria-busy="true"><i></i><i></i><i></i></div>';return;}
+  const put=h=>{if(body._h!==h){body.innerHTML=h;body._h=h;}};   // 23/10 lag: this runs every second; the list is rebuilt only when a line changed
+  if(live.state!=='open'&&!S.list){put(`<p class="wd-empty">${icon('refresh',16)} Đang kết nối…</p>`);return;}
+  if(!S.list){put('<div class="mnl-skel" role="status" aria-busy="true"><i></i><i></i><i></i></div>');return;}
   const t=now();
   const rows=S.list.filter(p=>p.end>t).map(p=>{
     const opens=p.at-S.open,going=t>=opens;
@@ -53,8 +54,8 @@ function render(){
       <small>${esc(when(p.at))}${state?` · ${esc(state)}`:''}</small></div>
       ${going?`<button type="button" class="wk-pill primary" data-wd="go" data-id="${p.id}">Vào dự${p.n?` · ${p.n}`:''}</button>`:''}</li>`;
   });
-  body.innerHTML=(rows.length?`<ul class="wd-list">${rows.join('')}</ul>`:`<p class="wd-empty">Chưa có đám cưới nào sắp tới.</p>`)+
-    `<button type="button" class="wd-race" data-wd="race">🏆 Khách mời của tuần</button>`;
+  put((rows.length?`<ul class="wd-list">${rows.join('')}</ul>`:`<p class="wd-empty">Chưa có đám cưới nào sắp tới.</p>`)+
+    `<button type="button" class="wd-race" data-wd="race">🏆 Khách mời của tuần</button>`);
 }
 
 async function act(a,d){
