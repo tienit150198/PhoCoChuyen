@@ -29,3 +29,38 @@ class BigCommandLog(unittest.TestCase):
         self.assertEqual(out.count('\n'), 1)
         self.assertIn('action=x?y??z??', out)
         self.assertLess(len(out), 120)
+
+
+class InvalidDataLog(unittest.TestCase):
+    """23/10 (Kai): "Dữ liệu không đúng cấu trúc" told nobody which command broke. server._log_invalid_data writes
+    the route, action, career, exception type and the last frames, never a payload value."""
+
+    def line(self, data, err):
+        out = io.StringIO()
+        server._bad_budget[:] = [0.0, 0]
+        with contextlib.redirect_stderr(out):
+            server._log_invalid_data('/api/command', data, err)
+        return out.getvalue()
+
+    def test_action_type_and_frames(self):
+        def boom(d):
+            return d['missing']
+        try:
+            boom({})
+        except KeyError as e:
+            out = self.line(dict(action='inv_receive', career='canteen', payload=dict(note='bí mật')), e)
+        self.assertTrue(out.startswith('[cmd-400] /api/command action=inv_receive career=canteen KeyError @ '), out)
+        self.assertIn('test_command_413_log.py:', out)
+        self.assertIn(':boom', out)
+        self.assertNotIn('bí mật', out)
+        self.assertEqual(out.count('\n'), 1)
+
+    def test_not_a_dict_and_the_cap(self):
+        out = self.line(None, ValueError('x'))
+        self.assertIn('action=- career=- ValueError', out)
+        err = io.StringIO()
+        server._bad_budget[:] = [0.0, 0]
+        with contextlib.redirect_stderr(err):
+            for _ in range(40):
+                server._log_invalid_data('/api/command', {}, ValueError('x'))
+        self.assertEqual(err.getvalue().count('\n'), 30)
