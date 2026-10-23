@@ -27,6 +27,9 @@ COUNTRIES = (
          docs=('anh', 'sao_ke', 'cong_viec', 'lich_trinh'), lang='tieng_anh', interview=3),
     dict(id='chau_au', flag='🇪🇺', name='Châu Âu', cities='Paris · Rome · Praha', trip=24000, visa=2500, days=100, bank=3,
          docs=('anh', 'sao_ke', 'cong_viec', 'lich_trinh', 'bao_hiem'), lang='tieng_phap'),
+    # 🇦🇺 23/10 (#464, game/travel.py): Úc joins so a real trip to Sydney has a visa to ask for.
+    dict(id='uc', flag='🇦🇺', name='Úc', cities='Sydney · Melbourne', trip=16000, visa=1500, days=90, bank=2,
+         docs=('anh', 'sao_ke', 'cong_viec', 'lich_trinh'), lang='tieng_anh'),
 )
 CLASSES = (
     dict(id='pho_thong', emoji='💺', name='Phổ thông', mult=1),
@@ -71,6 +74,9 @@ TRIP_LINES = {
     'chau_au': ('Tàu đêm Paris – Rome trễ hai tiếng, cả toa ngồi ăn bánh mì kể chuyện.',
                 'Đứng dưới tháp Eiffel lúc đèn nhấp nháy, cả nhóm hò reo.',
                 'Phố cổ Praha lát đá, kéo vali kêu lộc cộc suốt buổi sáng.'),
+    'uc': ('Chuyến bay đêm dài, sáng ra đã thấy Nhà hát Con Sò trắng muốt bên cảng.',
+           'Bạn cho kangaroo ăn, bé koala ôm cây ngủ gật.',
+           'Biển Bondi sóng to, bạn đứng trên ván lướt được đúng ba giây.'),
 }
 # Bought in the country, the life day of the trip only. Not resold: a pure sink (a keepsake, not an asset).
 SOUVENIRS = {
@@ -89,6 +95,9 @@ SOUVENIRS = {
     'chau_au': (dict(id='nuoc_hoa_paris', emoji='🌸', name='Nước hoa Paris', price=2000),
                 dict(id='pha_le_bohemia', emoji='🔮', name='Pha lê Bohemia', price=6000),
                 dict(id='tui_florence', emoji='👜', name='Túi da Florence', price=18000)),
+    'uc': (dict(id='mu_cao_boi_uc', emoji='🤠', name='Mũ cao bồi Úc', price=500),
+           dict(id='len_merino', emoji='🧶', name='Áo len Merino', price=3000),
+           dict(id='opal_den', emoji='💎', name='Đá opal đen', price=16000)),
 }
 SOUV_MAX = 99               # copies of one souvenir kept
 

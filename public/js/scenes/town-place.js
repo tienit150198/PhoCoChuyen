@@ -41,7 +41,8 @@ export const LANDMARKS={
   karaoke:{emoji:'🎤',name:'Phòng hát Mây',action:'liveKara'},   // 🎤 v4/karaoke.js: only while the live service has it on (else not built)
   ghepba:{emoji:'🧩',name:'Ghép ba Phố Mây',action:'tileMatch'},   // 🧩 v4/tile-match.js (game/tile_match.py)
   // 🛍️ Mua sắm (v4/lux.js, game/lux.py): each door opens its tab
-  travel:{emoji:'✈️',name:'Đại lý vé',action:'luxTrip'},hanghieu:{emoji:'💎',name:'Hàng hiệu',action:'luxSuu'},
+  travel:{emoji:'✈️',name:'Đại lý vé',action:'travel'},   // ✈️ v4/travel.js (#464): vé, chuyến bay, tham quan
+  hanghieu:{emoji:'💎',name:'Hàng hiệu',action:'luxSuu'},
   duhoc:{emoji:'🎓',name:'Du học & việc làm',action:'abroad'},   // ✈️🌏 v4/abroad.js, game/abroad.py
   mtq:{emoji:'🎆',name:'Mạnh Thường Quân',action:'luxMtq'},dinhthu:{emoji:'🏰',name:'Dinh thự',action:'luxNha'},
   // 🔨 Nhà đấu giá đồ độc bản (v4/auction.js, game/auction.py); 🏞️ the plaques of the landmarks named at auction

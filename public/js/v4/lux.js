@@ -68,6 +68,8 @@ export async function openLux(env,tab){
   render();
   if(S.tab==='mtq')loadBoard();
 }
+/** 🛂 The visa tab on one country (v4/travel.js: "Làm visa" on a place that needs one). */
+export async function openLuxVisa(env,cid){if(cid)S.country=cid;S.iv=null;S.answers=[];S.souv='';await openLux(env,'trip');}
 export async function luxAction(action,data,el,env){
   if(!(action in ACTIONS))return false;
   if(action==='luxFw'){S.give='phao_hoa';S.slot=0;}
@@ -117,6 +119,8 @@ const visaLeft=c=>(V()?.visa||{})[c.id]||0;
 const tripPrice=(c,cls)=>c.trip*(CAT().classes.find(x=>x.id===cls)?.mult||1);
 const insurePrice=c=>Math.floor(c.trip*CAT().insure_pct/100);
 const souvOpen=c=>today().includes(`in_${c.id}`);
+/** ✈️ The place of game/travel.py this visa opens ('' with a server from before #464: the one-tap trip stays). */
+const tvTo=cid=>S.env?.api?.content?.journey?.travel?.dests?.find(d=>d.visa===cid)?.id||'';
 
 /** The bottom bar's one button: [label, op, why (disabled reason)]. */
 function main(v){
@@ -124,6 +128,7 @@ function main(v){
     case'trip':{const c=country();
       if(visaLeft(c)){
         if(souvOpen(c)&&S.souv){const it=CAT().souvenirs[c.id].find(x=>x.id===S.souv);return [`Mua quà · ${fmt(it.price)} xu`,'souv',readyWhy(it.price)];}
+        if(tvTo(c.id))return ['✈️ Đặt vé máy bay','travel',''];   // ✈️ #464: the real trip (v4/travel.js) once the server has it
         const p=tripPrice(c,S.cls);return today().includes('trip')?['Mai bay tiếp','trip','Hôm nay đã đi']:[`Bay · ${fmt(p)} xu`,'trip',readyWhy(p)];}
       if(asks(c).length&&!answered(c))return [S.iv==null?'🗣️ Phỏng vấn':'Trả lời câu hỏi','iv',S.iv==null?'':'Chọn một câu trả lời'];
       return [`Nộp hồ sơ · ${fmt(c.visa)} xu`,'visa',docsOf(c).size?readyWhy(c.visa):'Chọn giấy tờ'];}
@@ -182,7 +187,8 @@ async function onClick(op,data){
     case'leave':await send('jr_lux_live',{id:null});return;
     case'go':{
       const [,what]=main(v);
-      if(what==='trip')await send('jr_lux_trip',{country:country().id,cls:S.cls,confirm:true});
+      if(what==='travel'){const to=tvTo(country().id);S.dlg.close();await (await import('./travel.js')).openTravel(S.env,{to});}
+      else if(what==='trip')await send('jr_lux_trip',{country:country().id,cls:S.cls,confirm:true});
       else if(what==='souv')await send('jr_lux_souv',{id:S.souv});
       else if(what==='iv'){S.iv=0;S.answers=[];render();}
       else if(what==='visa'){const c=country(),r=await send('jr_lux_visa',{country:c.id,docs:[...docsOf(c)],answers:asks(c).map((_,i)=>S.answers[i]??0),confirm:true});if(r){S.answers=[];S.iv=null;}}
@@ -243,6 +249,7 @@ function trip(v,c){
   const co=country(),left=visaLeft(co),n=(v.trips||{})[co.id]||0;
   const chips=`<div class="sd-chips">${c.countries.map(x=>chip('country',x.id,x.flag,x.id===co.id,x.name)).join('')}</div>`;
   const head=`<h3>${co.flag} ${esc(co.name)}</h3><p class="lx-sub">🛂 ${left?`còn ${left} ngày`:'chưa có visa'}${n?` · 📕×${n}`:''}</p>`;
+  if(left&&tvTo(co.id)&&!souvOpen(co))return chips+`<section class="sd-card">${head}<p class="lx-sub">✈️ Visa còn hạn. Đặt vé ở Du lịch: chọn ngày bay (đặt sớm rẻ hơn), lên máy bay, tham quan.</p></section>`;
   if(left){
     const cls=c.classes.map(x=>row('cls',x.id,x.emoji,x.name,fmt(tripPrice(co,x.id)),x.id===S.cls)).join('');
     const sv=souvOpen(co)?`<h4>🎁 Quà</h4><div class="sd-list">${c.souvenirs[co.id].map(x=>row('souv',x.id,x.emoji,x.name,fmt(x.price),x.id===S.souv,(v.souv||{})[x.id]?`<i>×${v.souv[x.id]}</i>`:'')).join('')}</div>`:'';

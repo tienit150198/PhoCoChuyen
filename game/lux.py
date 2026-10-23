@@ -11,6 +11,8 @@ caps, and public plaques.
   employer letter, an itinerary, travel insurance for Europe) and the US asks three interview questions. The fee is paid
   whatever happens; a missing or bad paper means a refusal (the first problem is named). A visa lasts some life days;
   then any class, one trip a life day: the album, a passport stamp, tinh thần, souvenirs of that country (that day only).
+  Since #464 (23/10) the page books real trips with that visa through ✈️ game/travel.py (a flight, the crew, the spots);
+  jr_lux_trip stays for pages from before. Úc joined the five countries then.
 * 💎 Sưu tập (jr_lux_buy / jr_lux_sell, jr_lux_open for wine): six sets of five pieces, ★ to ★★★★, one of each.
   Resold at SELL_PCT %; an opened bottle is gone (a line in the album).
 * 🏰 Dinh thự (jr_lux_buy / jr_lux_sell, jr_lux_live {id | None}): six villas, 150,000 → 2,500,000 xu
