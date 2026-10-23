@@ -135,7 +135,7 @@ export function workVisitsBoot(env){if(O.env)return;O.env=env;O.settlementSync=c
  O.mountObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-layout','data-game']});
  ownerMount();
  O.poller=createQuayPoller({active:()=>!document.hidden&&!S.dlg?.open,refresh,failed:()=>{}});O.poller.start();refresh().catch(()=>{});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){if(O.joined&&!S.dlg?.open)env.live?.()?.send({t:'visit_out'});O.joined=false;}else{O.nextOrders=0;refresh().catch(()=>{});}});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){O.hiddenAt=Date.now();if(O.joined&&!S.dlg?.open)env.live?.()?.send({t:'visit_out'});O.joined=false;}else{if(Date.now()-(O.hiddenAt||0)>=30000)O.nextOrders=0;refresh().catch(()=>{});}});   // a short app switch keeps the 30 s order poll (23/10 lag)
  env.api.addEventListener('state',()=>{if(O.current!==env.api.state?.current)O.lastPlaces=0;});
 }
 function renderOwner(){

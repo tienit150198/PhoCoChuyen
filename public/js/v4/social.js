@@ -266,8 +266,9 @@ export async function socialSubmit(form,env){
 
 /** Keeps the Phố nghề badge fresh while the tab is visible (cheap GET, once a minute). */
 export function startSocialPoll(env){
+  let last=0;   // a phone flipping between apps: one read per BACK_GAP, not one per return (23/10 lag)
   const tick=async()=>{
-    if(document.hidden)return;
+    if(document.hidden)return;last=Date.now();
     try{
       const d=await env.api.socialGet('me');
       env.api.social={...(env.api.social||{}),unread:d.unread,community:d.community,me:d.me};
@@ -275,5 +276,5 @@ export function startSocialPoll(env){
       if(btn){let b=btn.querySelector('.badge');if(d.unread){if(!b){b=document.createElement('em');b.className='badge';btn.append(b);}b.textContent=d.unread;}else b?.remove();}
     }catch{/* offline: try again later */}
   };
-  setInterval(tick,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+  setInterval(tick,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-last>=30000)tick();});
 }

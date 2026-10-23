@@ -124,5 +124,6 @@ export function homeGuestsBoot(env){
       const top=data?.deco?.log?.[0]?.id??0;if(N.decoTop!==null&&top!==N.decoTop)env.api.refresh?.().catch(()=>{});N.decoTop=top;}catch{/* Opening the sheet offers a retry. */}finally{N.reading=false;}};
   live.on('home_guests_changed',()=>{read();if(S.dlg?.open&&!S.busy)refresh();});
   live.on('home_changed',()=>{read();if(S.dlg?.open&&!S.busy)refresh();});
-  live.on('welcome',read);document.addEventListener('visibilitychange',read);env.api.addEventListener('state',()=>{if((env.api.account?.username||'')!==N.account)read();});setInterval(read,60000);read();
+  let shown=0;   // back to the tab: one read per 30 s (a phone flipping between apps sent one each time, 23/10 lag)
+  live.on('welcome',read);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-shown>=30000){shown=Date.now();read();}});env.api.addEventListener('state',()=>{if((env.api.account?.username||'')!==N.account)read();});setInterval(read,60000);read();
 }
