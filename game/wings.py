@@ -234,6 +234,8 @@ def action(s: dict, name_: str, p: dict) -> dict:
     if name_ == 'jr_pet_wing_drop':
         _keys(p, {'id', 'confirm'}, {'id', 'confirm'})
         x = _wing(w, p['id'])
+        from . import forge_locks
+        _need(not forge_locks.locked(s, x['id']), f'🔒 {name(x)} đang khóa. Mở khóa rồi hẵng bỏ nhé.', 'locked')
         _need(p['confirm'] is True, f'Xác nhận bỏ {name(x)}.')
         w['own'].remove(x)
         if w['on'] == x['id']:
@@ -253,6 +255,10 @@ def action(s: dict, name_: str, p: dict) -> dict:
     low = min(tiers)
     _need(low < TOP, 'Huyền thoại là hạng cao nhất rồi.', 'full')
     _need(main['r'] < TOP, f'{name(main)} đã là huyền thoại rồi: chọn đôi khác làm cánh chính nhé.', 'full')
+    from . import forge_locks   # 🔒 a locked wing is never an ingredient (it may be the main one)
+    for x in others:
+        if forge_locks.locked(s, x['id']):
+            forge_locks.refuse(name(x))
     fee = FUSE_FEE[low]
     _need(p['confirm'] is True, f'Xác nhận ghép ba đôi cánh ({_fmt(fee)} xu).')
     how = pt._pay(s, fee, f'Ghép cánh · {", ".join(name(x) for x in xs)}'[:120])
@@ -300,23 +306,31 @@ def _seq(x: dict) -> int:
     return int(x['id'][1:])
 
 
-def sets(w: dict, scope: str = 'all', top: int = TOP) -> list:
+def sets(w: dict, scope: str = 'all', top: int = TOP, locks=frozenset(), pin=None) -> list:
     """⚡ What Cường hóa nhanh may fuse now: [(tier, [main, a, b], how many sets of that tier)] for every tier with three
-    wings (of `scope`'s style, or any) whose result is at most `top`, the lowest tier first. The main one is the wing worn
-    when it is among them (it keeps its style and stays on), else the dearest style; the two others the cheapest styles,
-    never the wing worn (the quick pick's rule, owner 23/10)."""
+    wings (of `scope`'s style, or any) whose result is at most `top`, the lowest tier first. The main one is the wing
+    pinned (`pin`, ⚒️ Cường hóa tối đa of one wing), else the wing worn when it is among them (it keeps its style and stays
+    on), else a 🔒 locked one, else the dearest style; the two others the cheapest styles, never the pinned, worn or
+    locked ones (game/forge_locks.py; the quick pick's rule, owner 23/10). With a pin only the tiers up to the pinned
+    wing's own: what is below builds its ingredients, nothing above it is touched."""
+    pinned = next((x for x in w['own'] if x['id'] == pin), None) if pin else None
+    cap = min(top, TOP, pinned['r'] + 1 if pinned['r'] < TOP else 0) if pinned else min(top, TOP)   # a Huyền thoại: nothing
     groups: dict = {}
     for x in w['own']:
-        if (scope == 'all' or x['k'] == scope) and x['r'] < min(top, TOP):
+        if (scope == 'all' or x['k'] == scope) and x['r'] < cap:
             groups.setdefault(x['r'], []).append(x)
+    keep = set(locks) | {i for i in (pin, w['on']) if i}
     out = []
     for r in sorted(groups):
         g = groups[r]
-        if len(g) < 3:
+        free = [x for x in g if x['id'] not in keep]
+        k = min(len(free) // 2, len(g) // 3)   # each set: two free ones and a main one (a kept one, else a free one)
+        if k < 1:
             continue
-        main = next((x for x in g if x['id'] == w['on']), None) or max(g, key=lambda x: (_price(x), -_seq(x)))
-        rest = sorted((x for x in g if x is not main), key=lambda x: (_price(x), _seq(x)))
-        out.append((r, [main, rest[0], rest[1]], len(g) // 3))
+        main = (next((x for x in g if x['id'] == pin), None) or next((x for x in g if x['id'] == w['on']), None)
+                or max(g, key=lambda x: (x['id'] in keep, _price(x), -_seq(x))))
+        rest = sorted((x for x in free if x is not main), key=lambda x: (_price(x), _seq(x)))
+        out.append((r, [main, rest[0], rest[1]], k))
     return out
 
 
@@ -327,7 +341,9 @@ AUTO_STOP = {'done': ' Hết bộ ba để ghép.', 'top': ' Đã tới hạng �
 def _auto(s: dict, p: dict) -> dict:
     """⚡ Cường hóa nhanh (jr_pet_wing_fuse_auto): see the module's doc."""
     from . import pets as pt
-    _keys(p, {'budget', 'top', 'scope', 'rid', 'confirm'}, {'budget', 'confirm'})
+    _keys(p, {'budget', 'top', 'scope', 'rid', 'pin', 'confirm'}, {'budget', 'confirm'})
+    from . import forge_locks   # 🔒 locked wings are never used up; `pin` the main one of this run
+    pin, locks = forge_locks.pin_of(p), forge_locks.ids(s)
     scope = p.get('scope', 'all')
     _need(scope == 'all' or (isinstance(scope, str) and scope in INDEX), 'Chọn một kiểu cánh hoặc tất cả nhé.')
     top = p.get('top', TOP)
@@ -340,8 +356,8 @@ def _auto(s: dict, p: dict) -> dict:
     if rid and w and rid in w['rq']:   # a retried request: the run it made, nothing paid again
         made = [dict(x) for x in w['own'] if x['id'] in w['rq'][rid]]
         return dict(message='⚡ Lượt cường hóa này đã chạy rồi.', duplicate=True, wings=made)
-    first = sets(w, scope, top) if w else []
-    above = bool(w) and top < TOP and bool(sets(w, scope))
+    first = sets(w, scope, top, locks, pin) if w else []
+    above = bool(w) and top < TOP and bool(sets(w, scope, TOP, locks, pin))
     _need(bool(first), f'Đã tới hạng {tier_label(top)} rồi: chọn hạng cao hơn nhé.' if above
           else 'Chưa có ba đôi cánh cùng hạng để ghép.', 'not_owned')
     fee0 = FUSE_FEE[first[0][0]]
@@ -353,9 +369,9 @@ def _auto(s: dict, p: dict) -> dict:
     n = won = spent = 0
     stop = 'done'
     while True:
-        left = sets(w, scope, top)
+        left = sets(w, scope, top, locks, pin)
         if not left:
-            stop = 'top' if top < TOP and sets(w, scope) else 'done'
+            stop = 'top' if top < TOP and sets(w, scope, TOP, locks, pin) else 'done'
             break
         if n >= AUTO_MAX:
             stop = 'cap'
@@ -385,7 +401,7 @@ def _auto(s: dict, p: dict) -> dict:
     from . import forge_news   # 📣 one line for the run: the highest rank reached
     return forge_news.mark(dict(message=f'{msg}{AUTO_STOP[stop]} ({how})', ok=won > 0,
                                 auto=dict(n=n, ok=won, spent=spent, stop=stop, used=used, made=made,
-                                          left=sum(k for _, _, k in sets(w, scope, top)))), 'wing', [_fz(x) for x in made])
+                                          left=sum(k for _, _, k in sets(w, scope, top, locks, pin)))), 'wing', [_fz(x) for x in made])
 
 
 def _fz(x: dict) -> dict:

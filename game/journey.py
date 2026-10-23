@@ -1225,6 +1225,7 @@ def public(s: dict) -> dict:
         **({'restored': rsd} if (rsd := _restored_public(s)) else {}),   # 🧰 only once a player restorer restored something (state size)
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({'wings': wpub} if (wpub := _wings_public(s)) else {}),   # 🪽 only once a wing was bought (game/wings.py)
+        **({'forge_locks': fl} if (fl := _locks_public(s)) else {}),   # 🔒 only once something is locked (game/forge_locks.py)
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
 
 
@@ -1248,6 +1249,11 @@ def _recent(s: dict, n: int = 4) -> list[str]:
 def _wings_public(s: dict) -> dict | None:
     from . import wings
     return wings.public(s)
+
+
+def _locks_public(s: dict) -> list | None:
+    from . import forge_locks
+    return forge_locks.public(s)
 
 
 def _remote_public(s: dict) -> dict | None:
@@ -1419,6 +1425,8 @@ def validate(s: dict) -> None:
     wings.validate(s)   # 🪽 journey['wings'] (optional: game/wings.py)
     from . import forge_news
     forge_news.validate(s)   # 📣 journey['fzn'] (optional: game/forge_news.py, 🕶️ Ẩn tên)
+    from . import forge_locks
+    forge_locks.validate(s)   # 🔒 journey['fzl'] (optional: game/forge_locks.py, Khóa món)
     lx.validate(s)   # 🛍️ journey['lux'] (optional)
     isl.validate(s)   # 🏝️ journey['island'] (optional)
     from . import island_build

@@ -421,13 +421,13 @@ def _fuse_three(s: dict, x: dict, three: list) -> tuple:
 _ORDER = {it['id']: n for n, it in enumerate(W.ITEMS)}
 
 
-def triples(x: dict, scope: str = 'all', max_rank: int = TOP, keep_worn: bool = True) -> list:
+def triples(x: dict, scope: str = 'all', max_rank: int = TOP, keep_worn: bool = True, locks=frozenset()) -> list:
     """🤖 What Ghép tự động may fuse now: [(k, r, the items in the order jr_pet_wfuse takes them)] for every piece × rank
-    with three to use (worn ones left out when keep_worn, else last, as jr_pet_wfuse takes them) whose result is at
-    most max_rank; the lowest rank first, then the catalogue's order."""
+    with three to use (worn ones left out when keep_worn, else last, as jr_pet_wfuse takes them; 🔒 locked ones never,
+    game/forge_locks.py) whose result is at most max_rank; the lowest rank first, then the catalogue's order."""
     groups: dict = {}
     for i in x['it']:
-        if (scope == 'all' or i['k'] == scope) and i['r'] < min(max_rank, TOP):
+        if (scope == 'all' or i['k'] == scope) and i['r'] < min(max_rank, TOP) and i['id'] not in locks:
             groups.setdefault((i['k'], i['r']), []).append(i)
     out = []
     for (k, r), its in groups.items():
@@ -454,7 +454,9 @@ def _auto(s: dict, x: dict, p: dict) -> dict:
     _need(keep in (True, False), 'Thông tin không hợp lệ.')
     budget = p['budget']
     _need(_int(budget, 1, 10**12), 'Nhập số xu tối đa muốn tiêu nhé.')
-    first = triples(x, scope, top, keep)
+    from . import forge_locks   # 🔒 locked clothes are never used up
+    locks = forge_locks.ids(s)
+    first = triples(x, scope, top, keep, locks)
     _need(bool(first), 'Không còn ba món giống hệt nhau (cùng món, cùng hạng) để ghép tự động.'
           + (' Món đang mặc được giữ nguyên.' if keep else ''), 'not_owned')
     fee0 = FUSE_FEE[first[0][1]]
@@ -466,7 +468,7 @@ def _auto(s: dict, x: dict, p: dict) -> dict:
     n = won = lux = spent = 0
     stop = 'done'
     while True:
-        left = triples(x, scope, top, keep)
+        left = triples(x, scope, top, keep, locks)
         if not left:
             break
         if n >= AUTO_MAX:
@@ -496,7 +498,7 @@ def _auto(s: dict, x: dict, p: dict) -> dict:
     from . import forge_news   # 📣 one line for the run: the highest rank reached
     return forge_news.mark(dict(message=f'{msg} ({how})', ok=won > 0,
                                 auto=dict(n=n, ok=won, lux=lux, spent=spent, stop=stop, used=used, made=made,
-                                          left=len(triples(x, scope, top, keep)))), 'ward', [_fz(i) for i in made])
+                                          left=len(triples(x, scope, top, keep, locks)))), 'ward', [_fz(i) for i in made])
 
 
 def _fz(i: dict) -> dict:
@@ -562,6 +564,11 @@ def action(s: dict, name_: str, p: dict) -> dict:
         _need(p['r'] < TOP, 'Hạng SSS là cao nhất rồi.', 'full')
         same = [i for i in x['it'] if i['k'] == p['k'] and i['r'] == p['r']]
         _need(len(same) >= 3, 'Cần ba món giống hệt nhau (cùng món, cùng hạng).', 'not_owned')
+        from . import forge_locks   # 🔒 three unlocked ones, or a clear no
+        locks = forge_locks.ids(s)
+        if locks and len([i for i in same if i['id'] not in locks]) < 3:
+            forge_locks.refuse(f'{W.ITEM[p["k"]]["name"]} hạng {RANKS[p["r"]]}')
+        same = [i for i in same if i['id'] not in locks]
         _today(x)
         same.sort(key=lambda i: wearer(x, i['id']) is not None)   # the ones in the wardrobe first
         it = W.ITEM[p['k']]
@@ -580,6 +587,10 @@ def action(s: dict, name_: str, p: dict) -> dict:
         pt._keys(p, {'k', 'r', 'confirm'}, {'k', 'r', 'confirm'})
         same = [i for i in x['it'] if i['k'] == p.get('k') and i['r'] == p.get('r')]
         _need(bool(same), 'Không thấy món đồ này.', 'not_owned')
+        from . import forge_locks   # 🔒 an unlocked one goes, never a locked one
+        locks = forge_locks.ids(s)
+        same = [i for i in same if i['id'] not in locks]
+        _need(bool(same), f'🔒 {W.ITEM[p["k"]]["name"]} đang khóa. Mở khóa rồi hẵng bỏ nhé.', 'locked')
         same.sort(key=lambda i: wearer(x, i['id']) is not None)
         i = same[0]
         _need(p['confirm'] is True, f'Bỏ {name(i)}?')
