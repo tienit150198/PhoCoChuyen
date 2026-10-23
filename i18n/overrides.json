@@ -1,5 +1,11 @@
 {
   "strings": {
+    "Mở game và dựng phố nhanh hơn, bớt giật.": "Opening the game and building the town is faster, with fewer freezes.",
+    "Bảng xếp hạng mở nhanh hơn.": "Leaderboards open faster.",
+    "Vào đám cưới vẫn mang cánh và phụ kiện đôi.": "Wings and pair accessories now show at weddings too.",
+    "⚡ Ghép tự động mặc định chỉ tới hạng S. Muốn cao hơn, chọn ở “Ghép tới”.": "⚡ Auto-fuse now stops at rank S by default. To go higher, pick it under “Fuse up to”.",
+    "Ghép tới": "Fuse up to",
+    "Sự kiện Thiệp 20/10 đã khép lại. Cảm ơn mọi người!": "The 20/10 Cards event has ended. Thank you all!",
     "Ghép ba Phố Mây mở tới màn 300, khó hơn.": "Cloud Street Triple Match now goes to level 300, and it gets harder.",
     "Ô mới: 🎁 hộp ẩn, 🌈 cầu vồng, ⛓️ xích, 💣 bom.": "New tiles: 🎁 hidden box, 🌈 rainbow, ⛓️ chain, 💣 bomb.",
     "Mỗi màn 1–3 sao; cứ 10 màn có rương quà.": "1–3 stars on every level; a gift chest every 10 levels.",

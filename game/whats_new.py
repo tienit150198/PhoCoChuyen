@@ -39,6 +39,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.5.9", date="2026-10-23", items=(   # owner 23/10: "lag quá rồi", "đợi dựng phố lâu", "xếp hạng thêm cache", "đám cưới vẫn phải có cánh", "xóa thiệp 20/10"
+        dict(emoji='⚡', text="Mở game và dựng phố nhanh hơn, bớt giật."),
+        dict(emoji='🏆', text="Bảng xếp hạng mở nhanh hơn."),
+        dict(emoji='🪽', text="Vào đám cưới vẫn mang cánh và phụ kiện đôi."),
+        dict(emoji='🐾', text="⚡ Ghép tự động mặc định chỉ tới hạng S. Muốn cao hơn, chọn ở “Ghép tới”."),
+        dict(emoji='💐', text="Sự kiện Thiệp 20/10 đã khép lại. Cảm ơn mọi người!"),
+    )),
     dict(version="2.5.8", date="2026-10-23", items=(   # owner 23/10: "thêm mở tới màn 300 nhé, khó hơn, với có item ẩn"
         dict(emoji='🧩', text="Ghép ba Phố Mây mở tới màn 300, khó hơn."),
         dict(emoji='🎁', text="Ô mới: 🎁 hộp ẩn, 🌈 cầu vồng, ⛓️ xích, 💣 bom."),

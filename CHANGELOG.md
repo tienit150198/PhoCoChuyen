@@ -1,4 +1,19 @@
-# Unreleased — dọn dẹp 23/10
+# 2.5.9 — 23/10/2026
+
+Chủ game 23/10: "vẫn lag quá", "xếp hạng này kia thêm cache đi cho đỡ", "cảm giác mở game ra rồi đợi dựng phố lâu lắm", "vào đám cưới vẫn phải có cánh", "xóa bỏ cái thiệp 20/10 đi nhé" (perf/lag-2310 + feat/cleanup-2310).
+
+## ⚡ Bớt lag
+- server: /api/state, bootstrap và các màn đọc lại state không còn chép cả bản lưu khi bản lưu đã đúng build (fresh_view; bản lưu 10 MB 1099 → 281 ms, kết quả giống từng byte); quầy business_sync dùng lại lượt đọc. Khách đến nhà (home-guests) hỏi nền bằng ?poll=1 nhẹ (không parse bản lưu). Nhân viên tự làm làm mới mỗi 60 s (trước 30 s).
+- 🏆 Bảng xếp hạng: top và tổng giữ 30 s mỗi tiến trình (trước 5 s); hạng của "Bạn" (COUNT cả bảng) giữ 20 s theo đúng điểm của mình (điểm mình đổi là đếm lại ngay, dòng của mình luôn đọc mới); danh hiệu tuần của từng bảng giữ cùng holders (60 s); Top lỗ / Top lời giữ top, tổng và bảng vàng; trình duyệt giữ một bảng 30 s (trước 10 s). Công tắc "Hiện tên tôi" vẫn hiện ngay.
+- 🏝️ Dựng phố lúc mở game: mặt nạ che người của nhà/cây (109 cái, ~2,3 s trên máy chậm, một lần đơ 2,9 s) không còn đọc ở mỗi lần dựng: đọc khi nhân vật đi gần, phần còn lại lúc rảnh; ảnh/nhân vật/font về theo đợt được gom (150 ms, chờ loader xong) rồi dựng một lần; bundle Phaser bắt đầu tải (ưu tiên thấp) ngay khi khung đầu đang dựng; ảnh 2.5D (/icons/cozy-*, careers-v1, isometric) có ?v= trong import map: cache một năm thay vì ~80 lượt hỏi lại server mỗi lần mở. Đo (lần đầu, CPU ×4, 10 Mbps): long task 7,3 → 4,3 s, lần đơ dài nhất 2,9 → 1,5 s.
+- 🪽 Đám cưới: người vào tiệc mang cánh và phụ kiện đôi như khi dạo phố (live/wedding.py wed_in chỉ đọc bộ đồ).
+
+## 🐾 Ghép tự động tới S
+Chủ game 23/10 sau khi nhiều bạn mất pet SS/cánh S vì một lần ⚡ ghép nhiều vòng: "mặc định là để ghép tới bậc S thôi còn mọi người tự chỉnh lên tiếp các mức trên".
+- ⚒️ Lò cường hóa: ⚡ (Cường hóa tối đa, Ghép tất cả) mặc định chỉ ghép tới S; nút "Ghép tới S / SS / SSS / HT" lưu theo máy (localStorage mnl.forgeTop). Kệ 🧬 thú cưng: ⚡ Cường hóa nhanh mặc định "tới S".
+- server: lb.clear_cache xóa luôn bảng Top lỗ/lời đã giữ (fair_loss.clear_views).
+
+## 🧹 Dọn dẹp 23/10
 
 Chủ game 23/10: "xóa bỏ cái thiệp 20/10 đi nhé, với coi cái nào out date xóa đi" (feat/cleanup-2310).
 

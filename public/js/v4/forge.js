@@ -335,7 +335,7 @@ export function forgeView(env){
   const all=`<div class="fv-all">${btn(running==='all'?`⚒️ ${st.allAt||''}`:'⚡ Ghép tất cả','jrFgAll',{},'primary fv-allgo',busy||!plan.length)}
     <span class="fv-allx" role="group" aria-label="Tiêu tối đa">${[1,2,5].map(m=>`<button type="button" class="fv-qb${(st.allx||1)===m?' on':''}" data-action="jrFgAllX" data-x="${m}" aria-pressed="${(st.allx||1)===m}">×${m}</button>`).join('')}</span>
     <small class="fv-allsum">${plan.length?`≤ <b title="${fmt(sum)} xu">${shortNum(sum)}</b> xu`:'—'}</small>
-    <span class="fv-allx fv-top" role="group" aria-label="Ghép tới hạng"><small>Tới</small>${AUTO_TOPS.map(n=>`<button type="button" class="fv-qb${autoTop()===n?' on':''}" data-action="jrFgTop" data-top="${n}" aria-pressed="${autoTop()===n}">${TIERS[n]}</button>`).join('')}</span></div>`;
+    <span class="fv-allx fv-top" role="group" aria-label="Ghép tới hạng"><small>Ghép tới</small>${AUTO_TOPS.map(n=>`<button type="button" class="fv-qb${autoTop()===n?' on':''}" data-action="jrFgTop" data-top="${n}" aria-pressed="${autoTop()===n}">${TIERS[n]}</button>`).join('')}</span></div>`;
   const sel=st.sel&&items.find(x=>x.id===st.sel);
   const grid=items.length?`<ul class="fv-grid" aria-label="${esc(KINDS.find(x=>x[0]===as.ftab)[2])}">${items.map(x=>tile(api,st,x)).join('')}</ul>`
     :`<div class="fv-empty"><p>${NONE[kind]}</p>${btn('🛍️ Cửa hàng','jrAccShop',{tab:{wing:'wing',pet:'pbuy',ward:'pwear',gear:'pgear'}[kind]},'small')}</div>`;
