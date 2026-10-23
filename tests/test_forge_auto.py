@@ -783,7 +783,8 @@ class Live(unittest.TestCase):
         """jr_pet_wing_fuse, jr_pet_fuse, jr_pet_gear_up, jr_pet_gear_fuse and the four ⚡ runs with nothing 🔒 locked (and
         no pin): the journey and the answers the live release gives (same save, rolls, clock)."""
         adopt = lambda n: ['jr_pet_adopt', dict({'from': 'shop'}, breed='meo_mun', coat=0, nick=n, confirm=True), None]   # noqa: E731
-        cmds = [['jr_pet_wing_buy', dict(style='buom', qty=12, confirm=True), None]]
+        off = ['jr_pet_wing_wear', dict(id=None), None]   # 🪽 2.5.7: a worn wing lifts every pet's stats (💪), so the pets' picks compare wingless
+        cmds = [['jr_pet_wing_buy', dict(style='buom', qty=12, confirm=True), None], off]
         cmds += [['jr_pet_wing_fuse', dict(wings=[f'w{a}', f'w{b}', f'w{c}'], confirm=True), None]
                  for a, b, c in ((1, 2, 3), (1, 4, 5), (6, 7, 8), (1, 9, 10), (1, 11, 12))]
         cmds += [['jr_pet_wing_buy', dict(style='rong', qty=6, confirm=True), [('w', i, 'r', 4) for i in range(-6, 0)]]]
@@ -800,8 +801,8 @@ class Live(unittest.TestCase):
         cmds += [['jr_pet_gear_fuse', dict(gears=['g13', 'g14', 'g15'], confirm=True), [('g', f'g{i}', 'r', 1) for i in (13, 14, 15)]
                   + [('g', 'g13', 'lv', 10)]]]
         # ⚡ the four runs, nothing locked: what 2.5.6 does
-        cmds += [['jr_pet_wing_buy', dict(style='tien', qty=15, confirm=True), None],
-                 ['jr_pet_wing_fuse_auto', dict(budget=10**8, confirm=True), None]]
+        cmds += [['jr_pet_wing_buy', dict(style='tien', qty=15, confirm=True), None], off,
+                 ['jr_pet_wing_fuse_auto', dict(budget=10**8, confirm=True), None], off]
         cmds += [adopt(f'Ba {i}') for i in range(6)] + [['jr_pet_fuse_auto', dict(budget=10**8, confirm=True), None]]
         cmds += [['jr_pet_gear_buy', dict(slot='giap', model=0, rank=0, qty=9, confirm=True), None],
                  ['jr_pet_gear_auto', dict(budget=10**8, scope='giap', confirm=True), None]]
