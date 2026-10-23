@@ -176,6 +176,21 @@ class BoardTests(Base):
         for key in ('sid', 'username', 'uid', 'ip'):
             self.assertNotIn(f'"{key}"', blob)
 
+    def test_my_row_is_live_and_my_place_cached_until_my_score_moves(self):
+        """23/10 lag: the place ("Bạn") is a COUNT over the board, kept AHEAD_SECONDS while the viewer's own numbers stay."""
+        top = self.player(crafted(grocery=(900, 3, 5)), account='Người Nhất')
+        me = self.player(crafted(grocery=(50, 2, 1)), account='Tôi Đây')
+        self.assertEqual(lb.view(self.store, 'grocery', 50, me)['me']['rank'], 2)
+
+        def score(token, n):
+            with self.store.connect() as db:
+                db.execute("UPDATE leaderboard SET score=? WHERE sid=? AND board='grocery'", (n, self.sid(token)))
+        score(top, 10)
+        self.assertEqual(lb.view(self.store, 'grocery', 50, me)['me']['rank'], 2, 'the place is cached')
+        score(me, 51)
+        v = lb.view(self.store, 'grocery', 50, me)['me']
+        self.assertEqual((v['score'], v['rank']), (51, 1), 'my own score moved: counted again')
+
     def test_privacy_account_default_on_and_opt_out(self):
         acc = self.player(crafted(grocery=(200, 3, 5)), account='Mai Chi')
         other = self.player(crafted(grocery=(100, 3, 5)), account='Lan')

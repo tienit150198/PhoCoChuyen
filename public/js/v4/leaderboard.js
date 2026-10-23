@@ -13,7 +13,7 @@ import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the to
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
 import {petPicture,lookup,accOf,fxRef} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
 
-const FRESH_MS=10000;
+const FRESH_MS=30000;   // the server keeps a board 30 s too (game/leaderboard.py CACHE_SECONDS)
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const stars=v=>v?`${Number(v).toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1})}★`:'';
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');

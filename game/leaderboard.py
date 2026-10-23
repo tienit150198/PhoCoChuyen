@@ -67,7 +67,8 @@ CAREER_IDS = frozenset(CAREERS)
 BOARDS = CAREER_IDS | {OVERALL, CERTS, TITLES, WEALTH, COLLECTION}
 NAME = '_name'              # summary key of the guest's character name (not a board)
 LIMIT = 50
-CACHE_SECONDS = 5.0
+CACHE_SECONDS = 30.0        # the top rows and the total of a board, per process (23/10 lag: was 5 s)
+AHEAD_SECONDS = 20.0        # the viewer's place ("Bạn"): a COUNT over the board, kept while their own score stays the same
 GUEST_DEFAULT = 0           # guests are hidden until they opt in (privacy policy: nothing public unless you turn it on)
 XP_PER_LEVEL = 90
 MASTER_LEVEL = 3            # the career titles are earned at level 3
@@ -402,12 +403,44 @@ def _ahead_args(score, k1, k2, since, sid) -> tuple:
     return (score, score, k1, k1, k2, k2, since, since, sid)
 
 _cache: dict = {}
+_ahead: dict = {}   # (board, sid, score, k1, k2, since) -> (monotonic, rows ahead)
 _cache_lock = threading.Lock()
 
 
 def clear_cache() -> None:
     with _cache_lock:
         _cache.clear()
+        _ahead.clear()
+
+
+def ahead_of(db, key: tuple, sql: str, args: tuple) -> int:
+    """COUNT(*) of the visible rows ahead of a viewer (their place on a board), cached AHEAD_SECONDS per process under
+    `key`, which holds the viewer's own numbers: a new score of theirs counts again at once."""
+    now = time.monotonic()
+    with _cache_lock:
+        hit = _ahead.get(key)
+        if hit and now - hit[0] < AHEAD_SECONDS:
+            return hit[1]
+    n = db.execute(sql, args).fetchone()[0]
+    with _cache_lock:
+        if len(_ahead) > 4096:
+            _ahead.clear()
+        _ahead[key] = (now, n)
+    return n
+
+
+def _my_place(db, board: str, sid: str):
+    """(stats, rank) of the viewer on a board, or None without a row: their own row live, the place cached."""
+    mine = db.execute(f"SELECT l.sid,l.score,l.k1,l.k2,l.since,l.level,l.days,l.served,l.stars,l.mastered,a.display,p.name AS gname,a.uid IS NOT NULL AS acct "
+                      f"{_FROM} WHERE l.board=? AND l.sid=?", (board, sid)).fetchone()
+    if not mine:
+        return None
+    args = _ahead_args(mine['score'], mine['k1'], mine['k2'], mine['since'], sid)
+    ahead = ahead_of(db, (board, *args), f"SELECT COUNT(*) {_FROM} WHERE l.board=? AND {_VISIBLE} AND {_AHEAD}", (board, *args))
+    stats = _row_out(board, mine)
+    stats.pop('name', None)
+    stats.pop('guest', None)
+    return stats, ahead + 1
 
 
 def parse_query(q: dict) -> tuple[str, int]:
@@ -522,16 +555,10 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
     me = None
     if sid:
         with store.connect() as db:
-            me = _privacy(db, sid)
-            mine = db.execute(f"SELECT l.sid,l.score,l.k1,l.k2,l.since,l.level,l.days,l.served,l.stars,l.mastered,a.display,p.name AS gname,a.uid IS NOT NULL AS acct "
-                              f"{_FROM} WHERE l.board=? AND l.sid=?", (board, sid)).fetchone()
-            if mine:
-                ahead = db.execute(f"SELECT COUNT(*) {_FROM} WHERE l.board=? AND {_VISIBLE} AND {_AHEAD}",
-                                   (board, *_ahead_args(mine['score'], mine['k1'], mine['k2'], mine['since'], sid))).fetchone()[0]
-                stats = _row_out(board, mine)
-                stats.pop('name', None)
-                stats.pop('guest', None)
-                me.update(stats, rank=ahead + 1)
+            me = _privacy(db, sid)   # live: the "Hiện tên tôi" switch shows what was just set
+            place = _my_place(db, board, sid)
+            if place:
+                me.update(place[0], rank=place[1])
             else:
                 me['rank'] = None
         me.pop('show', None)
@@ -567,6 +594,7 @@ def set_visible(store, token: str, state: dict, visible) -> dict:
         return _privacy(db, sid)
     me = store.transaction(step)
     clear_cache()
+    lbt.clear_cache()   # the weekly holders' names too
     me.pop('show', None)
     if visible and not me['can_show']:
         message = 'Đặt tên cho nhân vật (khác “Mây”) để tên bạn hiện trên bảng xếp hạng nhé.'

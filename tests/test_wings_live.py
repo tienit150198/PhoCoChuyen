@@ -6,7 +6,9 @@ import time
 import unittest
 
 from game import wings as W
+from game import wedding_live as WL
 from tests.live_support import LiveCase, needs_ws
+from tests.test_live_wedding import WedCase
 
 
 def wearing(k, r):
@@ -42,6 +44,19 @@ class WingsLive(LiveCase):
                 break
         self.assertEqual(got[-1]['wg'], dict(k='buom', r=2))
 
+
+
+@needs_ws
+class WingsAtAWedding(WedCase):
+    async def test_a_guest_wears_the_wings_at_the_party(self):
+        """23/10 owner: "vào đám cưới vẫn phải có cánh": wed_in read the look only."""
+        (ta, tb), (sa, sb), wid, at = self.party(at_in=WL.OPEN_BEFORE - 60)
+        self.store.transaction(lambda db: W.commit(db, sa, wearing('phuong', 7)))
+        await self.join(ta, wid)
+        b = await self.join(tb, wid, g='male')
+        bride = next(p for p in b.room['people'] if p['pid'] == self.pid(sa))
+        self.assertEqual(bride['wg'], dict(k='phuong', r=7))
+        self.assertNotIn('wg', next(p for p in b.room['people'] if p['pid'] == self.pid(sb)))
 
 class OlderDatabase(unittest.IsolatedAsyncioTestCase):
     async def test_nothing_until_the_table_exists(self):

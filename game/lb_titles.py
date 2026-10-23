@@ -423,7 +423,7 @@ def holders(store) -> dict:
     for v in out.values():
         v.sort(key=lambda x: honour(x["board"], x["rank"]))
     with _cache_lock:
-        if len(_cache) > 8:
+        if len(_cache) > 96:
             _cache.clear()
         _cache[key] = (t, out)
     return out
@@ -455,10 +455,20 @@ def board_view(store, board: str, viewer: str | None = None) -> dict:
     week's final holders."""
     t = now()
     week, prev = vn_week(t), vn_week(week_start(t) - 3600)
-    with store.connect() as db:
-        rows = db.execute('SELECT w.week,w.rank,w.sid,w.score,w.final,w.at,a.display,p.name AS gname,p.show,a.uid IS NOT NULL AS acct '
-                          'FROM lb_weekly w LEFT JOIN accounts a ON a.sid=w.sid LEFT JOIN leaderboard_players p ON p.sid=w.sid '
-                          'WHERE w.board=? AND (w.final=0 OR w.week=?) ORDER BY w.rank', (board, prev)).fetchall()
+    key, mono = ('view', _key(store), board, prev), time.monotonic()
+    with _cache_lock:
+        hit = _cache.get(key)
+    if hit and mono - hit[0] < HOLDERS_SECONDS:   # the holders change once a day (refresh / heal clear this)
+        rows = hit[1]
+    else:
+        with store.connect() as db:
+            rows = [dict(r) for r in db.execute('SELECT w.week,w.rank,w.sid,w.score,w.final,w.at,a.display,p.name AS gname,p.show,a.uid IS NOT NULL AS acct '
+                                                'FROM lb_weekly w LEFT JOIN accounts a ON a.sid=w.sid LEFT JOIN leaderboard_players p ON p.sid=w.sid '
+                                                'WHERE w.board=? AND (w.final=0 OR w.week=?) ORDER BY w.rank', (board, prev)).fetchall()]
+        with _cache_lock:
+            if len(_cache) > 96:
+                _cache.clear()
+            _cache[key] = (mono, rows)
 
     def tiers(rows):
         out = []

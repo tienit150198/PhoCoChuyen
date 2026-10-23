@@ -814,7 +814,7 @@ class Handler(BaseHTTPRequestHandler):
                 try:before=int(q["before"]) if q.get("before") else None;skip=int(q.get("skip") or 0);limit=int(q.get("limit") or 50)
                 except ValueError:self.error(400,"Tham số không hợp lệ.","bad_request");return
                 self.json(200,self.server.store.archive_page(token,q.get("career",""),q.get("kind",""),before,skip,limit));return
-            if route=="/api/leaderboard":  # Bảng xếp hạng (game/leaderboard.py): display names only, cached ~5 s
+            if route=="/api/leaderboard":  # Bảng xếp hạng (game/leaderboard.py): display names only, cached ~30 s
                 token=self.token()
                 if not self.server.rate_limit("lb:"+(token or self.client_ip()),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 try:board,limit=leaderboard.parse_query({k:v[0] for k,v in parse_qs(split.query).items()})
@@ -841,7 +841,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 from game import auction
                 self.json(200,auction.admin_view(self.server.store));return
-            if route in ("/api/town","/api/town/board"):  # 🏗️ Công trình của phố (game/town_projects.py view / board): cached ~5 s, finishes what is built on the way
+            if route in ("/api/town","/api/town/board"):  # 🏗️ Công trình của phố (game/town_projects.py view / board): cached ~30 s, finishes what is built on the way
                 token=self.token()
                 if not self.server.rate_limit("town:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 from game import town_projects

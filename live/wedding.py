@@ -77,6 +77,8 @@ from .protocol import Feature, LiveError, on
 from .street import GEO, Walker, clean_look, clean_pet, clean_rank
 from . import pet_rank
 from . import babies
+from . import charms
+from . import wings
 
 PREFIX = 'wed:'
 REFRESH = 30.0              # seconds between two reads of the booked parties (and the reminder / settle checks)
@@ -357,6 +359,8 @@ class WeddingFeature(Feature):
         bsp = await babies.spouse_of(self.db, pl, bb)
         await self.street._ensure_loaded(pl)
         await self.street.lb_fresh()
+        pr = await charms.of_app(self.app).one(pl)   # 🤝 the pairs worn and 🪽 the wing worn, as on a stroll (23/10: no wings at a party)
+        wg = await wings.of_app(self.app).one(pl)
         if p['photos'] is None:
             p['photos'] = int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_photos WHERE wedding=?', (p['id'],)) or 0)
         if not await self._current(p) or p.get('closed'):
@@ -377,7 +381,9 @@ class WeddingFeature(Feature):
                 at = geo.clamp(x + random.uniform(-90, 90), y + random.uniform(-30, 30))
                 title = self.street.title_of(pl, f.get('title'), f.get('titles'))
             bb, _ = babies.claim(self.hub, bb, bsp)
-            self.street._enter(room, conn, Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk')), pt=pet_rank.cached(pl, clean_pet(f.get('pt'))), bb=bb))
+            w = Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk')), pt=pet_rank.cached(pl, clean_pet(f.get('pt'))), bb=bb)
+            w.pr, w.wg = pr, wg
+            self.street._enter(room, conn, w)
             overflow = False
         else:
             if len(room.data['watch']) >= WATCHERS_MAX:

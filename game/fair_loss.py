@@ -43,9 +43,28 @@ def now():
     return time.time()
 
 
+_views = {}   # the shared part of the two boards per process: key -> (monotonic, value), lb.CACHE_SECONDS
+
+
 def clear_cache():
     with _lock:
         _due.clear()
+        _views.clear()
+
+
+def _shared(key, make):
+    """What every viewer sees alike (the top rows, the total, the crowning), cached lb.CACHE_SECONDS per process."""
+    mono = time.monotonic()
+    with _lock:
+        hit = _views.get(key)
+        if hit and mono - hit[0] < lb.CACHE_SECONDS:
+            return hit[1]
+    out = make()
+    with _lock:
+        if len(_views) > 64:
+            _views.clear()
+        _views[key] = (mono, out)
+    return out
 
 
 def _activate(db, t):
@@ -308,8 +327,8 @@ def view(store, limit=20, token=None):
     from .journey import TITLE_INDEX
     from . import lb_titles
     with store.connect() as db:
-        top = _standings(db, w, limit)
-        total = db.execute(f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net<0 AND {lb._VISIBLE}', (w,)).fetchone()[0]
+        top, total = _shared(('loss', w, limit), lambda: (_standings(db, w, limit), db.execute(
+            f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net<0 AND {lb._VISIBLE}', (w,)).fetchone()[0]))
         rows = [dict(rank=i+1, name=r['display'] if r['acct'] else r['gname'], guest=not r['acct'],
                      score=-r['net'], xu=-r['net'], days=0, me=r['sid']==sid) for i, r in enumerate(top)]
         me = None
@@ -320,19 +339,24 @@ def view(store, limit=20, token=None):
             net = mine['net'] if mine else 0
             me.update(net=net, xu=max(0,-net), rank=None)
             if net < 0:
-                ahead = db.execute(f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net<0 AND {lb._VISIBLE} '
-                                   'AND (l.net,l.since,l.sid)<(?,?,?)', (w, net, mine['since'], sid)).fetchone()[0]
+                ahead = lb.ahead_of(db, ('loss', w, net, mine['since'], sid), f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net<0 AND {lb._VISIBLE} '
+                                    'AND (l.net,l.since,l.sid)<(?,?,?)', (w, net, mine['since'], sid))
                 me['rank'] = ahead+1
-        meta = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (CURSOR,)).fetchone()
-        started = json.loads(meta[0])['started'] if meta else t
-        seeded = bool(db.execute('SELECT 1 FROM leaderboard_meta WHERE k=?', (SEED+vn_day(w),)).fetchone())
-        prev = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (META+vn_day(w-WEEK),)).fetchone()
+        def crowning():
+            meta = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (CURSOR,)).fetchone()
+            seeded = bool(db.execute('SELECT 1 FROM leaderboard_meta WHERE k=?', (SEED+vn_day(w),)).fetchone())
+            prev = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (META+vn_day(w-WEEK),)).fetchone()
+            people = []
+            for r in json.loads(prev[0]) if prev else []:
+                person = db.execute('SELECT a.display,p.name AS gname,p.show,a.uid IS NOT NULL AS acct '
+                                    'FROM sessions s LEFT JOIN accounts a ON a.sid=s.sid '
+                                    'LEFT JOIN leaderboard_players p ON p.sid=s.sid WHERE s.sid=?', (r['sid'],)).fetchone()
+                people.append((r, dict(person, sid=r['sid']) if person else None))
+            return (json.loads(meta[0])['started'] if meta else None), seeded, bool(prev), people
+        started, seeded, prev, people = _shared(('crown', w), crowning)
+        started = t if started is None else started
         winners = []
-        for r in json.loads(prev[0]) if prev else []:
-            person = db.execute('SELECT a.display,p.name AS gname,p.show,a.uid IS NOT NULL AS acct '
-                                'FROM sessions s LEFT JOIN accounts a ON a.sid=s.sid '
-                                'LEFT JOIN leaderboard_players p ON p.sid=s.sid WHERE s.sid=?', (r['sid'],)).fetchone()
-            person = dict(person, sid=r['sid']) if person else None
+        for r, person in people:
             title = TITLE_INDEX[r['title']]
             winners.append(dict(rank=r['rank'], score=r['score'], name=lb_titles._public(person,sid) if person else 'Một người chơi',
                                 title=title['name'], emoji=title['emoji'], me=r['sid']==sid))
@@ -356,10 +380,10 @@ def view_win(store, asked, limit=20, token=None):
     board = fh.board()
     days = 'COALESCE((SELECT b.days FROM leaderboard b WHERE b.sid=l.sid AND b.board=?),0) AS days'
     with store.connect() as db:
-        top = [dict(r) for r in db.execute(
+        top, total = _shared(('win', board, w, limit), lambda: ([dict(r) for r in db.execute(
             f'SELECT l.sid,l.net,l.since,a.display,p.name AS gname,a.uid IS NOT NULL AS acct,{days} {_FROM} '
-            f'WHERE l.week=? AND l.net>0 AND {lb._VISIBLE} {_ORDER_WIN} LIMIT ?', (board, w, limit))]
-        total = db.execute(f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net>0 AND {lb._VISIBLE}', (w,)).fetchone()[0]
+            f'WHERE l.week=? AND l.net>0 AND {lb._VISIBLE} {_ORDER_WIN} LIMIT ?', (board, w, limit))],
+            db.execute(f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net>0 AND {lb._VISIBLE}', (w,)).fetchone()[0]))
         rows = [dict(rank=i+1, name=r['display'] if r['acct'] else r['gname'], guest=not r['acct'],
                      score=r['net'], xu=r['net'], days=int(r['days']), me=r['sid']==sid) for i, r in enumerate(top)]
         me = None
@@ -370,9 +394,8 @@ def view_win(store, asked, limit=20, token=None):
             net = mine['net'] if mine else 0
             me.update(net=net, xu=max(0, net), rank=None)
             if net > 0:
-                ahead = db.execute(f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net>0 AND {lb._VISIBLE} '
-                                   'AND (l.net>? OR (l.net=? AND (l.since,l.sid)<(?,?)))',
-                                   (w, net, net, mine['since'], sid)).fetchone()[0]
+                ahead = lb.ahead_of(db, ('win', w, net, mine['since'], sid), f'SELECT COUNT(*) {_FROM} WHERE l.week=? AND l.net>0 AND {lb._VISIBLE} '
+                                    'AND (l.net>? OR (l.net=? AND (l.since,l.sid)<(?,?)))', (w, net, net, mine['since'], sid))
                 me['rank'] = ahead+1
         meta = db.execute('SELECT v FROM leaderboard_meta WHERE k=?', (CURSOR,)).fetchone()
         started = json.loads(meta[0])['started'] if meta else t

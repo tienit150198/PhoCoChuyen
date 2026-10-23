@@ -17,6 +17,8 @@ class WeeklyLoss(StoreBase):
         fl.clear_cache()
         self.p = patch.object(fl, 'now', side_effect=lambda: self.clock.t)
         self.p.start(); self.addCleanup(self.p.stop)
+        c = patch.object(lb, 'CACHE_SECONDS', 0)   # every round shows at once here; the cache has its own test below
+        c.start(); self.addCleanup(c.stop)
 
     def lose(self, tok, amount=10, rid=None):
         self.dice(Dice(faces=['ga']*3, draws=[.99]))
@@ -28,6 +30,18 @@ class WeeklyLoss(StoreBase):
 
     def board(self, tok=None):
         return lb.view(self.store, 'fair-loss', 20, tok)
+
+    def test_the_top_is_cached_and_my_own_net_is_not(self):
+        """23/10 lag: the rows and the total are kept lb.CACHE_SECONDS per process; the viewer's own week is read live."""
+        a=self.player('Lan', wallet=10000)
+        self.lose(a,100)
+        self.assertEqual(self.board(a)['rows'][0]['xu'],100)
+        with patch.object(lb, 'CACHE_SECONDS', 30):
+            self.lose(a,50)
+            b=self.board(a)
+            self.assertEqual((b['rows'][0]['xu'], b['me']['xu']),(100,150))
+            self.fl.clear_cache()
+            self.assertEqual(self.board(a)['rows'][0]['xu'],150)
 
     def test_net_offsets_losses_and_new_week_starts_zero(self):
         a=self.player('Lan', wallet=10000)
