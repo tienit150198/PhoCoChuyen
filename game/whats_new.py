@@ -32,11 +32,6 @@ import re
 from pathlib import Path
 
 ENTRIES = (
-    dict(version="2.5.5.1", date="2026-10-23", items=(   # owner 23/10: "bấm chọn số lượng hoặc mua nó k giữ tại vị trí đó"; Cả phố: "mở quầy quần áo k đc"
-        dict(emoji='🛍️', text="Cửa hàng: bấm số lượng hay mua giờ giữ nguyên chỗ đang xem, không nhảy lên đầu trang nữa.",
-             go=dict(action='jrAccShop')),
-        dict(emoji='🏪', text="Mở quầy: món nào chưa bán được ghi rõ đã làm bao nhiêu / cần bao nhiêu việc, bấm vào để xem cách mở."),
-    )),
     dict(version="2.5.5", date="2026-10-23", items=(   # owner 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi"
         dict(emoji='🛍️', text="Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.",
              go=dict(action='jrAccShop')),
