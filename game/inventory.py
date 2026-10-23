@@ -1765,13 +1765,17 @@ def validate(c: dict, career: str) -> None:
     unit_ceiling = max(math.ceil(it['cost'] * sp['factor']) for it in spec['items']
                        for sp in [*suppliers(career), *SUPPLIER_INDEX.values()])
     line_cost_cap = max(10**6, line_cap * unit_ceiling)
+    # 23/10 (🚗 Đại lý xe, players: "xe mui trần 1 chiếc không nhập được"): a unit was capped at 10 000 xu, below the
+    # car dealer's dearer cars (mui trần ~12 936 xu from the maker, more through a dearer supplier): its order and lot
+    # failed validation ("Số lượng không hợp lệ."). The cap is now the dearest unit any supplier can charge.
+    unit_cap = max(10000, unit_ceiling)
     group_cost_cap = max(10**6, line_cap * unit_ceiling * CART_LINES)
     need(isinstance(x['lots'], list) and len(x['lots']) <= max(300, cap * len(ids)), 'Danh sách lô không hợp lệ.')
     for lot in x['lots']:
         need(isinstance(lot, dict) and lot.get('item') in ids, 'Lô hàng lạ.')
         clean_text(lot.get('id'), 80)
         integer(lot.get('qty'), 0, max(999, cap))
-        integer(lot.get('unit_cost'), 0, 10000)
+        integer(lot.get('unit_cost'), 0, unit_cap)
         integer(lot.get('expires'), 0, 10**7)
         integer(lot.get('received'), 1, 10**7)
     need(len({l['id'] for l in x['lots']}) == len(x['lots']), 'Trùng mã lô.')
@@ -1786,7 +1790,7 @@ def validate(c: dict, career: str) -> None:
         integer(o.get('qty'), 1, line_cap)
         integer(o.get('actual'), 0, o['qty'])
         integer(o.get('cost'), 0, line_cost_cap)
-        integer(o.get('unit_cost'), 0, 10000)
+        integer(o.get('unit_cost'), 0, unit_cap)
         if 'ready' in o:
             # A save from before clock deliveries: upgraded on its next use.
             integer(o['ready'], 0, 10**9)

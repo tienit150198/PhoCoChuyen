@@ -324,5 +324,22 @@ class Days(unittest.TestCase):
         self.assertNotIn('car_dealer', dormant_out(j.state)['careers'])
 
 
+
+class DearCars(unittest.TestCase):
+    def test_a_car_dearer_than_10000_xu_is_ordered_and_kept(self):
+        """23/10, players: "xe mui trần 1 chiếc không nhập được": a unit above 10 000 xu failed the save's check
+        ("Số lượng không hợp lệ.") on its order and on its lot."""
+        j = showroom('ban')
+        from game import engine as E
+        E.money(j.state, j.c, 5000, 'Góp vốn', None, 'owner_capital')
+        j.act('inv_order', item='dx_xe_so', qty=1, supplier='express', confirm=True)
+        x = j.c['ext']['inv']
+        o = x['orders'][-1]
+        o.update(item='dx_mui_tran', unit_cost=17464, cost=17464)
+        validate_state(j.state)
+        lot = next(l for l in x['lots'] if l['item'] == 'dx_xe_so')
+        x['lots'].append(dict(lot, id=lot['id'] + '-dear', item='dx_mui_tran', unit_cost=12936))
+        validate_state(j.state)
+
 if __name__ == '__main__':
     unittest.main()
