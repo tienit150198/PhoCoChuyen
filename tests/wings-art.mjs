@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {defaultLook,lookOf,figure,figureOf,figureSVG,portrait,myPortrait,paintPlayer,SVG,CANVAS,wingIcon,withWings,withPairs,cleanPairs,cleanWing,wingOfState,WING_STYLES,WING_TIERS,WING_TIER_COLOR} from '../public/js/v4/look.js';
-import {characterKey,STAMP_WING,stampWingFrame} from '../public/js/isometric/character-art.js';
-import {flapAt,WING_BEAT,wingMotes,moteAt,raysAt,burstAt,drawWings,stillMotion,flapStep,FLAP_STEPS} from '../public/js/v4/wings-art.js';
+import {characterKey,STAMP_WING,stampWingFrame,RIG_BOX,wingedStamp,WINGED_W} from '../public/js/isometric/character-art.js';
+import {flapAt,WING_BEAT,wingMotes,moteAt,raysAt,burstAt,drawWings,stillMotion,flapStep,FLAP_STEPS,CLASSIC_WING} from '../public/js/v4/wings-art.js';
 
 const py=readFileSync(new URL('../game/wings_content.py',import.meta.url),'utf8');
 
@@ -58,7 +58,7 @@ test('walkers bring their wings on both maps, the workplace scene flaps them',()
   assert.match(readFileSync(new URL('../public/js/isometric/phaser-world.js',import.meta.url),'utf8'),/\.wg=\{k:\w+\.wg\.k\.slice/,'the bundle is rebuilt');
   const walk=readFileSync(new URL('../public/js/v4/walk.js',import.meta.url),'utf8');
   assert.match(walk,/e\.k==='wg'/);
-  assert.match(readFileSync(new URL('../public/js/boba-world.js',import.meta.url),'utf8'),/paintWings\(c,F,CANVAS,\{t:this\.reduced\?null:this\.time\}\)/);
+  assert.match(readFileSync(new URL('../public/js/boba-world.js',import.meta.url),'utf8'),/paintWings\(c,F,CANVAS,\{t:this\.reduced\?null:this\.time,walk:moving\}\)/);
 });
 
 // ✨ owner 22/10 "cánh có hoạt họa, có tia sáng này kia nhé": the same beat everywhere, light by tier, stillness respected
@@ -99,10 +99,25 @@ test('the classic street draws the wings apart and moves them; the 2.5D map rigs
   assert.match(walk,/const F=figureOf\(withPairs\(p\.lk,p\.pr\),p\.g\)/,'the sprite without wings');
   assert.match(walk,/wingsBack\(c,p,p\.x,p\.y\+bob,sec,calm\);/);assert.match(walk,/wingsFront\(c,p,p\.x,p\.y\+bob,sec,calm\);/);
   assert.match(walk,/S\.wingsOn\?66:120/);
-  assert.deepEqual(Object.keys(STAMP_WING),['front','back']);assert.equal(stampWingFrame({k:'rong',r:1},false,0),null,'no canvas in node');
+  assert.deepEqual(Object.keys(STAMP_WING),['front','back','baked']);assert.equal(stampWingFrame({k:'rong',r:1},false,0),null,'no canvas in node');
   const ts=readFileSync(new URL('../client/isometric/phaser-world.ts',import.meta.url),'utf8');
   assert.match(ts,/if\(look\?\.wg\)\{const \{wg:_,\.\.\.bare\}=look;look=bare;\}/,'the 2.5D stamp without wings');
   assert.match(ts,/if\(wingsLive\)this\.wingTick\(\)/);
   const bundle=readFileSync(new URL('../public/js/isometric/phaser-world.js',import.meta.url),'utf8');
   assert.match(bundle,/wg-f:/);assert.match(bundle,/wingTop/);
+});
+
+// 🪽 owner 23/10 "cánh mua xong ra ngoài xấu quá, cho đẹp hơn, to hơn nhé": spread wide past the big head, rising high
+const extent=(wg,o)=>{const out=[];drawWings(out,SVG,wg,0,0,{anim:false,aura:false,sparkle:false,...o});const xs=[],ys=[];
+  for(const m of out.join('').matchAll(/ d="([^"]+)"/g)){const v=m[1].match(/-?\d+(\.\d+)?/g).map(Number);for(let i=0;i+1<v.length;i+=2){xs.push(v[i]);ys.push(v[i+1]);}}
+  return {w:Math.max(...xs)-Math.min(...xs),top:Math.min(...ys),bottom:Math.max(...ys)};};
+test('big wings: wide past the head, tips high, bướm and tiên a little smaller; a bigger stroke walking',()=>{
+  for(const k of WING_STYLES){const e=extent({k,r:0},{s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall});
+    const small=k==='buom'||k==='tien';assert.ok(e.w>=(small?120:135)&&e.w<=200,`${k} classic span ${e.w} (the head is 66 wide, the body 46)`);
+    assert.ok(e.top<=-52,`${k} rises to the head (${e.top})`);
+    const iso=extent({k,r:0},{s:STAMP_WING.front.s,gap:STAMP_WING.front.gap});assert.ok(iso.w>=(small?135:150)&&iso.w<=RIG_BOX[0],`${k} 2.5D span ${iso.w} (the chibi's head is ~95)`);
+    const ht=extent({k,r:7},{s:STAMP_WING.front.s,gap:STAMP_WING.front.gap,flap:-1});assert.ok(ht.w<RIG_BOX[0]&&-ht.top<RIG_BOX[3]&&ht.bottom<RIG_BOX[1]-RIG_BOX[3],`${k} fits the rig's canvas`);
+    const amp=walk=>Math.max(...[...Array(60)].map((_,i)=>Math.abs(flapAt(k,i*.05,walk))));assert.ok(amp(true)>amp(false)*1.8,`${k} walks with a bigger stroke`);}
+  assert.ok(extent({k:'rong',r:0},{}).w>extent({k:'buom',r:0},{}).w);
+  assert.equal(typeof wingedStamp,'function');assert.ok(WINGED_W>120);
 });

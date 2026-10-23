@@ -259,7 +259,7 @@ export const myPortrait=(state,size=40,label='Bạn')=>{const L=lookOf(state),wg
 export const CANVAS={R,E,L,P,heart,bloom,
   ring:(c,x,y,r,col,w)=>{c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.strokeStyle=col;c.lineWidth=w;c.stroke();},
   path:(c,d,fill)=>{c.fillStyle=fill;c.fill(new Path2D(d));},
-  stroke:(c,d,col,w)=>{c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.stroke(new Path2D(d));},
+  stroke:(c,d,col,w)=>{c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.lineJoin='round';c.stroke(new Path2D(d));},
   // 🪽 a path filled with a gradient from (x1, y1) to (x2, y2); a soft radial glow (v4/wings-art.js)
   pathG:(c,d,c1,c2,x1,y1,x2,y2)=>{const g=c.createLinearGradient(x1,y1,x2,y2);g.addColorStop(0,c1);g.addColorStop(1,c2);c.fillStyle=g;c.fill(new Path2D(d));},
   glow:(c,x,y,rx,ry,col,a=.4)=>{c.save();c.translate(x,y);c.scale(1,ry/rx);const g=c.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,col+Math.round(a*255).toString(16).padStart(2,'0'));g.addColorStop(1,col+'00');c.fillStyle=g;c.beginPath();c.arc(0,0,rx,0,Math.PI*2);c.fill();c.restore();}};
@@ -276,7 +276,7 @@ export const SVG={
   bloom:(c,x,y,size=12,col='#efb5ca')=>{for(let i=0;i<5;i++){const a=i*Math.PI*2/5;SVG.E(c,x+Math.cos(a)*size*.6,y+Math.sin(a)*size*.6,size*.5,size*.5,col);}SVG.E(c,x,y,size*.33,size*.33,'#f3d590');},
   ring:(c,x,y,r,col,w)=>c.push(`<circle cx="${n1(x)}" cy="${n1(y)}" r="${r}" fill="none" stroke="${col}" stroke-width="${w}"/>`),
   path:(c,d,fill)=>c.push(`<path d="${d}" fill="${fill}"/>`),
-  stroke:(c,d,col,w)=>c.push(`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`),
+  stroke:(c,d,col,w)=>c.push(`<path d="${d}" fill="none" stroke="${col}" stroke-width="${n1(w)}" stroke-linecap="round" stroke-linejoin="round"/>`),
   pathG:(c,d,c1,c2,x1,y1,x2,y2)=>{const id=`wg${++GID}`;c.push(`<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${n1(x1)}" y1="${n1(y1)}" x2="${n1(x2)}" y2="${n1(y2)}"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient><path d="${d}" fill="url(#${id})"/>`);},
   glow:(c,x,y,rx,ry,col,a=.4)=>{const id=`wg${++GID}`;c.push(`<radialGradient id="${id}"><stop offset="0" stop-color="${col}" stop-opacity="${a}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient><ellipse cx="${n1(x)}" cy="${n1(y)}" rx="${n1(rx)}" ry="${n1(ry)}" fill="url(#${id})"/>`);},
 };
@@ -635,7 +635,7 @@ function paintAccessoryShape(c,id,k,K,direction='se'){
 export function paintPlayer(c,F,K=SVG,arms=null){
   const sk=F.skin,male=F.g==='male',bb=!arms&&F.bb&&typeof F.bb==='object'?F.bb:null;   // 👶 carrying: the arms hold the baby
   K.E(c,0,0,26,8,'#81644823');
-  if(F.L?.wg)paintWings(c,F,K);   // 🪽 behind everything (v4/wings-art.js)
+  if(F.L?.wg)paintWings(c,F,K,F.ws?{s:F.ws}:undefined);   // 🪽 behind everything (v4/wings-art.js; ws: the mirror's smaller pair)
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
   K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l&&!bb)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r&&!bb)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
@@ -663,7 +663,9 @@ export function wingIcon(wg,size=56,label=''){
 export const withWings=(L,wg)=>{const w=cleanWing(wg);if(w)return {...L,wg:w};if(L&&'wg' in L){const {wg:_,...rest}=L;return rest;}return L;};
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */
 export function figureSVG(Lk,gender,{w=120,h=170,label='',box='-50 -146 100 154',facing='se'}={}){
-  const out=[];paintPlayer(out,figureOf(Lk,gender),SVG);
-  const marker=box==='-50 -146 100 154'?cozyMark(Lk,gender,'figure',facing):'';
-  return `<svg class="wd-fig" width="${w}" height="${h}" viewBox="${box}" ${label?`role="img" aria-label="${cozyOn?labelHTML(label):label}"`:'aria-hidden="true"'} focusable="false"${marker}>${out.join('')}</svg>`;
+  const out=[],F=figureOf(Lk,gender),whole=box==='-50 -146 100 154',wide=whole&&!!F.L?.wg;
+  if(wide)F.ws=.58;   // 🪽 the whole figure with its wings spread: a wider box, the pair a little smaller than out in the world
+  paintPlayer(out,F,SVG);
+  const marker=whole?cozyMark(Lk,gender,'figure',facing):'';
+  return `<svg class="wd-fig${wide?' wd-winged':''}" width="${w}" height="${h}" viewBox="${wide?'-72 -150 144 158':box}"${wide?' overflow="visible"':''} ${label?`role="img" aria-label="${cozyOn?labelHTML(label):label}"`:'aria-hidden="true"'} focusable="false"${marker}>${out.join('')}</svg>`;
 }
