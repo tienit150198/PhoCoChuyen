@@ -338,6 +338,8 @@ function changeMode(mode,env){
   updateIsometricShell(env);
 }
 
+/** The career picker, fresh each time (v4/career-pick.js reads these ui fields). */
+const PICK=Object.freeze({homeMode:'list',jrView:'pick',cpQ:'',cpSt:'',cpCat:'',cpMore:{}});
 /** Return false for normal app actions; no money/task/choose commands originate in this shell. */
 export async function isometricAction(action,data={},el=null,env){
   if(!action?.startsWith('iso')||!env)return false;
@@ -347,13 +349,13 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoTown':changeMode('town',env);break;
     case'isoWork':
       if(!model.current&&model.fresh){await firstJob(env);break;}
-      if(!model.current){env.openSheet('home',{homeMode:'list',jrView:'home'});break;}
+      if(!model.current){env.openSheet('home',PICK);break;}
       changeMode('work',env);break;
     case'isoCareers':if(!model.current&&model.fresh){await firstJob(env);break;}   // day 1: the first workplace, not the whole journey page
-      env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',{homeMode:'list',jrView:'home'});break;
+      env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',PICK);break;   // 🔎 Đổi nghề: search, chips, why a place is shut (v4/career-pick.js)
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
     case'isoRide':nextTownRide(env.api?.state,env.api?.content);if(env.api?.state&&env.api?.content)env.world?.update?.(env.api.state,env.api.content);updateIsometricShell(env);break;
-    case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
+    case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',PICK);break;
     case'isoChat':await act('liveChat');break;
     case'isoGuide':await openGuide(env);break;   // 🧭 iso-guide.js
     case'isoGo':await goTo(String(data.dest||''),env);break;
@@ -380,7 +382,7 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoClassic':{const {askInterface}=await import('./interface-mode.js');await askInterface(env,CLASSIC);break;}   // ☰ Thêm → "Giao diện cũ"
     case'isoEnd':changeMode('work',env);await act('end');break;   // first day, every customer served: close the shift (its own confirm)
     case'isoApply':changeMode('work',env);await act('jobapp');break;
-    case'isoQueue':if(model.current)await act('queue');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
+    case'isoQueue':if(model.current)await act('queue');else env.openSheet('home',PICK);break;
     case'isoZoomIn':env.world?.zoomBy?.(1.15);break;
     case'isoZoomOut':env.world?.zoomBy?.(1/1.15);break;
     case'isoRecenter':env.world?.recenter?.();break;

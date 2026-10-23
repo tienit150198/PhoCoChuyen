@@ -1,7 +1,7 @@
 /** 💼 Việc làm kế toán on the journey's workplace cards (game/accounting_jobs.py; the school, its job referral and
  * the entry check: v4/accounting-school.js). state.accounting_school.jobs = {places: {career: [ok, multiplier,
  * check]}, holiday?} lists only the places with a rule today. A server without it (older build): nothing changes. */
-const COURSE={corp_accounting:'Kế toán cơ bản',group_accounting:'Kế toán doanh nghiệp Việt Nam – TT99'};
+export const COURSE={corp_accounting:'Kế toán cơ bản',group_accounting:'Kế toán doanh nghiệp Việt Nam – TT99'};
 
 /** null, or {ok, x, holiday, why}: ok false = the place still needs its exam (why: the one line to show). */
 export function acctPlace(api,cid){

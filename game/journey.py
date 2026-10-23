@@ -69,6 +69,7 @@ from . import history_course as hcourse   # 📜 Học lịch sử Việt Nam: i
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 from . import quay as qy   # 🏪 Quầy của bạn: your own counter, staff, the till (game/quay.py)
 from . import abroad as ab   # ✈️ Du học, 🌏 Làm việc ở nước ngoài (game/abroad.py)
+from . import career_locks as cl   # 🔒 vì sao chưa làm được nghề này (game/career_locks.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -704,9 +705,10 @@ def gate(s: dict, career: str, action: str, internal: bool = False, p: dict | No
     j = s['journey']
     if internal or not j['story']:
         return
-    e.need(career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career), LOCKED, 'locked')   # 🛃 Hải quan: 3 chapters done
+    if not (career in j['unlocked'] or aj.opens(s, career) or gvr.opens(s, career) or late_opens(s, career)):   # 🛃 Hải quan: 3 chapters done
+        raise e.GameError(cl.refusal(s, career), 'locked')   # 🔒 the place, why and what opens it (game/career_locks.py)
     ok, why = aj.can_work(s, career)   # 💼 an accounting place takes you once you pass its exam
-    e.need(ok, why, 'need_cert')
+    e.need(ok, f'{_place(career)} chưa nhận bạn: {why[:1].lower()}{why[1:]}' if why else why, 'need_cert')
     if action == 'start_day' and not s['careers'][career]['open']:
         aj.gate_start(s, career, p if isinstance(p, dict) else {})   # kiểm tra kiến thức đầu ca
     if action == 'select_career':
@@ -1211,6 +1213,7 @@ def public(s: dict) -> dict:
         goals=_goals_view(ctx, j['chapter']), progress_paused=j['story'] and j['wallet'] < 0 and j['chapter'] <= LAST,
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
+        **({'locks': lk} if (lk := cl.public(s, _progress(ctx, j))) else {}), recent=_recent(s),   # 🔒 why a place is shut, 🕘 the last places worked (v4/career-pick.js)
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), cradle=_cradle_public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), gadgets=gd.public(s), **({'lab': _lab_public(s)} if 'lab' in j else {}), spend=sp.public(s), pets=pt.public(s), lux=lx.public(s), **({'uniq': u} if (u := auc.public(s)) else {}), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
@@ -1223,6 +1226,23 @@ def public(s: dict) -> dict:
         **({'tile': _tile_public(s)} if j['story'] else {}),
         **({'wings': wpub} if (wpub := _wings_public(s)) else {}),   # 🪽 only once a wing was bought (game/wings.py)
         **({HF_PICK: j[HF_PICK]} if isinstance(j.get(HF_PICK), str) else {}))   # 🖼️ the frame chosen (absent: automatic)   # 🧩 Ghép ba Phố Mây (game/tile_match.py)
+
+
+def _progress(ctx: dict, j: dict) -> tuple[int, int]:
+    goals = _goals_view(ctx, j['chapter'])
+    return sum(1 for g in goals if g['done']), len(goals)
+
+
+def _recent(s: dict, n: int = 4) -> list[str]:
+    """The last places worked, newest first (journey.days), each once: the picker's "Gần đây"."""
+    out = []
+    for row in reversed(s['journey'].get('days') or []):
+        cid = row.get('c') if isinstance(row, dict) else None
+        if cid in s['careers'] and cid not in out:
+            out.append(cid)
+            if len(out) == n:
+                break
+    return out
 
 
 def _wings_public(s: dict) -> dict | None:

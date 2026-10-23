@@ -349,10 +349,10 @@ function cardHTML(it){
   if(it.lm){const L=LANDMARKS[it.lm],soft=it.lm==='garage'&&!canRide(s,W.env.api.content)?'<small>Mua xe để chạy quanh phố</small>':projectNote(st);
     return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b>${soft}</div>${act(`${st.stage==='funding'?'Góp xây':'Vào'} ${icon('arrow',14)}`,L.action,L.data||{})}${x}`;}
   const m=meta(it.id),c=s.careers[it.id]||{},h=W.h;
-  if(st.lock){const n=(W.env.api.content.journey?.unlock_chapter||{})[it.id];
-    // How it opens (feedback #140 "sao không mở tiệm được"): its chapter, reached by the goals in 📋 Danh sách.
-    const how=n?(n===J.chapter+1?`Mở ở chương ${n}: làm xong việc cần làm của chương này trong 📋 Danh sách.`:`Mở ở chương ${n}. Đang ở chương ${J.chapter||1}.`):'';
-    return `<span class="tw-card-ico locked" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>🔒 ${esc(m.place||m.short||st.name)}</b><small>${esc(how||(n===J.chapter+1?'Sắp mở':'Còn ở phía trước'))}</small></div>${n?act('📋 Danh sách','jrList',{},'cream'):''}${x}`;}
+  if(st.lock){const n=(W.env.api.content.journey?.unlock_chapter||{})[it.id],L=h.lockOf?.(W.env.api,it.id);
+    // How it opens (feedback #140 "sao không mở tiệm được"; owner 23/10): the same reason as 🔎 Đổi nghề (career-pick.js lockOf).
+    const how=L?.how||(n?(n===J.chapter+1?`Mở ở chương ${n}: làm xong việc cần làm của chương này trong 📋 Danh sách.`:`Mở ở chương ${n}. Đang ở chương ${J.chapter||1}.`):'');
+    return `<span class="tw-card-ico locked" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>🔒 ${esc(m.place||m.short||st.name)}</b><small>${esc(how||(n===J.chapter+1?'Sắp mở':'Còn ở phía trước'))}</small></div>${L?.act==='accountingSchool'?act(`Đi học ${icon('arrow',14)}`,'accountingSchool',{},'cream'):n?act('📋 Việc cần làm','jrList',{},'cream'):''}${x}`;}
   const job=c.job||{},aj=h.acctPlace(W.env.api,it.id),tags=[],cur=it.id===s.current,ab=s.abandon?.preview;
   if(cur&&ab&&!ab.soft&&ab.career===it.id)tags.push(tag('⏳ Đang làm dở','amber'));
   if(st.x3)tags.push(tag(`🔥 Lời x${s.x3.x} hôm nay`,'hot'));
@@ -363,7 +363,8 @@ function cardHTML(it){
   if(!c.started&&J.story&&(W.env.api.content.journey?.unlock_chapter||{})[it.id]===J.chapter&&J.chapter>1)tags.push(tag('Mới mở','green'));
   if(guide().arrow===it.id)tags.push(tag('Hợp người mới','green'));
   // ⏸ A place the player closed (Tạm đóng) still has its sign: say why "Vào làm" is not there (reopening is free since #oldcost).
-  const why=aj&&!aj.ok?`<small class="tw-why">🔒 ${esc(aj.why)}</small>`:st.paused?'<small class="tw-why">Bạn đã tạm đóng nơi này. Mở lại miễn phí rồi vào làm ngay.</small>':'';
+  const soft=h.lockOf?.(W.env.api,it.id);   // 🔒 khai trừ, phỏng vấn lại, đang ở nước ngoài: you may go in, the work waits
+  const why=aj&&!aj.ok?`<small class="tw-why">🔒 ${esc(aj.why)}</small>`:soft?.soft?`<small class="tw-why">${esc(soft.how||soft.t)}</small>`:st.paused?'<small class="tw-why">Bạn đã tạm đóng nơi này. Mở lại miễn phí rồi vào làm ngay.</small>':'';
   const button=aj&&!aj.ok?act(`Đi học ${icon('arrow',14)}`,'accountingSchool',{},'cream'):st.paused?act('Mở lại','jrReopen',{career:it.id,go:1},'primary'):
     act(`${cur&&c.started?'Vào tiếp':'Vào làm'} ${icon('arrow',14)}`,'choose',{career:it.id});
   return `<span class="tw-card-ico" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>${esc(m.place||m.short)}</b><small>${esc(m.short||'')}</small>${why}${tags.length?`<div class="tw-tags">${tags.join('')}</div>`:''}</div>${button}${x}`;

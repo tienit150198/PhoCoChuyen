@@ -46,9 +46,10 @@ export const hasCareerUI=id=>Boolean(modules[id]);
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 
-/** The career picker keeps each workplace's progress; switching still uses the existing leave-shift check. */
+/** The career picker keeps each workplace's progress; switching still uses the existing leave-shift check.
+ * 🔎 It opens Đổi nghề (v4/career-pick.js: search, chips, why a place is shut), not the town map. */
 export function careerSwitchButton(){
-  return `<button type="button" class="btn ghost small career-switch" data-action="home" aria-label="Đổi nghề hoặc nơi làm việc" title="Chọn nghề khác; tiến trình từng nghề vẫn được lưu">${icon('grid',15)} Đổi nghề</button>`;
+  return `<button type="button" class="btn ghost small career-switch" data-action="jrPick" aria-label="Đổi nghề hoặc nơi làm việc" title="Chọn nghề khác; tiến trình từng nghề vẫn được lưu">${icon('grid',15)} Đổi nghề</button>`;
 }
 
 /** Context passed to a career module. `env` comes from app.js. */

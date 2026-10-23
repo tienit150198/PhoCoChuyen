@@ -26,6 +26,7 @@ import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán:
 import {fundMoveHTML,shortNum} from './wealth.js';
 import {chooser as hfChooser} from './honour-frames.js';   // 🖼️ Khung danh hiệu: which frame to wear (owner 18/10)
 import {typingNow} from '../typing-tap.js';
+import {pickView,pickAction,lockOf} from './career-pick.js';   // 🔎 Đổi nghề: search, chips, why a place is shut (owner 23/10)
 import {ev2010Open} from '../isometric/town-utilities.js';   // 💐 Thiệp 20/10 (game/event2010.py)   // 💼 Rút / góp vốn with a typed amount (F#259)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
@@ -65,7 +66,7 @@ export function townOn(env){
   return !(J.story&&!J.intro&&!J.gender);   // a brand-new player picks a look and a name first
 }
 /** What the town needs from here (the list's own helpers, so both say the same). */
-const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid),chapterCard,certBadge:api=>certBadge(api)};
+const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid),lockOf:(api,cid)=>lockOf(api,cid),chapterCard,certBadge:api=>certBadge(api)};
 function townPage(env){
   const m=TW.use();
   return m?m.townHTML(env,TOWN_HELP):`<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2></div><button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button></header>${skeleton()}</div>`;
@@ -74,7 +75,7 @@ function townPage(env){
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',hr_admin:'🗂️',secretary:'📅',it_helpdesk:'🖥️',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
   pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊',ice_cream:'🍨',com:'🍚',nail:'💅',pagoda:'🛕',pho:'🍜',photobooth:'📸',giupviec:'🧹',naucom:'🍲',babysitter:'👶',library:'📚',oil:'🛢️',railway:'🚦',nurse:'🏥',lighthouse:'🗼',rescue:'📞',lifeguard:'🛟',police:'👮',zpop:'💿'};
-const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
+export const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
 const LEGACY_CAT={mother_baby:'shop',pharmacy:'shop',accounting:'office',customer_care:'office',teacher:'service',tour_guide:'outdoor',milk_tea:'food'};
 // The workplaces counted by game/journey.py OFFICE, rather than every office-category career.
 const CHAPTER_OFFICE=['corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk'];
@@ -111,6 +112,7 @@ export function journeyHome(env){
   if(!J||!api.content.journey)return `<div class="jr-home"><p class="muted">Khu phố đang thức dậy…</p></div>`;
   if(townOn(env))return townPage(env);
   if(J.story&&!J.intro&&!(isoLand&&['female','male'].includes(J.gender)))return introView(env);
+  if(ui.jrView==='pick')return pickView(env,{iso:!!isoLand});   // 🔎 Đổi nghề (v4/career-pick.js)
   if(ui.jrView==='titles')return titlesView(env);
   if(ui.jrView==='wallet')return walletView(env);
   if(ui.jrView==='invest')return investView(env);
@@ -306,6 +308,7 @@ function placeCard(env,cid,st,hidden){
   if(c.started)line.push(`Ngày ${c.day} · Cấp ${c.level||1}`);
   if(p&&J.story)line.push(p.employed?`Làm thuê · lương về ví${abandonTrust(api,cid)}`:`Quỹ ${fmt(p.fund)} xu${p.paused?' · mở lại miễn phí':''}`);
   if(aj&&!aj.ok)line.push(`🔒 ${aj.why}`);
+  else{const L=lockOf(api,cid);if(L?.soft)line.push(L.t);}   // 🔒 khai trừ, phỏng vấn lại, đang ở nước ngoài (game/career_locks.py)
   const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
   return `<article class="jr-place jr-row ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}"${rowData(api,m,st)}${hidden?' hidden':''} style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
@@ -316,10 +319,9 @@ const rowData=(api,m,st)=>{const cat=catOf(m);return ` data-k="${esc(foldVi(`${m
 
 /** A place still locked: its name (so a search finds it) and the step that opens it. */
 function lockedTile(env,cid,hidden){
-  const {api}=env,J=api.state.journey,m=meta(api,cid),n=(api.content.journey.unlock_chapter||{})[cid];
-  const when=!n?'Chưa mở':n===J.chapter+1?`Xong chương ${J.chapter} là mở`:`Mở ở chương ${n}`;
+  const {api}=env,m=meta(api,cid),L=lockOf(api,cid),when=String(L?.t||'🔒 Chưa mở').replace(/^🔒\s*/,'');   // 🔎 the same words as Đổi nghề
   return `<article class="jr-row jr-place locked"${rowData(api,m,'lock')}${hidden?' hidden':''} aria-label="${esc(`${m.place||m.short}: ${when}`)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
-    <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')} · 🔒 ${esc(when)}</small></div></article>`;
+    <div class="jr-place-text"><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')} · 🔒 ${esc(when)}</small>${L?.how?`<small class="jr-lock-how">${esc(L.how)}</small>`:''}</div></article>`;
 }
 
 /** 💐 Thiệp 20/10 (/2010, its own page; game/event2010.py): one line while writing is open, from day 2. */
@@ -361,7 +363,7 @@ function placesSection(env){
     const html=ids.map(id=>{const show=plan.show[i++];return st==='lock'?lockedTile(env,id,!show):placeCard(env,id,st,!show);}).join(''),n=plan.n[st]||0,m=plan.more[st]||0;
     return `<section class="jr-find-grp" data-st="${st}"${n?'':' hidden'}><h3 class="jr-sub">${label} <small class="jr-find-n">${n}</small></h3><div class="jr-grid">${html}</div><button type="button" class="btn ghost small full jr-find-more" data-action="jrFindMore" data-st="${st}"${m?'':' hidden'}>Xem thêm ${m} nơi</button></section>`;
   };
-  const board=btn('🏆 Xếp hạng nghề','rankWork',{},'ghost small jr-rank');
+  const board=btn('🔎 Đổi nghề','jrPick',{},'cream small jr-pick')+btn('🏆 Xếp hạng nghề','rankWork',{},'ghost small jr-rank');
   return `<section class="jr-places" tabindex="-1" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2>${board}</div>${x3Banner(env)}
     <div class="jr-find">${search}${chips}${FIND_ST.map(grp).join('')}<p class="jr-find-none muted"${Object.keys(plan.n).length?' hidden':''}>Không thấy nghề nào. Thử chữ khác hay bỏ bớt lọc nhé.</p></div></section>`;
 }
@@ -677,6 +679,7 @@ export async function journeyAction(action,data,el,env){
   if(action==='jrAvatar'){AV.use();const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
     if(open){env.ui.jrView='avatar';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'avatar'});return true;}
   if(action.startsWith('jrAv'))return (await AV.get()).avatarAction(action,data,el,env);
+  if(action.startsWith('jrPick'))return pickAction(action,data,el,env);   // 🔎 Đổi nghề (v4/career-pick.js)
   const {ui,cmd,renderSheet,confirmAction,api}=env;
   switch(action){
     case'jrGoals':ui.jrGoalsExpanded=!ui.jrGoalsExpanded;renderSheet(false);return true;

@@ -366,7 +366,7 @@ function sceneActions(){
   return list;
 }
 function navItems(c){
-  const items=[['home','grid','Đổi nghề'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
+  const items=[['jrPick','grid','Đổi nghề'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
   items.splice(4,0,['nhom','chat','Nhóm phố',boardUnread(api)],['social','globe','Phố nghề',api.social?.unread||0]);  // Nhóm Cư Dân Phố (v4/board.js), Phố nghề (v4/social.js)
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store',wordsFor(career()).books,c.ops?.alerts?.length?'dot':0]);
@@ -436,11 +436,11 @@ function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)retur
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={jrAccShop:'Mua đồ cho bạn, thú cưng, nhà và xe',jrForge:'Ghép cánh, ghép thú, có cường hóa nhanh',remoteClose:'Khép ca ở nơi khác, khỏi về tiệm',halloween:'Săn bí ngô, gõ cửa xin kẹo',townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={jrAccShop:'Mua đồ cho bạn, thú cưng, nhà và xe',jrForge:'Ghép cánh, ghép thú, có cường hóa nhanh',remoteClose:'Khép ca ở nơi khác, khỏi về tiệm',halloween:'Săn bí ngô, gõ cửa xin kẹo',townFair:'Gian hàng của mọi nghề',svcMarket:'Thuê người chơi khác làm giúp',wedWork:'Cô dâu chú rể thuê bạn',hotelBook:'Khách người chơi thuê phòng của bạn',home:'Hành trình · mục tiêu của bạn',jrPick:'Tìm nghề · xem vì sao nơi nào chưa mở',rankWork:'Bảng xếp hạng nơi bạn đang làm',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['liveChat','home','fair','prepare','operations','jrInvest','prices','feedback','rankWork','jobapp','jrCerts','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
+const RAIL_MAIN=['liveChat','jrPick','fair','prepare','operations','jrInvest','prices','feedback','rankWork','jobapp','jrCerts','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
 /** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
 const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
 // 🏮 The fair while it is on or about to open (owner 08/10: "để luôn ở ngoài"): in sight, not in the Khu phố hub.
@@ -1634,7 +1634,7 @@ async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const 
 async function handleAction(action,data,el){
   // These island routes open local scenes without a server command. Apply the same camp boundary before
   // they can change mode or load a destination; chat and the camera keep their existing behavior.
-  if(api.state?.jail&&['home','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
+  if(api.state?.jail&&['home','jrPick','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
     await (await import('./v4/jail.js')).openJail(env());return;
   }
   if(action==='leisurePlace'){await (await import('./v4/venue-routing.js')).visitLeisure(env(),data.kind);return;}
