@@ -72,7 +72,7 @@ export class World {
   unproject(x,y){const a=(x-600)/TW,b=(y-205)/TH;return {x:(a+b)/2,y:(b-a)/2};}
   screen(p){return {x:this.offset.x+p.x*this.scale,y:this.offset.y+p.y*this.scale};}
   resize(){const r=this.canvas.getBoundingClientRect();this.width=r.width||1200;this.height=r.height||790;
-    // Small screens start at 2× (sharp) and drop to 1.5× when drawing turns out slow (watchCost).
+    // Small screens start at 2× (sharp; 1.25× in light mode) and drop to 1.5×, then 1.25× while drawing stays slow (watchCost).
     this.small=Math.min(this.width,this.height)<=520;this.dprCap??=lowEnd()?1.25:2;this.costFrames=0;this.cost=null;
     this.dpr=Math.min(devicePixelRatio||1,this.small?this.dprCap:2);this.dirty=true;this.wake?.();this.canvas.width=Math.round(this.width*this.dpr);this.canvas.height=Math.round(this.height*this.dpr);this.layout();}
   layout(){const reserve=this.width>1050?215:this.width>760?145:0;const available=this.width-reserve;this.scale=Math.min(available/(this.width<760?1000:1160),this.height/(this.width<760?680:760));this.offset={x:(available-W*this.scale)/2+15,y:(this.height-H*this.scale)/2+(this.width<760?-25:8)};}
