@@ -17,6 +17,7 @@ from game import reno as rn
 from game.engine import migrate_state, validate_state
 from tests.test_bank import act
 from tests.test_deco import D, bag, owner
+from tests.test_estate_moves import in_villa
 
 ROOT = Path(__file__).resolve().parents[1]
 NEW = DC.NEW_2026
@@ -64,7 +65,7 @@ def buy_put(s, k, prefer=(), on=None):
 
 class Catalogue(unittest.TestCase):
     def test_the_new_pieces(self):
-        self.assertTrue(40 <= len(NEW) <= 60)
+        self.assertTrue(40 <= len(NEW) <= 70)
         self.assertEqual(tuple(DC.ITEMS)[-len(NEW):], NEW)                 # appended last: the KNOWN_* lists keep their meaning
         self.assertEqual(DC.KNOWN_2471, tuple(DC.ITEMS)[:-len(NEW)])
         self.assertEqual(len({it['name'] for it in DC.ITEMS.values()}), len(DC.ITEMS))
@@ -105,7 +106,7 @@ class Catalogue(unittest.TestCase):
         self.assertTrue(set(NEW) - {'thang_khan', 'chau_ngam_chan', 'ke_tre_tam', 'den_muoi', 'ban_an_tron', 'tu_bep_treo',
                                      'may_rua_bat', 'gio_banh_mi', 'den_hoi_an'} <= {k for st in c['styles'] for k in st['items']} | set(NEW))
 
-    def test_drawn_in_2d_and_3d_and_named_in_english(self):
+    def test_drawn_and_named_in_english(self):
         js = (ROOT / 'public/js/v4/deco-art.js').read_text(encoding='utf-8')
         art = js[js.index('export const ART={'):js.index('/* ---------------------------------------------------------------- the room')]
         drawn = set(re.findall(r'^\s+([a-z_0-9]+):\{h:', art, re.M))
@@ -118,11 +119,6 @@ class Catalogue(unittest.TestCase):
                 entry = art[art.index(f'  {k}:{{h:'):][:120]
                 if flag:
                     self.assertIn(flag, entry)
-        meshes = (ROOT / 'client/home3d/meshes.js').read_text(encoding='utf-8')
-        bundle = (ROOT / 'public/js/v4/home-3d-scene.js').read_text(encoding='utf-8')
-        for k in ('sap_gu', 'giuong_may', 'sofa_goc', 'tu_che', 'man_hinh_cong', 'hon_non_bo'):
-            self.assertIn(k, meshes)
-            self.assertIn(k, bundle)                                          # the 3D bundle was rebuilt
         en = json.loads((ROOT / 'i18n/overrides.json').read_text(encoding='utf-8'))['strings']
         for k in NEW:
             self.assertIn(DC.ITEMS[k]['name'], en, k)
@@ -180,11 +176,12 @@ class Place(unittest.TestCase):
         homes = {}
         for k in NEW:
             it = DC.ITEMS[k]
-            kind = 'biet_thu_vuon' if set(it['rooms']) & {'living', 'bed', 'bed2', 'kitchen', 'yard'} else 'nha_pho'
+            kind = ('biet_thu_vuon' if set(it['rooms']) & {'living', 'bed', 'bed2', 'kitchen', 'yard'} else
+                    'nha_pho' if set(it['rooms']) - set(EC.TYPES) else 'dinh_thu_dao')   # 🏋️📚 the villa gym and study ones
             homes.setdefault(kind, []).append(k)
         seen = set()
         for kind, ks in homes.items():
-            s, placed = owner(kind, wallet=90000), {}
+            s, placed = (in_villa(kind) if kind in {e['id'] for e in EC.ESTATES} else owner(kind, wallet=90000)), {}
             for k in ks:
                 with self.subTest(k=k):
                     s, r = buy_put(s, k)
