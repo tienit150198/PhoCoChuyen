@@ -4,7 +4,7 @@ import {uiIcon as icon} from './isometric/ui-icons.js';
 import {hudMoney,shortNum} from './v4/wealth.js';
 import {myPortrait} from './v4/look.js';
 import {openGuide,goTo,firstJob} from './iso-guide.js';
-import {townUtilityGroups,ev2010Open,townRideLabel,nextTownRide,townRiding} from './isometric/town-utilities.js';
+import {townUtilityGroups,ev2010Open,townRideLabel,nextTownRide,townRiding,forgeOpen} from './isometric/town-utilities.js';
 
 const ENDED=new Set(['completed','referred','cancelled']);
 /** v4/onboard.js firstDay (story, first life day), inline: the shell's tests run this file without its imports. */
@@ -67,7 +67,7 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
     home:current?homeLabel(meta,room?.life?.shop_name):'',firstOpen:Boolean(current&&quickOpen(state,current)),
     missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':done?'isoEnd':'isoQueue',
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
-    fairOpen:Boolean(state.fair?.show),ev2010:ev2010Open(),menuOpen:false,cameraOpen:false,
+    fairOpen:Boolean(state.fair?.show),ev2010:ev2010Open(),menuOpen:false,cameraOpen:false,shop:Boolean(state.journey?.gender),forge:forgeOpen(state,content),
     utilityGroups:townUtilityGroups(state,content,social),
     ride:sceneMode==='town'?townRideLabel(state,content):'',riding:sceneMode==='town'?townRiding(state,content):null};
 }
@@ -119,6 +119,8 @@ export function isometricHUDHTML(model,state={}){
         ${control('Sổ việc','isoQueue','clipboard','iso-tool',' aria-label="Sổ việc đang chờ"')}
         ${control('Người quen','people','people','iso-tool',' aria-label="Người quen trong phố"')}
         ${m.current?control('Hôm nay','status','clock','iso-tool',' aria-label="Hôm nay: giờ, tình trạng và chuyện cần để ý"'):''}
+        ${m.shop?control('Cửa hàng','jrAccShop','bag','iso-tool iso-shop',' aria-label="Cửa hàng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng, nhà và xe"'):''}
+        ${m.forge?control('Cường hóa','jrForge','wrench','iso-tool iso-forge',' aria-label="Cường hóa: ghép cánh, ghép thú, nâng đồ thú cưng"'):''}
         ${control('Túi đồ','isoBag','bag','iso-tool')}
         ${m.ride?control(esc(m.ride),'isoRide','bike','iso-tool',` aria-label="${esc(m.ride)}: chạm để đổi xe hoặc đi bộ"`):''}
         ${m.ev2010?control('Thiệp 20/10','ev2010','heart','iso-tool iso-2010',' aria-label="Thiệp 20/10: viết thiệp tặng người thương"'):''}

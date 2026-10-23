@@ -521,8 +521,8 @@ def action(s: dict, name: str, p: dict) -> dict:
         iid = p['id']
         it = C.ACC.get(iid) or C.TOY.get(iid) if isinstance(iid, str) else None
         need(it is not None, 'Chọn một món trong tiệm nhé.')
-        qty = p.get('qty', 1)
-        need(_int(qty, 1, 3), 'Mua từ 1 đến 3 món một lần nhé.')
+        qty = p.get('qty', 1)   # 🛍️ owner 23/10 "mua thì cho mua nhiều cái 1 lần": up to C.ITEM_QTY_MAX (was 3), one charge
+        need(_int(qty, 1, C.ITEM_QTY_MAX), f'Mua từ 1 đến {C.ITEM_QTY_MAX} món một lần nhé.')
         need(p['confirm'] is True, f'Xác nhận mua {it["name"]}.')
         b = _ensure(s)
         if iid in C.ACC:   # 👗 an accessory goes to the wardrobe (rank D); `own` too, so an older build still has it
@@ -746,7 +746,7 @@ def catalogue() -> dict:
                 slots=[dict(id=a, emoji=b, name=c) for a, b, c in C.SLOTS],
                 tricks={k: [dict(id=t[0], emoji=t[1], name=t[2], at=t[3]) for t in v] for k, v in C.TRICKS.items()},
                 bath=dict(C.BATH), groom=dict(C.GROOM, cat=C.GROOM_CAT), vet=dict(C.VET), vaccine=dict(C.VACCINE),
-                play_free=C.PLAY_FREE, full=C.FULL, low=C.LOW, max=C.MAX_PETS, name_max=C.NAME_MAX, buy_qty=C.BUY_QTY_MAX,
+                play_free=C.PLAY_FREE, full=C.FULL, low=C.LOW, max=C.MAX_PETS, name_max=C.NAME_MAX, buy_qty=C.BUY_QTY_MAX,item_qty=C.ITEM_QTY_MAX,
                 shelter=C.SHELTER_NAME, shop=C.SHOP_NAME, donate=list(C.DONATE),
                 poses=[dict(id=a, name=b) for a, b in C.POSES], frames=[dict(id=a, emoji=b, name=c) for a, b, c in C.FRAMES],
                 tiers=px.catalogue(), wardrobe=pw.catalogue())

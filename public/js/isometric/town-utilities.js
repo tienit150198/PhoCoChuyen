@@ -21,6 +21,13 @@ const owns=(object,key)=>Object.prototype.hasOwnProperty.call(object,key);
 export const EV2010_UNTIL=1792515599e3;   // 20/10 23:59:59 VN: writing closed (owner 21/10), no card or entry after it
 export const ev2010Open=(t=Date.now())=>t<=EV2010_UNTIL;
 
+/** ⚒️ Cường hóa (v4/acc-shop.js forgeView, owner 23/10): something to ghép, the wings (game/wings.py) or the pets' tiers and
+ * wardrobe (game/pets.py), as the server sends them. The menu (app.js) and the new map's Tiện ích show it on this gate. */
+export function forgeOpen(state={},content={}){
+  const J=state?.journey||{},c=content?.journey||{},pc=c.pets;
+  return Boolean((J.gender&&c.wardrobe?.wings)||(J.story&&J.pets&&pc&&(pc.tiers||pc.wardrobe)));
+}
+
 /** Known optional services use the app's gates; ordinary map actions stay available. */
 export function townServiceAvailable(action,state={},content={},social={},actionData={}){
   const journey=state?.journey||{},story=Boolean(journey.story);
@@ -39,7 +46,12 @@ export function townServiceAvailable(action,state={},content={},social={},action
     return !feature||Boolean(state.fair[feature]);
   }
   if(action==='jrEnterHome')return Boolean(story&&journey.deco);
-  if(action==='jrAccShop')return Boolean(journey.gender);   // 🛍️ Tiệm phụ kiện (v4/acc-shop.js): a character to dress
+  if(action==='jrAccShop'){   // 🛍️ Cửa hàng (v4/acc-shop.js): a character to dress; its 🐾 shelves once the server has pets
+    if(!journey.gender)return false;const t=String(actionData?.tab||''),pc=content?.journey?.pets;
+    if(!/^p(buy|wear|wing|toy|gear)$/.test(t))return true;
+    return Boolean(story&&journey.pets&&pc&&(t==='pwear'||t==='pwing'?pc.wardrobe:t==='pgear'?pc.tiers:true));
+  }
+  if(action==='jrForge')return forgeOpen(state,content);
   if(action==='homeGuests')return story;
   if(action==='stView')return Boolean(story&&actionData?.view==='household'&&journey.household);
   if(action==='marriage'&&actionData?.tab==='family')return story;
@@ -69,7 +81,7 @@ export function townUtilityGroups(state={},content={},social={}){
       
       ['stView','home','👶','Chăm con riêng & thú cưng',{view:'household'},'household'],
       ['spendQuan','coffee','☕','Cà phê & quán ăn'],['spendSpa','sparkle','🪷','Spa'],['spendRap','camera','🎬','Rạp phim'],['spendChua','home','🙏','Công đức'],
-      ['spendStyle','sparkle','🎨','Phong cách'],['jrAccShop','bag','🎀','Tiệm phụ kiện'],['jrAccShop','gift','🤝','Phụ kiện đôi',{tab:'pair'},'acc-pairs'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],['island','globe','🌍','Đảo mở cửa',{tab:'inv'},'island-open'],
+      ['spendStyle','sparkle','🎨','Phong cách'],['lixi','gift','🧧','Lì xì'],['luxFw','sparkle','🎆','Bắn pháo hoa'],['island','globe','🌍','Đảo mở cửa',{tab:'inv'},'island-open'],
       ['luxTrip','pilot','✈️','Du lịch'],['luxSuu','award','🏺','Sưu tầm'],['luxNha','home','🏰','Dinh thự'],['luxBay','pilot','🛩️','Bay riêng'],
       ['luxTiec','people','🎉','Mở tiệc'],['luxHoc','book','📚','Khóa học'],['luxMtq','heart','💝','Mạnh Thường Quân'],
     ])},

@@ -297,5 +297,6 @@ MAX_FARM = 12
 NAME_MAX = 16
 BUY_QTY_MAX = 33          # 🛍️ owner 21/10 "cho chọn số lượng mua", then "mua thú thì k cần giới hạn tối đa đâu": no cap of its own, only
                           # the room left (MAX_PETS at home + pet_tiers.KENNEL_MAX in the kennel = 33)
+ITEM_QTY_MAX = 20         # 🛍️ owner 23/10 "mua thì cho mua nhiều cái 1 lần": toys and accessories of one kind in one purchase (was 3)
 SPIRIT = 1                # tinh thần once a life day, from a happy pet greeting you (small, capped)
 WEEK_DAY_PTS = 5          # 'Bé cưng của tuần': at most this many points a life day per pet (cosmetic only)

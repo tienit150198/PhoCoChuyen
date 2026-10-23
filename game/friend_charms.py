@@ -237,37 +237,46 @@ def _offer_db(db, sid: str, display: str, cid: str, other: str, kind: str) -> st
 
 
 def _buy(store, sid: str, display: str, d: dict) -> dict:
+    """🛍️ One pair, or `qty` pairs of one kind (owner 23/10 "mua thì cho mua nhiều cái 1 lần"; absent: 1, an older
+    client): one price of qty × the pair, one effect row (the request id: a retry pays nothing), all in the box or none
+    (the box's room, the wallet for the whole). With `code` the first pair goes to that friend, the others wait in the box."""
     kind = d.get('kind')
     mr.need(kind in INDEX, 'Chọn một cặp phụ kiện nhé.', 'bad_kind')
     mr.need(d.get('code') is None or isinstance(d.get('code'), str), 'Mã người chơi không hợp lệ.', 'bad_code')
+    qty = d.get('qty', 1)
+    mr.need(isinstance(qty, int) and not isinstance(qty, bool) and 1 <= qty <= BOX_MAX, f'Mua từ 1 đến {BOX_MAX} cặp một lần nhé.', 'bad_qty')
     k = INDEX[kind]
+    total, times = k['price'] * qty, f' ×{qty}' if qty > 1 else ''
     eid = f'charm:{sid[:16]}:{mr._rid(d)}'
     with store.connect() as db:
         if db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (eid,)).fetchone():
-            return _done(store, sid, f'Cặp {k["name"]} này bạn đã mua rồi.')
+            return _done(store, sid, f'Cặp {k["name"]}{times} này bạn đã mua rồi.')
         n = db.execute("SELECT COUNT(*) FROM friend_charms WHERE a=? AND status IN ('box','offered')", (sid,)).fetchone()[0]
         other = _target(db, sid, d['code']) if d.get('code') else None
     mr.need(n < BOX_MAX, f'Hộp quà đang có {BOX_MAX} cặp chưa tặng. Tặng bớt rồi mua thêm nhé.', 'box_full', 409)
-    cid = 'fc' + secrets.token_hex(6)
-    eff = mr._effect(eid, sid, 'wallet', -k['price'], f'Tiệm phụ kiện: cặp {k["name"]} ({k["item"].lower()})')
+    mr.need(n + qty <= BOX_MAX, f'Hộp quà chỉ còn chỗ cho {BOX_MAX - n} cặp. Mua ít hơn hoặc tặng bớt nhé.', 'box_full', 409)
+    cids = ['fc' + secrets.token_hex(6) for _ in range(qty)]
+    eff = mr._effect(eid, sid, 'wallet', -total, f'Tiệm phụ kiện: cặp {k["name"]}{times} ({k["item"].lower()})')
     named = []
 
     def fn(s):
-        mr.need(mr._can_spend(s, k['price'], d.get('pay')), f'Ví chưa đủ {k["price"]} xu để mua cặp {k["name"]}.', 'not_enough')
+        mr.need(mr._can_spend(s, total, d.get('pay')), f'Ví chưa đủ {total} xu để mua cặp {k["name"]}{times}.', 'not_enough')
         mr._spend(s, eff, d.get('pay'))
 
     def ops(db):
-        db.execute("INSERT INTO friend_charms(id,kind,a,status,price,at) VALUES(?,?,?,'box',?,?)", (cid, kind, sid, k['price'], mr.now()))
+        for cid in cids:
+            db.execute("INSERT INTO friend_charms(id,kind,a,status,price,at) VALUES(?,?,?,'box',?,?)", (cid, kind, sid, k['price'], mr.now()))
         mr._insert_effects(db, [eff], 'applied')
         if other:
-            named.append(_offer_db(db, sid, display, cid, other, kind))
+            named.append(_offer_db(db, sid, display, cids[0], other, kind))
     try:
         out = mr._mutate_retry(store, {sid: fn}, ops)
     except mr.dbm.IntegrityError:
-        return _done(store, sid, f'Cặp {k["name"]} này bạn đã mua rồi.')
+        return _done(store, sid, f'Cặp {k["name"]}{times} này bạn đã mua rồi.')
     if named:
-        return _done(store, sid, f'Đã mua cặp {k["name"]} ({k["price"]} xu) và gửi một chiếc tới {named[0]}. Chờ bạn ấy nhận nhé!', out)
-    return _done(store, sid, f'Đã mua cặp {k["name"]} ({k["price"]} xu). Cặp này nằm trong hộp quà, tặng một chiếc cho bạn bè để cùng đeo nhé.', out)
+        rest = f' {qty - 1} cặp còn lại nằm trong hộp quà.' if qty > 1 else ''
+        return _done(store, sid, f'Đã mua cặp {k["name"]}{times} ({total} xu) và gửi một chiếc tới {named[0]}. Chờ bạn ấy nhận nhé!{rest}', out)
+    return _done(store, sid, f'Đã mua cặp {k["name"]}{times} ({total} xu). {"Các cặp" if qty > 1 else "Cặp"} này nằm trong hộp quà, tặng một chiếc cho bạn bè để cùng đeo nhé.', out)
 
 
 def _cid(d: dict) -> str:

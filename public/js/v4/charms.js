@@ -9,7 +9,10 @@ import {setPairs,myPairs,pairIcon} from './look.js';
 
 export const kinds=api=>api.content?.journey?.wardrobe?.pairs?.kinds||[];
 export const kindOf=(api,id)=>kinds(api).find(k=>k.id===id)||null;
-export const shopName=api=>api.content?.journey?.wardrobe?.acc_shop?.name||'Tiệm phụ kiện';
+/** 🛍️ Cửa hàng (v4/acc-shop.js, owner 23/10 "cửa hàng hoặc shop đều là 1"): the one place to buy for the character and
+ * the pets; Tiệm phụ kiện Hạt Cườm is its 🎀 shelf. */
+export const SHOP_NAME='Cửa hàng';
+export const shopName=()=>SHOP_NAME;
 /** Offers waiting for this player (the view's list once read, else the bootstrap's count). */
 export const waiting=api=>Array.isArray(api.charmView?.incoming)?api.charmView.incoming.length:Number(api.charms?.incoming)||0;
 

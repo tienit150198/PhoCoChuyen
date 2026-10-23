@@ -12,7 +12,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {confirmPurchase} from './payment.js';
 import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf,cozyActive,wingOfState,wingIcon,WING_TIERS,WING_TIER_COLOR} from './look.js';
 import {GOC,colorList,haveColors,hasColor,priceOf as colorPrice,nameOf as colorName,swatch,unlockColor,openPalette} from './palette.js';
-import {pairsCard} from './charms.js';
+import {pairsCard,SHOP_NAME} from './charms.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const C=api=>api.content.journey?.wardrobe;
@@ -61,7 +61,7 @@ function status(api,it){
   else if(need==='married'&&api.state.marriage?.spouse?.status!=='married')return {lock:'Mở sau đám cưới'};
   if(it.price&&!owned(api).includes(it.id)){
     if(need==='shop'&&!staff(api))return {lock:`Chỉ bán cho người làm ở ${C(api).shop_name}`};
-    if(need.startsWith('open:')&&!shopOpen(api))return {lock:it.slot==='acc'?`Bán ở ${C(api).acc_shop?.name||C(api).shop_name}, có hàng từ chương 3`:`Bán ở ${C(api).shop_name}, mở từ chương 3`};
+    if(need.startsWith('open:')&&!shopOpen(api))return {lock:it.slot==='acc'?`Bán ở ${SHOP_NAME}, có hàng từ chương 3`:`Bán ở ${C(api).shop_name}, mở từ chương 3`};
     return {buy:true,price:priceOf(api,it)};
   }
   return null;
@@ -118,11 +118,14 @@ function colorPanel(api,st,look,slot){
   </section>`;
 }
 
+const SHOP_SLOTS=['top','bottom','shoes','hair'];   // Cửa hàng's 👕 Trang phục shelf (v4/acc-shop.js CL)
 function actions(api,st,look,saved){
   const changed=SLOTS.filter(k=>look[k]!==saved[k]),recolor=recolored(api,st,look);
   if(!changed.length&&!recolor.length)return `<p class="wd-hint">👇 Chạm một món để mặc thử.</p>`;
   const rows=changed.map(k=>{const it=itemOf(api,look[k]);return {it,st:status(api,it)};});
-  const buys=rows.filter(r=>r.st?.buy).map(r=>r.it.slot==='acc'?btn(`🛍️ Mua ${esc(r.it.name)} ở ${esc(C(api).acc_shop?.name||'Tiệm phụ kiện')}`,'jrAccShop',{item:r.it.id},'primary full')
+  // 🛍️ Buying is in Cửa hàng (owner 23/10): the button opens its shelf with the piece on the mirror; Tủ đồ wears what you own
+  const buys=rows.filter(r=>r.st?.buy).map(r=>r.it.slot==='acc'?btn(`🛍️ Mua ${esc(r.it.name)} ở ${SHOP_NAME}`,'jrAccShop',{item:r.it.id},'primary full')
+    :SHOP_SLOTS.includes(r.it.slot)?btn(`🛍️ Mua ${esc(r.it.name)} ở ${SHOP_NAME} · ${fmt(r.st.price)} xu`,'jrAccShop',{tab:'wear',item:r.it.id},'primary full')
     :btn(`Mua ${esc(r.it.name)} · ${fmt(r.st.price)} xu`,'jrWdBuy',{item:r.it.id},'primary full'));
   const locks=rows.filter(r=>r.st?.lock).map(r=>`<p class="wd-lock">🔒 ${esc(r.it.name)}: ${esc(r.st.lock.charAt(0).toLowerCase()+r.st.lock.slice(1))}.</p>`);
   const need=[...new Set(recolor.map(k=>tryColor(api,st,look[k])).filter(c=>!hasColor(api,c)))];
@@ -173,9 +176,9 @@ export function wardrobeView(env){
     </section>
     <nav class="wd-tabs" role="tablist" aria-label="Loại đồ">${tabs}</nav>
     ${paint}<div class="wd-grid">${grid}</div>
-    ${st.tab==='acc'?`<p class="wd-note as-foot">🛍️ Mua thêm phụ kiện: ${btn(esc(c.acc_shop?.name||'Tiệm phụ kiện'),'jrAccShop',{},'ghost small')}</p>${wingsCard(api)}${pairsCard(env)}`:''}
+    ${st.tab==='acc'?`<p class="wd-note as-foot">🛍️ Mua thêm phụ kiện: ${btn(SHOP_NAME,'jrAccShop',{tab:'acc'},'ghost small')}</p>${wingsCard(api)}${pairsCard(env)}`:''}
     <section class="jr-card wd-work"><label class="switch-row"><span class="grow"><b>Mặc đồ làm việc khi vào ca</b><small class="muted block">Tạp dề, áo blouse, yếm… theo nơi làm.</small></span><input type="checkbox" role="switch" data-action="jrWdUniform" ${saved.uniform?'checked':''}><i aria-hidden="true"></i></label></section>
-    <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAccShop">🛍️ ${esc(c.acc_shop?.name||'Tiệm phụ kiện')}</button><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
+    <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAccShop" data-tab="wear">🛍️ ${SHOP_NAME}</button><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
   </div>`;
 }
 
@@ -222,4 +225,4 @@ export async function wardrobeAction(action,data,el,env){
   }
   return false;
 }
-export {status as wdStatus,itemOf as wdItem};   // 🛍️ Tiệm phụ kiện (v4/acc-shop.js) sells the same accessories
+export {status as wdStatus,itemOf as wdItem,thumb as wdThumb};   // 🛍️ Cửa hàng (v4/acc-shop.js) sells the same accessories and clothes

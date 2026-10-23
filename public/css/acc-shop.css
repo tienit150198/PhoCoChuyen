@@ -91,3 +91,63 @@ html[data-layout="phone"] .as-kind-art svg{width:76px;height:76px}
 .wd-wings-row{align-items:center;flex-wrap:nowrap}
 .wd-wings-row .grow{min-width:0;flex:1}
 html[data-layout="phone"] .wg-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* 🛍️ Cửa hàng (owner 23/10): 👤 Cho bạn / 🐾 Thú cưng / 🏠 Nhà & xe, then the group's shelves; the pets' shelves are
+   v4/pets.js markup (pets.css) drawn in the sheet (.pt-embed), its main button sticky at the bottom as in its dialog. */
+.as-groups{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:4px;padding:4px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.as-group{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 10px;border:0;border-radius:14px;background:transparent;color:var(--ink-2);font:inherit;font-weight:800;cursor:pointer}
+.as-group>span{font-size:1.15rem}
+.as-group.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 -3px 0 var(--accent)}
+.as-group:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.as-chips .chip{min-height:40px}
+.pt-embed{display:grid;gap:10px;min-height:0}
+.pt-embed .pt-flash:empty{display:none}
+.pt-embed .pt-bar{margin:4px -6px 0;border-radius:16px 16px 0 0;box-shadow:0 -6px 14px color-mix(in srgb,var(--ink) 8%,transparent)}
+.pt-none .pt-chip{min-height:40px}
+html[data-layout="phone"] .as .wd-tabs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+html[data-layout="phone"] .as .wd-tab{flex-direction:column;white-space:normal;text-align:center;padding:4px 2px}
+html[data-layout="phone"] .as-group{font-size:.9rem;padding:6px 4px;gap:4px}
+/* 🏠 Nhà & xe: a card per screen that sells the rest */
+.as-more{font:inherit;color:inherit;text-align:left;cursor:pointer;align-items:center;border:1px solid var(--line)}
+.as-more .as-kind-art{font-size:2.6rem}
+.as-more .as-kind-text small{color:var(--ink-2);line-height:1.4}
+.as-more:hover{border-color:var(--accent)}
+.as-more:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* ⚒️ Cường hóa (forgeView): ⚡ Cường hóa nhanh on top of every shelf, what it picked under the button */
+.fg-intro{margin:0}
+.fg-quick,.pt-quick{display:grid;gap:6px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.fg-quick .btn,.pt-quick .btn{width:100%;min-height:46px;font-weight:800}
+.fg-quick small,.pt-quick small{color:var(--ink-2);line-height:1.45}
+.fg-empty{display:grid;gap:8px;padding:14px}
+.fg-empty h3{margin:0}
+.fg-empty .btn{justify-self:start}
+span.wg-pick{cursor:default}
+/* 🛍️ Mua nhiều một lần (owner 23/10): − N + with ×1 ×5 ×10 / Tối đa and the sum (🪽 🤝); 🧺 the cart of pieces (🎀 👕) */
+.as-qty{display:grid;gap:6px;margin:4px 0 2px}
+.as-qty-step{display:inline-flex;align-items:center;gap:6px}
+.as-qty-b{min-width:40px;min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-pill,999px);background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer}
+.as-qty-b.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.as-qty-b:disabled{opacity:.45;cursor:default}
+.as-qty-b:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.as-qty-n{min-width:28px;text-align:center;font-size:1.05rem}
+.as-qty-chips{display:flex;flex-wrap:wrap;gap:6px}
+.as-qty-chips .as-qty-b{min-height:36px;font-size:.85rem}
+.as-qty-sum{color:var(--ink-2)}
+.as-multi .chip{min-height:40px}
+.as-cart{display:grid;gap:6px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.as-cart-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.as-cart p{margin:0}
+.wd-item{position:relative}
+.wd-item.in-cart{outline:3px solid var(--accent);outline-offset:1px}
+.as-incart{position:absolute;top:4px;right:4px;font-style:normal;font-size:1rem}
+/* ⚒️ Cường hóa (owner 23/10 "ghép thì đưa vào mục riêng"): a card per kind owned, its counts, ⚡ when a set is ready */
+.fg-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.fg-kind{position:relative;display:grid;gap:2px;justify-items:start;text-align:left;min-height:64px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.fg-kind.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface));box-shadow:inset 0 -3px 0 var(--accent)}
+.fg-kind:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.fg-kind-e{font-size:1.3rem;line-height:1}
+.fg-kind small{color:var(--ink-2);font-size:.78rem;line-height:1.3}
+.fg-ready{position:absolute;top:6px;right:8px;font-style:normal}
+html[data-layout="phone"] .fg-kinds{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wg-group{display:grid;gap:6px;margin-top:8px}
+.wg-group-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0}
+.wg-group-head .wg-tier{position:static}
