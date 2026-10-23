@@ -1,3 +1,7 @@
+# 2.5.4.3 — 23/10/2026
+
+🪽 Cánh vẽ lại to và đẹp hơn (chủ game 23/10 "cánh mua xong ra ngoài xấu quá", "to hơn nhé"), cả bản đồ mới lẫn giao diện cũ: thiên thần lông nhiều lớp, phượng hoàng lông lửa, dơi / rồng màng có xương (rồng gai vảy vàng), tiên hai đôi trong có gân, bướm cánh trước sau có mắt cánh; sải cánh ~1,4–2× đầu chibi, mọc từ bả vai lên ngang đầu; hạng: viền màu B/A, quầng + tia từ S, lấp lánh SS/SSS, viền vàng Huyền thoại; đập nhẹ khi đứng, mạnh khi đi; vẽ một lần mỗi kiểu, dùng chung (feat/wings-v2 3b186310).
+
 # 2.5.4.2 — 23/10/2026
 
 Hotfix: giao diện cũ, cảnh làm việc đen thui chỉ còn đồ đạc và mèo (người chơi Đại lý xe, Android): Chrome xóa bộ nhớ khung vẽ phòng khi chuyển app; boba-world.js vẽ lại phòng khi quay lại trang (visibilitychange), khi khung vẽ báo contextrestored, và vẽ thẳng lên sân khấu khi khung vẽ đang mất (isContextLost).
