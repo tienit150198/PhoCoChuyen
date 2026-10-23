@@ -16,7 +16,8 @@ hoặc C ngẫu nhiên, xong nâng lên như cơ chế hiện tại nhé", "cho 
 * ⚡ jr_pet_wing_fuse_auto {budget, top?, scope?, rid?, confirm} (owner 23/10: "cường hóa nhanh sẽ tự ghép mà cường hóa chứ
   sao lại cường hóa từng lần", "nó giống ghép tự động của áo quần ấy"): jr_pet_wing_fuse's own fusion (_fuse_three: the
   same fee, roll, odds and losses) again and again, three wings of the lowest tier first (`sets`: one style or all, the
-  result at most `top`; the worn wing only ever the main one, never used up), a miss tried again while the wings remain,
+  result at most `top`; the three of a set always one style, owner 23/10 "ghép nhanh thì ghép gì nhận đó thôi k ghép
+  nhanh mấy dòng khác nhé"; the worn wing only ever the main one, never used up), a miss tried again while the wings remain,
   until none is left, the next fee would pass the budget or the money, or AUTO_MAX fusions; one charge, one save, a
   summary. `rid`: a retried request answers the run it made and pays nothing (kept in `rq` like a purchase).
 * 👕 jr_pet_wing_wear {id | null}: one wing worn at a time (or none). 🗑️ jr_pet_wing_drop {id, confirm}: thrown away.
@@ -299,40 +300,39 @@ def _fuse_three(w: dict, main: dict, others: list) -> bool:
     return True
 
 
-def _price(x: dict) -> int:
-    st = INDEX.get(x['k'])
-    return st['price'] if st else 0
-
-
 def _seq(x: dict) -> int:
     return int(x['id'][1:])
 
 
+_ORDER = {k: i for i, k in enumerate(ORDER)}
+
+
 def sets(w: dict, scope: str = 'all', top: int = TOP, locks=frozenset(), pin=None) -> list:
-    """⚡ What Cường hóa nhanh may fuse now: [(tier, [main, a, b], how many sets of that tier)] for every tier with three
-    wings (of `scope`'s style, or any) whose result is at most `top`, the lowest tier first. The main one is the wing
-    pinned (`pin`, ⚒️ Cường hóa tối đa of one wing), else the wing worn when it is among them (it keeps its style and stays
-    on), else a 🔒 locked one, else the dearest style; the two others the cheapest styles, never the pinned, worn or
-    locked ones (game/forge_locks.py; the quick pick's rule, owner 23/10). With a pin only the tiers up to the pinned
-    wing's own: what is below builds its ingredients, nothing above it is touched."""
+    """⚡ What Cường hóa nhanh may fuse now: [(tier, [main, a, b], how many sets of that style and tier)] for every style ×
+    tier with three wings (of `scope`'s style, or any) whose result is at most `top`, the lowest tier first, then the
+    styles' order (ORDER). The three of a set are always ONE style (owner 23/10: "ghép nhanh thì ghép gì nhận đó thôi k
+    ghép nhanh mấy dòng khác nhé": a run never uses up a wing of another style). The main one is the wing pinned (`pin`,
+    ⚒️ Cường hóa tối đa of one wing), else the wing worn when it is among them (it stays on), else a 🔒 locked one, else
+    the oldest; the two others never the pinned, worn or locked ones (game/forge_locks.py), the oldest first. With a pin
+    only its style and the tiers up to its own: what is below builds its ingredients, nothing above it is touched."""
     pinned = next((x for x in w['own'] if x['id'] == pin), None) if pin else None
     cap = min(top, TOP, pinned['r'] + 1 if pinned['r'] < TOP else 0) if pinned else min(top, TOP)   # a Huyền thoại: nothing
     groups: dict = {}
     for x in w['own']:
-        if (scope == 'all' or x['k'] == scope) and x['r'] < cap:
-            groups.setdefault(x['r'], []).append(x)
+        if (scope == 'all' or x['k'] == scope) and (not pinned or x['k'] == pinned['k']) and x['r'] < cap:
+            groups.setdefault((x['r'], _ORDER.get(x['k'], len(_ORDER)), x['k']), []).append(x)
     keep = set(locks) | {i for i in (pin, w['on']) if i}
     out = []
-    for r in sorted(groups):
-        g = groups[r]
+    for key in sorted(groups):
+        g = groups[key]
         free = [x for x in g if x['id'] not in keep]
         k = min(len(free) // 2, len(g) // 3)   # each set: two free ones and a main one (a kept one, else a free one)
         if k < 1:
             continue
         main = (next((x for x in g if x['id'] == pin), None) or next((x for x in g if x['id'] == w['on']), None)
-                or max(g, key=lambda x: (x['id'] in keep, _price(x), -_seq(x))))
-        rest = sorted((x for x in free if x is not main), key=lambda x: (_price(x), _seq(x)))
-        out.append((r, [main, rest[0], rest[1]], k))
+                or max(g, key=lambda x: (x['id'] in keep, -_seq(x))))
+        rest = sorted((x for x in free if x is not main), key=_seq)
+        out.append((key[0], [main, rest[0], rest[1]], k))
     return out
 
 
@@ -361,7 +361,7 @@ def _auto(s: dict, p: dict) -> dict:
     first = sets(w, scope, top, locks, pin) if w else []
     above = bool(w) and top < TOP and bool(sets(w, scope, TOP, locks, pin))
     _need(bool(first), f'Đã tới hạng {tier_label(top)} rồi: chọn hạng cao hơn nhé.' if above
-          else 'Chưa có ba đôi cánh cùng hạng để ghép.', 'not_owned')
+          else 'Chưa có ba đôi cánh cùng kiểu, cùng hạng để ghép.', 'not_owned')
     fee0 = FUSE_FEE[first[0][0]]
     _need(fee0 <= budget, f'Số xu đặt chưa đủ cho lượt ghép đầu ({_fmt(fee0)} xu).', 'not_enough')
     why = pt._ready_why(s, fee0)

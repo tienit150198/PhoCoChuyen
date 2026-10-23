@@ -319,3 +319,45 @@ test('⚒️ v2: the ticks: 🕶️ Ẩn tên is the save\'s setting (forgeAnon)
   fire('change',{fvPref:'fast'},{checked:true});assert.equal(store.get('mnl.forgeFast'),'1');
   fire('change',{fvPref:'fast'},{checked:false});delete globalThis.localStorage;
 });
+
+/* ---- one line a set (owner 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé"): on a save with
+ * several lines at one rank (🪽 styles, 🧬 breeds, 🧰 models), the client's plans are python's, every set is three of one
+ * line, a lone line is never an ingredient, the lowest rank first then the catalogue's order. ---- */
+const mixed=JSON.parse(execFileSync(process.env.PYTHON||'python',['-c',`
+import json
+from tests.test_forge_auto import wings, act, X, Wg
+from tests.test_pet_tiers import get as get_pet
+from game import wings as W, pet_tiers as px, pets as pt
+from game.engine import public_state
+s = wings(10**9, ('rong', 0, 3), ('buom', 0, 4), ('tien', 0, 2), ('buom', 1, 3))
+for i, (b, r) in enumerate((('meo_mun', 0),) * 3 + (('cho_ta', 0),) * 3 + (('tam_the', 0),) * 2 + (('aln', 1),) * 3):
+    s, _ = get_pet(s, f'Bé {i + 1}', breed=b, rank=r)
+for slot, model, qty in (('giay', 0, 2), ('giay', 3, 3), ('giay', 1, 3), ('giap', 0, 3)):
+    s, _ = act(s, 'jr_pet_gear_buy', slot=slot, model=model, rank=0, qty=qty, confirm=True)
+ids = lambda xs: [[r, [x['id'] for x in t], k] for r, t, k in xs]
+cho = next(q['id'] for q in px.all_pets(s) if q['b'] == 'cho_ta')
+g0 = X(s)['gear'][0]['id']
+plans = dict(wing=ids(W.sets(Wg(s))), wing_pin=ids(W.sets(Wg(s), pin='w5')), pet=[list(x) for x in px.fuse_sets(s)],
+             pet_pin=[list(x) for x in px.fuse_sets(s, pin=cho)], cho=cho, gear=px.gear_step(s, X(s))[1]['id'],
+             gear_left=px._gear_left(s, X(s), 'all', px.TOP), gear_pin=list(px.gear_step(s, X(s), pin=g0)[:2]), g0=g0)
+plans['gear_pin'][1] = plans['gear_pin'][1]['id']
+print(json.dumps(dict(state=public_state(s), content=dict(journey=dict(wardrobe=dict(wings=W.catalogue()), pets=pt.catalogue())), plans=plans), ensure_ascii=False))
+`],{encoding:'utf8',env:{...process.env,PYTHONUTF8:'1',PYTHONPATH:'.'},maxBuffer:64*1024*1024}));
+
+test('⚒️ one line a set (owner 23/10): the client\'s ⚡ plans are python\'s, never two lines in one set',()=>{
+  const P=mixed.plans,api={state:mixed.state,content:mixed.content,command:async()=>null},ids=xs=>xs.map(x=>[x.r,x.set.map(y=>y.id),x.t]);
+  const ws=FG.wingSets(api),ps=FG.petSets(api);
+  assert.deepEqual(ids(ws),P.wing);assert.deepEqual(ids(FG.wingSets(api,'all',7,'w5')),P.wing_pin);
+  assert.deepEqual(ids(ps),P.pet);assert.deepEqual(ids(FG.petSets(api,'all',7,P.cho)),P.pet_pin);
+  assert.deepEqual(ws.map(x=>[x.r,x.k]),[[0,'buom'],[0,'rong'],[1,'buom']],'D: the butterflies before the dragons (the styles\' order); tien ×2: none');
+  assert.ok(ws.every(x=>x.set.every(y=>y.k===x.k)),'one style a set');
+  assert.deepEqual(ps.map(x=>[x.r,x.b]),[[0,'cho_ta'],[0,'meo_mun'],[1,'aln']],'the breeds\' order; tam_the ×2: none');
+  assert.ok(ps.every(x=>x.set.every(y=>y.b===x.b)),'one breed a set');
+  assert.ok(FG.petSets(api,'all',7,P.cho).every(x=>x.b==='cho_ta'),'a pin: only its breed');
+  const g=FG.gearPlan(api);
+  assert.equal(g.sets[0].g.id,P.gear,'the gear that goes up first');assert.equal(g.sets.length,P.gear_left,'one set per slot × model × rank');
+  assert.deepEqual(g.sets.map(x=>[x.g.s,x.g.m]),[['giay',1],['giay',3],['giap',0]],'giày model 0 ×2: none; the slots\', then the models\' order');
+  const gp=FG.gearPlan(api,'giay',6,P.g0);
+  assert.deepEqual([gp.sets.length,gp.worn.map(x=>x.id)],[0,[P.g0]],'a pin with no mates of its model: +10 only');assert.deepEqual(P.gear_pin,['up',P.g0]);
+  assert.equal(FG.planOf(api,'wing','all',null,7).n,3);assert.equal(FG.planOf(api,'pet','all',null,7).n,3);
+});

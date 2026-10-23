@@ -44,6 +44,7 @@ ENTRIES = (
         dict(emoji='🏆', text="Bảng xếp hạng mở nhanh hơn."),
         dict(emoji='🪽', text="Vào đám cưới vẫn mang cánh và phụ kiện đôi."),
         dict(emoji='🐾', text="⚡ Ghép tự động mặc định chỉ tới hạng S. Muốn cao hơn, chọn ở “Ghép tới”."),
+        dict(emoji='🐾', text="⚡ Ghép nhanh chỉ ghép cùng dòng: ghép gì nhận nấy, không đụng dòng khác."),   # owner 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé"
         dict(emoji='💐', text="Sự kiện Thiệp 20/10 đã khép lại. Cảm ơn mọi người!"),
     )),
     dict(version="2.5.8", date="2026-10-23", items=(   # owner 23/10: "thêm mở tới màn 300 nhé, khó hơn, với có item ẩn"

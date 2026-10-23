@@ -84,9 +84,8 @@ def wings(wallet=10**9, *groups, on=None):
 
 
 def wings_by_hand(s, budget, scope='all', top=WC.TOP):
-    """The same fusions one jr_pet_wing_fuse at a time, picked as a careful player would (the lowest tier with three;
-    the worn one the main, else the dearest style; the cheapest two others, never the worn one)."""
-    price = lambda x: WC.INDEX[x['k']]['price']   # noqa: E731
+    """The same fusions one jr_pet_wing_fuse at a time, picked as a careful player would (the lowest tier with three of
+    ONE style, then the styles' order; the worn one the main, else the oldest; the oldest two others, never the worn one)."""
     seq = lambda x: int(x['id'][1:])                # noqa: E731
     n = spent = 0
     while n < W.AUTO_MAX:
@@ -94,15 +93,15 @@ def wings_by_hand(s, budget, scope='all', top=WC.TOP):
         g = {}
         for x in w['own']:
             if (scope == 'all' or x['k'] == scope) and x['r'] < min(top, WC.TOP):
-                g.setdefault(x['r'], []).append(x)
-        ready = sorted(r for r, xs in g.items() if len(xs) >= 3)
-        if not ready or spent + W.FUSE_FEE[ready[0]] > budget:
+                g.setdefault((x['r'], WC.ORDER.index(x['k'])), []).append(x)
+        ready = sorted(key for key, xs in g.items() if len(xs) >= 3)
+        if not ready or spent + W.FUSE_FEE[ready[0][0]] > budget:
             break
         xs = g[ready[0]]
-        main = next((x for x in xs if x['id'] == w['on']), None) or sorted(xs, key=lambda x: (-price(x), seq(x)))[0]
-        rest = sorted((x for x in xs if x is not main), key=lambda x: (price(x), seq(x)))[:2]
+        main = next((x for x in xs if x['id'] == w['on']), None) or min(xs, key=seq)
+        rest = sorted((x for x in xs if x is not main), key=seq)[:2]
         s, _ = act(s, 'jr_pet_wing_fuse', wings=[main['id'], rest[0]['id'], rest[1]['id']], main=main['id'], confirm=True)
-        spent += W.FUSE_FEE[ready[0]]
+        spent += W.FUSE_FEE[ready[0][0]]
         n += 1
     return s, n, spent
 
@@ -144,13 +143,18 @@ class WingAuto(unittest.TestCase):
         self.assertEqual(sorted(x['r'] for x in Wg(s)['own']), [1, 1, 1])
         self.assertEqual(r['auto']['stop'], 'top')
         self.assertIn('Đã tới hạng C', refused(self, s, 'jr_pet_wing_fuse_auto', budget=10**9, top=1, confirm=True))
-        # three SSS: 🌟 Huyền thoại, the dearest style kept
-        s = wings(10**9, ('buom', 6, 2), ('phuong', 6, 1))
-        Wg(s)['on'] = None                                                    # none worn: the dearest style is the main one
+        # three SSS of one style: 🌟 Huyền thoại of that style
+        s = wings(10**9, ('phuong', 6, 3))
+        Wg(s)['on'] = None
         with always(W, 0):
             s, r = act(s, 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True)
         self.assertEqual([(x['k'], x['r']) for x in Wg(s)['own']], [('phuong', WC.TOP)])
         self.assertEqual(r['auto']['spent'], W.FUSE_FEE[6])
+        # owner 23/10 "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé": two SSS of one style and one
+        # of another are no set for ⚡ (a fusion by hand still may)
+        s = wings(10**9, ('buom', 6, 2), ('phuong', 6, 1))
+        self.assertEqual(W.sets(Wg(s)), [])
+        self.assertIn('cùng kiểu, cùng hạng', refused(self, s, 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True))
 
     def test_budget_money_and_cap(self):
         s = wings(10**9, ('buom', 0, 6))
@@ -185,6 +189,8 @@ class WingAuto(unittest.TestCase):
         s = wings(10**9, ('buom', 0, 2), ('tien', 1, 2))
         self.assertIn('Chưa có ba đôi', refused(self, s, 'jr_pet_wing_fuse_auto', budget=10**6, confirm=True))
         self.assertIn('Chưa có ba đôi', refused(self, story(wallet=10**6), 'jr_pet_wing_fuse_auto', budget=10**6, confirm=True))
+        s = wings(10**9, ('buom', 0, 2), ('tien', 0, 1), ('rong', 0, 1))   # four D of three styles: no set
+        self.assertIn('Chưa có ba đôi', refused(self, s, 'jr_pet_wing_fuse_auto', budget=10**6, confirm=True))
         s = wings(10**9, ('buom', 0, 3), ('tien', 7, 3))
         for bad in (dict(budget=0), dict(budget=-1), dict(budget=2.5), dict(budget='9'), dict(budget=True), dict(budget=10**13),
                     dict(scope='nope'), dict(scope=3), dict(top=0), dict(top=8), dict(top=True), dict(rid='x'), dict(rid=5),
@@ -221,8 +227,8 @@ class WingAuto(unittest.TestCase):
             t, r = act(s, 'jr_pet_wing_fuse_auto', scope='buom', budget=10**9, confirm=True)
         self.assertEqual(sorted((x['k'], x['r']) for x in Wg(t)['own']), [('buom', 1), ('phuong', 0), ('phuong', 0)])
         self.assertEqual(Wg(t)['on'], Wg(s)['own'][3]['id'])
-        # the worn one with two others: the worn one goes up in place, still worn
-        s = wings(10**9, ('buom', 0, 2), ('tien', 0, 1), on=0)
+        # the worn one with two others of its style: the worn one goes up in place, still worn
+        s = wings(10**9, ('buom', 0, 3), on=0)
         with always(W, 0):
             t, r = act(s, 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True)
         self.assertEqual([(x['id'], x['k'], x['r']) for x in Wg(t)['own']], [(Wg(s)['on'], 'buom', 1)])
@@ -507,6 +513,122 @@ class GearAuto(unittest.TestCase):
         self.assertIn('Chưa có món nào', refused(self, s, 'jr_pet_gear_auto', scope='giap', budget=10**6, confirm=True))
 
 
+# ---------------------------------------------------------------- one line a set (owner 23/10)
+class OneLine(unittest.TestCase):
+    """Owner 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé": every ⚡ set is three of ONE
+    line and rank (🪽 one style, 🧬 one breed, 🧰 one slot and model): a run never uses up another line's piece, what is
+    fused is what comes out; the lowest rank first, then the catalogue's order. Lines with three still fuse."""
+
+    def test_wings_one_style_a_set(self):
+        s = wings(10**9, ('buom', 0, 4), ('rong', 0, 2), ('tien', 0, 5), ('phuong', 4, 2), ('doi', 4, 1))
+        Wg(s)['on'] = None
+        self.assertEqual([(r, [x['k'] for x in t], k) for r, t, k in W.sets(Wg(s))],
+                         [(0, ['buom'] * 3, 1), (0, ['tien'] * 3, 1)], 'rank first, then the styles\' order; rong ×2 and S ×2+1: none')
+        for seed in range(10):
+            trios = []
+            real = W._fuse_three
+
+            def spy(w, main, others):
+                trios.append([main['k']] + [x['k'] for x in others])
+                return real(w, main, others)
+            with seeded(W, seed), mock.patch.object(W, '_fuse_three', spy):
+                t, r = act(copy.deepcopy(s), 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True)
+            self.assertTrue(trios)
+            self.assertTrue(all(len(set(k)) == 1 for k in trios), trios)
+            for k in ('rong', 'phuong', 'doi'):                               # no three of theirs: untouched
+                self.assertEqual([x for x in Wg(t)['own'] if x['k'] == k], [x for x in Wg(s)['own'] if x['k'] == k], (seed, k))
+            self.assertLessEqual(len([x for x in Wg(t)['own'] if x['k'] == 'buom']), 4)
+            validate_state(t)
+        with always(W, 0):
+            t, r = act(copy.deepcopy(s), 'jr_pet_wing_fuse_auto', budget=10**9, confirm=True)
+        self.assertEqual(sorted((x['k'], x['r']) for x in Wg(t)['own']),
+                         sorted([('buom', 1), ('buom', 0), ('rong', 0), ('rong', 0), ('tien', 1), ('tien', 0), ('tien', 0),
+                                 ('phuong', 4), ('phuong', 4), ('doi', 4)]))
+        self.assertEqual((r['auto']['n'], r['auto']['used'], r['auto']['left']), (2, 4, 0))
+
+    def test_pets_one_breed_a_set_never_a_hybrid(self):
+        s, ids = pets(0, 0, 0, 1)                                             # meo_mun
+        for i, (b, r) in enumerate((('cho_ta', 0), ('cho_ta', 0), ('cho_ta', 0), ('tam_the', 0), ('tam_the', 0), ('aln', 1), ('aln', 1))):
+            s, _ = get_pet(s, f'Ba {i}', breed=b, rank=r)
+        s['journey']['pets']['walk'] = None
+        breed = {q['id']: q['b'] for q in px.all_pets(s)}
+        sets = px.fuse_sets(s)
+        self.assertEqual([(r, [breed[i] for i in t], k) for r, t, k in sets], [(0, ['cho_ta'] * 3, 1), (0, ['meo_mun'] * 3, 1)],
+                         'rank first, then the breeds\' order; tam_the ×2, aln ×2 and the C meo_mun: none')
+        for seed in range(8):
+            trios = []
+            real = px._fuse_check
+
+            def spy(s_, p_):
+                trios.append(([breed.get(i) for i in p_['pets']], p_.get('mix')))
+                return real(s_, p_)
+            with seeded(px, seed), no_myth(), mock.patch.object(px, '_fuse_check', spy):
+                t, r = act(copy.deepcopy(s), 'jr_pet_fuse_auto', budget=10**9, confirm=True)
+            self.assertTrue(trios)
+            self.assertTrue(all(len(set(b)) == 1 and mix is None for b, mix in trios), trios)
+            after = {q['id']: q for q in px.all_pets(t)}
+            for i, b in breed.items():
+                if b in ('tam_the', 'aln'):
+                    self.assertIn(i, after, (seed, b))
+                    self.assertEqual(px.rec_of(t, after[i])['r'], px.rec_of(s, next(q for q in px.all_pets(s) if q['id'] == i))['r'])
+            self.assertEqual({q['b'] for q in after.values()} - set(breed.values()), set(), 'never a 🧬 hybrid (cho_ta ×3 stays cho_ta)')
+            validate_state(t)
+        # two meo_mun D and one cho_ta D: no set (a fusion by hand still may)
+        s, ids = pets(0, 0)
+        s, _ = get_pet(s, 'Ba', breed='cho_ta')
+        self.assertEqual(px.fuse_sets(s), [])
+        self.assertIn('cùng giống, cùng hạng', refused(self, s, 'jr_pet_fuse_auto', budget=10**9, confirm=True))
+        # a pin: only its breed
+        s, ids = pets(0, 0, 0)
+        for i in range(3):
+            s, _ = get_pet(s, f'Ba {i}', breed='cho_ta')
+        s['journey']['pets']['walk'] = None
+        self.assertEqual([{px._where(s, i)[1]['b'] for i in t} for _, t, _ in px.fuse_sets(s, pin=ids[1])], [{'meo_mun'}])
+        self.assertEqual(px.fuse_sets(s, pin=ids[1])[0][1][0], ids[1])
+
+    def test_gear_one_model_a_set(self):
+        s, pid = pets(0)
+        for model, qty in ((0, 2), (1, 2), (3, 1)):
+            s, _ = act(s, 'jr_pet_gear_buy', slot='giay', model=model, rank=0, qty=qty, confirm=True)
+        model = lambda g: px.model_of(g, s)   # noqa: E731
+        self.assertEqual(sorted(model(g) for g in X(s)['gear']), [0, 0, 1, 1, 3])
+        self.assertIsNone(px.gear_step(s, X(s)), 'five giày D of three models: no three of one')
+        self.assertIn('cùng mẫu, cùng hạng', refused(self, s, 'jr_pet_gear_auto', budget=10**9, confirm=True))
+        self.assertEqual(px._gear_left(s, X(s), 'all', px.TOP), 0)
+        s, _ = act(s, 'jr_pet_gear_buy', slot='giay', model=1, rank=0, qty=1, confirm=True)
+        s, _ = act(s, 'jr_pet_gear_buy', slot='giay', model=3, rank=0, qty=2, confirm=True)
+        self.assertEqual(px._gear_left(s, X(s), 'all', px.TOP), 2)
+        step = px.gear_step(s, X(s))
+        self.assertEqual(model(step[1]), 1, 'the lowest model first (the models\' order)')
+        before = {g['id']: (model(g), g['r'], g['lv']) for g in X(s)['gear']}
+        for seed in range(6):
+            fused = []
+            real = px._gear_fuse_roll
+
+            def spy(s_, x_, main, others):
+                fused.append({px.model_of(g, s_) for g in [main] + others})
+                return real(s_, x_, main, others)
+            with seeded(px, seed), mock.patch.object(px, '_gear_fuse_roll', spy):
+                t, r = act(copy.deepcopy(s), 'jr_pet_gear_auto', budget=10**9, confirm=True)
+            self.assertTrue(fused)
+            self.assertTrue(all(len(m) == 1 for m in fused), fused)
+            for g in X(t)['gear']:
+                if before[g['id']][0] == 0:
+                    self.assertEqual((px.model_of(g, t), g['r'], g['lv']), before[g['id']], 'model 0 ×2: untouched')
+            validate_state(t)
+        with always(px, 0):
+            t, r = act(copy.deepcopy(s), 'jr_pet_gear_auto', budget=10**9, confirm=True)
+        self.assertEqual(sorted((px.model_of(g, t), g['r']) for g in X(t)['gear']), [(0, 0), (0, 0), (1, 1), (3, 1)])
+        self.assertEqual((r['auto']['fuses'], r['auto']['used'], r['auto']['left']), (2, 4, 0))
+        # a pin: only its model (a model-0 one with no mates of its model: strengthened to +10, nothing used)
+        g0 = next(g['id'] for g in X(s)['gear'] if model(g) == 0)
+        self.assertEqual(px.gear_step(s, X(s), pin=g0)[:2], ('up', next(g for g in X(s)['gear'] if g['id'] == g0)))
+        with always(px, 0):
+            t, r = act(copy.deepcopy(s), 'jr_pet_gear_auto', pin=g0, budget=10**9, confirm=True)
+        self.assertEqual(len(X(t)['gear']), len(X(s)['gear']))
+        self.assertEqual(next(g['lv'] for g in X(t)['gear'] if g['id'] == g0), px.GLV_MAX)
+
+
 # ---------------------------------------------------------------- the live release
 # ---------------------------------------------------------------- 🔒 Khóa món (game/forge_locks.py)
 def lock(s, *ids, on=True):
@@ -696,16 +818,17 @@ class Locks(unittest.TestCase):
     def test_pin_is_cường_hóa_tối_đa_of_one_piece(self):
         """`pin` (⚒️ "Cường hóa tối đa" on one piece): the tiers below build its ingredients, nothing above it is touched,
         the pinned one is the main one; a gear with no mates is strengthened to +10; a Huyền thoại / 🌟 has nothing to do."""
-        s = wings(10**9, ('buom', 0, 6), ('rong', 1, 1), ('tien', 4, 3))
+        s = wings(10**9, ('rong', 0, 6), ('rong', 1, 1), ('tien', 4, 3), ('buom', 0, 3), ('buom', 1, 2))
         Wg(s)['on'] = None
-        pin = next(x['id'] for x in Wg(s)['own'] if x['k'] == 'rong')
-        s_ids = {x['id'] for x in Wg(s)['own'] if x['r'] == 4}
+        pin = next(x['id'] for x in Wg(s)['own'] if x['k'] == 'rong' and x['r'] == 1)
+        keep = {x['id']: x['r'] for x in Wg(s)['own'] if x['k'] != 'rong'}
         self.assertEqual([r for r, _, _ in W.sets(Wg(s), pin=pin)], [0], 'only below the pinned C (the S are left alone)')
+        self.assertTrue(all(x['k'] == 'rong' for _, t, _ in W.sets(Wg(s), pin=pin) for x in t), 'only the pinned style')
         with always(W, 0):
             t, r = act(s, 'jr_pet_wing_fuse_auto', pin=pin, budget=10**9, confirm=True)
         own = {x['id']: x for x in Wg(t)['own']}
         self.assertEqual(own[pin]['r'], 2, 'six D → two C, then the pinned C and the two → B')
-        self.assertTrue(s_ids <= set(own), 'the S wings untouched')
+        self.assertEqual({i: own[i]['r'] for i in keep if i in own}, keep, 'other styles untouched (the S, the butterflies)')
         self.assertEqual(r['auto']['n'], 3)
         top = wings(10**9, ('buom', 7, 1), ('rong', 0, 3))
         self.assertEqual(W.sets(Wg(top), pin=Wg(top)['own'][0]['id']), [], 'a Huyền thoại pinned: nothing')
@@ -727,10 +850,11 @@ class Locks(unittest.TestCase):
         self.assertEqual(next(x for x in X(t)['gear'] if x['s'] == 'giap')['lv'], 0, 'another slot untouched')
 
     def test_nothing_locked_is_the_live_pick(self):
-        """No lock, no pin: the sets are those of 2.5.6 (Live checks the commands against the release itself)."""
+        """No lock, no pin: the sets of one style are those of 2.5.6 (Live checks the commands against the release
+        itself); since 23/10 the two rong D are no set with the butterflies (one style a set)."""
         s = wings(10**9, ('buom', 0, 7), ('rong', 0, 2), ('tien', 1, 4), on=3)
         self.assertEqual(W.sets(Wg(s)), W.sets(Wg(s), locks=frozenset(), pin=None))
-        self.assertEqual([k for _, _, k in W.sets(Wg(s))], [3, 1])
+        self.assertEqual([(r, t[0]['k'], k) for r, t, k in W.sets(Wg(s))], [(0, 'buom', 2), (1, 'tien', 1)])
 
 
 SINGLE = '''import json,sys
@@ -801,8 +925,8 @@ class Live(unittest.TestCase):
         cmds += [['jr_pet_gear_fuse', dict(gears=['g13', 'g14', 'g15'], confirm=True), [('g', f'g{i}', 'r', 1) for i in (13, 14, 15)]
                   + [('g', 'g13', 'lv', 10)]]]
         # ⚡ the four runs, nothing locked: what 2.5.6 does
-        cmds += [['jr_pet_wing_buy', dict(style='tien', qty=15, confirm=True), None], off,
-                 ['jr_pet_wing_fuse_auto', dict(budget=10**8, confirm=True), None], off]
+        cmds += [['jr_pet_wing_buy', dict(style='tien', qty=15, confirm=True), None], off,   # one style (23/10: one line a set)
+                 ['jr_pet_wing_fuse_auto', dict(budget=10**8, scope='tien', confirm=True), None], off]
         cmds += [adopt(f'Ba {i}') for i in range(6)] + [['jr_pet_fuse_auto', dict(budget=10**8, confirm=True), None]]
         cmds += [['jr_pet_gear_buy', dict(slot='giap', model=0, rank=0, qty=9, confirm=True), None],
                  ['jr_pet_gear_auto', dict(budget=10**8, scope='giap', confirm=True), None]]

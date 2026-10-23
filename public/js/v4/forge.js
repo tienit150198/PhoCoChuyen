@@ -103,32 +103,35 @@ const itemsOf=(api,kind)=>kind==='wing'?wings(api):kind==='pet'?pets(api):kind==
 
 /* ---- what the server's ⚡ finds (the same picks; locks and pin included) ---- */
 const seq=x=>Number(String(x.id).slice(1))||0;
-/** game/wings.py sets: [{r, set [main, a, b], t}] the lowest tier first. */
+/* One line a set (owner 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé"): three of one wing
+ * style / pet breed / gear model, never another line's; the lowest rank first, then the catalogue's order. */
+const byLine=(xs,key)=>{const g=new Map();for(const x of xs){const k=key(x);if(!g.has(k[0]))g.set(k[0],{o:k.slice(1),xs:[]});g.get(k[0]).xs.push(x);}
+  return [...g.values()].sort((a,b)=>{for(let i=0;i<a.o.length;i++)if(a.o[i]!==b.o[i])return a.o[i]-b.o[i];return 0;}).map(v=>v.xs);};
+/** game/wings.py sets: [{r, k, set [main, a, b], t}] one style a set, the lowest tier first, then the styles' order. */
 export function wingSets(api,scope='all',top=7,pin=null){
-  const all=wings(api),w=J(api).wings,locks=lockSet(api),pinned=pin&&all.find(x=>x.id===pin);
-  const cap=pinned?Math.min(top,7,pinned.r<7?pinned.r+1:0):Math.min(top,7);
-  const keep=new Set([...locks,...[pin,w?.on].filter(Boolean)]),g=new Map();
-  for(const x of all)if((scope==='all'||x.k===scope)&&x.r<cap){if(!g.has(x.r))g.set(x.r,[]);g.get(x.r).push(x);}
+  const all=wings(api),w=J(api).wings,locks=lockSet(api),pinned=pin&&all.find(x=>x.id===pin),order=(WC(api)?.styles||[]).map(s=>s.id);
+  const cap=pinned?Math.min(top,7,pinned.r<7?pinned.r+1:0):Math.min(top,7),ix=k=>{const i=order.indexOf(k);return i<0?order.length:i;};
+  const keep=new Set([...locks,...[pin,w?.on].filter(Boolean)]);
   const out=[];
-  for(const [r,xs] of [...g].sort((a,b)=>a[0]-b[0])){
+  for(const xs of byLine(all.filter(x=>(scope==='all'||x.k===scope)&&(!pinned||x.k===pinned.k)&&x.r<cap),x=>[`${x.r}|${x.k}`,x.r,ix(x.k)])){
     const free=xs.filter(x=>!keep.has(x.id)),t=Math.min(Math.floor(free.length/2),Math.floor(xs.length/3));if(t<1)continue;
-    const main=xs.find(x=>x.id===pin)||xs.find(x=>x.id===w?.on)||[...xs].sort((a,b)=>(keep.has(b.id)-keep.has(a.id))||(b.price-a.price)||(seq(a)-seq(b)))[0];
-    const rest=free.filter(x=>x!==main).sort((a,b)=>(a.price-b.price)||(seq(a)-seq(b)));
-    out.push({r,set:[main,rest[0],rest[1]],t});
+    const main=xs.find(x=>x.id===pin)||xs.find(x=>x.id===w?.on)||[...xs].sort((a,b)=>(keep.has(b.id)-keep.has(a.id))||(seq(a)-seq(b)))[0];
+    const rest=free.filter(x=>x!==main).sort((a,b)=>seq(a)-seq(b));
+    out.push({r:xs[0].r,k:xs[0].k,set:[main,rest[0],rest[1]],t});
   }
   return out;
 }
-/** game/pet_tiers.py fuse_sets. */
+/** game/pet_tiers.py fuse_sets: one breed a set (never a hybrid), the lowest rank first, then the breeds' order. */
 export function petSets(api,scope='all',top=7,pin=null){
-  const all=pets(api),walk=J(api).pets?.walk,locks=lockSet(api),pinned=pin&&all.find(p=>p.id===pin);
-  const cap=pinned?(pinned.legend?-1:pinned.r):7,keep=new Set([...locks,...[pin,walk].filter(Boolean)]),g=new Map();
-  for(const p of all){if(p.legend||p.sad||!p.dogcat||(scope!=='all'&&p.dogcat!==scope)||p.r+1>top||p.r>cap)continue;if(!g.has(p.r))g.set(p.r,[]);g.get(p.r).push(p);}
+  const all=pets(api),walk=J(api).pets?.walk,locks=lockSet(api),pinned=pin&&all.find(p=>p.id===pin),order=(PC(api)?.breeds||[]).map(b=>b.id);
+  const cap=pinned?(pinned.legend?-1:pinned.r):7,keep=new Set([...locks,...[pin,walk].filter(Boolean)]);
+  const ok=all.filter(p=>!(p.legend||p.sad||!p.dogcat||(scope!=='all'&&p.dogcat!==scope)||(pinned&&p.b!==pinned.b)||p.r+1>top||p.r>cap));
   const out=[];
-  for(const [r,xs] of [...g].sort((a,b)=>a[0]-b[0])){
+  for(const xs of byLine(ok,p=>[`${p.r}|${p.b}`,p.r,order.indexOf(p.b)])){const r=xs[0].r;
     const free=xs.filter(p=>!keep.has(p.id)),t=Math.min(Math.floor(free.length/2),Math.floor(xs.length/3));if(t<1)continue;
     const main=xs.find(p=>p.id===pin)||xs.find(p=>p.id===walk)||[...xs].sort((a,b)=>(keep.has(b.id)-keep.has(a.id))||(b.pw-a.pw)||(a.id<b.id?1:-1))[0];
     const rest=free.filter(p=>p!==main).sort((a,b)=>((a.at==='home')-(b.at==='home'))||(a.pw-b.pw)||(a.id<b.id?-1:1));
-    out.push({r,set:[main,rest[0],rest[1]],t});
+    out.push({r,b:xs[0].b,set:[main,rest[0],rest[1]],t});
   }
   return out;
 }
@@ -139,16 +142,16 @@ export function wardSets(api,scope='all',top=6){
     const n=g.pieces.filter(p=>!p.on&&!p.locked).length;if(n>=3)out.push({k:g.k,r:g.r,t:Math.floor(n/3)});}
   return out.sort((a,b)=>a.r-b.r||order.indexOf(a.k)-order.indexOf(b.k));
 }
-/** game/pet_tiers.py gear_step, as a plan: {sets [{g main, r}], worn [g] (+1s), est one round, min the first fee}. */
+/** game/pet_tiers.py gear_step, as a plan: {sets [{g main, r}], worn [g] (+1s), est one round, min the first fee}; one
+ * slot and model a set, the lowest rank first, then the slots' order, then the models'. */
 export function gearPlan(api,scope='all',top=6,pin=null){
   const t=TT(api);if(!t)return {sets:[],worn:[],n:0,est:0,min:0};
   const L=t.gear.lv_max,order=t.gear.slots.map(s=>s.id),locks=lockSet(api),all=gears(api),pinned=pin&&all.find(g=>g.id===pin);
-  const bag=all.filter(g=>(scope==='all'||g.s===scope)&&(!pinned||(g.s===pinned.s&&g.r<=pinned.r)));
+  const bag=all.filter(g=>(scope==='all'||g.s===scope)&&(!pinned||(g.s===pinned.s&&(g.m|0)===(pinned.m|0)&&g.r<=pinned.r)));
   const keep=g=>!!g.on||locks.has(g.id)||g.id===pin;
   const up=(r,lv)=>t.gear.up_fee[r]*(lv+1),toMax=g=>{let a=0;for(let lv=g.lv;lv<L;lv++)a+=up(g.r,lv);return a;};
-  const m=new Map();for(const g of bag){if(g.r>=Math.min(top,6))continue;const key=`${g.r}|${order.indexOf(g.s)}`;if(!m.has(key))m.set(key,[]);m.get(key).push(g);}
   const sets=[];
-  for(const [,gs] of [...m].sort((a,b)=>a[1][0].r-b[1][0].r||order.indexOf(a[1][0].s)-order.indexOf(b[1][0].s))){
+  for(const gs of byLine(bag.filter(g=>g.r<Math.min(top,6)),g=>[`${g.r}|${g.s}|${g.m|0}`,g.r,order.indexOf(g.s),g.m|0])){
     const main=[...gs].sort((a,b)=>((b.id===pin)-(a.id===pin))||(!!b.on-!!a.on)||(keep(b)-keep(a))||b.lv-a.lv||seq(a)-seq(b))[0];
     if(gs.filter(g=>g!==main&&!keep(g)).length<2)continue;
     sets.push({g:main,r:main.r,cost:toMax(main)+t.gear.fuse_fee[main.r],first:main.lv<L?up(main.r,main.lv):t.gear.fuse_fee[main.r]});

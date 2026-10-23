@@ -12,6 +12,7 @@ Chủ game 23/10: "vẫn lag quá", "xếp hạng này kia thêm cache đi cho �
 Chủ game 23/10 sau khi nhiều bạn mất pet SS/cánh S vì một lần ⚡ ghép nhiều vòng: "mặc định là để ghép tới bậc S thôi còn mọi người tự chỉnh lên tiếp các mức trên".
 - ⚒️ Lò cường hóa: ⚡ (Cường hóa tối đa, Ghép tất cả) mặc định chỉ ghép tới S; nút "Ghép tới S / SS / SSS / HT" lưu theo máy (localStorage mnl.forgeTop). Kệ 🧬 thú cưng: ⚡ Cường hóa nhanh mặc định "tới S".
 - server: lb.clear_cache xóa luôn bảng Top lỗ/lời đã giữ (fair_loss.clear_views).
+- 🧬 Ghép nhanh cùng dòng (chủ game 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé"): mọi bộ ba của ⚡ (Cường hóa nhanh, Cường hóa tối đa, Ghép tất cả) là ba món CÙNG dòng, cùng hạng: 🪽 cùng kiểu cánh (wings.sets), 🧬 cùng giống (pet_tiers.fuse_sets, không bao giờ ra giống lai), 🧰 cùng loại + cùng mẫu (gear_step / _gear_left, kể cả mẫu 💎); hạng thấp trước, rồi theo thứ tự danh mục. Ghim một món thì chỉ dòng của nó. Client v4/forge.js wingSets/petSets/gearPlan, v4/pets.js labPlan/gearPlan, v4/acc-shop.js wingSets tính y như server. Ghép tay ba món vẫn tự chọn như cũ. Test: tests/test_forge_auto.py OneLine, tests/forge-auto.mjs.
 
 ## 🧹 Dọn dẹp 23/10
 

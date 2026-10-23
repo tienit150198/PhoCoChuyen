@@ -116,16 +116,18 @@ function fusePanel(api,st,own){
     <p class="small">${why?esc(why):`Thành công: <b>${esc(styleOf(api,m.k)?.name||'Cánh')}</b> ${to>m.r?'lên':'giữ'} hạng <b>${esc(tierName(to))}</b>${to>m.r?'':' (ghép ba đôi cùng hạng mới lên được)'}, hai đôi kia dùng hết. Trượt: ${lose?'⚠️ hai đôi kia sẽ mất, cánh chính ở lại':'ba đôi vẫn còn'}, mất phí.`}</p>
     <div class="as-row-btns">${btn(`🧬 Ghép · ${fmt(fee)} xu`,'jrAsWingFuse',{},'primary small',busy||!!why)}${btn('Bỏ chọn','jrAsWingPick',{id:''},'ghost small')}</div></section>`;
 }
-/** ⚡ What jr_pet_wing_fuse_auto finds now, as game/wings.py `sets` sees it: for each tier with three wings (of `scope`'s
- * style, or any) whose result is at most `top`, the lowest tier first: {r, set [main, a, b], t sets}. The main one is the
- * wing worn when it is among them, else the dearest style; the two others the cheapest, never the wing worn. */
+/** ⚡ What jr_pet_wing_fuse_auto finds now, as game/wings.py `sets` sees it: for each style × tier with three wings (of
+ * `scope`'s style, or any) whose result is at most `top`, the lowest tier first, then the styles' order: {r, k, set [main,
+ * a, b], t sets}. One style a set (owner 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé").
+ * The main one is the wing worn when it is among them, else the oldest; the two others the oldest, never the wing worn. */
 export function wingSets(api,scope='all',top=WING_TIERS.length-1){
-  const w=wingsOf(api),T=WING_TIERS.length-1,price=x=>styleOf(api,x.k)?.price||0,seq=x=>Number(String(x.id).slice(1))||0,g=new Map();
-  for(const x of ownWings(api)){if((scope==='all'||x.k===scope)&&x.r<Math.min(top,T)){if(!g.has(x.r))g.set(x.r,[]);g.get(x.r).push(x);}}
-  return [...g].filter(([,xs])=>xs.length>=3).sort((a,b)=>a[0]-b[0]).map(([r,xs])=>{
-    const main=xs.find(x=>x.id===w?.on)||[...xs].sort((a,b)=>price(b)-price(a)||seq(a)-seq(b))[0];
-    const rest=xs.filter(x=>x!==main).sort((a,b)=>price(a)-price(b)||seq(a)-seq(b));
-    return {r,set:[main,rest[0],rest[1]],t:Math.floor(xs.length/3)};});
+  const w=wingsOf(api),T=WING_TIERS.length-1,seq=x=>Number(String(x.id).slice(1))||0,g=new Map(),order=(WC(api)?.styles||[]).map(s=>s.id);
+  for(const x of ownWings(api)){if((scope==='all'||x.k===scope)&&x.r<Math.min(top,T)){const key=`${x.r}|${x.k}`;if(!g.has(key))g.set(key,[]);g.get(key).push(x);}}
+  const ix=k=>{const i=order.indexOf(k);return i<0?order.length:i;};
+  return [...g.values()].filter(xs=>xs.length>=3).sort((a,b)=>a[0].r-b[0].r||ix(a[0].k)-ix(b[0].k)).map(xs=>{
+    const main=xs.find(x=>x.id===w?.on)||[...xs].sort((a,b)=>seq(a)-seq(b))[0];
+    const rest=xs.filter(x=>x!==main).sort((a,b)=>seq(a)-seq(b));
+    return {r:xs[0].r,k:xs[0].k,set:[main,rest[0],rest[1]],t:Math.floor(xs.length/3)};});
 }
 /** {sets, n sets now, est the first round's fees, min the first fee}. */
 export function wingPlan(api,scope='all',top=WING_TIERS.length-1){
@@ -149,12 +151,12 @@ function wingAuto(env,st){
   const fields=`<div class="fg-afields"><label class="fg-afield"><span>Kiểu cánh</span><select data-as-sel="wascope" aria-label="Kiểu cánh để ghép">${scopes}</select></label>`
     +`<label class="fg-afield"><span>Ghép tới hạng</span><select data-as-sel="watop" aria-label="Ghép tới hạng">${ranks}</select></label></div>`;
   let body;
-  if(!pl.n)body=`<p class="small muted">${top<T&&wingPlan(api,scope).n?`Đã tới hạng ${esc(tierName(top))}: chọn hạng cao hơn để ghép tiếp.`:'Cần ba đôi cùng hạng để lên hạng.'}</p>`;
+  if(!pl.n)body=`<p class="small muted">${top<T&&wingPlan(api,scope).n?`Đã tới hạng ${esc(tierName(top))}: chọn hạng cao hơn để ghép tiếp.`:'Cần ba đôi cùng kiểu, cùng hạng để lên hạng.'}</p>`;
   else{
     const cap=Math.max(pl.min,funds(api)),step=pl.min,lose=top>(c.lose_from??4);
     const quick=[];for(const [n,l] of [[pl.est,'Vòng đầu'],[pl.est*2,'×2'],[pl.est*5,'×5']]){const v=Math.max(pl.min,Math.min(n,cap));if(!quick.some(q=>q[0]===v))quick.push([v,l]);}
     const nb=(m,label,dis,on='')=>`<button type="button" class="as-qty-b${on}" data-action="jrAsWingBud"${attrs({n:m})}${dis?' disabled':''}${label.length<3?` aria-label="${m<b?'Bớt ngân sách':'Thêm ngân sách'}"`:''}>${label}</button>`;
-    const tags=pl.sets.map(x=>`<span class="fg-aset">${badge(x.r)} → ${badge(Math.min(x.r+1,T))}${x.t>1?`<small>×${x.t}</small>`:''}</span>`).join('');
+    const tags=pl.sets.map(x=>`<span class="fg-aset">${esc(styleOf(api,x.k)?.emoji||'')}${badge(x.r)} → ${badge(Math.min(x.r+1,T))}${x.t>1?`<small>×${x.t}</small>`:''}</span>`).join('');
     const short=funds(api)<pl.min||(Number(api.state.journey?.wallet)||0)<0;
     body=`<div class="fg-astats"><div><b>${pl.n}</b><small>bộ ba ghép được ngay</small></div><div><b>${fmt(pl.est)}</b><small>xu phí vòng đầu</small></div></div>`
       +`<div class="fg-asets">${tags}</div>`

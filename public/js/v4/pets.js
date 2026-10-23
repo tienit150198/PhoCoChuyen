@@ -472,25 +472,28 @@ function autoPick(el){
   S[k.bud]=0;return true;
 }
 const idn=x=>Number(String(x.id).slice(1))||0;
-/** 🧬 What jr_pet_fuse_auto finds now, as game/pet_tiers.py fuse_sets sees it: three pets of a rank (no 🌟 legendary, no
- * sad pet at home, one kind or both) whose result is at most `top` (7: 🌟). {sets [{r, t}], n, est, min}. */
+/** 🧬 What jr_pet_fuse_auto finds now, as game/pet_tiers.py fuse_sets sees it: three pets of ONE breed and rank (owner
+ * 23/10: "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác nhé"; no 🌟 legendary, no sad pet at home, one
+ * kind or both) whose result is at most `top` (7: 🌟), the lowest rank first, then the breeds' order. {sets [{r, b, t}], n, est, min}. */
 function labPlan(scope=S.lascope,top=S.latop){
   const t=TT();if(!t)return {sets:[],n:0,est:0,min:0};
-  const m=new Map();
-  for(const p of allPets()){const b=breedOf(p.b);if(!b||p.legend||fuseWhy(p)||(scope!=='all'&&b.kind!==scope))continue;const r=p.r||0;if(r+1>top)continue;m.set(r,(m.get(r)||0)+1);}
-  const sets=[...m].filter(([,n])=>n>=3).map(([r,n])=>({r,t:Math.floor(n/3)})).sort((a,b)=>a.r-b.r),fee=r=>Number(t.ranks[r]?.fee)||0;
+  const m=new Map(),order=(CAT()?.breeds||[]).map(b=>b.id);
+  for(const p of allPets()){const b=breedOf(p.b);if(!b||p.legend||fuseWhy(p)||(scope!=='all'&&b.kind!==scope))continue;const r=p.r||0;if(r+1>top)continue;
+    const key=`${r}|${p.b}`;if(!m.has(key))m.set(key,{r,b:p.b,n:0});m.get(key).n++;}
+  const sets=[...m.values()].filter(x=>x.n>=3).map(({r,b,n})=>({r,b,t:Math.floor(n/3)})).sort((a,b)=>a.r-b.r||order.indexOf(a.b)-order.indexOf(b.b)),fee=r=>Number(t.ranks[r]?.fee)||0;
   return {sets,n:sets.reduce((a,x)=>a+x.t,0),est:sets.reduce((a,x)=>a+x.t*fee(x.r),0),min:sets.length?fee(sets[0].r):0};
 }
-/** 🧰 What jr_pet_gear_auto does now, as game/pet_tiers.py gear_step sees it: three of a slot and rank (two not worn), the
- * main one (worn first, then the highest level) to +max then a rank up, the lowest rank first; with none of those the
- * gear worn below +max. {sets [{g, r}], worn [g], n, est (one round, no misses), min (the first step's fee)}. */
+/** 🧰 What jr_pet_gear_auto does now, as game/pet_tiers.py gear_step sees it: three of a slot, model and rank (two not
+ * worn; one model a set, owner 23/10), the main one (worn first, then the highest level) to +max then a rank up, the
+ * lowest rank first (then the slots', then the models' order); with none of those the gear worn below +max.
+ * {sets [{g, r}], worn [g], n, est (one round, no misses), min (the first step's fee)}. */
 function gearPlan(scope=S.gascope,top=S.gatop){
   const t=TT();if(!t)return {sets:[],worn:[],n:0,est:0,min:0};
   const L=t.gear.lv_max,order=t.gear.slots.map(s=>s.id),bag=(X()?.gear||[]).filter(g=>scope==='all'||g.s===scope);
   const up=(r,lv)=>t.gear.up_fee[r]*(lv+1),toMax=g=>{let a=0;for(let lv=g.lv;lv<L;lv++)a+=up(g.r,lv);return a;};
-  const m=new Map();for(const g of bag){if(g.r>=Math.min(top,6))continue;const key=`${g.r}|${order.indexOf(g.s)}`;if(!m.has(key))m.set(key,[]);m.get(key).push(g);}
+  const m=new Map();for(const g of bag){if(g.r>=Math.min(top,6))continue;const key=`${g.r}|${g.s}|${g.m|0}`;if(!m.has(key))m.set(key,[]);m.get(key).push(g);}
   const sets=[];
-  for(const [,gs] of [...m].sort((a,b)=>a[1][0].r-b[1][0].r||order.indexOf(a[1][0].s)-order.indexOf(b[1][0].s))){
+  for(const gs of [...m.values()].sort((a,b)=>a[0].r-b[0].r||order.indexOf(a[0].s)-order.indexOf(b[0].s)||(a[0].m|0)-(b[0].m|0))){
     const main=[...gs].sort((a,b)=>(!!b.on-!!a.on)||b.lv-a.lv||idn(a)-idn(b))[0];
     if(gs.filter(g=>g!==main&&!g.on).length<2)continue;
     sets.push({g:main,r:main.r,cost:toMax(main)+t.gear.fuse_fee[main.r],first:main.lv<L?up(main.r,main.lv):t.gear.fuse_fee[main.r]});
@@ -525,7 +528,7 @@ export function petForgeCounts(env){
 const forgeLink=tab=>S.host?'':`<div class="pt-chips"><button type="button" class="pt-chip on" data-pt="forge" data-tab="${tab}">⚒️ Ghép ở Cường hóa: mọi thứ ghép một chỗ</button></div>`;
 const opt=(v,l,on)=>`<option value="${esc(v)}"${on?' selected':''}>${esc(l)}</option>`;
 const setTag=(k,r,n)=>{const it=wItem(k);return it?`<span class="pt-aset"><i aria-hidden="true">${esc(it.emoji)}</i>${esc(it.name)} ${RK(r)}${n>1?`<small>×${n}</small>`:''}</span>`:'';};
-const rankSet=(r,n)=>`<span class="pt-aset">${r>=6?'SSS → 🌟':`${RK(r)} → ${RK(r+1)}`}${n>1?`<small>×${n}</small>`:''}</span>`;
+const rankSet=(r,n,b)=>{const bb=b&&breedOf(b);return `<span class="pt-aset">${bb?`<span>${esc(bb.name)}</span> `:''}${r>=6?'SSS → 🌟':`${RK(r)} → ${RK(r+1)}`}${n>1?`<small>×${n}</small>`:''}</span>`;};
 /** What each shelf's card says and picks: {what (the ones the pickers choose), fields, stats, tags, note, lose, none}. */
 function autoParts(kind,pl){
   const k=AK[kind],top=S[k.top];
@@ -540,15 +543,15 @@ function autoParts(kind,pl){
   if(kind==='lab'){
     const n=sc=>labPlan(sc,top).n,scope=opt('all',`Tất cả (${n('all')})`,S.lascope==='all')+opt('dog',`🐶 Chó (${n('dog')})`,S.lascope==='dog')+opt('cat',`🐱 Mèo (${n('cat')})`,S.lascope==='cat');
     return {label:'Bé',scope,ranks:[1,2,3,4,5,6].map(r=>opt(r,RNAME(r),top===r)).join('')+opt(7,'🌟 Huyền thoại',top===7),unit:'bộ ba bé ghép được ngay',
-      tags:pl.sets.map(x=>rankSet(x.r,x.t)).join(''),
-      none:'Chưa có 3 bé cùng hạng (vui vẻ, không phải huyền thoại) để ghép.',lose:top>loseFrom()};
+      tags:pl.sets.slice(0,8).map(x=>rankSet(x.r,x.t,x.b)).join('')+(pl.sets.length>8?`<span class="pt-aset">+${pl.sets.length-8}</span>`:''),
+      none:'Chưa có 3 bé cùng giống, cùng hạng (vui vẻ, không phải huyền thoại) để ghép.',lose:top>loseFrom()};
   }
   const t=TT(),L=t.gear.lv_max,cnt=sc=>gearPlan(sc,top).n;
   const scope=opt('all',`Tất cả (${cnt('all')})`,S.gascope==='all')+t.gear.slots.map(s=>opt(s.id,`${s.emoji} ${s.name} (${cnt(s.id)})`,S.gascope===s.id)).join('');
   const gt=(g,to)=>`<span class="pt-aset"><i aria-hidden="true">${esc(g.emoji)}</i>${esc(g.name)} ${RK(g.r)}${g.lv?` +${g.lv}`:''} → ${to}</span>`;
   return {label:'Linh kiện',scope,ranks:[1,2,3,4,5,6].map(r=>opt(r,RNAME(r),top===r)).join(''),unit:pl.sets.length?'món lên hạng được':'món đang gắn cường hóa được',
     tags:pl.sets.slice(0,8).map(x=>gt(x.g,`${RK(x.r+1)}`)).join('')+pl.worn.slice(0,8).map(g=>gt(g,`+${L}`)).join(''),
-    none:`Chưa có món nào cường hóa được: cần 3 món cùng loại, cùng hạng (2 món chưa gắn), hoặc một món đang gắn chưa tới +${L}.`,lose:top>loseFrom()};
+    none:`Chưa có món nào cường hóa được: cần 3 món cùng mẫu, cùng hạng (2 món chưa gắn), hoặc một món đang gắn chưa tới +${L}.`,lose:top>loseFrom()};
 }
 /** The ⚡ card of a shelf (and the last run's summary above it). An older server (no auto limits): no card. */
 function autoCard(kind){

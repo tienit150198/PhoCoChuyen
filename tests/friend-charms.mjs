@@ -192,14 +192,16 @@ test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh fuses aga
   const {wingSets,wingPlan,forgeView,forgeTabs}=await import('../public/js/v4/acc-shop.js');
   const wings={styles:[{id:'buom',emoji:'🦋',name:'Cánh bướm',price:8800,desc:''},{id:'rong',emoji:'🐉',name:'Cánh rồng',price:36000,desc:''}],
     earn:[2,4,6,8,11,15,20,25],battle:[1,1,2,2,3,4,5,6],fee:[500,2000,10000,50000,300000,2e7,2e8],own_max:40,qty_max:20,lose_from:4,auto_max:50};
-  const own=[{id:'w1',k:'buom',r:0},{id:'w2',k:'rong',r:0},{id:'w3',k:'buom',r:0},{id:'w4',k:'buom',r:1},{id:'w5',k:'buom',r:1},{id:'w6',k:'rong',r:1},{id:'w7',k:'buom',r:0}];
+  const own=[{id:'w1',k:'buom',r:0},{id:'w2',k:'rong',r:0},{id:'w3',k:'buom',r:0},{id:'w4',k:'buom',r:1},{id:'w5',k:'buom',r:1},{id:'w6',k:'rong',r:1},{id:'w7',k:'buom',r:0},{id:'w8',k:'buom',r:1}];
   const api={content:{journey:{wardrobe:{...content.journey.wardrobe,wings}}},state:{...state,journey:{...state.journey,wings:{own,on:'w5'}}}};
-  // as game/wings.py sets: the lowest tier first; the main one the worn wing, else the dearest style; the others the
-  // cheapest, never the worn one
+  // as game/wings.py sets: one style a set (owner 23/10 "ghép nhanh thì ghép gì nhận đó thôi k ghép nhanh mấy dòng khác
+  // nhé": the lone rong D is never an ingredient), the lowest tier first; the main one the worn wing, else the oldest;
+  // the others the oldest, never the worn one
   const ids=api=>wingSets(api).map(x=>x.set.map(w=>w.id));
-  assert.deepEqual(ids(api),[['w2','w1','w3'],['w5','w4','w6']]);
+  assert.deepEqual(ids(api),[['w1','w3','w7'],['w5','w4','w8']],'the rong D and C: never with the butterflies');
+  assert.ok(wingSets(api).every(x=>x.set.every(w=>w.k===x.k)),'three of one style');
   api.state.journey.wings={own,on:null};
-  assert.deepEqual(ids(api)[1],['w6','w4','w5'],'nothing worn: the dearest style is the main one');
+  assert.deepEqual(ids(api)[1],['w4','w5','w8'],'nothing worn: the oldest is the main one');
   api.state.journey.wings={own,on:'w1'};
   assert.deepEqual(ids(api)[0],['w1','w3','w7'],'the worn one is the main one, never an ingredient');
   assert.deepEqual(wingSets(api,'rong'),[],'one style: only its wings');
@@ -225,8 +227,8 @@ test('⚒️ Cường hóa: wings ghép there, ⚡ Cường hóa nhanh fuses aga
   assert.match(res,/class="fg-ares-best"/);assert.match(res,/data-action="jrAsWingRes"/);
   delete ui.as.wres;
   // owner 23/10 "ghép thì đưa vào mục riêng": what is owned by kind, counted, ⚡ when a set is ready; the wings by tier
-  assert.match(fg,/class="fg-kind active"[^>]*data-tab="wing"><span class="fg-kind-e" aria-hidden="true">🪽<\/span><b>Cánh<\/b><small>7 đôi · C×3 D×4<\/small><i class="fg-ready"/);
-  assert.match(fg,/<b>Hạng C<\/b> · 3 đôi <small class="muted">· ghép được 1 lần/);assert.match(fg,/<b>Hạng D<\/b> · 4 đôi/);
+  assert.match(fg,/class="fg-kind active"[^>]*data-tab="wing"><span class="fg-kind-e" aria-hidden="true">🪽<\/span><b>Cánh<\/b><small>8 đôi · C×4 D×4<\/small><i class="fg-ready"/);
+  assert.match(fg,/<b>Hạng C<\/b> · 4 đôi <small class="muted">· ghép được 1 lần/);assert.match(fg,/<b>Hạng D<\/b> · 4 đôi/);
   assert.doesNotMatch(fg,/tỉ lệ|tỷ lệ|%<\/small>/,'no odds (owner 19/10)');
   // owner 23/10 "không cần giải thích nhiều": two short ticks near the top, no intro, no help lines
   assert.match(fg,/<label class="fg-noask"><input type="checkbox" data-as-noask ><span>Không hỏi lại<\/span><\/label>/,'☑️ Không hỏi lại (mnl.noAsk), unticked by default');

@@ -6,6 +6,7 @@ export default [
   {"emoji":"🏆","text":"Bảng xếp hạng mở nhanh hơn."},
   {"emoji":"🪽","text":"Vào đám cưới vẫn mang cánh và phụ kiện đôi."},
   {"emoji":"🐾","text":"⚡ Ghép tự động mặc định chỉ tới hạng S. Muốn cao hơn, chọn ở “Ghép tới”."},
+  {"emoji":"🐾","text":"⚡ Ghép nhanh chỉ ghép cùng dòng: ghép gì nhận nấy, không đụng dòng khác."},
   {"emoji":"💐","text":"Sự kiện Thiệp 20/10 đã khép lại. Cảm ơn mọi người!"}
  ]},
  {"version":"2.5.8","date":"2026-10-23","items":[

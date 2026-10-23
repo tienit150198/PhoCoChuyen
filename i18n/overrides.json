@@ -4,6 +4,11 @@
     "Bảng xếp hạng mở nhanh hơn.": "Leaderboards open faster.",
     "Vào đám cưới vẫn mang cánh và phụ kiện đôi.": "Wings and pair accessories now show at weddings too.",
     "⚡ Ghép tự động mặc định chỉ tới hạng S. Muốn cao hơn, chọn ở “Ghép tới”.": "⚡ Auto-fuse now stops at rank S by default. To go higher, pick it under “Fuse up to”.",
+    "⚡ Ghép nhanh chỉ ghép cùng dòng: ghép gì nhận nấy, không đụng dòng khác.": "⚡ Quick fuse only fuses within one line: what you fuse is what you get, other lines are never touched.",
+    "Chưa có ba đôi cánh cùng kiểu, cùng hạng để ghép.": "You don't have three wings of the same style and rank to fuse yet.",
+    "Cần ba đôi cùng kiểu, cùng hạng để lên hạng.": "You need three wings of the same style and rank to rank up.",
+    "Chưa có ba bé cùng giống, cùng hạng (vui vẻ, không phải huyền thoại) để ghép.": "You don't have three pets of the same breed and rank (happy, not legendary) to fuse yet.",
+    "Chưa có 3 bé cùng giống, cùng hạng (vui vẻ, không phải huyền thoại) để ghép.": "You don't have 3 pets of the same breed and rank (happy, not legendary) to fuse yet.",
     "Ghép tới": "Fuse up to",
     "Sự kiện Thiệp 20/10 đã khép lại. Cảm ơn mọi người!": "The 20/10 Cards event has ended. Thank you all!",
     "Ghép ba Phố Mây mở tới màn 300, khó hơn.": "Cloud Street Triple Match now goes to level 300, and it gets harder.",
@@ -44531,6 +44536,8 @@
     "Hội chắp cánh": "Winged Club"
   },
   "patterns": {
+    "Chưa có món nào cường hóa được: cần ba món cùng mẫu, cùng hạng (hai món chưa gắn) hoặc một món đang gắn chưa tới +$1.": "Nothing to upgrade yet: you need three pieces of the same model and rank (two not equipped) or an equipped piece below +$1.",
+    "Chưa có món nào cường hóa được: cần 3 món cùng mẫu, cùng hạng (2 món chưa gắn), hoặc một món đang gắn chưa tới +$1.": "Nothing to upgrade yet: you need 3 pieces of the same model and rank (2 not equipped), or an equipped piece below +$1.",
     "Màn $1": "Level $1",
     "Màn $1 ▶": "Level $1 ▶",
     "▶ Chơi màn $1": "▶ Play level $1",
