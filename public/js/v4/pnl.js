@@ -71,6 +71,9 @@ const shortReason=r=>String(r||'').split(' · ')[0].trim()||'Khoản khác';
 
 /* ------------------------------------------------------------- statements */
 const ledgerOf=career=>{const l=career?.ops?.finance?.ledger;return Array.isArray(l)?l:[];};
+/** 💤 A cold career's older chart days (game/slim.py day_sums): {category: [money in, money out, rows]} of the rows
+ * that went to the archive. Only sums: enough for the 7-day bars, never a day's detail. */
+const daySums=(career,day)=>{const d=career?.ops?.finance?.day_sums?.[String(day)];return d&&typeof d==='object'?d:null;};
 
 /** One day's statement from the ledger (cash basis). Costs are positive numbers.
  * net = revenue − cogs − opex − losses + other; cashChange = net + transfers. */
@@ -95,10 +98,22 @@ export function pnlOf(career,day){
     if(r.category==='tip')tips+=a;
     if(BILL_CATS.has(r.category)&&a<0)billsPaid+=-a;
   }
+  let count=rows.length;
+  for(const [cat,v] of Object.entries(daySums(career,day)||{})){
+    if(!Array.isArray(v))continue;
+    const pos=Number(v[0])||0,neg=Number(v[1])||0;count+=Number(v[2])||0;
+    if(pos)sums[groupOf(cat,pos)]+=pos;
+    if(neg)sums[groupOf(cat,neg)]+=neg;
+    if(cat==='owner_draw')draw+=-neg;
+    if(cat==='owner_capital')capital+=pos;
+    if(cat==='salary')salary+=pos+neg;
+    if(cat==='tip')tips+=pos+neg;
+    if(BILL_CATS.has(cat))billsPaid+=-neg;
+  }
   const revenue=sums.revenue,cogs=-sums.cogs,opex=-sums.opex,losses=-sums.losses,other=sums.other,transfers=sums.transfers;
   const gross=revenue-cogs,net=gross-opex-losses+other;
   const list=g=>Object.values(lines[g]).filter(x=>x.amount).sort((a,b)=>Math.abs(b.amount)-Math.abs(a.amount));
-  return {day,count:rows.length,revenue,cogs,opex,losses,other,transfers,gross,net,cashChange:net+transfers,
+  return {day,count,revenue,cogs,opex,losses,other,transfers,gross,net,cashChange:net+transfers,
     margin:revenue>0?Math.round((net-other)/revenue*100):null,grossMargin:revenue>0?Math.round(gross/revenue*100):null,
     lines:Object.fromEntries(Object.keys(lines).map(g=>[g,list(g)])),
     topCosts:Object.values(byReason).sort((a,b)=>b.amount-a.amount).slice(0,3),

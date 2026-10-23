@@ -32,7 +32,7 @@ import re
 from pathlib import Path
 
 ENTRIES = (
-    dict(version="2.5.5", date="2026-10-24", items=(   # owner 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi"
+    dict(version="2.5.5", date="2026-10-23", items=(   # owner 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi"
         dict(emoji='🛍️', text="Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.",
              go=dict(action='jrAccShop')),
         dict(emoji='⚒️', text="Cường hóa: ghép cánh, ghép thú… ở một chỗ, có Cường hóa nhanh.",

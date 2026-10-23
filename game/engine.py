@@ -46,6 +46,7 @@ from . import giftshop as gifts
 from . import incidents as incs
 from . import happenings as haps
 from . import archive as ar
+from . import slim  # 💤 cold careers keep a slim record (game/slim.py)
 from . import bank_speaker
 from . import bank_plus as bplus  # 📦 22/10: a restock the fund cannot pay, covered by the wallet, the card or a vay nhập hàng
 from . import income_gear
@@ -608,7 +609,7 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         noticed = False
         if not internal or action == business.ACTION:
             noticed = business.business_progression.owner_access(out)
-        if business.reconcile(out) or noticed:validate_state(out)
+        if action!=slim.ACTION and (business.reconcile(out) or noticed):validate_state(out)  # 💤 a night compaction settles nothing
         return out,result
     try:return bank_speaker.collect(lambda:income_gear.collect(lambda:pay_boost.collect(run)))
     finally:
@@ -617,6 +618,9 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
+    if action==slim.ACTION:  # 💤 the night job (scripts/slim_saves.py): cold careers' old rows to the archive, nothing else
+        need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
+        return s,slim.apply(s,payload if isinstance(payload,dict) else {})
     settled_at=business.time.time()
     if not internal or action == business.ACTION:
         business.business_progression.owner_access(s,now=settled_at)
@@ -1450,6 +1454,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["feed"]=[fbk.public_post(f,cid,raw.get("day")) for f in raw["feed"]]
         c["feedback_stats"]=fbk.stats(raw)
         c.pop("ext",None)
+        c["slim"]=slim.view(raw)  # 💤 rows a cold spell moved to the archive: "Xem cũ hơn" on short lists
         c["life"]=life.public_life(s["careers"][cid])
         c["day_clock"]=dc.view(raw,cid)  # giờ trong ngày: HUD clock, closing warnings, the scene's light
         c["ot"]=None if pm.managing(s,raw,cid) else ovt.public(raw,cid)  # ⏱️ the work screen's overtime chip (view only)
@@ -1605,6 +1610,7 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
     life.validate(c,cid)
     ext=c.get("ext");need(isinstance(ext,dict) and ext_keys<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
     integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
+    slim.validate(c)  # 💤 ext.slim, ops.finance.day_sums (optional)
     sit.validate(c,cid);inv.validate(c,cid);ao.validate(c,cid);cgad.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
     cq.validate(c)  # complaints book (optional in older saves)
     fbk._ra.validate_recent(c)  # recent review aspects (optional in older saves)

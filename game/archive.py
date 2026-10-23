@@ -62,6 +62,12 @@ def collect() -> Collector:
     return Collector()
 
 
+def collecting() -> bool:
+    """Rows cut now are collected for the archive (inside a command): only then may code cut more than a list's
+    usual slice on its own initiative (game/slim.py)."""
+    return _OUT.get() is not None
+
+
 def acting(career: str | None):
     """Context token: rows cut with owner=None belong to this career (engine.apply_action)."""
     return _ACTING.set(career)

@@ -1,4 +1,4 @@
-# 2.5.5 — 24/10/2026
+# 2.5.5 — 23/10/2026
 
 🛍️ Cửa hàng và ⚒️ Cường hóa (chủ game 23/10: "với bán đồ này đưa ra 1 cái gọi là shop riêng đi, xong thú cưng hay người gì trong đó cả", "cửa hàng hoặc shop đều là 1 đó nhé, mua gì nằm đó hết cho dễ"). Thêm (chủ game 23/10): "mua thì cho mua nhiều cái 1 lần", "ghép thì đưa vào mục riêng, hiện tại khó ghép quá". Không đổi giá, tỉ lệ, phí, schema hay save; server chỉ nhận thêm số lượng ở ba lệnh mua cũ (rollback về 2.5.4.1 an toàn: dữ liệu không đổi dạng). Mọi lệnh ghép là lệnh cũ (jr_pet_wing_fuse, jr_pet_fuse, jr_pet_wfuse, jr_pet_gear_*). Có gì mới 2.5.5 (4 dòng).
 
@@ -54,6 +54,15 @@ perf/client (từ 74cfb003): ⚡ đỡ lag phía trình duyệt (chủ game 23/1
 - Lời từ chối của select_career thành câu rõ: "<Nơi> chưa mở với bạn. Làm xong việc cần làm của chương N…" / "<Nơi> chưa nhận bạn: cần chứng nhận …".
 - Lối vào: thanh bên / menu "Đổi nghề" (jrPick thay home), nút 🔎 Đổi nghề ở danh sách hành trình, nút đổi nghề trong tiệm; 2.5D: Công việc / túi / hàng chờ mở thẳng trang này. Ô khóa ở hành trình và cửa khóa khi đi dạo dùng chung lý do. Gợi ý hướng dẫn trỏ vào nút mới.
 - Test: tests/test_career_locks.py, tests/career_pick.mjs; cập nhật isometric-shell, journey_experience, test_feedback_workflows, docs/qa/isometric-feature-parity.json.
+
+## 🗜️ Save gọn hơn ban đêm (server)
+
+perf/save-slim (từ 74cfb003, chủ game 23/10 "lag lắm, cái nào cũ cũ giảm tải được xóa được thì bỏ bớt", sau khi xem: "đừng để ảnh hưởng và làm chậm"): 💤 nghề lâu không chơi giữ bản ghi gọn, làm ban đêm, lệnh của người chơi không làm thêm gì. Không xóa gì của người chơi: mọi dòng cắt ra đi vào bảng archive cùng giao dịch với bản lưu (game/archive.py), xem lại bằng "Xem cũ hơn" như trước.
+- game/slim.py: một nghề là "nguội" khi không phải nghề đang chọn và 10 ngày gần nhất trong journey.days không có ngày nào ở đó (bản lưu chưa đủ 10 ngày thì không nghề nào nguội). Chỉ lệnh nội bộ slim_compact (máy chủ gửi, người chơi gửi bị từ chối) mới gọn, tối đa 24 nghề một lệnh; lệnh này không quyết toán gì (không nhân viên, không phí, không reconcile), không đổi updated_at (lần cuối thấy người chơi) và không ghi receipt (thống kê thời gian chơi không đếm). Sổ dòng tiền giữ 30 dòng mới nhất (màn hình hiện 24) + mọi dòng từ ngày thẻ lãi/lỗ đang hiện + dòng của việc còn trên bàn, phần trước vào archive và cộng vào số dư đầu (ví vẫn khớp sổ); các ngày của biểu đồ 7 ngày để lại tổng theo ngày/loại ở ops.finance.day_sums (v4/pnl.js cộng vào, biểu đồ không đổi); tiêu đề "Sổ dòng tiền · N dòng gần nhất" đếm cả dòng đã cất (số không tụt). Nhật ký giữ 80 dòng (Sổ tay hiện 80; + dòng hôm nay khi đang mở ca); life.activity_history / price_history giữ 10 (giao diện không hiện). Album giữ nguyên 6 ảnh (sheet Kỷ niệm hiện cả 6 ngay khi mở). Đếm ở ext.slim (view: c.slim) để nút "Xem cũ hơn" vẫn hiện trên danh sách đã ngắn đi. Bảng tin, việc, ký ức, lịch sử tình huống giữ nguyên.
+- Store.save_command(sid, …): lệnh nội bộ theo mã bản lưu, cùng đường lệnh thường (tính không khóa, rồi so-và-ghi theo revision cùng dòng archive); bản lưu đã đổi thì Conflict, không ghi gì.
+- scripts/slim_saves.py: việc ban đêm (systemd timer 04:00 giờ VN, mẫu unit trong docstring). Đi theo index stat_sessions_seen (updated_at, revision, sid) từng trang 200 dòng bằng keyset, mới nhất trước, bản lưu cập nhật trong 30 ngày nhưng không trong 15 phút gần nhất; chỉ lấy bản lưu có pg_column_size(state) ≥ --min-kb (512, kích thước nén, không giải nén); nghỉ --pause 0,5 s sau mỗi lệnh, tối đa --per-minute 30 lệnh/phút, dừng ở --until 05:00 / --minutes 55; --dry-run chỉ đọc; mỗi bản lưu một dòng log + dòng tổng kết (cả JSON).
+- game/staff_market.py: hệ số thị trường và ngày hot được nhớ theo khung 30 phút / giờ (mỗi đơn nhân viên trong lúc bù giờ hỏi lại).
+- Đo trên bản lưu tổng hợp 13,6 MB, 72 nghề (scratchpad bench2.py, trung vị 7 lần): lệnh đầu tiên sau deploy 669–715 ms (base) / 678–697 ms (mới); trước khi gọn: business_sync 464 → 437, ask 369 → 330, advance 342 → 321, end_day 421 → 406, start_day 357 → 332, settings 355 → 327 ms; sau việc ban đêm (3 lệnh 450–475 ms, 14.040 dòng vào archive) bản lưu còn 10,9 MB (−20%): 345 / 272 / 268 / 306 / 282 / 272 ms, UPDATE 158 → 105 ms.
 
 # 2.5.4.3 — 23/10/2026
 

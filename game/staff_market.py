@@ -61,13 +61,24 @@ def market(career: str, t: float | None = None) -> int:
     """The career's market multiplier at time t, in hundredths (60…160)."""
     if off():
         return 100
-    slot = int((now() if t is None else t) // SLOT)
+    return _market(career, int((now() if t is None else t) // SLOT))
+
+
+@functools.lru_cache(maxsize=1024)
+def _market(career: str, slot: int) -> int:
+    """market() of one time slot: pure (perf 23/10: a staff catch-up asks it for every order)."""
     v = 1 + sum(a * math.sin(2 * math.pi * slot / p + _phase(career, i)) for i, (a, p) in enumerate(WAVES))
     return max(LOW, min(HIGH, round(v * 100)))
 
 
 def _day(t: float) -> int:
-    return datetime.datetime.fromtimestamp(t, VN).date().toordinal() - EPOCH
+    return _day_of_hour(int(t // 3600))
+
+
+@functools.lru_cache(maxsize=256)
+def _day_of_hour(hour: int) -> int:
+    """The Vietnam day of an hour since the epoch (UTC+7: a Vietnam day is whole hours)."""
+    return datetime.datetime.fromtimestamp(hour * 3600, VN).date().toordinal() - EPOCH
 
 
 def _cycle(k: int, ids: list) -> list:

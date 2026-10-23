@@ -39,6 +39,7 @@ from . import fastjson as fj
 from . import pg_schema
 from . import settle_scope
 from . import validate_memo as vm
+from .slim import ACTION as SLIM_ACTION  # 💤 the night compaction (scripts/slim_saves.py)
 from . import fair as fh  # 🍀 Lộc trời cho: the server-wide hourly gate (loc_prepare / loc_claim)
 from . import fair_refund  # 💸 Chợ đen fines paid back: added to the Bảng vàng score (game/fair_refund.py)
 
@@ -160,6 +161,10 @@ def _slow(action,career,size,t0,t1,t2,t3,t4)->None:
     if total<SLOW_MS:return
     ms=lambda a,b:round((b-a)*1000)
     _slow_log(f"[slow-cmd] {total:.0f}ms {action} {career} save={size//1024}KB read={ms(t0,t1)} compute={ms(t1,t2)} store={ms(t2,t3)} view={ms(t3,t4)} pid={os.getpid()}")
+
+# A command's save write. 💤 The night compaction (game/slim.py) is not the player playing: no updated_at (last seen,
+# the stat_session_active trigger fires on any SET of it) and no receipt (the stat_play_cmd trigger counts play time).
+_SAVE_UPDATE=("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?","UPDATE sessions SET state=?,revision=? WHERE sid=?")
 
 def _write_archive(db,sid:str,rows:list)->None:
     """Append rows to each (career, kind) history of this save, inside the caller's transaction."""
@@ -535,15 +540,27 @@ class Store:
         if not internal and not out.get("replayed"):rt.count(self,who[0],career,action)  # Giữ chân: a dict update, written every few seconds
         return out
 
-    def _command(self,h:str,who:list,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str,reuse=None)->dict:
+    def save_command(self,sid:str,request_id:str,expected:int,action:str,payload:dict)->dict:
+        """An internal command addressed by save id (a server job: scripts/slim_saves.py), through the same path as
+        any command (lock-free compute, then the revision compare-and-set with its archive rows). The save moved
+        since `expected`: Conflict, nothing written."""
+        if type(expected) is not int:raise GameError("Thiếu phiên bản tiến trình.")
+        fingerprint=hashlib.sha256(json.dumps([None,action,payload],sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+        with _COMMAND_GATE:
+            try:out=self._command("",[sid],request_id,expected,None,action,payload,True,fingerprint,sid=sid)
+            finally:kpi.econ_drop()
+        return out
+
+    def _command(self,h:str,who:list,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str,reuse=None,sid:str|None=None)->dict:
         if action == 'jr_deco_skin':
             from . import home_decor
             return home_decor.command(self,h,who,request_id,expected,career,action,payload,internal,fingerprint)
         t0=time.perf_counter()
+        fixed=sid  # a server job's command names the save itself (save_command)
         for _ in range(OPTIMISTIC_TRIES):
             # 1. A consistent snapshot of the save and of this request's receipt, without any lock.
             with self.connect() as db:
-                sid,_=self._resolve(db,h)
+                sid,_=self._resolve(db,h) if fixed is None else (fixed,None)
                 kept=reuse if reuse is not None and reuse[0]==sid else None
                 reuse=None  # handed over for the first look only: another one reads the save
                 if kept is not None:row=_snapshot_row(db.execute(_SNAPSHOT_KEPT,(kept[1],request_id,sid),text_bytes=True).fetchone())
@@ -575,11 +592,12 @@ class Store:
                 t3=time.perf_counter()
                 lb.remember(sid,row["revision"]+1,board[0],synced=bool(board[1]) or board[2] is not None)  # rows written, or unchanged from synced ones
                 if steps[0]:rt.emit_marks(sid,*steps)
-                view=public_state(raw,migrated=True)
+                view=public_state(raw,migrated=True) if action!=SLIM_ACTION else None  # nobody looks at a night job's save
                 _slow(action,career,row["size"] if row["size"] is not None else len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
                 return dict(state=view,revision=row["revision"]+1,result=result,replayed=False)
-        with self.connect() as db:
-            sid,_=self._resolve(db,h)
+        if fixed is None:
+            with self.connect() as db:
+                sid,_=self._resolve(db,h)
         who[0]=sid
         return self._command_locked(sid,request_id,expected,career,action,payload,internal,fingerprint)
 
@@ -721,7 +739,7 @@ class Store:
                 if isinstance(result,dict) and result.get('svc_done'):
                     from . import service_market
                     service_market.command_commit(db,sid,result)  # 🛎️ a career command that fulfils Phố dịch vụ orders (paid at the next poll)
-            if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
+            if db.execute(_SAVE_UPDATE[action==SLIM_ACTION]+" AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
             if action:
@@ -781,7 +799,7 @@ class Store:
             _write_archive(db,sid,cut)
             if board and board[1]:lb.write(db,sid,board[0],old=board[2] if len(board)>2 else None)  # only when a number on a board moved, only those rows
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])  # rare: only when a funnel step was crossed
-            db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
+            if action!=SLIM_ACTION:db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
             from .home_decor import notify
             notify(db,sid,action)
             db.commit()
@@ -841,7 +859,7 @@ class Store:
             if isinstance(result,dict) and result.get('svc_done'):
                 from . import service_market
                 service_market.command_commit(db,sid,result)  # 🛎️ a career command that fulfils Phố dịch vụ orders (paid at the next poll)
-            db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
+            db.execute(_SAVE_UPDATE[action==SLIM_ACTION],(serialized,revision,sid))
             from . import couple
             couple.commit_holds(db,sid,before,raw)  # 💳 a joint-card hold this command made is settled with the save
             from . import fair_loss
@@ -895,7 +913,7 @@ class Store:
             _write_archive(db,sid,cut)
             if board[1]:lb.write(db,sid,board[0],old=board[2])
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])
-            db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,_receipt(result)))
+            if action!=SLIM_ACTION:db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,_receipt(result)))
             from .home_decor import notify
             notify(db,sid,action)
             db.commit()
