@@ -28,6 +28,7 @@
  *   the pets in ⚒️ Cường hóa (jr_pet_wing_fuse, the first one picked is the main one and keeps its style). The tier's badge and colour on
  *   every tile, what it adds (tiền kiếm được, sức thú khi đấu) under the mirror. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {shortNum} from './wealth.js';
 import {confirmPurchase} from './payment.js';
 import {lookOf,figureSVG,portrait,pairIcon,myPairs,wingIcon,wingOfState,WING_TIERS,WING_TIER_COLOR} from './look.js';
 import {kinds,kindOf,adopt,refreshCharms,pairRows,waiting,relOf,SHOP_NAME} from './charms.js';
@@ -291,7 +292,7 @@ function wingResult(api,a){
   const made=[...(a.made||[])].sort((x,y)=>y.r-x.r),best=made[0];
   return `<section class="jr-card fg-ares" aria-live="polite" aria-label="Kết quả cường hóa nhanh"><div class="fg-ares-h"><h3>⚡ Kết quả cường hóa nhanh</h3>${btn('✕','jrAsWingRes',{},'ghost small')}</div>
     ${best?`<div class="fg-ares-best">${wingIcon(best,96,wName(api,best))}${badge(best.r)}<b>${esc(wName(api,best))}</b></div>`:''}
-    <div class="fg-astats four"><div><b>${a.n}</b><small>lượt ghép</small></div><div class="good"><b>${a.ok}</b><small>thành công</small></div><div><b>${a.n-a.ok}</b><small>trượt</small></div><div><b>${fmt(a.spent)}</b><small>xu đã tiêu</small></div></div>
+    <div class="fg-astats four"><div><b>${a.n}</b><small>lượt ghép</small></div><div class="good"><b>${a.ok}</b><small>thành công</small></div><div><b>${a.n-a.ok}</b><small>trượt</small></div><div><b title="${fmt(a.spent)} xu">${shortNum(a.spent)}</b><small>xu đã tiêu</small></div></div>
     <p class="small muted fg-center">Dùng hết ${a.used} đôi · ${esc(stop)}${a.left?` Còn ${a.left} bộ ba.`:''}</p>
     ${made.length?`<h4>✨ Cánh lên hạng</h4><ul class="fg-amade">${made.map(x=>`<li style="--wt:${WING_TIER_COLOR[x.r]}">${wingIcon(x,48)}${badge(x.r)}<small>${esc(styleOf(api,x.k)?.name||'Cánh')}</small></li>`).join('')}</ul>`
       :`<p class="small muted fg-center">💨 Lần này chưa lên hạng đôi nào${a.used?'':', các đôi vẫn còn nguyên'}.</p>`}</section>`;

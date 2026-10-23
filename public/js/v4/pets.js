@@ -11,6 +11,7 @@
  * charge, `qty` sent only above 1 (an older server, whose content has no qty limits, draws no picker).
  * Styles: /css/pets.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {shortNum} from './wealth.js';
 import {paint as sheetPaint} from './sheet-paint.js';
 import {lookOf,figureSVG} from './look.js';
 import {petSVG,petPicture,lookup,accOf,fxRef} from './pet-art.js';
@@ -597,7 +598,7 @@ function autoResult(kind,a,max){
   }
   return `<section class="pt-card pt-ares" aria-label="Kết quả cường hóa nhanh" aria-live="polite"><div class="pt-ares-h"><h4>⚡ Kết quả cường hóa nhanh</h4>${chip('ares',{kind},false,'✕','Ẩn kết quả')}</div>`
     +best
-    +`<div class="pt-astats four"><div><b>${a.n}</b><small>lượt</small></div><div class="good"><b>${a.ok}</b><small>thành công</small></div><div><b>${a.n-a.ok}</b><small>trượt</small></div><div class="lux"><b>${fmt(a.spent)}</b><small>xu đã tiêu</small></div></div>`
+    +`<div class="pt-astats four"><div><b>${a.n}</b><small>lượt</small></div><div class="good"><b>${a.ok}</b><small>thành công</small></div><div><b>${a.n-a.ok}</b><small>trượt</small></div><div class="lux"><b title="${fmt(a.spent)} xu">${shortNum(a.spent)}</b><small>xu đã tiêu</small></div></div>`
     +`<p class="pt-muted pt-center">${esc(used)}</p><p class="pt-muted pt-center"><span>${esc(stop)}</span>${a.left?` <span>Còn ${a.left} ${kind==='gear'?'bộ lên hạng':'bộ ba'}.</span>`:''}</p>`
     +(made?`<h4>✨ ${kind==='lab'?'Bé lên hạng':kind==='gear'?'Món mạnh lên':'Món mới'}</h4><div class="pt-asets">${made}</div>`:`<p class="pt-muted pt-center">💨 Lần này chưa ${kind==='gear'?'mạnh thêm món nào':'lên hạng'}${kind==='ward'?', các món vẫn còn nguyên':''}.</p>`)
     +`</section>`;
