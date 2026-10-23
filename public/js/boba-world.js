@@ -323,7 +323,7 @@ export class BobaWorld extends World {
    const outfit=officer?'#719c95':employee?.color|| (player?F.topC||(F.L.uniform?pal.primary:F.classic):['#aacabb','#c8b7da','#dfb6a2','#94b7c8'][n%4]);const blink=!this.reduced&&Math.sin(this.time*1.1+n)>.992;const bob=this.reduced?0:Math.sin(this.time*(moving?7:1.8)+n)*(moving?2:1);
    c.save();c.translate(p.x,p.y+bob);c.scale(1.08,1.08);E(c,0,0,26,8,'#81644823');
    const step=moving&&!this.reduced?Math.sin(this.time*8)*3:0;const sk=F?.skin;
-   if(F?.L?.wg)paintWings(c,F,CANVAS,{t:this.reduced?null:this.time});   // 🪽 behind everything: the style's own flap, the tier's breathing glow, rays and motes (v4/wings-art.js)
+   if(F?.L?.wg)paintWings(c,F,CANVAS,{t:this.reduced?null:this.time,walk:moving});   // 🪽 behind everything: the style's own flap, the tier's breathing glow, rays and motes (v4/wings-art.js)
    if(F){paintLegs(c,F,step);paintHairBack(c,F);}
    else{R(c,-19,-20,15,20,'#f0d3b8',5);R(c,4,-20,15,20,'#f0d3b8',5);R(c,-21,-7+step,19,10,'#785c51',5);R(c,3,-7-step,19,10,'#785c51',5);if(long)R(c,-28,-92,56,64,hair,22);}
    R(c,-23,-52,46,36,outfit,15);E(c,-25,-36,8,14,sk?.hand||'#f5d5ba');E(c,25,-36,8,14,sk?.hand||'#f5d5ba');

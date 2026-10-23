@@ -16,8 +16,10 @@ export const wornWing=(state:any)=>typeof W.wingOfState==='function'?W.wingOfSta
  *   glow   the tier's light behind it from S, breathing (alpha)
  *   rays   light rays from S, turning slowly (rotation), ADD blended
  *   ring   SSS / Huyền thoại: a ring of light sent out every 2.6 s (scale, alpha)
- *   wing   the pair, one of FLAP_STEPS cached canvases picked by the style's own beat (butterfly quick, dragon slow):
- *          behind the chibi when it faces us, over its back seen from behind (the stamp's own layering)
+ *   wing   the pair (owner 23/10 "cho đẹp hơn, to hơn": spread wide past the head), one of FLAP_STEPS cached canvases
+ *          picked by the style's own beat (butterfly quick, dragon slow), a gentle stroke standing, the full one walking:
+ *          behind the chibi when it faces us, over its back seen from behind (the stamp's own layering); one set of
+ *          canvases for both views and for everyone wearing that wing
  *   motes  sparkles drifting off the wings (pooled images moved by moteAt, a pure function of the time)
  * No canvas is drawn per frame: only textures picked and images moved. The scene sleeps as before; while a moving rig is
  * in view the world wakes it ~15 times a second for one frame (PhaserWorld.wingTick). Caps: LIVE characters move (me
@@ -25,7 +27,7 @@ export const wornWing=(state:any)=>typeof W.wingOfState==='function'?W.wingOfSta
  * glow and rays still, no motes, no ring. */
 export const LIVE=8,MAX_MOTES=48,WING_FPS=15;
 type Rig={wg:string;glow?:Phaser.GameObjects.Image;rays?:Phaser.GameObjects.Image;ring?:Phaser.GameObjects.Image;wing:Phaser.GameObjects.Image;motes:Phaser.GameObjects.Image[];phase:number};
-export type WingHost={image:Phaser.GameObjects.Image;wg:any;direction:string;top:[number,number]|null;show:boolean;live:boolean};
+export type WingHost={image:Phaser.GameObjects.Image;wg:any;direction:string;top:[number,number]|null;show:boolean;live:boolean;walk?:boolean};
 export class WingRigs{
   private rigs=new Map<string,Rig>();
   constructor(private scene:Phaser.Scene){}
@@ -42,20 +44,20 @@ export class WingRigs{
     const back=h.direction==='nw'||h.direction==='ne',v=back?C.STAMP_WING.back:C.STAMP_WING.front,host=h.image,sc=host.scaleX,depth=host.depth;
     const rx=host.x+(h.top[0]-60)*sc,ry=host.y+(h.top[1]+v.dy-160)*sc,still=!h.live||W.stillMotion(),tt=t+rig.phase,ss=W.wingScale(w,v.s);
     // the wing: a cached flap
-    const f=still?0:W.flapStep(W.flapAt(w.k,tt)),frame=C.stampWingFrame(w,back,f);
-    const key=this.texture(`wg-f:${w.k}:${w.r}:${back?1:0}:${f}`,frame?.canvas);
+    const f=still?0:W.flapStep(W.flapAt(w.k,tt,!!h.walk)),frame=C.stampWingFrame(w,back,f),cy=(W.LIGHT_Y??32)*ss*sc;
+    const key=this.texture(`wg-f:${w.k}:${w.r}:${f}`,frame?.canvas);
     if(key){if(rig.wing.texture.key!==key)rig.wing.setTexture(key);rig.wing.setOrigin(frame.ox/frame.w,frame.oy/frame.h).setScale(sc).setPosition(rx,ry).setDepth(depth+(back?.001:-.001)).setVisible(true);}else rig.wing.setVisible(false);
     // the light behind: glow, rays, ring (from S)
     if(w.r>=4){
-      if(!rig.glow){const g=C.stampWingLight('glow',w,back),k=this.texture(`wg-g:${w.k}:${w.r}:${back?1:0}`,g?.canvas);if(k)rig.glow=this.scene.add.image(0,0,k).setOrigin(g.ox/g.canvas.width,g.oy/g.canvas.height);}
+      if(!rig.glow){const g=C.stampWingLight('glow',w,back),k=this.texture(`wg-g:${w.k}:${w.r}`,g?.canvas);if(k)rig.glow=this.scene.add.image(0,0,k).setOrigin(g.ox/g.canvas.width,g.oy/g.canvas.height);}
       if(rig.glow)rig.glow.setScale(sc).setPosition(rx,ry).setDepth(depth-.002).setAlpha(still?1:W.wingPulse(tt)).setVisible(true);
-      if(!rig.rays){const g=C.stampWingLight('rays',w,back),k=this.texture(`wg-r:${w.r}:${back?1:0}`,g?.canvas);if(k)rig.rays=this.scene.add.image(0,0,k).setBlendMode(ADD);}
+      if(!rig.rays){const g=C.stampWingLight('rays',w,back),k=this.texture(`wg-r:${w.r}`,g?.canvas);if(k)rig.rays=this.scene.add.image(0,0,k).setBlendMode(ADD);}
       const ry2=W.raysAt(w.r,tt);
-      if(rig.rays&&ry2)rig.rays.setScale(sc).setPosition(rx,ry-32*ss*sc).setDepth(depth-.0025).setRotation(still?0:ry2.rot).setAlpha(still?.85:ry2.a).setVisible(true);
+      if(rig.rays&&ry2)rig.rays.setScale(sc).setPosition(rx,ry-cy).setDepth(depth-.0025).setRotation(still?0:ry2.rot).setAlpha(still?.85:ry2.a).setVisible(true);
       if(w.r>=6){
         if(!rig.ring){const g=C.stampWingLight('ring',w,back),k=this.texture(`wg-o:${w.r}`,g?.canvas);if(k)rig.ring=this.scene.add.image(0,0,k).setBlendMode(ADD);}
         const b=still?null:W.burstAt(tt);
-        if(rig.ring){if(b)rig.ring.setScale(sc*ss*(16+b.ph*74)/44).setPosition(rx,ry-32*ss*sc).setDepth(depth-.0015).setAlpha(b.a).setVisible(true);else rig.ring.setVisible(false);}
+        if(rig.ring){if(b)rig.ring.setScale(sc*ss*(16+b.ph*74)/44).setPosition(rx,ry-cy).setDepth(depth-.0015).setAlpha(b.a).setVisible(true);else rig.ring.setVisible(false);}
       }
     }
     // the motes over it

@@ -1,6 +1,6 @@
 /** Decorate explicitly tagged SVG portraits with the same saved-wardrobe chibi used in the world.
  * Keep the semantic SVG root and all wardrobe handlers on their existing parent buttons. */
-import {getCharacterStamp} from './character-art.js';
+import {getCharacterStamp,wingedStamp} from './character-art.js';
 import {ART,SLOTS,TINT_SLOTS,ACC_COLORS,defaultLook,cleanPairs,cleanWing} from '../v4/look.js';
 
 const SELECTOR='svg[data-cozy-portrait]',NS='http://www.w3.org/2000/svg',MAX_THUMBNAILS=64;
@@ -27,11 +27,11 @@ export function decodeCozyPortrait(value){
 
 function makeThumbnail(stamp,mode,doc){
   const canvas=doc.createElement('canvas');
-  canvas.width=mode==='face'?160:120;canvas.height=160;
+  canvas.width=mode==='face'?160:stamp.width>120?stamp.width:120;canvas.height=160;   // 🪽 a winged figure is wider (wingedStamp)
   const c=canvas.getContext('2d');if(!c)return null;
   c.imageSmoothingEnabled=true;
   if(mode==='face')c.drawImage(stamp.canvas,0,0,120,120,0,0,160,160);
-  else c.drawImage(stamp.canvas,0,0,120,160);
+  else c.drawImage(stamp.canvas,0,0,canvas.width,160);
   return canvas.toDataURL('image/png');
 }
 function decorative(svg){
@@ -60,7 +60,7 @@ export function bootCozyPortraits(options={}){
   const requestFrame=options.requestFrame??globalThis.requestAnimationFrame;
   const cancelFrame=options.cancelFrame??globalThis.cancelAnimationFrame;
   if(!doc||!Observer||!requestFrame)return null;
-  const getStamp=options.getStamp??getCharacterStamp,thumbnailOf=options.makeThumbnail??makeThumbnail;
+  const getStamp=options.getStamp??(o=>o.wide&&o.look?.wg?wingedStamp(o):getCharacterStamp(o)),thumbnailOf=options.makeThumbnail??makeThumbnail;
   const thumbnails=new Map(),tracked=new Set(),pending=new Set();let frame=null,disposed=false;
   const connected=svg=>root.contains(svg);
   function schedule(){if(!disposed&&frame===null&&pending.size)frame=requestFrame(sweep);}
@@ -72,7 +72,7 @@ export function bootCozyPortraits(options={}){
   function thumbnail(spec){
     const key=JSON.stringify(spec),hit=thumbnails.get(key);
     if(hit){thumbnails.delete(key);thumbnails.set(key,hit);return hit;}
-    const stamp=getStamp({look:spec.look,gender:spec.gender,direction:spec.facing,walkFrame:0,onReady:ready});
+    const stamp=getStamp({look:spec.look,gender:spec.gender,direction:spec.facing,walkFrame:0,onReady:ready,wide:spec.mode==='figure'});
     const href=thumbnailOf(stamp,spec.mode,doc);if(!href)return null;
     const result={href,ready:stamp.ready};thumbnails.set(key,result);
     while(thumbnails.size>MAX_THUMBNAILS)thumbnails.delete(thumbnails.keys().next().value);

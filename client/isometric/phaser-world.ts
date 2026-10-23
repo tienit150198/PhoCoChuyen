@@ -386,14 +386,14 @@ class DioramaScene extends Phaser.Scene {
     const t=performance.now()/1000,still=this.owner.reduced,keep=new Set<string>(),top=(key:string)=>key&&this.textures.exists(key)?(this.textures.get(key) as any).customData?.wingTop||null:null;
     let budget=MAX_MOTES,live=0;
     if(this.actor){keep.add('me');const wg=wornWing(this.owner.state),show=!!wg&&this.actor.visible&&!this.riding,on=show&&!still;
-      budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on},t,budget);if(on)live++;}
+      budget-=this.wings.sync('me',{image:this.actor,wg,direction:this.actorDirection,top:top(this.actorKey),show,live:on,walk:this.playerMoving},t,budget);if(on)live++;}
     const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,shown:RemoteActor[]=[];
     for(const actor of this.remoteActors.values())if(actor.look?.wg&&actor.image.visible&&!actor.ride&&this.owner.mode==='town')shown.push(actor);
     shown.sort((a,b)=>Math.hypot(a.image.x-cx,a.image.y-cy)-Math.hypot(b.image.x-cx,b.image.y-cy));
     const moving=new Set(shown.slice(0,Math.max(0,WING_LIVE-live)));
     for(const actor of this.remoteActors.values()){const id='peer:'+actor.peer.pid;keep.add(id);
       const show=shown.includes(actor),on=show&&!still&&moving.has(actor);if(on)live++;
-      budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on},t,Math.max(0,budget));}
+      budget-=this.wings.sync(id,{image:actor.image,wg:actor.look?.wg,direction:actor.peer.direction,top:top(actor.texture),show,live:on,walk:actor.path.length>0},t,Math.max(0,budget));}
     this.wings.keepOnly(keep);
     return live>0;
   }
@@ -1299,7 +1299,8 @@ class DioramaScene extends Phaser.Scene {
     const F=figure(this.owner.state),uniformColor=this.owner.mode==='work'?this.owner.game?.catalogue?.find(c=>c.id===this.owner.career)?.color||'#8ba77a':'#8ba77a',key=this.characterTexture('iso-player',F.L,F.g||'none',this.owner.direction,uniformColor,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
-  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.rideMotion(f,moving);else this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
+  private playerMoving=false;   // 🪽 the wings' walking stroke
+  positionPlayer(moving:boolean){this.playerMoving=moving;const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced),riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,frame=riding?this.riderFrame(moving):pose.frame;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;const f=px(this.owner.player);if(this.actor.x!==f.x||this.actor.y!==f.y)this.actor.setPosition(f.x,f.y);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);if(riding)this.rideMotion(f,moving);else this.actor.setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.alpha>.6&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y||Number(b.hotspot.id.startsWith('treasure:'))-Number(a.hotspot.id.startsWith('treasure:')));return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

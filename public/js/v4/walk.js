@@ -45,7 +45,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing} from './look.js';
-import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING} from './wings-art.js';
+import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING,WING_BOX} from './wings-art.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
@@ -735,12 +735,12 @@ function drawPet(c,p,cat){
  * v4/wings-art.js): behind, the tier's breathing glow, turning rays and ring, then the wings themselves from a few cached
  * flap bitmaps (wingBitmap, shared by every walker in that wing); in front, the drifting motes. Each walker its own phase.
  * Still (reduced motion): the wings still, the glow still, the sparkles still. (x, y) the feet. */
-const WBOX=[200,190,100,128];
+const WBOX=WING_BOX.map(v=>v*CLASSIC_WING.s);
 const wingT=(p,sec,calm)=>calm?null:sec+(p.wph??=((p.pid||'').length*1.37)%3);
 function wingsBack(c,p,x,y,sec,calm){
   const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at,o={s:CLASSIC_WING.s,gap:CLASSIC_WING.gap,tall:CLASSIC_WING.tall,spread:CLASSIC_WING.spread};
   c.save();c.translate(x+ax*AV,y+ay*AV);c.scale(AV,AV);drawWings(c,CANVAS,w,0,0,{...o,body:false,sparkle:false,t});
-  const bm=wingBitmap(CANVAS,w,t==null?0:flapStep(flapAt(w.k,t)),o,WBOX,AV*S.k*S.dpr,'walk');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);
+  const bm=wingBitmap(CANVAS,w,t==null?0:flapStep(flapAt(w.k,t,!!p.moving)),o,WBOX,AV*S.k*S.dpr,'walk');if(bm)c.drawImage(bm.canvas,-bm.ox,-bm.oy,bm.w,bm.h);
   c.restore();}
 function wingsFront(c,p,x,y,sec,calm){
   const w=p.wg;if(!w)return;const t=wingT(p,sec,calm),[ax,ay]=CLASSIC_WING.at;
