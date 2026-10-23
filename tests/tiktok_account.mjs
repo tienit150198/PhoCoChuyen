@@ -56,12 +56,12 @@ async function startGame({marker='',current=null,open=false,summary=false,social
   const node={hidden:true};
   // The 2.5D HUD and world are stubbed (iso-boot.js has its own tests).
   const context={iso:{bootShell(){},start(){},booted:()=>false},interact:()=>{},isoTownFirst:()=>!newbie,api:game,ui,L,CAREER_MODULES:[],career:()=>current,careerAssets:async()=>{},setLanguage:async()=>{},
-    shell:{boot:noop},journeyBoot:noop,boardBoot:noop,startTicker:noop,$:selector=>selector==='#sheet'?sheet:node,
-    world:{resize:noop},renderMain:noop,accountBoot,env:()=>environment,ensureCareerUI:noop,bootLive:noop,performance:{mark:noop},
+    shell:{boot:noop},journeyBoot:noop,charmsBoot:noop,charmsWaiting:()=>false,ev2010Open:()=>false,seedHween:noop,hwShown:()=>false,boardBoot:noop,startTicker:noop,$:selector=>selector==='#sheet'?sheet:node,
+    world:{resize:noop,setMode:noop},renderMain:noop,accountBoot,env:()=>environment,ensureCareerUI:noop,bootLive:noop,performance:{mark:noop},
     console,localStorage,location,history,CustomEvent,URL,URLSearchParams,sound:{prepare:noop},needsJob:()=>false,
     room:()=>({open,shift_summary:summary}),firstDay:()=>true,registerWorker:noop,listenWorker:noop,
     openSheet:environment.openSheet,prefetch:noop,whenIdle:fn=>idle.push(fn),setTimeout:fn=>idle.push(fn),
-    window:{requestIdleCallback:fn=>idle.push(fn)},document:{dispatchEvent:noop},
+    window:{requestIdleCallback:fn=>idle.push(fn)},document:{dispatchEvent:noop,addEventListener:noop},
     loadModule:async()=>module(['telemetryBoot','whatsNewBoot','x3Boot','giftBoot','onboardBoot','tickerBoot','homeGuestsBoot','workVisitsBoot'])};
   context.loadInterface=async()=>({iso:context.iso,World:null});
   context.promptInterface=async()=>{calls.push('interfacePrompt');return true;};
