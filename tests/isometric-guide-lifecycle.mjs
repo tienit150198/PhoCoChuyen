@@ -81,7 +81,7 @@ test('all 67 documented utilities dispatch existing actions and reject stale una
   const calls=[],x=harness(false,({env,real})=>{
     real.mode='work';real.go=()=>assert.fail('a shared utility must not start an invented walk');
     env.act=async(action,data)=>calls.push({action,data:data||{}});
-    Object.assign(env.api.state,{journey:{story:true,garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{},deco:{},household:{}},marriage:{spouse:{}},rui:{},fair:{show:true,dog:{},knife:{},scratch:{},photo:{}}});
+    Object.assign(env.api.state,{journey:{story:true,garage:{},gadgets:{},pets:{},spend:{},lux:{},travel:{},abroad:{},deco:{},household:{}},marriage:{spouse:{}},rui:{},fair:{show:true,dog:{},knife:{},scratch:{},photo:{}}});
     env.api.content.journey={quay:{},auction:{},certs:{}};
   });
   x.socket.welcomed=true;x.socket.flags={street:true,dating:true,wedding:true,kara:true};

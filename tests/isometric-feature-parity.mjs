@@ -35,7 +35,7 @@ for(const id of layout.careerOrder.filter(id=>!legacy.includes(id))){
 }
 const appSource=declarations('public/js/app.js',['sceneActions','navItems','stockBadge','dockItems','railHTML','groupBadge',
   'RAIL_MAIN','RAIL_GROUPS','RAIL_GROUPED','RAIL_NOTE','ACC_CAREERS','railItem','railMain','badgeHTML','bangWarNote']);
-const optionalJourney={garage:{},gadgets:{},pets:{},spend:{},lux:{},abroad:{},deco:{},household:{}};
+const optionalJourney={garage:{},gadgets:{},pets:{},spend:{},lux:{},travel:{},abroad:{},deco:{},household:{}};
 const optionalContent={quay:{},auction:{},certs:{}};
 const enabledLive={welcomed:true,flags:{street:true,dating:true,wedding:true,kara:true,bark:true}};
 function harness(id,{mode='town',interfaceMode='new',screen='phone',full=false}={}){
