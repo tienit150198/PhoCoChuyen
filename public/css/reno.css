@@ -155,14 +155,6 @@
 .dc-cells.over .dc-cell:focus{outline:none}
 .dc-cells.over .dc-cell:focus-visible{outline:3px solid var(--focus);outline-offset:-2px;background:rgba(127,220,154,.3)}
 .dc-cells.over .dc-cell.bad:focus-visible{outline-color:#e2554a;background:rgba(226,85,74,.2)}
-.dc-cells.map{display:grid;gap:6px;padding:8px 10px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
-.dc-cells.map>small{color:var(--ink-2);font-weight:700;font-size:.82rem}
-.dc-cells-grid{display:grid;gap:4px}
-.dc-cells.map .dc-cell{min-height:36px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--good-soft);color:var(--ink);font:700 .9rem/1 var(--font);cursor:pointer}
-.dc-cells.map .dc-cell.has{background:var(--surface-2)}
-.dc-cells.map .dc-cell.bad{background:var(--bad-soft);color:var(--bad)}
-.dc-cells.map .dc-cell.now{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.dc-cells.map .dc-cell:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
 .dc-steps{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
 .dc-steps .dc-step{flex:1 1 44px;min-width:44px;min-height:44px;padding-inline:4px;font-size:1.1rem}
 .dc-steps .dc-unsel{flex:2 1 auto;min-height:44px}
@@ -329,15 +321,30 @@
 /* 🎨 Trang trí giúp (game/home_coop.py): the friends' changes beside the room */
 .dc-coop h4{margin:12px 0 4px}.dc-coop-log{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.dc-coop-log li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px;border-top:1px dashed var(--line,#e5d8c5)}.dc-coop-log p{margin:0;line-height:1.4;min-width:0}.dc-coop-log small{color:var(--muted,#746453);flex:none}.dc-coop-log .btn{flex:none}
 .dc-coop .dc-actions{margin-top:10px}
-/* Real 3D view reuses the existing bag, costs, paint, repair and ownership controls. */
-.home3d-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
-.home3d-controls [aria-pressed="true"]{background:#e9d5b8;border-color:#ae8255;color:#59432f}
-.home3d-viewport{position:relative;width:100%;height:clamp(300px,48vh,570px);min-width:0;border-radius:18px;overflow:hidden;background:#eee2cd;isolation:isolate}
-.home3d-canvas{display:block;width:100%;height:100%;touch-action:none;outline-offset:-4px;border-radius:18px}
-.home3d-canvas:focus-visible{outline:3px solid #b67b40}
-.home3d-loading{position:absolute;left:0;right:0;top:45%;text-align:center;color:#79563f;pointer-events:none;z-index:1}
-.dc-roomwrap-3d{min-width:0;background:#eee2cd;border:1px solid #d3b99b;border-radius:18px;overflow:hidden}
-.dc-roomwrap-3d .hw-say{z-index:2;max-width:80%;left:50%!important;top:auto!important;bottom:12px;transform:translateX(-50%);pointer-events:none}
-@media(max-width:600px){.home3d-viewport{height:360px;max-height:54vh;min-height:280px}.home3d-controls .btn{min-height:36px}}
+/* 🔍 Phóng to, thu nhỏ (v4/home-zoom.js): one transform on the room's frame; zoomed in, the room pans under the finger */
+.dc-roomwrap{overflow:hidden;border-radius:18px}
+.dc-zoom{position:relative;transform-origin:0 0}
+.dc-zoom.moving{will-change:transform}
+.dc-room{touch-action:pan-y}
+.dc-room.edit,.dc-roomwrap.zoomed .dc-room{touch-action:none}
+.dc-roomwrap.zoomed .dc-room:not(.edit){cursor:grab}
+.dc-zoombar{position:absolute;left:8px;bottom:8px;z-index:2;display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:rgba(255,253,248,.92);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+.dc-zoombar .btn{min-width:36px;min-height:36px;padding:0 6px;border-radius:999px;font-weight:800}
+.dc-zoom-pct{min-width:38px;text-align:center;color:#5b4535;font-size:.74rem;font-weight:800}
+.dc-donecorner{position:absolute;right:8px;top:8px;z-index:2}
+.dc-donecorner .btn{min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+/* ▦ the cells a piece snaps to while it is placed */
+.dc-grid{fill:none;stroke:#3fae66;stroke-opacity:.38;stroke-width:1;stroke-dasharray:2 4}
+.dc-turn{font-weight:800}
+/* 🪑 the character using a piece (v4/home-pose.js) */
+.hp-zz text{font-family:system-ui,sans-serif}
+@media (prefers-reduced-motion:no-preference){
+  body:not(.reduce-motion) .hp-gym .hp-body{animation:hp-lift 1.1s ease-in-out infinite alternate}
+  body:not(.reduce-motion) .hp-sit .hp-body,body:not(.reduce-motion) .hp-watch .hp-body,body:not(.reduce-motion) .hp-read .hp-body{animation:hp-breathe 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+  body:not(.reduce-motion) .hp-zz{animation:dc-zz 2.6s ease-in-out infinite}
+  body:not(.reduce-motion) .hp-steam,body:not(.reduce-motion) .hp-note,body:not(.reduce-motion) .hp-bubble{animation:dc-zz 2.2s ease-in-out infinite}
+}
+@keyframes hp-lift{from{translate:0 0}to{translate:0 -3px}}
+@keyframes hp-breathe{0%,100%{scale:1 1}50%{scale:1 1.015}}
 .rn-inc{margin:6px 0 0;font-size:.88rem;font-weight:700;color:var(--good)}   /* 🛡️ a sự cố on this part, insured (game/rui.py home_incident) */
 .rn-ins{color:var(--ink-2)}

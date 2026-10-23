@@ -4,10 +4,10 @@ No positions, gestures or room ids are persisted. Up to twelve occupants, one
 controlling tab each. Every action and periodic tick rechecks current access.
 
 home_in {r,host?,look?,g?,x?,y?} -> home_room {room,r,host,me,people,cap:12}
-home_mv {p:[[x,y],[x,y]],ms}; home_emote {kind:hug|kiss|heart,to:pid}
+home_mv {p:[[x,y],[x,y]],ms,a?}; home_emote {kind:hug|kiss|heart,to:pid}
 home_reply {id,answer:accept|shy|sulk|decline|cancel}; offers expire after 15 seconds.
 home_out -> home_left {why:out}; takeover/revocation: home_left {why:other|changed}
-home {room,ev:[{k:in,...person}|{k:mv,pid,p,ms}|{k:out,pid}|
+home {room,ev:[{k:in,...person}|{k:mv,pid,p,ms,a?}|{k:out,pid}|
     {k:emote,id,pid,to,kind,ttl}|{k:reaction,id,pid,to,kind,answer}|{k:ended,id,why}]}
 home_changed is a furniture invalidation only: clients refetch their authorized view.
 """
@@ -31,6 +31,9 @@ CAP = 12
 CHECK_EVERY = 2.0
 MAX_MS = 3000
 EMOTES = frozenset(('hug', 'kiss', 'heart'))
+# 🪑 what a resident is doing with a piece after walking up to it (v4/home-pose.js): shown to the others in the room,
+# nothing saved. A move without `a` stands up again.
+POSES = frozenset(('sit', 'lie', 'read', 'watch', 'gym', 'cook', 'bath', 'play'))
 REPLIES = frozenset(('accept', 'shy', 'sulk', 'decline', 'cancel'))
 OFFER_TTL = 15
 NEAR = .32
@@ -296,9 +299,11 @@ class HomeFeature(Feature):
 
     @on('home_mv', rate=(4, 1.0))
     async def home_mv(self, conn, f):
-        path, ms = f.get('p'), f.get('ms')
+        path, ms, pose = f.get('p'), f.get('ms'), f.get('a')
         if not isinstance(path, list) or len(path) != 2 or type(ms) not in (int, float) or not math.isfinite(ms):
             raise LiveError('bad', 'Vị trí không hợp lệ.')
+        if pose is not None and (not isinstance(pose, str) or pose not in POSES):
+            raise LiveError('bad', 'Tư thế không hợp lệ.')
         path = [clean_point(point) for point in path]
         room = await self._check(conn)
         offer = room.data.get('offer')
@@ -306,8 +311,12 @@ class HomeFeature(Feature):
             self._end_offer(room,'moved')
         person = room.data['people'][conn.player.pid]
         person['x'], person['y'] = path[-1]
-        room.send(dict(t='home', room=room.id, ev=[dict(k='mv', pid=conn.player.pid, p=path,
-                                        ms=int(min(MAX_MS, max(0, ms))))]), sender=conn.player)
+        ev = dict(k='mv', pid=conn.player.pid, p=path, ms=int(min(MAX_MS, max(0, ms))))
+        if pose:
+            person['a'] = ev['a'] = pose
+        else:
+            person.pop('a', None)
+        room.send(dict(t='home', room=room.id, ev=[ev]), sender=conn.player)
 
     @on('home_emote', rate=(6, 10))
     async def home_emote(self, conn, f):

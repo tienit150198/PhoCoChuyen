@@ -8,7 +8,7 @@
  * button named for a screen reader) tap a card then one of the ready-made spots under it. Tap a piece for its tools
  * (flip, up/down, another room, put away, sell). ♿ Chạm chọn, chạm đặt (góp ý #443, a player who uses a screen reader):
  * a chosen piece (a card, or a piece in the room) goes where the next tap on the room lands; every cell of its zone is
- * also a real <button> named by its row and column (over the drawing; a small map under the 3D view), the chosen piece
+ * also a real <button> named by its row and column (over the drawing), the chosen piece
  * has ⬅️⬆️⬇️➡️ one-cell steps and ✕ Bỏ chọn, and one live region outside the patched page reads every choice, move and
  * refusal. Same commands as a drag. The shop and the bag filter by 🔎 name, 🆕 Mới về, a style and a
  * category, so a phone never scrolls through every piece. Undo keeps the last moves (jr_deco_layout). 🎨 Tường & sàn: wallpaper and floor per room. The cats
@@ -32,26 +32,25 @@ import {setup as walkSetup} from './home-walk.js';
 import {live} from './live.js';
 import {sharedRooms,ownershipOrder,guestSession} from './home-view.js';
 import {morph,railScroll,railRestore} from './home-morph.js';
+import {zoomer} from './home-zoom.js';   // 🔍 phóng to, thu nhỏ căn phòng
 // 👶 Bé nhà mình: the babies at home, their moments, "Bế bé đi chơi" (game/cradle.py)
 import * as BB from './baby.js';
 import {babyRoom,babyPortrait} from './baby-art.js';
-import {PALETTE} from './look.js';
-import {flagSVG,flagBadge} from './bang-tag.js';   // ⚔️ 🚩 the bang's flag on the wall of my first room (the 3D view: in its corner), while I am in that bang
-import {sceneSession} from './home-3d.js';
+import {flagSVG} from './bang-tag.js';   // ⚔️ 🚩 the bang's flag on the wall of my first room, while I am in that bang
 import {t as tr} from './i18n.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',style:'',q:'',qTimer:0,busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null,tryTint:null,saidFlash:null,tapEnd:0,refocus:'',focusNext:[],mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0,view3d:true,gesture3d:false};
-const home3d={session:null,mount(...args){return (this.session??=sceneSession()).mount(...args);},close(){this.session?.close();},detach(){this.session?.detach();},camera(action){this.session?.camera(action);}};
+  try:null,nudge:null,tryTint:null,saidFlash:null,tapEnd:0,refocus:'',focusNext:[],mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0};
 const guest=guestSession(S);
+const ZM=zoomer();
 let openSeq=0;
 const readGuest=code=>S.env.api.json(`/api/home-guests/${S.coop?'deco/':''}view?code=${encodeURIComponent(code)}`);
 /** 🎨 The only commands a friend decorating a home sends, as home_coop actions. */
 const COOP={jr_deco_put:'put',jr_deco_pick:'pick',jr_deco_layout:'layout'};
 // 'floor' only switches which villa floor's rooms the rail shows (F#280: a housemate could not reach floor 2).
-const VISIT_OPS=new Set(['scroll','close','back','room','floor','guests','hwEmote','hwReply','view3d','camera']);
-const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','style','unfilter','hold','unhold','spot','cell','step','unsel','move','flip','pin','face','zup','zdown','pick','undo','tipOk']);
+const VISIT_OPS=new Set(['scroll','close','back','room','floor','guests','hwEmote','hwReply','zoom']);
+const COOP_OPS=new Set([...VISIT_OPS,'floor','edit','done','drawer','cat','style','unfilter','hold','unhold','spot','cell','step','unsel','move','flip','pin','turn','zup','zdown','pick','undo','tipOk']);
 const post=(url,body)=>S.env.api.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':S.env.api.csrf},body:JSON.stringify(body)});
 const U=A.U;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -59,7 +58,7 @@ const xu=n=>`${fmt(n)} xu`;
 const low=s=>String(s||'').slice(0,1).toLowerCase()+String(s||'').slice(1);
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 // The rail arrows (‹ ›) stay live while a command is out: scrolling the drawer changes nothing on the server.
-const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-dc="${op}"${attrs(data)}${S.busy&&op!=='scroll'?' disabled':''}${extra}>${label}</button>`;
+const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-dc="${op}"${attrs(data)}${S.busy&&op!=='scroll'&&op!=='zoom'?' disabled':''}${extra}>${label}</button>`;
 const J=()=>S.env?.api?.state?.journey||{};
 /* The place you live in, its rooms and pieces (deco.public). 1.4.11: the new rooms (the bathroom, a villa's pool) come
  * as `more` [{t: template, s: skin}] with the templates in the catalogue (`kits`); here they join `rooms`. */
@@ -139,12 +138,13 @@ function dialog(){
     const f=e.target.closest?.('[data-dc-search]');if(!f)return;
     S.q=f.value.slice(0,40);clearTimeout(S.qTimer);S.qTimer=setTimeout(()=>{S.resetStrip=true;render();},160);
   });
+  d.addEventListener('wheel',e=>{if(S.tab==='deco'&&!S.photo&&e.target.closest?.('.dc-roomwrap'))ZM.wheel(d,e);},{passive:false});   // 🔍
   d.addEventListener('pointerdown',onDown);
   d.addEventListener('pointermove',onMove);
   d.addEventListener('pointerup',onUp);
   d.addEventListener('pointercancel',onCancel);
   d.addEventListener('cancel',e=>{if(S.held||S.sel){e.preventDefault();const c=chosen();S.held=null;S.sel='';if(c)say(`Đã bỏ chọn ${low(c.it.name)}.`);render();}});
-  d.addEventListener('close',()=>{home3d.close();clearTimeout(sayT);sayBuf=[];S.gesture3d=false;openSeq++;S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();S.coop=false;S.coopSeq++;guest.close();});
+  d.addEventListener('close',()=>{clearTimeout(sayT);sayBuf=[];openSeq++;ZM.reset();S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();S.coop=false;S.coopSeq++;guest.close();});
   S.dlg=d;return d;
 }
 
@@ -163,7 +163,7 @@ export async function openReno(env,mode,guestCode=''){
     let seen='';
     env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey,sp=S.env.api.state?.marriage?.spouse;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco,sp]);if(key===seen)return;seen=key;
       if(S.dlg?.open)refreshMate();
-      if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press&&!S.gesture3d)render();});
+      if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
     live.on('home_changed',()=>{refreshMate();loadCoopLog();});
     live.on('home_guests_changed',refreshMate);
     live.on('welcome',refreshMate);
@@ -185,7 +185,7 @@ export async function openReno(env,mode,guestCode=''){
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
   hw().reopen();
   if(!guestCode)framedPhotos();
-  loadMate();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
+  loadMate();loadHostGrant();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
   if(!S.remote){loadCoopLog();BB.css();BB.loadFamily(env.api).then(()=>{if(seq!==openSeq||!S.dlg?.open||S.remote)return;render();BB.greet(env,{here:true});});}   // 👶
 }
@@ -200,7 +200,7 @@ async function loadCoopLog(){
   let d;try{d=await S.env.api.json('/api/home-guests/deco/log');}catch{return;}
   if(seq!==S.coopSeq||S.remote||!S.dlg?.open)return;
   const changed=JSON.stringify(S.coopLog)!==JSON.stringify(d);S.coopLog=d;
-  if(changed&&!S.busy&&!S.drag&&!S.press&&!S.gesture3d)render();
+  if(changed&&!S.busy&&!S.drag&&!S.press)render();
 }
 /** 🎨 The owner puts back what one friend change moved (POST deco/undo), then reads the home again. */
 async function coopUndo(id){
@@ -223,7 +223,7 @@ function refreshMate(){
 async function loadMate(){
   clearTimeout(S.mateTimer);S.mateTimer=0;
   if(S.remote){
-    try{const was=JSON.stringify(S.remote);if(await guest.refresh(readGuest)&&JSON.stringify(S.remote)!==was&&S.dlg?.open&&!S.drag&&!S.press&&!S.gesture3d)render();}   // 23/10 lag: the 5 s visit poll redraws the whole room (every piece and figure) only when the host's home changed
+    try{const was=JSON.stringify(S.remote);if(await guest.refresh(readGuest)&&JSON.stringify(S.remote)!==was&&S.dlg?.open&&!S.drag&&!S.press)render();}   // 23/10 lag: the 5 s visit poll redraws the whole room (every piece and figure) only when the host's home changed
     catch(e){
       if([401,403,404,409,410].includes(e.status)){S.dlg?.close();S.env.toast?.(e.message||'Lời mời vào nhà đã hết hiệu lực.','hint');return;}
     }
@@ -238,7 +238,7 @@ async function loadMate(){
   if(S.mateKey!==key||seq!==S.mateSeq)return;   // moved or reopened meanwhile: the newer request decides
   if(m?.moved){S.mate=null;S.mateState=null;S.env.api.refresh?.().then(()=>{if(S.dlg?.open)render();}).catch(()=>{});return;}   // 🏡 the stay ended: the pieces are back in the bag
   const next=failed&&S.mate?.at===key?S.mate:m&&m.at===key&&Array.isArray(m.items)?m:null,changed=JSON.stringify(S.mate)!==JSON.stringify(next);S.mate=next;S.mateState=!failed&&S.env.api.state===state?state:null;
-  if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press&&!S.gesture3d)render();
+  if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
   // Someone else lives here: ask again in 30 s while the room is open and the page visible (also after each own deco
   // command, on home_changed and when the page shows again). Nobody else: once per opening.
   if(S.dlg?.open&&(next||where==='stay'))S.mateTimer=setTimeout(pollMate,MATE_POLL);
@@ -278,22 +278,28 @@ const ask=(title,msg,label,cost)=>S.env.confirmAction(title,msg,label,cost?{cost
 /** 🚶 the character walking around the room when not decorating (v4/home-walk.js), made on first use. */
 let HW=null;
 const hw=()=>HW??=walkSetup({S,A,V:useV,roomOf,inRoom,mateIn,hostFor,send,render,sfx,calm,roomSvg,live,babyAt,
-  is3d:()=>S.view3d&&S.tab==='deco',
   babyCard:()=>{const el=S.dlg?.querySelector('#dc-baby-card');el?.scrollIntoView?.({block:'nearest',behavior:calm()?'auto':'smooth'});el?.querySelector('[data-dc="bbMoment"]:not([disabled]),[data-dc="bbCarry"]')?.focus?.({preventScroll:true});}});
 
 /* ---- the layout, as the client sees it (free units; game/deco.py check) ---- */
 const roomOf=id=>(V()?.rooms||[]).find(r=>r.id===id)||null;
 const items=()=>V()?.items||[];
 const placed=uid=>items().find(i=>i.id===uid)||null;
-/** A placed piece as the server keeps it: {r, x, y, f[, on][, z]} in units. */
-function qOf(p){const q={r:p.r,x:p.fx??p.x*U,y:p.fy??p.y*U,f:p.f||0};if(p.on)q.on=p.on;if(p.z)q.z=p.z;if(p.face==='back')q.face='back';return q;}
-const sameQ=(a,b)=>!!a&&!!b&&a.r===b.r&&a.x===b.x&&a.y===b.y&&(a.f||0)===(b.f||0)&&(a.on||'')===(b.on||'')&&(a.z||0)===(b.z||0)&&(a.face||'front')===(b.face||'front');
-/** Everything in room `rm` as {id, k, it, q}, without `skip`. */
-function inRoom(rm,skip=new Set()){return items().filter(p=>p.r===rm.id&&!skip.has(p.id)&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p)}));}
+/** ↻ How a piece (placed or in the bag) is turned: 0..3 (game/deco.py `rot`); a server from before sends only `face`. */
+const rotOf=p=>Number.isInteger(p?.rot)&&p.rot>0&&p.rot<4?p.rot:p?.face==='back'?2:0;
+/** The catalogue item as it stands: its footprint turned with it (deco-art.js turn). */
+const itemOf=p=>A.turn(ITEM(p?.k),rotOf(p));
+/** A piece's turn may change: a floor piece or a rug standing on the floor (the server's deco.turns). */
+const canTurn=(it,p)=>!!it&&!p?.on&&(it.spot==='floor'||it.spot==='rug'||(CD().facing||[]).includes(it.id));
+const ROT_WORD=['mặt trước','quay phải','mặt sau','quay trái'];
+/** A placed piece as the server keeps it: {r, x, y, f[, on][, z][, rot]} in units. */
+function qOf(p){const q={r:p.r,x:p.fx??p.x*U,y:p.fy??p.y*U,f:p.f||0};if(p.on)q.on=p.on;if(p.z)q.z=p.z;const t=rotOf(p);if(t)q.rot=t;return q;}
+const sameQ=(a,b)=>!!a&&!!b&&a.r===b.r&&a.x===b.x&&a.y===b.y&&(a.f||0)===(b.f||0)&&(a.on||'')===(b.on||'')&&(a.z||0)===(b.z||0)&&(a.rot||0)===(b.rot||0);
+/** Everything in room `rm` as {id, k, it, q}, without `skip` (`it` turned as the piece stands). */
+function inRoom(rm,skip=new Set()){return items().filter(p=>p.r===rm.id&&!skip.has(p.id)&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:itemOf(p),q:qOf(p)}));}
 const ridersOf=uid=>items().filter(p=>p.on===uid).map(p=>p.id);
 /** 💞 The spouse's pieces in this home (ids 'p:…'), read-only: drawn, never part of the checks above. */
 const mates=()=>S.mate&&S.mate.at===V()?.place?.key?S.mate.items:[];
-function mateIn(rm){return mates().filter(p=>p.r===rm.id&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p),mate:true,c:p.c||null,n:p.n||''}));}
+function mateIn(rm){return mates().filter(p=>p.r===rm.id&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:itemOf(p),q:qOf(p),mate:true,c:p.c||null,n:p.n||''}));}
 /** What `q` stands on: {it, q} (a placed piece) or {fix} (a fixture), or null. */
 function hostFor(rm,q,list){
   if(!q.on)return null;
@@ -342,6 +348,7 @@ function whyText(bad,rm,it){
   return 'Chỗ này không đặt được.';
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const SNAP=U/2;
 /** The surfaces a small thing may stand on in `rm`: their top in pixels and how to turn a point into a spot. */
 function surfaces(rm,list,G){
   const out=[];
@@ -380,9 +387,10 @@ function candidate(rm,it,ax,ay,list,f){
   if(it.spot==='wall')y=(ay-G.WY)/A.SW;
   else if(it.spot==='top')y=(ay+6-G.FY)/A.SF-U;
   else y=(ay+3-G.FY)/A.SF-it.h*U;
-  return {r:rm.id,x:clamp(Math.round(x),0,z[0]),y:clamp(Math.round(y),0,z[1]),f};
+  const snap=v=>Math.round(v/SNAP)*SNAP;   // ▦ the grid: half a cell (the arrow keys still nudge finer)
+  const q={r:rm.id,x:clamp(snap(x),0,z[0]),y:clamp(snap(y),0,z[1]),f};if(it.rot)q.rot=it.rot;return q;
 }
-const heldItem=()=>S.held?ITEM(S.held.k):null;
+const heldItem=()=>S.held?A.turn(ITEM(S.held.k),S.held.rot||0):null;
 const roomsFor=it=>(V()?.rooms||[]).filter(r=>it.rooms.includes(r.type));
 /** Where the finger holds a piece that comes from the drawer: its base a little above the finger. */
 function grabFor(it){const W=it.w*A.CW;return it.spot==='wall'?[W/2,it.h*A.WR+8]:[W/2,6];}
@@ -399,7 +407,7 @@ function say(text){
 /** The piece a tap on the room puts down: the one held (from the drawer, or being moved), else the chosen placed one. */
 function chosen(){
   if(S.held){const it=heldItem();return it?{it,uid:S.held.uid||'',src:S.held.src}:null;}
-  const p=S.sel?placed(S.sel):null,it=p&&ITEM(p.k);return it?{it,uid:p.id,src:'sel'}:null;
+  const p=S.sel?placed(S.sel):null,it=p&&itemOf(p);return it?{it,uid:p.id,src:'sel'}:null;
 }
 /** Where a piece stands, in words: "hàng 2 cột 3" (hàng 1 at the back of the floor / the top of the wall, cột 1 on the
  * left), "tường hàng 1 cột 3", "trên bàn trà". */
@@ -408,11 +416,11 @@ function spotName(rm,it,q,list){
   const cell=`hàng ${Math.round(q.y/U)+1} cột ${Math.round(q.x/U)+1}`;
   return it.spot==='wall'?`tường ${cell}`:cell;
 }
-const posOf=p=>{const rm=roomOf(p?.r),it=ITEM(p?.k);return rm&&it?spotName(rm,it,qOf(p),inRoom(rm)):'';};
+const posOf=p=>{const rm=roomOf(p?.r),it=itemOf(p);return rm&&it?spotName(rm,it,qOf(p),inRoom(rm)):'';};
 const placedName=p=>`${ITEM(p.k)?.name||''}, ${posOf(p)}`;
 /** After a move or a placing: where the piece is now. */
 function sayWhere(uid){const p=placed(uid),it=ITEM(p?.k);if(it)say(`${it.name} giờ ở ${posOf(p)}.`);}
-/** Choose a placed piece (a tap, Enter, the 3D view), or let go of it when it is the chosen one already. */
+/** Choose a placed piece (a tap, Enter), or let go of it when it is the chosen one already. */
 function choose(uid,toggle=true){
   const p=placed(uid);if(!p)return;
   if(S.sel===uid&&toggle){S.sel='';say(`Đã bỏ chọn ${low(ITEM(p.k)?.name)}.`);}
@@ -422,11 +430,11 @@ function choose(uid,toggle=true){
 /** Put the chosen piece at `q` (a tap, a cell, a named spot): the held one as dropAt, the chosen placed one moved. */
 async function placeChosen(q){
   if(S.held)return dropAt(q);
-  const p=S.sel?placed(S.sel):null,it=ITEM(p?.k),rm=roomOf(q?.r);if(!p||!it||!rm)return;
+  const p=S.sel?placed(S.sel):null,it=itemOf(p),rm=roomOf(q?.r);if(!p||!it||!rm)return;
   if(isPinned(p.id)){S.flash={text:'Món này đang ghim. Bỏ ghim rồi dời nhé.',kind:'warn'};sfx('error');render();return;}
   const bad=checkQ(rm,it,q,inRoom(rm,new Set([p.id,...ridersOf(p.id)])));
   if(bad){S.flash={text:whyText(bad,rm,it),kind:'warn'};sfx('error');render();return;}
-  const to={...q,f:p.f||0};if(p.z)to.z=p.z;if(p.face==='back')to.face='back';
+  const to={...q,f:p.f||0};if(p.z)to.z=p.z;if(rotOf(p)&&!q.on)to.rot=rotOf(p);
   if(sameQ(to,qOf(p))){say(`${it.name} đang ở đó rồi.`);return;}
   await putPiece(p.id,to);
 }
@@ -439,7 +447,7 @@ const EDGE={l:'Đã sát mép trái rồi.',r:'Đã sát mép phải rồi.',u:'
 /** ⬅️⬆️⬇️➡️ one cell for the chosen piece; a door or a window in the way: on to the next cell it may stand on. Steps
  * pressed quickly go as one move (like the arrow keys). */
 function step(p,dx,dy){
-  const rm=roomOf(p.r),it=ITEM(p.k);if(!rm||!it)return;
+  const rm=roomOf(p.r),it=itemOf(p);if(!rm||!it)return;
   if(isPinned(p.id)){S.flash={text:'Món này đang ghim. Bỏ ghim rồi dời nhé.',kind:'warn'};sfx('error');render();return;}
   const list=inRoom(rm,new Set([p.id,...ridersOf(p.id)])),from=S.nudge?.uid===p.id?S.nudge.q:qOf(p);
   let last=from,bad=null,to=null;
@@ -453,8 +461,8 @@ function step(p,dx,dy){
 }
 /** ♿ The cells of the zone the chosen piece may take in `rm`, each a real button named by its row and column and what
  * is there ("hàng 2 cột 3, trống", "…, có ghế gỗ", "…, vướng cửa sổ"): over the drawing (transparent, the finger
- * still reaches the drawing under them) or, under the 3D view, a small map. A cell is the piece's back left corner. */
-function cellsMarkup(rm,c,map){
+ * still reaches the drawing under them). A cell is the piece's back left corner. */
+function cellsMarkup(rm,c){
   const it=c?.it;if(!rm||!it||!it.rooms.includes(rm.type))return '';
   const z=zoneOf(rm,it);if(!z)return '';
   const list=inRoom(rm,new Set(c.uid?[c.uid,...ridersOf(c.uid)]:[]));if(list.length>=rm.cap)return '';
@@ -467,12 +475,11 @@ function cellsMarkup(rm,c,map){
     const has=others.filter(o=>ov(q.x,q.x+W,o.q.x,o.q.x+o.it.w*U)>0&&ov(q.y,q.y+H,o.q.y,o.q.y+o.it.h*U)>0).map(o=>low(o.it.name));
     const what=now?'đang ở đây':bad?(bad.code==='fixture'?`vướng ${FX[bad.f.t]||'chỗ cố định'}`:'không đặt được'):has.length?`có ${[...new Set(has)].join(', ')}`:'trống';
     const cls=now?' now':bad?' bad':has.length?' has':'';
-    const pos=map?'':` style="left:${pct(A.PX+k*A.CW,G.W)};top:${pct(top+r*RH,G.H)};width:${pct(it.w*A.CW,G.W)};height:${pct(it.h*RH,G.H)}"`;
-    out.push(`<button type="button" class="dc-cell${cls}" data-dc="cell" data-x="${q.x}" data-y="${q.y}"${pos} aria-label="${esc(`${spotName(rm,it,q,list)}, ${what}`)}"${S.busy?' disabled':''}>${map?`<span aria-hidden="true">${now?'◉':bad?'✕':has.length?'•':''}</span>`:''}</button>`);
+    const pos=` style="left:${pct(A.PX+k*A.CW,G.W)};top:${pct(top+r*RH,G.H)};width:${pct(it.w*A.CW,G.W)};height:${pct(it.h*RH,G.H)}"`;
+    out.push(`<button type="button" class="dc-cell${cls}" data-dc="cell" data-x="${q.x}" data-y="${q.y}"${pos} aria-label="${esc(`${spotName(rm,it,q,list)}, ${what}`)}"${S.busy?' disabled':''}></button>`);
   }
   const label=wall?`Chỗ đặt ${low(it.name)} trên tường: hàng 1 ở trên cùng, cột 1 bên trái`:`Chỗ đặt ${low(it.name)} trên sàn: hàng 1 ở trong cùng, cột 1 bên trái`;
-  return map?`<div class="dc-cells map" role="group" aria-label="${esc(label)}"><small aria-hidden="true">${wall?'▦ Chạm ô để đặt · hàng 1 ở trên cùng':'▦ Chạm ô để đặt · hàng 1 ở trong cùng'}</small><div class="dc-cells-grid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${out.join('')}</div></div>`
-    :`<div class="dc-cells over" role="group" aria-label="${esc(label)}" style="aspect-ratio:${G.W}/${G.H}">${out.join('')}</div>`;
+  return `<div class="dc-cells over" role="group" aria-label="${esc(label)}" style="aspect-ratio:${G.W}/${G.H}">${out.join('')}</div>`;
 }
 /** A value inside a quoted attribute selector ([data-uid="…"]): only quotes and backslashes need escaping there. */
 const attrQ=v=>String(v).replace(/["\\]/g,'\\$&');
@@ -480,7 +487,7 @@ const attrQ=v=>String(v).replace(/["\\]/g,'\\$&');
 function focusKeyOf(el){
   if(!el||el===S.dlg||!S.dlg?.contains?.(el))return '';
   if(el.matches?.('g[data-uid]'))return pieceKey(el.dataset.uid);
-  if(el.matches?.('.home3d-canvas,svg.dc-room'))return el.matches('svg')?'svg.dc-room':'.home3d-canvas';
+  if(el.matches?.('svg.dc-room'))return 'svg.dc-room';
   if(el.tagName!=='BUTTON')return '';   // a text field is never focused again by a redraw (the phone's keyboard would pop up)
   if(el.id)return `[id="${attrQ(el.id)}"]`;
   const ds=Object.entries(el.dataset||{});
@@ -509,7 +516,7 @@ function depthOrder(rm,list){
   return [...list].map(o=>[key(o),o]).sort((a,b)=>a[0][0]-b[0][0]||a[0][1]-b[0][1]||a[0][2]-b[0][2]||ownershipOrder(a[1],b[1],V()?.place.where==='own')).map(x=>x[1]);
 }
 function bbox(it,a){
-  const [x,y]=a,w=it.w*A.CW,h=(A.ART[it.id]?.h||30)+4;
+  const [x,y]=a,w=it.w*A.CW,h=(A.ART[it.id]?.h||30)+4+A.lift(it);   // ↻ a turned piece reaches further back
   if(it.spot==='wall')return [x,y,w,it.h*A.WR];
   if(it.spot==='rug')return [x,y-it.h*A.FR,w,it.h*A.FR];
   return [x,y-h,w,h+2];
@@ -520,8 +527,9 @@ const sparkles=(x,y,w,h)=>`<g class="dc-sparks" aria-hidden="true">${[[.1,.1,'#f
 function zoneMarkup(rm,it,G,list){
   if(!it||!it.rooms.includes(rm.type))return '';
   const z=zoneOf(rm,it),out=[];
-  if(it.spot==='wall'&&rm.wrows)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.WY}" width="${rm.cols*A.CW}" height="${rm.wrows*A.WR}" rx="8"/>`);
-  else if(it.spot!=='wall'&&z)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.FY}" width="${rm.cols*A.CW}" height="${rm.frows*A.FR}" rx="8"/>`);
+  const grid=(y0,rows,rh)=>{let d='';for(let i=1;i<rm.cols;i++)d+=`M${A.PX+i*A.CW} ${y0}v${rows*rh}`;for(let j=1;j<rows;j++)d+=`M${A.PX} ${y0+j*rh}h${rm.cols*A.CW}`;return d?`<path class="dc-grid" d="${d}"/>`:'';};   // ▦ the cells it snaps to
+  if(it.spot==='wall'&&rm.wrows)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.WY}" width="${rm.cols*A.CW}" height="${rm.wrows*A.WR}" rx="8"/>`,grid(G.WY,rm.wrows,A.WR));
+  else if(it.spot!=='wall'&&z)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.FY}" width="${rm.cols*A.CW}" height="${rm.frows*A.FR}" rx="8"/>`,it.spot==='top'?'':grid(G.FY,rm.frows,A.FR));
   for(const f of rm.fix)if(f.block&&f.layer===(it.spot==='wall'?'wall':'floor')&&!(it.spot==='rug'&&f.rug)&&!(f.allow||[]).some(t=>it.tags.includes(t))){
     const y=f.layer==='wall'?G.WY+f.y*A.WR:G.FY+f.y*A.FR,h=f.layer==='wall'?f.h*A.WR:f.h*A.FR;
     out.push(`<rect class="dc-nogo" x="${A.PX+f.x*A.CW+3}" y="${y+3}" width="${f.w*A.CW-6}" height="${h-6}" rx="6"/>`);
@@ -542,7 +550,7 @@ function roomMarkup(rm,opts={}){
   for(const o of depthOrder(rm,all)){
     const it=o.it,a=A.anchor(it,o.q,G,hostFor(rm,o.q,all));
     const g=A.glowAt(it,a[0],a[1],o.q.f);if(g)glows.push(g);
-    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id),o.q.face,o.mate?'':o.id);
+    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id),'front',o.mate?'':o.id);
     if(photo){out.push(body);continue;}
     if(o.mate){
       const [bx,by,bw,bh]=bbox(it,a);
@@ -727,15 +735,14 @@ async function onClick(op,data){
   if(S.coop&&((op==='drawer'&&data.d!=='bag')||(op==='hold'&&data.src!=='bag')))return;   // the owner's bag only
   const v=V();
   switch(op){
-    case'view3d':S.view3d=data.mode==='3d';home3d.close();catsStop();hw().stop();render();return;
-    case'camera':home3d.camera(data.action);return;
     case'scroll':{const rail=S.dlg.querySelector(`[data-dc-rail="${data.rail}"]`);rail?.scrollBy({left:(Number(data.dir)||1)*Math.max(120,rail.clientWidth*.8),behavior:'smooth'});return;}
     case'close':S.dlg.close();return;
     case'back':{const remote=!!S.remote;S.dlg.close();if(remote)S.env.act('homeGuests');else (await import('./house.js')).openHouse(S.env);return;}
     case'guests':S.dlg.close();S.env.act('homeGuests');return;
     case'tab':S.tab=data.tab;S.flash=null;S.held=null;S.sel='';render();return;
-    case'room':S.room=data.room;S.sel='';render();return;
-    case'floor':{const r=(V()?.rooms||[]).find(x=>floorOf(x)===Number(data.fl));if(r){S.room=r.id;S.sel='';render();}return;}   // 🏰 a villa's floor
+    case'room':S.room=data.room;S.sel='';ZM.reset();render();return;
+    case'floor':{const r=(V()?.rooms||[]).find(x=>floorOf(x)===Number(data.fl));if(r){S.room=r.id;S.sel='';ZM.reset();render();}return;}   // 🏰 a villa's floor
+    case'zoom':ZM.button(S.dlg,data.z);return;   // 🔍 ＋ － ⤢
     case'edit':S.edit=true;S.flash=null;S.toTop=true;sfx('click');render();return;
     case'done':S.edit=false;S.held=null;S.sel='';S.flash=null;S.toTop=true;sfx('click');render();return;
     case'drawer':S.drawer=data.d;S.cat='';S.resetStrip=true;S.held=S.drawer==='skin'?null:S.held;render();return;
@@ -746,7 +753,7 @@ async function onClick(op,data){
       const q={r:rm.id,x:Number(data.x)||0,y:Number(data.y)||0,f:c.uid?placed(c.uid)?.f||0:0};if(data.on)q.on=data.on;
       await placeChosen(q);return;}
     case'step':{const p=placed(data.uid);if(!p||p.id!==S.sel)return;step(p,Math.sign(Number(data.dx)||0),Math.sign(Number(data.dy)||0));return;}
-    case'unsel':{const p=placed(S.sel);S.sel='';if(p){say(`Đã bỏ chọn ${low(ITEM(p.k)?.name)}.`);S.focusNext=[pieceKey(p.id),'svg.dc-room','.home3d-canvas'];}render();return;}
+    case'unsel':{const p=placed(S.sel);S.sel='';if(p){say(`Đã bỏ chọn ${low(ITEM(p.k)?.name)}.`);S.focusNext=[pieceKey(p.id),'svg.dc-room'];}render();return;}
     case'hold':{const it=ITEM(data.k);if(!it)return;
       if(S.held&&S.held.k===data.k&&S.held.src===data.src){S.held=null;say(`Đã bỏ chọn ${low(it.name)}.`);render();return;}
       S.held={k:data.k,src:data.src};S.sel='';sfx('pop');
@@ -757,17 +764,17 @@ async function onClick(op,data){
     case'buyBag':{const it=heldItem();if(!it||S.held.src!=='shop')return;
       if(await ask(`Mua ${low(it.name)}?`,`Cất vào túi đồ, đặt lúc nào cũng được. Ấm cúng +${it.cozy} khi bày ra (mỗi loại tính một lần).`,`Mua · ${xu(it.price)}`,it.price)){
         const r=await send('jr_deco_buy',{item:it.id,confirm:true,n:nonce()});if(r){sfx('coins');S.held={k:it.id,src:'bag'};render();}}return;}
-    case'move':{const p=placed(data.uid);if(!p)return;S.held={k:p.k,src:'room',uid:p.id};S.sel='';sfx('pop');say(`Đang dời ${low(ITEM(p.k)?.name)}. Chạm chỗ muốn đặt, hoặc chọn phòng khác.`);render();return;}
+    case'move':{const p=placed(data.uid);if(!p)return;S.held={k:p.k,src:'room',uid:p.id,rot:rotOf(p)};S.sel='';sfx('pop');say(`Đang dời ${low(ITEM(p.k)?.name)}. Chạm chỗ muốn đặt, hoặc chọn phòng khác.`);render();return;}
     case'flip':{const p=placed(data.uid);if(!p)return;await putPiece(p.id,{...qOf(p),f:p.f?0:1});return;}
     case'pin':{const on=togglePin(data.uid);S.flash={text:on?'📌 Đã ghim: món này không bị kéo nhầm nữa.':'Đã bỏ ghim: kéo để dời được rồi.',kind:'good'};sfx('click');render();return;}
-    case'face':{const p=placed(data.uid);if(!p||(CD().facing||[]).indexOf(p.k)<0)return;await putPiece(p.id,{...qOf(p),face:p.face==='back'?'front':'back'});return;}
+    case'turn':{if(S.held&&!data.uid){turnHeld();return;}const p=placed(data.uid);if(!p)return;await turnPiece(p);return;}
     case'zup':case'zdown':{const p=placed(data.uid);if(!p)return;const rm=roomOf(p.r),zs=inRoom(rm,new Set([p.id])).map(o=>o.q.z||0);
       const z=op==='zup'?Math.min(CD().z_max||99,Math.max(0,...zs)+1):Math.max(0,Math.min(...zs,p.z||0)-1);
       if(z===(p.z||0)){S.flash={text:op==='zup'?'Món này đang ở trên cùng rồi.':'Món này đang ở dưới cùng rồi.',kind:'warn'};render();return;}
       await putPiece(p.id,{...qOf(p),z});return;}
     case'tint':{const p=placed(data.uid),it=ITEM(p?.k);if(!it)return;
       (await import('./palette.js')).pickColor(S.env,{title:it.name,current:tintOf(p.id)||'goc',preview:c=>A.thumb(it,88,c),
-        onTry:c=>{S.tryTint={uid:p.id,c};if(S.view3d)sync3d();else paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
+        onTry:c=>{S.tryTint={uid:p.id,c};paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
         onClose:()=>{S.tryTint=null;render();}});return;}
     case'pick':return pick(data.uid);
     case'restore':S.dlg?.close();await (await import('./restore.js')).openRestore(S.env,{service:'co_dien',ref:data.uid});return;   // 🧰 Làm cổ điển by a player restorer
@@ -780,6 +787,7 @@ async function onClick(op,data){
         const r=await send('jr_deco_pick',{uid:'all'});if(r){pushUndo(prev);S.sel='';sfx('click');render();}}return;}
     case'undo':return undo();
     case'coopUndo':return coopUndo(Number(data.id));
+    case'stayCoop':if(data.code)await openReno(S.env,'coop',data.code);return;   // 🏡 arrange the host's furniture with their grant
     case'skin':return pickSkin(data.part,data.skin);
     case'photo':return takePhoto();
     case'photoSave':{if(!S.photo)return;const career=S.env.api.state?.current||S.env.api.state?.focus;
@@ -822,39 +830,67 @@ async function putPiece(uid,q,again=''){
   const prev={[uid]:placed(uid)?qOf(placed(uid)):null};
   for(const u of ridersOf(uid))prev[u]=qOf(placed(u));
   const body={uid,r:q.r,x:q.x,y:q.y,f:q.f||0};if(q.on)body.on=q.on;if(q.z!=null)body.z=q.z;
-  if(q.face!=null)body.face=q.face;
+  if(!q.on&&q.rot!=null)body.rot=q.rot;   // ↻ only a turn: without it the server keeps the piece's own
   const r=await send('jr_deco_put',body);
   if(r&&!r.duplicate){
     pushUndo(prev);cheer(r,uid);
     // more of the same kind in the bag: keep holding it (three plants in a row)
-    S.held=again&&V().bag.some(b=>b.k===again)?{k:again,src:'bag'}:null;S.sel=S.held?'':uid;
+    const next=again?V().bag.find(b=>b.k===again):null;S.held=next?{k:again,src:'bag',rot:rotOf(next)}:null;S.sel=S.held?'':uid;
     S.focusNext=[pieceKey(uid)];   // ♿ the control pressed is gone (the last card of its kind): the piece itself
     render();
     sayWhere(uid);
   }
   return r;
 }
+/** ↻ Xoay 90° (góp ý #358): the next turn of a placed piece, where it stands when it still fits, else the nearest spot
+ * where it does (the room's edge or a door in the way); nowhere near: why not. One jr_deco_put; ↶ Hoàn tác turns it back. */
+async function turnPiece(p){
+  const base=ITEM(p.k),rm=roomOf(p.r);if(!base||!rm||!canTurn(base,p))return;
+  if(isPinned(p.id)){S.flash={text:'Món này đang ghim. Bỏ ghim rồi xoay nhé.',kind:'warn'};sfx('error');render();return;}
+  const rot=(rotOf(p)+1)%4,it=A.turn(base,rot),list=inRoom(rm,new Set([p.id,...ridersOf(p.id)])),q={...qOf(p),rot};
+  const to=fitNear(rm,it,q,list);
+  if(!to){const bad=checkQ(rm,it,clampQ(rm,it,q,list),list)||{code:'bounds'};S.flash={text:`Xoay ${low(base.name)} không vừa chỗ này. ${whyText(bad,rm,it)}`,kind:'warn'};sfx('error');render();return;}
+  const r=await putPiece(p.id,to);
+  if(r&&!r.duplicate)say(`${base.name}: ${ROT_WORD[rot]}.`);
+}
+/** The spot nearest `q` (itself first) where `it` may stand, half a cell at a time, up to three cells away. */
+function fitNear(rm,it,q,list){
+  const c=clampQ(rm,it,q,list);if(!checkQ(rm,it,c,list))return c;
+  let best=null,bd=1e9;
+  for(let dy=-3*U;dy<=3*U;dy+=U/2)for(let dx=-3*U;dx<=3*U;dx+=U/2){
+    const t=clampQ(rm,it,{...q,x:q.x+dx,y:q.y+dy},list),d=Math.hypot(t.x-q.x,t.y-q.y);
+    if(d<bd&&!checkQ(rm,it,t,list)){bd=d;best=t;}
+  }
+  return best;
+}
+/** ↻ The piece in hand (from the drawer, or being moved) turns before it is put down. */
+function turnHeld(){
+  const h=S.held,base=ITEM(h?.k);if(!h||!canTurn(base))return;
+  h.rot=((h.rot||0)+1)%4;h.turned=true;sfx('click');say(`${base.name}: ${ROT_WORD[h.rot]}.`);render();
+}
 async function pick(uid){
   const p=placed(uid);if(!p)return;
   const prev={[uid]:qOf(p)};for(const u of ridersOf(uid))prev[u]=qOf(placed(u));
   const r=await send('jr_deco_pick',{uid});
-  if(r){pushUndo(prev);S.sel='';sfx('click');S.focusNext=['svg.dc-room','.home3d-canvas'];render();}
+  if(r){pushUndo(prev);S.sel='';sfx('click');S.focusNext=['svg.dc-room'];render();}
 }
 async function undo(){
   const last=S.undo.pop();if(!last){render();return;}
   const r=await send('jr_deco_layout',{set:last},{loud:true});
   if(r){sfx('pop');render();}
 }
+/** ↻ The spot for the piece in hand with its turn (sent when it has one, or was turned back to the front). */
+const heldQ=(q,h)=>{const o={...q};delete o.rot;if(!q.on&&(h.rot||h.turned))o.rot=h.rot||0;return o;};
 /** Put the held piece at the free spot `q` of the current room (buying it first from the shop). */
 async function dropAt(q){
   const h=S.held,it=heldItem(),rm=roomOf(S.room);if(!h||!it||!rm||!q)return;
   const bad=checkQ(rm,it,q,inRoom(rm,new Set(h.uid?[h.uid,...ridersOf(h.uid)]:[])));
   if(bad){S.flash={text:whyText(bad,rm,it),kind:'warn'};sfx('error');render();return;}
-  if(h.src==='room'){await putPiece(h.uid,q);return;}
+  if(h.src==='room'){await putPiece(h.uid,heldQ(q,h));return;}
   if(h.src==='bag'){const b=V().bag.find(x=>x.k===h.k);if(!b){S.held=null;render();return;}
-    await putPiece(b.id,q,h.k);return;}
+    await putPiece(b.id,heldQ(q,h),h.k);return;}
   if(await ask(`Mua ${low(it.name)}?`,`Đặt ở ${low(rm.name)} · ấm cúng +${it.cozy} nếu chỗ này chưa có món này. Bán lại được ${CD().sell_pct}% giá.`,`Mua · ${xu(it.price)}`,it.price)){
-    const put={r:q.r,x:q.x,y:q.y,f:q.f||0};if(q.on)put.on=q.on;
+    const put={r:q.r,x:q.x,y:q.y,f:q.f||0};if(q.on)put.on=q.on;if(h.rot&&!q.on)put.rot=h.rot;
     const r=await send('jr_deco_buy',{item:it.id,confirm:true,put,n:nonce()});
     if(r&&r.uid){if(!r.duplicate)pushUndo({[r.uid]:null});S.held=null;S.sel=r.uid;sfx('coins');cheer(r,r.uid);S.focusNext=[pieceKey(r.uid)];render();sayWhere(r.uid);}
   }else render();
@@ -876,7 +912,6 @@ async function pickSkin(part,skin){
 /* ---- keyboard: arrows nudge the selected piece (Shift: a whole cell), F flips it, PageUp/PageDown order it,
  * Delete puts it back in the bag. Nudges wait a moment and go as one move. ---- */
 function onKey(e){
-  if(e.target.closest?.('.home3d-canvas'))return; // 3D owns these same keyboard actions through its adapter.
   const g=e.target.closest?.('g[data-uid]');
   if(g&&(e.key==='Enter'||e.key===' ')&&!S.edit){e.preventDefault();hw().tap(roomOf(S.room),{x:0,y:0},g.dataset.uid);return;}   // 🚶 walk up to it and use it
   if(!S.edit&&e.target.closest?.('svg.dc-room')&&hw().key(roomOf(S.room),e))return;
@@ -886,12 +921,12 @@ function onKey(e){
   const step=e.shiftKey?U:4,d={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
   if(d){e.preventDefault();if(!isPinned(p.id))nudge(p,d);return;}
   if(e.key==='f'||e.key==='F'){e.preventDefault();putPiece(p.id,{...qOf(p),f:p.f?0:1}).then(focusSel);return;}
-  if((e.key==='r'||e.key==='R')&&(CD().facing||[]).includes(p.k)){e.preventDefault();onClick('face',{uid:p.id}).then(focusSel);return;}
+  if((e.key==='r'||e.key==='R')&&canTurn(ITEM(p.k),p)){e.preventDefault();onClick('turn',{uid:p.id}).then(focusSel);return;}
   if(e.key==='PageUp'||e.key==='PageDown'){e.preventDefault();onClick(e.key==='PageUp'?'zup':'zdown',{uid:p.id}).then(focusSel);return;}
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();pick(p.id);}
 }
 function nudge(p,[dx,dy]){
-  const rm=roomOf(p.r),it=ITEM(p.k);if(!rm||!it)return;
+  const rm=roomOf(p.r),it=itemOf(p);if(!rm||!it)return;
   const from=S.nudge&&S.nudge.uid===p.id?S.nudge.q:qOf(p);
   const list=inRoom(rm,new Set([p.id,...ridersOf(p.id)]));
   nudgeTo(p,clampQ(rm,it,{...from,x:from.x+dx,y:from.y+dy},list));
@@ -909,6 +944,10 @@ const focusSel=()=>{if(S.sel)S.dlg?.querySelector(`g[data-uid="${CSS.escape(S.se
 function svgPoint(svg,cx,cy){const m=svg.getScreenCTM();if(!m)return null;const p=new DOMPoint(cx,cy).matrixTransform(m.inverse());return {x:p.x,y:p.y};}
 const roomSvg=()=>S.dlg?.querySelector('svg.dc-room');
 function onDown(e){
+  if(!S.photo&&e.target.closest?.('.dc-zoom')&&ZM.down(S.dlg,e)){   // 🔍 a second finger: a pinch, not a tap or a drag
+    if(S.drag){const D=S.drag;S.drag=null;S.held=null;S.dragEnd=Date.now();floatGhost(null);if(D.kind==='piece')S.sel=D.uid;render();}
+    S.press=null;return;
+  }
   if(S.busy||e.button>0||S.photo)return;
   const svg=e.target.closest?.('svg.dc-room'),card=e.target.closest?.('.dc-buycard');
   if(svg){
@@ -923,11 +962,11 @@ function onDown(e){
 function startPieceDrag(uid,cx,cy){
   if(isPinned(uid))return false;   // 📌 ghim
   const p=placed(uid),rm=roomOf(p?.r),svg=roomSvg();if(!p||!rm||!svg)return false;
-  const it=ITEM(p.k),G=A.geom(rm),list=inRoom(rm),q=qOf(p),a=A.anchor(it,q,G,hostFor(rm,q,list)),pt=svgPoint(svg,cx,cy);if(!pt)return false;
+  const it=itemOf(p),G=A.geom(rm),list=inRoom(rm),q=qOf(p),a=A.anchor(it,q,G,hostFor(rm,q,list)),pt=svgPoint(svg,cx,cy);if(!pt)return false;
   const ride=ridersOf(uid),els=[uid,...ride].map(u=>svg.querySelector(`g[data-uid="${CSS.escape(u)}"]`)).filter(Boolean);
   const layer=els[0]?.parentNode;for(const el of els){el.classList.add('drag');layer?.append(el);}   // on top while held
   S.drag={kind:'piece',uid,k:p.k,it,rm,q0:q,a0:a,grab:[pt.x-a[0],pt.y-a[1]],els,list:inRoom(rm,new Set([uid,...ride])),q:q,bad:null};
-  S.held={k:p.k,src:'room',uid};S.sel='';
+  S.held={k:p.k,src:'room',uid,rot:rotOf(p)};S.sel='';
   svg.classList.add('dragging');
   svg.querySelector('.dc-zonelayer').innerHTML=zoneMarkup(rm,it,G,S.drag.list);
   for(const el of svg.querySelectorAll('.dc-selbox'))el.remove();
@@ -935,18 +974,20 @@ function startPieceDrag(uid,cx,cy){
   return true;
 }
 function onMove(e){
+  if(ZM.move(S.dlg,e))return;   // 🔍 pinching or panning
   const p=S.press;if(!p||p.id!==e.pointerId)return;
   const dx=e.clientX-p.x,dy=e.clientY-p.y;
   if(!S.drag){
     if(p.kind==='room'){
-      if(!S.edit||!p.uid||isPinned(p.uid)||Math.hypot(dx,dy)<DRAG_PX)return;
-      if(S.held&&S.held.src!=='room')return;
+      const piece=S.edit&&p.uid&&!isPinned(p.uid)&&!(S.held&&S.held.src!=='room');
+      if(Math.hypot(dx,dy)<DRAG_PX)return;
+      if(!piece){if(ZM.k>1&&ZM.panFrom(S.dlg,e.clientX,e.clientY))p.pan=true;return;}   // 🔍 zoomed in: one finger pans
       if(!startPieceDrag(p.uid,p.x,p.y))return;
     }else{
       if(Math.abs(dy)<12||Math.abs(dy)<Math.abs(dx)*1.2)return;   // sideways: the drawer scrolls
-      const it=ITEM(p.k);if(!it)return;
+      const bagged=p.src==='bag'?V()?.bag.find(b=>b.k===p.k):null,rot=rotOf(bagged),it=A.turn(ITEM(p.k),rot);if(!it)return;
       try{p.el.setPointerCapture(e.pointerId);}catch{/* fine */}
-      S.drag={kind:'card',k:p.k,src:p.src,it,grab:grabFor(it),q:null,bad:null,uid:p.src==='bag'?(V()?.bag.find(b=>b.k===p.k)?.id||''):''};S.held={k:p.k,src:p.src};S.sel='';
+      S.drag={kind:'card',k:p.k,src:p.src,it,grab:grabFor(it),q:null,bad:null,uid:bagged?.id||''};S.held={k:p.k,src:p.src,rot};S.sel='';
       if(!it.rooms.includes(roomOf(S.room)?.type)){const r=roomsFor(it)[0];if(r){S.room=r.id;render();}}
       const svg=roomSvg(),rm=roomOf(S.room);if(svg&&rm){svg.querySelector('.dc-zonelayer').innerHTML=zoneMarkup(rm,it,A.geom(rm),inRoom(rm));svg.classList.add('dragging');}
       p.el.classList.add('lifted');
@@ -958,7 +999,7 @@ function onMove(e){
 /** Follow the finger: the piece itself (a transform, nothing redrawn), green where it may land, red where not. */
 function dragTo(cx,cy){
   const D=S.drag,svg=roomSvg();if(!D||!svg)return;
-  const rm=roomOf(S.room),pt=svgPoint(svg,cx,cy),r=svg.getBoundingClientRect();
+  const rm=roomOf(S.room),pt=svgPoint(svg,cx,cy),r=(svg.closest?.('.dc-roomwrap')||svg).getBoundingClientRect();   // 🔍 zoomed: the visible frame
   const inside=cx>=r.left-8&&cx<=r.right+8&&cy>=r.top-8&&cy<=r.bottom+8;
   if(D.kind==='card'){
     floatGhost(inside?null:D.it,cx,cy);
@@ -967,15 +1008,14 @@ function dragTo(cx,cy){
     const list=inRoom(rm),q=candidate(rm,D.it,pt.x-D.grab[0],pt.y-D.grab[1],list,0);
     if(!q){g.innerHTML='';D.q=null;return;}
     const a=A.anchor(D.it,q,A.geom(rm),hostFor(rm,q,list));D.q=q;D.bad=checkQ(rm,D.it,q,list);
-    const facing=D.uid?V()?.bag.find(b=>b.id===D.uid)?.face:undefined;if(facing)q.face=facing;
-    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null,q.face,D.uid||'')}</g>`;
+    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null,'front',D.uid||'')}</g>`;
     return;
   }
   if(!pt)return;
   const G=A.geom(D.rm),q=candidate(D.rm,D.it,pt.x-D.grab[0],pt.y-D.grab[1],D.list,D.q0.f);
   if(!q)return;
   q.z=D.q0.z;if(!q.z)delete q.z;
-  if(D.q0.face)q.face=D.q0.face;
+  if(D.q0.rot)q.rot=D.q0.rot;
   D.q=q;D.bad=checkQ(D.rm,D.it,q,D.list);D.out=!inside;
   showMove(D.uid,q,D);
 }
@@ -984,12 +1024,12 @@ function paintPiece(uid){
   const svg=roomSvg(),p=placed(uid),rm=roomOf(p?.r),el=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-piece`);if(!el||!rm)return;
   const list=inRoom(rm),o=list.find(x=>x.id===uid);if(!o)return;
   const a=A.anchor(o.it,o.q,A.geom(rm),hostFor(rm,o.q,list));
-  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid),o.q.face,uid);
+  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid),'front',uid);
 }
 /** Draw `uid` (and what stands on it) at `q` without redrawing the room. */
 function showMove(uid,q,D=null){
   const svg=roomSvg(),p=placed(uid),rm=roomOf(p?.r);if(!svg||!p||!rm)return;
-  const it=ITEM(p.k),G=A.geom(rm),list=inRoom(rm),q0=qOf(p);
+  const it=itemOf(p),G=A.geom(rm),list=inRoom(rm),q0=qOf(p);
   const a0=A.anchor(it,q0,G,hostFor(rm,q0,list)),a=A.anchor(it,q,G,hostFor(rm,q,list.filter(o=>o.id!==uid))),dx=a[0]-a0[0],dy=a[1]-a0[1];
   const els=D?.els||[uid,...ridersOf(uid)].map(u=>svg.querySelector(`g[data-uid="${CSS.escape(u)}"]`)).filter(Boolean);
   for(const el of els){
@@ -998,8 +1038,10 @@ function showMove(uid,q,D=null){
   }
 }
 async function onUp(e){
+  const zoomed=ZM.up(S.dlg,e);
   const p=S.press;if(!p||p.id!==e.pointerId)return;
   S.press=null;S.tapEnd=Date.now();
+  if(p.pan||zoomed&&!S.drag)return;   // 🔍 the end of a pan or a pinch: not a tap
   if(S.drag){
     const D=S.drag;dragTo(e.clientX,e.clientY);
     S.drag=null;S.dragEnd=Date.now();floatGhost(null);
@@ -1027,7 +1069,7 @@ async function onUp(e){
   }
   // ♿ chạm chọn, chạm đặt: a tap on a piece chooses it (again: lets go); with one chosen, a tap on the room puts it there
   // (a small thing tapped onto a table or a shelf goes up on it), as a drag would.
-  const cur=S.sel?placed(S.sel):null,cit=ITEM(cur?.k),rm=roomOf(S.room),pt=svgPoint(svg,e.clientX,e.clientY);
+  const cur=S.sel?placed(S.sel):null,cit=itemOf(cur),rm=roomOf(S.room),pt=svgPoint(svg,e.clientX,e.clientY);
   const at=()=>{if(!cur||!cit||!rm||!pt)return null;const g=grabFor(cit);return candidate(rm,cit,pt.x-g[0],pt.y-g[1],inRoom(rm,new Set([cur.id,...ridersOf(cur.id)])),cur.f||0);};
   if(p.uid){
     const q=cur&&p.uid!==cur.id&&cit.spot==='top'&&!ridersOf(cur.id).includes(p.uid)?at():null;
@@ -1040,6 +1082,7 @@ async function onUp(e){
   }
 }
 function onCancel(e){
+  ZM.up(S.dlg,e);
   if(S.press?.id!==e.pointerId)return;
   const card=S.press.kind==='card'&&!S.drag;S.press=null;
   if(card)return;   // the drawer took the swipe
@@ -1084,7 +1127,7 @@ async function takePhoto(){
 const levelIdx=total=>{const ls=[...(CD().levels||[])].sort((a,b)=>a.min-b.min);let i=-1;for(const l of ls)if(total>=l.min)i++;return Math.max(0,Math.min(4,i));};
 function paintBusy(){
   if(S.busy&&!S.refocus)S.refocus=focusKeyOf(globalThis.document?.activeElement);   // ♿ a disabled button drops its focus
-  S.dlg?.setAttribute('aria-busy',String(S.busy));S.dlg?.querySelectorAll('[data-dc]').forEach(b=>{if(b.tagName==='BUTTON'&&b.dataset.dc!=='scroll')b.disabled=S.busy;});}
+  S.dlg?.setAttribute('aria-busy',String(S.busy));S.dlg?.querySelectorAll('[data-dc]').forEach(b=>{if(b.tagName==='BUTTON'&&b.dataset.dc!=='scroll'&&b.dataset.dc!=='zoom')b.disabled=S.busy;});}
 /** ♿ After a redraw: focus it took away (the room drawing is always new; a busy button let go of it) goes back to the
  * same control, else to S.focusNext (where the action that removed the control wants it). Focus the player moved
  * themselves is never touched; neither are text fields. */
@@ -1105,50 +1148,16 @@ function render(){
   const v=V();
   if(v&&!S.remote&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
   if(v&&!S.remote){const lv=levelIdx(v.cozy.total);S.cheer=S.lastLv>=0&&lv>S.lastLv;S.lastLv=lv;}
-  home3d.detach(); // preserve the canvas/context while the shared dialog morphs its controls
   morph(S.dlg.querySelector('.dc-root'),page());
   const b2=S.dlg.querySelector('.dc-body');if(b2&&top!=null&&(S.toTop||b2!==body)&&b2.scrollTop!==(S.toTop?0:top))b2.scrollTop=S.toTop?0:top;
   if(S.toTop)S.dlg.scrollTop=0;
   const reset=S.resetStrip;railRestore(S.dlg,scrolls,key=>reset&&key!=='rooms');
   S.dlg.setAttribute('aria-busy',String(S.busy));
   S.pop='';S.resetStrip=false;S.toTop=false;
-  if(S.view3d&&S.tab==='deco'){catsStop();sync3d();}else{home3d.close();catsResume();if(!CATS.timer&&S.dlg.open)CATS.timer=setTimeout(catsTick,1800);}
+  ZM.apply(S.dlg);
+  catsResume();if(!CATS.timer&&S.dlg.open)CATS.timer=setTimeout(catsTick,1800);
   hw().resume();hw().paint();
   refocus(fkey);
-}
-/** Bridge only: the 3D renderer never calls a save endpoint or sets a price. */
-function threeActors(){
-  const rm=roomOf(S.room);if(!rm)return {};
-  const G=A.geom(rm),list=inRoom(rm),fraction=(x,y)=>[clamp((x-A.PX)/(rm.cols*A.CW),0,1),clamp((y-G.FY)/(rm.frows*A.FR),0,1)];
-  const children=homeBabies().slice(0,8).map((b,i)=>{const p=babySpot(rm,G,i);return {id:`baby:${b.id}`,name:b.name,at:fraction(p.x,p.y),art:babyRoom({g:b.grow,o:b.outfit},{asleep:doneWith(b).has('ru')}),viewBox:'-48 -70 96 80',height:.75,width:.9};});
-  const pets=catsFor(rm,G,list).slice(0,8).map((c,i)=>({id:`pet:${c.pet?.p.id||c.coat||i}`,name:c.pet?.p.name||'',at:fraction(c.x,c.y),art:catInner(c),viewBox:'-45 -60 90 68',height:.64,width:.85}));
-  return {people:hw().presentation(),children,pets};
-}
-function threeKey(e){
-  if(!S.edit){hw().key(roomOf(S.room),e);return;}
-  const p=placed(S.sel);if(!p||S.busy||S.remote&&!S.coop)return;
-  const step=e.shiftKey?U:4,delta={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
-  if(delta){e.preventDefault();if(!isPinned(p.id))nudge(p,delta);return;}
-  const op={f:'flip',F:'flip',r:'face',R:'face',Delete:'pick',Backspace:'pick',PageUp:'zup',PageDown:'zdown'}[e.key];if(op){e.preventDefault();onClick(op,{uid:p.id});}
-}
-async function threeMove(uid,q){
-  const p=placed(uid),rm=roomOf(S.room);if(!p||!rm||S.busy||S.remote&&!S.coop||isPinned(uid)){sync3d();return;}
-  const it=ITEM(p.k),bad=checkQ(rm,it,q,inRoom(rm,new Set([uid,...ridersOf(uid)])));
-  if(bad){S.flash={text:whyText(bad,rm,it),kind:'warn'};render();return;}
-  await putPiece(uid,q);
-}
-function sync3d(){
-  if(!S.dlg?.open||!S.view3d||S.tab!=='deco')return;
-  const rm=roomOf(S.room),root=S.dlg.querySelector('.home3d-viewport');if(!rm||!root)return;
-  const skin={...rm.skin};if(S.try?.room===rm.id)skin[S.try.part==='wall'?'w':'f']=S.try.skin==='auto'?undefined:S.try.skin;
-  const list=[...inRoom(rm),...mateIn(rm)].map(o=>({...o,color:PALETTE[o.mate?o.c:tintOf(o.id)]?.c||null,pinned:isPinned(o.id)}));
-  const data={room:{...rm,skin},scope:V()?.place?.key,parts:partsMap(),items:list,edit:S.edit,busy:S.busy,remote:!!S.remote,coop:S.coop,selected:S.sel,held:S.held?{...S.held,it:heldItem()}:null};
-  const seq=openSeq;
-  home3d.mount(root,data,{actors:threeActors,calm,select:uid=>{if(S.busy||S.remote&&!S.coop)return;choose(uid,false);},place:q=>{if(!S.busy&&(!S.remote||S.coop))dropAt(q);},move:threeMove,walk:(p,uid)=>hw().tap3d(p,uid),key:threeKey,
-    interacting:on=>{S.gesture3d=on;if(!on)setTimeout(()=>{if(S.dlg?.open&&!S.busy&&!S.gesture3d)render();},0);},
-    fallback:message=>{S.view3d=false;home3d.close();S.flash={text:message,kind:'warn'};render();}})
-    .then(scene=>{if(!scene||seq!==openSeq||!S.view3d)return;root.querySelector('.home3d-loading')?.remove();})
-    .catch(()=>{if(seq!==openSeq||!S.dlg?.open||!S.view3d)return;S.view3d=false;home3d.close();S.flash={text:'Thiết bị chưa mở được cảnh 3D. Bạn vẫn có thể bày trí trong phòng minh họa.',kind:'warn'};render();});
 }
 function head(v){
   const pl=v?.place;
@@ -1173,18 +1182,18 @@ function decoPage(v){
   const rm=roomOf(S.room);if(!rm)return '';
   const use=useV();
   hw().ensure(rm);
-  const svg=S.view3d?'<div class="home3d-viewport" role="group" aria-label="Cảnh nhà 3D"><p class="home3d-loading">Đang mở căn phòng 3D…</p></div>':roomMarkup(rm,{edit:S.edit}).svg;
+  const svg=roomMarkup(rm,{edit:S.edit}).svg;
   const wide=!!window.matchMedia?.('(min-width:720px)').matches;   // a wide sheet: the drawer beside the room, so a card is always in reach
-  const tip=S.edit&&!tipSeen()?`<div class="dc-tip" role="note"><span aria-hidden="true">👆</span><p><b>${S.view3d?'Chọn đồ trong túi rồi chạm chỗ muốn đặt':'Giữ một món rồi kéo đi đâu cũng được'}</b><small>${S.view3d?'Kéo món đã bày để dời. Kéo chỗ trống để xoay; cuộn hoặc chụm để thu phóng.':'Hoặc chạm chọn một món rồi chạm chỗ muốn đặt. Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó.'} Chạm món đồ để lật, đổi phòng hoặc cất đi.</small></p>${btn('Hiểu rồi','tipOk',{},'ghost small')}</div>`:'';
+  const tip=S.edit&&!tipSeen()?`<div class="dc-tip" role="note"><span aria-hidden="true">👆</span><p><b>Giữ một món rồi kéo đi đâu cũng được</b><small>Hoặc chạm chọn một món rồi chạm chỗ muốn đặt. Chạm món đồ để xoay, lật, đổi phòng hoặc cất đi. Chụm hai ngón hoặc cuộn chuột để phóng to, thu nhỏ.</small></p>${btn('Hiểu rồi','tipOk',{},'ghost small')}</div>`:'';
   const bar=S.coop?(S.edit?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
       :`<div class="dc-actions">${btn('✏️ Trang trí giúp','edit',{},'primary')}${btn('← Bạn bè & nhà','guests',{},'ghost')}</div>`)
     :S.remote?`<div class="dc-actions">${btn('← Bạn bè & nhà','guests',{},'primary')}</div>`:S.edit
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
-  const viewControls=`<div class="home3d-controls" aria-label="Góc nhìn căn nhà">${btn('◈ Nhà 3D','view3d',{mode:'3d'},'ghost small',` aria-pressed="${S.view3d}"`)}${btn('▧ Minh họa','view3d',{mode:'2d'},'ghost small',` aria-pressed="${!S.view3d}"`)}${S.view3d?`${btn('−','camera',{action:'out'},'ghost small',' aria-label="Thu nhỏ"')}${btn('+','camera',{action:'in'},'ghost small',' aria-label="Phóng to"')}${btn('⌂ Góc đầu','camera',{action:'reset'},'ghost small')}`:''}</div>`;
-  const cells=S.edit&&!S.photo?cellsMarkup(rm,chosen(),S.view3d):'';   // ♿ every spot a named button
-  const stage=`<div class="dc-stage">${roomTabs(v)}${viewControls}<div class="dc-roomwrap${S.view3d?' dc-roomwrap-3d':''}">${svg}${S.view3d?'':cells}${S.view3d&&!S.remote?flagBadge():''}${S.edit?'':`${S.view3d?'':hw().hint(use,rm)}${hw().sayHTML()}`}</div>${S.view3d?cells:''}${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
-  const side=S.coop?`${coopCard()}${S.edit&&wide?drawer(v):''}`:S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${S.edit?'':babyCard()}${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${coopOwnerCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
+  const cells=S.edit&&!S.photo?cellsMarkup(rm,chosen()):'';   // ♿ every spot a named button
+  const done=S.edit&&(S.coop||!S.remote)?`<div class="dc-donecorner">${btn('✓ Xong','done',{},'primary small',' aria-label="Xong, thôi bày trí"')}</div>`:'';   // always in reach, even zoomed in
+  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap"><div class="dc-zoom"${ZM.style()}>${svg}${cells}</div>${ZM.controls(btn)}${done}${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
+  const side=S.coop?`${coopCard()}${S.edit&&wide?drawer(v):''}`:S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${S.edit?'':babyCard()}${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${stayCard(v)}${cozyCard(v)}${coopOwnerCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }
 function scrollRail(key,html){
@@ -1219,7 +1228,7 @@ function heldBar(v){
   const pick=spots.length?`<div class="dc-spots" role="group" aria-label="${esc(`Đặt nhanh ${low(it.name)} vào ${low(rm.name)}`)}"><small>📍 Đặt nhanh:</small>${spots.map(o=>
     btn(esc(o.label),'spot',{x:o.q.x,y:o.q.y,on:o.q.on||''},'ghost small',` aria-label="${esc(`Đặt ${low(it.name)}: ${o.label}, ${low(rm.name)}`)}"`)).join('')}</div>`:'';
   return `<div class="dc-held" role="group" aria-label="${esc(`Đang chọn ${low(it.name)}`)}">${A.thumb(it,40)}<p><b>${esc(it.name)}</b><small>${esc(sub)}</small><small class="dc-held-hint">${hint}</small></p>
-    <span class="dc-held-go">${S.held.src==='shop'?btn('🎒 Mua cất túi','buyBag',{},'ghost small',it.price>v.ready?' disabled':''):''}${btn('✕ Bỏ chọn','unhold',{},'ghost small')}</span>${pick}</div>`;
+    <span class="dc-held-go">${canTurn(ITEM(S.held.k))?btn(`↻ Xoay · ${ROT_WORD[S.held.rot||0]}`,'turn',{},'ghost small',' aria-label="Xoay 90 độ trước khi đặt"'):''}${S.held.src==='shop'?btn('🎒 Mua cất túi','buyBag',{},'ghost small',it.price>v.ready?' disabled':''):''}${btn('✕ Bỏ chọn','unhold',{},'ghost small')}</span>${pick}</div>`;
 }
 /** 📍 Đặt nhanh (góp ý #443, a player who cannot see the room): a few ready-made spots for the held piece in room `rm`,
  * as buttons a screen reader names ("Góc trái sàn", "Lên bàn trà"): no dragging, no aiming at the drawing. Each spot
@@ -1260,9 +1269,9 @@ function quickSpots(rm,it,skip=new Set(),f=0){
 function toolButtons(v,p,it){
   const tb=(label,op,tip,cls='')=>btn(label,op,{uid:p.id},`ghost small${cls}`,` title="${esc(tip)}" aria-label="${esc(tip)}"`);
   const pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),...(S.coop?[]:[tb('🎨 Màu','tint','Đổi màu')])];
-  if((CD().facing||[]).includes(p.k))out.unshift(tb(`↻ Xoay hướng · ${p.face==='back'?'Mặt sau':'Mặt trước'}`,'face',`Xoay hướng sang ${p.face==='back'?'mặt trước':'mặt sau'} (R)`));
+  if(canTurn(it,p)){const t=rotOf(p);out.unshift(tb(`↻ Xoay · ${ROT_WORD[t]}`,'turn',`Xoay 90 độ, đang ${ROT_WORD[t]} (phím R)`,' dc-turn'));}
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
-  if(S.view3d||v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb(S.view3d?'↗ Dời / đổi phòng':'🚪 Đổi phòng','move','Chọn vị trí hoặc phòng muốn đặt'));
+  if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Chọn vị trí hoặc phòng muốn đặt'));
   if(!S.coop&&!S.remote&&!agedBy(p.id)&&['table','bed','light','le'].includes(it.cat)&&!it.uq&&S.env?.api?.state?.journey?.story)out.push(tb('🧰 Làm cổ điển','restore','Nhờ một người chơi làm Thợ phục chế'));
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'));
   if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
@@ -1276,7 +1285,7 @@ function stepButtons(p,it){
     +(ups.length?`<div class="dc-spots" role="group" aria-label="${esc(`Đặt ${low(it.name)} lên`)}"><small>📍 Đặt lên:</small>${ups.map(o=>btn(esc(o.label),'spot',{x:o.q.x,y:o.q.y,on:o.q.on},'ghost small',` aria-label="${esc(`Đặt ${low(it.name)}: ${o.label}`)}"`)).join('')}</div>`:'');
 }
 function tools(v){
-  const p=placed(S.sel),it=ITEM(p?.k);if(!it)return '';
+  const p=placed(S.sel),it=itemOf(p);if(!it)return '';
   const by=agedBy(p.id),badge=by?`<small class="rs-badge" title="Đã phục chế bởi ${esc(by)}">✨ Cổ điển · ${esc(by)}</small>`:'';
   return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b><small class="dc-tools-at">${esc(posOf(p))}</small>${badge}</span>${stepButtons(p,it)}<span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
 }
@@ -1414,6 +1423,25 @@ function setsCard(v){
 }
 /** "một chậu cây ×2, kệ sách": each wish in its own element (the English layer translates them one by one). */
 const missList=list=>list.map(w=>{const m=String(w).match(/^(.*) ×(\d+)$/);return m?`<i>${esc(m[1])}</i> ×${m[2]}`:`<i>${esc(w)}</i>`;}).join(', ');
+/** 🏡 Ở chung (góp ý #330): the host's own furniture moves only with the host's 🎨 Cho trang trí grant (game/home_coop.py,
+ * checked by the server on every change). With it, this opens the host's home to arrange: move, turn, put away into the
+ * host's bag. Without it: how to get it. The grants come with GET /api/home-guests (deco.homes). */
+function hostGrant(){
+  const hg=S.env?.api?.homeGuests,stay=(hg?.homes||[]).find(h=>h.kind==='stay'&&h.here);if(!stay)return null;
+  return {host:stay,grant:(hg?.deco?.homes||[]).find(h=>h.code===stay.code)||null};
+}
+function stayCard(v){
+  if(S.remote||v?.place?.where!=='stay')return '';
+  const h=hostGrant();if(!h)return '';
+  return `<section class="bk-card dc-stay"><h3>🏡 Đồ của ${esc(h.host.name||'chủ nhà')}</h3>${h.grant
+    ?`<p>Chủ nhà cho bạn sắp đồ giúp: dời, xoay hay cất vào túi của chủ nhà.</p><div class="dc-actions">${btn('🎨 Sắp đồ chủ nhà','stayCoop',{code:h.grant.code},'primary')}</div>`
+    :'<p class="bk-hint">Đồ của chủ nhà chỉ chủ nhà dời được. Nhờ chủ nhà bật 🎨 Cho trang trí cho bạn là sắp giúp được.</p>'}</section>`;
+}
+/** The grants for the card above, read once when a stay home opens and nothing was read yet. */
+function loadHostGrant(){
+  if(S.remote||V()?.place?.where!=='stay'||S.env?.api?.homeGuests)return;
+  S.env.api.json('/api/home-guests').then(d=>{if(!S.env.api.homeGuests)S.env.api.homeGuests=d;if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();}).catch(()=>{});
+}
 function placeNote(v){
   const st=v.stats||{},pl=v.place;
   const note=pl.repairs?'':pl.where==='shared'?'💞 Nhà chung: bày trí thoải mái, chuyện sửa nhà để người đứng tên lo.':pl.where==='stay'?'🏡 Ở chung nhà bạn: mua, bày, bán đồ của mình thoải mái. Sửa nhà để chủ nhà lo.':'🧾 Chỗ ở thuê: tự mua, bày, bán đồ của mình thoải mái, chỉ không sửa nhà.';

@@ -501,7 +501,7 @@ for _S in SETS.values():
 ITEMS['anh_chup'] = dict(_i('wall', 'wall', 2, 2, 0, 2, _UQ_ROOMS, 'Ảnh chụp đóng khung', '🖼️', ('art',)), price=0, uq=True)
 
 # ---------------------------------------------------------------- 🛋️ Thêm đồ trang trí (owner 21/10/2026: "thêm đồ trang trí cho nhà")
-# 55 evergreen pieces for every room and style (nét Việt xưa, tối giản, pastel, góc gaming, góc đọc sách, bếp, nhà tắm,
+# 64 evergreen pieces for every room and style (+9 for the villa gym and study, 24/10) (nét Việt xưa, tối giản, pastel, góc gaming, góc đọc sách, bếp, nhà tắm,
 # ban công), appended last: an older build (2.4.71 and before) keeps them in reno.items, unshown (its validate checks
 # kinds by shape only), and places them nowhere, so a rollback loses nothing. New pieces are priced as written (like the
 # villa pieces, never through game/price_index.py) and fit the villa rooms by BASE (game/estates_content.py). `new`:
@@ -577,6 +577,17 @@ MORE_2026 = {
     'chau_sen_da': _n('plant', 'top', 1, 1, 22, 1, SMALL + OUT + BATH + ('pool',), 'Chậu sen đá', '🪴', ('plant',)),
     'cay_bang_sing': _n('plant', 'floor', 1, 1, 140, 2, IN + OUT + ('loft',), 'Cây bàng Singapore', '🌳', ('plant',)),
     'tham_tho_cam': _n('bed', 'rug', 3, 1, 120, 2, IN + ('loft',), 'Thảm thổ cẩm', '🧶', ('rug', 'viet')),
+    # 🏋️ Phòng gym và 📚 thư viện (góp ý #330: "thêm đồ cho phòng gym, thư viện"): the villa's gym and study rooms; the
+    # mat and the dumbbells fit any living room or bedroom too. Used for real (v4/home-pose.js): tập, đọc.
+    'tham_yoga': _n('fun', 'rug', 2, 1, 90, 1, ('gym', 'living', 'bed'), 'Thảm tập yoga', '🧘', ('rug', 'sport')),
+    'ta_tay': _n('fun', 'floor', 1, 1, 120, 1, ('gym', 'living', 'bed'), 'Giá tạ tay', '💪', ('sport',)),
+    'bao_cat': _n('fun', 'floor', 1, 1, 260, 2, ('gym',), 'Bao cát đấm bốc', '🥊', ('sport',)),
+    'xe_dap_tap': _n('fun', 'floor', 2, 1, 950, 2, ('gym',), 'Xe đạp tập', '🚴', ('sport',)),
+    'ghe_tap_ta': _n('fun', 'floor', 2, 1, 520, 2, ('gym',), 'Ghế đẩy tạ', '🏋️', ('sport',)),
+    'tu_sach_kinh': _n('bed', 'floor', 2, 1, 780, 3, ('study',), 'Tủ sách cửa kính', '📚', ('books', 'reading')),
+    'ban_doc_den': _n('table', 'floor', 2, 1, 420, 2, ('study',), 'Bàn đọc đèn xanh', '📗', ('desk', 'reading'), surface=24),
+    'thang_thu_vien': _n('bed', 'floor', 1, 1, 180, 1, ('study',), 'Thang thư viện', '🪜', ('reading',)),
+    'gia_bao': _n('fun', 'floor', 1, 1, 120, 1, ('study', 'living'), 'Giá báo gỗ', '📰', ('books', 'reading')),
 }
 for _k, _it in MORE_2026.items():   # the villa rooms take them by BASE, like the older furniture (estates_content.register)
     _it['rooms'] = tuple(_it['rooms']) + tuple(t for t, (_e, _nm, base) in _EC.ROOM_TYPES.items()

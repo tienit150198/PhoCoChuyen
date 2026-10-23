@@ -7,12 +7,13 @@ import * as art from '../public/js/v4/deco-art.js';
 import {setup} from '../public/js/v4/home-walk.js';
 import * as view from '../public/js/v4/home-view.js';
 import {escapeHTML,icon} from '../public/js/icons.js';
+import {zoomer} from '../public/js/v4/home-zoom.js';
 globalThis.document={body:{classList:{contains:()=>true}}};
 globalThis.window={matchMedia:()=>({matches:false})};
 const source=(await readFile(new URL('../public/js/v4/reno.js',import.meta.url),'utf8')).replace(/^import .*;.*\r?\n/gm,'').replace(/^export /gm,'');
 const none=()=>'',many=new Proxy({},{get:()=>()=>[]});
-const ui=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','BB','flagSVG','flagBadge','PALETTE','tr',
-  source+'\nreturn {S,page,onClick,say,chosen,placeChosen};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},many,none,none,{},t=>t);
+const ui=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','BB','flagSVG','flagBadge','PALETTE','tr','zoomer',
+  source+'\nreturn {S,page,onClick,say,chosen,placeChosen};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},many,none,none,{},t=>t,zoomer);
 const U=art.U,wait=ms=>new Promise(r=>setTimeout(r,ms));
 const chair={id:'ghe_dau',name:'Ghế đẩu',spot:'floor',cat:'table',w:1,h:1,rooms:['living'],tags:[],cozy:1,price:10,sell:5};
 const frame={id:'tranh',name:'Tranh treo',spot:'wall',cat:'wall',w:1,h:1,rooms:['living'],tags:[],cozy:1,price:10,sell:5};
@@ -24,7 +25,7 @@ const sent=[];
 const env={confirmAction:async()=>true,api:{state:{journey:{deco},settings:{sound:false}},
   content:{journey:{deco:{items:[chair,frame],cats:[],skins:[],levels:[],fix_names:{cua:'cửa ra vào'}}}},
   command:async(action,payload)=>{sent.push({action,payload});return {message:'Đã lưu'};}}};
-Object.assign(ui.S,{env,dlg:null,edit:true,room:'living',view3d:false,undoKey:'attic'});
+Object.assign(ui.S,{env,dlg:null,edit:true,room:'living',undoKey:'attic'});
 
 // Choosing a placed piece: its name and place, the steps, ✕ Bỏ chọn, and every floor cell as a named button.
 ui.S.sel='a';
@@ -73,9 +74,9 @@ env.api.state.journey.deco=deco;deco.items[0]=edge;
 
 // 📌 a pinned piece is not moved by a tap or a step either.
 globalThis.localStorage={getItem:()=>'["a"]',setItem:()=>{}};
-const pinned=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','BB','flagSVG','flagBadge','PALETTE','tr',
-  source+'\nreturn {S,onClick};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},many,none,none,{},t=>t);
-Object.assign(pinned.S,{env,dlg:null,edit:true,room:'living',view3d:false,sel:'a'});
+const pinned=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','BB','flagSVG','flagBadge','PALETTE','tr','zoomer',
+  source+'\nreturn {S,onClick};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},many,none,none,{},t=>t,zoomer);
+Object.assign(pinned.S,{env,dlg:null,edit:true,room:'living',sel:'a'});
 await pinned.onClick('cell',{x:'0',y:'0'});await pinned.onClick('step',{uid:'a',dx:'1',dy:'0'});await wait(400);
 assert.equal(sent.length,0,'pinned: nothing sent');
 assert.match(pinned.S.flash.text,/ghim/);
@@ -94,12 +95,16 @@ assert.deepEqual(sent.pop(),{action:'jr_deco_put',payload:{uid:'b',r:'living',x:
 ui.S.held={k:frame.id,src:'bag'};await ui.onClick('unhold',{});
 assert.equal(ui.chosen(),null,'Bỏ chọn: nothing chosen');
 
-// The 3D view: the same cells as a small map under the scene.
-ui.S.sel='a';ui.S.view3d=true;
+// 🔍 The room zooms (pinch, wheel, ＋ / － / ⤢) and the chosen piece's cells stay over the drawing, inside the zoomed frame.
+ui.S.sel='a';
 html=ui.page();
-assert.match(html,/class="dc-cells map" role="group"/,'under the 3D view the cells are a map');
-assert.match(html,/class="dc-cell now" data-dc="cell" data-x="20" data-y="20" aria-label="hàng 2 cột 2, đang ở đây"><span aria-hidden="true">◉<\/span>/);
-ui.S.view3d=false;
+assert.match(html,/<div class="dc-zoom"><svg data-whole class="dc-room edit/,'the room sits in its zoom frame');
+assert.match(html,/class="dc-zoombar" role="group" aria-label="Phóng to, thu nhỏ căn phòng"/,'zoom buttons over the room');
+for(const z of ['out','in','fit'])assert.match(html,new RegExp(`data-dc="zoom" data-z="${z}"`),'zoom '+z);
+assert.ok(html.indexOf('class="dc-cells over"')>html.indexOf('class="dc-zoom"')&&html.indexOf('class="dc-cells over"')<html.indexOf('class="dc-zoombar"'),'the cells zoom with the room');
+assert.match(html,/class="dc-cell now" data-dc="cell" data-x="20" data-y="20"[^>]*aria-label="hàng 2 cột 2, đang ở đây"/);
+assert.match(html,/class="dc-donecorner"><button type="button" class="btn primary small" data-dc="done"/,'✓ Xong always over the room while decorating');
+assert.doesNotMatch(html,/home3d|Nhà 3D|dc-cells map/,'no 3D view any more');
 await ui.onClick('unsel',{});
 assert.equal(ui.S.sel,'','✕ Bỏ chọn');
 
@@ -114,4 +119,4 @@ assert.equal(live.textContent,'','cleared first, so the same line is read again'
 await wait(80);
 assert.equal(live.textContent,'Chạm chỗ muốn đặt.');
 ui.S.dlg=null;
-console.log('Chạm chọn, chạm đặt: named pieces and cells, cell / step / bag moves as jr_deco_put, refusals say why, pins, 3D map, live region passed');
+console.log('Chạm chọn, chạm đặt: named pieces and cells, cell / step / bag moves as jr_deco_put, refusals say why, pins, zoom frame, live region passed');

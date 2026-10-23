@@ -610,6 +610,23 @@ export const ART={
   tham_tho_cam:{h:14,rug:1,d:(W,D)=>R(4,-D+5,W-8,D-8,'#3d2a4a',3)+Rn(6,-D+8,W-12,3,'#d9483b')+Rn(6,-7,W-12,3,'#d9483b')
     +Array.from({length:Math.floor((W-16)/10)},(_,i)=>Pa(`M${12+i*10} ${-D/2-1}l5-5l5 5l-5 5z`,['#f2c14e','#d9483b','#6bb5a0'][i%3],0)).join('')
     +L(Array.from({length:Math.floor((W-8)/5)},(_,i)=>`M${6+i*5} ${-D+5}v-2M${6+i*5} -3v2`).join(''),'#f2c14e',1)},
+  tham_yoga:{h:10,rug:1,d:(W,D)=>R(4,-D+6,W-14,D-10,'#7fc4b0',5)+Rn(8,-D+9,W-22,2,'#a8dccb')+Rn(8,-7,W-22,2,'#a8dccb')+E(W-10,-D/2+1,5,D/2-5,'#5fa592',1.2)+E(W-10,-D/2+1,2,D/2-9,'#a8dccb',0)},
+  ta_tay:{h:40,d:()=>shadow(40,30)+L('M10 0l4-36M30 0l-4-36',P.dark,2.6)+[[-10,P.pinkD],[-22,P.skyD],[-33,P.gold]].map(([y,c])=>L(`M12 ${y}h16`,'#8d96a0',2)+R(8,y-4,6,8,c,2,1.1)+R(26,y-4,6,8,c,2,1.1)).join('')},
+  bao_cat:{h:84,d:()=>shadow(40,30)+R(4,-5,14,5,P.dark,2)+L('M10 -4v-76h16',P.greyD,3)+L('M26 -80v8',P.greyD,1.6)+R(17,-72,18,44,'#b5523b',8)+Rn(19,-62,14,3,'#8e3a28')+Rn(19,-40,14,3,'#8e3a28')},
+  xe_dap_tap:{h:58,d:(W)=>shadow(W,30)+R(6,-6,W-12,5,P.dark,2)+L(`M${W*.3-7} -6l7-10l7 10`,'#8d96a0',2.4)+C(W*.3,-17,11,P.darkL)+C(W*.3,-17,4,'#8d96a0',1)
+    +L(`M${W*.3} -17L${W*.58} -30L${W*.74} -48`,'#8d96a0',3.4)+L(`M${W*.58} -30v-8`,'#8d96a0',3)+R(W*.58-9,-42,18,5,'#2f2f35',2,1.2)+L(`M${W*.74} -48h9`,'#2f2f35',3.4)+R(W*.74-4,-58,16,9,P.darkL,2,1.2)+Rn(W*.74-1,-56,10,5,'#7ec8e3',1)},
+  ghe_tap_ta:{h:52,d:(W)=>shadow(W,30)+legs([10,W-30],-12,12,P.dark)+R(6,-20,W-24,9,'#2f2f35',4)+L(`M${W-24} 0v-44M${W-10} 0v-44`,'#8d96a0',2.6)
+    +L(`M${W-34} -40h32`,'#a39a90',2.6)+R(W-37,-46,5,12,P.dark,2,1)+R(W-5,-46,5,12,P.dark,2,1)},
+  tu_sach_kinh:{h:84,d:(W)=>shadow(W,30)+R(2,-84,W-4,84,'#7a4a2a',3)+Rn(6,-80,W-12,76,'#4a2f1e',1)
+    +[-58,-32,-6].map(yb=>Array.from({length:Math.floor((W-12)/7)},(_,i)=>Rn(6+i*7,yb-18+(i%3)*2,6,18-(i%3)*2,['#d45f55','#4b5a8a','#f2c14e','#7cc4a8','#e0839b'][i%5],1)).join('')).join('')
+    +L(`M6 -56h${W-12}M6 -30h${W-12}`,'#7a4a2a',2.4)+Rn(6,-80,W-12,76,'#cfe8f3',0,.28)+L(`M${W/2} -80v76`,'#7a4a2a',2.4)+L('M12 -74l10-12M14 -50l10-12','#fff',1.4,' opacity=".6"')
+    +C(W/2-4,-40,1.8,P.gold,.8)+C(W/2+4,-40,1.8,P.gold,.8)},
+  ban_doc_den:{h:50,surface:24,d:(W)=>shadow(W,30)+legs([6,W-10],-12,12,P.woodD)+box(2,W-4,12,6,8,P.woodD,P.wood,3)+L('M12 -27v-10',P.gold,2)+R(8,-29,8,3,P.gold,1,1)
+    +Pa('M3 -37h18l-3 -7h-12z','#2f6b4a',1.2)+Rn(7,-37,10,1.6,'#fff3c4')+Pa(`M${W/2-10} -27l10 2l10 -2v-5l-10 2l-10 -2z`,'#fffdf3',1.1)},
+  thang_thu_vien:{h:80,d:()=>shadow(40,30)+L('M8 0l10-78M26 0l10-78',P.woodD,2.6)+[-14,-28,-42,-56,-70].map(y=>L(`M${n(8-10*y/78)} ${y}h18`,P.wood,2.4)).join('')
+    +C(9,-1,2.5,P.dark,1)+C(27,-1,2.5,P.dark,1)},
+  gia_bao:{h:46,d:()=>shadow(40,30)+L('M8 0l4-40M32 0l-4-40',P.woodD,2.4)+L('M10 -14h20M11 -28h18',P.woodD,2)+Pa('M13 -28l2-14h12l-1 14z','#f4f1ea',1.1)
+    +L('M16 -38h8M16 -35h8',P.greyD,1)+Pa('M13 -14l1-11h13v11z','#fbf6ea',1.1)+R(15,-23,8,4,P.redD,1,0)},
 };
 /* ↻ Xoay hướng: the back of the pieces from 1.7.15 and before that turn too (game/deco.py FACING_ITEMS; the new
  * ones above carry their own `back`). Seen from behind: the back panel in front, what faced you hidden behind it. */
@@ -974,7 +991,9 @@ export const TINT={sofa:'pink',ban_tra:'wood',giuong:'sky',tv:'wood',be_ca:'wood
   ghe_doc_sach:{'#79a98c':'c','#5f8f74':'d','#4e7a61':'d'},den_doc_sach:{'#2f6b4a':'c'},chan_len:['peach','mint','butter'],ke_sach_treo:'wood',ban_do:'wood',ban_an_tron:'wood',
   noi_dat:{'#a8603a':'c','#8a4a2c':'d'},tu_bep_treo:'mint',may_rua_bat:{'#dfe3e6':'c','#cfd5d9':'l'},gio_banh_mi:'wood',thang_khan:'wood',chau_ngam_chan:'wood',
   den_muoi:{'#ffa07a':'c','#ffcfae':'l'},ke_tre_tam:{'#d8c27a':'c','#b9a35a':'d'},ban_ghe_ban_cong:'mint',chau_lan:{'#f0b6d8':'c'},gian_muop:'wood',hon_non_bo:{'#9aa0a6':'c'},
-  den_nang_luong:{'#3d4a6b':'c'},chau_sen_da:'pot',cay_bang_sing:{white:'c',grey:'d'},tham_tho_cam:{'#3d2a4a':'c'}};
+  den_nang_luong:{'#3d4a6b':'c'},chau_sen_da:'pot',cay_bang_sing:{white:'c',grey:'d'},tham_tho_cam:{'#3d2a4a':'c'},
+  tham_yoga:{'#7fc4b0':'c','#5fa592':'d'},ta_tay:{'#3d3a4a':'c'},bao_cat:{'#b5523b':'c','#8e3a28':'d'},xe_dap_tap:{'#5a566b':'c'},ghe_tap_ta:{'#2f2f35':'c'},
+  tu_sach_kinh:{'#7a4a2a':'c','#4a2f1e':'d'},ban_doc_den:'wood',thang_thu_vien:'wood',gia_bao:'wood'};
 const MAPS=new Map();
 function tintMap(id){
   if(MAPS.has(id))return MAPS.get(id);
@@ -1020,10 +1039,37 @@ export function anchor(it,q,G,host=null){
   if(it.spot==='top')return [PX+q.x*SX,G.FY+(q.y+U)*SF-6];
   return [PX+q.x*SX,G.FY+(q.y+it.h*U)*SF-3];
 }
-/** One piece's drawing with its origin at (ax, ay) (f: mirrored; tint: its colour from the palette, if any). */
+/* ↻ Xoay 90° (góp ý #358, game/deco.py `rot`): 0 its front to us, 1 turned to the right, 2 its back to us, 3 turned to the
+ * left. A turned piece is the same catalogue item with its footprint turned (w × h swapped for a quarter turn): every
+ * rule that reads it.w / it.h (zones, fixtures, surfaces, the cells) then reads the turned footprint, like the server.
+ * Only floor pieces and rugs turn (wall pieces and the small things on a table do not). */
+const TURNED=new WeakMap();
+export function turn(it,rot=0){
+  rot=Number(rot)||0;if(!it||it.base||rot<1||rot>3)return it;
+  let m=TURNED.get(it);if(!m)TURNED.set(it,m=[]);
+  return m[rot]??={...it,w:rot%2?it.h:it.w,h:rot%2?it.w:it.h,rot,base:it};
+}
+/** A quarter-turned floor piece is drawn from its front drawing, narrowed and slanted so it runs into the room: from its
+ * front cell (low) to the far end of its footprint (high). How wide, how far up and where it starts, in pixels. */
+function side(it){
+  const b=it.base,W0=b.w*CW,W1=it.w*CW,Wd=Math.min(W0,Math.max(W1,W0*.6));
+  return {W0,Wd,x0:(W1-Wd)/2,rise:Math.max(FR*.45,(it.h-1)*FR*.8)};
+}
+/** How much higher a turned piece reaches than its drawing (its hit box in v4/reno.js). */
+export const lift=it=>it?.rot%2&&it.spot!=='rug'&&it.base?side(it).rise:0;
+/** One piece's drawing with its origin at (ax, ay) (f: mirrored; tint: its colour from the palette, if any; a turned
+ * piece from turn(): its side, or its back). */
 export function pieceAt(it,ax,ay,f,tint=null,face='front',uid=''){
   const a=ART[it.id];if(!a)return '';
-  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,draw=face==='back'&&a.back?a.back:a.d,body=tinted(it.id,draw(W,D,uid),tint);   // uid: 📸 a framed photo's own picture
+  const rot=it.base?it.rot:0;if(rot===2){face='back';if(!a.back)f=f?0:1;}   // no back drawn: the front, mirrored
+  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,draw=face==='back'&&a.back?a.back:a.d;
+  if(rot%2&&it.spot!=='rug'){
+    const s=side(it),body=tinted(it.id,a.d(s.W0,it.base.h*FR,uid),tint),k=s.Wd/s.W0,dy=-s.rise/s.W0;
+    const m=rot===1?`matrix(${n(k)} ${dy.toFixed(4)} 0 1 ${n(s.x0)} 0)`:`matrix(${n(-k)} ${dy.toFixed(4)} 0 1 ${n(s.x0+s.Wd)} 0)`;
+    const g=`<g transform="${m}">${body}</g>`;
+    return `<g transform="translate(${n(ax)} ${n(ay)})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${g}</g>`:g}</g>`;
+  }
+  const body=tinted(it.id,draw(W,D,uid),tint);   // uid: 📸 a framed photo's own picture
   return `<g transform="translate(${n(ax)} ${n(ay)})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${body}</g>`:body}</g>`;
 }
 /** A small soft shadow under a thing standing on a surface (the floor pieces draw their own). */
@@ -1031,6 +1077,7 @@ export const contact=(it,ax,ay)=>E(ax+it.w*CW/2,ay-1.5,it.w*CW*.3,2.6,'#000',0,'
 /** A glow at night for a lamp with its origin at (ax, ay): [cx, cy, r], or null. */
 export function glowAt(it,ax,ay,f){
   const a=ART[it.id];if(!a?.g)return null;
+  if(it.base&&it.rot%2){const b=it.base,[,gy,r]=a.g(b.w*CW,b.spot==='wall'?b.h*WR:b.h*FR);return [ax+it.w*CW/2,ay+gy-lift(it)/2,r];}
   const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,[gx,gy,r]=a.g(W,D);
   return [ax+(f?W-gx:gx),ay+gy,r];
 }

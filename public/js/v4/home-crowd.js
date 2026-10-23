@@ -1,6 +1,7 @@
 /** Shared home presence and server-confirmed invitations. No pose changes saved coordinates. */
 import {lookOf,figureOf} from './look.js';
 import {affectionFigure,POSE_MS} from './home-affection.js';
+import {POSES,poseFigure,posed,remoteSeat} from './home-pose.js';   // 🪑 the others sitting, lying, reading…
 import {escapeHTML as esc} from '../icons.js';
 const unit=n=>Math.round(Math.max(0,Math.min(1,Number(n)||0))*1000)/1000;
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite);
@@ -23,13 +24,15 @@ export function crowd({live,state,redraw,still,svg,xy,approach,isWalking=()=>fal
   }
   function leave(){if(C.room||C.joining)live?.send({t:'home_out'});C.want=false;C.r='';C.scope='';C.host='';C.blocked=false;C.note='';clear();}
   function reopen(){C.blocked=false;C.note='';}
+  /** 🪑 Using a piece where the character stands now: the others see the pose (a move without `a` stands up). */
+  function act(a){if(C.room&&ok()&&POSES.includes(a))live.send({t:'home_mv',p:[C.at,C.at],ms:0,a});}
   function walk(p,ms,approaching=false){
     if(!Array.isArray(p)||p.length<2||!p.every(point))return;
     if(!approaching&&busy()){resetAction();C.note='';redraw();}
     C.at=p.at(-1).map(unit);
     if(C.room&&ok())live.send({t:'home_mv',p:p.map(q=>q.map(unit)),ms:Math.min(3000,Math.max(0,Math.round(ms)))});
   }
-  function add(e){if(e.pid===C.me||!e.pid||!Number.isFinite(e.x)||!Number.isFinite(e.y))return;if(!C.people.has(e.pid)&&C.people.size>=11)return;C.people.set(e.pid,{...e,x:unit(e.x),y:unit(e.y),path:null});}
+  function add(e){if(e.pid===C.me||!e.pid||!Number.isFinite(e.x)||!Number.isFinite(e.y))return;if(!C.people.has(e.pid)&&C.people.size>=11)return;C.people.set(e.pid,{...e,a:POSES.includes(e.a)?e.a:'',x:unit(e.x),y:unit(e.y),path:null});}
   function at(q){if(!q.path)return [q.x,q.y];const t=Math.min(1,(performance.now()-q.t0)/q.ms),p=q.path;if(t>=1||still()){q.path=null;return [q.x,q.y];}return [p[0]+(q.x-p[0])*t,p[1]+(q.y-p[1])*t];}
   function order(el,y){el.dataset.y=String(y);const next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y],:scope>g.dc-mate[data-y],:scope>g.hw-me[data-y],:scope>g.hc-person[data-y]')].find(g=>g!==el&&+g.dataset.y>y+2);const before=next||el.parentNode.querySelector(':scope>.dc-cats');if(before&&el.nextSibling!==before)el.parentNode.insertBefore(el,before);}
   function paint(){const root=svg();if(!root)return;for(const el of root.querySelectorAll('.hc-person')){const q=C.people.get(el.dataset.pid);if(!q)continue;const [x,y]=xy(at(q));el.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;el.querySelector('.hw-fig')?.classList.toggle('walk',Boolean(q.path)&&!still());order(el,y);}}
@@ -45,7 +48,7 @@ export function crowd({live,state,redraw,still,svg,xy,approach,isWalking=()=>fal
   function figure(F,pid=C.me){return affectionFigure(F,pose(pid));}
   function markup(r=C.r,scope=C.scope){
     if(r!==C.r||scope!==C.scope)return '';let out='';
-    for(const q of C.people.values()){let fig='';try{const ps=pose(q.pid);fig=ps?affectionFigure(figureOf(q.lk,q.g),ps):(q.svg??=affectionFigure(figureOf(q.lk,q.g)));}catch{}   // 23/10 lag: a visitor standing as they are keeps their drawn figure (redrawn on every emote, note, in or out)
+    for(const q of C.people.values()){let fig='';try{const ps=pose(q.pid);fig=ps?affectionFigure(figureOf(q.lk,q.g),ps):q.a?(q.posed??=posed(poseFigure(figureOf(q.lk,q.g),q.a),q.a,{dy:(remoteSeat[q.a]?.dy||0)/.42,k:1})):(q.svg??=affectionFigure(figureOf(q.lk,q.g)));}catch{}   // 23/10 lag: a visitor standing as they are keeps their drawn figure (redrawn on every emote, note, in or out)
     const [x,y]=xy(at(q));out+=`<g class="hc-person" data-pid="${esc(q.pid)}" data-y="${y}" aria-hidden="true" style="transform:translate(${x.toFixed(1)}px,${y.toFixed(1)}px)"><g class="hw-fig${q.path?' walk':''}"><g transform="scale(.42)">${fig}</g></g><text class="hc-name" text-anchor="middle" y="-69">${esc(q.name||'Người thương')}</text></g>`;}
     const e=C.effect;
     if(e){const a=xy(e.positions[e.pid]),b=xy(e.positions[e.to]),elapsed=performance.now()-e.start;out+=`<g class="hc-effect hc-effect-${e.kind}" aria-hidden="true" transform="translate(${a[0]},${a[1]-37})" style="--hc-flight-x:${b[0]-a[0]}px;--hc-flight-y:${b[1]-a[1]-5}px;--hc-delay:-${Math.min(POSE_MS,elapsed)}ms"><text class="hc-heart" text-anchor="middle">${e.kind==='heart'?'♥':e.kind==='hug'?'♡':e.kind==='kiss'?'♥':e.kind==='shy'?'〃':'…'}</text></g>`;}
@@ -91,7 +94,9 @@ export function crowd({live,state,redraw,still,svg,xy,approach,isWalking=()=>fal
       else if(e.k==='mv'){
         const q=C.people.get(e.pid);if(!q||!Array.isArray(e.p)||!e.p.length||!e.p.every(point))continue;
         if(involved(e.pid)){resetAction();C.note='';changed=true;}
-        const start=at(q),end=e.p.at(-1);q.x=unit(end[0]);q.y=unit(end[1]);q.path=still()||!(e.ms>0)?null:start;q.t0=performance.now();q.ms=Math.min(3000,Math.max(1,e.ms));paint();animate();
+        const start=at(q),end=e.p.at(-1),a=POSES.includes(e.a)?e.a:'';q.x=unit(end[0]);q.y=unit(end[1]);q.path=still()||!(e.ms>0)?null:start;q.t0=performance.now();q.ms=Math.min(3000,Math.max(1,e.ms));
+        if(a!==(q.a||'')){q.a=a;q.posed=null;changed=true;}   // 🪑 sat down or stood up: their figure is drawn again
+        paint();animate();
       }else if(e.k==='emote'&&EMOTES[e.kind]&&e.pid!==e.to&&(e.pid===C.me||C.people.has(e.pid))&&(e.to===C.me||C.people.has(e.to))){
         if(C.invite?.id&&C.invite.id===e.id)continue;
         resetAction();const q=C.people.get(e.pid)||C.people.get(e.to);
@@ -119,10 +124,5 @@ export function crowd({live,state,redraw,still,svg,xy,approach,isWalking=()=>fal
     }else resetAction();
     C.note=f.msg||f.message||'Chưa thể làm lúc này. Thử lại sau nhé.';redraw();
   });
-  // Read-only render projection for the 3D view. It uses this same authorized room and capped peer map.
-  function presentation(){return [...C.people.values()].map(q=>{
-    if(!q.art){try{q.art=figure(figureOf(q.lk,q.g),q.pid);}catch{q.art='';}}
-    return {id:q.pid,name:q.name||'Bạn',at:at(q),art:q.art,height:1.65};
-  });}
-  return {join,leave,reopen,walk,markup,panel,emote,reply,figure,presentation,resume:()=>{paint();animate();},dispose:()=>{leave();for(const off of subs)off();},state:()=>({room:C.room,r:C.r,me:C.me,people:[...C.people.values()].map(q=>({pid:q.pid,name:q.name,at:at(q)}))})};
+  return {join,leave,reopen,walk,act,markup,panel,emote,reply,figure,resume:()=>{paint();animate();},dispose:()=>{leave();for(const off of subs)off();},state:()=>({room:C.room,r:C.r,me:C.me,people:[...C.people.values()].map(q=>({pid:q.pid,name:q.name,at:at(q)}))})};
 }

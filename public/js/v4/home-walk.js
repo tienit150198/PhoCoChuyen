@@ -6,6 +6,9 @@
  *   🗄️ a wardrobe, a mirror, a dressing table: Tủ đồ (v4/wardrobe.js);
  *   🛁 the bathtub, the pool, a sun lounger: the relax act of the day (game/relax.py) when it can be done, else why not;
  *   anything else: a short line from the character in a bubble (nothing changes).
+ * 🪑 Góp ý #372: at the piece the character also uses it (v4/home-pose.js): sits on a chair or the sofa, lies down on
+ * the bed (asleep at night), reads, watches TV from the nearest seat, exercises, cooks, soaks in the tub, plays. The
+ * pose stays until the next tap; the others in the room see it (live home_mv `a`). Cosmetic only: nothing is saved.
  * Like the fair's walk (v4/fair-walk.js) the player does the walking; like reno.js's cats the figure is one SVG group
  * moved by a CSS transition (no frame loop), frozen and resumed around a re-render. Reduced motion: it steps there.
  * reno.js owns the dialog and passes its helpers in (setup); every rule and number is the server's (deco.public
@@ -14,7 +17,8 @@ import {figure,lookOf,figureSVG,wornColor} from './look.js';
 import {escapeHTML as esc} from '../icons.js';
 import {crowd} from './home-crowd.js';
 // 👶 the baby in your arms when you carry it (v4/baby.js)
-import {withBaby,carried} from './baby.js';
+import {withBaby} from './baby.js';
+import {actFor,poseFigure,posed,seatOf} from './home-pose.js';
 
 const K=.42;                 // the figure (about 150 units tall) in room pixels
 const SPEED=150;             // room pixels a second
@@ -39,6 +43,12 @@ const LINES={
   may_choi_game:['Chơi một ván game cho đỡ căng thẳng.'],loa:['Mở một bài nhạc nhẹ, phòng ấm hẳn lên.'],radio:['Vặn radio nghe tin tức buổi tối.'],
   cay_canh:['Tưới chút nước cho cây, lá xanh mướt.'],gau_bong:['Ôm gấu bông một cái cho đỡ mệt.'],
   ban_an:['Lau bàn ăn sạch sẽ.'],ban_tra:['Pha một ấm trà, ngồi nhâm nhi.'],
+  may_chay_bo:['Chạy bộ mười phút, mồ hôi nhễ nhại.','Bật máy chạy chậm, vừa chạy vừa nghe nhạc.'],gia_ta:['Nâng tạ vài hiệp, tay săn chắc hẳn.'],
+  xe_dap_tap:['Đạp xe tại chỗ, chân mỏi mà vui.'],bao_cat:['Đấm bao cát vài cú, xả hết bực bội.'],ta_tay:['Cầm tạ tay tập vài hiệp.'],
+  ghe_tap_ta:['Nằm đẩy tạ một hiệp, thở đều nào.'],tham_yoga:['Trải thảm tập yoga, hít thở thật sâu.'],
+  bep_ga:['Bắc chảo lên bếp, xào nhanh đĩa rau.','Nấu nồi canh, thơm cả nhà.'],kitchen:['Lăng xăng trong bếp một lúc.'],
+  ban_doc_den:['Bật đèn xanh, đọc thêm một chương.'],tu_sach_kinh:['Lấy một cuốn sách cũ ra đọc lại.'],thang_thu_vien:['Leo lên thang lấy cuốn sách trên cao.'],
+  books:['Rút một cuốn sách ra đọc vài trang.'],reading:['Ngồi đọc sách, quên cả giờ.'],seat:['Ngồi nghỉ chân một chút.'],
   table:['Ngồi nghỉ chân một chút.'],plant:['Tưới chút nước cho cây, lá xanh mướt.'],light:['Bật đèn lên, phòng sáng ấm hẳn.'],
   wall:['Ngắm nghía một chút, nhìn cũng xinh.'],fun:['Nghịch một chút cho vui.'],bed:['Sắp xếp lại góc này cho gọn.'],
   bath:['Rửa mặt cho tỉnh táo.'],pool:['Hít một hơi gió mát bên hồ.'],le:['Nhìn mà thấy Tết tới gần.'],
@@ -52,7 +62,7 @@ const BABY_LINE={so_sinh:['Bé ngủ ngoan quá, thương ghê.','Nắm bàn tay
 
 export function setup(ctx){
   const {S,A,roomOf,inRoom,hostFor,send,render,sfx,calm,roomSvg}=ctx;
-  const W={room:'',x:0,y:0,to:null,until:0,timer:0,then:null,say:null,fridge:false,closet:null,note:null,walked:false};
+  const W={room:'',x:0,y:0,to:null,until:0,timer:0,then:null,say:null,fridge:false,closet:null,note:null,walked:false,pose:null};
   const st=()=>S.env?.api?.state||{};
   const FR=()=>S.remote?null:ctx.V?.()?.fridge||S.env?.api?.state?.journey?.deco?.fridge||null;
   const useRoom=rm=>[...inRoom(rm),...(ctx.mateIn?.(rm)||[])];
@@ -65,7 +75,7 @@ export function setup(ctx){
     if(!S.dlg?.open||crowdRender)return;
     crowdRender=setTimeout(function flush(){
       crowdRender=0;if(!S.dlg?.open)return;
-      if(S.busy||S.drag||S.press||S.gesture3d){crowdRender=setTimeout(flush,120);return;}
+      if(S.busy||S.drag||S.press){crowdRender=setTimeout(flush,120);return;}
       // The short avatar pose can finish while the longer invitation is still open.
       // Restore that exact response control after replacing the room DOM.
       const focused=globalThis.document?.activeElement;
@@ -117,16 +127,34 @@ export function setup(ctx){
     const d=(rm.fix||[]).find(f=>f.t==='door'&&f.layer==='floor'),b=box(rm,G);
     const p=d?clampTo(rm,G,A.PX+(d.x+.5)*A.CW,G.FY+A.FR*1.2):clampTo(rm,G,(b.x0+b.x1)/2,b.y1-6);
     if(ctx.V?.()?.place?.where==='shared')p[0]=Math.min(b.x1,p[0]+28);
-    stop();W.room=rm.id;W.x=p[0];W.y=p[1];W.say=null;
+    stop();W.room=rm.id;W.x=p[0];W.y=p[1];W.say=null;W.pose=null;
   }
 
   /* ---- the figure ---- */
   function markup(rm,G){
     if(W.room!==rm.id)enter(rm,G);
-    const out=[];try{out.push(HC.figure(withBaby(figure(st()),st())));}catch{/* look not ready */}
     const at=W.to||{x:W.x,y:W.y};
-    return `<g class="hw-me" data-y="${at.y}" aria-hidden="true" style="transform:translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)" data-to="${at.x.toFixed(1)},${at.y.toFixed(1)}"><g class="hw-fig${W.to?' walk':''}"><g transform="scale(${K})">${out.join('')}</g></g></g>${HC.markup(W.room,homeScope())}`;
+    return `<g class="hw-me" data-y="${at.y}" aria-hidden="true" style="transform:translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)" data-to="${at.x.toFixed(1)},${at.y.toFixed(1)}">${figHTML()}</g>${HC.markup(W.room,homeScope())}`;
   }
+  /** The character standing (or walking), or using a piece (W.pose). */
+  function figHTML(){
+    let F;try{F=withBaby(figure(st()),st());}catch{return '';}   // look not ready
+    if(W.pose){try{return `<g class="hw-fig posed">${posed(poseFigure(F,W.pose.act,{asleep:W.pose.asleep}),W.pose.act,{...W.pose,k:K})}</g>`;}catch{W.pose=null;}}
+    let fig='';try{fig=HC.figure(F);}catch{/* look not ready */}
+    return `<g class="hw-fig${W.to?' walk':''}"><g transform="scale(${K})">${fig}</g></g>`;
+  }
+  /** 🪑 Use piece `o` in a pose: on its seat, its mattress, in its tub, else standing in front of it. */
+  function poseAt(rm,o,act,{asleep=false,seat=''}={}){
+    if(!rm||!o||!act)return;
+    const G=A.geom(rm),list=useRoom(rm),a=A.anchor(o.it,o.q,G,hostFor(rm,o.q,list));
+    const wid=o.it.w*A.CW,dep=o.it.spot==='wall'?o.it.h*A.WR:o.it.h*A.FR,h=A.ART?.[o.it.id]?.h||40;
+    const sp=seatOf(seat||act,o.it,a,[W.x,W.y],{W:wid,D:dep,h,f:o.q.f});
+    W.pose={act,dx:sp.dx,dy:sp.dy,flip:!!sp.flip,asleep,uid:o.id};
+    const el=meEl();if(el)el.innerHTML=figHTML();
+    HC.act?.(act);
+  }
+  /** Up again (a tap elsewhere): standing where the character stood before using the piece. */
+  function standUp(){if(!W.pose)return;W.pose=null;const el=meEl();if(el)el.innerHTML=figHTML();}
   const meEl=()=>roomSvg()?.querySelector('.hw-me');
   /** Put the figure among the pieces by where its feet are going: behind what stands further forward (reno.js marks each
    * floor piece with its front edge, data-y; the spouse's pieces in a shared home too). */
@@ -144,7 +172,7 @@ export function setup(ctx){
   }
   /** After it redrew: the walk carries on to where it was going. */
   function resume(){
-    if(S.dlg?.open&&(roomSvg()||ctx.is3d?.())&&W.room===S.room){
+    if(S.dlg?.open&&roomSvg()&&W.room===S.room){
       HC.join(W.room,fractions([W.x,W.y]),homeScope(),homeHost());HC.resume();}
     else HC.leave();
     order();
@@ -162,15 +190,13 @@ export function setup(ctx){
     const f=W.then;W.then=null;if(f)f();
   }
   function walkTo(p,then=null,approaching=false){
-    clearTimeout(W.timer);
+    clearTimeout(W.timer);standUp();
     const el=meEl();
     if(el&&W.to){const m=new DOMMatrixReadOnly(getComputedStyle(el).transform);W.x=m.e;W.y=m.f;}
-    else if(ctx.is3d?.()&&W.to){const at=position3d();W.x=at[0];W.y=at[1];}
     W.to=null;W.then=then;
     const d=Math.hypot(p[0]-W.x,p[1]-W.y);
-    const ms=(!el&&!ctx.is3d?.())||calm()||d<3?0:Math.min(3000,Math.round(Math.max(250,d/SPEED*1000)));
+    const ms=!el||calm()||d<3?0:Math.min(3000,Math.round(Math.max(250,d/SPEED*1000)));
     HC.walk([fractions([W.x,W.y]),fractions(p)],ms,approaching);
-    if(ctx.is3d?.()&&ms){W.from=[W.x,W.y];W.start=performance.now();W.to={x:p[0],y:p[1]};W.until=W.start+ms;W.timer=setTimeout(arrive,ms+30);return;}
     if(!el||calm()||d<3){W.x=p[0];W.y=p[1];if(el){el.style.transitionDuration='0ms';el.style.transform=`translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)`;}arrive();return;}
     W.to={x:p[0],y:p[1]};W.until=performance.now()+ms;order();
     el.querySelector('.hw-fig')?.classList.add('walk');
@@ -202,22 +228,38 @@ export function setup(ctx){
     walkTo(clampTo(rm,G,(W.to?.x??W.x)+d[0],(W.to?.y??W.y)+d[1]));return true;
   }
   /** What a piece does when the character reaches it. */
+  /** 🌙 The room drawn at night (deco-art lightAt: the svg's lt-night class). */
+  const dark=()=>!!roomSvg()?.classList?.contains('lt-night');
+  const lineFor=it=>pick(LINES[it.id]||LINES[it.cat]||(it.tags||[]).map(t=>LINES[t]).find(Boolean)||FLOOR_LINE);
+  /** 📺 The seat nearest to `o` in the same room (to watch TV sitting down), or null. */
+  function seatNear(rm,o,list){
+    let best=null,bd=1e9;
+    for(const x of list){if(x.q.on||actFor(x.it)!=='sit')continue;const d=Math.hypot(x.q.x-o.q.x,x.q.y-o.q.y);if(d<bd){bd=d;best=x;}}
+    return best;
+  }
   async function use(rm,o){
-    const k=o.it.id,N=st().needs;
-    if(S.remote){say(pick(LINES[k]||LINES[o.it.cat]||FLOOR_LINE));return;}
+    const k=o.it.id,N=st().needs,act=actFor(o.it);
+    if(S.remote){say(lineFor(o.it));if(act&&act!=='watch')poseAt(rm,o,act,{asleep:act==='lie'&&dark()});return;}
     if(FRIDGES.has(k)){openFridge();return;}
-    if(BEDS.has(k)){
+    if(BEDS.has(k)||act==='lie'){
       if(N?.evening&&!N.evening.chosen&&S.env?.act){S.dlg.close();S.env.act('evening');return;}
-      say(N?.evening?.chosen?'Chúc ngủ ngon nhé.':pick(BED_LINE));return;
+      const night=!!N?.evening?.chosen;
+      poseAt(rm,o,'lie',{asleep:night||dark()});   // 🛏️ lie down: asleep once the evening is chosen, or at night
+      say(night?'Chúc ngủ ngon nhé.':pick(BED_LINE));return;
     }
     if(CLOSET.has(k)&&S.env?.act){
       W.closet={room:rm.id,uid:o.id,pick:'',page:0};W.fridge=false;sfx('pop');render();
       requestAnimationFrame(()=>S.dlg?.querySelector('.hw-closet')?.scrollIntoView?.({block:'nearest',behavior:calm()?'auto':'smooth'}));return;
     }
     if(WARDROBE.has(k)&&S.env?.act){S.dlg.close();S.env.act('jrWardrobe');return;}
-    const act=RELAX[k],a=act&&(ctx.V()?.relax||[]).find(x=>x.id===act);
-    if(a){if(a.ok){const r=await send('jr_relax_do',{act:a.id},{loud:true,flash:false});if(r){sfx('chime');say(r.message.replace(/^\S+\s/,''),true);}}else say(a.why);return;}
-    say(pick(LINES[k]||LINES[o.it.cat]||FLOOR_LINE));
+    const ra=RELAX[k],a=ra&&(ctx.V()?.relax||[]).find(x=>x.id===ra);
+    if(a){if(a.ok){const r=await send('jr_relax_do',{act:a.id},{loud:true,flash:false});if(r){sfx('chime');if(act)poseAt(rm,o,act);say(r.message.replace(/^\S+\s/,''),true);}}else say(a.why);return;}
+    if(act==='watch'){   // 📺 from the nearest seat when there is one
+      const list=useRoom(rm),seat=seatNear(rm,o,list);
+      if(seat){walkTo(standFor(rm,A.geom(rm),seat,list),()=>{poseAt(rm,seat,'watch',{seat:'sit'});say(lineFor(o.it));});return;}
+    }
+    if(act)poseAt(rm,o,act);
+    say(lineFor(o.it));
   }
   /** A line in a bubble over the character (it stays a few seconds; `long`: a whole sentence from the server). */
   function say(text,long=false){
@@ -231,9 +273,11 @@ export function setup(ctx){
     const rm=roomOf(S.room);if(!rm||!W.say)return;
     const G=A.geom(rm),x=W.to?.x??W.x,y=W.to?.y??W.y;
     el.textContent=W.say.text;el.hidden=false;
-    const wrap=el.parentElement.getBoundingClientRect().width||G.W,half=el.offsetWidth/2+6;
-    el.style.left=`${Math.max(half,Math.min(wrap-half,x/G.W*wrap)).toFixed(1)}px`;const high=el.parentElement.getBoundingClientRect().height||G.H;   // room for the bubble above the head, else it comes lower
-    el.style.top=`${Math.max(el.offsetHeight+2,(y-150*K-6)/G.H*high).toFixed(1)}px`;
+    const box=el.parentElement.getBoundingClientRect(),wrap=box.width||G.W,high=box.height||G.H,half=el.offsetWidth/2+6;
+    const m=roomSvg()?.getScreenCTM?.(),head=m&&globalThis.DOMPoint?new DOMPoint(x,y-150*K-6).matrixTransform(m):null;   // 🔍 zoomed in: where the head is on screen
+    const px=head?head.x-box.left:x/G.W*wrap,py=head?head.y-box.top:(y-150*K-6)/G.H*high;
+    el.style.left=`${Math.max(half,Math.min(wrap-half,px)).toFixed(1)}px`;   // room for the bubble above the head, else it comes lower
+    el.style.top=`${Math.max(el.offsetHeight+2,Math.min(high-4,py)).toFixed(1)}px`;
     clearTimeout(W.sayT);W.sayT=setTimeout(()=>{if(W.say&&performance.now()-W.say.at>=SAY_MS-50)hush();},W.say.long?SAY_MS*1.6:SAY_MS);
   }
   /** The bubble's slot, placed by paint() after a render. */
@@ -322,20 +366,11 @@ export function setup(ctx){
     }
     return false;
   }
-  function reset(){HC.leave();clearTimeout(crowdRender);crowdRender=0;stop();W.room='';W.say=null;W.fridge=false;W.closet=null;W.note=null;W.walked=false;}
+  function reset(){HC.leave();clearTimeout(crowdRender);crowdRender=0;stop();W.room='';W.say=null;W.pose=null;W.fridge=false;W.closet=null;W.note=null;W.walked=false;}
 
   /* ---- test hooks (scratch browser checks) ---- */
-  globalThis.__homeWalk={state:()=>({room:W.room,me:[W.x,W.y],to:W.to&&[W.to.x,W.to.y],fridge:W.fridge,say:W.say?.text||''}),
+  globalThis.__homeWalk={state:()=>({room:W.room,me:[W.x,W.y],to:W.to&&[W.to.x,W.to.y],fridge:W.fridge,say:W.say?.text||'',pose:W.pose?.act||''}),
     screen:uid=>{const svg=roomSvg(),g=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-hit`);if(!g)return null;const r=g.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}};
 
-  function position3d(){if(!W.to||!W.from||!ctx.is3d?.())return [W.x,W.y];const t=Math.min(1,(performance.now()-W.start)/Math.max(1,W.until-W.start));return [W.from[0]+(W.to.x-W.from[0])*t,W.from[1]+(W.to.y-W.from[1])*t];}
-  let myArt='',myArtKey='';
-  function presentation(){
-    const state=st(),key=JSON.stringify([lookOf(state),state.journey?.gender,BBkey(state)]);
-    if(key!==myArtKey){myArtKey=key;try{myArt=HC.figure(withBaby(figure(state),state));}catch{myArt='';}}
-    return [{id:'self',name:'Bạn',at:fractions(position3d()),art:myArt,height:1.65},...HC.presentation()];
-  }
-  const BBkey=state=>carried(state);
-  function tap3d(p,uid){const rm=roomOf(S.room);if(!rm)return;const G=A.geom(rm),b=box(rm,G);tap(rm,{x:b.x0+p[0]*(b.x1-b.x0),y:b.y0+p[1]*(b.y1-b.y0)-18},uid);}
-  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,say,presentation,tap3d,ensure:rm=>{if(W.room!==rm.id)enter(rm,A.geom(rm));},socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
+  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,say,ensure:rm=>{if(W.room!==rm.id)enter(rm,A.geom(rm));},socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
 }
