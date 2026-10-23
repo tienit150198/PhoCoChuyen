@@ -1,11 +1,13 @@
 /** 🏝️ Đảo riêng on the old interface: the island (public/js/island-layout.js) as a flat, warm 2D walk, drawn like the
  * other v4 walks (the figures are look.js paintPlayer). Same renderer contract as the new interface's Phaser scene
  * (client/isometric/private-island.ts): frame(model), toMap(clientX, clientY), toScreen(x, y, lift), personHeight,
- * resize(), destroy(), and 🏗️ setBuilds(built) (the plots and their buildings: v4/island-build-art.js). The scene
- * controller (v4/island-scene.js) owns walking, the live room and the overlays. */
+ * resize(), destroy(), and 🏗️ setBuilds(built) (the buildings: v4/island-build-art.js), 🏝️ setLayout(L, paths) (the
+ * island at its size, its decorations: public/js/island-decor-art.js, its footpaths). The scene controller
+ * (v4/island-scene.js) owns walking, the live room and the overlays. */
 import {figureOf,paintPlayer,CANVAS} from './look.js';
-import {inPoly} from '../island-layout.js';
+import {inPoly,turn} from '../island-layout.js';
 import {createBuildArt} from './island-build-art.js';
+import {paintDecorItem,decorFx} from '../island-decor-art.js';
 
 const FLAT=.64;   // the map's y is squashed: a three-quarter view from above
 const FIG_H=160,FIG_W=110;
@@ -17,23 +19,41 @@ function inset(shore,by){
 function seeded(seed){let s=seed>>>0||1;return ()=>((s=Math.imul(s^(s>>>15),2246822507)^Math.imul(s^(s>>>13),3266489909))>>>0)/4294967296;}
 function darker(hex,k){const n=parseInt(String(hex).slice(1),16);if(!Number.isFinite(n))return hex;const c=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${c((n>>16)&255)},${c((n>>8)&255)},${c(n&255)})`;}
 
-/** The camera for a stage of w×h CSS pixels: the map's scale S (px per map unit) and its offset; a phone follows `focus`. */
-export function walkCamera(w,h,focus=[.5,.5]){
+/** The camera for a stage of w×h CSS pixels: the map's scale S (px per map unit) and its offset; a phone follows `focus`.
+ * `bounds`: the map's extent (🏝️ a bigger island reaches past 0..1). */
+export function walkCamera(w,h,focus=[.5,.5],bounds=[0,1]){
   const S=Math.max(560,Math.min(1100,Math.min(w/1.02,h/(FLAT*1.04))));
-  const mapW=S,mapH=S*FLAT,clamp=(v,lo,hi)=>lo>hi?(lo+hi)/2:Math.max(lo,Math.min(hi,v));
-  const ox=clamp(w/2-focus[0]*S,w-mapW-S*.06,S*.06),oy=clamp(h/2-focus[1]*S*FLAT,h-mapH-S*.06,S*.06);
+  const [lo,hi]=bounds,clamp=(v,a,b)=>a>b?(a+b)/2:Math.max(a,Math.min(b,v));
+  const ox=clamp(w/2-focus[0]*S,w-hi*S-S*.06,S*.06-lo*S),oy=clamp(h/2-focus[1]*S*FLAT,h-hi*S*FLAT-S*.06,S*.06-lo*S*FLAT);
   return {S,ox,oy,fs:S/1400};
 }
 
-export function createWalkRenderer(canvas,L){
-  const ctx=canvas.getContext('2d'),figures=new Map(),rand=seeded(L.shore.length*977+Math.round(L.villa.x*1000));
-  const grass=inset(L.shore,L.sandWidth),swells=[],dots=[];
-  for(let i=0;i<60;i++){const x=rand()*1.2-.1,y=rand()*1.2-.1;if(!inPoly(inset(L.shore,-.05),x,y))swells.push([x,y,8+rand()*14,rand()*6]);}
-  for(let i=0;i<120;i++){const x=rand(),y=rand();if(inPoly(grass,x,y))dots.push([x,y,4+rand()*6]);}
-  const palms=L.palms.map(([x,y])=>[x,y,(rand()-.5)*.5,70+rand()*24,rand()*6]);
+export function createWalkRenderer(canvas,L0){
+  const ctx=canvas.getContext('2d'),figures=new Map();
+  let L=L0,grass=[],swells=[],dots=[],palms=[],paths=[],bounds=[0,1],gulls=[];
+  /** What the map's look needs, once per layout (🏝️ its size, its bounds). */
+  function prepare(){
+    const rand=seeded(L.shore.length*977+Math.round(L.villa.x*1000));bounds=L.bounds||[0,1];const [lo,hi]=bounds,sp=hi-lo;
+    grass=inset(L.shore,L.sandWidth);swells=[];dots=[];
+    for(let i=0;i<70;i++){const x=lo-.1+rand()*(sp+.2),y=lo-.1+rand()*(sp+.2);if(!inPoly(inset(L.shore,-.05),x,y))swells.push([x,y,8+rand()*14,rand()*6]);}
+    for(let i=0;i<200;i++){const x=lo+rand()*sp,y=lo+rand()*sp;if(inPoly(grass,x,y))dots.push([x,y,4+rand()*6,rand()<.15]);}
+    palms=L.palms.map(([x,y])=>[x,y,(rand()-.5)*.5,70+rand()*24,rand()*6]);
+    gulls=[0,1,2].map(()=>[lo+rand()*sp,rand()*sp*.6,20000+rand()*12000,rand()]);
+  }
+  prepare();
   let w=1,h=1,dpr=1,cam=walkCamera(1,1),focus=[L.villa.x,L.villa.y+L.villa.h],destroyed=false,built=[];
   const P=(x,y)=>[cam.ox+x*cam.S,cam.oy+y*cam.S*FLAT];
   const art=createBuildArt(ctx,()=>({P,S:cam.S,FLAT}));
+  /** 🏝️ house-art.js's adapter in this three-quarter view, around a decoration's middle; `sway` bends it in the wind. */
+  function decorView(it,sway=0){
+    const k=cam.S/900;
+    return {zs:k,depth:(x,y)=>y,light:(nx,ny,nz)=>Math.max(.66,Math.min(1.14,.86+.14*ny+.24*nz+.1*nx)),
+      P:(x,y,z)=>{const [a,b]=P(it.x+x,it.y+y);return [a+sway*z*k,b-z*k];},
+      fill(pts,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();ctx.globalAlpha=1;},
+      circle(x,y,r,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,Math.max(.5,r),0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;},
+      line(a,b,color,lw){ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}};
+  }
+  const hourNow=()=>(new Date().getUTCHours()+7)%24;
   function poly(list,fill,dy=0){ctx.beginPath();list.forEach(([x,y],i)=>{const [a,b]=P(x,y);i?ctx.lineTo(a,b+dy):ctx.moveTo(a,b+dy);});ctx.closePath();ctx.fillStyle=fill;ctx.fill();}
   function rect(r,fill,dy=0){const [a,b]=P(r.x-r.w/2,r.y-r.h/2),[c,d]=P(r.x+r.w/2,r.y+r.h/2);ctx.fillStyle=fill;ctx.fillRect(a,b+dy,c-a,d-b);return [a,b,c,d];}
   function planks(r){
@@ -49,13 +69,19 @@ export function createWalkRenderer(canvas,L){
       for(let i=0;i<8;i++){ctx.fillStyle=cols[i%4]+'bb';ctx.beginPath();ctx.ellipse(a+Math.cos(i*2.4)*r*.6,b+Math.sin(i*2.4)*r*.3,r*.28,r*.16,0,0,Math.PI*2);ctx.fill();}}
     poly(L.shore,darker(L.sand,.72),10);poly(inset(L.shore,-.01),'rgba(255,255,255,.55)');poly(L.shore,L.sand);
     poly(grass,L.grassDark,3);poly(grass,L.grass);
-    ctx.fillStyle=L.grassDark+'99';for(const [x,y,r] of dots){const [a,b]=P(x,y);ctx.beginPath();ctx.ellipse(a,b,r*cam.S/900,r*cam.S/2200,0,0,Math.PI*2);ctx.fill();}
+    for(const [x,y,r,flower] of dots){const [a,b]=P(x,y);ctx.fillStyle=L.grassDark+'99';ctx.beginPath();ctx.ellipse(a,b,r*cam.S/900,r*cam.S/2200,0,0,Math.PI*2);ctx.fill();
+      if(flower){ctx.fillStyle=['#ffffff','#ffd25a','#ff8aa0'][Math.abs(Math.floor(x*97))%3];ctx.beginPath();ctx.arc(a+3,b-1,1.6,0,Math.PI*2);ctx.fill();}}
     for(const r of [L.dock,...(L.walk||[])])planks(r);
     for(const d of L.deco){
       if(d.t==='strip'){const r={x:d.x,y:d.y,w:d.w||.5,h:d.h||.06},[a,b,c,e]=rect(r,'#5d5a5f');ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.setLineDash([14,12]);ctx.beginPath();ctx.moveTo(a+8,(b+e)/2);ctx.lineTo(c-8,(b+e)/2);ctx.stroke();ctx.setLineDash([]);}
       if(d.t==='pool'){const r={x:d.x,y:d.y,w:d.w||.14,h:d.h||.06};rect({...r,w:r.w+.015,h:r.h+.02},'#f4efe6');rect(r,'#47b7d8');rect({...r,y:r.y-r.h*.3,h:r.h*.2},'rgba(255,255,255,.35)');}
     }
-    art.ground(L.plots,built);   // 🏗️ the plots: empty, lawns, pools, piers
+    if(paths.length){for(const [lw,color] of [[9,darker(L.sand,.92)],[5,'#f4e6c4']]){ctx.strokeStyle=color;ctx.lineWidth=lw*cam.S/900;ctx.lineCap='round';ctx.lineJoin='round';
+      for(const line of paths){ctx.beginPath();line.forEach(([x,y],i)=>{const [a,b]=P(x,y);i?ctx.lineTo(a,b):ctx.moveTo(a,b);});ctx.stroke();}}}
+    for(const it of L.decor||[]){paintDecorItem(it.kind,it.r,decorView(it),{only:'ground'});   // 🏝️ pools, lawns, paths: flat
+      const wfx=decorFx(it.kind).water;if(wfx){const [cx,cy]=turn(wfx[0],wfx[1],it.r),[hx,hy]=turn(wfx[2],wfx[3],it.r),[a,b]=P(it.x+cx,it.y+cy),wd=Math.abs(hx)*cam.S,dp=Math.abs(hy)*cam.S*FLAT;
+        ctx.strokeStyle=`rgba(255,255,255,${.35+.3*Math.sin(t/700+it.id)})`;ctx.lineWidth=1.5;for(let i=-1;i<=1;i++){const yy=b+i*dp*.45-2,dx=Math.sin(t/900+i+it.id)*wd*.15;ctx.beginPath();ctx.moveTo(a-wd*.5+dx,yy);ctx.lineTo(a+wd*.1+dx,yy);ctx.stroke();}}}
+    art.ground(built);   // 🏗️ lawns, pools, piers under the buildings
     if(L.pad.kind==='heli'){const [a,b]=P(L.pad.x,L.pad.y),r=cam.S*.045;ctx.fillStyle='#6b6f74';ctx.beginPath();ctx.ellipse(a,b,r,r*FLAT,0,0,Math.PI*2);ctx.fill();
       ctx.strokeStyle='#ffd75a';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(a,b,r*.8,r*.8*FLAT,0,0,Math.PI*2);ctx.stroke();
       ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(r*.8)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('H',a,b+1);}
@@ -90,10 +116,14 @@ export function createWalkRenderer(canvas,L){
         const an=t/1100;ctx.fillStyle='rgba(255,243,176,.3)';ctx.beginPath();ctx.moveTo(a,b-135*k);ctx.lineTo(a+Math.cos(an)*130*k,b-135*k+Math.sin(an)*30*k-18*k);ctx.lineTo(a+Math.cos(an)*130*k,b-135*k+Math.sin(an)*30*k+18*k);ctx.fill();}]);
       else if(d.t==='steam')out.push([d.y,()=>{const [a,b]=P(d.x,d.y);for(let i=0;i<3;i++){const p=((t/2600)+i/3)%1;ctx.fillStyle=`rgba(255,255,255,${.5*(1-p)})`;ctx.beginPath();ctx.ellipse(a+(i-1)*12*k,b-10*k-p*60*k,(12+p*14)*k,(8+p*10)*k,0,0,Math.PI*2);ctx.fill();}}]);
     }
-    out.push(...art.standing(L.plots,built,t));   // 🏗️ houses, castles, tents, scaffolding
-    for(const s of L.spots)out.push([s.y-.001,()=>{const [a,b]=P(s.x,s.y),bob=Math.sin(t/700+s.x*9)*4;
+    out.push(...art.standing(built,t));   // 🏗️ houses, castles, tents, scaffolding
+    for(const it of L.decor||[]){const fx=decorFx(it.kind),ph=it.id*1.7;   // 🏝️ what stands: trees in the wind, flames, lamps after dark
+      out.push([it.y+it.h*.012,()=>{paintDecorItem(it.kind,it.r,decorView(it,fx.sway?Math.sin(t/1400+ph)*.04:0),{only:'parts'});
+        if(fx.fire){const [fx0,fy0]=turn(fx.fire[0],fx.fire[1],it.r),[a,b]=P(it.x+fx0,it.y+fy0),k=cam.S/900,fl=1+Math.sin(t/110+ph)*.25;ctx.fillStyle='#ff9a3a';ctx.beginPath();ctx.moveTo(a-4*k,b-fx.fire[2]*k);ctx.lineTo(a+4*k,b-fx.fire[2]*k);ctx.lineTo(a,b-(fx.fire[2]+12*fl)*k);ctx.fill();}
+        if(fx.glow&&(hourNow()>=18||hourNow()<6)){const [gx,gy]=turn(fx.glow[0],fx.glow[1],it.r),[a,b]=P(it.x+gx,it.y+gy),k=cam.S/900;ctx.fillStyle='rgba(255,231,160,.35)';ctx.beginPath();ctx.arc(a,b-fx.glow[2]*k,16*k,0,Math.PI*2);ctx.fill();}}]);}
+    for(const s of L.spots){if(s.decor)continue;out.push([s.y-.001,()=>{const [a,b]=P(s.x,s.y),bob=Math.sin(t/700+s.x*9)*4;
       ctx.fillStyle='rgba(255,255,255,.3)';ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(a,b,20*k,9*k,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-      ctx.fillStyle='#000';ctx.font=`${Math.round(24*k+6)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(s.emoji,a,b-12*k+bob);}]);
+      ctx.fillStyle='#000';ctx.font=`${Math.round(24*k+6)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(s.emoji,a,b-12*k+bob);}]);}
     return out;
   }
   function figure(p){
@@ -135,7 +165,15 @@ export function createWalkRenderer(canvas,L){
   }
   function resize(){
     const r=canvas.getBoundingClientRect();dpr=Math.min(2,globalThis.devicePixelRatio||1);w=Math.max(1,r.width);h=Math.max(1,r.height);
-    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);cam=walkCamera(w,h,focus);
+    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);cam=walkCamera(w,h,focus,bounds);
+  }
+  /** Gulls over the sea and ☀️ the light of the hour in Vietnam: a warm dawn, a golden evening, a blue night. */
+  function sky(t){
+    const k=cam.S/900;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=2;
+    for(const [x0,y0,ms,ph] of gulls){const f=((t/ms)+ph)%1,[lo,hi]=bounds,[a,b]=P(lo-.2+f*(hi-lo+.4),y0+Math.sin(f*9)*.02),fl=Math.sin(t/200+ph*9)*3*k;void x0;
+      ctx.beginPath();ctx.moveTo(a-7*k,b-200*k);ctx.lineTo(a-2*k,b-200*k-4*k-fl);ctx.lineTo(a,b-200*k-1*k);ctx.lineTo(a+2*k,b-200*k-4*k-fl);ctx.lineTo(a+7*k,b-200*k);ctx.stroke();}
+    const hr=hourNow(),tint=hr>=19||hr<5?'rgba(29,43,94,.3)':hr>=17?'rgba(255,138,61,.13)':hr<7?'rgba(255,197,138,.1)':'';
+    if(tint){ctx.fillStyle=tint;ctx.fillRect(0,0,w,h);}
   }
   resize();
   const ro=typeof ResizeObserver==='function'?new ResizeObserver(()=>resize()):null;ro?.observe(canvas.parentElement||canvas);
@@ -144,18 +182,21 @@ export function createWalkRenderer(canvas,L){
     get personHeight(){return 150*cam.fs;},
     frame(model,t=performance.now()){
       if(destroyed)return;
-      if(model.focus){focus=model.focus;cam=walkCamera(w,h,focus);}
+      if(model.focus){focus=model.focus;cam=walkCamera(w,h,focus,bounds);}
       ctx.setTransform(dpr,0,0,dpr,0,0);ground(t);
       const list=standing(t);
       for(const p of model.people)list.push([p.y,()=>person(p,t)]);
       if(model.vehicle)list.push([model.vehicle.y+.001,()=>vehicle(model.vehicle,t)]);
       list.sort((a,b)=>a[0]-b[0]);for(const [,draw] of list)draw();
+      sky(t);
     },
-    toMap(clientX,clientY){const r=canvas.getBoundingClientRect(),x=(clientX-r.left-cam.ox)/cam.S,y=(clientY-r.top-cam.oy)/(cam.S*FLAT);return x>=-.1&&x<=1.1&&y>=-.1&&y<=1.1?[x,y]:null;},
+    toMap(clientX,clientY){const r=canvas.getBoundingClientRect(),x=(clientX-r.left-cam.ox)/cam.S,y=(clientY-r.top-cam.oy)/(cam.S*FLAT),[lo,hi]=bounds;return x>=lo-.1&&x<=hi+.1&&y>=lo-.1&&y<=hi+.1?[x,y]:null;},
     toScreen(x,y,lift=0){const [a,b]=P(x,y);return [a,b-lift*cam.S/900];},
     resize,
-    /** 🏗️ What stands on the plots now (public/js/island-layout.js withBuilds().built). */
+    /** 🏗️ What stands on the island now (public/js/island-layout.js withBuilds().built). */
     setBuilds(list){built=Array.isArray(list)?list:[];},
+    /** 🏝️ The island at its size with its decorations (withDesign) and its footpaths. */
+    setLayout(next,lines=[]){const grew=next.shore!==L.shore||next.bounds!==L.bounds;L=next;paths=Array.isArray(lines)?lines:[];if(grew){prepare();cam=walkCamera(w,h,focus,bounds);}},
     destroy(){destroyed=true;ro?.disconnect();figures.clear();},
   };
 }

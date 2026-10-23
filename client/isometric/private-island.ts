@@ -2,12 +2,16 @@ import Phaser from 'phaser';
 // @ts-ignore The illustrated atlas adapter preserves the game's actual wardrobe.
 import {getCharacterStamp} from '/js/isometric/character-art.js';
 import {paintPlot,type BuiltItem} from './island-builds';
+import {paintDecor,type DecorItem} from './island-decor';
 
 /** 🏝️ Đảo riêng on the new interface: one private island (public/js/island-layout.js) drawn isometrically.
  * The scene controller (public/js/v4/island-scene.js) owns walking, the live room and the overlays (names, bubbles);
  * this only paints: the sea, the coast, the villa, palms, the island's own art, the people and the boat or plane that
  * brought them. Map positions are fractions of the island's square (x east, y south), as on the old interface.
- * 🏗️ setBuilds(): the building plots and what stands on them (island-builds.ts), painted again when they change. */
+ * 🏗️ setBuilds(): what stands on the island (island-builds.ts), painted again when it changes. 🏝️ setLayout(): the island
+ * at its size with its decorations (public/js/island-layout.js withDesign; island-decor.ts), painted again when it
+ * changes; the sea moves, the waves break on the beach, gulls fly over, crabs walk the sand, the light follows the hour
+ * of the day in Vietnam (lamps lit after dark). */
 type Pt=[number,number];
 type Facing='se'|'sw'|'ne'|'nw';
 interface Rect {x:number;y:number;w:number;h:number}
@@ -16,6 +20,7 @@ export interface IslandLayout {
   villa:Rect&{floors:number;roof:string;wall:string};dock:Rect;pad:{x:number;y:number;kind:string};
   spots:Array<{id:string;emoji:string;x:number;y:number;build?:unknown}>;deco:Array<{t:string;x:number;y:number;r?:number;w?:number;h?:number}>;walk?:Rect[];
   plots?:Array<[number,number,number]>;
+  bounds?:[number,number];decor?:DecorItem[];tier?:number;paths?:boolean;
 }
 export interface IslandPerson {id:string;x:number;y:number;look:any;gender:string;dir:Facing;walking:boolean;pose?:string;hidden?:boolean}
 export interface IslandFrame {people:IslandPerson[];vehicle?:{kind:string;big?:boolean;x:number;y:number;lift:number;dir:number}|null;focus?:Pt|null}
@@ -50,9 +55,16 @@ export class PrivateIslandRenderer {
   private plotArt:Phaser.GameObjects.GameObject[]=[];
   private built:BuiltItem[]|null=null;
   private builtKey='';
+  private layoutKey='';
+  private lights:Phaser.GameObjects.GameObject[]=[];
+  private shadeRect:Phaser.GameObjects.Graphics|null=null;
+  private hourAt=-1;
+  private lightAt=0;
+  /** Footpaths to draw (public/js/island-layout.js footpaths()), from the scene controller. */
+  private paths:Pt[][]=[];
 
   constructor(canvas:HTMLCanvasElement,layout:IslandLayout){
-    this.canvas=canvas;this.layout=layout;
+    this.canvas=canvas;this.layout=layout;this.layoutKey=PrivateIslandRenderer.keyOf(layout,[]);
     const rect=canvas.getBoundingClientRect(),owner=this;
     let done:()=>void=()=>{};this.ready=new Promise(resolve=>{done=resolve;});
     this.engine=new Phaser.Game({type:Phaser.CANVAS,canvas,width:Math.round(rect.width)||375,height:Math.round(rect.height)||560,backgroundColor:layout.deep,
@@ -62,17 +74,31 @@ export class PrivateIslandRenderer {
     if(typeof ResizeObserver==='function'){this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas.parentElement||canvas);}
   }
 
-  /** 🏗️ What stands on the plots now (public/js/island-layout.js withBuilds().built): painted again only when it changed. */
+  /** 🏗️ What stands on the island now (public/js/island-layout.js withBuilds().built): painted again only when it changed. */
   setBuilds(built:BuiltItem[]){
-    const key=JSON.stringify(built.map(b=>[b.plot,b.kind,b.look||0,b.level,b.work,b.next]));
+    const key=JSON.stringify(built.map(b=>[b.plot,b.kind,b.look||0,b.level,b.work,b.next,b.x,b.y,b.r||0]));
     if(key===this.builtKey&&this.built)return;
     this.builtKey=key;this.built=built;if(this.scene)this.paintPlots();
   }
+  /** 🏝️ The island at its size with its decorations (withDesign) and its footpaths: everything but the people and the
+   * vehicle painted again when it changed. */
+  private static keyOf(layout:IslandLayout,paths:Pt[][]){return JSON.stringify([layout.tier||0,layout.shore[0],(layout.decor||[]).map(d=>[d.id,d.kind,d.x,d.y,d.r]),paths.map(p=>p.length)]);}
+  setLayout(layout:IslandLayout,paths:Pt[][]=[]){
+    const key=PrivateIslandRenderer.keyOf(layout,paths);
+    this.layout=layout;this.paths=paths;
+    if(key===this.layoutKey)return;this.layoutKey=key;
+    const s=this.scene;if(!s||this.destroyed)return;
+    const keep=new Set<Phaser.GameObjects.GameObject>();for(const a of this.actors.values()){keep.add(a.image);keep.add(a.ripple);}
+    if(this.vehicle)keep.add(this.vehicle);
+    for(const o of [...s.children.list])if(!keep.has(o)){s.tweens.killTweensOf?.(o);o.destroy();}
+    this.plotArt=[];this.lights=[];this.shadeRect=null;this.hourAt=-1;
+    this.paint(false);
+  }
   private paintPlots(){
     const s=this.scene;if(!s||this.destroyed)return;
-    for(const o of this.plotArt)o.destroy();this.plotArt=[];
-    const plots=this.layout.plots||[],rand=seeded(plots.length*131+7);
-    plots.forEach(([x,y,coast],i)=>{const it=(this.built||[]).find(b=>b.plot===i)||null;this.plotArt.push(...paintPlot(s,it,{x,y,coast:Boolean(coast)},rand));});
+    for(const o of this.plotArt){s.tweens.killTweensOf?.(o);o.destroy();}this.plotArt=[];
+    const rand=seeded((this.built||[]).length*131+7);
+    for(const it of this.built||[])this.plotArt.push(...paintPlot(s,it,{x:it.x,y:it.y,coast:Boolean(it.coast)},rand));
   }
 
   /** The newest people and vehicle; Phaser draws them on its next tick. */
@@ -82,8 +108,8 @@ export class PrivateIslandRenderer {
   toMap(clientX:number,clientY:number):Pt|null{
     const cam=this.scene?.cameras.main;if(!cam)return null;
     const r=this.canvas.getBoundingClientRect(),w=cam.getWorldPoint(clientX-r.left,clientY-r.top);
-    const a=w.x/(N*HW),b=w.y/(N*HH),x=(a+b)/2,y=(b-a)/2;
-    return x>=-.1&&x<=1.1&&y>=-.1&&y<=1.1?[x,y]:null;
+    const a=w.x/(N*HW),b=w.y/(N*HH),x=(a+b)/2,y=(b-a)/2,[lo,hi]=this.layout.bounds||[0,1];
+    return x>=lo-.1&&x<=hi+.1&&y>=lo-.1&&y<=hi+.1?[x,y]:null;
   }
   /** A map point → where it shows on the canvas (CSS pixels from its top left), `lift` pixels above the ground. */
   toScreen(x:number,y:number,lift=0):Pt|null{
@@ -112,36 +138,49 @@ export class PrivateIslandRenderer {
   }
 
   /* ---- painting --------------------------------------------------------------------------------------------- */
-  private paint(){
-    const s=this.scene!,L=this.layout,rand=seeded(L.shore.length*977+Math.round(L.villa.x*1000));
+  private paint(centre=true){
+    const s=this.scene!,L=this.layout,rand=seeded(L.shore.length*977+Math.round(L.villa.x*1000)),[lo,hi]=L.bounds||[0,1];
     const ground=s.add.graphics().setDepth(-1e6);
-    // The sea: a lighter shelf around the island, sparkles and slow swell lines.
-    const pad=.45,sea=pts([[-pad,-pad],[1+pad,-pad],[1+pad,1+pad],[-pad,1+pad]]);
+    // The sea: a lighter shelf around the island, sparkles and slow swell lines drifting.
+    const pad=.45,sea=pts([[lo-pad,lo-pad],[hi+pad,lo-pad],[hi+pad,hi+pad],[lo-pad,hi+pad]]);
     ground.fillStyle(hex(L.deep),1).fillPoints(sea,true);
+    ground.fillStyle(shade(hex(L.sea),.92),1).fillPoints(pts(inset(L.shore,-.16)),true);
     ground.fillStyle(hex(L.sea),1).fillPoints(pts(inset(L.shore,-.09)),true);
     const swell=s.add.graphics().setDepth(-1e6+1);swell.lineStyle(2,0xffffff,.35);
-    for(let i=0;i<46;i++){const x=rand()*1.6-.3,y=rand()*1.6-.3;if(this.onLand(x,y,.05))continue;const [a,b]=iso(x,y);swell.beginPath();swell.arc(a,b,10+rand()*14,Math.PI*1.15,Math.PI*1.85);swell.strokePath();}
+    for(let i=0;i<70;i++){const x=lo-.3+rand()*(hi-lo+.6),y=lo-.3+rand()*(hi-lo+.6);if(this.onLand(x,y,.05))continue;const [a,b]=iso(x,y);swell.beginPath();swell.arc(a,b,10+rand()*14,Math.PI*1.15,Math.PI*1.85);swell.strokePath();}
     s.tweens.add({targets:swell,alpha:{from:.45,to:1},duration:2200,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+    s.tweens.add({targets:swell,x:{from:-6,to:6},duration:5200,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
     for(const d of L.deco)if(d.t==='reef'){const [a,b]=iso(d.x,d.y),r=(d.r||.05)*N*HW;
       for(let i=0;i<9;i++){ground.fillStyle([0xff8a7a,0xffc56b,0xb48de0,0x7fd6c2][i%4],.75).fillEllipse(a+(rand()-.5)*r*1.6,b+(rand()-.5)*r*.8,r*.35+rand()*r*.3,r*.18+rand()*r*.15);}}
     // The coast: a sandy cliff edge, the beach, then grass.
     ground.fillStyle(shade(hex(L.sand),.72),1).fillPoints(pts(L.shore,0,-12),true);
-    ground.fillStyle(0xffffff,.55).fillPoints(pts(inset(L.shore,-.012)),true);
-    ground.fillStyle(hex(L.sand),1).fillPoints(pts(L.shore),true);
+    // 🌊 the surf: a white band breaking on the beach, coming and going
+    const surf=s.add.graphics().setDepth(-1e6+2);surf.fillStyle(0xffffff,.6).fillPoints(pts(inset(L.shore,-.014)),true);
+    s.tweens.add({targets:surf,alpha:{from:.35,to:.95},duration:2600,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+    const land=s.add.graphics().setDepth(-1e6+3);
+    land.fillStyle(shade(hex(L.sand),.9),1).fillPoints(pts(L.shore),true);
+    land.fillStyle(hex(L.sand),1).fillPoints(pts(inset(L.shore,.006)),true);
     const grass=inset(L.shore,L.sandWidth);
-    ground.fillStyle(hex(L.grassDark),1).fillPoints(pts(grass,0,-3),true);
-    ground.fillStyle(hex(L.grass),1).fillPoints(pts(grass),true);
-    for(let i=0;i<140;i++){const x=rand(),y=rand();if(!this.inside(grass,x,y))continue;const [a,b]=iso(x,y);ground.fillStyle(hex(L.grassDark),.55).fillEllipse(a,b,6+rand()*8,3+rand()*3);}
+    land.fillStyle(hex(L.grassDark),1).fillPoints(pts(grass,0,-3),true);
+    land.fillStyle(hex(L.grass),1).fillPoints(pts(grass),true);
+    land.fillStyle(shade(hex(L.grass),1.06),.8).fillPoints(pts(inset(L.shore,L.sandWidth+.05)),true);
+    for(let i=0;i<260;i++){const x=lo+rand()*(hi-lo),y=lo+rand()*(hi-lo);if(!this.inside(grass,x,y))continue;const [a,b]=iso(x,y);land.fillStyle(hex(L.grassDark),.5).fillEllipse(a,b,6+rand()*8,3+rand()*3);
+      if(rand()<.18){land.fillStyle([0xffffff,0xffd25a,0xff8aa0][Math.floor(rand()*3)],.9).fillCircle(a+4,b-1,1.6);}}
+    for(let i=0;i<60;i++){const x=lo+rand()*(hi-lo),y=lo+rand()*(hi-lo);if(!this.inside(L.shore,x,y)||this.inside(grass,x,y))continue;const [a,b]=iso(x,y);land.fillStyle(shade(hex(L.sand),.85),.6).fillEllipse(a,b,3,1.6);}
+    // 🛤️ the footpaths (the owner's choice): sandy ways from the pier to the doors
+    for(const [wd,color] of [[9,shade(hex(L.sand),.9)],[5,0xf4e6c4]] as Array<[number,number]>){land.lineStyle(wd,color,.9);
+      for(const line of this.paths){const p=pts(line);if(p.length<2)continue;land.beginPath();land.moveTo(p[0].x,p[0].y);for(const q of p.slice(1))land.lineTo(q.x,q.y);land.strokePath();}}
     // Flat things on the ground: piers, the runway, the pool, the helipad.
-    for(const r of [L.dock,...(L.walk||[])])this.planks(ground,r);
+    const top=s.add.graphics().setDepth(-1e6+3.5);
+    for(const r of [L.dock,...(L.walk||[])])this.planks(top,r);
     for(const d of L.deco){
-      if(d.t==='strip'){const r={x:d.x,y:d.y,w:d.w||.5,h:d.h||.06};ground.fillStyle(0x5d5a5f,1).fillPoints(this.rect(r),true);
-        ground.lineStyle(3,0xffffff,.9);for(let k=-.45;k<.45;k+=.08){const [a,b]=iso(r.x+r.w*k,r.y),[c,e]=iso(r.x+r.w*(k+.04),r.y);ground.lineBetween(a,b,c,e);}}
-      if(d.t==='pool'){const r={x:d.x,y:d.y,w:d.w||.14,h:d.h||.06};ground.fillStyle(0xf4efe6,1).fillPoints(this.rect({...r,w:r.w+.015,h:r.h+.015}),true);ground.fillStyle(0x47b7d8,1).fillPoints(this.rect(r),true);
-        ground.fillStyle(0xffffff,.35).fillPoints(this.rect({...r,y:r.y-r.h*.2,h:r.h*.2}),true);}
+      if(d.t==='strip'){const r={x:d.x,y:d.y,w:d.w||.5,h:d.h||.06};top.fillStyle(0x5d5a5f,1).fillPoints(this.rect(r),true);
+        top.lineStyle(3,0xffffff,.9);for(let k=-.45;k<.45;k+=.08){const [a,b]=iso(r.x+r.w*k,r.y),[c,e]=iso(r.x+r.w*(k+.04),r.y);top.lineBetween(a,b,c,e);}}
+      if(d.t==='pool'){const r={x:d.x,y:d.y,w:d.w||.14,h:d.h||.06};top.fillStyle(0xf4efe6,1).fillPoints(this.rect({...r,w:r.w+.015,h:r.h+.015}),true);top.fillStyle(0x47b7d8,1).fillPoints(this.rect(r),true);
+        top.fillStyle(0xffffff,.35).fillPoints(this.rect({...r,y:r.y-r.h*.2,h:r.h*.2}),true);}
     }
-    if(L.pad.kind==='heli'){const [a,b]=iso(L.pad.x,L.pad.y);ground.fillStyle(0x6b6f74,1).fillEllipse(a,b,96,48);ground.lineStyle(3,0xffd75a,1).strokeEllipse(a,b,80,40);
-      ground.lineStyle(5,0xffffff,1);ground.lineBetween(a-12,b-9,a-12,b+9);ground.lineBetween(a+12,b-9,a+12,b+9);ground.lineBetween(a-12,b,a+12,b);}
+    if(L.pad.kind==='heli'){const [a,b]=iso(L.pad.x,L.pad.y);top.fillStyle(0x6b6f74,1).fillEllipse(a,b,96,48);top.lineStyle(3,0xffd75a,1).strokeEllipse(a,b,80,40);
+      top.lineStyle(5,0xffffff,1);top.lineBetween(a-12,b-9,a-12,b+9);top.lineBetween(a+12,b-9,a+12,b+9);top.lineBetween(a-12,b,a+12,b);}
     // Standing things, sorted by where they touch the ground.
     for(const d of L.deco){
       if(d.t==='peak')this.peak(d.x,d.y,d.r||.12);
@@ -153,11 +192,45 @@ export class PrivateIslandRenderer {
     const v=L.villa;this.box(v.x,v.y,v.w,v.h,34*v.floors,hex(v.wall),hex(v.roof),26,v.floors);
     for(const [x,y] of L.palms)this.palm(x,y,rand);
     this.paintPlots();
-    for(const sp of L.spots){if(sp.build)continue;const [a,b]=iso(sp.x,sp.y);
+    // 🏝️ the decorations, then life around: gulls over the sea, crabs on the sand
+    const drand=seeded((L.decor||[]).length*313+11);
+    for(const it of L.decor||[])this.lights.push(...paintDecor(s,it,drand).lights);
+    this.ambient(rand);
+    for(const sp of L.spots){if(sp.build||(sp as {decor?:unknown}).decor)continue;const [a,b]=iso(sp.x,sp.y);
       const ring=s.add.ellipse(a,b,46,22,0xffffff,.28).setStrokeStyle(2,0xffffff,.8).setDepth(b-2);
       const icon=s.add.text(a,b-30,sp.emoji,{fontSize:'26px'}).setOrigin(.5,1).setDepth(b+1);
       s.tweens.add({targets:icon,y:b-38,duration:1400+rand()*500,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});void ring;}
-    const [cx,cy]=iso(L.villa.x,L.villa.y+L.villa.h);s.cameras.main.centerOn(cx,cy);
+    if(centre){const [cx,cy]=iso(L.villa.x,L.villa.y+L.villa.h);s.cameras.main.centerOn(cx,cy);}
+    this.daylight(true);
+  }
+  /** Gulls gliding over the sea, crabs scuttling along the beach (a few: cheap on a phone). */
+  private ambient(rand:()=>number){
+    const s=this.scene!,L=this.layout,[lo,hi]=L.bounds||[0,1];
+    for(let i=0;i<3;i++){
+      const y0=lo+.1+rand()*(hi-lo-.2),[a,b]=iso(lo-.3,y0),[c,d]=iso(hi+.3,y0+(rand()-.5)*.3),g=s.add.graphics().setDepth(1e6),up=260+rand()*120;
+      g.lineStyle(2,0xffffff,.95);g.beginPath();g.moveTo(-7,0);g.lineTo(-2,-4);g.lineTo(0,-1);g.lineTo(2,-4);g.lineTo(7,0);g.strokePath();
+      g.setPosition(a,b-up);
+      s.tweens.add({targets:g,x:c,y:d-up,duration:26000+rand()*14000,repeat:-1,delay:rand()*9000});
+      s.tweens.add({targets:g,scaleY:{from:1,to:.4},duration:420,yoyo:true,repeat:-1});
+    }
+    const beach=inset(L.shore,L.sandWidth*.45);
+    for(let i=0;i<3;i++){
+      const k=Math.floor(rand()*beach.length),p0=beach[k],p1=beach[(k+2)%beach.length],[a,b]=iso(p0[0],p0[1]),[c,d]=iso(p1[0],p1[1]);
+      const crab=s.add.graphics().setPosition(a,b).setDepth(b);crab.fillStyle(0xd9483b,1).fillEllipse(0,-3,9,5);crab.fillStyle(0xb5352b,1).fillCircle(-5,-5,1.6).fillCircle(5,-5,1.6);
+      crab.lineStyle(1,0xb5352b,1).lineBetween(-4,-1,-7,1).lineBetween(4,-1,7,1);
+      s.tweens.add({targets:crab,x:c,y:d,duration:9000+rand()*6000,yoyo:true,repeat:-1,ease:'Sine.easeInOut',hold:2500,repeatDelay:3000,onUpdate:()=>{crab.setDepth(crab.y);}});
+    }
+  }
+  /** ☀️ The light of the hour in Vietnam (UTC+7): a warm dawn, plain day, a golden evening, a blue night with lamps lit. */
+  private daylight(force=false){
+    const s=this.scene;if(!s||this.destroyed)return;
+    const h=(new Date().getUTCHours()+7)%24;if(!force&&h===this.hourAt)return;this.hourAt=h;
+    const [color,alpha]=h>=19||h<5?[0x1d2b5e,.3]:h>=17?[0xff8a3d,.13]:h<7?[0xffc58a,.1]:[0xffffff,0];
+    if(!this.shadeRect)this.shadeRect=s.add.graphics().setScrollFactor(0).setDepth(2e6);
+    const cam=s.cameras?.main,w=(cam?.width||800)/(cam?.zoom||1),hh=(cam?.height||600)/(cam?.zoom||1);
+    this.shadeRect.clear();if(alpha>0)this.shadeRect.fillStyle(color,alpha).fillRect(-w/2-40,-hh/2-40,w*2+80,hh*2+80);
+    this.shadeRect.setVisible(alpha>0);
+    const night=h>=18||h<6;for(const l of this.lights)(l as Phaser.GameObjects.Ellipse).setVisible(night);
   }
   private inside(poly:Pt[],x:number,y:number){let r=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [ax,ay]=poly[i],[bx,by]=poly[j];if((ay>y)!==(by>y)&&x<(bx-ax)*(y-ay)/(by-ay)+ax)r=!r;}return r;}
   private onLand(x:number,y:number,margin:number){return this.inside(inset(this.layout.shore,-margin),x,y);}
@@ -242,6 +315,7 @@ export class PrivateIslandRenderer {
     }
     for(const [id,a] of this.actors)if(!seen.has(id)){a.image.destroy();a.ripple.destroy();this.actors.delete(id);}
     this.drawVehicle(frame.vehicle||null,now);
+    if(!this.lightAt||now-this.lightAt>60000){this.lightAt=now;this.daylight();}
     const cam=s.cameras.main,focus=frame.focus;
     if(focus){const [fx,fy]=iso(focus[0],focus[1]);const tx=fx,ty=fy-40,mx=cam.scrollX+cam.width/2,my=cam.scrollY+cam.height/2;
       const k=Math.abs(tx-mx)+Math.abs(ty-my)>900?1:.12;cam.centerOn(mx+(tx-mx)*k,my+(ty-my)*k);}
