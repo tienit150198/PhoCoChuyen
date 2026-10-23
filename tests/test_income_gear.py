@@ -205,3 +205,25 @@ class IncomeGearTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class BusyOwnerGear(unittest.TestCase):
+    """Feedback #498 (2.5.4): a save whose other workplaces use up each command's order budget could never fit gear
+    ("Còn đơn cũ đang chốt tiền"); the workplace bought for now settles its own backlog first."""
+    def test_gear_is_fitted_when_other_workplaces_eat_the_budget(self):
+        from game import operations as ops
+        s=new_state();t0=2000000000
+        for career,at in (('customer_care',t0),('accounting',t0+3000)):
+            c=s['careers'][career];c.update(open=True,started=True);c['money']=c['ops']['finance']['opening_balance']=10**6
+            with patch.object(wb.time,'time',return_value=at):
+                ops.action(s,c,career,'ops_hire',{'candidate':career+'-staff-1','confirm':True});wb.settle(s,only=career)
+        a=s['careers']['accounting'];key='incomegear_accounting_quality_1'
+        first=min(p['at'] for p in a['ops']['business']['pending'].values())
+        now=first+5
+        with patch.object(wb,'MAX_ORDERS',4),patch.object(wb,'SETTLE_SECONDS',0),patch.object(wb.time,'time',return_value=now):
+            out,_=apply_action(s,'accounting','buy_upgrade',{'item':key})
+        oa=out['careers']['accounting']
+        self.assertIn(key,oa['upgrades'])
+        self.assertFalse(any(p['at']<=now for p in oa['ops']['business']['pending'].values()))
+        self.assertTrue(any(p['at']<=now for p in out['careers']['customer_care']['ops']['business']['pending'].values()))
+        validate_state(out)

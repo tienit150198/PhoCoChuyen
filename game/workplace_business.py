@@ -481,19 +481,20 @@ def credit_profit_bonus(c,margin,ref,name,visitor=False):
     return bonus
 
 
-def settle(s,now=None):
-    """Mutate only an owned transaction state; process at most MAX_ORDERS globally."""
+def settle(s,now=None,only=None):
+    """Mutate only an owned transaction state; process at most MAX_ORDERS globally (`only`: that workplace alone, so
+    one being bought for is never starved by a save's other workplaces, 2.5.4)."""
     from .operations import recent_ledger_batch
     with recent_ledger_batch():
-        return _settle(s,now)
+        return _settle(s,now,only)
 
 
-def _settle(s,now=None):
+def _settle(s,now=None,only=None):
     now=_now(now);changed=False;remaining=MAX_ORDERS;businesses=[]
     from .player_service_tasks import settle_staff
     from .shop_events import tick_career
     for career,c in s.get('careers',{}).items():
-        if career not in ORDERS or 'ops' not in c:continue
+        if career not in ORDERS or 'ops' not in c or only not in (None,career):continue
         changed=staff_life.tick_career(s,c,career) or changed
         changed=tick_career(s,c,career) or changed
         changed=prepare(c,now) or changed

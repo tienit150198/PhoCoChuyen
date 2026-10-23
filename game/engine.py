@@ -1154,8 +1154,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(not u.get('requires') or u['requires'] in c['upgrades'],"Lắp bậc trước rồi nâng tiếp nhé.")
         need(1+c["xp"]//90>=u["min_level"],f'Cần cấp {u["min_level"]}. Hoàn thành thêm vài việc nhé.')
         if u['kind']=='equipment':
-            pending=c['ops'].get('business',{}).get('pending',{})
-            need(not any(row['at']<=settled_at for row in pending.values()),
+            # 2.5.4 (feedback #498): a save with dozens of staffed workplaces is always some orders behind (the global
+            # budget per command); this workplace's own backlog is settled first, alone, then the gear is fitted.
+            behind=lambda:any(row['at']<=settled_at for row in c['ops'].get('business',{}).get('pending',{}).values())
+            if behind() and business.workplace_business.settle(s,now=settled_at,only=career):validate_state(s)
+            need(not behind(),
                  'Còn đơn cũ đang chốt tiền. Tải lại để đồng bộ thu nhập rồi mua nâng cấp nhé.', 'business_catching_up')
         money(s,c,-u["price"],"Mua "+u["name"]);c["upgrades"].append(item)
         if u["kind"]=="decor":
