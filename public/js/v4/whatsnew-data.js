@@ -5,7 +5,10 @@ export default [
   {"emoji":"🛍️","text":"Cửa hàng riêng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng ở cùng một chỗ.","go":{"action":"jrAccShop"}},
   {"emoji":"⚒️","text":"Cường hóa: ghép cánh, ghép thú… ở một chỗ, có Cường hóa nhanh.","go":{"action":"jrForge"}},
   {"emoji":"🛒","text":"Mua nhiều món một lần: chọn số lượng cánh, phụ kiện đôi, đồ cho bé; phụ kiện, trang phục cho vào giỏ.","go":{"action":"jrAccShop"}},
-  {"emoji":"🧩","text":"Cường hóa dễ hơn: thấy hết đồ ghép được theo từng loại, đếm sẵn, chạm ⚡ là ghép.","go":{"action":"jrForge"}}
+  {"emoji":"🔎","text":"Đổi nghề dễ hơn: gõ tìm không cần dấu (vd. “ban hoa”), lọc Làm được / Đã làm / Bị khóa.","go":{"action":"jrPick"}},
+  {"emoji":"🔒","text":"Nghề chưa làm được ghi rõ lý do ngay trên thẻ, bấm “Vì sao?” để xem cách mở.","go":{"action":"jrPick"}},
+  {"emoji":"⚡","text":"Game mượt hơn, nhất là trên điện thoại yếu."},
+  {"emoji":"💰","text":"Số tiền lớn hiện gọn: 1 tỷ, 2,5 triệu."}
  ]},
  {"version":"2.5.4","date":"2026-10-23","items":[
   {"emoji":"🤝","text":"Thêm nhiều phụ kiện đôi mới ở Tiệm phụ kiện."},
