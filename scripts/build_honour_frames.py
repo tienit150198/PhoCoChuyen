@@ -14,7 +14,7 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'public', 'icons', 'frames')
 DATA = os.path.join(ROOT, 'public', 'js', 'v4', 'honour-frames-data.js')
-# the boards worn (honour-frames.js TIERS, CAREER, CAREER_ANY, WORN and the auction's 60)
+# the boards worn (honour-frames.js TIERS, CAREER, CAREER_ANY, WORN; an auction title's frame is drawn, #508)
 IDS = ('03', '14', '16', '18', '20', '21') + tuple(f'{i:02d}' for i in range(25, 69)) + ('72',)
 # 🆓 the everyday frames anyone may wear (honour-frames.js FREE, owner 18/10 "cho người ta chọn khung mặc định nữa")
 IDS += ('01', '02', '05', '19', '22', '23', '24')

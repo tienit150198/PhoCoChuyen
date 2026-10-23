@@ -2,6 +2,7 @@
 import {escapeHTML as esc} from '../icons.js';
 import {paintingSVG,landmarkSVG} from './auction-art.js';
 import {thumb} from './deco-art.js';
+import {uqBadge} from './honour-frames.js';   // 👑 a title's own one-of-a-kind frame (#508)
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const TIERS={1:'Phổ thông',2:'Quý hiếm',3:'Huyền thoại'};
 /* 🏎️ the limited editions' own paints (game/garage.py SPECIAL_PAINTS): their card shows the car in it */
@@ -29,7 +30,7 @@ export function itemArt(l){
     return `<div class="au-art au-petgear au-tier-${tier}" style="--au-rank:${RANK_COLOR[r]}" aria-hidden="true"><span>${esc(l.emoji||'🐾')}</span><b>${RANKS[r]}</b><small>TỦ ĐỒ THÚ CƯNG · 01/01</small></div>`;}
   if(l.kind==='tool')return `<div class="au-art au-tool au-tier-${tier}" aria-hidden="true"><span>${esc(l.emoji||'🧰')}</span><small>ĐỒ NGHỀ ĐỘC BẢN · 01/01</small></div>`;
   if(l.kind==='land')return `<figure class="au-art au-landscape">${landmarkSVG(l.item||l.id)}<figcaption>${esc(d.where||'')}</figcaption></figure>`;
-  return `<div class="au-art au-emblem au-tier-${tier}" aria-hidden="true"><svg viewBox="0 0 260 160"><path d="M55 128Q12 75 60 29M205 128Q248 75 200 29" fill="none" stroke="currentColor" stroke-width="3"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${36+i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(-35 ${36+i*2} ${49+i*16})"/><ellipse cx="${224-i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(35 ${224-i*2} ${49+i*16})"/>`).join('')}<path d="M80 26L130 10L180 26V80Q180 122 130 142Q80 122 80 80Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M73 129H187L177 149H83Z" fill="currentColor"/></svg><span>${esc(l.emoji||'👑')}</span><small>ĐỘC BẢN · 01/01</small></div>`;
+  return `<div class="au-art au-emblem au-tier-${tier}" aria-hidden="true"><svg viewBox="0 0 260 160"><path d="M55 128Q12 75 60 29M205 128Q248 75 200 29" fill="none" stroke="currentColor" stroke-width="3"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${36+i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(-35 ${36+i*2} ${49+i*16})"/><ellipse cx="${224-i*2}" cy="${49+i*16}" rx="6" ry="12" transform="rotate(35 ${224-i*2} ${49+i*16})"/>`).join('')}<path d="M80 26L130 10L180 26V80Q180 122 130 142Q80 122 80 80Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M73 129H187L177 149H83Z" fill="currentColor"/></svg>${(l.kind==='title'&&uqBadge(l.item||l.id,l.emoji))||`<span>${esc(l.emoji||'👑')}</span>`}<small>ĐỘC BẢN · 01/01</small></div>`;
 }
 
 export function collectibleDetails(l){
