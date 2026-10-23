@@ -358,7 +358,7 @@ function placesSection(env){
     const html=ids.map(id=>{const show=plan.show[i++];return st==='lock'?lockedTile(env,id,!show):placeCard(env,id,st,!show);}).join(''),n=plan.n[st]||0,m=plan.more[st]||0;
     return `<section class="jr-find-grp" data-st="${st}"${n?'':' hidden'}><h3 class="jr-sub">${label} <small class="jr-find-n">${n}</small></h3><div class="jr-grid">${html}</div><button type="button" class="btn ghost small full jr-find-more" data-action="jrFindMore" data-st="${st}"${m?'':' hidden'}>Xem thêm ${m} nơi</button></section>`;
   };
-  const board=btn('🔎 Đổi nghề','jrPick',{},'cream small jr-pick')+btn('🏆 Xếp hạng nghề','rankWork',{},'ghost small jr-rank');
+  const board=btn('🔎 Tìm nghề','jrPickFind',{},'cream small jr-pick')+btn('🏆 Xếp hạng nghề','rankWork',{},'ghost small jr-rank');
   return `<section class="jr-places" tabindex="-1" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2>${board}</div>${x3Banner(env)}
     <div class="jr-find">${search}${chips}${FIND_ST.map(grp).join('')}<p class="jr-find-none muted"${Object.keys(plan.n).length?' hidden':''}>Không thấy nghề nào. Thử chữ khác hay bỏ bớt lọc nhé.</p></div></section>`;
 }

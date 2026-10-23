@@ -129,7 +129,7 @@ export function townHTML(env,h){
   // owner 19/10 "bấm đổi nghề nó có bên trên xấu quá, xóa rồi gọn lại": one row on a phone (🏝️ Ra đảo stays in the menu
   // and the rail; Chợ đen and Chứng chỉ show their emoji only on a narrow screen), the ✕ at the right end
   return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}${fair}${cert}
-    <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
+    <button type="button" class="tw-chip tw-find" data-action="jrPickFind" aria-label="Tìm nghề">🔎<span class="tw-word"> Tìm nghề</span></button><button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
     <div class="tw-slot" data-tw-slot><i class="tw-end" hidden></i></div></div>`;
 }
 /** Can this browser draw it? (else the list shows, as before) */

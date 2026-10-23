@@ -131,7 +131,7 @@ const calls=[];
 const env={api:{state,content},ui:{},world:{mode:'town',setMode:mode=>calls.push(['mode',mode]),overviewIsland:()=>calls.push(['overview'])},closeSheet:()=>calls.push(['close']),
   openSheet:(view,data)=>calls.push(['sheet',view,data]),act:async (action,data)=>calls.push(['act',action,data]),renderMain:()=>{}};
 assert.equal(await isometricAction('isoCareers',{},null,env),true);
-assert.deepEqual(calls.pop(),['sheet','home',{homeMode:'list',jrView:'pick',cpQ:'',cpSt:'',cpCat:'',cpMore:{}}],'Công việc opens Đổi nghề, fresh');
+assert.deepEqual(calls.pop(),['sheet','home',{homeMode:'list',jrView:'home'}],'Công việc opens the places as before 2.5.5, 🔎 Tìm nghề on top');
 assert.equal(await isometricAction('isoAvatar',{},null,env),true);
 assert.deepEqual(calls.pop(),['sheet','home',{jrView:'wardrobe'}]);
 await isometricAction('isoBag',{},null,env);

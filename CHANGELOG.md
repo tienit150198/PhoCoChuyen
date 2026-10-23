@@ -1,3 +1,9 @@
+# 2.5.9.1 — 23/10/2026
+
+Chủ game 23/10 (Ha Yeon: "bấm đổi nghề không coi được cái khu phố đi chỗ này chỗ kia như cũ"): "chỉnh cho người ta áp dụng cả 2, mở ra map như màn cũ".
+- 🗺️ "Đổi nghề" (thanh bên, nút cạnh tên tiệm) mở lại Hành trình như trước 2.5.5: Bản đồ phố (hoặc Danh sách, theo Cài đặt); "Công việc" trên thanh 2.5D mở danh sách nơi làm như cũ.
+- 🔎 Tìm nghề (trang tìm, lọc, lý do khóa) một chạm: chip trên Bản đồ phố, nút đầu "Nơi làm việc"; Có gì mới 2.5.5 dẫn thẳng tới đó (jrPickFind).
+
 # 2.5.9 — 23/10/2026
 
 Chủ game 23/10: "vẫn lag quá", "xếp hạng này kia thêm cache đi cho đỡ", "cảm giác mở game ra rồi đợi dựng phố lâu lắm", "vào đám cưới vẫn phải có cánh", "xóa bỏ cái thiệp 20/10 đi nhé" (perf/lag-2310 + feat/cleanup-2310).

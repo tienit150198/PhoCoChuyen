@@ -338,7 +338,7 @@ function changeMode(mode,env){
 }
 
 /** The career picker, fresh each time (v4/career-pick.js reads these ui fields). */
-const PICK=Object.freeze({homeMode:'list',jrView:'pick',cpQ:'',cpSt:'',cpCat:'',cpMore:{}});
+const PICK=Object.freeze({homeMode:'list',jrView:'home'});   // Công việc: the places as before 2.5.5 (owner 23/10 "như màn cũ"), 🔎 Tìm nghề on top
 /** Return false for normal app actions; no money/task/choose commands originate in this shell. */
 export async function isometricAction(action,data={},el=null,env){
   if(!action?.startsWith('iso')||!env)return false;
@@ -351,7 +351,7 @@ export async function isometricAction(action,data={},el=null,env){
       if(!model.current){env.openSheet('home',PICK);break;}
       changeMode('work',env);break;
     case'isoCareers':if(!model.current&&model.fresh){await firstJob(env);break;}   // day 1: the first workplace, not the whole journey page
-      env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',PICK);break;   // 🔎 Đổi nghề: search, chips, why a place is shut (v4/career-pick.js)
+      env.ui&&(env.ui.isoTab='isoCareers');env.openSheet('home',PICK);break;
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
     case'isoRide':nextTownRide(env.api?.state,env.api?.content);if(env.api?.state&&env.api?.content)env.world?.update?.(env.api.state,env.api.content);updateIsometricShell(env);break;
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',PICK);break;

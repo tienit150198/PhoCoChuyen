@@ -90,6 +90,6 @@ test('the journey list and the old list say the same reason on a shut place',()=
   e.api.state.journey.maturity={level:1,xp:0,floor:0,next:100,name:'Mới đến'};
   const h=journeyHome(e);
   assert.match(h,/🔒 Xong chương 2 là mở/);
-  assert.match(h,/data-action="jrPick"/,'🔎 Đổi nghề one tap from the list');
+  assert.match(h,/data-action="jrPickFind"/,'🔎 Tìm nghề one tap from the list');
   assert.match(journeyHome(env({jrView:'pick'})),/class="cp"/,'jrView pick is the picker');
 });

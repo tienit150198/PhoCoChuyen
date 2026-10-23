@@ -195,11 +195,16 @@ export function openPick(env,{iso=false}={}){
   else env.openSheet('home',{homeMode:'list',jrView:'pick'});
 }
 
+/** 🗺️ "Đổi nghề" opens the home as before 2.5.5 (owner 23/10: "mở ra map như màn cũ", Ha Yeon: "không coi được cái khu
+ * phố đi chỗ này chỗ kia như cũ"): the town map (or the list, the player's Cài đặt choice), its 🔎 Tìm nghề one tap away. */
+export function openSwitch(env){env.openSheet('home',{homeMode:null,jrView:'home'});}
+
 /** jrPick* actions (journey.js journeyAction hands them here). */
 export function pickAction(action,data,el,env){
   const {ui}=env,sheet=document.getElementById('sheet');wire(env);
   switch(action){
-    case'jrPick':openPick(env);return true;
+    case'jrPick':openSwitch(env);return true;
+    case'jrPickFind':openPick(env);return true;
     case'jrPickSt':ui.cpSt=data.st||'';ui.cpMore={};syncChips(sheet,ui);pickApply(sheet,ui);return true;
     case'jrPickCat':ui.cpCat=data.cat&&ui.cpCat!==data.cat?data.cat:'';ui.cpMore={};syncChips(sheet,ui);pickApply(sheet,ui);return true;
     case'jrPickMore':ui.cpMore={...(ui.cpMore||{}),[data.sec]:true};pickApply(sheet,ui);return true;

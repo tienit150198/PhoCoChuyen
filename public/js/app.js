@@ -1635,7 +1635,7 @@ async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const 
 async function handleAction(action,data,el){
   // These island routes open local scenes without a server command. Apply the same camp boundary before
   // they can change mode or load a destination; chat and the camera keep their existing behavior.
-  if(api.state?.jail&&['home','jrPick','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
+  if(api.state?.jail&&['home','jrPick','jrPickFind','sharedIsland','leisurePlace','isoTown','isoWork','isoCareers','isoMission','isoPrepare','isoApply','isoQueue','isoGo','isoLeisure','isoBag'].includes(action)){
     await (await import('./v4/jail.js')).openJail(env());return;
   }
   if(action==='leisurePlace'){await (await import('./v4/venue-routing.js')).visitLeisure(env(),data.kind);return;}
