@@ -69,7 +69,8 @@ test('queued wakes respect hidden/pause guards and do not revive an inactive sce
 });
 
 test('loader COMPLETE invalidates preview art and performs one coalesced scene rebuild',async()=>{
-  const h=harness();h.scene.create();h.scene.load.emit('complete');h.scene.load.emit('complete');await flush();
+  const h=harness();h.scene.create();h.scene.load.loading=false;h.scene.load.emit('complete');h.scene.load.emit('complete');await flush();
+  assert.equal(h.calls.rebuild,0,'a wave of art is gathered first (23/10 lag)');await new Promise(r=>setTimeout(r,200));
   assert.equal(h.owner.cachedPreview.size,0);assert.equal(h.calls.rebuild,1);assert.equal(h.calls.wake,1);
 });
 

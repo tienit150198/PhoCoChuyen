@@ -34,6 +34,9 @@ from game import ads, observability
 VERSIONED_DIRS = ("js", "css", "i18n", "music", "audio", "icons")  # audio/: short recorded sounds (public/audio/*/CREDITS.md)
 VERSIONED_SUFFIXES = {".js", ".css", ".json", ".mp3", ".webp", ".png", ".svg"}
 MAPPED_SUFFIXES = (".js", ".css", ".json", ".mp3")  # in the import map (modules + asset() lookups)
+# 🏝️ The 2.5D art Phaser, the characters and the leisure places fetch through asset() (23/10 lag: without a ?v= URL each
+# of ~80 images was asked again on every load, Cache-Control: no-cache). In the import map too, so cached a year.
+MAPPED_ICONS = ("/icons/cozy-", "/icons/careers-v1/", "/icons/isometric/")
 PRECOMPRESS = (".js", ".css", ".json", ".svg")  # text copies that get .gz/.br siblings in the store (precompress)
 HASH_LEN = 12
 
@@ -198,7 +201,7 @@ class WebAssets:
         content = self.content_version() or ""
         build = hashlib.sha256(json.dumps([sorted(files.items()), content, self.release]).encode()).hexdigest()[:HASH_LEN]
         version = f"{self.release}+{build}" if self.release else build
-        imports = {url: f"{url}?v={h}" for url, h in files.items() if url.endswith(MAPPED_SUFFIXES) and not url.startswith(("/js/admin/", "/js/sticker/"))}
+        imports = {url: f"{url}?v={h}" for url, h in files.items() if (url.endswith(MAPPED_SUFFIXES) or url.startswith(MAPPED_ICONS)) and not url.startswith(("/js/admin/", "/js/sticker/"))}
         importmap = json.dumps({"imports": imports}, separators=(",", ":"), sort_keys=True)
         preload = [f"{u}?v={files[u]}" for u in self.module_graph(ENTRY) if u in files]
         template = (self.public / "index.html").read_text(encoding="utf-8")

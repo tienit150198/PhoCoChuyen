@@ -18,6 +18,10 @@ import {townBirds} from './v4/town-birds.js';
 
 export {updateIsometricShell,isometricAction};
 
+// 23/10 "đợi dựng phố lâu": the Phaser bundle's bytes start now, at low priority, while the first frame is built
+// (only the download: nothing is compiled before that frame); loadWorld() then finds them in the HTTP cache.
+try{const u=globalThis.__mnlBoot?.asset?.('/js/isometric/phaser-world.js');if(u&&u.includes('?v='))fetch(u,{priority:'low',credentials:'same-origin'}).then(r=>r.arrayBuffer()).catch(()=>{});}catch{/* the import below fetches it */}
+
 /** The HUD, the joystick, the shared town and the portraits. Once, after the app's state has loaded. */
 let up=false;
 export const booted=()=>up;

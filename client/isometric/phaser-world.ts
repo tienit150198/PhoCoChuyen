@@ -61,7 +61,8 @@ import type {ArchitectureInk} from './work-architecture';
 
 export type WorldMode = 'town' | 'work';
 type StaticVisual=Phaser.GameObjects.Image|Phaser.GameObjects.Text|Phaser.GameObjects.Container;
-type Occluder=OccludingShape&{image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
+// mask: filled when first needed (maskOf) or in idle time (warmMasks), from the frame the image had when registered
+type Occluder=Omit<OccludingShape,'mask'>&{mask?:AlphaMask|null;maskKey:string;maskFrame:Phaser.Textures.Frame;image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
 type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string};
 interface Hotspot extends Point {id:string;label:string;approach:Point;interactionPoint?:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
@@ -373,7 +374,8 @@ class DioramaScene extends Phaser.Scene {
   private occluderIndex=new SpatialIndex<Occluder>();
   private occluders:Occluder[]=[];
   private fadingOccluders=new Set<Occluder>();
-  private alphaMasks=new Map<string,AlphaMask>();
+  private alphaMasks=new Map<string,AlphaMask|null>();   // null: a frame that cannot be read
+  private maskWarm=false;
   private occlusionPosition='';
   occludedCount=0;
   private actorRing?:Phaser.GameObjects.Image;
@@ -452,7 +454,9 @@ class DioramaScene extends Phaser.Scene {
   }
   private assetsReady=()=>{if(!this.sys.isActive())return;this.owner['cachedPreview'].clear();this.queueArtRefresh();};
   private charactersReady=()=>{if(!this.sys.isActive())return;this.characterRevision++;this.queueArtRefresh();};
-  private queueArtRefresh(){if(this.artRefreshQueued)return;this.artRefreshQueued=true;queueMicrotask(()=>{this.artRefreshQueued=false;if(!this.sys.isActive())return;this.rebuild();this.owner.wake();});}
+  // 23/10 lag: art, characters and fonts arrive in waves and each rebuilt the whole town; a short wait gathers a wave,
+  // and while the loader is still busy its COMPLETE (assetsReady) rebuilds once for all of it.
+  private queueArtRefresh(){if(this.artRefreshQueued)return;this.artRefreshQueued=true;setTimeout(()=>{this.artRefreshQueued=false;if(!this.sys.isActive()||this.load.isLoading())return;this.rebuild();this.owner.wake();},150);}
   update(_time:number,delta:number){this.cacheGround();this.owner.step(Math.min(.06,delta/1000));this.syncStaticVisibility();}
   requestRender(){this.renderRequested=true;this.settledFrames=0;}
   settle(){if(this.renderRequested){this.renderRequested=false;this.settledFrames=0;return false;}return ++this.settledFrames>=2;}
@@ -664,19 +668,41 @@ class DioramaScene extends Phaser.Scene {
   private registerOccluder(image:Phaser.GameObjects.Image,sign?:Phaser.GameObjects.Container){
     const existing=this.occluders.find(entry=>entry.image===image);
     if(existing){if(sign)existing.sign=sign;return;}
-    const frame=image.frame,key=image.texture.key+':'+frame.name;
-    let mask=this.alphaMasks.get(key);
-    if(!mask){
-      // Downsample once per source/frame. No canvas reads while the player walks.
-      const cv=document.createElement('canvas');cv.width=64;cv.height=64;
+    // 23/10 lag: no alpha mask here (≈20 ms a frame on a mid phone, 2+ s per town build): maskOf when the player is
+    // near, warmMasks in idle time. Masks are kept by source frame for the whole session.
+    const frame=image.frame,maskKey=image.texture.key+':'+frame.name,r=image.getBounds();
+    const entry:Occluder={image,sign,alpha:1,target:1,depth:image.depth,mask:this.alphaMasks.get(maskKey),maskKey,maskFrame:frame,bounds:{x0:r.left,y0:r.top,x1:r.right,y1:r.bottom}};
+    this.occluders.push(entry);this.occluderIndex.add(entry,entry.bounds);
+    if(entry.mask===undefined)this.warmMasks();
+  }
+  private maskOf(entry:Occluder):AlphaMask|null{
+    if(entry.mask!==undefined)return entry.mask;
+    let mask=this.alphaMasks.get(entry.maskKey);
+    if(mask===undefined){
+      // Downsample once per source/frame. No canvas reads while the player walks past it again.
+      const frame=entry.maskFrame,cv=document.createElement('canvas');cv.width=64;cv.height=64;
       const ctx=cv.getContext('2d',{willReadFrequently:true})!;
       try{ctx.drawImage(frame.source.image as CanvasImageSource,frame.cutX,frame.cutY,frame.cutWidth,frame.cutHeight,0,0,64,64);
         const rgba=ctx.getImageData(0,0,64,64).data,alpha=new Uint8Array(64*64);for(let i=0;i<alpha.length;i++)alpha[i]=rgba[i*4+3];
-        mask={width:64,height:64,alpha};this.alphaMasks.set(key,mask);
-      }catch{return;}
+        mask={width:64,height:64,alpha};
+      }catch{mask=null;}
+      this.alphaMasks.set(entry.maskKey,mask);
     }
-    const r=image.getBounds(),entry:Occluder={image,sign,alpha:1,target:1,depth:image.depth,mask,bounds:{x0:r.left,y0:r.top,x1:r.right,y1:r.bottom}};
-    this.occluders.push(entry);this.occluderIndex.add(entry,entry.bounds);
+    entry.mask=mask;return mask;
+  }
+  /** The masks the town still lacks, a few per idle slot, so the first walk behind a house reads nothing. */
+  private warmMasks(){
+    if(this.maskWarm)return;this.maskWarm=true;
+    const idle=(fn:(d?:{timeRemaining():number})=>void)=>typeof requestIdleCallback==='function'?requestIdleCallback(fn,{timeout:2000}):setTimeout(fn,200);
+    const step=(d?:{timeRemaining():number})=>{
+      if(!this.sys.isActive()){this.maskWarm=false;return;}
+      const end=performance.now()+12;let left=false;
+      for(const entry of this.occluders){if(entry.mask!==undefined)continue;
+        if((d?d.timeRemaining()<4:false)||performance.now()>end){left=true;break;}
+        this.maskOf(entry);}
+      if(left)idle(step);else this.maskWarm=false;
+    };
+    idle(step);
   }
   updateOcclusion(dt:number){
     if(!this.actor||this.owner.mode!=='town'){this.actorRing?.setVisible(false);return false;}
@@ -686,7 +712,7 @@ class DioramaScene extends Phaser.Scene {
       for(const entry of this.fadingOccluders)entry.target=1;
       const candidates=this.occluderIndex.query({x0:p.x-14,y0:p.y-80,x1:p.x+14,y1:p.y-25});
       this.occludedCount=0;
-      for(const entry of candidates)if(coversPlayer({...p,depth:this.actor.depth},entry)){entry.target=.35;this.fadingOccluders.add(entry);this.occludedCount++;}
+      for(const entry of candidates){const mask=this.maskOf(entry);if(mask&&coversPlayer({...p,depth:this.actor.depth},{bounds:entry.bounds,depth:entry.depth,mask})){entry.target=.35;this.fadingOccluders.add(entry);this.occludedCount++;}}
     }
     let active=false;
     for(const entry of this.fadingOccluders){
