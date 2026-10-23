@@ -39,6 +39,19 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.0", date="2026-10-24", items=(   # owner 23-24/10: đảo to + chế độ xây, nhà 2D, tổng quan nhà, du lịch thật, trường học, cánh bay, thưởng top tuần; góp ý #508 #313 #364 #315 #322 #464 #358 #330 #372 #510
+        dict(emoji='🏝️', text="Đảo to hơn, 🛠️ Chế độ xây: đặt nhà, hồ bơi, cây cối khắp đảo, 🌊 lấn biển!", go=dict(action='island')),
+        dict(emoji='🛋️', text="Nhà 2D: xoay đồ 4 hướng, phóng to thu nhỏ, ngồi ghế, nằm giường thật", go=dict(action='house')),
+        dict(emoji='🗺️', text="Tổng quan nhà, 🚘 hầm xe biệt thự, 🧹 việc nhà và 🏖️ trò chơi trên đảo", go=dict(action='homeOverview')),
+        dict(emoji='✈️', text="Du lịch thật: đặt vé sớm rẻ hơn, tiếp viên phục vụ, tham quan 12 nơi", go=dict(action='travel')),
+        dict(emoji='🏫', text="Trường học: 13 ngành đại học, du học thật 1 học kỳ ở 5 nước, có Trung Quốc", go=dict(action='school')),
+        dict(emoji='🪽', text="Cánh to hơn và bay được! Cánh càng xịn bay càng nhanh", go=dict(action='pets', data={'tab': 'shop', 'kind': 'wing'})),
+        dict(emoji='💒', text="Top Khách mời có danh hiệu, khung riêng; 🏆 top tuần nào cũng có thưởng xu", go=dict(action='rank')),
+        dict(emoji='🖼️', text="Khung top khác hẳn nhau; khung độc bản đấu giá là của riêng, đổi được"),
+        dict(emoji='👗', text="Áo cưới mở khi đính hôn; tủ đồ chia nam/nữ; thêm 28 món đồ nam", go=dict(action='jrWardrobe')),
+        dict(emoji='🛡️', text="Bảo hiểm nhà trả cả sự cố ở Sửa nhà; đồ chống móc, chống hack tới 80%", go=dict(action='rui')),
+        dict(emoji='🧑‍🍳', text="Văn phòng phẩm, đại lý xe… thuê đủ 4 nhân viên; Ca sĩ vào việc không cần mở ca"),
+    )),
     dict(version="2.5.9", date="2026-10-23", items=(   # owner 23/10: "lag quá rồi", "đợi dựng phố lâu", "xếp hạng thêm cache", "đám cưới vẫn phải có cánh", "xóa thiệp 20/10"
         dict(emoji='⚡', text="Mở game và dựng phố nhanh hơn, bớt giật."),
         dict(emoji='🏆', text="Bảng xếp hạng mở nhanh hơn."),

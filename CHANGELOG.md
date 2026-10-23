@@ -1,3 +1,69 @@
+# 2.6.0 — 24/10/2026
+
+Bản lớn gom 12 nhánh (chủ game 23–24/10 + góp ý #508 #313 #364 #315 #322 #464 #358 #330 #372 #510). Schema 92 (bảng mới `island_layout`, chỉ thêm). Có gì mới 2.6.0.
+
+## 🏝️ Đảo to hơn, 🛠️ Chế độ xây (feat/island-build-v2)
+- server: game/island_design_content.py (lưới 60×60, bậc kích thước: bậc 0 miễn phí = +15 %, 🌊 lấn biển 20/30/40/50 % giá đảo, 64 món trang trí có giá, điểm, kích thước) và game/island_design.py (đặt trên lưới: biên, bờ/biển, địa hình cố định, chồng lấn, giới hạn; 📦 Kho; dời/xoay; công trình đặt theo lưới; nâng cấp bản lưu; đồng bộ bảng `island_layout`; điểm thiết kế cộng vào bảng 🏝️ Đảo đẹp; góc nhìn cho chủ và khách). Đảo cũ vào ở bậc 0, mọi công trình giữ ô cũ (ô ven biển được đẩy ra bờ), điểm công trình giữ nguyên, chỉ cộng thêm điểm thiết kế. Bản lưu: khóa tùy chọn journey.isld.
+- client: v4/island-editor.js (toàn màn hình, ưu tiên điện thoại): kéo, chụm / lăn chuột / ＋ － để zoom; khay công trình, trang trí theo nhóm, 📦 Kho có thẻ vẽ sẵn; bóng mờ xanh/đỏ theo đúng luật server, ⟳ xoay, ✓ đặt, ✥ dời, 📦 cất; 🌊 lấn biển và 🛤️ lối đi. Tab 🏗️ Xây mở chế độ xây, liệt kê công trình để nâng cấp / sơn / phá dỡ. island-layout.js dùng chung lưới với server; island-decor-art.js 64 mẫu trang trí (lay, nước, lửa, đèn); Phaser (private-island.ts, island-decor.ts) và canvas cũ vẽ biển rộng hơn, sóng, hoa, lối đi, chim, cua, ánh sáng theo giờ (UTC+7) và đèn ban đêm.
+
+## 🛋️ Nhà 2D (feat/home-2d, góp ý #358 #330 #372)
+Chủ game 23/10: "xóa cái nhà 3d đi… chỉ cần nhà bình thường… ghế đặt thì cho xoay… phóng lớn, thu bé".
+- 🗑️ Bỏ hẳn nhà 3D (client/home3d, home-3d*.js, test, nút 2D/3D). three.js chỉ còn cho khu dân cư: client/district3d/scene.js → public/js/v4/district-3d-scene.js (scripts/build_district3d.mjs, `npm run build:district3d`; three-compat.mjs giữ chốt chặn Safari cũ).
+- ↻ Xoay 90°: đồ đặt sàn và thảm xoay 4 hướng (nút, phím R, hoặc xoay trước khi đặt), chân đồ đổi theo, hình vẽ nghiêng; không vừa thì dời tới chỗ vừa gần nhất. Server kiểm mọi lần xoay; hướng lưu ở bảng phụ decor_rot (bản lưu cũ đọc như cũ, bản cũ bỏ qua), chỗ chỉ vừa khi xoay vào decor_spin (bản cũ thấy món đó trong túi, không mất gì). ⇋ Lật giữ nguyên, kéo bắt lưới nửa ô, ↶ Hoàn tác, nút ✓ Xong luôn ở góc phòng.
+- 🔍 Phóng to 100–300 % (chụm hai ngón, lăn chuột, ＋ / － / ⤢), một ngón kéo khi đã phóng to (v4/home-zoom.js).
+- 🪑 Dùng đồ thật (v4/home-pose.js): ngồi ghế/sofa, nằm giường (ngủ khi tối), đọc sách, xem TV, tập, nấu, ngâm bồn, chơi; người cùng phòng thấy tư thế (live home_mv `a`, không lưu). Bạn ở ghép được chủ nhà cho 🎨 Sắp đồ thì dời/xoay/cất đồ của chủ qua đường coop.
+- 🏋️ 📚 9 món mới (🆕 Mới về): thảm yoga, giá tạ tay, bao cát, xe đạp tập, ghế đẩy tạ; tủ sách cửa kính, bàn đọc đèn xanh, thang thư viện, giá báo gỗ.
+
+## 🗺️ Tổng quan nhà, 🚘 Hầm xe, 🧹 Việc nhà, 🏖️ Chơi trên đảo (feat/villa-overview)
+- game/home_overview.py: sơ đồ từng tầng cho mọi kiểu nhà (gác mái, phòng thuê, nhà ở, 6 biệt thự), đồ và Ấm cúng từng phòng, ai đang ở nhà, các nhà khác đang sở hữu; không lưu gì. Chạm một phòng mở thẳng phòng đó trong trình trang trí 2D (reno 'room:<id>').
+- game/villa_garage.py (journey.hamxe, tùy chọn): chỗ đậu theo nơi ở (hầm biệt thự 4–12 chỗ, hầm chung, bãi hẻm), thuyền ở bến, máy bay ở sân đỗ; 🫧 rửa xe mỗi xe một lần mỗi ngày (+1 tinh thần lần đầu), chọn chỗ đậu.
+- game/home_chores.py (journey.chores): 5 việc nhà mỗi ngày theo những gì nhà có; +1 tinh thần ×2, xong 3 việc có ít xu, chuỗi 7 ngày có thưởng.
+- game/island_fun.py (journey.beach): 6 trò trên bãi biển + 🎁 rương báu mỗi ngày khi đang ở đảo, kiểm với island_trips lúc lưu. Hàng chip 🏖️ nằm trên hàng chỗ chơi của cảnh đảo mới; tới lửa trại, rạn san hô… là tự làm trò của chỗ đó.
+
+## ✈️ Du lịch trải nghiệm (feat/travel-real, góp ý #464)
+- game/travel.py + travel_content.py (journey.travel, tùy chọn; lệnh jr_trip_*): 12 nơi (5 trong nước, 7 nước ngoài), mỗi nơi có màu, đường chân trời, lời chào, 5 điểm tham quan (chụp ảnh, món ăn, trò nhẹ, nghỉ) và 3 món quà lưu niệm.
+- Vé khứ hồi theo số ngày đặt trước: hôm nay ×2, trước 4 ngày giá tốt; phổ thông / thương gia ×3. Nơi cần visa dùng visa của Hàng hiệu (game/lux.py) đúng ngày bay (thêm Úc). Hủy: hoàn 90 % trước ngày bay, 50 % trong ngày; lỡ chuyến tự hoàn 50 %. Trả ví rồi ngân hàng, không bao giờ âm.
+- Lên máy bay đúng ngày, bữa ăn theo hạng vé, tiếp viên trò chuyện, hạ cánh (dấu hộ chiếu, tinh thần, lời chào), mỗi điểm một lần mỗi chuyến (bưu thiếp giữ mãi), quà lưu niệm, bay về, tổng kết + Sổ du lịch. Chuyến để quá 2 ngày tự bay về. Mở từ menu, cửa ✈️ Đại lý vé trong phố và tab visa của Hàng hiệu.
+
+## 🏫 Trường học (feat/study-real, góp ý #315 #322)
+- game/school.py: mỗi lúc một chương trình (journey.school, tùy chọn). Đại học 13 ngành: 2 học kỳ × 3 môn, thời khóa biểu theo tuần (Chủ nhật nghỉ, 2 tiết mỗi ngày), mỗi môn 3 buổi giảng + câu hỏi, bài tập sau buổi 2 (giữ điểm cao nhất), thi 5 câu (đạt 3, thi lại miễn phí hôm sau với đề mới), điểm 10/20/20/50, điểm chữ + GPA/4, tín chỉ, xếp loại bằng. Thôi học hoàn một nửa số buổi chưa học; học kỳ đã xong được bảo lưu.
+- Du học thật 1 học kỳ (Hàn, Nhật, Pháp, Úc, Trung Quốc): nộp hồ sơ, phỏng vấn visa, bay, học, làm thêm (20–30 xu/ngày, có trần), sự kiện văn hóa, bằng.
+- Bằng cấp: +8–15 % Tiền công ở nghề liên quan (dòng "🎓 có bằng", không phụ thuộc MNL_PAYBOOST_OFF), cơ hội được nhận như chứng chỉ, dòng thăng chức, mở sớm nghề liên quan, 4 danh hiệu mới; học kỳ ở nước ngoài tính vào thưởng bằng nước ngoài (theo nước, không cộng đôi).
+- 930 câu hỏi (game/school_bank_*.py, ≥ 30 mỗi nhóm, school_q.check). Client v4/school.js + css/school.css, mục menu, thẻ ở Hành trình, banner ở tab ✈️ Du học cũ (khóa ngắn 4 bài vẫn còn). Bản lưu cũ không đổi.
+
+## 🪽 Cánh to hơn và bay được (feat/wing-fly)
+Chủ game 24/10: "cánh cho to hơn, và bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được".
+- Cánh to hơn ở mọi nơi (D ×1,19 … Huyền thoại ×1,26), hộp cache nới theo; icon cửa hàng giữ cỡ.
+- 🪽 Bay / 🪽 Hạ cánh ở phố cổ điển, phố 2.5D (HUD) và các màn dạo: lơ lửng, có bóng, nhanh theo hạng cánh như thang xe (1,45 xe đạp … 2,3 siêu xe). Không bao giờ vừa bay vừa lái: cất cánh là cất xe ("🛵 Cất xe, cất cánh!"), lên xe là hạ cánh, bế em bé là hạ cánh. Lưu theo trình duyệt (mnl.fly), không đổi bản lưu.
+- live: street `fly {on}` + walk_in `fl`, tốc độ do server quyết (SPEED×FLY_FAST); đi xe hoặc ngồi sau là hạ cánh; quán cà phê / đám cưới từ chối (no_fly); town_in/town_mv `fl` chỉ khi server thấy đang đeo cánh, không trong công trường/hoạt động; đổi/tháo cánh (NOTIFY wing) đổi hạng hoặc hạ cánh. Live cũ: người bay trên 2.5D bị giới hạn bằng tốc độ xe.
+
+## 🖼️ Khung top và 🏆 thưởng top tuần (fix/frames-508, góp ý #508)
+- Mỗi bảng có hào quang riêng (đổi màu khi dùng chung nét vẽ) + huy chương hạng (vàng top 1, bạc top 2–3, đồng top 4–10) trên avatar và bong bóng chat; không hạng top nào còn dùng khung thường (thú cưng top 2–3 / 4–10 từng là khung mèo, thỏ miễn phí).
+- Danh hiệu đấu giá (dh_*): mỗi cái một khung vẽ riêng (màu, hoa văn, huy hiệu, ruy băng 01/01), suy từ id nên người giữ không mất gì; thẻ lô đấu giá hiện khung sẽ nhận. Bảng chọn khung liệt kê danh hiệu đấu giá đang có để đeo / tháo.
+- 💒 Bảng Khách mời (số đám cưới dự trong tuần, chỉ người hiện tên): 💒 Vua ăn cưới của tuần (top 1), 💐 Khách mời vàng của tuần (top 2–3), khung riêng (tim vàng hồng, nhẫn champagne).
+- 🏆 Thưởng top tuần: khi tuần chốt, mỗi người giữ hạng cuối nhận một quà hệ thống (id lbw-<tuần>-<bảng>-<hạng>, ON CONFLICT DO NOTHING). Mức của chủ game 24/10: mọi bảng top 1 1.000.000 / top 2–3 500.000 / top 4–10 200.000 xu (đua: 1.000.000 / 500.000); Khách mời 2.000.000 / 1.000.000; Trùm nghề 1.000.000; bang chiến: đấu thủ bang vô địch 500.000, á quân 200.000 mỗi người. Từ tuần 2026-W43; admin và người ẩn tên không nhận. Bảng xếp hạng và đua đám cưới hiện "🎁 Thưởng tuần: … xu".
+
+## 👗 Tủ đồ nam/nữ (feat/wardrobe-gender)
+Chủ game 24/10: "áo quần khi có đính hôn thì mở luôn", "đồ k phân biệt nam nữ à, sao đồ lộn xộn thế", chỉ có 4 món cắt cho nam.
+- Áo cưới / vest cưới mở khi đính hôn ("… mở khi bạn đính hôn"); đã mặc hay cởi ra đều giữ trong wardrobe_plus.owned, hủy hôn hay ly hôn không mất.
+- Mỗi món gắn nam / nữ / unisex; Tủ đồ và Cửa hàng 👕 Trang phục / 🎀 Phụ kiện hiện đồ theo giới tính nhân vật + unisex (và đồ đang mặc, đang thử, đã mua) trước, "Xem cả đồ khác (n)" cho phần còn lại; ai mặc gì vẫn được.
+- 28 món nam mới bán ở Tiệm Áo Chỉ Mây: 5 kiểu tóc, 9 áo (áo dài nam, vest, sơ mi kẻ, len cổ lọ, áo da, bà ba, gile…), 4 quần, 4 giày, 6 phụ kiện (đồng hồ dây da, cà vạt, nơ, thắt lưng, kính phi công, nón fedora); vẽ đủ ở gương, chân dung, canvas, chibi phố, mặt chat. Tổng: nam 32, nữ 49, unisex 62.
+
+## 🛡️ Bảo hiểm nhà và đồ chống trộm (fix/insure-2310, góp ý #313 #364)
+- Sự cố nhà để đó (hoặc thẻ tự chọn "Để đó") mà đã mua bảo hiểm: Sửa nhà tính min(giá sửa thường, phần còn phải trả sau bảo hiểm), 0 xu khi bảo hiểm 100 %; sửa xong đóng sự cố luôn (không bị tính hai lần, Ấm cúng về ngay). Sửa nhà nói rõ bảo hiểm trả gì, hao mòn/nâng cấp do người chơi trả, "đang chờ hiệu lực (còn N ngày)".
+- Đồ chống trộm tới 80 % (chủ game 23/10: "loại 80% thôi chứ k có loại 100%"): 🎒 Túi khóa chống móc (móc túi −80 %, sau Túi đeo chéo) và 🛡️ Bảo mật ngân hàng nâng cao (hack −80 %, sau hai lớp); THEFT_GUARD_MAX = 80; cảnh báo móc túi gợi ý bước kế; hướng dẫn nói không có mức 100 %.
+
+## 🧑‍🍳 Nhân viên và ca sĩ
+- Tuyển nhân viên (fix/staff-candidates, #510): mọi tiệm giờ đều có đủ 4 ứng viên cho Tiệm sân vườn (văn phòng phẩm, đại lý xe, căn tin, tiệm vàng, sửa xe, độ xe, giặt ủi, phục chế, KOL… trước chỉ có 1–3 người). Ứng viên cũ giữ id, người đã thuê giữ hồ sơ.
+- 🎤 Ca sĩ phòng trà (fix/singer-prefix): "Vào việc thôi!" (cs_intro) chạy khi chưa mở ca. Tiền tố cs_ của ca sĩ trùng nghề chăm sóc khách hàng; giờ lệnh của nghề đi theo cổng ca của chính nó (free_actions), chăm sóc khách hàng vẫn cần mở ca. Test chặn tiền tố lệnh trùng mới.
+
+## 📄 Tài liệu
+- docs/LO_TRINH_NGHE.md (docs/careers-roadmap): lộ trình nghề — nghề mới, nâng cấp nghề cũ, khung chung, các đợt.
+
+## Ghép bản
+- i18n: overrides gộp từ mọi nhánh, public/i18n/en.json build lại; bỏ ghi đè "😊 Tinh thần" → "Spirit" của nhánh du lịch (giữ "Mood" như cả game).
+- Bundle Phaser (public/js/isometric/phaser-world.js) build lại từ client/isometric/*.ts sau khi gộp cánh bay + đảo.
+
 # 2.5.9.1 — 23/10/2026
 
 Chủ game 23/10 (Ha Yeon: "bấm đổi nghề không coi được cái khu phố đi chỗ này chỗ kia như cũ"): "chỉnh cho người ta áp dụng cả 2, mở ra map như màn cũ".
