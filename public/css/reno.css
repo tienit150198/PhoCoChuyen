@@ -29,7 +29,7 @@
 .dc-roomwrap{position:relative;min-width:0}
 .dc-room{display:block;width:100%;height:auto;border-radius:18px;border:1px solid var(--line);background:#f3e6d2;box-shadow:var(--shadow-sm);user-select:none;-webkit-user-select:none;touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .dc-room.edit{touch-action:none;cursor:default}
-.dc-hint{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,253,248,.9);color:#5b4535;font-size:.8rem;font-weight:700;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.dc-hint{position:absolute;right:10px;bottom:10px;max-width:calc(100% - 190px);text-align:right;padding:4px 10px;border-radius:999px;background:rgba(255,253,248,.9);color:#5b4535;font-size:.8rem;font-weight:700;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 
 .dc-it{outline:none}
 .dc-room.edit .dc-it{cursor:grab}
