@@ -2,7 +2,7 @@
 // (withBuilds: houses and sites block the way, finished buildings are spots), walking around them (findPath), the old
 // interface's drawings (v4/island-build-art.js through v4/island-walk.js), the new interface's (client/isometric/
 // island-builds.ts through private-island.ts, bundled with a fake Phaser), and the scene controller: the owner taps a
-// plot to build, a leisure building asks for its tinh thần, a home's door opens its inside, a site becomes a building.
+// site for its sheet (🏗️ opens the build mode), a leisure building asks for its tinh thần, a home's door opens its inside, a site becomes a building.
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFileSync} from 'node:fs';
@@ -119,13 +119,15 @@ function harness(builds,{mine=true}={}){
   const session=createIslandSession(env,{trip,view,actions,loadRenderer:async()=>renderer,loadLive:async()=>live,clock:()=>clock,wall:()=>wall,raf:fn=>{tick=fn;return 1;},caf(){}});
   return {session,calls,view,live,sets,run(ms){const n=Math.ceil(ms/16);for(let i=0;i<n&&tick;i++){clock+=16;tick(clock);}},setWall(v){wall=v;}};
 }
-test('on the island: the owner taps a plot to build, a pool gives its tinh thần, a home opens inside, a site becomes a building', async () => {
+test('on the island: the owner taps a site for its sheet, a pool gives its tinh thần, a home opens inside, a site becomes a building', async () => {
   const L=I.layout('san_ho');
   const rows=[{p:0,k:'biet_thu',l:2,b:0,t:0},{p:1,k:'ho_boi',l:1,b:0,t:0},{p:6,k:'cam_trai',l:0,b:1,t:NOW+120}];
   const h=harness(rows);await h.session.start();h.live.emit('isl_room',{room:'isl:x',trip:'abcd1234abcd1234',me:'pme',owner:'pme',people:[]});h.run(3000);
   assert.equal(h.sets[0].length,3);assert.ok(h.calls.some(c=>c[0]==='spots'));
-  // the owner taps an empty plot: the build sheet for it
-  const [ex,ey]=L.plots[4];h.view.tap(ex*1000,ey*1000);assert.deepEqual(h.calls.at(-1),['build',4]);
+  // 🏝️ 24/10: the ground is a free grid; the owner's taps on empty ground walk, a site opens its sheet, 🏗️ the build mode
+  const B=h.session.layout,site=B.built.find(b=>b.plot===6);assert.ok(site&&site.work);
+  const [ex,ey]=L.plots[4];h.view.tap(ex*1000,ey*1000);assert.ok(!h.calls.some(c=>c[0]==='build'),'an empty plot just walks');
+  h.view.tap(site.x*1000,site.y*1000);assert.deepEqual(h.calls.at(-1),['build',6]);
   h.view.build();assert.deepEqual(h.calls.at(-1),['build',-1]);
   // the pool: walk there, the others see it, the tinh thần is asked for
   h.view.spot('b_b');h.run(9000);

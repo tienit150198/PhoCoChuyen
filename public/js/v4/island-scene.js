@@ -5,9 +5,10 @@
  * "← Về phố" just goes home: the trip goes on, the dialog (v4/island.js) brings the player back.
  * 🏗️ The island's buildings (trip.builds, game/island_build.py) stand on both maps (withBuilds): scaffolding until their
  * hour, then the building; a leisure building is a spot (walk up: its pose, and actions.use() for the small daily tinh
- * thần), a home's door opens its inside view; the owner taps an empty plot to build (actions.build). A trip has no time
- * limit since 19/10 (trip.unlimited). */
-import {layout,arrival,step,walkable,nearestWalkable,spotNear,standAt,spotById,spotLine,EMOTES,withBuilds,plotAt,workAt,findPath} from '../island-layout.js';
+ * thần), a home's door opens its inside view; the owner's 🏗️ opens the build mode (actions.build). A trip has no time
+ * limit since 19/10 (trip.unlimited). 🏝️ 24/10: the island at its size with its decorations (withDesign: the owner's
+ * from the save, journey.isld, a visitor's from the trip's `design`), redrawn when the owner changes it. */
+import {layout,arrival,step,walkable,nearestWalkable,spotNear,standAt,spotById,spotLine,EMOTES,withBuilds,withDesign,footpaths,workAt,findPath} from '../island-layout.js';
 import {createIslandPresence,peerAt} from './island-live.js';
 import {lookOf} from './look.js';
 import {newInterface} from '../interface-mode.js';
@@ -46,7 +47,11 @@ export const hoursLeft=s=>{const m=Math.max(1,Math.ceil(s/60)),h=Math.floor(m/60
 /** The session without the DOM: tests drive it with a fake view, renderer, live socket and clock. */
 export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()=>null,actions={},clock=()=>performance.now(),wall=()=>Date.now()/1000,
   raf=fn=>requestAnimationFrame(fn),caf=id=>cancelAnimationFrame(id),reduced=false,onClose=()=>{},skew=0}){
-  const base=layout(trip.island?.look),kind=trip.visit?'solo':trip.kind||'solo',route=vehicleRoute(base,kind,!trip.visit&&(trip.seats||0)>=12),[sx,sy]=landing(base,kind);
+  /** 🏝️ The island's design: the owner's own save (fresh after every change in the build mode), else the trip's. */
+  const iid=trip.island?.id;
+  const designOf=()=>(trip.mine&&iid&&env.api.state?.journey?.isld?.i?.[iid])||trip.design||null;
+  let design=designOf(),base=withDesign(layout(trip.island?.look),design),paths=footpaths(base),pathKey=JSON.stringify(paths);
+  const kind=trip.visit?'solo':trip.kind||'solo',route=vehicleRoute(base,kind,!trip.visit&&(trip.seats||0)>=12),[sx,sy]=landing(base,kind);
   /** The server's unix time (the buildings' hours are the server's). */
   const serverNow=()=>wall()+skew;
   let builds=Array.isArray(trip.builds)?trip.builds:[],L=withBuilds(base,builds,serverNow()),buildKey='';
@@ -64,7 +69,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     if(said)env.toast?.(said);
     onClose(reason);
   }
-  function onState(){if(env.api.state?.jail)close();else view.fun?.(funList());}
+  function onState(){if(env.api.state?.jail){close();return;}if(trip.mine)redesign(designOf());view.fun?.(funList());}
   /** 🏖️ Chơi trên đảo (game/island_fun.py): the beach activities and the daily chest, done ones marked. */
   function funList(){
     const B=env.api.content?.journey?.homelife?.beach,done=env.api.state?.journey?.homelife?.beach||{};
@@ -87,9 +92,9 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
   function send(to,ms){if(!presence)return;presence.move([me.x,me.y],to,Math.min(6000,ms));me.sent=to;me.sendAt=clock();}
   function tap(clientX,clientY){
     const p=renderer?.toMap(clientX,clientY);if(!p)return;
-    const plot=plotAt(L,p[0],p[1]),here=plot>=0?L.built.find(b=>b.plot===plot):null;
-    if(plot>=0&&trip.mine&&actions.build&&(!here||here.work)){actions.build(plot);return;}   // the owner: an empty plot / a site
-    if(here&&!here.work&&here.level>=1){const sp=L.spots.find(x=>x.build?.plot===plot);if(sp){const [x,y]=standAt(L,sp);go(x,y,sp);return;}}
+    const half=.036,here=L.built.find(b=>Math.abs(b.x-p[0])<=half&&Math.abs(b.y-p[1])<=half)||null;   // a building under the finger
+    if(here&&here.work&&trip.mine&&actions.build){actions.build(here.plot);return;}   // the owner: a site, its sheet
+    if(here&&!here.work&&here.level>=1){const sp=L.spots.find(x=>x.build?.plot===here.plot);if(sp){const [x,y]=standAt(L,sp);go(x,y,sp);return;}}
     const s=spotNear(L,p[0],p[1],.06);
     if(s){const [x,y]=standAt(L,s);go(x,y,s);}else go(p[0],p[1]);
   }
@@ -108,13 +113,21 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     builds=Array.isArray(list)?list:[];
     const now=serverNow(),key=JSON.stringify(builds.map(b=>[b.p,b.k,b.l,b.b,workAt(b,now)]));
     if(key===buildKey)return;buildKey=key;
-    L=withBuilds(base,builds,now);renderer?.setBuilds?.(L.built);view.spots?.(L.spots);
+    L=withBuilds(base,builds,now);renderer?.setBuilds?.(L.built);view.spots?.(chips(L.spots));
+    const next=footpaths(L),pk=JSON.stringify(next);if(pk!==pathKey){pathKey=pk;paths=next;renderer?.setLayout?.(base,paths);}   // 🛤️ to the homes' doors too
     if(!walkable(L,me.x,me.y)){const [x,y]=nearestWalkable(L,me.x,me.y);me.x=x;me.y=y;}
+  }
+  /** 🏝️ The island's design changed (the owner built, moved, lấn biển): the map, the spots, the footpaths. */
+  let designKey=JSON.stringify(design);
+  function redesign(next){
+    const key=JSON.stringify(next||null);if(key===designKey||closed)return;designKey=key;design=next;
+    base=withDesign(layout(trip.island?.look),design);paths=footpaths(base);buildKey='';rebuild(builds);
+    renderer?.setLayout?.(base,paths);
   }
   let reloading=0;
   async function reload(){
     if(!actions.reload||closed||Date.now()-reloading<1500)return;reloading=Date.now();
-    try{const t=await actions.reload();if(t&&!closed)rebuild(t.builds);}catch{/* the map keeps what it had */}
+    try{const t=await actions.reload();if(t&&!closed){if(!trip.mine&&t.design)redesign(t.design);rebuild(t.builds);}}catch{/* the map keeps what it had */}
   }
   function key(code,down){
     const map={ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r'};
@@ -167,6 +180,7 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     if(a>=1&&!arrived){arrived=true;view.arrived?.();}
     if(arrived)walk(dt,t);
     const list=people(t);
+    if(trip.mine&&globalThis.document?.querySelector?.('dialog.isl-ed[open]'))return;   // 🛠️ the build mode covers the island: draw nothing under it
     renderer.frame({people:list,vehicle:vehicleAt(route,a),focus:[me.x,me.y]},t);
     const head=renderer.personHeight||90;
     view.tags(list.filter(p=>!p.hidden).map(p=>{const s=renderer.toScreen(p.x,p.y);return s&&{...p,sx:s[0],sy:s[1]-head-(p.pose==='swim'?-head*.35:0)};}).filter(Boolean));
@@ -190,8 +204,9 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
     if(env.world){previousPause=env.world.paused;env.world.paused=true;}
     env.closeSheet?.();env.api.addEventListener?.('state',onState);view.open(L,trip);
     try{
-      renderer=await loadRenderer(view);if(closed){renderer?.destroy();renderer=null;return;}
-      renderer.setBuilds?.(L.built);view.spots?.(L.spots);view.fun?.(funList());buildKey='';rebuild();
+      renderer=await loadRenderer(view,base);if(closed){renderer?.destroy();renderer=null;return;}
+      renderer.setLayout?.(base,paths);renderer.setBuilds?.(L.built);view.spots?.(chips(L.spots));view.fun?.(funList());buildKey='';rebuild();
+      if(!trip.mine&&!trip.design)reload();   // 🏝️ opened from a list without its design: read the trip once
       view.ready();
       const live=await loadLive().catch(()=>null);if(closed)return;
       if(live?.on)pingOff=live.on('island_ping',f=>{if(f.trip===trip.id&&f.why==='seat')reload();});   // 🏗️ the owner built or razed something
@@ -200,10 +215,12 @@ export function createIslandSession(env,{trip,view,loadRenderer,loadLive=async()
       t0=last=clock();frameId=raf(tick);
     }catch(error){if(!closed){env.toast?.(error?.message||'Chưa mở được đảo. Thử lại nhé.',true);close();}}
   }
-  return {start,close,tick,tap,useSpot,key,rebuild,reload,
+  return {start,close,tick,tap,useSpot,key,rebuild,reload,redesign,
     get me(){return me;},get arrived(){return arrived;},get why(){return why;},get presence(){return presence;},get closed(){return closed;},get layout(){return L;}};
 }
 
+/** The spot buttons: every place once, a decoration's kind once (twenty sun loungers are one button). */
+function chips(list){const seen=new Set();return list.filter(s=>{if(!s.decor)return true;const k=s.decor.kind;if(seen.has(k))return false;seen.add(k);return true;});}
 const spotChips=list=>list.map(s=>`<button type="button" class="isl-chip${s.build?' isl-chip-b':''}" data-spot="${esc(s.id)}">${esc(s.emoji)} ${esc(s.name)}</button>`).join('');
 /** 🏠 What a home holds at each level: [emoji, left %, bottom %, size px] on the floor, the wall's and the floor's colours. */
 const ROOMS={
@@ -256,7 +273,7 @@ export function createView(){
           <p class="isl-notice" role="status" aria-live="polite" hidden></p></div>
         <footer class="isl-bar">
           <div class="isl-row isl-fun" role="group" aria-label="Chơi trên đảo" hidden></div>
-          <div class="isl-row isl-spots" role="group" aria-label="Chỗ chơi trên đảo">${spotChips(L.spots)}</div>
+          <div class="isl-row isl-spots" role="group" aria-label="Chỗ chơi trên đảo">${spotChips(chips(L.spots))}</div>
           <div class="isl-row isl-emotes" role="group" aria-label="Biểu cảm">${EMOTES.map(([id,e,name])=>`<button type="button" class="isl-emo" data-emote="${id}" aria-label="${esc(name)}" title="${esc(name)}">${e}</button>`).join('')}</div>
           <form class="isl-say"><input type="text" maxlength="120" autocomplete="off" enterkeyhint="send" placeholder="Nói gì đó với mọi người…" aria-label="Nói với mọi người trên đảo"><button type="submit" class="btn primary">Gửi</button></form>
         </footer></div>`;
@@ -320,7 +337,7 @@ export async function loadRendererFor(env,view,L){
     try{
       const m=await import('../isometric/phaser-world.js');
       if(typeof m.PrivateIslandRenderer==='function'){
-        const r=new m.PrivateIslandRenderer(view.canvas,L);let timer;
+        const r=new m.PrivateIslandRenderer(view.canvas,L);let timer;   // 🏝️ the session sends the designed island (setLayout) once it runs
         const ok=await Promise.race([r.ready.then(()=>true),new Promise(res=>{timer=setTimeout(()=>res(false),15000);})]).finally(()=>clearTimeout(timer));
         if(ok)return r;r.destroy();
       }
@@ -344,7 +361,7 @@ export function openIslandScene(env,trip,{actions={},onClose=()=>{},skew=0}={}){
       const L=layout(trip.island?.look);
       const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches||false;
       const session=createIslandSession(env,{trip,view:createView(),actions,reduced,skew,
-        loadRenderer:view=>loadRendererFor(env,view,L),
+        loadRenderer:(view,designed)=>loadRendererFor(env,view,designed||L),
         loadLive:async()=>{const network=await import('./live.js');env.bootLive?.(network);return network.live;},
         onClose:why=>{active=null;onClose(why);}});
       await session.start();return session;

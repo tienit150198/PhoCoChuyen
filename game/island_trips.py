@@ -205,19 +205,25 @@ def _is_public(db, trip: str) -> bool:
     return bool(db.execute("SELECT 1 FROM island_public WHERE trip=? AND status='open'", (trip,)).fetchone())
 
 
-def _trip_view(db, t: dict, sid: str, now: float | None = None) -> dict:
+def _trip_view(db, t: dict, sid: str, now: float | None = None, design: bool = True) -> dict:
     from . import island_build as ib
+    from . import island_design as idz
     now = mr.now() if now is None else now
     guests = mr._rows(db, "SELECT guest, status FROM island_guests WHERE trip=? AND status IN ('invited','aboard') "
                           'ORDER BY invited, guest', (t['id'],))
     aboard = sum(1 for g in guests if g['status'] == 'aboard')
     builds = ib.island_rows(db, t['owner'], t['island'])
+    lay = idz.with_places(idz.design_row(db, t['owner'], t['island']), t['island'], (b['p'] for b in builds))   # 🏝️ its size, decorations and the buildings' places
     public = _is_public(db, t['id'])
     visitors = _visitors(db, t['id'], now) if public else 0
     out = dict(id=t['id'], island=_island(t['island']), vehicle=_vehicle(t['vehicle']), kind=t['kind'], seats=int(t['seats']),
                aboard=aboard + 1, ends=float(t['ends']), owner=_person(db, t['owner']), mine=t['owner'] == sid,
-               unlimited=float(t['ends']) - now > LONG, builds=builds, score=ib.row_score(builds, now),
+               unlimited=float(t['ends']) - now > LONG, builds=builds, score=ib.row_score(builds, now) + lay['pts'],
                public=public, visitors=visitors, cap=C.PUBLIC_CAP if public else int(t['seats']))
+    if design:
+        out['design'] = lay
+    else:
+        out['decor'] = len(lay['d'])
     if out['mine']:
         out['guests'] = [dict(**_person(db, g['guest']), status=g['status']) for g in guests]
         if public:
@@ -244,7 +250,7 @@ def open_list(db, sid: str, now: float) -> list:
     pid = social.pid_of(sid)
     out = []
     for r in mr._rows(db, OPEN_SQL, (now, sid, sid, sid, pid, pid, OPEN_MAX)):
-        v = _trip_view(db, r, sid, now)
+        v = _trip_view(db, r, sid, now, design=False)   # the list: counts only (a trip entered from it is read again)
         v['people'] = v['aboard'] + v['visitors']
         out.append(v)
     out.sort(key=lambda v: (-v['score'], -v['people'], v['id']))

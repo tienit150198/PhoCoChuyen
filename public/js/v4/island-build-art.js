@@ -5,6 +5,7 @@
  * projection {P(x, y) → [px, py], S, FLAT}. Pure painting: the list comes from public/js/island-layout.js withBuilds. */
 import {PLOT_W} from '../island-layout.js';
 import {HOUSES,paintHouse,houseTop} from '../house-art.js';
+import {turnedView} from '../island-decor-art.js';
 
 /** How much bigger than its plot's own scale each kind is drawn (as on the new interface: client/isometric/island-builds.ts).
  * 🏡 The house styles of public/js/house-art.js: HOUSE_GROW. */
@@ -52,7 +53,7 @@ export function createBuildArt(ctx,view){
       if(p.coast)emoji('⚓',(a+c)/2,(b+d)/2+8,14,.7);return;}
     const lv=Math.max(1,Math.min(3,it.level));
     if(it.work&&it.level<1){const [a,b,c,d]=rect(r,'#c9b48a');ctx.fillStyle='#9b8a6a';for(let i=0;i<6;i++)ctx.fillRect(a+(c-a)*((i*37)%10)/10,b+(d-b)*((i*53)%10)/10,5,3);return;}
-    if(HOUSES[it.kind]){const {P}=view(),[a,b]=P(p.x,p.y);ctx.save();ctx.translate(a,b);ctx.scale(HOUSE_GROW,HOUSE_GROW);ctx.translate(-a,-b);paintHouse(it.kind,lv,it.look||0,houseView(p),{only:'ground'});ctx.restore();return;}
+    if(HOUSES[it.kind]){const {P}=view(),[a,b]=P(p.x,p.y);ctx.save();ctx.translate(a,b);ctx.scale(HOUSE_GROW,HOUSE_GROW);ctx.translate(-a,-b);paintHouse(it.kind,lv,it.look||0,turnedView(houseView(p),it.r||0),{only:'ground'});ctx.restore();return;}
     switch(it.kind){
       case 'nha_san':rect(r,'rgba(201,167,122,.55)');break;
       case 'biet_thu':rect(r,'#e9e2d2');break;
@@ -81,7 +82,7 @@ export function createBuildArt(ctx,view){
 
   function standOne(p,it,t){
     const lv=Math.max(1,Math.min(3,it.level));
-    if(HOUSES[it.kind]){paintHouse(it.kind,lv,it.look||0,houseView(p),{only:'parts'});return;}
+    if(HOUSES[it.kind]){paintHouse(it.kind,lv,it.look||0,turnedView(houseView(p),it.r||0),{only:'parts'});return;}
     switch(it.kind){
       case 'nha_san':{const hw=lv>1?.024:.02,hd=lv>1?.02:.017,z=14;const legs=box(p.x,p.y,hw,hd,0,z,'rgba(0,0,0,0)','rgba(0,0,0,0)');
         ctx.fillStyle='#6e4a2e';for(const f of [0,1])ctx.fillRect(legs.a+(legs.c-legs.a)*f-1.5,legs.front,3,legs.base-legs.front);
@@ -114,13 +115,13 @@ export function createBuildArt(ctx,view){
   }
 
   return {
-    /** Everything that lies flat, under the people: `plots` [[x, y, coast]], `built` withBuilds().built. */
-    ground(plots,built){(plots||[]).forEach(([x,y,c],i)=>groundOne({x,y,coast:Boolean(c)},(built||[]).find(b=>b.plot===i)||null));},
+    /** Everything that lies flat, under the people: `built` withBuilds().built (each where it stands). */
+    ground(built){for(const it of built||[])groundOne({x:it.x,y:it.y,coast:Boolean(it.coast)},it);},
     /** [y, draw] of what stands up, sorted with the people by the walk. */
-    standing(plots,built,t){
+    standing(built,t){
       const out=[];
       for(const it of built||[]){
-        const p=(plots||[])[it.plot];if(!p)continue;const at={x:p[0],y:p[1]};
+        const at={x:it.x,y:it.y};
         if(it.level>=1)out.push([at.y+H*.8,()=>{const {P}=view(),[a,b]=P(at.x,at.y),K=GROW[it.kind]||(HOUSES[it.kind]?HOUSE_GROW:1);ctx.save();ctx.translate(a,b);ctx.scale(K,K);ctx.translate(-a,-b);standOne(at,it,t);ctx.restore();}]);
         if(it.work)out.push([at.y+H*.8+.0001,()=>scaffold(at,it,t)]);
         if(it.kind==='ben_thuyen'&&it.pier&&!it.work)out.push([it.pier.end[1],()=>{}]);

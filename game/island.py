@@ -315,7 +315,11 @@ def _sell(s: dict, p: dict) -> dict:
     if back:
         _wallet_rows(j, back, KIND, f'Bán lại · {it["name"]}')
     built = ib.on_sell(s, it['id'])
+    from . import island_design
+    kept = island_design.on_sell(s, it['id'])   # 🏝️ its decorations go back into the kho, its size stays with the save
     extra = f' Công trình trên đảo được phá dỡ, thu hồi vật liệu {_fmt(built)} xu.' if built else ''
+    if kept:
+        extra += f' {kept} món trang trí được cất vào kho.'
     return dict(message=f'Đã bán {it["name"]}, nhận {_fmt(back)} xu vào ví.{extra} Chuyến ra đảo đang mở (nếu có) cũng kết thúc.')
 
 
@@ -353,4 +357,9 @@ def catalogue() -> dict:
     return dict(islands=[dict(i, month=month_of(i['id'], i['price']), sell=sell_price(i['price'])) for i in C.ISLANDS if not i.get('gone')],
                 seats=seats, arrive=dict(C.ARRIVE), sell_pct=C.SELL_PCT, minutes=C.SESSION_MIN, invite_max=C.INVITE_MAX,
                 month_days=bk.MONTH_DAYS, unlimited=True, public_cap=C.PUBLIC_CAP,   # 19/10: a trip has no time limit (`minutes`: for older clients)
-                build=ib.catalogue(), **({'build_off': True} if ib.off() else {}))   # 🏗️ Xây trên đảo (game/island_build.py; MNL_ISLAND_BUILD_OFF hides its tab)
+                build=dict(ib.catalogue(), design=_design_catalogue()), **({'build_off': True} if ib.off() else {}))
+
+
+def _design_catalogue() -> dict:
+    from . import island_design   # 🏝️ Thiết kế đảo: the grid, the size tiers, the decorations
+    return island_design.catalogue()   # 🏗️ Xây trên đảo (game/island_build.py; MNL_ISLAND_BUILD_OFF hides its tab)

@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 // @ts-ignore a plain module shared with the old interface and the build sheet (bundled in: a relative path)
 import {HOUSES,paintHouse,houseTop} from '../../public/js/house-art.js';
+// @ts-ignore the same: a house style turned a quarter (🏝️ moved and turned in the build mode)
+import {turnedView} from '../../public/js/island-decor-art.js';
 
 /** 🏗️ Xây trên đảo on the new interface: the plots of a private island and what stands on them (game/island_build.py),
  * drawn isometrically by PrivateIslandRenderer (private-island.ts). Pure painting: every building is a few Phaser
@@ -9,7 +11,7 @@ import {HOUSES,paintHouse,houseTop} from '../../public/js/house-art.js';
  * (withBuilds); nothing here decides a rule. 🏡 The house styles (20/10) are public/js/house-art.js models, painted
  * through a small adapter (houseView) in their colour (`look`). */
 type Pt=[number,number];
-export interface BuiltItem {plot:number;x:number;y:number;coast:boolean;kind:string;look?:number;level:number;work:boolean;until:number;next:number;
+export interface BuiltItem {plot:number;x:number;y:number;r?:number;coast:boolean;kind:string;look?:number;level:number;work:boolean;until:number;next:number;
   pier?:{rect:{x:number;y:number;w:number;h:number};end:Pt;dir:Pt}}
 
 const N=14,HW=40,HH=20,PLOT=.072;
@@ -99,8 +101,8 @@ export function paintPlot(s:Phaser.Scene,it:BuiltItem|null,plot:{x:number;y:numb
   g.setScale(K);
   if(isHouse(it.kind)){   // 🏡 a house style: its yard flat under the people, the house sorted by its front corner
     flat.setScale(K);
-    paintHouse(it.kind,lv,it.look||0,houseView(flat,P,x,y),{only:'ground'});
-    paintHouse(it.kind,lv,it.look||0,houseView(g,P,x,y),{only:'parts'});
+    paintHouse(it.kind,lv,it.look||0,turnedView(houseView(flat,P,x,y),it.r||0),{only:'ground'});
+    paintHouse(it.kind,lv,it.look||0,turnedView(houseView(g,P,x,y),it.r||0),{only:'parts'});
     return out;
   }
   /** A small moving part (a flag, a flame, a jet of water) at a point of `g`'s drawing, as big as the building. */

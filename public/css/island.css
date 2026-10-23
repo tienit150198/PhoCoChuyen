@@ -156,3 +156,52 @@ dialog.isl-scene{position:fixed;inset:0;margin:0;padding:0;width:100vw;max-width
 .isl-fun .isl-chip{background:#f3fbff;border-color:#9ccbe0;color:#163b4d}
 .isl-fun .isl-chip.done{opacity:.55}
 .isl-fun .isl-chip.chest{border-color:#d4a838;background:#fff6d5;color:#4a3606;font-weight:700}
+/* 🛠️ Chế độ xây (v4/island-editor.js): the island full screen, the map in the middle, the panel under it; phone first. */
+dialog.isl-ed{position:fixed;inset:0;margin:0;padding:0;width:100vw;max-width:none;height:100vh;height:100dvh;max-height:none;border:0;border-radius:0;background:#1d5f78;color:#4a3628;overflow:hidden;box-sizing:border-box}
+dialog.isl-ed[open]{display:flex;flex-direction:column}
+.isl-ed::backdrop{background:#16384a}
+.isl-ed-head{display:flex;align-items:center;gap:10px;padding:max(6px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left));background:#fff6e4;border-bottom:1px solid #e0c79f}
+.isl-ed-x{flex:none;width:40px;height:40px;border:0;border-radius:12px;background:#f1e2c6;color:inherit;font-size:18px;font-weight:800;cursor:pointer}
+.isl-ed-title{flex:1;min-width:0}
+.isl-ed-title h2{margin:0;font-size:17px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isl-ed-title small{display:block;font-size:12px;color:#7a6a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isl-ed-wallet{flex:none;font-weight:700;font-size:13px}
+.isl-ed-stage{position:relative;flex:1;min-height:160px;overflow:hidden}
+.isl-ed-cv{display:block;width:100%;height:100%;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
+.isl-ed-zoom{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.isl-ed-zoom button{width:40px;height:40px;border:0;border-radius:12px;background:#fff6e4e6;color:#4a3628;font-size:20px;font-weight:800;box-shadow:0 2px 8px #0003;cursor:pointer}
+.isl-ed-flash{position:absolute;left:10px;right:62px;top:10px;margin:0;padding:8px 12px;border-radius:12px;background:#fff6e4;box-shadow:0 4px 14px #0004;font-size:13px;font-weight:600;line-height:1.35;text-align:center}
+.isl-ed-flash.bad{background:#ffe3dc;color:#8a2c1c}
+.isl-ed-panel{flex:none;max-height:46vh;overflow:auto;background:#fff6e4;border-top:1px solid #e0c79f;padding:8px max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+.isl-ed-panel[aria-busy="true"]{opacity:.75}
+.isl-ed-tools{display:flex;gap:6px;margin-bottom:6px}
+.isl-ed-tool{flex:1;min-width:0;min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:4px 10px;border:1px solid #e0c79f;border-radius:12px;background:#fff;color:inherit;font-weight:700;font-size:14px;text-align:left;cursor:pointer}
+.isl-ed-tool small{font-weight:500;font-size:11px;color:#7a6a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.isl-ed-tool[aria-pressed="true"]{border-color:#3d7d4f;background:#eef8ee}
+.isl-ed-tool.done{color:#7a6a5c;cursor:default}
+.isl-ed-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.isl-ed-tabs::-webkit-scrollbar{display:none}
+.isl-ed-tabs button{flex:none;min-height:36px;padding:4px 12px;border:1px solid #e0c79f;border-radius:18px;background:#fff;color:inherit;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer}
+.isl-ed-tabs button.on{background:#c0603a;border-color:#c0603a;color:#fff}
+.isl-ed-cards{display:grid;grid-auto-flow:column;grid-auto-columns:104px;gap:8px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity}
+.isl-ed-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:150px;padding:6px 4px;border:1px solid #e0c79f;border-radius:14px;background:#fff;color:inherit;text-align:center;cursor:pointer;scroll-snap-align:start}
+.isl-ed-card canvas{width:92px;height:72px}
+.isl-ed-card b{font-size:12.5px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.isl-ed-card small{font-size:11.5px;font-weight:700;color:#3d7d4f}
+.isl-ed-card i{font-style:normal;font-size:11px;color:#7a6a5c}
+.isl-ed-card em{position:absolute;left:4px;right:4px;top:4px;padding:2px 4px;border-radius:8px;background:#fffaf0e6;font-style:normal;font-size:10.5px;font-weight:700;color:#a0452c}
+.isl-ed-card.off{opacity:.6}
+.isl-ed-empty{width:min(420px,calc(100vw - 40px));margin:8px 4px;font-size:13px;color:#7a6a5c;white-space:normal}
+.isl-ed-bar{display:grid;gap:6px}
+.isl-ed-what{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:15px}
+.isl-ed-what span{font-size:20px}
+.isl-ed-what small{color:#7a6a5c;font-size:12.5px;font-weight:600}
+.isl-ed-why{margin:0;font-size:13px;color:#3d7d4f;font-weight:600}
+.isl-ed-why.bad{color:#a0452c}
+.isl-ed-btns{display:flex;gap:6px;flex-wrap:wrap}
+.isl-ed-btns .btn{flex:1;min-width:84px;min-height:46px;font-weight:700}
+.isl-ed-btns .btn[disabled]{opacity:.5}
+/* 🏗️ Xây: the way in, what stands on the island */
+.isl-ed-entry h3{margin:0 0 4px}
+.isl-ed-facts{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;font-weight:600}
+.isl-blist{display:grid;gap:6px}

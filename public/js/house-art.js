@@ -27,7 +27,7 @@ export function shade(hex,k){
   const c=v=>clamp(Math.round(v*k),0,255).toString(16).padStart(2,'0');
   return '#'+c((n>>16)&255)+c((n>>8)&255)+c(n&255);
 }
-const isoLight=(nx,ny,nz)=>clamp(.8+.2*nx+.05*ny+.3*nz,.62,1.16);
+export const isoLight=(nx,ny,nz)=>clamp(.8+.2*nx+.05*ny+.3*nz,.62,1.16);
 
 /* ---- the model builder ---------------------------------------------------------------------------------------- */
 function builder(){
@@ -129,6 +129,12 @@ function builder(){
   };
   return h;
 }
+
+/** 🏝️ A model drawn by `draw(h)` with this builder ({parts, ground, top}): the island decorations
+ * (public/js/island-decor-art.js) use the same parts as the houses. */
+export function modelOf(draw){const h=builder();draw(h);return {parts:h.parts,ground:h.base,top:h.top};}
+/** Paint a model of modelOf() through a view (see the top of this file). */
+export function paintModelVia(m,view,only=''){paintModel(m,view,only);}
 
 /* ---- the styles ------------------------------------------------------------------------------------------------ */
 // Shared colours.

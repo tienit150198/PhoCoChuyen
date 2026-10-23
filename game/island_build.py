@@ -52,7 +52,8 @@ VERSION = 1
 KEY = 'islb'
 KIND = 'life'
 COMMANDS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_isle_use', 'jr_isle_paint')
-SYNC_ACTIONS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_isle_paint', 'jr_island_sell', 'jr_island_buy', 'reset_all', 'import_save')
+SYNC_ACTIONS = ('jr_isle_build', 'jr_isle_up', 'jr_isle_raze', 'jr_isle_paint', 'jr_island_sell', 'jr_island_buy', 'reset_all', 'import_save',
+                'jr_isle_place', 'jr_isle_dmove', 'jr_isle_store', 'jr_isle_bmove', 'jr_isle_expand', 'jr_isle_opt')   # 🏝️ game/island_design.py
 BUILD = {b['id']: b for b in C.BUILDINGS}
 LOOK_RE = re.compile(r'([a-z0-9_]+?)__([1-9])')
 BLOCK_KEYS = frozenset({'v', 'p', 'n', 'u'})
@@ -279,24 +280,37 @@ def off() -> bool:
 
 
 # ---------------------------------------------------------------- commands
+def _design():
+    from . import island_design
+    return island_design
+
+
 def action(s: dict, name: str, p: dict) -> dict:
     need = _core().need
     j = s['journey']
     need(j.get('story'), 'Xây trên đảo chỉ có trong hành trình.', 'locked')
     need(not off(), OFF_TEXT, 'off')
+    if name in _design().COMMANDS:   # 🏝️ Thiết kế đảo: decorations, moving, lấn biển (game/island_design.py)
+        return _design().action(s, name, p)
     need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
     need(isinstance(p, dict), 'Thông tin không hợp lệ.')
     if name == 'jr_isle_use':
         return _use(s, p)
-    need(set(p) <= {'island', 'plot', 'kind', 'confirm', 'look'} and {'island', 'plot'} <= set(p), 'Thông tin không hợp lệ.')
+    grid = name == 'jr_isle_build' and 'plot' not in p   # 🏝️ placed on the grid: {x, y, r} (game/island_design.py)
+    need(set(p) <= {'island', 'plot', 'kind', 'confirm', 'look', 'x', 'y', 'r'} and 'island' in p
+         and (grid and {'x', 'y'} <= set(p) or not grid and 'plot' in p and not {'x', 'y', 'r'} & set(p)), 'Thông tin không hợp lệ.')
     iid = p['island']
     need(isinstance(iid, str) and iid in isl.owned(s), 'Bạn chưa có hòn đảo này.', 'not_owned')
-    spots = plots_of(iid)
-    need(type(p['plot']) is int and 0 <= p['plot'] < len(spots), 'Chọn một ô đất nhé.')
+    if not grid:
+        need(type(p['plot']) is int and 0 <= p['plot'] < PLOTS_MAX
+             and (p['plot'] < len(plots_of(iid)) or str(p['plot']) in _plots(s, iid)), 'Chọn một ô đất nhé.')
     t = now()
     b = get(s)
     done = _settle(b, t) if b else []
-    out = {'jr_isle_build': _build, 'jr_isle_up': _up, 'jr_isle_raze': _raze, 'jr_isle_paint': _paint}[name](s, p, iid, str(p['plot']), t)
+    if grid:
+        out = _build(s, p, iid, '', t)
+    else:
+        out = {'jr_isle_build': _build, 'jr_isle_up': _up, 'jr_isle_raze': _raze, 'jr_isle_paint': _paint}[name](s, p, iid, str(p['plot']), t)
     if done:
         out.setdefault('effects', []).extend(f'{it["emoji"]} {it["name"]} đã xây xong (cấp {lv}).' for _, _, k, lv in done if (it := known(k)))
     return out
@@ -321,13 +335,28 @@ def _build(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     need(it is not None, 'Chọn một công trình nhé.')
     look = _look(it, p)
     plots = _plots(s, iid)
+    D = _design()
+    if not key:   # 🏝️ on the grid: a free plot index, the cells checked (bounds, land, the coast, nothing in the way)
+        r = p.get('r', 0)
+        need(type(p['x']) is int and type(p['y']) is int and type(r) is int and 0 <= r <= 3, 'Thông tin không hợp lệ.')
+        why = D.check_building(s, iid, it['id'], p['x'], p['y'], r)
+        if why == 'Phải đặt sát bờ biển.':
+            why = f'{it["name"]} phải đặt sát bờ biển.'
+        need(not why, why, 'place')
+        n = D.free_plot(s, iid)
+        need(n >= 0, 'Đảo đã kín công trình rồi.', 'limit')
+        key = str(n)
     cur = plots.get(key)
     if cur and split(cur['k'])[0] == it['id'] and cur['l'] == 0 and cur['b'] == 1:   # a second tap: nothing to pay
         return dict(message=f'{it["name"]} đang được xây ở ô này rồi.', duplicate=True)
     need(cur is None, 'Ô đất này đã có công trình.', 'taken')
     isle = isl.ISLAND[iid]
-    if it.get('coast'):
-        need(plots_of(iid)[int(key)][2], f'{it["name"]} cần ô đất sát bờ biển (ô có ⚓).', 'coast')
+    if 'x' not in p:   # an old plot (an older client): the old rules, and its cells free of decorations
+        need(int(key) < len(plots_of(iid)), 'Chọn một ô đất nhé.')
+        if it.get('coast'):
+            need(plots_of(iid)[int(key)][2], f'{it["name"]} cần ô đất sát bờ biển (ô có ⚓).', 'coast')
+        why = D.check_plot(s, iid, int(key))
+        need(not why, why, 'taken')
     if it.get('big'):
         need(isle['price'] >= C.BIG_FROM, f'{it["name"]} chỉ xây được trên đảo lớn (Mây Đá, Hoàng Hôn).', 'small')
     if it.get('max'):
@@ -341,6 +370,8 @@ def _build(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     how = isl._take(s, price, f'🏗️ Xây {it["name"]} · {isle["name"]}')
     b = _ensure(s)
     b['p'].setdefault(iid, {})[key] = dict(k=kind_of(it['id'], look), l=0, b=1, t=int(t + hours * 3600), x=price)
+    if 'x' in p:
+        D.set_building(s, iid, int(key), p['x'], p['y'], p.get('r', 0))
     b['n']['built'] = min(BIG, b['n']['built'] + 1)
     b['n']['xu'] = min(BIG, b['n']['xu'] + price)
     return dict(message=f'{it["emoji"]} Khởi công {it["name"]} trên {isle["name"]}: trả {how}. Xong sau {hours} giờ.',
@@ -384,6 +415,7 @@ def _raze(s: dict, p: dict, iid: str, key: str, t: float) -> dict:
     need(j['wallet'] + back <= isl.PRICE_MAX, 'Ví đã quá đầy. Gửi bớt vào ngân hàng rồi phá nhé.', 'limit')
     need(p.get('confirm') is True, f'Xác nhận phá {name}, nhận lại {_fmt(back)} xu.')
     plots.pop(key)
+    _design().on_raze(s, iid, int(key))   # 🏝️ its place on the grid goes with it
     b = get(s)
     b['n']['raze'] = min(BIG, b['n']['raze'] + 1)
     b['n']['back'] = min(BIG, b['n']['back'] + back)
@@ -465,15 +497,15 @@ def _rows(after) -> dict:
     for iid, d in b['p'].items():
         if iid not in owned or not isinstance(d, dict):
             continue
-        n = len(plots_of(iid))
         for k, e in d.items():
-            if known(e['k']) and int(k) < n:
+            if known(e['k']) and int(k) < PLOTS_MAX:   # 🏝️ since 24/10 a building may stand on any plot index (the grid)
                 out[(iid, int(k))] = e
     return out
 
 
 def sync(db, sid: str, after) -> None:
-    """island_builds rows of this owner = the save (upsert what is there, 'gone' for what is not)."""
+    """island_builds rows of this owner = the save (upsert what is there, 'gone' for what is not); 🏝️ island_layout too
+    (game/island_design.py)."""
     t = now()
     want = _rows(after)
     have = {(r['island'], int(r['plot'])): r for r in db.execute(
@@ -493,6 +525,7 @@ def sync(db, sid: str, after) -> None:
         if key not in want and r['status'] == 'up':
             db.execute("UPDATE island_builds SET status='gone', at=? WHERE owner=? AND island=? AND plot=?", (t, sid, key[0], key[1]))
             moved.add(key[0])
+    moved |= _design().sync(db, sid, after, t)
     if moved:   # whoever is on that island now sees the new scaffolding / the empty plot (live island_ping 'seat')
         from . import island_trips as it
         for trip in db.execute("SELECT id, island FROM island_trips WHERE owner=? AND status='open'", (sid,)).fetchall():
@@ -530,9 +563,8 @@ def island_rows(db, owner: str, iid: str) -> list:
     """The buildings visitors see on `owner`'s island `iid` (no sid in it)."""
     rows = db.execute("SELECT plot, kind, lvl, next_lvl, ready_at FROM island_builds WHERE owner=? AND island=? AND status='up' "
                       'ORDER BY plot', (owner, iid)).fetchall()
-    n = len(plots_of(iid))
     return [dict(p=int(r['plot']), k=r['kind'], l=int(r['lvl']), b=int(r['next_lvl']), t=float(r['ready_at']))
-            for r in rows if known(r['kind']) and int(r['plot']) < n]
+            for r in rows if known(r['kind']) and int(r['plot']) < PLOTS_MAX]
 
 
 def row_score(rows: list, t: float) -> int:
@@ -569,5 +601,6 @@ def catalogue() -> dict:
 def forget(db, sid: str) -> None:
     """A player erased their data (game/storage.py delete): their buildings leave the open-island list and the board."""
     db.execute('DELETE FROM island_builds WHERE owner=?', (sid,))
+    _design().forget(db, sid)
     from . import island_lb
     island_lb.clear_cache()

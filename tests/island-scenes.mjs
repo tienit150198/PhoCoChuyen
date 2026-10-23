@@ -8,7 +8,7 @@ import {resolve} from 'node:path';
 import {build} from 'esbuild';
 import * as I from '../public/js/island-layout.js';
 import {vehicleRoute,vehicleAt,landing,facing,createIslandSession} from '../public/js/v4/island-scene.js';
-import {createIslandPresence,peerAt} from '../public/js/v4/island-live.js';
+import {createIslandPresence,peerAt,toWire,fromWire} from '../public/js/v4/island-live.js';
 import {townUtilityGroups,townServiceAvailable} from '../public/js/isometric/town-utilities.js';
 
 const ISLANDS=readFileSync('game/island_content.py','utf8');
@@ -125,7 +125,9 @@ function harness({kind='boat',ends=1e9}={}){
 test('arriving, walking, the others, waves and bubbles, then going home', async () => {
   const h=harness();await h.session.start();
   assert.equal(h.env.world.paused,true);
-  const join=h.live.sent.find(f=>f.t==='isl_in');assert.equal(join.trip,h.trip.id);assert.equal(join.g,'female');assert.deepEqual([join.x,join.y],landing(I.layout('dua'),'boat').map(v=>+v.toFixed(4)));
+  const join=h.live.sent.find(f=>f.t==='isl_in');assert.equal(join.trip,h.trip.id);assert.equal(join.g,'female');assert.deepEqual([join.x,join.y],landing(I.withDesign(I.layout('dua'),null),'boat').map(toWire));
+  // 🏝️ 24/10: the room keeps 0..1 of the bigger map (BOUNDS): out and back the same point
+  for(const v of [-.2,0,.47,1,1.2])assert.ok(Math.abs(fromWire(toWire(v))-v)<.0002,v);assert.equal(toWire(-5),0);assert.equal(toWire(5),1);
   h.run(200);assert.equal(h.frames.at(-1).people[0].hidden,true,'still on the boat');
   const boat=h.frames.at(-1).vehicle;assert.equal(boat.kind,'boat');
   h.run(2600);assert.equal(h.session.arrived,true);assert.equal(h.frames.at(-1).people[0].hidden,false);
@@ -140,7 +142,7 @@ test('arriving, walking, the others, waves and bubbles, then going home', async 
   assert.ok(h.tags.at(-1).some(t=>t.id==='p2'&&t.bubble==='Chào!'));
   // A tap walks there and tells the others.
   const n=h.live.sent.length;h.view.tap(500,520);
-  const mv=h.live.sent.slice(n).find(f=>f.t==='isl_mv');assert.ok(mv&&mv.ms>0,'move sent');assert.deepEqual(mv.p[1],[.5,.52]);
+  const mv=h.live.sent.slice(n).find(f=>f.t==='isl_mv');assert.ok(mv&&mv.ms>0,'move sent');assert.deepEqual(mv.p[1],[toWire(.5),toWire(.52)]);
   h.run(4000);const me=h.session.me;assert.ok(Math.hypot(me.x-.5,me.y-.52)<.01,'walked there');
   // A spot button: walk up, then everyone sees it.
   h.view.spot('lua');h.run(5000);
