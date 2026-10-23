@@ -208,7 +208,7 @@ def validate_data(c):
 
 SPEC=dict(id=ID,prefix='art_',category='service',meta=dict(short='Xưởng vẽ',place='Xưởng vẽ Màu Nắng',tagline='Giữ lời hẹn bằng màu và nét.',icon='palette',
  color='#b66a46',light='#fff1d9',weather='Nắng xiên qua cửa kính',work='Đơn đặt tranh',station='Bàn vẽ',greeting='Đọc phiếu trước khi mở hộp màu nhé.',caption='Một khu phố, nhiều cách nhìn',map_label='XƯỞNG VẼ MÀU NẮNG'),
- people=PEOPLE,staff=[('Minh','frame','Cắt khung và giữ mép tranh sạch.',80,85),('Linh','colors','Soạn màu theo phiếu đặt.',75,90)],roles={'frame':'Làm khung','colors':'Soạn màu'},
+ people=PEOPLE,staff=[('Minh','frame','Cắt khung và giữ mép tranh sạch.',80,85),('Linh','colors','Soạn màu theo phiếu đặt.',75,90), ('Thảo', 'canvas', 'Căng toan phẳng, dán băng giấy giữ mép trước khi vẽ.', 78, 88), ('Bảo', 'pack', 'Bọc góc tranh bằng xốp, ghi tên khách lên thẻ treo.', 82, 84)],roles={'frame':'Làm khung','colors':'Soạn màu', 'canvas': 'Căng toan', 'pack': 'Đóng gói tranh'},
  physical=('art_begin','art_layer','art_proof','art_deliver'),no_tick=('art_plan',),free_actions=(),tip=0,
  activity=('🎨','Thứ tự hoàn thiện tranh',[('Nền','Trước hình'),('Chi tiết','Sau hình'),('Chữ ký','Trước giao')],['Đọc phiếu','Phác thảo','Dựng lớp','Kiểm và giao']),
  stories=[('Màu của phố',('Miên đưa bạn một hộp màu nhỏ.','Khách đầu tiên treo tranh bên ô cửa.','Cả phố nhận ra câu chuyện của mình trên tường xưởng.'))],
