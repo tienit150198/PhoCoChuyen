@@ -1,3 +1,7 @@
+# 2.5.4.1 — 23/10/2026
+
+Hotfix: 🪽 tab Cánh báo "Thao tác chưa hoàn tất" khi mở Tiệm phụ kiện từ menu (jrAccShop trong v4/journey.js tạo ui.as thiếu wfz → st.wfz.filter lỗi). journey.js khởi tạo đủ wfz / reveal / wtry; acc-shop.js wingShelf chịu được ui.as cũ.
+
 # 2.5.4 — 23/10/2026
 
 feat/pairs-wings (từ origin/main afb38304 = 2.5.3): 🤝 thêm 7 phụ kiện đôi + giá mới, 💞 quan hệ bạn bè, 🪽 cánh có hạng D → Huyền thoại (chủ game 22/10: "tính xem thêm cánh cho người dùng nhé, cánh sẽ buff cho người chơi khi đánh pet", "cánh này là làm đẹp cho người dùng nhé, với tăng tiền kiếm được nữa", "cho nâng nữa, nâng lên như thú đi", "mua thì mặc định D hoặc C ngẫu nhiên", "cho cánh đẹp tí, có cả mode cũ và mode mới đều hiển thị được nhé"). Schema 89 → 90 (chỉ thêm bảng friend_bonds, wing_worn). Save: khóa mới journey['wings'] (2.5.3 giữ nguyên, không đọc). Có gì mới 2.5.4.

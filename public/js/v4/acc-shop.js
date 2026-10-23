@@ -120,7 +120,7 @@ function wingShelf(env,st){
   const {api}=env,c=WC(api);
   if(!c)return `<p class="muted">Cánh đang về hàng, lát nữa quay lại nhé.</p>`;
   const w=wingsOf(api),own=Array.isArray(w?.own)?w.own:[],worn=wingOfState(api.state),g=api.state.journey.gender;
-  st.wfz=st.wfz.filter(id=>own.some(x=>x.id===id));
+  st.wfz=(st.wfz||[]).filter(id=>own.some(x=>x.id===id));   // ui.as may come from jrAccShop (v4/journey.js) without it
   const show=st.wtry?{k:st.wtry,r:0}:worn,look=lookOf(api.state),pr=myPairs();
   const mirror=figureSVG({...look,...(pr?{pr}:{}),...(show?{wg:show}:{})},g,{w:150,h:212,label:show?'Nhân vật của bạn với đôi cánh':'Nhân vật của bạn'});
   const wx=worn&&own.find(x=>x.id===w.on);
