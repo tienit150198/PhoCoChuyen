@@ -26,6 +26,11 @@ feat/pairs-wings (từ origin/main afb38304 = 2.5.3): 🤝 thêm 7 phụ kiện 
   - Giảm chuyển động (cài đặt, html / body .reduce-motion, prefers-reduced-motion): cánh đứng yên, hào quang / tia đứng yên, không hạt bay, không vòng sáng.
 - Tiệm phụ kiện có tab 🪽 Cánh: thử trước gương, mua, tủ cánh có huy hiệu hạng, chọn ba đôi để ghép, bảng hạng được gì. Tủ đồ có thẻ cánh đang đeo.
 
+## 🛠️ Sửa lỗi
+- 👗 Thời trang, Thay đồ ma-nơ-canh: nút áo / áo khoác / giày không còn bị co méo (class nhóm của nút đổi g-* → cg-*, trùng với hình ma-nơ-canh).
+- 🛠️ Thiết bị tăng tốc (feedback #498): save có nhiều nơi làm việc có nhân viên luôn còn đơn cũ, mua thiết bị báo "Còn đơn cũ đang chốt tiền" mãi; giờ chốt riêng đơn của nơi đó rồi lắp (workplace_business.settle(only=)).
+- 🏦 Giao dịch viên (feedback #495): bước "Tiền quầy phải có" hiện lại sổ giao dịch trong ngày.
+
 ## Kiểm thử
 - tests/test_wings.py (mới), tests/test_wings_live.py (mới), tests/wings-art.mjs (mới); tests/test_friend_charms.py thêm Bonds (quan hệ), giá và danh sách mới; tests/friend-charms.mjs. tests/wings-art.mjs thêm: nhịp từng kiểu, hạt / tia / vòng theo hạng, SVG tự động (SMIL) và giảm chuyển động, phố cũ và 2.5D vẽ cánh tách rời; tests/isometric-vehicles.mjs có withWings.
 - RollbackTo253: save có cánh qua 2.5.3 (git archive afb38304) validate / migrate / qua ngày rồi về lại nguyên vẹn; trận không cánh phát lại giống hệt 2.5.3.
