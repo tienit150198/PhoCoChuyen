@@ -275,7 +275,7 @@
 .career-job.ao .ao-occasion.compact{padding:10px 12px}
 .career-job.ao .ao-occasion.compact h4{margin:0 0 4px}
 .career-job.ao .ao-occasion.compact .ao-big{font-size:28px}
-.career-job.ao .ao-rack[data-want="top"] .ao-chip:is(.g-top,.g-one),.career-job.ao .ao-rack[data-want="bottom"] .ao-chip.g-bottom{border-color:var(--ao-violet);box-shadow:inset 0 0 0 2px var(--ao-violet)}
+.career-job.ao .ao-rack[data-want="top"] .ao-chip:is(.cg-top,.cg-one),.career-job.ao .ao-rack[data-want="bottom"] .ao-chip.cg-bottom{border-color:var(--ao-violet);box-shadow:inset 0 0 0 2px var(--ao-violet)}
 .career-job.ao .ao-occasion.compact .ao-budget{margin-top:4px}
 
 /* 0.9.5 assembly kit (asm_kit.js, calm.css): what the order asks for leads the rack with a

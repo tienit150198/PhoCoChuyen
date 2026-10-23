@@ -187,7 +187,7 @@ function rack(t,x,mode='pick',want=''){
   if(!all)list=list.filter(it=>need.has(it.id)||it.id===p.item);
   const chips=list.map(it=>{const left=sizes(x,it.id).reduce((s,z)=>s+free(x,it.id,z),0),w=need.has(it.id);
     const sub=cl?`${mode!=='dress'&&left<=0?'✕ ':''}${x.fmt(price(x,it.id))}`:`${mode==='dress'?'':`còn ${left} · `}${x.fmt(price(x,it.id))} xu`;
-    return `<button type="button" class="ao-chip g-${x.esc(x.cc.groups?.[it.id]||'')}${p.item===it.id?' on':''}${w?' want':''}${cl&&left<=0&&mode!=='dress'?' out':''}" data-action="car:item" data-task="${x.esc(t.id)}" data-item="${x.esc(it.id)}"${w&&need.get(it.id)?` data-colour="${x.esc(need.get(it.id))}"`:''} aria-pressed="${p.item===it.id}"${cl?` aria-label="${x.esc(`${it.name}${w?', khách cần':''}, còn ${left}, ${price(x,it.id)} xu`)}" title="${x.esc(it.name)}"`:''}>${w?`<i class="asm-need">${cl?'★':'Khách cần'}</i>`:''}<span aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(cl?shortName(x,it.id):it.name)}</b><small>${sub}</small></button>`;}).join('')
+    return `<button type="button" class="ao-chip cg-${x.esc(x.cc.groups?.[it.id]||'')}${p.item===it.id?' on':''}${w?' want':''}${cl&&left<=0&&mode!=='dress'?' out':''}" data-action="car:item" data-task="${x.esc(t.id)}" data-item="${x.esc(it.id)}"${w&&need.get(it.id)?` data-colour="${x.esc(need.get(it.id))}"`:''} aria-pressed="${p.item===it.id}"${cl?` aria-label="${x.esc(`${it.name}${w?', khách cần':''}, còn ${left}, ${price(x,it.id)} xu`)}" title="${x.esc(it.name)}"`:''}>${w?`<i class="asm-need">${cl?'★':'Khách cần'}</i>`:''}<span aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(cl?shortName(x,it.id):it.name)}</b><small>${sub}</small></button>`;}).join('')
     +(hidden?`<button type="button" class="ao-chip ao-more" data-action="car:rackAll" data-task="${x.esc(t.id)}" aria-label="Xem cả giá treo: ${hidden} món khác"><span aria-hidden="true">＋</span><b>${hidden}</b><small aria-hidden="true">👚</small></button>`:'');
   let body=cl?'':`<p class="small muted ao-lab">${mode==='dress'?'Chạm một món để chọn màu.':'Chạm một món để chọn màu và size.'}</p>`;
   if(p.item){
@@ -320,8 +320,8 @@ function outfitSteps(t,x){
   // One action at a time: first a top or a one-piece for the occasion, then trousers to go with the top.
   const top=items.some(i=>grp[i]==='top'),one=items.some(i=>grp[i]==='one');
   const pick=set?{ok:true,label:'Một bộ hoàn chỉnh: váy/áo dài, hoặc áo + quần'}
-    :top?{ok:null,label:'Chọn quần hợp với áo',note:'một bộ: áo + quần',go:{sel:'.ao-rack .ao-chip.g-bottom',label:'👖 Chọn quần hợp với áo'},pulse:''}
-    :{ok:null,label:'Chọn áo hoặc váy hợp dịp',note:'một bộ: váy/áo dài, hoặc áo + quần',go:{sel:'.ao-rack .ao-chip.g-one,.ao-rack .ao-chip.g-top',label:'👗 Chọn áo hoặc váy hợp dịp'},pulse:''};
+    :top?{ok:null,label:'Chọn quần hợp với áo',note:'một bộ: áo + quần',go:{sel:'.ao-rack .ao-chip.cg-bottom',label:'👖 Chọn quần hợp với áo'},pulse:''}
+    :{ok:null,label:'Chọn áo hoặc váy hợp dịp',note:'một bộ: váy/áo dài, hoặc áo + quần',go:{sel:'.ao-rack .ao-chip.cg-one,.ao-rack .ao-chip.cg-top',label:'👗 Chọn áo hoặc váy hợp dịp'},pulse:''};
   return [
     pick,
     {ok:!t.picks.length?null:wrongSize?false:true,label:`Đúng size khách nói: áo ${n.top}, quần ${n.waist}`,note:wrongSize?`${item(x,wrongSize.item).name} đang size ${wrongSize.size}`:'',go:wrongSize?{cmd:'ao_unpick',payload:{task:t.id,index:t.picks.indexOf(wrongSize)},label:'↩︎ Treo lại món sai size'}:null},
