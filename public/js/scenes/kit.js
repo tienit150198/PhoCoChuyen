@@ -11,7 +11,10 @@ export const E=(c,x,y,rx,ry,fill)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.P
 /** Round-capped line. */
 export const L=(c,x,y,x2,y2,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();};
 /** Font size that makes `s` fit `max` pixels (never below 10). */
-export const fit=(c,s,max,size,weight=700)=>{c.font=`${weight} ${size}px ${FONT}`;const w=c.measureText(tr(String(s))).width;return w>max?Math.max(10,Math.floor(size*max/w)):size;};
+// Memo: scenes call fit() for the same labels every frame (measureText was ~3% of a phone's walking frame).
+const FITS=new Map();
+export const fit=(c,s,max,size,weight=700)=>{c.font=`${weight} ${size}px ${FONT}`;const t=tr(String(s)),k=weight+'|'+size+'|'+max+'|'+t;let v=FITS.get(k);
+  if(v===undefined){const w=c.measureText(t).width;v=w>max?Math.max(10,Math.floor(size*max/w)):size;if(FITS.size>600)FITS.clear();FITS.set(k,v);}return v;};
 /** Centered (by default) translated text. */
 export const T=(c,s,x,y,size=16,color='#765952',weight=700,align='center')=>{c.font=`${weight} ${size}px ${FONT}`;c.fillStyle=color;c.textAlign=align;c.textBaseline='middle';c.fillText(tr(String(s)),x,y);};
 /** Filled polygon from [[x,y],…]. */

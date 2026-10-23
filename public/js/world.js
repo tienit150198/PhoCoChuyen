@@ -4,6 +4,7 @@
  */
 import {t as tr} from './v4/i18n.js';
 import {encodePhoto} from './v4/photo-encode.js';
+import {lowEnd,markLowEnd,onLowEnd} from './perf-mode.js';
 const W=1200,H=790,TW=45,TH=24;
 const PALETTE={mother_baby:{wall:'#f1e2c8',side:'#e4d3b5',accent:'#8da181',counter:'#a8b695',wood:'#c8aa79'},pharmacy:{wall:'#e1eddf',side:'#c8dccc',accent:'#6e9d90',counter:'#8ab3a3',wood:'#b7bc94'},accounting:{wall:'#ebe4ee',side:'#d5ccdf',accent:'#9292ac',counter:'#a4a2b7',wood:'#b8a78e'},customer_care:{wall:'#e1ebed',side:'#c9dade',accent:'#7e9faa',counter:'#9eb8bf',wood:'#b9ac94'}};
 PALETTE.teacher={...PALETTE.accounting};PALETTE.tour_guide={...PALETTE.customer_care};PALETTE.milk_tea={...PALETTE.mother_baby};
@@ -16,6 +17,9 @@ const now=()=>globalThis.performance?.now?.()??Date.now();
  * after LONG_IDLE ms without any activity; reduced motion or pause draw on change (plus a slow safety
  * refresh); nothing at all while the tab is hidden, the canvas is off screen or a sheet covers it. */
 const FULL=1000/60,AMBIENT=100,IDLE=200,STILL=500,LONG_IDLE=20000,TOUCH=1500,SLACK=4;
+/* Slow drawing (23/10 lag): ambient frames keep to ≤ 1/AMBIENT_SHARE of the time (a 40 ms frame waits 160 ms, not 100);
+ * small screens step 2× → 1.5× → 1.25× pixels while frames stay slow (cost EMA over 30 drawn frames). */
+const AMBIENT_SHARE=4,SLOW_15=12,SLOW_125=22;
 function rounded(c,x,y,w,h,r=8){c.beginPath();c.roundRect(x,y,w,h,r);}
 function rr(c,x,y,w,h,fill,r=8,stroke){rounded(c,x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1.4;c.stroke();}}
 function ell(c,x,y,rx,ry,fill){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();}
@@ -42,9 +46,10 @@ export class World {
       ['pointerdown',()=>this.poke(),true],['keydown',()=>this.poke(),true]];
     for(const [type,fn,capture] of this.listeners)doc?.addEventListener?.(type,fn,capture?{capture:true,passive:true}:undefined);
     if(typeof IntersectionObserver==='function'){this.visibleObserver=new IntersectionObserver(entries=>{this.onScreen=entries.at(-1).isIntersecting;this.wake(true);});this.visibleObserver.observe(canvas);}
+    this.offLow=onLowEnd(()=>{if(this.small&&this.dprCap>1.25){this.dprCap=Math.min(this.dprCap,1.25);this.resize();}});
     this.raf=requestAnimationFrame(this.frame);
   }
-  destroy(){cancelAnimationFrame(this.raf);clearTimeout(this.timer);this.resizeObserver.disconnect();this.visibleObserver?.disconnect();
+  destroy(){cancelAnimationFrame(this.raf);clearTimeout(this.timer);this.resizeObserver.disconnect();this.visibleObserver?.disconnect();this.offLow?.();
     for(const [type,fn,capture] of this.listeners||[])globalThis.document?.removeEventListener?.(type,fn,capture?{capture:true}:undefined);}
   /* World time: an accessor so the cached room layer (BobaWorld.backdrop) can tell whether a scene's room
    * drawing animates with time (timeRead) or is static. */
@@ -67,7 +72,7 @@ export class World {
   screen(p){return {x:this.offset.x+p.x*this.scale,y:this.offset.y+p.y*this.scale};}
   resize(){const r=this.canvas.getBoundingClientRect();this.width=r.width||1200;this.height=r.height||790;
     // Small screens start at 2× (sharp) and drop to 1.5× when drawing turns out slow (watchCost).
-    this.small=Math.min(this.width,this.height)<=520;this.dprCap??=2;this.costFrames=0;this.cost=null;
+    this.small=Math.min(this.width,this.height)<=520;this.dprCap??=lowEnd()?1.25:2;this.costFrames=0;this.cost=null;
     this.dpr=Math.min(devicePixelRatio||1,this.small?this.dprCap:2);this.dirty=true;this.wake?.();this.canvas.width=Math.round(this.width*this.dpr);this.canvas.height=Math.round(this.height*this.dpr);this.layout();}
   layout(){const reserve=this.width>1050?215:this.width>760?145:0;const available=this.width-reserve;this.scale=Math.min(available/(this.width<760?1000:1160),this.height/(this.width<760?680:760));this.offset={x:(available-W*this.scale)/2+15,y:(this.height-H*this.scale)/2+(this.width<760?-25:8)};}
   update(state,content){
@@ -258,16 +263,18 @@ export class World {
       this.next(walking&&!this.paused?0:1000);
       return;}
     const still=this.paused||this.reduced;this.longIdle=t-this.lastActive>LONG_IDLE;
-    const gap=(motion&&!this.paused)||touched?FULL:still?STILL:this.longIdle?IDLE:AMBIENT;
+    const gap=(motion&&!this.paused)||touched?FULL:Math.max(still?STILL:this.longIdle?IDLE:AMBIENT,(this.cost||0)*AMBIENT_SHARE);
     if(this.dirty||t-this.lastDraw>=gap-SLACK)this.paint(t);
     this.next(gap===FULL?0:Math.max(1,this.lastDraw+gap-now()-SLACK));
   }
   /** Schedule the next frame: 0 = next display frame, else a timer (no vsync wake-ups while waiting). */
   next(ms){if(this.raf)return;clearTimeout(this.timer);this.timer=0;if(ms<=0)this.raf=requestAnimationFrame(this.frame);else this.timer=setTimeout(this.tick,ms);}
   paint(t){this.dirty=false;this.lastDraw=t;const a=now();this.draw();this.watchCost(now()-a);}
-  /** Phones: if drawing stays slow, render the canvas at a lower pixel ratio (never below 1.5). */
-  watchCost(ms){if(!this.small||this.dprCap<=1.5)return;this.cost=this.cost==null?ms:this.cost*.9+ms*.1;
-    if(++this.costFrames>30&&this.cost>12){this.dprCap=1.5;this.resize();}}
+  /** Drawing cost (EMA, ms). Phones: if it stays slow, render the canvas at a lower pixel ratio (1.5×, then 1.25× and
+   * the shared light mode, perf-mode.js). */
+  watchCost(ms){this.cost=this.cost==null?ms:this.cost*.9+ms*.1;if(!this.small||this.dprCap<=1.25||++this.costFrames<=30)return;
+    if(this.dprCap>1.5&&this.cost>SLOW_15){this.dprCap=1.5;this.resize();}
+    else if(this.cost>SLOW_125){this.dprCap=1.25;markLowEnd('classic');this.resize();}}
   animate(dt){
     if(this.keys.size){const k=this.keys;let dx=0,dy=0;if(k.has('w')||k.has('arrowup')){dx-=1;dy-=1;}if(k.has('s')||k.has('arrowdown')){dx+=1;dy+=1;}if(k.has('a')||k.has('arrowleft')){dx-=1;dy+=1;}if(k.has('d')||k.has('arrowright')){dx+=1;dy-=1;}
       const nx=this.player.x+dx*dt*2.2,ny=this.player.y+dy*dt*2.2;if(this.navFree(nx,ny)){this.player.x=nx;this.player.y=ny;this.player.path=[];this.player.goal=null;this.pending=null;}}

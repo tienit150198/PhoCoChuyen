@@ -24,6 +24,16 @@ const RIDE_RAMP=.7;
 const easeOut=(t:number)=>1-(1-t)*(1-t);
 // @ts-ignore The catalogue scene family mapping remains the source of truth.
 import {kindOf,wordsFor} from '/js/scenes/vocabulary.js';
+// @ts-ignore ⚡ the shared light mode (public/js/perf-mode.js): measured slow → 30 fps here, lighter classic canvas.
+// A namespace import, like vehicle-art: a test double without it keeps the full rate.
+import * as PerfMode from '/js/perf-mode.js';
+const PM:any=PerfMode;
+const lowEnd=():boolean=>!!PM.lowEnd?.();
+const markLowEnd=(why:string)=>PM.markLowEnd?.(why);
+const onLowEnd=(fn:()=>void):()=>void=>PM.onLowEnd?.(fn)||(()=>{});
+/* Frame watch (23/10 lag): while something moves, an average frame interval over SLOW_MS for SLOW_FRAMES frames means
+ * this device cannot hold 60: cap the loop at LOW_FPS (even 30 instead of a jittery 35–45, half the drawing). */
+const SLOW_MS=30,SLOW_FRAMES=120,LOW_FPS=32;
 import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,landmarkSpritePlacement,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
 import {insideIsland,islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
@@ -123,6 +133,11 @@ export class PhaserWorld {
   private cachedPreview=new Map<string,string>();
   private lastInput=0;
   private fxPaintAt=-Infinity;
+  private dialogAt=-1;
+  private dialogOpen=[false,false];
+  private slowEma=0;
+  private slowFrames=0;
+  private offLow:()=>void=noOp;
   residentShops:Array<{id:string;name:string;kind?:string;target?:string;ownerName?:string;career?:string}>=[];
   townDistricts(){return townDistricts();}
   townAmenities(){return townAmenities();}
@@ -158,7 +173,7 @@ export class PhaserWorld {
       scene:[new DioramaScene(owner)],callbacks:{postBoot(game){game.events.once(Phaser.Core.Events.DESTROY,()=>owner.disposeObservers());}}});
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas.parentElement||canvas);
     if(typeof IntersectionObserver==='function'){this.visibleObserver=new IntersectionObserver(entries=>{this.visible=entries[entries.length-1]?.isIntersecting??true;this.wake();});this.visibleObserver.observe(canvas);}
-    this.modalObserver=new MutationObserver(()=>{if(this.blockingDialog())this.clearMovementControls();this.wake();});this.modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+    this.modalObserver=new MutationObserver(()=>{this.dialogAt=-1;if(this.blockingDialog())this.clearMovementControls();this.wake();});this.modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
     this.listen(canvas,'pointerdown',this.pointerDown as EventListener);
     this.listen(canvas,'pointermove',this.pointerMove as EventListener);
     this.listen(canvas,'pointerup',this.pointerUp as EventListener);
@@ -169,7 +184,8 @@ export class PhaserWorld {
     this.listen(canvas,'blur',()=>{this.clearMovementControls();this.pointers.clear();this.pinch=null;this.wake();});
     this.listen(window,'blur',()=>{this.clearMovementControls();this.pointers.clear();this.pinch=null;this.wake();});
     this.listen(document,'visibilitychange',()=>this.wake());
-    this.listen(document,'close',()=>this.wake(),true);
+    this.listen(document,'close',()=>{this.dialogAt=-1;this.wake();},true);
+    if(lowEnd())this.capFps();else this.offLow=onLowEnd(()=>this.capFps());
     this.listen(window,'pagehide',()=>{this.clearMovementControls();this.engine.loop.sleep();});
     this.listen(window,'pageshow',()=>this.wake());
     if(new URLSearchParams(location.search).has('isometricdebug')){(window as any).__isoWorld=this;this.listeners.push(installPerformanceProbe(this.engine,canvas,()=>this.debug()));}
@@ -276,7 +292,18 @@ export class PhaserWorld {
     const image=out.toDataURL('image/webp',.8);this.cachedPreview.set(career,image);return image;
   }
   wake(){if(this.destroyed||!this.engine)return;if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}this.stage?.requestRender();this.engine.loop.wake();}
-  private blockingDialog(allowDrawer=false){return !!document.querySelector('dialog[open]'+(allowDrawer?':not(.drawer)':'')+(this.canvas?.closest?.('dialog[data-shared-island]')?':not([data-shared-island])':''));}
+  /** An open dialog over the map. Asked several times a frame (step, wake, keys): one DOM query per 100 ms, at once
+   * again after any open/close (modalObserver, the 'close' event). */
+  private blockingDialog(allowDrawer=false){const now=performance.now(),i=allowDrawer?1:0;
+    if(now-this.dialogAt>100||this.dialogAt<0){this.dialogAt=now;const own=this.canvas?.closest?.('dialog[data-shared-island]')?':not([data-shared-island])':'';
+      this.dialogOpen=[!!document.querySelector('dialog[open]'+own),!!document.querySelector('dialog[open]:not(.drawer)'+own)];}
+    return this.dialogOpen[i];}
+  /** ⚡ Light mode: the loop runs at most LOW_FPS frames a second (Phaser's own limiter, rebound on wake). */
+  private capFps(){const loop:any=this.engine?.loop;if(!loop||loop.fpsLimit===LOW_FPS)return;loop.fpsLimit=LOW_FPS;loop.hasFpsLimit=true;loop._limitRate=1000/LOW_FPS;if(loop.running){loop.sleep();loop.wake();}}
+  private watchFrames(active:boolean){
+    if(lowEnd()){this.slowFrames=0;return;}
+    const raw=(this.engine.loop as any).rawDelta||0;if(!active||raw>250){this.slowFrames=0;this.slowEma=0;return;}
+    this.slowEma=this.slowEma?this.slowEma*.95+raw*.05:raw;if(++this.slowFrames>=SLOW_FRAMES&&this.slowEma>SLOW_MS)markLowEnd('iso');}
   shouldSleep(){return this._paused||document.hidden||!this.visible||this.blockingDialog(true);}
   step(dt:number){
     if(this.shouldSleep()){this.clearMovementControls();this.engine.loop.sleep();return;}
@@ -300,6 +327,7 @@ export class PhaserWorld {
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
     const active=fading||moving||remoteMoving||petMoving||(!!ride&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
+    this.watchFrames(active);
     if(!active&&stage.settle()){this.engine.loop.sleep();if(wingsLive)this.wingTick();}
   }
   /** 🪽 Moving wings in view (wing-rigs.ts) and nothing else moving: one frame ~WING_FPS times a second, never the full
@@ -322,7 +350,7 @@ export class PhaserWorld {
   private followAgain(){const s=this.stage;if(s&&s.cameraMode==='browse'&&!s.islandOverview&&this.pointers.size<2)s.cameraMode='follow';}  // not mid-pinch
   private tap(point:Point){if(this.mode==='town'&&this.socialEnabled){const pid=this.stage!.hitRemote(point);if(pid){window.dispatchEvent(new CustomEvent('mnl:town-peer',{detail:{pid}}));return;}}if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.followAgain();this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.followAgain();this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
   destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);if(this.wingTimer)clearTimeout(this.wingTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
-  private disposeObservers(){this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
+  private disposeObservers(){this.offLow();this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
 }
 
 class DioramaScene extends Phaser.Scene {
