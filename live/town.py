@@ -30,6 +30,12 @@ tier) while flying, a `mv` carries `fl` (null: landed) only when it changed. Fly
 flyer's road vehicle (a two-wheeler or a car; a yacht or a plane waits at its harbour) goes home (`r` null), and a
 frame that names a road vehicle without `fl` lands them. A flyer's movement budget grows with the tier past the
 fastest ride (budget(): FLY_FAST[tier] / RIDE_MAX of SPEED). Older clients ignore `fl`.
+🪽 In the air nothing on the ground is in the way (owner 24/10 "bay bị mắc nhà, đi khó chịu quá, sửa lại đi bay cứ
+vướng vướng"): a flyer's position may be over a house, a tree, a fence or the water, only inside the map's BOUNDS
+(clean_point(fly=True)); the speed budget still holds. Landing (`fl` false, a road vehicle, an activity, the wings taken
+off) over something solid puts them on the nearest walkable point (land()), and that is the position the others get.
+A town_in that is not in the air at a solid point (an older tab after a flight) is put there too, and its town_room
+carries `x`, `y` (and `snap`) so the client moves there.
 """
 from __future__ import annotations
 
@@ -100,15 +106,81 @@ OBSTACLES = town_obstacles()
 CLEARANCE = .14
 
 
-def clean_point(x, y):
+def walkable(x, y) -> bool:
+    """On open ground: inside the bounds, on the island's open ground, clear of every building, tree, fence and prop
+    (client/isometric/model.ts isWalkable, the same CLEARANCE)."""
+    return (BOUNDS[0] <= x <= BOUNDS[2] and BOUNDS[1] <= y <= BOUNDS[3]
+            and any(x0 <= x <= x1 and y0 <= y <= y1 for x0, y0, x1, y1 in ROADS)
+            and not any(x0 - CLEARANCE <= x <= x1 + CLEARANCE and y0 - CLEARANCE <= y <= y1 + CLEARANCE
+                        for x0, y0, x1, y1 in _near(x, y)))
+
+
+_CELL = 4.0
+_GRID: dict = {}
+for _o in OBSTACLES:   # obstacles by 4-unit cell (padded), so a point looks only at the few around it
+    for _cx in range(math.floor((_o[0] - CLEARANCE) / _CELL), math.floor((_o[2] + CLEARANCE) / _CELL) + 1):
+        for _cy in range(math.floor((_o[1] - CLEARANCE) / _CELL), math.floor((_o[3] + CLEARANCE) / _CELL) + 1):
+            _GRID.setdefault((_cx, _cy), []).append(_o)
+del _o, _cx, _cy
+
+
+def _near(x, y):
+    return _GRID.get((math.floor(x / _CELL), math.floor(y / _CELL)), ())
+
+
+def nearest_walkable(x, y, reach=12.0):
+    """🪽 The walkable point nearest to (x, y) (itself when it is walkable), as model.ts nearestWalkable: each open-ground
+    rectangle's clamp, its edges and the padded edges of the obstacles near it; None when nothing is within `reach`."""
+    if walkable(x, y):
+        return round(float(x), 3), round(float(y), 3)
+    pad = CLEARANCE + .01
+    best, bd = None, reach
+    for r0, s0, r1, s1 in ROADS:
+        r0, s0, r1, s1 = max(r0, BOUNDS[0]), max(s0, BOUNDS[1]), min(r1, BOUNDS[2]), min(s1, BOUNDS[3])
+        cx, cy = min(max(x, r0), r1), min(max(y, s0), s1)
+        if r1 <= r0 or s1 <= s0 or math.hypot(cx - x, cy - y) >= bd:
+            continue
+        lx0, ly0, lx1, ly1 = max(r0, x - bd), max(s0, y - bd), min(r1, x + bd), min(s1, y + bd)
+        near = [o for o in OBSTACLES if o[2] + pad >= lx0 and o[0] - pad <= lx1 and o[3] + pad >= ly0 and o[1] - pad <= ly1]
+        xs = sorted({v for v in [cx, r0, r1, *[e for o in near for e in (o[0] - pad, o[2] + pad)]] if r0 <= v <= r1},
+                    key=lambda v: abs(v - x))
+        ys = sorted({v for v in [cy, s0, s1, *[e for o in near for e in (o[1] - pad, o[3] + pad)]] if s0 <= v <= s1},
+                    key=lambda v: abs(v - y))
+        for px in xs:
+            if abs(px - x) >= bd:
+                break
+            for py in ys:
+                d = math.hypot(px - x, py - y)
+                if d >= bd:
+                    break
+                if walkable(px, py):
+                    best, bd = (px, py), d
+                    break
+    return (round(best[0], 3), round(best[1], 3)) if best else None
+
+
+def in_bounds(x, y) -> bool:
+    return BOUNDS[0] <= x <= BOUNDS[2] and BOUNDS[1] <= y <= BOUNDS[3]
+
+
+def clean_point(x, y, fly=False):
+    """A ground position (walkable), or 🪽 in the air (`fly`) anywhere inside the map's bounds."""
     if not all(type(v) in (int, float) and math.isfinite(v) for v in (x, y)):
         raise LiveError('bad', 'Vị trí không hợp lệ.')
-    if not (BOUNDS[0] <= x <= BOUNDS[2] and BOUNDS[1] <= y <= BOUNDS[3]) or not any(
-            x0 <= x <= x1 and y0 <= y <= y1 for x0, y0, x1, y1 in ROADS) or any(
-            x0 - CLEARANCE <= x <= x1 + CLEARANCE and y0 - CLEARANCE <= y <= y1 + CLEARANCE
-            for x0, y0, x1, y1 in OBSTACLES):
+    if not (in_bounds(x, y) if fly else walkable(x, y)):
         raise LiveError('bad', 'Vị trí này có công trình, cây hoặc mặt nước.')
     return round(float(x), 3), round(float(y), 3)
+
+
+def land(w) -> bool:
+    """🪽 Down from the air over something solid: onto the nearest walkable point. True when they were moved."""
+    if walkable(w.x, w.y):
+        return False
+    at = nearest_walkable(w.x, w.y) or nearest_walkable(w.x, w.y, reach=math.inf)
+    if at is None:
+        return False
+    w.x, w.y = at
+    return True
 
 
 def clean_ride(r):
@@ -346,7 +418,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
     async def town_in(self, conn, f):
         if f.get('map') != MAP_ID:
             raise LiveError('bad', 'Bản đồ không hợp lệ.')
-        point = clean_point(f.get('x'), f.get('y'))
+        point = clean_point(f.get('x'), f.get('y'), fly=f.get('fl') is True)   # 🪽 in the air: anywhere in the bounds
         activity = clean_activity(f.get('activity'))
         look, gender = clean_look(f.get('look'), f.get('g'))
         ride = await plates.keep(self.db, conn.player, clean_ride(f.get('r')))   # 🚗 (an auction plate: only if won)
@@ -368,6 +440,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
             w.fl = w.wg['r']
             if road(w.ride):
                 w.ride = None
+        snapped = w.fl is None and land(w)   # 🪽 not in the air after all (no wings, an activity): on open ground
         room.data['people'][w.pid] = w
         conn.ext['town'] = conn.player.ext['town'] = room.id
         self._queue(room, w.pid, dict(k='in', **w.public()))
@@ -377,6 +450,8 @@ class TownFeature(ScaleSites, TownSocial, Feature):
                    social=bool(self.cfg.chat and self.app.chat))
         if treasure is not None and treasure.enabled():
             out.update(x=w.x, y=w.y)
+        if snapped:
+            out.update(x=w.x, y=w.y, snap=True)
         if isinstance(f.get('cid'), str) and len(f['cid']) <= 40:
             out['cid'] = f['cid']
         return out
@@ -398,13 +473,15 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         pet = await pet_rank.keep(self.db, conn.player, clean_pet(f['pt'])) if 'pt' in f else None   # 🐾 likewise
         fh = await fish_carry.keep(self.db, conn.player, fish_carry.clean(f['fh'])) if 'fh' in f else None   # 🎣 likewise
         room, w = self._me(conn)
-        x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
-                if 'site_key' in room.data else clean_point(f.get('x'), f.get('y')))
-        now = time.monotonic()
-        activity = None if 'site_key' in room.data else clean_activity(f['activity']) if 'activity' in f else w.activity
+        site = 'site_key' in room.data
+        activity = None if site else clean_activity(f['activity']) if 'activity' in f else w.activity
         want = f['fl'] is True if 'fl' in f else w.fl is not None and not ('r' in f and road(ride))   # 🪽 riding lands
         # 🪽 flying only in the town itself, never during an activity (fishing, rowing, swimming, at home: on foot)
-        fl = w.wg['r'] if want and w.wg and 'site_key' not in room.data and activity is None else None
+        fl = w.wg['r'] if want and w.wg and not site and activity is None else None
+        # 🪽 in the air (or coming down from it: land() below) a position over a house, a tree or the water is fine
+        x, y = (site_point(room.data['site_layout'], f.get('x'), f.get('y'))
+                if site else clean_point(f.get('x'), f.get('y'), fly=fl is not None or w.fl is not None))
+        now = time.monotonic()
         k = max(budget(w.fl), budget(fl)) / SPEED   # landing or taking off: the faster of the two
         credit = min(MAX_CREDIT * k, w.credit + max(0.0, now - w.last) * SPEED * k)
         distance = math.hypot(x - w.x, y - w.y)
@@ -431,6 +508,8 @@ class TownFeature(ScaleSites, TownSocial, Feature):
                 event['r'] = dict(ride) if ride else None
         if fl != w.fl:
             w.fl = event['fl'] = fl
+        if fl is None and not site and land(w):   # 🪽 landed over something solid: on the nearest open ground
+            event.update(x=w.x, y=w.y)
         if 'pt' in f and pet != w.pet:
             w.pet = pet
             event['pt'] = dict(pet) if pet else None

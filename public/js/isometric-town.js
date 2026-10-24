@@ -177,7 +177,7 @@ export function createTownPresence(envGetter,options={}){
         if(f.map!==MAP||sitePresence.active)return;
         if(!wanted()||!enabled()){socket.send({t:'town_out',cid:`town-out-${++seq}`});clear();return;}
         if(f.cid&&f.cid!==joining?.cid)return; // a late reply from an earlier town/work switch
-        if(socket.flags?.treasure&&Number.isFinite(f.x)&&Number.isFinite(f.y)){
+        if((socket.flags?.treasure||f.snap===true)&&Number.isFinite(f.x)&&Number.isFinite(f.y)){   // 🪽 snap: put on open ground (live/town.py land)
           world()?.correctPresence?.({x:f.x,y:f.y});joinedPoint=point();
         }
         socialEnabled=f.social===true;room=f.room;me=f.me;joining=null;lastPoint=joinedPoint;lastAppearance=joinedAppearance;lastActivity=joinedActivity;lastRide=joinedRide;lastPet=joinedPet;lastFish=joinedFish;lastFly=joinedFly;lastSent=now();peers.clear();
@@ -222,7 +222,7 @@ export function createTownPresence(envGetter,options={}){
           joining=null;retryAt=now()+Math.max(1000,(Number(f.wait)||2)*1000);status();
         }else if(f.ref==='town_mv'){
           if(f.code==='not_in'){clear();retryAt=now()+1000;}
-          else lastAppearance=null; // A rejected movement may also have carried the latest outfit.
+          else{lastAppearance=null;lastFly=null;} // A rejected movement may also have carried the latest outfit (🪽 or the take-off / landing: sent again).
         }
         // Invalid/speed samples wait for the walker to advance; no rejoin/teleport loop.
       }));

@@ -74,6 +74,23 @@ export function moveOnGround(nav:Navigation,from:Point,input:Point,dt:number):Po
   const slides=[{x:next.x,y:from.y},{x:from.x,y:next.y}].sort((a,b)=>Math.hypot(b.x-from.x,b.y-from.y)-Math.hypot(a.x-from.x,a.y-from.y));
   return slides.find(p=>lineClear(nav,from,p))||{x:from.x,y:from.y};
 }
+/** 🪽 Flying (owner 24/10 "bay bị mắc nhà, đi khó chịu quá, sửa lại đi bay cứ vướng vướng"): in the air nothing on the
+ * ground is in the way (houses, trees, fences, water, props); only the map's bounds hold, so nobody flies off the island. */
+export const clampToBounds=(nav:Navigation,p:Point):Point=>({x:Math.max(nav.bounds.x0,Math.min(nav.bounds.x1,p.x)),y:Math.max(nav.bounds.y0,Math.min(nav.bounds.y1,p.y))});
+/** 🪽 The joystick / keys in the air: the same pace as moveOnGround, a straight line, kept inside the bounds. */
+export function moveInAir(nav:Navigation,from:Point,input:Point,dt:number):Point{
+  const axis=normalizeMovementInput(input.x,input.y),seconds=Number.isFinite(dt)?Math.max(0,Math.min(.06,dt)):0,delta=unproject({x:axis.x*170*seconds,y:axis.y*170*seconds});
+  return clampToBounds(nav,{x:from.x+delta.x,y:from.y+delta.y});
+}
+/** 🪽 A tap or a door in the air: straight there (inside the bounds), never around buildings. [] when already there. */
+export function airRoute(nav:Navigation,from:Point,to:Point):Point[]{
+  const end=clampToBounds(nav,to);return Math.hypot(end.x-from.x,end.y-from.y)>1e-9?[end]:[];
+}
+/** 🪽 Where a flyer touches down (Hạ cánh): where they are on open ground, else the nearest walkable point (never inside
+ * a house, a tree or the water). */
+export function landingSpot(nav:Navigation,p:Point):Point{
+  return isWalkable(nav,p)?{x:p.x,y:p.y}:nearestWalkable(nav,clampToBounds(nav,p))||{x:p.x,y:p.y};
+}
 export function advanceRoute(from:Point,path:Point[],stride:number,metric:'ground'|'screen'='ground',nav?:Navigation):{point:Point;path:Point[];arrived:boolean}{
   if(!path.length)return {point:{x:from.x,y:from.y},path:[],arrived:false};
   let point={...from},step=Number.isFinite(stride)?Math.max(0,stride):0,index=0;
@@ -113,7 +130,9 @@ export function publicTownPlayers(peers:unknown,nav?:Navigation):RemotePlayer[]{
   if(!Array.isArray(peers))return [];const seen=new Set<string>(),result:RemotePlayer[]=[];
   for(const peer of peers){
     if(!peer||typeof peer.pid!=='string'||!peer.pid.trim()||seen.has(peer.pid)||!Number.isFinite(peer.x)||!Number.isFinite(peer.y))continue;
-    const at=nav?nearestWalkable(nav,{x:peer.x,y:peer.y}):{x:peer.x,y:peer.y};if(!at)continue;
+    // 🪽 a flyer (`fl` with wings worn) may be over a house, a tree or the water: kept where they are, inside the bounds
+    const air=Number.isInteger(peer.fl)&&peer.fl>=0&&peer.fl<=7&&!!peer.look?.wg&&typeof peer.look.wg==='object';
+    const at=nav?air?clampToBounds(nav,{x:peer.x,y:peer.y}):nearestWalkable(nav,{x:peer.x,y:peer.y}):{x:peer.x,y:peer.y};if(!at)continue;
     const look:Record<string,any>={},source=peer.look&&typeof peer.look==='object'&&!Array.isArray(peer.look)?peer.look:{};
     for(const slot of ['hair','shade','skin','top','bottom','shoes','acc'])if(typeof source[slot]==='string')look[slot]=source[slot].slice(0,48);
     if(typeof source.uniform==='boolean')look.uniform=source.uniform;
@@ -154,11 +173,11 @@ export function effectFrameState(ev:{t0:number;end?:number|null}|null|undefined,
   const finished=ev.end!=null,clear=finished&&time-ev.end!>=2.5,animate=!reduced&&!clear&&(finished||time-ev.t0<6);
   return {animate,needsFrames:!clear&&(finished||animate),clear};
 }
-export function nearestReachableHotspot<T extends {id:string;approach:Point;interactionPoint?:Point}>(nav:Navigation,from:Point,hotspots:T[],range=2.4):T|null{
+export function nearestReachableHotspot<T extends {id:string;approach:Point;interactionPoint?:Point}>(nav:Navigation,from:Point,hotspots:T[],range=2.4,air=false):T|null{
   // A sign may stand beside its entrance; either spot can select the same route.
   const distance=(p:Point)=>Math.hypot(p.x-from.x,p.y-from.y);
   const nearby=hotspots.map(h=>({h,d:Math.min(distance(h.approach),h.interactionPoint?distance(h.interactionPoint):Infinity)})).filter(h=>h.d<=range).sort((a,b)=>a.d-b.d||Number(b.h.id.startsWith('treasure:'))-Number(a.h.id.startsWith('treasure:')));
-  for(const {h} of nearby)if(findRoute(nav,from,h.approach).length)return h;return null;
+  for(const {h} of nearby)if(air||findRoute(nav,from,h.approach).length)return h;return null;   // 🪽 in the air: straight there
 }
 export interface SavedDecor {id:'plant'|'lamp'|'seat'|'rug'|'poster';spot:string;at:Point;z:number;footprint:Rect|null}
 export interface RoomAppearance {theme:'boba'|'warm'|'sage'|'lavender';wall:string;wallSide:string;tier:'cozy'|'sunny'|'garden';security:string[];decor:SavedDecor[];tools:string[];gearTier:number;needsRepair:boolean}

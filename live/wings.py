@@ -124,9 +124,14 @@ class WingFeature(Feature):
             fl = getattr(w, 'fl', None)
             land = fl is not None and (wg['r'] if wg else None) != fl   # 🪽 wings off: landed; a new tier: its speed
             if kind == 'town':
+                if land:
+                    w.fl = wg['r'] if wg else None
+                    if w.fl is None and 'site_key' not in room.data:
+                        from .town import land as down
+                        down(w)   # 🪽 over a roof, a tree or the water: on the nearest open ground
                 ev = dict(k='mv', pid=w.pid, x=w.x, y=w.y, direction=w.direction, wg=wg)
                 if land:
-                    w.fl = ev['fl'] = wg['r'] if wg else None
+                    ev['fl'] = w.fl
                 town._queue(room, w.pid, ev)
             else:
                 street._queue(room, w.pid, dict(k='wg', pid=w.pid, wg=wg))

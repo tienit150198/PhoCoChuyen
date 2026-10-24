@@ -101,6 +101,10 @@ function route(a,b){
   if(dist[n-1]===Infinity)return [a,a];
   const out=[];for(let u=n-1;u>=0;u=prev[u])out.unshift(nodes[u]);return out;
 }
+/** 🪽 A flyer's path (live/street.py Geo.air, owner 24/10 "bay bị mắc nhà ... bay cứ vướng vướng"): straight to the target
+ * over the lake, the fountain and the stalls, only kept inside the place. */
+export const airPoint=(geo,x,y)=>[Math.round(Math.min(Math.max(x,0),geo?.w??600)*10)/10,Math.round(Math.min(Math.max(y,0),geo?.h??900)*10)/10];
+export const airPath=(geo,a,b)=>[[a[0],a[1]],airPoint(geo,b[0],b[1])];
 /** Where a path walked since t0 is at t: [x, y, moving] (v: their speed, a rider's own). */
 function posAt(p,t0,t,v=S.speed){
   let left=Math.max(0,t-t0)*(v||S.speed);
@@ -423,8 +427,8 @@ function say(){
 function go(x,y){
   const m=me();if(!m||!S.geo)return;
   if(m.b&&S.people.has(m.b)){S.co?.querySelector('.rd-co-msg')?.animate?.([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:260});return;}   // 💑 the driver drives
-  const t=nowS(),[cx,cy]=posAt(m.p,m.at,t,m.v),target=clamp(x,y);
-  m.p=route([cx,cy],target);m.at=t;m.pred=target;
+  const t=nowS(),[cx,cy]=posAt(m.p,m.at,t,m.v),air=m.fl!=null,target=air?airPoint(S.geo,x,y):clamp(x,y);   // 🪽 in the air: straight there
+  m.p=air?airPath(S.geo,[cx,cy],target):route([cx,cy],target);m.at=t;m.pred=target;
   S.pending=target;
   const wait=S.moveAt+MOVE_GAP-performance.now();
   clearTimeout(S.moveTimer);
@@ -798,7 +802,8 @@ function draw(ts,t){
     p.x=x;p.y=y;p.moving=moving;list.push(p);}
   for(const p of list){const d=p.b&&pill.get(p.b)===p?S.people.get(p.b):null;p.on=d||null;if(d){p.x=d.x;p.y=d.y-.01;}}
   for(const q of parked)list.push({parked:q,y:q.y});
-  list.sort((a,b)=>a.y-b.y);S.wingsOn=!calm&&list.some(p=>p.wg&&!p.parked&&!(p.ride&&!p.s));
+  const up=p=>!p.parked&&p.fl!=null&&p.wg&&!p.s?1e5:0;   // 🪽 flyers over everyone and everything, in depth order among themselves
+  list.sort((a,b)=>a.y+up(a)-b.y-up(b));S.wingsOn=!calm&&list.some(p=>p.wg&&!p.parked&&!(p.ride&&!p.s));
   for(const p of list){
     if(p.parked){p.parked.draw();continue;}
     if(p.on)continue;   // 💑 drawn behind the driver

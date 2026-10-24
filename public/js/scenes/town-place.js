@@ -141,6 +141,16 @@ export function nearest(pl,p){
   for(const r of pl.rects){const q=[Math.max(r.x0,Math.min(r.x1,p[0])),Math.max(r.y0,Math.min(r.y1,p[1]))],d=(q[0]-p[0])**2+(q[1]-p[1])**2;if(d<bd){bd=d;best=q;}}
   return best;
 }
+/** 🪽 In the air (owner 24/10 "bay bị mắc nhà, đi khó chịu quá, sửa lại đi bay cứ vướng vướng") nothing in the town is in
+ * the way: over the shops, the roofs and the trees in a straight line; only the town's own edges hold (and the sky's top
+ * band stays above them). */
+export const airPoint=(pl,p)=>[Math.max(PAD,Math.min(pl.W-PAD,p[0])),Math.max(TOP*.5,Math.min(pl.H-PAD,p[1]))];
+/** 🪽 A flyer's path [from, to]: straight, `to` kept inside the town. */
+export const airRoute=(pl,from,to)=>[[from[0],from[1]],airPoint(pl,to)];
+/** 🪽 On foot again from wherever they are (landing over a shop): [from, the nearest floor point, …] then over the floor. */
+export function groundRoute(pl,from,to){
+  const r=route(pl,from,to);return r&&!walkable(pl,from)?[[from[0],from[1]],...r]:r;
+}
 /** A path [from, …, to] over the floor: every leg inside one rectangle. `to` is moved onto the floor first. */
 export function route(pl,from,to){
   from=nearest(pl,from);to=nearest(pl,to);
