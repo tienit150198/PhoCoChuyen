@@ -45,7 +45,7 @@ const MEDAL=['🥇','🥈','🥉'];
 const F={env:null,dlg:null,cv:null,ctx:null,raf:0,last:0,spot:'ho',trip:'',phase:'idle',pressing:false,c0:0,power:0,
   r:null,f:null,bob:null,fx:[],rings:[],drops:[],waves:null,stars:null,jump:null,line:null,panel:null,tab:{shop:'rod',board:'dex'},
   open:-1,rec:null,recAt:0,boards:{},detail:null,dims:{w:0,h:0,dpr:1},msgT:0,busy:false,timers:[],prevPause:null,onState:null,nibDone:0,twitch:0,
-  lake:null,cam:0,camTo:null,meFig:null,lastAct:'',panAt:0,feedN:-1,bannerT:0,pcard:null};
+  lake:null,cam:0,camTo:null,meFig:null,lastAct:'',panAt:0,feedN:-1,bannerT:0,pcard:null,under:null};
 
 const C=()=>F.env?.api?.content?.journey?.fish||null;
 const P=()=>F.env?.api?.state?.journey?.fish||{fresh:true,rod:'tre',rods:['tre'],bait:{},use:'',gio:0,cap:20,bag:[],dex:{},tot:{},ms:[],carry:0,aq:[],tro:{},deal:null};
@@ -78,6 +78,25 @@ const oddsHTML=r=>{
 const priceOf=f=>Number(f?.pr)||0;   // journey.fish.bag[].pr: game/fishing_content.price, before haggling
 const vibrate=p=>{try{navigator.vibrate?.(p);}catch{/* not on iOS */}};
 const later=(fn,ms)=>{const id=setTimeout(fn,ms);F.timers.push(id);return id;};
+const TYPING='input,textarea,select,[contenteditable]:not([contenteditable="false"])';
+/** #515 "đang câu ấn giữ nút thì nó cứ hiện bàn phím": no keyboard while fishing. Blurs a focused text field (the chat
+ * under the lake, the place the lake was opened from, the 💬 line: closed again when nothing was typed in it). */
+function blurTyping(){
+  const a=document.activeElement;
+  if(!a||a===document.body||!a.matches?.(TYPING))return false;
+  const say=F.dlg?.querySelector('.fs-sayrow input'),row=say?.closest('form');
+  try{a.blur();}catch{/* fine */}
+  if(a===say&&row&&!say.value.trim())row.hidden=true;
+  return true;
+}
+/** Focus that lands under the lake (the dialogs open before it, the page) or on the 💬 field while it is closed. */
+function guardFocus(e){
+  const d=F.dlg,t=e.target;
+  if(!d?.open||!t?.matches?.(TYPING))return;
+  if(d.contains(t)){if(t.closest('form')?.hidden)blurTyping();return;}
+  const box=t.closest?.('dialog[open]');
+  if(!box||F.under?.has(box))blurTyping();   // a dialog opened over the lake (the town chat) may type
+}
 
 /* ---------------------------------------------------------------- open / close */
 export async function openFishing(env,{spot='',trip=''}={}){
@@ -89,7 +108,9 @@ export async function openFishing(env,{spot='',trip=''}={}){
   F.trip=typeof trip==='string'&&/^[0-9a-f]{16}$/.test(trip)?trip:'';
   F.spot=F.trip?'dao':['ho','song','bien'].includes(spot)?spot:(F.spot&&F.spot!=='dao'?F.spot:'ho');
   const d=dialog();
-  if(!d.open)d.showModal();
+  blurTyping();
+  if(!d.open){F.under=new Set([...document.querySelectorAll('dialog[open]')].filter(x=>x!==d));d.showModal();}
+  blurTyping();document.removeEventListener('focusin',guardFocus,true);document.addEventListener('focusin',guardFocus,true);
   if(env.world&&F.prevPause===null){F.prevPause=Boolean(env.world.paused);env.world.paused=true;}
   F.onState=()=>{F.meFig=null;paintHud();if(F.panel)paintPanel();};
   env.api.addEventListener?.('state',F.onState);
@@ -131,7 +152,7 @@ function dialog(){
   document.body.append(d);
   F.cv=d.querySelector('.fs-cv');F.ctx=F.cv.getContext('2d');
   const go=d.querySelector('.fs-go'),stage=d.querySelector('.fs-stage');
-  const down=e=>{if(e.button>0)return;e.preventDefault();
+  const down=e=>{if(e.button>0)return;e.preventDefault();blurTyping();
     if(e.currentTarget===F.cv&&tapPeer(e))return;   // 👥 a tap on another fisher: their card, not a cast
     try{e.currentTarget.setPointerCapture?.(e.pointerId);}catch{/* fine */}press(e.timeStamp);};
   const up=e=>{e.preventDefault();release();};
@@ -140,7 +161,7 @@ function dialog(){
   go.addEventListener('contextmenu',e=>e.preventDefault());stage.addEventListener('contextmenu',e=>e.preventDefault());
   d.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!F.panel&&!e.repeat&&(e.target===go||e.target===d)){e.preventDefault();press(e.timeStamp);}});
   d.addEventListener('keyup',e=>{if((e.key===' '||e.key==='Enter')&&!F.panel&&(e.target===go||e.target===d)){e.preventDefault();release();}});
-  d.addEventListener('click',e=>{const el=e.target.closest('[data-fs]');if(!el||!d.contains(el))return;e.preventDefault();act(el.dataset.fs,el.dataset).catch(err=>say(err?.message||'Có lỗi nhỏ, thử lại nhé.'));});
+  d.addEventListener('click',e=>{const el=e.target.closest('[data-fs]');if(!el||!d.contains(el))return;e.preventDefault();act(el.dataset.fs,el.dataset.fs==='sayOpen'?{tap:e.isTrusted}:el.dataset).catch(err=>say(err?.message||'Có lỗi nhỏ, thử lại nhé.'));});
   d.addEventListener('cancel',e=>{e.preventDefault();if(F.panel){closePanel();return;}if(!d.querySelector('.fs-pcard').hidden){hidePeerCard();return;}close();});
   d.querySelector('.fs-sayrow').addEventListener('submit',e=>{e.preventDefault();const inp=e.currentTarget.querySelector('input'),text=inp.value.trim();if(!text)return;
     if(F.lake?.say(text)){inp.value='';e.currentTarget.hidden=true;}else say('Chưa nói được: đang mất kết nối, thử lại sau nhé.');});
@@ -159,6 +180,7 @@ function stop(){
   if(F.env?.world&&F.prevPause!==null){F.env.world.paused=F.prevPause;F.env.world.wake?.();}
   F.prevPause=null;F.r=null;F.f=null;F.phase='idle';F.panel=null;biteFx(false);
   F.lake?.stop();F.lake=null;F.camTo=null;hidePeerCard();
+  document.removeEventListener('focusin',guardFocus,true);F.under=null;
 }
 
 /* ---------------------------------------------------------------- server */
@@ -750,8 +772,10 @@ async function act(a,ds){
     case'again':hideCard();idle();return;
     case'feed':{const el=F.dlg.querySelector('.fs-feed-all');el.hidden=!el.hidden;if(!el.hidden)paintFeed();return;}
     case'feedPid':{const p=F.lake?.peers.get(ds.pid);if(p){F.camTo=posOf(p.s);F.dlg.querySelector('.fs-feed-all').hidden=true;}return;}
-    case'sayOpen':{const f=F.dlg.querySelector('.fs-sayrow');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus();return;}
-    case'sayClose':F.dlg.querySelector('.fs-sayrow').hidden=true;return;
+    case'sayOpen':{   // only a real tap on 💬, never in the middle of a cast or a fight (#515)
+      if(!ds.tap||F.pressing||['charge','hooking','fight'].includes(F.phase))return;
+      const f=F.dlg.querySelector('.fs-sayrow');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus();else blurTyping();return;}
+    case'sayClose':blurTyping();F.dlg.querySelector('.fs-sayrow').hidden=true;return;
     case'pan':{const g=geo(),o=offscreen([...(F.lake?.peers.values()||[])],F.cam,g.sp,g.w),left=Number(ds.dir)<0,to=left?o.lp:o.rp;
       if(to!=null)F.camTo=to+(left?1:-1)*Math.max(0,g.w/2/g.sp-1.5);return;}
     case'pcardX':hidePeerCard();return;
