@@ -1,5 +1,7 @@
 # 2.6.3 — 24/10/2026
 
+- 🛒 Quầy bán cần hiện cả 🏦 ngân hàng (server vẫn trả ví trước, thiếu lấy ngân hàng), báo "Còn thiếu … xu" ngay khi không đủ, ghi rõ mua cần nào cũng được (chủ game 24/10 "mua vượt cấp mà k đc": server chưa từng chặn, quầy chỉ hiện ví).
+
 🎣 Giật cá dễ hơn (fix/fish-hook; chủ game 24/10: "cách giật đang khó quá" → chọn "Giật dễ hơn"). Không đổi schema. Có gì mới 2.6.3.
 
 - Cửa sổ giật 3 giây (trước 1,4 s), cần xịn giữ lâu hơn: tre 3 s, trúc 3,1, carbon 3,25, biển 3,4, vàng 3,6, bạch kim 3,8, Long Vương 4 s; mồi cộng thêm (tôm +0,1, mồi giả / phát sáng +0,2, huyền thoại +0,3). Quầy bán cần ghi "⏱️ Giật …s".

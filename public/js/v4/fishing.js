@@ -36,6 +36,8 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const clock=()=>performance.now()/1000;
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const wallet=()=>Math.max(0,Number(F.env?.api?.state?.journey?.wallet)||0);
+const bankBal=()=>Math.max(0,Number(F.env?.api?.state?.journey?.bank?.balance)||0);   // the server pays from the wallet first, then the bank account (auction._take)
+const funds=()=>wallet()+bankBal();
 let SPM=null;
 const spOf=id=>{if(!SPM){SPM=new Map();for(const s of C()?.species||[])SPM.set(s.id,s);}return SPM.get(id)||null;};
 const rods=()=>C()?.rods||[];
@@ -616,7 +618,8 @@ async function act(a,ds){
       const kind=ds.kind,item=ds.item,n=Number(ds.n)||1;
       if(kind==='rod'||kind==='gio'){
         const x=kind==='rod'?rodOf(item):(C()?.baskets||[]).find(b=>b.id===item);
-        if(x?.price>0&&F.env.confirmAction&&!(await F.env.confirmAction(`Mua ${x.name}?`,`Giá ${fmt(x.price)} xu. Ví đang có ${fmt(wallet())} xu.`,'Mua')))return;
+        if(x?.price>funds()){say(`Còn thiếu ${fmt(x.price-funds())} xu (tính cả ví và ngân hàng).`);return;}
+        if(x?.price>0&&F.env.confirmAction&&!(await F.env.confirmAction(`Mua ${x.name}?`,`Giá ${fmt(x.price)} xu. Trả từ ví (${fmt(wallet())} xu) trước, thiếu thì lấy ngân hàng (${fmt(bankBal())} xu).`,'Mua')))return;
       }
       const r=await send('jr_fish_buy',{kind,item,...(kind==='bait'&&n>1?{n}:{})});if(r?.message)say(r.message);paintPanel();return;}
     case'equip':{const r=await send('jr_fish_equip',ds.rod!=null?{rod:ds.rod}:{bait:ds.bait||''});if(r?.message)say(r.message);paintPanel();return;}
@@ -657,9 +660,9 @@ const fbtn=(label,a,data={},cls='')=>`<button type="button" class="fs-btn small 
 
 function shopHTML(){
   const p=P(),c=C(),t=F.tab.shop;
-  let out=tabs('shop',[['rod','🎣 Cần câu'],['bait','🪱 Mồi'],['gio','🧺 Giỏ']])+`<p class="fs-note">👛 Ví: <b>${fmt(wallet())} xu</b></p>`;
+  let out=tabs('shop',[['rod','🎣 Cần câu'],['bait','🪱 Mồi'],['gio','🧺 Giỏ']])+`<p class="fs-note">👛 Ví: <b>${fmt(wallet())} xu</b>${bankBal()?` · 🏦 Ngân hàng: <b>${fmt(bankBal())} xu</b>`:''}</p>`;
   if(t==='rod'){
-    out+=`<p class="fs-note">Cần xịn quăng xa hơn (ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, may mắn gặp cá hiếm hơn.</p><ul class="fs-list">${c.rods.map(r=>{
+    out+=`<p class="fs-note">Cần xịn quăng xa hơn (ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, may mắn gặp cá hiếm hơn.</p><p class="fs-note">Mua cần nào cũng được, không cần mua theo thứ tự.</p><ul class="fs-list">${c.rods.map(r=>{
       const own=(p.rods||[]).includes(r.id),cur=p.rod===r.id;
       return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico" style="--c:${esc(r.color||'#eee')}">${esc(r.emoji)}</span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${fmt(r.range)} m · 🧵 ${esc(kgLine(r.line))} · 🍀 ×${String(r.luck).replace('.',',')}</small><small>⏱️ Giật ${secs(r.hook||C()?.hook_window||3)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
         ${cur?'<span class="fs-tag">Đang cầm</span>':own?fbtn('Cầm','equip',{rod:r.id}):fbtn(r.price?`${fmt(r.price)} xu`:'Miễn phí','buy',{kind:'rod',item:r.id},'primary')}</li>`;}).join('')}</ul>`;

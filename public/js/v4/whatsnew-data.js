@@ -3,7 +3,8 @@
 export default [
  {"version":"2.6.3","date":"2026-10-24","items":[
   {"emoji":"🎣","text":"Giật cá dễ hơn: 3 giây để giật, có vòng đếm ngược; bấm lúc cá rỉa không mất cá","go":{"action":"fishing"}},
-  {"emoji":"📶","text":"Mạng chậm không còn bị tính chậm tay"}
+  {"emoji":"📶","text":"Mạng chậm không còn bị tính chậm tay"},
+  {"emoji":"🛒","text":"Quầy cần tính cả tiền ngân hàng; mua cần nào cũng được, không cần theo thứ tự","go":{"action":"fishing"}}
  ]},
  {"version":"2.6.2","date":"2026-10-24","items":[
   {"emoji":"🎣","text":"Câu cá: giữ để lấy lực, quăng xa ra cá to, giật đúng lúc rồi kéo cho khéo!","go":{"action":"fishing"}},

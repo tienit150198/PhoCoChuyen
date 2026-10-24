@@ -1,5 +1,7 @@
 {
   "strings": {
+    "Quầy cần tính cả tiền ngân hàng; mua cần nào cũng được, không cần theo thứ tự": "The rod stall counts your bank money too; buy any rod, no need to go in order",
+    "Mua cần nào cũng được, không cần mua theo thứ tự.": "Buy any rod you like, no need to go in order.",
     "Giật cá dễ hơn: 3 giây để giật, có vòng đếm ngược; bấm lúc cá rỉa không mất cá": "Easier fishing: 3 seconds to yank with a countdown ring; tapping while a fish nibbles no longer loses it",
     "Mạng chậm không còn bị tính chậm tay": "A slow connection no longer counts as a slow yank",
     "Chưa cắn đâu, chờ chút…": "Not biting yet, hang on…",
