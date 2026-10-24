@@ -395,7 +395,15 @@ export function inventoryView(env){
   // "?" → the illustrated "Nhập hàng & xếp kệ" page, where the workplace has one (tutorial/guide-data.js).
   const help=(GUIDE[api.state.current]?.pages||[]).some(p=>p.id==='restock')?`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(api.state.current)}" data-tab="work" data-page="restock" aria-label="Cách nhập hàng & xếp kệ">?</button>`:'';
   return head('Kho & nhập hàng',`Mỗi loại chứa tối đa ${cap}`,'KHO · '+esc(place)).replace('<button class="icon-btn" type="button" data-action="close"',help+'<button class="icon-btn" type="button" data-action="close"')+
-    `<div class="sheet-body">${inventoryLimits(inv)}<details class="inv-how"><summary>❔ Nhập hàng thế nào?</summary><p class="small muted">📦 Đặt hàng → chờ thùng về → mở thùng, chạm đếm từng món → nhận lên kệ: lúc đó mới bán được.</p></details>${hint}${strip}${door}${shortBox}${tabs([['stock','Kệ hàng'],['orders',`Thùng hàng${transitS.length?` · ${transitS.length}`:''}`],['lots','Hạn dùng']],tab,'v4InvTab').replace('class="pill-tabs"','class="pill-tabs inv-tabs"')}<div class="space-top">${body}</div></div>`;
+    `<div class="sheet-body">${inventoryLimits(inv)}${scaleSupplies(c)}<details class="inv-how"><summary>❔ Nhập hàng thế nào?</summary><p class="small muted">📦 Đặt hàng → chờ thùng về → mở thùng, chạm đếm từng món → nhận lên kệ: lúc đó mới bán được.</p></details>${hint}${strip}${door}${shortBox}${tabs([['stock','Kệ hàng'],['orders',`Thùng hàng${transitS.length?` · ${transitS.length}`:''}`],['lots','Hạn dùng']],tab,'v4InvTab').replace('class="pill-tabs"','class="pill-tabs inv-tabs"')}<div class="space-top">${body}</div></div>`;
+}
+/** #388: the contract supplies of an expanded shop (vải, nguyên liệu… game/career_scale_inventory.py) live in
+ * 🎖️ Thăng tiến, not on this shelf: what is held there, and one tap to buy more. */
+function scaleSupplies(c){
+  const items=c.scale?.tier?c.scale.stock?.items||[]:[];
+  if(!items.length)return '';
+  const have=m=>(m.locations||[]).reduce((n,x)=>n+(Number(x.units)||0),0);
+  return `<div class="notice inv-scale"><div class="grow"><b>📦 Vật tư quy mô</b><p class="small">${items.map(m=>`${esc(m.name)}: ${fmt(have(m))} ${esc(m.unit)}`).join(' · ')}</p></div><button type="button" class="btn small" data-action="scaleGo" data-target="stock">Mua vật tư</button></div>`;
 }
 /** Order card (owner 10/10 "dài quá, dài dòng quá": compact, docs/UI_KIT.md): facts as numbers, stepper + quick chips
  * (never past the room left), ONE bill line (total · wholesale tag · ship tag only when it costs · when it arrives),

@@ -132,14 +132,20 @@ def shape(margin: int, stars: int = 4) -> int:
     return margin if margin <= knee else min(ceil, knee + (margin - knee) // 4)
 
 
-def staff_revenue(price: int, stars: int, cash: int, goods: int, mult: int = 100) -> int:
+def staff_revenue(price: int, stars: int, cash: int, goods: int, mult: int = 100, fixed: int = 0, cap: bool = False) -> int:
     """What one staff order takes in: the shelf price at this service (as before), its margin shaped, then the market.
-    `cash`: wage and supplies paid from the fund; `goods`: the stock's cost. A loss is never multiplied."""
-    revenue = price * (80 + stars * 4) // 100
+    `cash`: wage and supplies paid from the fund; `goods`: the stock's cost. A loss is never multiplied.
+    `fixed`: the part of `price` the service never lowers (#523: a vehicle's list price, a jewel's gold at today's board;
+    the owner's own slip passes it on whole and only the fee follows the quality, game/staff_orders.py fixed()).
+    `cap`: never take more than that price at this service (staff_orders.AT_PRICE: a staff sale never out-earns the
+    owner's own sale of the same goods, even a small basket whose margin the ×1.6 would lift above it)."""
+    fixed = max(0, min(price, fixed))
+    revenue = fixed + (price - fixed) * (80 + stars * 4) // 100
     margin = revenue - cash - goods
     if margin <= 0:
         return revenue
-    return cash + goods + max(0, shape(margin, stars) * mult * SHOP_BOOST // 10000)
+    out = cash + goods + max(0, shape(margin, stars) * mult * SHOP_BOOST // 10000)
+    return min(out, revenue) if cap else out
 
 
 def series(career: str, t: float | None = None, n: int = SERIES) -> list:

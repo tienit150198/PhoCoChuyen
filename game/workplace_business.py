@@ -394,7 +394,9 @@ def _finish(s,c,career,e,at,order=None):
     basis=max(goods,_replacement(career,inputs))
     from . import ads   # 📺 ⏰ Giờ vàng riêng (game/ads.py): ×1,5 at the order's own time, on top of the street's
     from . import bang   # ⚔️ ⏰ Giờ vàng của bang (game/bang.py): ×2 at the order's own time, the larger of it and the street's
-    revenue=staff_market.staff_revenue(base,quality,cash,basis,staff_market.x(career,at,bang.gold_mult(at))*ads.gold_mult(s,at)//100)
+    from .staff_orders import fixed,AT_PRICE   # #523: a vehicle's list price, a jewel's gold pass on whole (the owner's slip)
+    revenue=staff_market.staff_revenue(base,quality,cash,basis,staff_market.x(career,at,bang.gold_mult(at))*ads.gold_mult(s,at)//100,
+                                       fixed(c,career,inputs),career in AT_PRICE)
     from .income_gear import improved_revenue
     revenue=improved_revenue(c,revenue,cash+basis)
     _count_used(c,inputs)
@@ -633,7 +635,9 @@ def _explain(c,b,out):
         goods=sum(unit.get(i,0)*q for i,q in inputs.items())
         mult=staff_market.x(career,out.get('server_now'))
         from .income_gear import improved_revenue
-        take=lambda stars:improved_revenue(c,staff_market.staff_revenue(base,stars,cash,goods,mult),cash+goods)
+        whole=staff_orders.fixed(c,career,inputs)
+        cap=career in staff_orders.AT_PRICE
+        take=lambda stars:improved_revenue(c,staff_market.staff_revenue(base,stars,cash,goods,mult,whole,cap),cash+goods)
         out['next_order']=dict(label=label,revenue=take(5),revenue_low=take(1),wage=wage,materials=supplies,goods=goods,
                                margin=take(4)-cash-goods,
                                items=[dict(item=i,name=names.get(i,i),qty=q) for i,q in inputs.items()])

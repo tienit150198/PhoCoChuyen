@@ -120,7 +120,7 @@ def action(s,c,cid,name,p,now=None):
         _need(old is None or not old['reserved'],'Bạn đang giữ một đề nghị hợp đồng.')
         if old is None:
             available=_snapshots(c,cid)
-            _need(available,'Cần bố trí ít nhất một tài nguyên có người phụ trách và còn hoạt động.')
+            _need(available,'Chưa vị trí nào có người: mở 👥 Đội ngũ → Tuyển người, rồi Phân công vị trí.')
             _need(r['seq']<10**9)
             seq=r['seq']+1
             digest=hashlib.sha256(f"{s['journey'].get('seed',0)}|{cid}|{seq}".encode()).digest()

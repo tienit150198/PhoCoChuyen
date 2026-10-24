@@ -16,6 +16,10 @@ Rules every entry follows:
   instead of losing money, and a line that cannot is left out.
 
 Careers without a menu keep their single authored order (workplace_business.ORDERS).
+
+#523 (đại lý xe, tiệm vàng: "nhập một đống xe về thấy toàn bán mũ bảo hiểm"): a vehicle or a jewel sells at its list
+price like the owner's own slip, where only the shop's fee follows the service (fixed()): a whole vehicle at 84% would
+sell under its cost. The counter shops (căn tin, văn phòng phẩm) sell a class-sized basket of any good on the shelf.
 """
 from __future__ import annotations
 
@@ -24,6 +28,8 @@ import zlib
 
 FLOOR = 84        # % of the price at a 1-star service (80 + 1*4)
 WEIGHT_CAP = 10   # an item's weight: orders the shelf can still make, capped
+BULK = 80         # xu: the counter shops' staff basket (a class, a parents' meeting), as their old ten-piece order
+AT_PRICE = frozenset(('car_dealer', 'jewelry', 'canteen', 'stationery'))   # #523: staff_market.staff_revenue `cap`
 
 
 def _plugin(career):
@@ -41,6 +47,25 @@ def costs(career: str) -> dict:
         return {k: l['cost'] for k, l in LOT_INDEX.items()}
     from . import inventory as inv
     return {x['id']: x['cost'] for x in inv.catalogue(career)}
+
+
+def _piece_value(c: dict, item: str) -> int:
+    """💍 A piece's gold at today's board (bán ra) and its stone: what the customer pays before the tiền công."""
+    from .careers import jewelry, jewelry_content as J
+    x = J.PIECES[item]
+    return x['phan'] * jewelry.board(c['day'])['rows'][x['tuoi']]['sell'] // 10 + x.get('stone', 0)
+
+
+def fixed(c: dict, career: str, inputs: dict) -> int:
+    """The part of an order's price the service never lowers (staff_market.staff_revenue `fixed`): as on the owner's
+    own slip, a vehicle's list price (car_dealer._paid) and a jewel's gold and stone (jewelry._paid) pass on whole."""
+    if career == 'car_dealer':
+        from .careers import car_dealer_content as C
+        return sum(C.MODELS[i]['price'] * q for i, q in inputs.items() if i in C.MODELS)
+    if career == 'jewelry':
+        from .careers import jewelry_content as J
+        return sum(_piece_value(c, i) * q for i, q in inputs.items() if i in J.PIECES)
+    return 0
 
 
 def known(career: str) -> set:
@@ -83,7 +108,9 @@ class _Menu:
         return next((i for i in items if self.avail(i) > 0), None)
 
     def _ok(self, revenue, inputs):
-        return revenue * FLOOR // 100 - sum(self.cost.get(i, 0) * q for i, q in inputs.items()) >= self.target
+        whole = min(revenue, fixed(self.c, self.career, inputs))
+        low = whole + (revenue - whole) * FLOOR // 100
+        return low - sum(self.cost.get(i, 0) * q for i, q in inputs.items()) >= self.target
 
     # -- entries
     def fixed(self, label, inputs, revenue):
@@ -106,6 +133,15 @@ class _Menu:
             if revenue > 0 and self._ok(revenue, inputs):
                 self.out.append((label_for(q), revenue, inputs, max(1, min(WEIGHT_CAP, have // q))))
                 return
+
+    def bulk(self, item, price, label_for, cap=30):
+        """A counter shop's basket: about BULK xu of one good (or what is left of it, if that still earns)."""
+        if price <= 0:
+            return
+        have = self.avail(item)
+        q = min(cap, max(1, -(-BULK // price)), have)
+        if q >= 1 and self._ok(price * q, {item: q}):
+            self.out.append((label_for(q), price * q, {item: q}, max(1, min(WEIGHT_CAP, have // q))))
 
 
 def _available(c, career, item, floor=True):
@@ -329,10 +365,44 @@ def _drain(m):
     m.fixed('Việc riêng: thay ống xi-phông bồn rửa', {'xi_phong': 1, 'gang_tay': 1}, 26)
 
 
+def _times(name, q):
+    return f'Đơn riêng: {name}' if q == 1 else f'Đơn riêng: {q} × {name}'
+
+
+def _car_dealer(m):
+    from .careers import car_dealer, car_dealer_content as C
+    for k, x in C.MODELS.items():
+        fee = 'dv_dang_ky_xm' if x['kind'] == 'xm' else 'dv_dang_ky_ot'
+        m.fixed(f'Đơn riêng: {_lower(x["name"])} kèm làm giấy tờ', {k: 1}, x['price'] + m.price(fee, car_dealer.PRICES[fee]))
+    for k, a in C.ACCESSORIES.items():
+        price = m.price(k, car_dealer.PRICES[k])
+        m.retail(k, lambda q, price=price: price * q, lambda q, a=a: _times(a['name'], q), cap=6)
+
+
+def _jewelry(m):
+    from .careers import jewelry, jewelry_content as J
+    for k, x in J.PIECES.items():
+        m.fixed(_times(x['name'], 1), {k: 1}, _piece_value(m.c, k) + m.price(x['cong'], jewelry.PRICES[x['cong']]))
+
+
+def _counter(career):
+    def menu(m):
+        from . import inventory as inv
+        from .careers import PLUGINS
+        material = {g.get('uses') for g in PLUGINS[career].SHOP.goods.values()}   # kept for the owner's services
+        for it in inv.catalogue(career):
+            if it['id'] in material:
+                continue
+            price = it.get('price', 0)   # the cover price / the canteen board: fixed, never tuned (counterkit)
+            m.bulk(it['id'], price, lambda q, it=it: _times(it['name'], q))
+    return menu
+
+
 MENUS = dict(mother_baby=_mother_baby, pharmacy=_pharmacy, grocery=_grocery, fruit=_fruit, pet_shop=_pet_shop,
              florist=_florist, tra_da=_tra_da, ice_cream=_ice_cream, com=_com, pho=_pho, restaurant=_restaurant,
              cafe_bakery=_cafe_bakery, salon=_salon, pet_care=_pet_care, nail=_nail, giupviec=_giupviec,
-             photobooth=_photobooth, farm=_farm, repair=_repair, delivery=_delivery, drain=_drain, zpop=_zpop)
+             photobooth=_photobooth, farm=_farm, repair=_repair, delivery=_delivery, drain=_drain, zpop=_zpop,
+             car_dealer=_car_dealer, jewelry=_jewelry, canteen=_counter('canteen'), stationery=_counter('stationery'))
 
 
 def target(cash: int) -> int:
