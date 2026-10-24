@@ -1,3 +1,14 @@
+# 2.6.7.1 — 25/10/2026
+
+🥉 Trận tranh hạng 3 cho 🛡️ Bang chiến pet (chủ game 25/10). Không đổi schema, không có "Có gì mới".
+
+- Có 2 bán kết thật (từ 4 bang) thì 2 bang thua bán kết đánh thêm trận tranh hạng 3, cùng giờ chung kết, cùng luật (5 trận 1–1, hòa xét máu rồi hạt giống). Lưu 1 dòng pet_war_matches `rd = rounds + 1, slot 0` (data.third); pet_war.rounds giữ số vòng nhánh đấu; pet_war.data thêm third / third_team / fourth_team / third_match. Kết quả chốt lúc khóa đội, hiện theo giờ như các trận khác; end_of không đổi (trận hạng 3 xong cùng chung kết).
+- Thắng trận hạng 3: +PTS_WIN như mọi trận thắng (không có thưởng vô địch), Elo cập nhật; `best` vẫn là bán kết; bảng xếp hạng bang để hạng ba trên hạng tư.
+- Danh hiệu 🥉 Hạng ba bang chiến pet (board pet_war hạng 11–15, nhãn "Bang hạng ba") cho 5 bé của bang hạng ba trong 1 tuần; 3 bang thì bang thua bán kết thật là hạng ba (không có trận). Không có xu thưởng tuần cho hạng ba (WEEKLY_REWARD chỉ 2 bậc). Khung 🥉 tự đeo, không có trong danh sách chọn khung (HF_PICK_RE giữ 1–10 để save vẫn hợp lệ nếu quay về 2.6.7).
+- Giao diện: nhánh đấu thêm cột "🥉 Tranh hạng 3", dòng "🥉 Hạng ba: …" dưới nhà vô địch, 🥉 trong bảng xếp hạng bang; thẻ Bang chiến tuần ghi "🥉 Tranh hạng 3", "Bang mình tranh hạng 3, cùng giờ chung kết.", kết quả "🥉 Hạng ba!" / "Hạng tư".
+- Bản cũ (2.6.7) đọc dòng mới: nhánh đấu chỉ vẽ vòng 1…rounds nên không thấy trận hạng 3 (không có "chung kết thứ hai"); thẻ bang ghi trận đó là "Vòng 3" (4 bang) kèm tỉ số; xếp hạng bang xếp 2 bang theo điểm rồi Elo; hạng 11–15 không có danh hiệu, không có thưởng, client cũ không hiện chip/khung. Không lỗi.
+- Tests: tests/test_pet_war_third.py (3, 4, 5, 8, 2 bang; bye; hòa; điểm; Elo; danh hiệu; giao diện; đọc bằng code 2.6.7), tests/honour_frames_508.mjs.
+
 # 2.6.7 — 25/10/2026
 
 Gộp 7 nhánh (chủ game 24/10 "xong thì 2.6.7 đưa lên hết nhé"). Schema 94 (bảng chat_notes mới). "Có gì mới" chung chung theo chủ game ("nhiều cái k nên công bố"): thêm coin/cổ phiếu, đổi giao diện nhà, sửa lỗi theo góp ý. Không công bố biến động sàn.
