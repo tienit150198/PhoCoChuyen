@@ -302,6 +302,10 @@ class FishLakeFeature(Feature):
         if hit and hit[0] == day:
             out['today'] = dict(hit[1])
         other = self.hub.players.get(pid)
+        from . import notes
+        nt = await notes.of_app(self.app).one(conn.player, pid)   # 💭 their note (live/notes.py)
+        if nt:
+            out['nt'] = nt
         best, dex, vis = await self._card(other) if other else (None, None, False)
         if vis:
             if best:

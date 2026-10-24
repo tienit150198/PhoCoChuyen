@@ -52,6 +52,7 @@ html[data-layout="phone"] .wk-head{padding-top:12px}
 .wk-who small.wk-friend{color:var(--good);font-weight:700}
 .wk-who .jr-av{flex:none;border-radius:50%}
 .wk-said{margin:0 0 8px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:.88rem;color:var(--ink-2);overflow-wrap:anywhere}
+.wk-note{margin:0 0 8px;padding:6px 10px;border-radius:12px;border:1px dashed var(--line);font-size:.86rem;color:var(--ink-2);overflow-wrap:anywhere}   /* 💭 their chat note */
 .wk-bar{position:absolute;left:0;bottom:0;width:100%;height:3px;background:var(--accent);transform-origin:left;animation:wk-shrink linear forwards}
 @keyframes wk-shrink{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 

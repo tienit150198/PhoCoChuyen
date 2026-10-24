@@ -106,6 +106,7 @@ export function createTownSocial(envGetter,options={}){
   function renderCard(){
     if(!card||card.pid!==selected)return;cardNode.replaceChildren();cardNode.hidden=false;
     cardNode.append(el('strong',null,card.name||'Người chơi'));
+    if(typeof card.nt?.t==='string'){const n=el('small','note','💭 '+card.nt.t.slice(0,60));n.className='town-social-note';n.dataset.noTranslate='';cardNode.append(n);}   // 💭 their chat note (live/notes.py)
     if(card.friend&&typeof card.rel?.name==='string')cardNode.append(el('small','rel',`${typeof card.rel.emoji==='string'?card.rel.emoji:'💞'} ${card.rel.name}`.slice(0,40)));   // 💞 the relationship the two set (game/friend_charms.py)
     cardNode.append(button('greet','👋 Chào',()=>transmit('town_emote',{e:'👋',target:selected})));
     const emotes=el('div',null);emotes.className='town-social-emotes';

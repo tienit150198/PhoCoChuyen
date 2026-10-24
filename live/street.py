@@ -90,7 +90,7 @@ import re
 import secrets
 import time
 
-from . import babies, bangs, charms, coride, effects, honours, plates, styles, wings
+from . import babies, bangs, charms, coride, effects, honours, notes, plates, styles, wings
 from game.wings_content import FLY_FAST   # 🪽 a flyer's speed by tier
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
@@ -984,7 +984,8 @@ class StreetFeature(Feature):
             except DbError as e:
                 log('card code:', type(e).__name__)
         rel = await charms.bond(self.app, p, o) if friend else None   # 💞 the relationship the two set
-        return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account,
+        nt = await notes.of_app(self.app).one(p, w.pid)   # 💭 their note (live/notes.py)
+        return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account, **({'nt': nt} if nt else {}),
                     code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private, **({'st': w.st} if w.st else {}),
                     **({'tt': w.tt} if w.tt else {}), **({'bg': w.bg} if w.bg else {}), **({'rel': rel} if rel else {}),
                     **({'pr': w.pr} if w.pr else {}), **({'wg': w.wg} if w.wg else {}))

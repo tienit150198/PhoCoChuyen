@@ -331,6 +331,7 @@ def forget(store, token: str) -> None:
         db.execute('DELETE FROM chat_members WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_prefs WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_faces WHERE pid=?', (pid,))
+        db.execute('DELETE FROM chat_notes WHERE pid=?', (pid,))   # 💭 their note (live/notes.py; SCHEMA_VERSION 94)
         db.execute('DELETE FROM chat_hides WHERE pid=?', (pid,))    # 🗑️ what they deleted on their side
         db.execute('DELETE FROM chat_clears WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_slow WHERE pid=?', (pid,))   # 🐢 their slow mode

@@ -16,7 +16,8 @@
  * 💕 Dates (./dating.js, lazy): live.bonds (pids "đang tìm hiểu"), dateNav(), openDate(), benchSpot(walk) for the stroll's bench.
  * 🙂 Faces: `hello` carries this save's face code (./face-code.js faceCode: s.avatar and the wardrobe clothes); when it
  * changes (the builder, Tủ đồ) a `face` frame follows, but only to a service whose welcome `me` has `fc` (an older one
- * would answer "unknown"). `faced {pid, fc}` updates friends and DM peers. */
+ * would answer "unknown"). `faced {pid, fc}` updates friends and DM peers.
+ * 💭 `noted {pid, nt}` (live/notes.py): a note set, cleared or hidden: `me.nt`, the friend's and the DM peer's `nt`. */
 import {icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {faceCode} from './face-code.js';
@@ -170,6 +171,11 @@ function frame(f){
     case'faced':{   // 🙂 a face changed (mine from another tab, a friend's, a DM peer's)
       const put=x=>{if(!x)return;if(f.fc)x.fc=f.fc;else delete x.fc;};
       if(f.pid===live.me?.pid)put(live.me);put(live.friend(f.pid));for(const c of live.chans)if(c.peer?.pid===f.pid)put(c.peer);
+      break;}
+    case'noted':case'note_reported':{   // 💭 a note changed (a reported one: gone for me at once)
+      const nt=f.t==='noted'?f.nt||null:null,put=x=>{if(!x)return;if(nt)x.nt=nt;else delete x.nt;};
+      if(live.me&&f.pid===live.me.pid)live.me.nt=nt;else put(live.friend(f.pid));
+      for(const c of live.chans)if(c.peer?.pid===f.pid)put(c.peer);
       break;}
     case'read':{const c=live.chan(f.ch);if(c){c.unread=0;c.read=Math.max(c.read||0,f.id);}break;}
     case'msg':{

@@ -684,7 +684,7 @@ function paintOverlays(){
     const more=c.more?(c.report?`<div class="wk-acts wrap">${REASONS.map(([k,l])=>`<button type="button" class="wk-pill" data-wk="reason" data-reason="${k}">${l}</button>`).join('')}</div>`
       :`<div class="wk-acts">${c.said?`<button type="button" class="wk-pill" data-wk="report">${icon('flag',14)} Báo cáo lời vừa nói</button>`:''}<button type="button" class="wk-pill warn" data-wk="block">Chặn</button></div>`):'';
     cd.innerHTML=`<div class="wk-who">${hfAvatar(c.tt,c.st,portrait(withWings(withPairs(c.lk,c.pr),c.wg),c.g,48,c.name),S.env?.api)}<div class="grow"><b data-no-translate${stName(S.env?.api,c.st)}>${esc(c.name)}</b>${c.bg?bgChip(c.bg,false):''}${c.ti?`<small>${esc(c.ti)}</small>`:''}${hnTitles(S.env?.api,c.tt).length?`<small class="wk-hn">${hnChips(S.env?.api,c.tt,0)}</small>`:''}${c.friend?`<small class="wk-friend">${c.rel?.name?`${esc(c.rel.emoji||'💞')} ${esc(c.rel.name)}`:'Bạn bè'}</small>`:''}</div>
-      <button type="button" class="icon-btn" data-wk="cardClose" aria-label="Đóng">${icon('x',18)}</button></div>${c.said&&c.more&&c.report?`<p class="wk-said" data-no-translate>“${esc(c.said.text)}”</p>`:''}
+      <button type="button" class="icon-btn" data-wk="cardClose" aria-label="Đóng">${icon('x',18)}</button></div>${c.nt?.t?`<p class="wk-note" data-no-translate>💭 ${esc(c.nt.t)}</p>`:''}${c.said&&c.more&&c.report?`<p class="wk-said" data-no-translate>“${esc(c.said.text)}”</p>`:''}
       <div class="wk-acts">${acts.join('')}</div>${more}`;
     cd.hidden=false;
   }else cd.hidden=true;

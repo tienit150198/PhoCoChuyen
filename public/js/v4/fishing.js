@@ -365,7 +365,7 @@ function paintPeerCard(f){
   const api=F.env?.api,d=F.pcard.data,fish=(x,label)=>{if(!x)return '';const sp=spOf(x.s),R=rar(x.r);
     return `<li style="--rc:${esc(R.color||'#ccc')}">${sp?fishSvg(sp,{w:44,h:22}):''}<span>${label}: <b>${esc(sp?.name||x.s)}</b> ${esc(fmtKg(x.g))} <small>${esc(R.emoji)} ${esc(R.name)}</small></span></li>`;};
   const pic=hfAvatar(p.tt,p.st,portrait(withWings(p.lk||{},p.wg),p.g,52,p.name),api);
-  el.innerHTML=`<button type="button" class="fs-x" data-fs="pcardX" aria-label="Đóng">✕</button><div class="fs-pc-who">${pic}<div><b data-no-translate${stName(api,p.st)}>${esc(p.name)}</b>${p.tt?`<small>${hnChips(api,p.tt,2)}</small>`:''}<small class="fs-pc-rod">${rodSvg(p.rod||'tre',24)} ${esc(rodOf(p.rod||'tre').emoji)} ${esc(rodOf(p.rod||'tre').name)}</small></div></div>
+  el.innerHTML=`<button type="button" class="fs-x" data-fs="pcardX" aria-label="Đóng">✕</button><div class="fs-pc-who">${pic}<div><b data-no-translate${stName(api,p.st)}>${esc(p.name)}</b>${p.tt?`<small>${hnChips(api,p.tt,2)}</small>`:''}<small class="fs-pc-rod">${rodSvg(p.rod||'tre',24)} ${esc(rodOf(p.rod||'tre').emoji)} ${esc(rodOf(p.rod||'tre').name)}</small></div></div>${d?.nt?.t?`<p class="fs-pc-note" data-no-translate>💭 ${esc(d.nt.t)}</p>`:''}
     ${!d?'<p class="fs-note">Đang xem…</p>':`<ul class="fs-pc-fish">${fish(d.today,'🐟 Hôm nay')}${fish(d.best,'🐋 Lớn nhất')}${d.dex?`<li><span>📖 Sổ cá: <b>${fmt(d.dex)}</b> loài</span></li>`:''}${!d.today&&!d.best&&!d.dex?'<li><span>Chưa có con cá nào để khoe.</span></li>':''}</ul>`}`;
   el.hidden=false;
 }
