@@ -39,6 +39,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.7", date="2026-10-25", items=(   # owner 24/10: "công bố thêm coin, đổi giao diện nhà,.. gì đó chung chung thôi"
+        dict(emoji='📈', text="Sàn có thêm nhiều coin và cổ phiếu mới"),
+        dict(emoji='🏠', text="Đổi giao diện nhà"),
+        dict(emoji='✨', text="Thêm vài món mới và sửa nhiều lỗi theo góp ý của mọi người"),
+    )),
     dict(version="2.6.6", date="2026-10-24", items=(   # owner 24/10: "trong danh sách thú thêm con mèo này nhé, tên Mai", "cần xịn thì nhìn khác đi", "cá to thì nhìn to thật", "bị mất cái cánh … cắt mất", "scroll ngang nếu nhiều người"
         dict(emoji='🐱', text="Tiệm thú cưng có bé mới: Mèo Mai, mèo tai cụp mũm mĩm hay ngồi dựa tường như người 😼", go=dict(action='pets')),
         dict(emoji='🎣', text="Mỗi cần câu một dáng riêng, cần xịn lấp lánh; cá to nhìn to thật, cá khủng phải vác vai", go=dict(action='fishing')),

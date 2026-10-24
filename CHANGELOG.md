@@ -1,4 +1,16 @@
-# Chưa phát hành — feat/market-wild
+# 2.6.7 — 25/10/2026
+
+Gộp 7 nhánh (chủ game 24/10 "xong thì 2.6.7 đưa lên hết nhé"). Schema 94 (bảng chat_notes mới). "Có gì mới" chung chung theo chủ game ("nhiều cái k nên công bố"): thêm coin/cổ phiếu, đổi giao diện nhà, sửa lỗi theo góp ý. Không công bố biến động sàn.
+
+- 🏠 Nhà chibi như 2.5.9 (feat/home-chibi-back): bỏ lưới snap và viền gạch đứt (#518: `.dc-grid` của khung phòng dính rule nét đứt của lưới), thanh 🔍 zoom nằm trên phòng, đặt đồ tự do; giữ ↻ xoay, zoom, dùng đồ. Chỉ sửa client.
+- 🎣 #515 bàn phím khi câu (phần còn thiếu sau 2.6.6: 💬 chỉ mở khi chạm thật, không mở lúc quăng/kéo; thanh lực không chuyền chạm xuống 💬); #517 tranh cá cỡ nhỏ 1×1 (`tranh_ca_nho`) + 6 màu nền (mặc định kem nhạt), lệnh `jr_fish_tro`, mục `journey.fish.tro` có thể có phần tử thứ 3 (nền).
+- 🛒 #523 nhân viên đại lý xe, tiệm vàng, căn tin, văn phòng phẩm bán đúng hàng trên kệ (game/staff_orders.py, staff_market `fixed` + `cap`); #388 thẻ chuẩn bị ca điều phối, lối tắt mua vật tư quy mô, gợi ý mặt bằng cho chỗ nhân viên.
+- ♿ #519 Du lịch → visa → vé → bay dùng được với trình đọc màn hình (public/js/v4/sheet-focus.js); #428 danh sách "Rương & lì xì" (public/js/isometric-pickups.js); nhãn hồ câu, báo cá cắn bằng giọng.
+- ✨ #355 thư ký: người gọi / công ty / giờ gọi lại chọn 1 trong 4; #514 khung Trùm riêng theo nghề, Trùm hãng phim dễ thương; #501 #507 quầy 💄 Mỹ phẩm, 🎀 Phụ kiện dễ thương, 🍢 Cá viên chiên.
+- 💬 #170 ghi chú trạng thái 24 giờ (live/notes.py, bảng chat_notes, schema 94); #485 nấu cơm tối ở nhà; #373 tạp hóa thêm 5 món theo cấp và khách sỉ (đặt cọc 20 %, giao hôm sau).
+- 🎢 Sàn Phố: xem mục dưới. Mốc chuyển giá mới `_DEFAULT_WILD_AT` = 25/10/2026 01:00 VN (sau giờ phát hành ~1 giờ, Mây Coin và vàng nối giá cũ, không nhảy); `MNL_MARKET_WILD_AT` không đặt trên máy chủ.
+
+## Sàn Phố (feat/market-wild)
 
 🎢 Sàn Phố (chủ game 24/10: "cho thêm nhiều loại coin khác, nhiều loại chứng khoán nữa nhé… cho biến động lên xuống thất thường… hiện tại dễ đầu tư quá"). Không đổi schema, không thêm bảng, giá tính trong tiến trình. Chủ game 24/10: chỉ báo người chơi "có thêm nhiều coin và cổ phiếu mới", KHÔNG báo việc thị trường biến động mạnh hơn / luật giá đổi.
 

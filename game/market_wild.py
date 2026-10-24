@@ -55,7 +55,7 @@ LN10 = math.log(10)
 SPLIT = 10                # a new asset is split 1→10 above launch×SPLIT, and (not risky) merged 10→1 under launch/SPLIT
 E_MAX = 12                # at most 10^12 either way
 
-_DEFAULT_WILD_AT = int(dt.datetime(2026, 10, 26, 4, tzinfo=rm._VN).timestamp())
+_DEFAULT_WILD_AT = int(dt.datetime(2026, 10, 25, 1, tzinfo=rm._VN).timestamp())   # 2.6.7 went live 24/10 ~midnight
 
 
 def _wild_at() -> int:
