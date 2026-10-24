@@ -55,33 +55,36 @@ def zone_of(dist: float) -> int:
 
 # ---------------------------------------------------------------- rods, baits, baskets
 # range: metres at full power; line: the heaviest fish (kg) it holds safely; luck: rare weights × luck^rarity;
-# reel: reel speed (a shorter fight); bite: the share of casts a fish really bites (else it only nibbles: rỉa mồi). Cổ đại from Cần bạch kim (`ancient`), else × ANCIENT_GATE.
+# reel: reel speed (a shorter fight); bite: the share of casts a fish really bites (else it only nibbles: rỉa mồi); hook: the
+# seconds to tap Giật after the bite shows (owner 24/10 "giật dễ hơn": 3 s, up to 4 s). Cổ đại from Cần bạch kim (`ancient`), else × ANCIENT_GATE.
 RODS = (
-    dict(id='tre', name='Cần tre', emoji='🎋', price=0, range=20, line=6, luck=1.0, reel=1.0, bite=0.78, ancient=False, color='#c9a96b'),
-    dict(id='truc', name='Cần trúc', emoji='🎍', price=30_000, range=24, line=15, luck=1.0, reel=1.05, bite=0.8, ancient=False, color='#9bbf5a'),
-    dict(id='carbon', name='Cần carbon', emoji='🎣', price=200_000, range=40, line=45, luck=1.31, reel=1.1, bite=0.89, ancient=False, color='#3b3f4a'),
-    dict(id='bien', name='Cần câu biển', emoji='🌊', price=1_500_000, range=60, line=180, luck=1.69, reel=1.15, bite=0.93, ancient=False, color='#2a6fb8'),
-    dict(id='vang', name='Cần vàng', emoji='🥇', price=8_000_000, range=75, line=800, luck=2.07, reel=1.2, bite=0.95, ancient=False, color='#e6b422'),
-    dict(id='bach_kim', name='Cần bạch kim', emoji='💠', price=20_000_000, range=90, line=3_500, luck=2.1, reel=1.25, bite=0.97, ancient=True, color='#cfd8e3'),
-    dict(id='long_vuong', name='Cần Long Vương', emoji='🐉', price=50_000_000, range=110, line=25_000, luck=2.18, reel=1.3, bite=0.98, ancient=True, color='#d62f2f'),
+    dict(id='tre', name='Cần tre', emoji='🎋', price=0, range=20, line=6, luck=1.0, reel=1.0, bite=0.78, hook=3.0, ancient=False, color='#c9a96b'),
+    dict(id='truc', name='Cần trúc', emoji='🎍', price=30_000, range=24, line=15, luck=1.0, reel=1.05, bite=0.8, hook=3.1, ancient=False, color='#9bbf5a'),
+    dict(id='carbon', name='Cần carbon', emoji='🎣', price=200_000, range=40, line=45, luck=1.31, reel=1.1, bite=0.89, hook=3.25, ancient=False, color='#3b3f4a'),
+    dict(id='bien', name='Cần câu biển', emoji='🌊', price=1_500_000, range=60, line=180, luck=1.69, reel=1.15, bite=0.93, hook=3.4, ancient=False, color='#2a6fb8'),
+    dict(id='vang', name='Cần vàng', emoji='🥇', price=8_000_000, range=75, line=800, luck=2.07, reel=1.2, bite=0.95, hook=3.6, ancient=False, color='#e6b422'),
+    dict(id='bach_kim', name='Cần bạch kim', emoji='💠', price=20_000_000, range=90, line=3_500, luck=2.1, reel=1.25, bite=0.97, hook=3.8, ancient=True, color='#cfd8e3'),
+    dict(id='long_vuong', name='Cần Long Vương', emoji='🐉', price=50_000_000, range=110, line=25_000, luck=2.18, reel=1.3, bite=0.98, hook=4.0, ancient=True, color='#d62f2f'),
 )
 ROD = {r['id']: r for r in RODS}
 ROD_IDS = tuple(ROD)
 ANCIENT_GATE = 0.05
 
-# Baits: bought by the box (`n` uses), one used per cast while chosen. `rar`: × weight per rarity; `wait`: × bite wait.
+# Baits: bought by the box (`n` uses), one used per cast while chosen. `rar`: × weight per rarity; `wait`: × bite wait;
+# `hook` (optional): seconds added to the rod's hook window.
 # Priced so the bait meant for a rod (giun: tre, tôm: carbon, mồi giả: biển, phát sáng: vàng, huyền thoại: Long Vương) costs
 # about 85 % of what it adds there (tests/test_fishing_ev.py): a small edge and the rarer species, never a money sink.
+# (2.6.3: the easier hook lands more of its rare fish, so Mồi huyền thoại went 50.000 → 55.000 to stay at ≈85 %.)
 BAITS = (
     dict(id='giun', name='Giun đất', emoji='🪱', price=60, n=30, rar=(1.25, 1.2, 1, 1, 1, 1, 1), wait=0.85,
          hint='Cá nhỏ cắn nhanh hơn.'),
-    dict(id='tom', name='Tôm tươi', emoji='🦐', price=100, n=20, rar=(1, 1.3, 1.3, 1.2, 1, 1, 1), wait=0.95,
+    dict(id='tom', name='Tôm tươi', emoji='🦐', price=100, n=20, rar=(1, 1.3, 1.3, 1.2, 1, 1, 1), wait=0.95, hook=0.1,
          hint='Cá Khá, Quý ưa mồi tôm.'),
-    dict(id='moi_gia', name='Mồi giả', emoji='🪝', price=600, n=10, rar=(0.9, 1, 1.4, 1.45, 1.3, 1, 1), wait=1.0,
+    dict(id='moi_gia', name='Mồi giả', emoji='🪝', price=600, n=10, rar=(0.9, 1, 1.4, 1.45, 1.3, 1, 1), wait=1.0, hook=0.2,
          hint='Cá săn mồi (Quý, Hiếm) mê mồi giả.'),
-    dict(id='phat_sang', name='Mồi phát sáng', emoji='✨', price=5_000, n=10, rar=(0.85, 0.9, 1, 1.5, 1.6, 1.5, 1.2), wait=1.0,
+    dict(id='phat_sang', name='Mồi phát sáng', emoji='✨', price=5_000, n=10, rar=(0.85, 0.9, 1, 1.5, 1.6, 1.5, 1.2), wait=1.0, hook=0.2,
          night=1.25, hint='Sáng lấp lánh, ban đêm càng hiệu nghiệm.'),
-    dict(id='huyen_thoai', name='Mồi huyền thoại', emoji='🔱', price=50_000, n=5, rar=(0.8, 0.8, 0.9, 1, 1.2, 2.2, 2.2), wait=1.05,
+    dict(id='huyen_thoai', name='Mồi huyền thoại', emoji='🔱', price=55_000, n=5, rar=(0.8, 0.8, 0.9, 1, 1.2, 2.2, 2.2), wait=1.05, hook=0.3,
          hint='Gọi cá Huyền thoại, Cổ đại.'),
 )
 BAIT = {b['id']: b for b in BAITS}
@@ -104,9 +107,13 @@ CAST_SECONDS = 1.6      # the cast's flight: the wait counts from the splash
 WAIT = ((5, 15), (6, 17), (9, 20), (14, 28), (16, 30), (18, 34), (24, 45))   # bite wait (s) per rarity: longer → heavier
 JUNK_WAIT = (5, 12)
 NOBITE_WAIT = (10, 18)  # rỉa mồi: nibbles only, then the bait is gone
-HOOK_WINDOW = 1.4       # seconds after the bite to tap Giật
-HOOK_EARLY = 0.25       # a tap this long before the bite still counts (network), earlier scares the fish off
-HOOK_LATE = 0.8         # and this long after the window (network)
+HOOK_WINDOW = 3.0       # seconds to tap Giật after the bite shows: the default (a rod's own `hook`, + its bait's)
+# The client measures how long after it showed the bite the player tapped (`ms`, performance.now()) and the server judges
+# that against the window: a slow save or network never costs the fish. The server's own receipt time only bounds it:
+HOOK_EARLY = 0.25       # a tap received this long before the bite at most (it cannot follow a bite shown on screen)
+HOOK_LAG = 8.0          # a tap received at most window + this after the bite (heavy saves: 1–2 s a command, each way)
+HOOK_SCARE = 3          # taps before the bite (nibbles) the client forgives with "Chưa cắn đâu"; one more scares the fish
+HOOK_LATE = 0.8         # an older client (no `ms`): judged by receipt, this long after the window
 REEL = (3.0, 4.0, 5.0, 6.5, 8.0, 10.0, 12.0)   # fight seconds per rarity (+ up to 3 s for a heavy one), ÷ rod reel
 REEL_MIN_SHARE = 0.6    # the server refuses a landing sooner than this share of the fight
 ROUND_TTL = 180         # seconds a round stays open
@@ -122,7 +129,7 @@ RELEASE_SPIRIT = 3      # 🐟 thả cá: +1 tinh thần, at most this many a da
 
 # ---------------------------------------------------------------- the sim's "decent play" (tests/test_fishing_ev.py)
 SIM_POWER = (0.70, 0.95)
-SIM_HOOK = 0.9                                    # taps Giật in time
+SIM_MISS = 0.15                                   # taps Giật in time: 1 − SIM_MISS / window (3 s: 95 %, 4 s: 96 %)
 SIM_REEL = (0.95, 0.93, 0.9, 0.85, 0.8, 0.75, 0.7)   # keeps the tension green to the end
 SIM_UI = (3.0, 1.5)     # seconds on the catch card (landed) / after a miss
 HAGGLE_EV = 1 - HAGGLE_CHANCE * (1 - sum(HAGGLE_OFFER) / 200)   # accepting every offer
@@ -415,6 +422,18 @@ def wait_of(r: int, f: float, noise: float, bait: str | None = None) -> float:
     return (lo + (hi - lo) * max(0.0, min(1.0, 0.65 * f + 0.35 * noise))) * m
 
 
+def hook_window(rod: str, bait: str | None = None) -> float:
+    """Seconds to tap Giật after the bite shows: the rod's `hook` (+ the bait's `hook`)."""
+    w = (ROD.get(rod) or {}).get('hook', HOOK_WINDOW)
+    b = BAIT.get(bait) if bait else None
+    return round(w + (b.get('hook', 0.0) if b else 0.0), 2)
+
+
+def sim_hook(rod: str, bait: str | None = None) -> float:
+    """The sim's share of bites hooked in time (decent play)."""
+    return 1 - SIM_MISS / hook_window(rod, bait)
+
+
 def reel_of(r: int, f: float, rod: str) -> float:
     return (REEL[r] + 3.0 * f) / ROD[rod]['reel']
 
@@ -446,6 +465,7 @@ def expected(rod: str, spot: str, bait: str | None = None, cond: dict | None = N
             s = SPREAD[0] + (SPREAD[1] - SPREAD[0]) * (k + .5) / n
             zp[zone_of(min(sp['max'], p * rd['range'] * s))] += 1 / (n * n)
     value = time_ = 0.0
+    hook = sim_hook(rod, bait)
     for zi, pz in enumerate(zp):
         if pz <= 0:
             continue
@@ -467,9 +487,9 @@ def expected(rod: str, spot: str, bait: str | None = None, cond: dict | None = N
                     wait = wait_of(r, f, 0.5, bait)
                     reel = reel_of(r, f, rod)
                     snap = snap_chance(kg, rod)
-                    land = SIM_HOOK * SIM_REEL[r] * (1 - snap)
+                    land = hook * SIM_REEL[r] * (1 - snap)
                     v = land * price(spc['id'], grams(kg)) * HAGGLE_EV
-                    t = (CAST_SECONDS + wait + SIM_HOOK * reel * (1 - 0.5 * snap)
+                    t = (CAST_SECONDS + wait + hook * reel * (1 - 0.5 * snap)
                          + land * SIM_UI[0] + (1 - land) * SIM_UI[1])
                     value += ps / n * v
                     time_ += ps / n * t

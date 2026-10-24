@@ -1,6 +1,7 @@
 """🎣 Câu cá (game/fishing.py, game/fishing_content.py; owner 24/10): the content (122 species in 7 rarities, rods at the
 owner's prices, baits, baskets), a round decided by the server at the cast (power × range × spread, tangling, zones, the
-bite wait, junk and rỉa mồi), the hook window, the reel's minimum time and the fated snap, receipts, no daily cap, the
+bite wait, junk and rỉa mồi), the hook window (per rod and bait, judged on the client's own measure so lag never costs
+the fish; nibble taps keep the round), the reel's minimum time and the fated snap, receipts, no daily cap, the
 🐟 Chợ cá (price, haggling: accept / bargain / decline, no re-roll by declining), the bag (keep, release, carry, tranh cá,
 bể cá), 📖 Sổ cá milestones (xu once, earned titles and frame), the old leisure keepsakes moved into Sổ cá, saves of a
 newer build (rollback), the public view (never the open round's fish) and the island cast checked at commit."""
@@ -32,11 +33,13 @@ def run(s, name, clock, rng=None, **p):
         return act(s, name, **p)
 
 
-def put_round(s, kind='fish', sp='ca_chep', g=2500, at=T0, bite=T0 + 10, reel=4.0, snap=0, rod='tre', spot='ho', trip=''):
-    """A round as jr_fish_cast leaves it (to test hook / land without dice)."""
+def put_round(s, kind='fish', sp='ca_chep', g=2500, at=T0, bite=T0 + 10, reel=4.0, snap=0, rod='tre', spot='ho', trip='', win=None):
+    """A round as jr_fish_cast leaves it (to test hook / land without dice); `win` None: a round cast on 2.6.2 (no `win`)."""
     d = F.ensure(s)
     d['act'] = dict(id='a' * 32, at=at, spot=spot, trip=trip, rod=rod, dist=12.0, zone=0, kind=kind, sp=sp if kind != 'none' else '',
                     g=g if kind == 'fish' else 0, bite=bite, hook=0.0, reel=reel, snap=snap, nib=[])
+    if win is not None:
+        d['act']['win'] = win
     validate_state(s)
     return s
 
@@ -75,6 +78,22 @@ class Content(unittest.TestCase):
         self.assertEqual([r['id'] for r in C.RODS if r['ancient']], ['bach_kim', 'long_vuong'])
         self.assertEqual(C.BASKETS[0]['price'], 0)
         self.assertTrue(all(b['price'] > 0 and b['n'] > 0 for b in C.BAITS))
+
+    def test_hook_window_per_rod_and_bait(self):
+        """Owner 24/10 "giật dễ hơn": 3 s on the bamboo rod, longer on every better rod, about 4 s on Long Vương; a bait may add."""
+        wins = [C.hook_window(r['id']) for r in C.RODS]
+        self.assertEqual(wins[0], 3.0)
+        self.assertEqual(wins[-1], 4.0)
+        self.assertEqual(wins, sorted(set(wins)), 'each rod up holds the bite longer')
+        self.assertEqual(C.HOOK_WINDOW, 3.0)
+        self.assertEqual(C.hook_window('tre', 'giun'), 3.0)
+        self.assertEqual(C.hook_window('long_vuong', 'huyen_thoai'), 4.3)
+        self.assertTrue(all(0 <= b.get('hook', 0) <= 0.5 for b in C.BAITS))
+        self.assertEqual(C.hook_window('a_newer_rod'), C.HOOK_WINDOW)
+        cat = F.catalogue()
+        self.assertEqual([r['hook'] for r in cat['rods']], wins)
+        self.assertEqual(cat['hook_scare'], C.HOOK_SCARE)
+        self.assertTrue(0.94 <= C.sim_hook('tre') < C.sim_hook('long_vuong') < 1)
 
     def test_catalogue_is_static_json(self):
         cat = F.catalogue()
@@ -123,6 +142,8 @@ class Cast(unittest.TestCase):
             a = s['journey']['fish']['act']
             self.assertNotIn('sp', c)
             self.assertNotIn('g', c)
+            self.assertEqual(c['window'], C.hook_window('tre'))
+            self.assertEqual(s['journey']['fish']['act']['win'], c['window'])
             if a['kind'] == 'none':
                 self.assertIn('gone', c)
                 self.assertNotIn('bite', c)
@@ -181,17 +202,78 @@ class Rounds(unittest.TestCase):
         self.s = put_round(story(wallet=1000))
 
     def test_early_late_and_none(self):
+        """An older client ({round} alone): judged by the receipt, with the 3 s window."""
         s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 5), round='a' * 32)
         self.assertEqual(r['hook'], dict(lost='early'))
         self.assertIsNone(s['journey']['fish']['act'])
-        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + C.HOOK_WINDOW + C.HOOK_LATE + 0.1), round='a' * 32)
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + 3.0 + C.HOOK_LATE + 0.1), round='a' * 32)
         self.assertEqual(r['hook'], dict(lost='late'))
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + 3.0 + C.HOOK_LATE - 0.1), round='a' * 32)
+        self.assertIn('secs', r['hook'])
         s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 - C.HOOK_EARLY + 0.05), round='a' * 32)
         self.assertIn('secs', r['hook'])
-        s, r = run(put_round(story(wallet=1000), kind='none'), 'jr_fish_hook', Clock(T0 + 10), round='a' * 32)
-        self.assertEqual(r['hook'], dict(lost='none'))
+        for p in (dict(), dict(ms=800), dict(early=True)):   # rỉa mồi: a tap ends it as before, whatever it says
+            s, r = run(put_round(story(wallet=1000), kind='none'), 'jr_fish_hook', Clock(T0 + 10), round='a' * 32, **p)
+            self.assertEqual(r['hook'], dict(lost='none'))
+            self.assertEqual(s['journey']['fish']['tot']['miss'], 1)
         with self.assertRaises(GameError):
             run(self.s, 'jr_fish_hook', Clock(T0 + 10), round='b' * 32)
+
+    def test_the_window_is_the_rods(self):
+        s = put_round(story(wallet=1000), rod='long_vuong', win=4.3)
+        _, r = run(s, 'jr_fish_hook', Clock(T0 + 14), round='a' * 32, ms=4200)
+        self.assertIn('secs', r['hook'])
+        _, r = run(s, 'jr_fish_hook', Clock(T0 + 14), round='a' * 32, ms=4301)
+        self.assertEqual(r['hook'], dict(lost='late'))
+        s = put_round(story(wallet=1000), rod='long_vuong')   # cast on 2.6.2: no `win`, the rod's own
+        self.assertEqual(F.window_of(s['journey']['fish']['act']), 4.0)
+        _, r = run(s, 'jr_fish_hook', Clock(T0 + 14), round='a' * 32, ms=3990)
+        self.assertIn('secs', r['hook'])
+
+    def test_a_tap_during_the_nibbles_keeps_the_round(self):
+        """Owner 24/10: tapping while the fish only nibbles no longer loses it. A tap the server receives before the bite could
+        have shown is ignored (the round stays open, nothing counted); the client's own HOOK_SCARE taps run out: `early`."""
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 5), round='a' * 32, ms=0)
+        self.assertEqual(r['hook'], dict(wait=True))
+        self.assertIn('Chưa cắn', r['message'])
+        a = s['journey']['fish']['act']
+        self.assertEqual((a['id'], a['hook']), ('a' * 32, 0))
+        self.assertEqual(s['journey']['fish']['tot']['miss'], 0)
+        s, r = run(s, 'jr_fish_hook', Clock(T0 + 10 - C.HOOK_EARLY + 0.01), round='a' * 32, ms=300)   # the slack
+        self.assertIn('secs', r['hook'])
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 6), round='a' * 32, early=True)
+        self.assertEqual(r['hook'], dict(lost='early'))
+        self.assertIsNone(s['journey']['fish']['act'])
+        self.assertEqual(s['journey']['fish']['tot']['miss'], 1)
+        self.assertEqual(C.HOOK_SCARE, 3)
+
+    def test_lag_never_costs_the_fish(self):
+        """[slow-cmd] 1628 ms jr_fish_hook … save=12127KB: the cast's answer and the tap each lose 1–2 s. The client's own
+        measure from the bite it drew decides; the receipt only has to be after the bite and within window + HOOK_LAG."""
+        win = C.hook_window('tre')
+        for late_by, ms in ((win + 2.5, 900), (win + 5, 2900), (win + C.HOOK_LAG - 0.1, 3000)):
+            s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + late_by), round='a' * 32, ms=ms)
+            self.assertIn('secs', r['hook'], (late_by, ms))
+        hooked_at = T0 + 10 + win + C.HOOK_LAG - 0.1
+        self.assertEqual(s['journey']['fish']['act']['hook'], hooked_at)
+        # the landing counts from the hook's receipt: a slow save on the hook only adds to the fight's time
+        with self.assertRaises(GameError) as e:
+            run(s, 'jr_fish_land', Clock(hooked_at + 4.0 * C.REEL_MIN_SHARE - 0.2), round='a' * 32, ok=True)
+        self.assertEqual(e.exception.code, 'too_early')
+        _, r = run(s, 'jr_fish_land', Clock(hooked_at + 4.0 * C.REEL_MIN_SHARE), round='a' * 32, ok=True)
+        self.assertEqual(r['land']['res'], 'fish')
+        # out of bounds: the claim past the window, the receipt past window + lag
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 11), round='a' * 32, ms=win * 1000 + 1)
+        self.assertEqual(r['hook'], dict(lost='late'))
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + win + C.HOOK_LAG + 0.1), round='a' * 32, ms=200)
+        self.assertEqual(r['hook'], dict(lost='late'))
+
+    def test_bad_hook_payloads(self):
+        for p in (dict(ms=-1), dict(ms='800'), dict(ms=float('nan')), dict(ms=float('inf')), dict(ms=10**9), dict(ms=True),
+                  dict(early=False), dict(early=1), dict(ms=100, early=True), dict(ms=100, x=1)):
+            with self.assertRaises(GameError, msg=p) as e:
+                run(self.s, 'jr_fish_hook', Clock(T0 + 11), round='a' * 32, **p)
+            self.assertEqual(e.exception.code, 'bad_round', p)
 
     def hooked(self, **kw):
         s = put_round(story(wallet=1000), **kw)

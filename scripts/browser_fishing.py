@@ -5,8 +5,11 @@ scripts/browser_housing.py, PostgreSQL through TEST_DATABASE_URL).
 Lan (a story save with 2.000.000 xu) opens Khu phố → 🎣 Câu cá and, with fingers only:
   1. sees the lake (zones, buoys, rod range), the three stalls on the bank and the HUD;
   2. holds the button (the power meter swings), releases: the bobber flies and splashes;
-  3. waits for the bite ("!"), taps, plays the tension reel to the end: the catch card (retries a lost round);
-  4. 🎣 Quầy bán cần: buys Cần trúc; 🐟 Quầy thu mua: sells the bag (a haggle is answered); 📖 Sổ cá and 🐋 the board.
+  3. taps once while the bobber only nibbles: "Chưa cắn đâu" and the round goes on (2.6.3: no fish lost);
+  4. waits for the bite ("!", the big "Giật!", the countdown ring around the bobber and the bar in the button), taps
+     1,2 s into the 3 s window with the hook request held 2,5 s on the wire (a heavy save's lag: the old receipt rule
+     called that late), plays the tension reel to the end: the catch card (retries a lost round);
+  5. 🎣 Quầy bán cần (each rod's ⏱️ Giật seconds): buys Cần trúc; 🐟 Quầy thu mua: sells the bag (a haggle is answered); 📖 Sổ cá and 🐋 the board.
 JPEG screenshots in out_dir; exit 1 on a failed check, a console error, a page error or an HTTP 5xx.
 
     TEST_DATABASE_URL=postgresql://… python scripts/browser_fishing.py [out_dir]
@@ -119,7 +122,17 @@ async def main() -> int:
             fps = await page.evaluate("""()=>new Promise(done=>{let n=0;const t0=performance.now();const f=()=>{n++;if(performance.now()-t0<1000)requestAnimationFrame(f);else done(n);};requestAnimationFrame(f);})""")
             check(fps >= 40, f'the lake animates ({fps} frames in a second)')
 
-            caught = None
+            lag = {'on': False, 'held': 0}
+
+            async def slow_hook(route):
+                body = route.request.post_data or ''
+                if lag['on'] and route.request.method == 'POST' and '"jr_fish_hook"' in body and '"ms"' in body:
+                    lag['held'] += 1
+                    await asyncio.sleep(2.5)   # the tap reaches the server 2,5 s late
+                await route.continue_()
+            await page.route('**/api/command', slow_hook)
+
+            caught, nibble_ok, lag_ok = None, False, False
             for attempt in range(12):
                 x, y = await go_box()
                 await page.mouse.move(x, y)
@@ -144,12 +157,41 @@ async def main() -> int:
                         break
                     if attempt == 0 and _ == 40:
                         await shot('03-wait', 0)
+                    if not nibble_ok and _ == 25 and 'wait' in c and tip.startswith('Chờ phao'):
+                        # a tap before the bite: a note, the round goes on (a rỉa mồi round ends as before: try the next)
+                        await page.mouse.down()
+                        await page.wait_for_timeout(60)
+                        await page.mouse.up()
+                        await page.wait_for_timeout(250)
+                        said = await page.inner_text('dialog.fs-sheet[open] .fs-say')
+                        if 'Chưa cắn' in said:
+                            await shot('03b-nibble-tap', 0)
+                            await page.wait_for_timeout(600)
+                            still = await page.inner_text('dialog.fs-sheet[open] .fs-go')
+                            nibble_ok = still.startswith('Chờ phao')
+                            check(nibble_ok, f'a tap during the nibbles keeps the round: {said!r}, then {still!r}')
                 if phase != 'bite':
                     continue
                 await shot('04-bite', 0)
+                big = await page.evaluate("(()=>{const e=document.querySelector('dialog.fs-sheet[open] .fs-bite');return e&&!e.hidden?e.textContent:''})()")
+                check('Giật' in big, f'the big "Giật!" at the bite: {big!r}')
+                await page.wait_for_timeout(1150)
+                left = await page.evaluate("Number(getComputedStyle(document.querySelector('dialog.fs-sheet[open] .fs-go')).getPropertyValue('--left'))")
+                await shot('04b-countdown', 0)
+                check(0.35 < left < 0.8, f'the countdown runs down in the 3 s window (--left {left:.2f} after 1,2 s)')
+                lag['on'] = not lag_ok
                 await page.mouse.down()
                 await page.wait_for_timeout(60)
                 await page.mouse.up()
+                if lag['on']:
+                    for _ in range(80):
+                        if 'reel' in await cls() or (await page.inner_text('dialog.fs-sheet[open] .fs-go')).startswith('🎣 Giữ'):
+                            break
+                        await page.wait_for_timeout(100)
+                    lag['on'] = False
+                    lag_ok = 'reel' in await cls()
+                    said = await page.inner_text('dialog.fs-sheet[open] .fs-say')
+                    check(lag_ok and lag['held'] >= 1, f'hooked though the tap reached the server 2,5 s late (1,2 s + 2,5 s > the old 2,2 s): {said!r}')
                 # the fight: hold while the needle is left of the green's middle
                 await page.wait_for_timeout(500)
                 fought = False
@@ -181,12 +223,15 @@ async def main() -> int:
                 await shot('06-junk', 500)
                 await page.click('dialog.fs-sheet[open] .fs-card [data-fs="again"]')
             check(caught is not None, f'a catch card after playing a round: {(caught or "")[:80]!r}')
+            check(nibble_ok, 'a nibble tap was tried on a round with a bite coming')
             if caught:
                 await shot('06-card', 700)
                 await page.click('dialog.fs-sheet[open] .fs-card [data-fs="again"]')
             # 🎣 Quầy bán cần
             await page.click('dialog.fs-sheet[open] .fs-st-shop')
             await page.wait_for_selector('dialog.fs-sheet[open] .fs-panel:not([hidden]) .fs-item')
+            rods = await page.inner_text('dialog.fs-sheet[open] .fs-panel')
+            check('⏱️ Giật 3s' in rods and '⏱️ Giật 4s' in rods and '⏱️ Giật 3,25s' in rods, 'each rod shows its hook window')
             await shot('07-shop')
             await page.click('dialog.fs-sheet[open] .fs-panel [data-fs="buy"][data-item="truc"]')
             await page.wait_for_selector('#confirmDialog[open] [data-action="confirmYes"]', timeout=5000)

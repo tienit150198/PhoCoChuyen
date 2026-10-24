@@ -52,7 +52,7 @@ class EV(unittest.TestCase):
             self.assertLessEqual(net, 0.2 * plain['hour'], (rod, bait, net))      # an edge, not a second income
 
     def test_the_server_rolls_like_the_model(self):
-        """Real casts (game/fishing._cast), decent play as the model's SIM_*: hook SIM_HOOK, land SIM_REEL[r] unless fated to snap."""
+        """Real casts (game/fishing._cast), decent play as the model's SIM_*: hook sim_hook(rod), land SIM_REEL[r] unless fated to snap."""
         cond = dict(night=False, rain=False, month=6)
         for rod in ('tre', 'truc', 'carbon'):
             spot = C.best_hour(rod)[1]
@@ -67,7 +67,7 @@ class EV(unittest.TestCase):
                     power = rng.uniform(*C.SIM_POWER)
                     F._cast(s, d, dict(spot=spot, power=power), 1_790_000_000.0)
                     a = d['act']
-                    if a and a['kind'] == 'fish' and not a['snap'] and rng.random() < C.SIM_HOOK * C.SIM_REEL[C.SPECIES[a['sp']]['r']]:
+                    if a and a['kind'] == 'fish' and not a['snap'] and rng.random() < C.sim_hook(rod) * C.SIM_REEL[C.SPECIES[a['sp']]['r']]:
                         total += C.price(a['sp'], a['g']) * C.HAGGLE_EV
             mc, model = total / n, C.expected(rod, spot)['cast']
             self.assertTrue(0.8 * model <= mc <= 1.2 * model, f'{rod} at {spot}: {mc:.1f} vs model {model:.1f} xu/cast')

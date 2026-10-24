@@ -8,9 +8,14 @@ the trader sometimes haggles. Every number lives in game/fishing_content.py.
 The server decides everything that matters at the cast (jr_fish_cast): how far the line went (power × rod range × a
 random spread: the same rod and power land differently), the zone, whether something bites at all (rỉa mồi), junk or a
 fish, its rarity, species, weight and when it bites (a longer wait leans to a heavier fish). The client only plays the
-bobber, the nibbles and the reel mini-game; it never learns the fish before the catch. jr_fish_hook must come inside the
-bite window (too early: the fish is scared off; too late: it let go), jr_fish_land no sooner than REEL_MIN_SHARE of the
-fight; a fish too heavy for the line was fated to snap at the cast. Receipts make a retried landing harmless.
+bobber, the nibbles and the reel mini-game; it never learns the fish before the catch. jr_fish_hook carries how long after
+the bite showed the player tapped (`ms`, measured by the client from the moment it drew the bite): inside the rod's hook
+window (game/fishing_content.hook_window, 3–4 s) it hooks, so a slow save or network never costs the fish (owner 24/10
+"giật dễ hơn"); the server's receipt time only bounds the claim (HOOK_EARLY, HOOK_LAG). Taps during the nibbles are the
+client's ("Chưa cắn đâu"; HOOK_SCARE of them forgiven, then `early` scares the fish). jr_fish_land no sooner than
+REEL_MIN_SHARE of the fight after the hook was received (the fight starts on the client only after the hook's answer, so
+a slow save only adds to that time); a fish too heavy for the line was fated to snap at the cast. Receipts make a retried
+landing harmless.
 
 Selling (jr_fish_sell) pays the price of game/fishing_content.price; HAGGLE_CHANCE of the sales the trader offers less
 (70–95 %): accept, bargain once (full price, a small bonus, or he refuses those fish for the day) or decline (the offer
@@ -171,10 +176,10 @@ def catalogue() -> dict:
     return dict(
         rarities=[dict(r) for r in C.RARITIES], spots=[dict(id=k, **v) for k, v in C.SPOTS.items()],
         zones=[dict(id=z['id'], name=z['name'], to=min(z['to'], 999)) for z in C.ZONES],
-        rods=[{k: r[k] for k in ('id', 'name', 'emoji', 'price', 'range', 'line', 'luck', 'reel', 'bite', 'ancient', 'color')} for r in C.RODS],
-        baits=[{k: b[k] for k in ('id', 'name', 'emoji', 'price', 'n', 'hint')} for b in C.BAITS],
+        rods=[{k: r[k] for k in ('id', 'name', 'emoji', 'price', 'range', 'line', 'luck', 'reel', 'bite', 'hook', 'ancient', 'color')} for r in C.RODS],
+        baits=[dict({k: b[k] for k in ('id', 'name', 'emoji', 'price', 'n', 'hint')}, hook=b.get('hook', 0.0)) for b in C.BAITS],
         baskets=[dict(b) for b in C.BASKETS], species=sp, junk=[dict(id=a, emoji=b, name=c) for a, b, c in C.JUNK],
-        power_sweet=C.POWER_SWEET, hook_window=C.HOOK_WINDOW, carry_min=C.CARRY_MIN, aquarium=C.AQUARIUM_MAX,
+        power_sweet=C.POWER_SWEET, hook_window=C.HOOK_WINDOW, hook_scare=C.HOOK_SCARE, carry_min=C.CARRY_MIN, aquarium=C.AQUARIUM_MAX,
         trophies=TROPHY_MAX, tier_reward=list(C.TIER_REWARD), spot_reward=C.SPOT_REWARD,
         haggle=dict(chance=C.HAGGLE_CHANCE, offer=list(C.HAGGLE_OFFER)),
         titles=[dict(id=t['id'], emoji=t['emoji'], name=t['name'], earn=t['earn']) for t in C.STYLE_TITLES])
@@ -228,8 +233,9 @@ def _cast(s, d, p, t):
     z = C.ZONES[zone]
     cond = C.conditions(t)
     start = t + C.CAST_SECONDS
+    win = C.hook_window(rod['id'], bait)
     act = dict(id=secrets.token_hex(16), at=t, spot=spot, trip=p.get('trip', ''), rod=rod['id'], dist=round(dist, 2),
-               zone=zone, kind='none', sp='', g=0, bite=0.0, hook=0.0, reel=0.0, snap=0, nib=[])
+               zone=zone, kind='none', sp='', g=0, bite=0.0, hook=0.0, reel=0.0, snap=0, nib=[], win=win)
     if rng.random() >= rod['bite']:
         act['bite'] = start + rng.uniform(*C.NOBITE_WAIT)          # rỉa mồi: nibbles, then the bait is gone
     elif rng.random() < z['junk']:
@@ -247,7 +253,7 @@ def _cast(s, d, p, t):
     act['nib'] = sorted(round(rng.uniform(lo, hi), 2) for _ in range(k)) if hi > lo else []
     d['act'] = act
     view = dict(id=act['id'], now=t, dist=round(dist, 1), zone=zone, splash=start, nib=list(act['nib']),
-                window=C.HOOK_WINDOW, cond=cond)
+                window=win, cond=cond)
     if act['kind'] == 'none':
         view['gone'] = act['bite']
     else:
@@ -255,35 +261,47 @@ def _cast(s, d, p, t):
     return dict(message='', cast=view, **({'bait_used': bait} if bait else {}))
 
 
-def _round(d, p, keys):
-    need = _core().need
-    token = p.get('round')
-    need(set(p) == keys and isinstance(token, str) and TOKEN.fullmatch(token) is not None, 'Lượt câu không hợp lệ.', 'bad_round')
-    return token
-
-
 def _close(d, token, res):
     d['rc'] = (d['rc'] + [dict(id=token, res=res)])[-MAX_RECEIPTS:]
     d['act'] = None
 
 
+def window_of(a: dict) -> float:
+    """The open round's hook window (seconds): set at the cast (`win`), else (a round cast on 2.6.2) the rod's."""
+    w = a.get('win')
+    return w if _num(w, 0.5, 30) else C.hook_window(a['rod'])
+
+
 def _hook(s, d, p, t):
+    """{round, ms}: a tap `ms` after the client showed the bite. {round, early: true}: the taps during the nibbles that
+    the client forgives (HOOK_SCARE) ran out. {round} alone: an older client (or closing a rỉa mồi round), by receipt."""
     need = _core().need
-    token = _round(d, p, {'round'})
+    token = p.get('round')
+    need(set(p) in ({'round'}, {'round', 'ms'}, {'round', 'early'}) and isinstance(token, str) and TOKEN.fullmatch(token) is not None
+         and ('ms' not in p or _num(p['ms'], 0, 600_000)) and p.get('early', True) is True, 'Lượt câu không hợp lệ.', 'bad_round')
     a = d['act']
     need(isinstance(a, dict) and a['id'] == token, 'Lượt câu đã đóng. Quăng cần lần nữa nhé.', 'bad_round')
     need(a['hook'] == 0, 'Đã giật cần rồi.', 'bad_round')
+    tot = d['tot']
     if a['kind'] == 'none':
         _close(d, token, 'none')
-        d['tot']['miss'] = min(LIMIT, d['tot']['miss'] + 1)
+        tot['miss'] = min(LIMIT, tot['miss'] + 1)
         return dict(message='🐟 Cá rỉa mất mồi rồi! Quăng lại nhé.', hook=dict(lost='none'))
-    if t < a['bite'] - C.HOOK_EARLY:
+    win, claim = window_of(a), p.get('ms')
+    shown = t >= a['bite'] - C.HOOK_EARLY   # the receipt cannot come before the bite could have been drawn
+    if 'early' in p or (claim is None and not shown):
         _close(d, token, 'early')
-        d['tot']['miss'] = min(LIMIT, d['tot']['miss'] + 1)
+        tot['miss'] = min(LIMIT, tot['miss'] + 1)
         return dict(message='😱 Giật sớm quá, cá hoảng sợ bỏ đi mất!', hook=dict(lost='early'))
-    if t > a['bite'] + C.HOOK_WINDOW + C.HOOK_LATE:
+    if not shown:
+        return dict(message='Chưa cắn đâu, chờ chút…', hook=dict(wait=True))   # ignored: the round stays open
+    if claim is None:   # an older client: its receipt, a little network allowance
+        late = t > a['bite'] + win + C.HOOK_LATE
+    else:               # the client's own measure, inside the window; the receipt only within a generous lag
+        late = claim > win * 1000 or t > a['bite'] + win + C.HOOK_LAG
+    if late:
         _close(d, token, 'late')
-        d['tot']['miss'] = min(LIMIT, d['tot']['miss'] + 1)
+        tot['miss'] = min(LIMIT, tot['miss'] + 1)
         return dict(message='💨 Chậm tay rồi, cá nhả mồi mất!', hook=dict(lost='late'))
     a['hook'] = t
     if a['kind'] == 'junk':
@@ -306,6 +324,7 @@ def _land(s, d, p, t):
     a = d['act']
     need(isinstance(a, dict) and a['id'] == token and a['hook'] > 0, 'Lượt câu đã đóng. Quăng cần lần nữa nhé.', 'bad_round')
     if p['ok'] and not a['snap']:   # a snap or a lost fish may end the fight early; a landed one takes its reel time
+        # counted from the hook's receipt: the client starts the fight only on the hook's answer, so lag only adds time
         need(t - a['hook'] + 0.05 >= a['reel'] * C.REEL_MIN_SHARE, 'Cá còn đang giãy, kéo tiếp nào!', 'too_early')
     need(t <= a['at'] + C.ROUND_TTL, 'Lượt câu đã hết giờ. Quăng lại nhé.', 'expired')
     tot = d['tot']
@@ -702,7 +721,8 @@ def _act_ok(a) -> bool:
             and (a['trip'] == '' or TRIP_RE.fullmatch(a['trip']) is not None) and _sp(a['rod']) and _num(a['dist'], 0, 10**4)
             and _int(a['zone'], 0, len(C.ZONES) - 1) and a['kind'] in ('none', 'junk', 'fish') and isinstance(a['sp'], str)
             and _int(a['g'], 0, 10**8) and all(_num(a[k], 0, 1e11) for k in ('bite', 'hook')) and _num(a['reel'], 0, 600)
-            and a['snap'] in (0, 1) and isinstance(a['nib'], list) and len(a['nib']) <= 8 and all(_num(x, 0, 1e11) for x in a['nib']))
+            and a['snap'] in (0, 1) and isinstance(a['nib'], list) and len(a['nib']) <= 8 and all(_num(x, 0, 1e11) for x in a['nib'])
+            and ('win' not in a or _num(a['win'], 0.5, 30)))
 
 
 def _ok(d) -> bool:

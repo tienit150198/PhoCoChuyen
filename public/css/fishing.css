@@ -62,6 +62,17 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-go.wait{background:linear-gradient(#b8d8e8,#86b3c8);color:#16384a;box-shadow:0 5px 0 #4f7a8e}
 .fs-go[disabled]{opacity:.6}
 @keyframes fs-pulse{to{transform:scale(1.04)}}
+/* the bite: the button's countdown bar (--left 1 → 0, set every frame) and the big "Giật!" over the lake */
+.fs-go{position:relative}
+.fs-go.hook::before,.fs-go.hook::after{content:'';position:absolute;left:16%;right:16%;bottom:7px;height:5px;border-radius:3px;pointer-events:none}
+.fs-go.hook::before{background:rgba(255,255,255,.25)}
+.fs-go.hook::after{background:#fff;box-shadow:0 0 8px #fff,0 0 14px #ffd34d;transform:scaleX(var(--left,1));transform-origin:left center}
+.fs-bite{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);padding:4px 18px;border-radius:999px;background:rgba(224,50,43,.88);color:#fff;
+  font-size:40px;font-weight:900;line-height:1.15;white-space:nowrap;text-shadow:0 2px 0 #8f1a14;box-shadow:0 0 0 3px #fff,0 0 28px rgba(255,90,70,.9);z-index:3;pointer-events:none}
+.fs-bite[hidden]{display:none}
+.fs-bite.go{animation:fs-bite-pop .45s cubic-bezier(.2,1.6,.4,1),fs-bite-beat .42s ease-in-out .45s infinite alternate}
+@keyframes fs-bite-pop{from{transform:translate(-50%,-50%) scale(.3);opacity:0}}
+@keyframes fs-bite-beat{to{transform:translate(-50%,-50%) scale(1.1)}}
 .fs-tip{font-size:12px;color:#f3dcb6;text-align:center;min-height:16px}
 /* the catch card */
 .fs-card{position:absolute;left:50%;top:48%;width:min(330px,calc(100% - 28px));transform:translate(-50%,-50%);padding:16px 14px 12px;border-radius:20px;background:#fffdf6;color:#1d2b36;
@@ -154,7 +165,7 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-reward ul{margin:2px 0 0;padding:0;list-style:none}
 .fs-empty{padding:20px 8px;text-align:center;color:#6b5a40}
 @media (prefers-reduced-motion:reduce){
-  .fs-go.hook,.fs-ban.rec,.fs-card svg.fish-art{animation:none}
+  .fs-go.hook,.fs-ban.rec,.fs-card svg.fish-art,.fs-bite.go{animation:none}
   .fs-card,.fs-panel,.fs-deal{animation:none}
 }
 @media (max-height:640px){
