@@ -1,0 +1,61 @@
+/* 🍳 Nấu cơm tối ở nhà (public/js/v4/cook-night.js). Phone first (390 px), theme tokens of app.css. */
+.ck-sheet{max-width:560px}
+.ck-body{display:flex;flex-direction:column;gap:12px}
+.ck-lead{margin:0;font-weight:700;font-size:15px;line-height:1.4}
+.ck-lead span{font-weight:400;color:var(--muted)}
+.ck-fine{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.ck-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}
+.ck-foot .btn{min-height:44px}
+.ck-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.ck-steps li{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:11px;min-width:0}
+.ck-steps li span{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);font-weight:700;font-size:12px;background:var(--surface)}
+.ck-steps li small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ck-steps li.on{color:var(--ink)}
+.ck-steps li.on span{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
+.ck-steps li.done span{border-color:var(--good);color:var(--good)}
+.ck-dishes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ck-dish{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;font:inherit;cursor:pointer;min-height:44px}
+.ck-dish:disabled{opacity:.55;cursor:default}
+.ck-dish:not(:disabled):active{transform:scale(.98)}
+.ck-dish-emoji{font-size:34px;line-height:1.1}
+.ck-dish b{font-size:14px;line-height:1.3}
+.ck-dish small{color:var(--muted);font-size:12px}
+.ck-dish .ck-fire{color:var(--warn)}
+.ck-dish .ck-best{color:var(--star,#e0a100);letter-spacing:1px}
+.ck-items,.ck-rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ck-item,.ck-spice{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:14px;border:2px dashed var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;min-height:72px}
+.ck-item span,.ck-spice span{font-size:28px;line-height:1}
+.ck-item small,.ck-spice small{font-size:12px;text-align:center;line-height:1.25}
+.ck-item.on,.ck-spice.on{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.ck-item i{position:absolute;top:4px;right:6px;font-style:normal;color:var(--good);font-weight:800}
+.ck-card{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--info-soft);border:1px solid var(--line)}
+.ck-card small{color:var(--muted)}
+.ck-board{display:flex;flex-direction:column;gap:8px}
+.ck-cut{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;min-height:48px}
+.ck-cut::before{content:'🔪';font-size:20px}
+.ck-cut b{flex:1;text-align:left}
+.ck-cut.on{background:var(--good-soft);border-color:var(--good)}
+.ck-cut:not(:disabled):active{transform:translateY(1px)}
+.ck-dots{letter-spacing:3px;color:var(--good)}
+.ck-pan{display:grid;place-items:center;height:96px;position:relative}
+.ck-pan span{font-size:64px;line-height:1}
+.ck-pan em{position:absolute;font-style:normal;font-size:28px;top:28px}
+.ck-pan.hot span{animation:ck-sizzle .35s ease-in-out infinite alternate}
+@keyframes ck-sizzle{from{transform:rotate(-2deg)}to{transform:rotate(2deg) translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){.ck-pan.hot span{animation:none}}
+.ck-gauge{position:relative;height:28px;border-radius:14px;background:linear-gradient(90deg,#9cc3e6,#f3d27a 45%,#e8743b 85%,#a8321e);border:1px solid var(--line-strong,var(--line));overflow:hidden}
+.ck-gauge i{position:absolute;top:0;bottom:0}
+.ck-near{background:rgba(255,255,255,.35)}
+.ck-zone{background:rgba(46,160,67,.6);box-shadow:inset 0 0 0 2px rgba(255,255,255,.85)}
+.ck-needle{position:absolute;top:-2px;bottom:-2px;width:6px;margin-left:-3px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
+.ck-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:-6px}
+.ck-say{margin:0;text-align:center;font-weight:800;font-size:16px}
+.ck-say.good{color:var(--good)}
+.ck-say.mid{color:var(--warn)}
+.ck-say.bad{color:var(--bad,#b3261e)}
+.ck-recipe summary{cursor:pointer;color:var(--muted);font-size:13px}
+.ck-recipe p{margin:6px 0 0;font-size:13px}
+.ck-done{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:8px 0}
+.ck-done p{margin:0;line-height:1.45}
+.ck-tray{font-size:72px;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+.ck-stars{font-size:26px;color:var(--star,#e0a100);letter-spacing:3px}
