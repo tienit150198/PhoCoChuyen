@@ -1,18 +1,21 @@
 /** 🎣 Câu cá (game/fishing.py is the authority, every number in game/fishing_content.py). A full-screen lake: one canvas
- * (sky, far shore, the water in zones Gần / Vừa / Xa / Sâu with distance buoys, the dock, the player, the line, the
- * bobber, ripples, splashes, rain) and plain elements over it: the HUD, the power meter, the tension meter, the catch card,
+ * (sky, far shore, the water in the rod's zones Gần / Vừa / Xa / Sâu with distance buoys for the rod in hand, in perspective
+ * so a 2 km cast lands by the horizon, the dock, the player, the line, the bobber, ripples, splashes, rain) and plain
+ * elements over it: the HUD, the power meter, the cast's distance counter, the tension meter, the catch card,
  * and three stalls on the bank: 🎣 Quầy bán cần (rods, bait, baskets), 📖 Bảng bộ sưu tập (Sổ cá, 🐋 Cá lớn nhất,
  * 📖 Bộ sưu tập, the top 3 on the board) and 🐟 Quầy thu mua (the fish bag, the trader who sometimes haggles).
  *
- * A round: hold to charge (the power swings; past POWER_SWEET the line may tangle), release → jr_fish_cast {spot, power}.
- * The server picks how far it went, the zone, whether and when something bites (and what: never told here). The bobber
- * flies, splashes at `splash`, nibbles at `nib`, and at `bite` dips hard with "!", a big "Giật!" and a buzz, and a glowing
+ * A round: hold (the meter fills) and release, or just tap → jr_fish_cast {spot, power}: casting never fails (owner 24/10
+ * "quăng dễ hơn … tầm quăng random"). The server picks how far it went (random over the rod's reach, the power only
+ * nudging it), the zone, whether and when something bites (and what: never told here). The bobber flies while a counter
+ * ticks the metres up ("🎯 1.234 m!", 🚀 past far_share of the rod's longest, 🏅 a new longest cast), splashes at `splash`, nibbles at `nib`, and at `bite` dips hard with "!", a big "Giật!" and a buzz, and a glowing
  * ring around the bobber (and a bar in the button) counts the rod's window down. A tap → jr_fish_hook {round, ms}: `ms` is
  * how long after this page drew the bite the player tapped (performance.now()), so a slow save or network never makes a
  * timely tap late. A tap during the nibbles only says "Chưa cắn đâu" (hook_scare of them; one more scares the fish:
  * {round, early}); on a rỉa mồi round (`gone`, nothing bites) a tap ends it as before. The fight is played here with what the hook answered (secs,
- * pull, dart, green zone width, `heavy`, a fated `snap_at`): hold to reel, release to ease, keep the needle in the green;
- * too long in the red snaps the line, too slack lets the fish go. jr_fish_land {round, ok}: the server checks the time and
+ * pull, dart, green zone width, `heavy`, a fated `snap_at`) by v4/fish-reel.js: hold to reel, release to ease; the green
+ * is wide, the needle slow and drifting back toward it, the yellow reels in too (slower); only a long stay in the
+ * flashing red snaps the line, a long slack lets the fish go. jr_fish_land {round, ok}: the server checks the time and
  * says what it was. The catch jumps out of the water and its card opens (🏆 a town record, 📖 a new species, 🏅 a best).
  *
  * Opened by app.js `fishing` (Khu phố), the outings' 🎣 Câu cá, the town map's leisure place and the island's 🎣 chip
@@ -20,11 +23,11 @@
 import {escapeHTML as esc} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {fishSvg,drawFish,fmtKg,RARITY_COLORS} from './fish-art.js';
+import {reelStart,reelStep,MID,RED} from './fish-reel.js';
 
-const PERIOD=1.7;            // s: one swing of the power meter
-const K=34;                  // m: the perspective of the lake (a buoy at K metres sits half way to the horizon)
-const RED=.9,SLACK=.1,RED_MAX=1.1,SLACK_MAX=2.6,MID=.55;
-const MARKS=[10,20,40,65,100,120];
+const FILL=.9;               // s: the power meter fills, then stays full (a tap casts too)
+const PERSP=.3;              // the lake's perspective: a buoy at PERSP × the view's depth sits half way to the horizon
+const MARKS=[10,20,30,50,100,200,300,500,1000,1500,2000,3000,5000];   // m: the buoys, the ones that suit the rod in hand
 const MEDAL=['🥇','🥈','🥉'];
 const F={env:null,dlg:null,cv:null,ctx:null,raf:0,last:0,spot:'ho',trip:'',phase:'idle',pressing:false,c0:0,power:0,
   r:null,f:null,bob:null,fx:[],rings:[],drops:[],waves:null,stars:null,jump:null,line:null,panel:null,tab:{shop:'rod',board:'dex'},
@@ -41,11 +44,16 @@ const funds=()=>wallet()+bankBal();
 let SPM=null;
 const spOf=id=>{if(!SPM){SPM=new Map();for(const s of C()?.species||[])SPM.set(s.id,s);}return SPM.get(id)||null;};
 const rods=()=>C()?.rods||[];
-const rodOf=id=>rods().find(r=>r.id===id)||rods()[0]||{id:'tre',name:'Cần tre',emoji:'🎋',range:20,line:6,luck:1,color:'#c8a85a'};
+const rodOf=id=>rods().find(r=>r.id===id)||rods()[0]||{id:'tre',name:'Cần tre',emoji:'🎋',reach:[15,80],zones:[62,100,150],line:6,luck:1,color:'#c8a85a'};
+const reachOf=r=>Array.isArray(r?.reach)&&r.reach.length===2?r.reach.map(Number):[15,80];
 const myRod=()=>rodOf(P().rod);
-const spotOf=id=>(C()?.spots||[]).find(s=>s.id===id)||{id,name:id,emoji:'🎣',max:100,water:'#4aa3c7',deep:'#1f5f86',shore:'#7bbf6a'};
+const spotOf=id=>(C()?.spots||[]).find(s=>s.id===id)||{id,name:id,emoji:'🎣',water:'#4aa3c7',deep:'#1f5f86',shore:'#7bbf6a'};
 const rar=r=>(C()?.rarities||[])[r]||{name:'',emoji:'⚪',color:RARITY_COLORS[r]||'#b8c0c8'};
 const secs=n=>`${String(+Number(n).toFixed(2)).replace('.',',')}s`;
+const km=m=>String(+(m/1000).toFixed(2)).replace('.',',');
+const fmtM=m=>`${fmt(Math.round(m))} m`;                                     // the cast: big numbers ("1.234 m")
+const shortM=m=>m>=1000?`${km(m)} km`:`${fmt(Math.round(m))} m`;            // buoys ("1,5 km")
+const reachTxt=([lo,hi])=>hi>=1000?`${km(lo)}–${km(hi)} km`:`${fmt(lo)}–${fmt(hi)} m`;   // the rod stall ("0,5–2 km")
 const kgLine=kg=>kg>=1000?`${String(+(kg/1000).toFixed(1)).replace('.',',')} tấn`:`${fmt(kg)} kg`;
 const priceOf=f=>Number(f?.pr)||0;   // journey.fish.bag[].pr: game/fishing_content.price, before haggling
 const vibrate=p=>{try{navigator.vibrate?.(p);}catch{/* not on iOS */}};
@@ -66,7 +74,7 @@ export async function openFishing(env,{spot='',trip=''}={}){
   F.onState=()=>{paintHud();if(F.panel)paintPanel();};
   env.api.addEventListener?.('state',F.onState);
   idle('');paintSpots();paintHud();resize();loadRecords();
-  if(P().fresh)say('🎣 Giữ nút để lấy lực, thả tay để quăng. Quăng xa ra cá to!',5000);
+  if(P().fresh)say('🎣 Giữ rồi thả để quăng, xa gần hên xui! Càng xa cá càng to.',5000);
   cancelAnimationFrame(F.raf);F.last=0;F.raf=requestAnimationFrame(tick);
 }
 export async function fishingAction(action,data,el,env){if(action!=='fishing')return false;await openFishing(env,data||{});return true;}
@@ -81,7 +89,8 @@ function dialog(){
       <div class="fs-hud"><button type="button" class="fs-chip fs-gear" data-fs="shop"></button><button type="button" class="fs-chip fs-bagb" data-fs="market"></button></div>
       <div class="fs-say" role="status" aria-live="polite" hidden></div>
       <div class="fs-bite" aria-hidden="true" hidden>❗ Giật!</div>
-      <div class="fs-meter" hidden><i></i><s></s></div><span class="fs-pow" hidden></span>
+      <div class="fs-meter" hidden><i></i></div><span class="fs-pow" hidden></span>
+      <div class="fs-dist" aria-live="polite" hidden><b></b><small></small></div>
       <div class="fs-ten" hidden><div class="fs-ten-bar"><b></b><i></i></div><div class="fs-ten-row"><span>🐟</span><span class="fs-prog"><i></i></span><span>🧍</span></div></div>
       <div class="fs-bank">
         <button type="button" class="fs-stall fs-st-shop" data-fs="shop"><span class="fs-roof"></span><b>🎣 Quầy bán cần</b><small>Cần · mồi · giỏ</small></button>
@@ -149,7 +158,7 @@ function release(){
   if(F.phase==='fight'&&F.f)F.f.hold=false;
 }
 function idle(tip){
-  F.phase='idle';F.r=null;F.f=null;F.bob=null;F.line=null;F.jump=null;biteFx(false);
+  F.phase='idle';F.r=null;F.f=null;F.bob=null;F.line=null;F.jump=null;biteFx(false);distFx(null);
   meters();paintGo(tip);
 }
 async function cast(power){
@@ -160,20 +169,15 @@ async function cast(power){
   if(!res||!res.cast){idle();if(F.env?.api?.state?.journey?.fish?.bag?.length>=P().cap)openPanel('market');return;}
   const c=res.cast,got=clock(),off=c.now!=null?c.now-got:0;   // server time = local + off (the answer's own clock)
   const L=ts=>ts-off,lat=(Math.random()-.5)*.55;
-  F.bob={d:c.dist,lat,x:0,y:0,dip:0};
+  F.bob={d:Number(c.dist)||0,lat,x:0,y:0,dip:0};
   F.castL=got;
-  if(c.tangle){
-    F.phase='tangle';F.bob.splashL=got+.9;F.bob.tangle=true;vibrate(40);
-    say(res.message||'🪢 Dây rối mất rồi!');paintGo('Quăng nhẹ tay hơn chút nhé (vạch đỏ là rối dây).');
-    later(()=>{if(F.phase==='tangle')idle();},1900);return;
-  }
   // The bite is drawn at the same distance from this answer as the server put it from its own clock (`now`): a slow
   // answer only draws it later, and the tap is measured from when it is drawn (shownL), so that costs nothing.
-  F.r={id:c.id,dist:c.dist,zone:c.zone,splashL:Math.max(got+.6,L(c.splash)),nib:(c.nib||[]).map(L),biteL:c.bite!=null?L(c.bite):0,
-    goneL:c.gone!=null?L(c.gone):0,window:Number(c.window)||C()?.hook_window||3,shownL:0,early:0,earlyL:0,t0};
+  F.r={id:c.id,dist:Number(c.dist)||0,zone:c.zone,huge:!!c.huge,best:!!c.best,splashL:Math.max(got+.6,L(c.splash)),nib:(c.nib||[]).map(L),biteL:c.bite!=null?L(c.bite):0,
+    goneL:c.gone!=null?L(c.gone):0,window:Number(c.window)||C()?.hook_window||1,shownL:0,early:0,earlyL:0,t0};
   F.nibDone=0;F.twitch=0;
   if(res.bait_used&&P().bait?.[res.bait_used]==null)say('Hết mồi rồi, mua thêm ở 🎣 Quầy bán cần nhé.');
-  F.phase='fly';paintGo();
+  F.phase='fly';paintGo();distFx('fly');
 }
 /** A tap while the bobber only nibbles: a short note, the round goes on. After hook_scare of them (taps closer than .45 s
  * count once) the next one scares the fish off. */
@@ -204,16 +208,15 @@ async function hook(scare=false,at=0){
 }
 function startFight(h){
   const t=clock();
-  F.f={secs:Math.max(1.5,Number(h.secs)||3),pull:clamp(Number(h.pull)||.2,0,1),dart:clamp(Number(h.dart)||.1,0,1),green:clamp(Number(h.green)||.3,.12,.6),
-    heavy:!!h.heavy,snapL:h.snap_at!=null?t+Number(h.snap_at):0,t0:t,tau:.42,prog:0,red:0,slack:0,hold:F.pressing,dl:0,dv:0,seed:Math.random()*6,sway:0};
-  F.phase='fight';vibrate([30,30,60]);
+  F.f=reelStart(h,F.pressing);F.f.t0=t;
+  F.phase='fight';vibrate([30,30,60]);distFx(null);
   if(F.f.heavy)say('⚠️ Cá nặng quá sức dây! Coi chừng đứt…',2600);
   meters();paintGo();
 }
 async function endFight(kind){
   const r=F.r;if(!r||!F.f)return;
   F.phase='landing';const f=F.f;meters();paintGo();
-  if(kind==='snap'){snapFx();say(f.heavy&&f.snapL?'💥 Phựt! Cá quá nặng, đứt dây rồi.':'💥 Phựt! Căng quá đứt dây rồi.');}
+  if(kind==='snap'){snapFx();say(f.heavy&&f.snapAt?'💥 Phựt! Cá quá nặng, đứt dây rồi.':'💥 Phựt! Căng quá đứt dây rồi.');}
   else if(kind==='slack'){fleeFx();say('🐟 Dây chùng quá, cá giãy thoát mất!');}
   let res=null;
   for(let i=0;i<4;i++){
@@ -248,10 +251,12 @@ function tick(){
 }
 function step(t,dt){
   if(F.phase==='charge'){
-    F.power=.5-.5*Math.cos(2*Math.PI*(t-F.c0)/PERIOD);paintMeter();
+    F.power=Math.min(1,(t-F.c0)/FILL);paintMeter();
   }else if(F.phase==='fly'&&F.r&&t>=F.r.splashL){
     const g=geo(),y=g.yOf(F.r.dist),x=g.px+F.bob.lat*g.half(y);
-    splashAt(x,y,12,'#dff6ff');ring(x,y,1.2);F.phase='wait';paintGo();
+    splashAt(x,y,F.r.huge?22:12,'#dff6ff');ring(x,y,F.r.huge?1.8:1.2);F.phase='wait';paintGo();distFx('land');
+  }else if(F.phase==='fly'&&F.r){
+    const u=clamp((t-F.castL)/Math.max(.3,F.r.splashL-F.castL),0,1);distTick(F.r.dist*(1-Math.pow(1-u,3)));
   }else if(F.phase==='wait'&&F.r){
     const r=F.r;
     while(F.nibDone<r.nib.length&&t>=r.nib[F.nibDone]){F.nibDone++;F.bob.dip=.35;const p=bobXY();ring(p[0],p[1],.7);vibrate(8);}
@@ -276,24 +281,11 @@ function step(t,dt){
   if(F.bob)F.bob.dip=Math.max(0,F.bob.dip-dt*(F.phase==='bite'?.15:1.6));
 }
 function fight(t,dt){
-  const f=F.f,g0=MID-f.green/2,g1=MID+f.green/2;
-  if(f.dl>0){f.dl-=dt;f.tau+=f.dv*dt;}
-  else if(Math.random()<dt*(.2+f.dart*1.1)){
-    f.dl=.25+Math.random()*.25;f.dv=(.55+f.pull*1.05)*(Math.random()<.8?1:-.6);f.sway=(Math.random()<.5?-1:1);
-    const p=fishXY();splashAt(p[0],p[1],6,'#e8f8ff');vibrate(12);
-  }
-  f.tau+=(f.hold?(.42+.2*f.pull):-(.62-.14*f.pull))*dt+f.pull*.12*Math.sin(t*2.4+f.seed)*dt;
-  f.tau=clamp(f.tau,0,1);
-  if(f.hold){f.prog+=dt/(f.secs*(f.tau>=g0&&f.tau<=g1?.85:f.tau>g1?1.7:3.2));}
-  else f.prog-=dt*(.025+.05*f.pull);
-  f.prog=clamp(f.prog,0,1);
-  f.red=f.tau>RED?f.red+dt:Math.max(0,f.red-dt*.7);
-  f.slack=f.tau<SLACK&&!f.hold?f.slack+dt:Math.max(0,f.slack-dt*1.5);
+  const f=F.f,wasRed=f.tau>RED,{end,dart}=reelStep(f,dt);
+  if(dart){const p=fishXY();splashAt(p[0],p[1],6,'#e8f8ff');vibrate(12);}
+  if(f.tau>RED&&!wasRed&&t-(f.warnL||0)>2.5){f.warnL=t;say('⚠️ Căng quá! Thả tay ra cho dây chùng chút!',1800);vibrate([20,20,20]);}
   paintTension();
-  if(f.snapL&&t>=f.snapL){endFight('snap');return;}
-  if(f.red>RED_MAX){endFight('snap');return;}
-  if(f.slack>SLACK_MAX){endFight('slack');return;}
-  if(f.prog>=1)endFight('ok');
+  if(end)endFight(end);
 }
 
 /* ---------------------------------------------------------------- geometry */
@@ -304,11 +296,12 @@ function resize(){
   F.dims={w,h,dpr};F.cv.width=Math.round(w*dpr);F.cv.height=Math.round(h*dpr);F.ctx.setTransform(dpr,0,0,dpr,0,0);
   F.waves=null;F.stars=null;
   const bank=F.dlg?.querySelector('.fs-bank')?.offsetHeight||112;F.bankH=bank;
-  const meter=F.dlg?.querySelector('.fs-meter'),ten=F.dlg?.querySelector('.fs-ten');
+  const meter=F.dlg?.querySelector('.fs-meter');
   if(meter){meter.style.top=`${Math.round(h*.2)}px`;meter.style.height=`${Math.round(h-bank-h*.2-40)}px`;}
 }
+/** The lake in perspective, as deep as the rod in hand throws (M: a little past its longest cast, at the horizon). */
 function geo(){
-  const {w,h}=F.dims,bank=F.bankH||112,shore=h-bank,hor=Math.max(46,h*.14),M=spotOf(F.spot).max||100;
+  const {w,h}=F.dims,bank=F.bankH||112,shore=h-bank,hor=Math.max(46,h*.14),M=reachOf(myRod())[1]*1.08,K=M*PERSP;
   const top=hor+8,bottom=shore-28,frac=d=>(d/(d+K))/(M/(M+K));
   const yOf=d=>bottom-(bottom-top)*clamp(frac(Math.max(0,d)),0,1);
   const half=y=>{const u=clamp((y-hor)/(shore-hor),0,1);return w*(.17+.36*u);};
@@ -332,6 +325,23 @@ function biteFx(on){
 }
 function biteLeft(left){F.dlg?.querySelector('.fs-go')?.style.setProperty('--left',clamp(left,0,1).toFixed(3));}
 function fleeFx(){const p=F.f?fishXY():bobXY();ring(p[0],p[1],1);ring(p[0]+16,p[1]-4,.6);splashAt(p[0],p[1],6,'#e8f8ff');}
+/** The cast's distance over the lake: `fly` counts up with the bobber, `land` the big "🎯 1.234 m!" (🚀 a monster cast,
+ * 🏅 the longest yet), then a small chip while the round goes on; null hides it. */
+function distFx(mode){
+  const el=F.dlg?.querySelector('.fs-dist');if(!el)return;
+  clearTimeout(F.distT);
+  if(!mode||!F.r){el.hidden=true;el.className='fs-dist';return;}
+  const r=F.r,zn=(C()?.zones||[])[r.zone]?.name||ZN[r.zone]||'';
+  el.hidden=false;
+  if(mode==='fly'){el.className='fs-dist fly';distTick(0);el.querySelector('small').textContent='';return;}
+  el.className=`fs-dist land${r.huge?' huge':''}`;void el.offsetWidth;el.classList.add('pop');
+  el.querySelector('b').textContent=`🎯 ${fmtM(r.dist)}!`;
+  el.querySelector('small').textContent=[r.huge?'🚀 Quăng siêu xa!':'',r.best?'🏅 Kỷ lục quăng mới!':''].filter(Boolean).join(' ')||`Vùng ${zn}`;
+  if(r.huge||r.best)F.dlg.querySelector('.fs-say').hidden=true;   // the big number has the stage
+  vibrate(r.huge?[30,30,30,30,90]:15);
+  F.distT=later(()=>{if(F.r===r&&!el.hidden){el.className='fs-dist mini';el.querySelector('b').textContent=`🎯 ${fmtM(r.dist)}`;el.querySelector('small').textContent=`Vùng ${zn}`;}},2400);
+}
+function distTick(m){const b=F.dlg?.querySelector('.fs-dist b');if(b)b.textContent=`🎯 ${fmtM(m)}`;}
 function snapFx(){const p=F.f?fishXY():bobXY();splashAt(p[0],p[1],10,'#ffffff');F.line={snap:clock()};vibrate([80,30,80]);}
 
 /* ---------------------------------------------------------------- drawing */
@@ -404,29 +414,33 @@ function farShore(ctx,g,S,night,t){
   }
 }
 const ZN=['Gần','Vừa','Xa','Sâu'];
+/** The buoys for a lake `M` metres deep: round distances, each about twice the one before, up to the rod's longest. */
+function marks(M){
+  const top=M/1.08,out=[];
+  for(const m of MARKS){if(m<M*.08||m>top)continue;if(!out.length||m>=out[out.length-1]*1.8)out.push(m);}
+  return out.slice(-4);
+}
+/** The rod's zones (where Vừa, Xa, Sâu start for the rod in hand) as bands, and its buoys. No reach line: the cast is random. */
 function zones(ctx,g,night){
-  const zs=C()?.zones||[{to:20},{to:40},{to:65},{to:999}],rod=myRod();
-  let from=0;ctx.font='700 11px system-ui,sans-serif';ctx.textBaseline='middle';
+  const zs=C()?.zones||ZN.map(name=>({name})),cut=myRod().zones||[62,100,150];
+  ctx.font='700 11px system-ui,sans-serif';ctx.textBaseline='middle';
   zs.forEach((z,i)=>{
-    const to=Math.min(z.to,g.M),y0=g.yOf(from),y1=g.yOf(to);if(to<=from)return;
+    const from=Math.min(i?Number(cut[i-1])||0:0,g.M),to=Math.min(i<cut.length?Number(cut[i])||0:g.M,g.M),y0=g.yOf(from),y1=g.yOf(to);if(to<=from)return;
     ctx.fillStyle=i%2?'rgba(255,255,255,.035)':'rgba(0,20,40,.06)';ctx.fillRect(0,y1,g.w,y0-y1);
+    if(y0-y1<13)return;
     ctx.fillStyle=night?'rgba(220,235,255,.55)':'rgba(255,255,255,.75)';ctx.textAlign='left';ctx.fillText(z.name||ZN[i],8,(y0+y1)/2);
-    from=to;
   });
   ctx.textAlign='center';
-  for(const m of MARKS){
-    if(m>g.M)continue;const y=g.yOf(m),hw=g.half(y),s=.55+.45*(y-g.hor)/(g.shore-g.hor);
+  for(const m of marks(g.M)){
+    const y=g.yOf(m),hw=g.half(y),s=.55+.45*(y-g.hor)/(g.shore-g.hor);
     for(const x of [g.px-hw*.92,g.px+hw*.92]){ctx.fillStyle='#ff6a3d';ctx.beginPath();ctx.arc(x,y-3*s,4.5*s,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(x-4.5*s,y-3.5*s,9*s,1.6*s);}
-    ctx.fillStyle='rgba(255,255,255,.85)';ctx.font=`700 ${Math.round(9+3*s)}px system-ui,sans-serif`;ctx.fillText(`${m}m`,g.px+hw*.92,y-12*s);
+    ctx.fillStyle='rgba(255,255,255,.85)';ctx.font=`700 ${Math.round(9+3*s)}px system-ui,sans-serif`;ctx.fillText(shortM(m),g.px+hw*.92,y-12*s);
   }
-  const ry=g.yOf(Math.min(rod.range,g.M));   // how far this rod reaches
-  ctx.setLineDash([6,5]);ctx.strokeStyle='rgba(255,224,90,.75)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(g.px-g.half(ry)*.8,ry);ctx.lineTo(g.px+g.half(ry)*.8,ry);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='rgba(255,224,90,.95)';ctx.font='800 10px system-ui,sans-serif';ctx.fillText(`🎣 tầm cần ${rod.range}m`,g.px,ry-8);
 }
 function waves(ctx,g,t,night){
-  if(!F.waves){F.waves=[];for(let i=0;i<46;i++)F.waves.push([Math.random(),Math.random()*g.M,Math.random()*6]);}
+  if(!F.waves){F.waves=[];for(let i=0;i<46;i++)F.waves.push([Math.random(),Math.random(),Math.random()*6]);}
   ctx.strokeStyle=night?'rgba(180,210,255,.18)':'rgba(255,255,255,.35)';ctx.lineWidth=1.2;ctx.beginPath();
-  for(const [fx,d,ph] of F.waves){const y=g.yOf(d),hw=g.half(y),x=g.px+(fx*2-1)*hw+Math.sin(t*.6+ph)*6,len=4+10*(y-g.hor)/(g.shore-g.hor);
+  for(const [fx,fd,ph] of F.waves){const y=g.yOf(fd*g.M),hw=g.half(y),x=g.px+(fx*2-1)*hw+Math.sin(t*.6+ph)*6,len=4+10*(y-g.hor)/(g.shore-g.hor);
     if(Math.sin(t*.9+ph)<-.3)continue;ctx.moveTo(x-len,y);ctx.quadraticCurveTo(x,y-2.5,x+len,y);}
   ctx.stroke();
 }
@@ -459,10 +473,9 @@ function lineAndBobber(ctx,g,t){
   const tx=tip.x+bend*.5,ty=tip.y+bend;
   if(!F.bob||F.phase==='jump')return;
   let bx,by;
-  if((F.phase==='fly'||F.phase==='tangle')&&F.bob){
-    const target=F.bob.tangle?[g.px+30,g.yOf(Math.min(F.bob.d,6))]:bobXY(),end=F.bob.splashL||(F.r?.splashL)||F.castL+1,u=clamp((t-F.castL)/Math.max(.3,end-F.castL),0,1);
-    bx=tx+(target[0]-tx)*u;by=ty+(target[1]-ty)*u-Math.sin(Math.PI*u)*Math.min(160,40+F.bob.d*1.6);
-    if(F.bob.tangle&&u>=1){ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.beginPath();for(let k=0;k<12;k++){const a=k*1.7+t*3;ctx.lineTo(bx+Math.cos(a)*8,by+Math.sin(a)*5);}ctx.stroke();}
+  if(F.phase==='fly'&&F.bob){
+    const target=bobXY(),end=(F.r?.splashL)||F.castL+1,u=clamp((t-F.castL)/Math.max(.3,end-F.castL),0,1);
+    bx=tx+(target[0]-tx)*u;by=ty+(target[1]-ty)*u-Math.sin(Math.PI*u)*(40+130*clamp(F.bob.d/g.M,0,1));
   }else if(F.phase==='fight'||F.phase==='landing'){
     [bx,by]=F.f?fishXY():bobXY();
   }else{
@@ -541,30 +554,23 @@ function paintTop3(){
 }
 function paintGo(tip){
   const b=F.dlg?.querySelector('.fs-go'),s=F.dlg?.querySelector('.fs-tip');if(!b)return;
-  const ph=F.phase;b.className='fs-go'+(ph==='bite'?' hook':ph==='fight'?' reel':['wait','casting','fly','hooking','landing','jump','lost','tangle'].includes(ph)?' wait':'');
+  const ph=F.phase;b.className='fs-go'+(ph==='bite'?' hook':ph==='fight'?' reel':['wait','casting','fly','hooking','landing','jump','lost'].includes(ph)?' wait':'');
   b.textContent={idle:'🎣 Giữ để quăng',card:'🎣 Giữ để quăng tiếp',charge:'Thả tay để quăng!',casting:'Vút…',fly:'Vút…',wait:'Chờ phao chìm… (chạm = Giật)',bite:'❗ GIẬT!',hooking:'Giật!',
-    fight:'💪 Giữ để kéo · thả để nhả',landing:'Kéo lên…',jump:'Lên rồi!',lost:'…',tangle:'Gỡ dây…'}[ph]||'🎣';
-  if(s)s.textContent=tip!=null&&tip!==''?tip:{idle:'Lực mạnh ra xa, cá to hơn. Vạch đỏ dễ rối dây.',charge:'Thả ở vạch bạn muốn: xa hơn = cá lớn hơn.',wait:'Phao rung nhẹ là cá rỉa. Phao chìm hẳn + “!” mới giật.',
-    bite:'Chạm Giật trước khi vòng sáng tắt!',fight:'Kim trong vùng xanh. Đỏ lâu: đứt dây. Chùng lâu: sổng cá.'}[ph]||'';
+    fight:'💪 Giữ để kéo · thả để nhả',landing:'Kéo lên…',jump:'Lên rồi!',lost:'…'}[ph]||'🎣';
+  if(s)s.textContent=tip!=null&&tip!==''?tip:{idle:'Giữ rồi thả để quăng, xa gần hên xui!',card:'Giữ rồi thả để quăng, xa gần hên xui!',charge:'Thả tay là bay! Đầy vạch thì xa hơn chút.',wait:'Phao rung nhẹ là cá rỉa. Phao chìm hẳn + “!” mới giật.',
+    bite:'Chạm Giật trước khi vòng sáng tắt!',fight:'Giữ để kéo, vạch nháy đỏ thì thả tay.'}[ph]||'';
 }
 function meters(){
   const d=F.dlg;if(!d)return;
   d.querySelector('.fs-meter').hidden=F.phase!=='charge';d.querySelector('.fs-pow').hidden=F.phase!=='charge';
   d.querySelector('.fs-ten').hidden=!(F.phase==='fight');
-  if(F.phase==='charge'){
-    const m=d.querySelector('.fs-meter'),sweet=C()?.power_sweet||.95,rod=myRod();
-    m.querySelector('s').style.height=`${(1-sweet)*100}%`;
-    m.querySelectorAll('u,em').forEach(x=>x.remove());
-    let from=0;for(const z of C()?.zones||[]){const to=Math.min(z.to,rod.range);if(to>from&&to<rod.range){const f=to/rod.range;m.insertAdjacentHTML('beforeend',`<u style="bottom:${(f/1.0)*100}%"></u>`);}from=to;}
-  }
   if(F.phase==='fight'&&F.f){const bar=d.querySelector('.fs-ten-bar b');bar.style.left=`${(MID-F.f.green/2)*100}%`;bar.style.width=`${F.f.green*100}%`;}
 }
 function paintMeter(){
   const d=F.dlg;if(!d)return;
-  const m=d.querySelector('.fs-meter'),p=d.querySelector('.fs-pow'),rod=myRod(),sweet=C()?.power_sweet||.95;
-  m.querySelector('i').style.height=`${F.power*100}%`;
-  const est=Math.round(F.power*rod.range),zs=C()?.zones||[],z=zs.findIndex(x=>est<x.to);
-  p.textContent=`${F.power>sweet?'⚠️ ':''}~${est}m · ${(zs[z<0?zs.length-1:z]||{}).name||''}`;
+  const m=d.querySelector('.fs-meter'),p=d.querySelector('.fs-pow'),full=F.power>=1;
+  m.querySelector('i').style.height=`${F.power*100}%`;m.classList.toggle('full',full);
+  p.textContent=full?'🔥 Hết cỡ!':`💪 ${Math.round(F.power*100)}%`;
   p.style.top=`${m.offsetTop+m.offsetHeight*(1-F.power)-10}px`;
 }
 function paintTension(){
@@ -580,7 +586,7 @@ function say(text,ms=3200){
 
 /* ---------------------------------------------------------------- the catch card */
 function showCard(land,res){
-  F.jump=null;F.r=null;F.bob=null;F.phase='card';paintGo();
+  F.jump=null;F.r=null;F.bob=null;F.phase='card';paintGo();distFx(null);
   const el=F.dlg?.querySelector('.fs-card');if(!el)return;
   if(land.res==='junk'){
     const j=(C()?.junk||[]).find(x=>x.id===land.junk)||{emoji:'🥾',name:'Rác'};
@@ -610,7 +616,7 @@ async function act(a,ds){
       if(ds.id&&ds.id!==F.spot){F.spot=ds.id;F.waves=null;hideCard();idle();paintSpots();say(`${spotOf(F.spot).emoji} ${spotOf(F.spot).name}: ${spotOf(F.spot).hint||''}`);}return;
     case'again':hideCard();idle();return;
     case'shop':case'market':case'board':case'dex':
-      if(!['idle','card','lost','tangle'].includes(F.phase)){say('Đang câu dở, xong con này đã nhé!');return;}
+      if(!['idle','card','lost'].includes(F.phase)){say('Đang câu dở, xong con này đã nhé!');return;}
       openPanel(a);return;
     case'panelX':closePanel();return;
     case'tab':F.tab[ds.p]=ds.t;if(ds.p==='board'&&ds.t!=='dex')loadBoard(ds.t);paintPanel();return;
@@ -662,9 +668,9 @@ function shopHTML(){
   const p=P(),c=C(),t=F.tab.shop;
   let out=tabs('shop',[['rod','🎣 Cần câu'],['bait','🪱 Mồi'],['gio','🧺 Giỏ']])+`<p class="fs-note">👛 Ví: <b>${fmt(wallet())} xu</b>${bankBal()?` · 🏦 Ngân hàng: <b>${fmt(bankBal())} xu</b>`:''}</p>`;
   if(t==='rod'){
-    out+=`<p class="fs-note">Cần xịn quăng xa hơn (ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, may mắn gặp cá hiếm hơn.</p><p class="fs-note">Mua cần nào cũng được, không cần mua theo thứ tự.</p><ul class="fs-list">${c.rods.map(r=>{
+    out+=`<p class="fs-note">Cần xịn quăng xa hơn (📏 xa gần hên xui, ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, may mắn gặp cá hiếm hơn.</p><p class="fs-note">Mua cần nào cũng được, không cần mua theo thứ tự.</p><ul class="fs-list">${c.rods.map(r=>{
       const own=(p.rods||[]).includes(r.id),cur=p.rod===r.id;
-      return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico" style="--c:${esc(r.color||'#eee')}">${esc(r.emoji)}</span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${fmt(r.range)} m · 🧵 ${esc(kgLine(r.line))} · 🍀 ×${String(r.luck).replace('.',',')}</small><small>⏱️ Giật ${secs(r.hook||C()?.hook_window||3)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
+      return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico" style="--c:${esc(r.color||'#eee')}">${esc(r.emoji)}</span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${esc(reachTxt(reachOf(r)))} · 🧵 ${esc(kgLine(r.line))} · 🍀 ×${String(r.luck).replace('.',',')}</small><small>⏱️ Giật ${secs(r.hook||C()?.hook_window||1)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
         ${cur?'<span class="fs-tag">Đang cầm</span>':own?fbtn('Cầm','equip',{rod:r.id}):fbtn(r.price?`${fmt(r.price)} xu`:'Miễn phí','buy',{kind:'rod',item:r.id},'primary')}</li>`;}).join('')}</ul>`;
   }else if(t==='bait'){
     out+=`<p class="fs-note">Mồi tốt tăng cơ hội gặp cá hiếm. Mỗi lần quăng tốn 1 mồi đang dùng.</p><ul class="fs-list"><li class="fs-item${!p.use?' cur':''}"><span class="fs-ico">🎣</span><div class="fs-it"><b>Không mồi đặc biệt</b><small>Mồi cơm thường, miễn phí</small></div>${!p.use?'<span class="fs-tag">Đang dùng</span>':fbtn('Dùng','equip',{bait:''})}</li>
@@ -715,6 +721,7 @@ function dexHTML(){
   const p=P(),c=C(),dex=p.dex||{},rec=F.rec?.records||{},ms=p.ms||[],have=id=>(dex[id]?.[0]||0)>0;
   const all=c.species.length,got=c.species.filter(s=>have(s.id)).length;
   let out=`<div class="fs-dex-head"><b>Đã câu ${fmt(got)}/${fmt(all)} loài</b><small>${fmt(p.tot?.fish||0)} con đã câu</small></div><div class="fs-bar2"><i style="width:${all?got/all*100:0}%"></i></div>`;
+  out+=`<p class="fs-far">🎯 Cú quăng xa nhất: <b>${p.far>0?esc(fmtM(p.far)):'chưa có'}</b></p>`;
   const titles=new Map((c.titles||[]).map(x=>[x.id,x]));
   out+=`<details class="fs-ms"><summary><b>🎁 Phần thưởng sưu tập</b></summary><ul>
     ${c.rarities.map((R,r)=>`<li>${ms.includes(`r${r}`)?'<span class="fs-done">✓</span>':'○'} Đủ cá ${esc(R.emoji)} ${esc(R.name)}: +${fmt(c.tier_reward[r])} xu</li>`).join('')}

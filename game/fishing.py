@@ -5,17 +5,19 @@ cá nhỏ … cho người ta chọn lực để quăng … cá chia nhiều lo�
 để người ta câu cá kiếm tiền"), then: no daily cast limit; the bite wait is random and longer for bigger / rarer fish;
 the trader sometimes haggles. Every number lives in game/fishing_content.py.
 
-The server decides everything that matters at the cast (jr_fish_cast): how far the line went (power × rod range × a
-random spread: the same rod and power land differently), the zone, whether something bites at all (rỉa mồi), junk or a
+The server decides everything that matters at the cast (jr_fish_cast): how far the line went (owner 24/10 "quăng dễ hơn …
+tầm quăng random": a random distance over the rod's reach, 15–80 m on Cần tre up to 2 km on Long Vương, the power only
+nudging it; a cast never fails), the zone (the rod's own), whether something bites at all (rỉa mồi), junk or a
 fish, its rarity, species, weight and when it bites (a longer wait leans to a heavier fish). The client only plays the
 bobber, the nibbles and the reel mini-game; it never learns the fish before the catch. jr_fish_hook carries how long after
 the bite showed the player tapped (`ms`, measured by the client from the moment it drew the bite): inside the rod's hook
-window (game/fishing_content.hook_window, 3–4 s) it hooks, so a slow save or network never costs the fish (owner 24/10
-"giật dễ hơn"); the server's receipt time only bounds the claim (HOOK_EARLY, HOOK_LAG). Taps during the nibbles are the
+window (game/fishing_content.hook_window, 1–1,5 s since 2.6.4: owner 24/10 "giật cũng là 1 giây") it hooks, so a slow
+save or network never costs the fish; the server's receipt time only bounds the claim (HOOK_EARLY, HOOK_LAG). Taps during the nibbles are the
 client's ("Chưa cắn đâu"; HOOK_SCARE of them forgiven, then `early` scares the fish). jr_fish_land no sooner than
 REEL_MIN_SHARE of the fight after the hook was received (the fight starts on the client only after the hook's answer, so
-a slow save only adds to that time); a fish too heavy for the line was fated to snap at the cast. Receipts make a retried
-landing harmless.
+a slow save only adds to that time; the client's reel, public/js/v4/fish-reel.js, never lands sooner); a fish too heavy
+for the line was fated to snap at the cast, any other snap or escape is the client's report (`ok` false). Receipts make a retried
+landing harmless. `far` (optional) keeps the player's longest cast (🎯 Cú quăng xa nhất, metres).
 
 Selling (jr_fish_sell) pays the price of game/fishing_content.price; HAGGLE_CHANCE of the sales the trader offers less
 (70–95 %): accept, bargain once (full price, a small bonus, or he refuses those fish for the day) or decline (the offer
@@ -49,6 +51,7 @@ UID_RE = re.compile(r'd[0-9]{1,9}')
 MS_RE = re.compile(r'r[0-6]|s_(ho|song|bien|dao)|all')
 MAX_RECEIPTS = 12
 TROPHY_MAX = 12
+FAR_MAX = 10**5   # metres: the longest cast a save may hold
 SELL_MAX = 200
 LIMIT = 10**9
 KIND, LABEL = 'life', '🎣 Câu cá'
@@ -135,6 +138,12 @@ def legacy_catch(s: dict, sp: str) -> None:
         row[2] |= 1 << C.SPOT_IDS.index('ho')
 
 
+def far_of(d: dict) -> int:
+    """🎯 Cú quăng xa nhất (metres; 0 before the first cast of 2.6.4)."""
+    v = d.get('far', 0)
+    return v if _int(v, 0, FAR_MAX) else 0
+
+
 # ---------------------------------------------------------------- public
 def public(s: dict) -> dict | None:
     """journey.fish for the client (None before the first command). The open round's fish is never in it."""
@@ -153,7 +162,7 @@ def public(s: dict) -> dict | None:
         deal = _deal_view(d, d['deal']['ids'], day)
     return dict(rod=d['rod'], rods=list(d['rods']), bait=dict(d['bait']), use=d['use'], gio=d['gio'], cap=cap(d), bag=bag,
                 dex={k: list(v) for k, v in d['dex'].items()}, tot=dict(d['tot']), ms=list(d['ms']), carry=d['carry'],
-                aq=[list(x) for x in d['aq']], tro={k: list(v) for k, v in d['tro'].items()}, deal=deal,
+                aq=[list(x) for x in d['aq']], tro={k: list(v) for k, v in d['tro'].items()}, deal=deal, far=far_of(d),
                 cond=C.conditions(now()))   # 🌙 / 🌧️ now: the lake's sky and which species can bite
 
 
@@ -175,11 +184,12 @@ def catalogue() -> dict:
                belly=x['belly'], fin=x['fin'], pat=x['pat'], cond=C.cond_text(x), hint=x['hint']) for x in C.SPECIES.values()]
     return dict(
         rarities=[dict(r) for r in C.RARITIES], spots=[dict(id=k, **v) for k, v in C.SPOTS.items()],
-        zones=[dict(id=z['id'], name=z['name'], to=min(z['to'], 999)) for z in C.ZONES],
-        rods=[{k: r[k] for k in ('id', 'name', 'emoji', 'price', 'range', 'line', 'luck', 'reel', 'bite', 'hook', 'ancient', 'color')} for r in C.RODS],
+        zones=[dict(id=z['id'], name=z['name']) for z in C.ZONES],
+        rods=[dict({k: r[k] for k in ('id', 'name', 'emoji', 'price', 'line', 'luck', 'reel', 'bite', 'hook', 'ancient', 'color')},
+                   reach=list(r['reach']), zones=list(r['zones'])) for r in C.RODS],
         baits=[dict({k: b[k] for k in ('id', 'name', 'emoji', 'price', 'n', 'hint')}, hook=b.get('hook', 0.0)) for b in C.BAITS],
         baskets=[dict(b) for b in C.BASKETS], species=sp, junk=[dict(id=a, emoji=b, name=c) for a, b, c in C.JUNK],
-        power_sweet=C.POWER_SWEET, hook_window=C.HOOK_WINDOW, hook_scare=C.HOOK_SCARE, carry_min=C.CARRY_MIN, aquarium=C.AQUARIUM_MAX,
+        far_share=C.FAR_SHARE, hook_window=C.HOOK_WINDOW, hook_scare=C.HOOK_SCARE, carry_min=C.CARRY_MIN, aquarium=C.AQUARIUM_MAX,
         trophies=TROPHY_MAX, tier_reward=list(C.TIER_REWARD), spot_reward=C.SPOT_REWARD,
         haggle=dict(chance=C.HAGGLE_CHANCE, offer=list(C.HAGGLE_OFFER)),
         titles=[dict(id=t['id'], emoji=t['emoji'], name=t['name'], earn=t['earn']) for t in C.STYLE_TITLES])
@@ -225,16 +235,15 @@ def _cast(s, d, p, t):
             d['use'] = ''
     d['tot']['cast'] = min(LIMIT, d['tot']['cast'] + 1)
     d['act'] = None
-    dist = min(C.SPOTS[spot]['max'], power * rod['range'] * rng.uniform(*C.SPREAD))
-    if power > C.POWER_SWEET and rng.random() < C.TANGLE_CHANCE:
-        return dict(message='🪢 Quăng mạnh quá, dây rối mất rồi! Gỡ dây rồi quăng lại nhé.',
-                    cast=dict(tangle=True, dist=round(dist, 1)))
-    zone = C.zone_of(dist)
+    dist = round(C.cast_dist(rod['id'], power, rng.random()), 1)
+    zone = C.zone_of(dist, rod['id'])
     z = C.ZONES[zone]
+    best = 0 < far_of(d) < round(dist)   # a longer cast than any before (the first one is no record yet)
+    d['far'] = max(far_of(d), round(dist))
     cond = C.conditions(t)
     start = t + C.CAST_SECONDS
     win = C.hook_window(rod['id'], bait)
-    act = dict(id=secrets.token_hex(16), at=t, spot=spot, trip=p.get('trip', ''), rod=rod['id'], dist=round(dist, 2),
+    act = dict(id=secrets.token_hex(16), at=t, spot=spot, trip=p.get('trip', ''), rod=rod['id'], dist=dist,
                zone=zone, kind='none', sp='', g=0, bite=0.0, hook=0.0, reel=0.0, snap=0, nib=[], win=win)
     if rng.random() >= rod['bite']:
         act['bite'] = start + rng.uniform(*C.NOBITE_WAIT)          # rỉa mồi: nibbles, then the bait is gone
@@ -252,8 +261,8 @@ def _cast(s, d, p, t):
     lo, hi = start + 1.2, act['bite'] - 1.3
     act['nib'] = sorted(round(rng.uniform(lo, hi), 2) for _ in range(k)) if hi > lo else []
     d['act'] = act
-    view = dict(id=act['id'], now=t, dist=round(dist, 1), zone=zone, splash=start, nib=list(act['nib']),
-                window=win, cond=cond)
+    view = dict(id=act['id'], now=t, dist=dist, zone=zone, huge=dist >= C.FAR_SHARE * rod['reach'][1], best=best,
+                splash=start, nib=list(act['nib']), window=win, cond=cond)
     if act['kind'] == 'none':
         view['gone'] = act['bite']
     else:
@@ -718,7 +727,7 @@ def _act_ok(a) -> bool:
         return True
     return (isinstance(a, dict) and ACT_KEYS <= set(a) and isinstance(a['id'], str) and TOKEN.fullmatch(a['id']) is not None
             and _num(a['at'], 0, 1e11) and a['spot'] in C.SPOTS and isinstance(a['trip'], str)
-            and (a['trip'] == '' or TRIP_RE.fullmatch(a['trip']) is not None) and _sp(a['rod']) and _num(a['dist'], 0, 10**4)
+            and (a['trip'] == '' or TRIP_RE.fullmatch(a['trip']) is not None) and _sp(a['rod']) and _num(a['dist'], 0, FAR_MAX)
             and _int(a['zone'], 0, len(C.ZONES) - 1) and a['kind'] in ('none', 'junk', 'fish') and isinstance(a['sp'], str)
             and _int(a['g'], 0, 10**8) and all(_num(a[k], 0, 1e11) for k in ('bite', 'hook')) and _num(a['reel'], 0, 600)
             and a['snap'] in (0, 1) and isinstance(a['nib'], list) and len(a['nib']) <= 8 and all(_num(x, 0, 1e11) for x in a['nib'])
@@ -777,6 +786,8 @@ def _ok(d) -> bool:
     if deal is not None and not (isinstance(deal, dict) and set(deal) == {'ids', 'at'} and isinstance(deal['ids'], list)
                                  and 1 <= len(deal['ids']) <= SELL_MAX and all(_int(i, 1, LIMIT) for i in deal['ids'])
                                  and _num(deal['at'], 0, 1e11)):
+        return False
+    if 'far' in d and not _int(d['far'], 0, FAR_MAX):
         return False
     rel = d['rel']
     return (isinstance(rel, list) and len(rel) == 2 and _int(rel[0], 0, 10**7) and _int(rel[1], 0, 100) and d['mig'] in (0, 1)

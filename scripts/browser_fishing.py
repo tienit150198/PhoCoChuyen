@@ -3,13 +3,17 @@
 scripts/browser_housing.py, PostgreSQL through TEST_DATABASE_URL).
 
 Lan (a story save with 2.000.000 xu) opens Khu phố → 🎣 Câu cá and, with fingers only:
-  1. sees the lake (zones, buoys, rod range), the three stalls on the bank and the HUD;
-  2. holds the button (the power meter swings), releases: the bobber flies and splashes;
-  3. taps once while the bobber only nibbles: "Chưa cắn đâu" and the round goes on (2.6.3: no fish lost);
-  4. waits for the bite ("!", the big "Giật!", the countdown ring around the bobber and the bar in the button), taps
-     1,2 s into the 3 s window with the hook request held 2,5 s on the wire (a heavy save's lag: the old receipt rule
-     called that late), plays the tension reel to the end: the catch card (retries a lost round);
-  5. 🎣 Quầy bán cần (each rod's ⏱️ Giật seconds): buys Cần trúc; 🐟 Quầy thu mua: sells the bag (a haggle is answered); 📖 Sổ cá and 🐋 the board.
+  1. sees the lake (the bamboo rod's zones and buoys, no "tầm cần" line), the three stalls on the bank and the HUD;
+  2. 2.6.4: a plain short tap casts (never a tangle): the counter ticks up and "🎯 … m!" shows at the splash, within
+     the bamboo rod's 15–80 m;
+  3. holds the button (the power meter fills), releases: the bobber flies and splashes;
+  4. taps once while the bobber only nibbles: "Chưa cắn đâu" and the round goes on (2.6.3: no fish lost);
+  5. waits for the bite ("!", the big "Giật!", the countdown ring around the bobber and the bar in the button), taps
+     0,45 s into the 1 s window with the hook request held 2,5 s on the wire (a heavy save's lag: judged on the
+     client's own measure, still in time), plays the easy reel to the end: the catch card (retries a lost round);
+  6. 🎣 Quầy bán cần (each rod's 📏 reach and ⏱️ Giật seconds): buys Cần trúc; 🐟 Quầy thu mua: sells the bag (a haggle
+     is answered); 📖 Sổ cá (🎯 Cú quăng xa nhất) and 🐋 the board;
+  7. with a Cần Long Vương (given to her save): casts until one flies past 1 km ("🎯 1.234 m!", 🚀 past 85 % of 2 km).
 JPEG screenshots in out_dir; exit 1 on a failed check, a console error, a page error or an HTTP 5xx.
 
     TEST_DATABASE_URL=postgresql://… python scripts/browser_fishing.py [out_dir]
@@ -17,6 +21,7 @@ JPEG screenshots in out_dir; exit 1 on a failed check, a console error, a page e
 from __future__ import annotations
 
 import asyncio
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -122,6 +127,37 @@ async def main() -> int:
             fps = await page.evaluate("""()=>new Promise(done=>{let n=0;const t0=performance.now();const f=()=>{n++;if(performance.now()-t0<1000)requestAnimationFrame(f);else done(n);};requestAnimationFrame(f);})""")
             check(fps >= 40, f'the lake animates ({fps} frames in a second)')
 
+            async def dist_label():
+                return await page.evaluate("(()=>{const e=document.querySelector('dialog.fs-sheet[open] .fs-dist');return e&&!e.hidden?e.innerText.replace(/\\s+/g,' '):''})()")
+
+            def metres_of(label):
+                m = re.search(r'🎯 ([0-9.]+) m!', label)
+                return int(m.group(1).replace('.', '')) if m else -1
+
+            async def reopen():
+                await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+                await page.wait_for_timeout(300)
+                await act('fishing')
+                await page.wait_for_selector('dialog.fs-sheet[open] .fs-stall', timeout=15000)
+                await page.wait_for_timeout(400)
+
+            # 2.6.4: a plain short tap casts, the distance counts up and shows big at the splash
+            x, y = await go_box()
+            await page.mouse.move(x, y)
+            await page.mouse.down()
+            await page.wait_for_timeout(60)
+            await page.mouse.up()
+            await page.wait_for_timeout(900)
+            flying = await dist_label()
+            check(flying.startswith('🎯') and ' m' in flying, f'the distance counter while the bobber flies: {flying!r}')
+            await page.wait_for_timeout(1100)
+            label = await dist_label()
+            await shot('02a-cast-tap', 0)
+            check(15 <= metres_of(label) <= 80, f'a short tap casts: {label!r} (bamboo rod 15–80 m)')
+            tip = await page.inner_text('dialog.fs-sheet[open] .fs-go')
+            check(tip.startswith('Chờ phao'), f'the round goes on after a tap cast: {tip!r}')
+            await reopen()
+
             lag = {'on': False, 'held': 0}
 
             async def slow_hook(route):
@@ -137,11 +173,12 @@ async def main() -> int:
                 x, y = await go_box()
                 await page.mouse.move(x, y)
                 await page.mouse.down()
-                await page.wait_for_timeout(520)
+                await page.wait_for_timeout(1000)
                 if attempt == 0:
                     await shot('02-charge', 0)
                     meter = await page.evaluate("!document.querySelector('dialog.fs-sheet[open] .fs-meter').hidden")
-                    check(meter, 'the power meter shows while holding')
+                    pw = await page.inner_text('dialog.fs-sheet[open] .fs-pow')
+                    check(meter and 'Hết cỡ' in pw, f'the power meter fills while holding: {pw!r}')
                 await page.mouse.up()
                 # wait for the bite (or a lost round)
                 phase = ''
@@ -175,10 +212,10 @@ async def main() -> int:
                 await shot('04-bite', 0)
                 big = await page.evaluate("(()=>{const e=document.querySelector('dialog.fs-sheet[open] .fs-bite');return e&&!e.hidden?e.textContent:''})()")
                 check('Giật' in big, f'the big "Giật!" at the bite: {big!r}')
-                await page.wait_for_timeout(1150)
+                await page.wait_for_timeout(450)
                 left = await page.evaluate("Number(getComputedStyle(document.querySelector('dialog.fs-sheet[open] .fs-go')).getPropertyValue('--left'))")
                 await shot('04b-countdown', 0)
-                check(0.35 < left < 0.8, f'the countdown runs down in the 3 s window (--left {left:.2f} after 1,2 s)')
+                check(0.2 < left < 0.75, f'the countdown runs down in the 1 s window (--left {left:.2f} after 0,45 s)')
                 lag['on'] = not lag_ok
                 await page.mouse.down()
                 await page.wait_for_timeout(60)
@@ -191,7 +228,7 @@ async def main() -> int:
                     lag['on'] = False
                     lag_ok = 'reel' in await cls()
                     said = await page.inner_text('dialog.fs-sheet[open] .fs-say')
-                    check(lag_ok and lag['held'] >= 1, f'hooked though the tap reached the server 2,5 s late (1,2 s + 2,5 s > the old 2,2 s): {said!r}')
+                    check(lag_ok and lag['held'] >= 1, f'hooked in the 1 s window though the tap reached the server 2,5 s late: {said!r}')
                 # the fight: hold while the needle is left of the green's middle
                 await page.wait_for_timeout(500)
                 fought = False
@@ -231,7 +268,9 @@ async def main() -> int:
             await page.click('dialog.fs-sheet[open] .fs-st-shop')
             await page.wait_for_selector('dialog.fs-sheet[open] .fs-panel:not([hidden]) .fs-item')
             rods = await page.inner_text('dialog.fs-sheet[open] .fs-panel')
-            check('⏱️ Giật 3s' in rods and '⏱️ Giật 4s' in rods and '⏱️ Giật 3,25s' in rods, 'each rod shows its hook window')
+            check('⏱️ Giật 1s' in rods and '⏱️ Giật 1,5s' in rods and '⏱️ Giật 1,1s' in rods, 'each rod shows its hook window')
+            check('📏 15–80 m' in rods and '📏 0,5–2 km' in rods and '📏 0,3–1,5 km' in rods, f'each rod shows its random reach')
+            check('tầm cần' not in rods, 'no "tầm cần" anywhere')
             await shot('07-shop')
             await page.click('dialog.fs-sheet[open] .fs-panel [data-fs="buy"][data-item="truc"]')
             await page.wait_for_selector('#confirmDialog[open] [data-action="confirmYes"]', timeout=5000)
@@ -262,12 +301,53 @@ async def main() -> int:
             await page.wait_for_selector('dialog.fs-sheet[open] .fs-panel .fs-grid')
             dex = await page.inner_text('dialog.fs-sheet[open] .fs-panel')
             check('Đã câu' in dex and '???' in dex, 'Sổ cá: progress and the uncaught silhouettes')
+            far = dex.split('Cú quăng xa nhất', 1)[-1][:24]
+            check('Cú quăng xa nhất' in dex and ' m' in far, f'Sổ cá: 🎯 the longest cast: {far!r}')
             await shot('11-dex', 600)
             await page.click('dialog.fs-sheet[open] .fs-panel [data-fs="tab"][data-t="fish_big"]')
             await page.wait_for_timeout(1200)
             board = await page.inner_text('dialog.fs-sheet[open] .fs-panel')
             check('1.000.000' in board and ('Lan' in board or 'Câu một con' in board or 'Bạn: hạng' in board), f'the 🐋 board with its weekly rewards: {board[:160]!r}')
             await shot('12-board')
+            # 🐉 a Cần Long Vương (given to the save): casts fly 0,5–2 km; one past 1 km for the shot (🚀 if one comes)
+            await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+
+            def give_lv(s):
+                from game import fishing as F
+                d = F.ensure(s)
+                d['act'] = None
+                if 'long_vuong' not in d['rods']:
+                    d['rods'].append('long_vuong')
+                d['rod'] = 'long_vuong'
+            mutate(db, token, give_lv)
+            await page.reload()
+            await page.wait_for_selector('#app:not([hidden])', timeout=60000)
+            await page.wait_for_timeout(1500)
+            await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+            await act('fishing')
+            await page.wait_for_selector('dialog.fs-sheet[open] .fs-stall', timeout=15000)
+            await page.wait_for_timeout(600)
+            await shot('14-lake-long-vuong')
+            best_km, huge_seen = 0, False
+            for k in range(30):
+                x, y = await go_box()
+                await page.mouse.move(x, y)
+                await page.mouse.down()
+                await page.wait_for_timeout(1000)
+                await page.mouse.up()
+                await page.wait_for_timeout(2000)
+                label = await dist_label()
+                metres = metres_of(label)
+                if k == 0:
+                    check(500 <= metres <= 2000, f'a Long Vương cast lands in 0,5–2 km: {label!r}')
+                if metres >= 1000 and not huge_seen and (metres > best_km or 'siêu xa' in label):
+                    best_km, huge_seen = metres, 'siêu xa' in label
+                    await shot('15-cast-km', 0)
+                if huge_seen:
+                    break
+                await reopen()
+            check(best_km >= 1000, f'a monster cast past 1 km (15-cast-km.jpg): {best_km} m')
+            print(f'INFO the Long Vương shot: {best_km} m, 🚀 Quăng siêu xa: {huge_seen}')
             # 💪 a 🟠 fish carried: drawn in the hands of my character in the town (v4/look.js figure: journey.fish.wear)
             await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
             mutate(db, token, carry_seed)

@@ -1,6 +1,7 @@
 """🎣 Câu cá (game/fishing.py, game/fishing_content.py; owner 24/10): the content (122 species in 7 rarities, rods at the
-owner's prices, baits, baskets), a round decided by the server at the cast (power × range × spread, tangling, zones, the
-bite wait, junk and rỉa mồi), the hook window (per rod and bait, judged on the client's own measure so lag never costs
+owner's prices, baits, baskets), a round decided by the server at the cast (2.6.4: a random distance over the rod's reach,
+15–80 m up to 2 km, that never fails, the power only nudging it; the rod's own zones; 🎯 the longest cast kept), the
+bite wait, junk and rỉa mồi, the hook window (per rod and bait, judged on the client's own measure so lag never costs
 the fish; nibble taps keep the round), the reel's minimum time and the fated snap, receipts, no daily cap, the
 🐟 Chợ cá (price, haggling: accept / bargain / decline, no re-roll by declining), the bag (keep, release, carry, tranh cá,
 bể cá), 📖 Sổ cá milestones (xu once, earned titles and frame), the old leisure keepsakes moved into Sổ cá, saves of a
@@ -68,10 +69,17 @@ class Content(unittest.TestCase):
     def test_rods_baits_baskets(self):
         self.assertEqual({r['id']: r['price'] for r in C.RODS},
                          dict(tre=0, truc=30_000, carbon=200_000, bien=1_500_000, vang=8_000_000, bach_kim=20_000_000, long_vuong=50_000_000))
+        self.assertEqual({r['id']: r['reach'] for r in C.RODS},
+                         dict(tre=(15, 80), truc=(20, 120), carbon=(40, 250), bien=(80, 500), vang=(150, 900), bach_kim=(300, 1500),
+                              long_vuong=(500, 2000)))
         prev = None
         for r in C.RODS:   # every step up reaches further, holds more and is luckier
+            self.assertLess(r['reach'][0], r['reach'][1])
+            self.assertEqual(len(r['zones']), len(C.ZONES) - 1)
+            self.assertEqual(list(r['zones']), sorted(set(r['zones'])), r['id'])
             if prev:
-                self.assertGreater(r['range'], prev['range'])
+                self.assertGreater(r['reach'][0], prev['reach'][0])
+                self.assertGreater(r['reach'][1], prev['reach'][1])
                 self.assertGreater(r['line'], prev['line'])
                 self.assertGreaterEqual(r['luck'], prev['luck'])
             prev = r
@@ -80,26 +88,33 @@ class Content(unittest.TestCase):
         self.assertTrue(all(b['price'] > 0 and b['n'] > 0 for b in C.BAITS))
 
     def test_hook_window_per_rod_and_bait(self):
-        """Owner 24/10 "giật dễ hơn": 3 s on the bamboo rod, longer on every better rod, about 4 s on Long Vương; a bait may add."""
+        """Owner 24/10 "giật cũng là 1 giây không cần 3s đâu" (2.6.4): 1 s on the bamboo rod, a little longer on every better
+        rod, 1,5 s on Long Vương; a bait may add a little (judged on the client's own measure, so 1 s is fair)."""
         wins = [C.hook_window(r['id']) for r in C.RODS]
-        self.assertEqual(wins[0], 3.0)
-        self.assertEqual(wins[-1], 4.0)
+        self.assertEqual(wins[0], 1.0)
+        self.assertEqual(wins[-1], 1.5)
         self.assertEqual(wins, sorted(set(wins)), 'each rod up holds the bite longer')
-        self.assertEqual(C.HOOK_WINDOW, 3.0)
-        self.assertEqual(C.hook_window('tre', 'giun'), 3.0)
-        self.assertEqual(C.hook_window('long_vuong', 'huyen_thoai'), 4.3)
-        self.assertTrue(all(0 <= b.get('hook', 0) <= 0.5 for b in C.BAITS))
+        self.assertEqual(C.HOOK_WINDOW, 1.0)
+        self.assertEqual(C.hook_window('tre', 'giun'), 1.0)
+        self.assertEqual(C.hook_window('long_vuong', 'huyen_thoai'), 1.65)
+        self.assertTrue(all(0 <= b.get('hook', 0) <= 0.15 for b in C.BAITS))
         self.assertEqual(C.hook_window('a_newer_rod'), C.HOOK_WINDOW)
         cat = F.catalogue()
         self.assertEqual([r['hook'] for r in cat['rods']], wins)
         self.assertEqual(cat['hook_scare'], C.HOOK_SCARE)
-        self.assertTrue(0.94 <= C.sim_hook('tre') < C.sim_hook('long_vuong') < 1)
+        self.assertTrue(0.88 <= C.sim_hook('tre') < C.sim_hook('long_vuong') < 1)
 
     def test_catalogue_is_static_json(self):
         cat = F.catalogue()
         json.dumps(cat)
         self.assertEqual(len(cat['species']), len(C.SPECIES))
         self.assertEqual([r['price'] for r in cat['rods']], [r['price'] for r in C.RODS])
+        self.assertEqual([r['reach'] for r in cat['rods']], [list(r['reach']) for r in C.RODS])
+        self.assertEqual([r['zones'] for r in cat['rods']], [list(r['zones']) for r in C.RODS])
+        self.assertTrue(all('range' not in r for r in cat['rods']))   # no "tầm cần" any more
+        self.assertNotIn('power_sweet', cat)
+        self.assertEqual(cat['far_share'], C.FAR_SHARE)
+        self.assertTrue(all('max' not in s for s in cat['spots']))
 
     def test_waits_reel_and_snap(self):
         for r, (lo, hi) in enumerate(C.WAIT):
@@ -129,15 +144,17 @@ class Content(unittest.TestCase):
 
 class Cast(unittest.TestCase):
     def test_distance_zone_and_view(self):
-        rods = {'tre': 20}
+        near, top = C.ROD['tre']['reach']
         for seed in range(40):
             s = story(wallet=1000)
             s, r = run(s, 'jr_fish_cast', Clock(), random.Random(seed), spot='ho', power=0.8)
             c = r['cast']
-            if c.get('tangle'):
-                self.fail('no tangling at 0.8')
-            self.assertTrue(0.8 * 0.8 * rods['tre'] - 0.01 <= c['dist'] <= 0.8 * 1.2 * rods['tre'] + 0.01, c['dist'])
-            self.assertEqual(c['zone'], C.zone_of(c['dist']))
+            self.assertNotIn('tangle', c)
+            self.assertTrue(near <= c['dist'] <= top, c['dist'])
+            self.assertEqual(c['zone'], C.zone_of(c['dist'], 'tre'))
+            self.assertEqual(c['huge'], c['dist'] >= C.FAR_SHARE * top)
+            self.assertFalse(c['best'])   # the first cast is no record yet
+            self.assertEqual(s['journey']['fish']['far'], round(c['dist']))
             self.assertEqual(c['splash'], T0 + C.CAST_SECONDS)
             a = s['journey']['fish']['act']
             self.assertNotIn('sp', c)
@@ -157,14 +174,74 @@ class Cast(unittest.TestCase):
             self.assertNotIn('act', pub)
             self.assertNotIn(a['sp'] or 'x', json.dumps(pub['bag']))
 
-    def test_overpower_tangles_sometimes_and_never_below_sweet(self):
-        tangles = 0
-        for seed in range(60):
-            s, r = run(story(wallet=1000), 'jr_fish_cast', Clock(), random.Random(seed), spot='ho', power=1)
-            tangles += bool(r['cast'].get('tangle'))
-            if r['cast'].get('tangle'):
-                self.assertIsNone(s['journey']['fish']['act'])
-        self.assertTrue(10 < tangles < 40, tangles)
+    def test_every_cast_flies_any_power_any_rod(self):
+        """Owner 24/10 "quăng dễ hơn": a tap (power 0), a full meter (1) or anything between always casts, every rod lands
+        inside its reach (Long Vương up to 2 km), and the power only nudges the distance (a tap: about 10 % shorter)."""
+        for rod in C.ROD_IDS:
+            lo, hi = C.ROD[rod]['reach']
+            for power in (0, 0.37, 1):
+                s = story(wallet=1000)
+                d = F.ensure(s)
+                d['rods'], d['rod'] = list(C.ROD_IDS), rod
+                s, r = run(s, 'jr_fish_cast', Clock(), random.Random(int(power * 100) + len(rod)), spot='ho', power=power)
+                c = r['cast']
+                self.assertTrue(lo <= c['dist'] <= hi, (rod, power, c['dist']))
+                self.assertEqual(c['zone'], C.zone_of(c['dist'], rod))
+                self.assertIsNotNone(s['journey']['fish']['act'])
+        self.assertEqual(C.cast_dist('long_vuong', 1, 0), 500)
+        self.assertAlmostEqual(C.cast_dist('long_vuong', 1, 1), 2000)
+        self.assertAlmostEqual(C.cast_dist('long_vuong', 0, 1), 500 + 1500 * 0.9)
+        for rod in C.ROD_IDS:   # skewed: most casts mid-range, a monster one (≥ 85 % of the longest) now and then
+            lo, hi = C.ROD[rod]['reach']
+            ds = [C.cast_dist(rod, 1, (k + .5) / 2000) for k in range(2000)]
+            mid = sum(lo + 0.2 * (hi - lo) <= x <= lo + 0.7 * (hi - lo) for x in ds) / len(ds)
+            huge = sum(x >= C.FAR_SHARE * hi for x in ds) / len(ds)
+            self.assertGreater(mid, 0.6, rod)
+            self.assertTrue(0.02 <= huge <= 0.07, (rod, huge))
+            tap = sum(C.cast_dist(rod, 0, (k + .5) / 2000) for k in range(2000)) / 2000
+            full = sum(ds) / len(ds)
+            self.assertTrue(0.9 * full <= tap < full, (rod, tap, full))
+
+    def test_zone_of_is_the_rod_s_own(self):
+        self.assertEqual([C.zone_of(x, 'tre') for x in (15, 61.9, 62, 80)], [0, 0, 1, 1])
+        self.assertEqual([C.zone_of(x, 'bien') for x in (80, 153.9, 154, 436.9, 437, 500)], [1, 1, 2, 2, 3, 3])
+        self.assertEqual([C.zone_of(x, 'long_vuong') for x in (500, 578.9, 579, 2000)], [2, 2, 3, 3])
+        self.assertEqual(C.zone_of(70, 'a_newer_rod'), C.zone_of(70, 'tre'))
+        for rod in C.ROD_IDS:   # monotone over the reach
+            lo, hi = C.ROD[rod]['reach']
+            zs = [C.zone_of(lo + (hi - lo) * k / 100, rod) for k in range(101)]
+            self.assertEqual(zs, sorted(zs), rod)
+
+    def test_the_longest_cast_is_kept(self):
+        s = story(wallet=1000)
+        clock, best, seen_best = Clock(), 0, False
+        for i in range(40):
+            clock.t += 30
+            s, r = run(s, 'jr_fish_cast', clock, random.Random(100 + i), spot='ho', power=1)
+            c = r['cast']
+            self.assertEqual(c['best'], best > 0 and round(c['dist']) > best)
+            seen_best |= c['best']
+            best = max(best, round(c['dist']))
+            self.assertEqual(s['journey']['fish']['far'], best)
+            self.assertEqual(F.public(s)['far'], best)
+        self.assertTrue(seen_best)
+        d = s['journey']['fish']
+        d['rods'], d['rod'] = list(C.ROD_IDS), 'long_vuong'
+        s, r = run(s, 'jr_fish_cast', clock, random.Random(5), spot='ho', power=1)
+        self.assertGreaterEqual(s['journey']['fish']['far'], 500)
+        self.assertTrue(r['cast']['best'])
+        validate_state(s)
+        old = story(wallet=1000)   # a save of 2.6.3 (no `far`): valid, 0, and its first cast is no record yet
+        F.ensure(old).pop('far', None)
+        validate_state(old)
+        self.assertEqual(F.public(old)['far'], 0)
+        old, r = run(old, 'jr_fish_cast', clock, spot='ho', power=0.5)
+        self.assertFalse(r['cast']['best'])
+        for bad in (-1, 1.5, '9', 10**6, True):
+            s2 = story(wallet=1000)
+            F.ensure(s2)['far'] = bad
+            with self.assertRaises(GameError):
+                validate_state(s2)
 
     def test_bad_payloads_and_island(self):
         s = story(wallet=1000)
@@ -202,13 +279,14 @@ class Rounds(unittest.TestCase):
         self.s = put_round(story(wallet=1000))
 
     def test_early_late_and_none(self):
-        """An older client ({round} alone): judged by the receipt, with the 3 s window."""
+        """An older client ({round} alone): judged by the receipt, with the rod's window (1 s)."""
+        w = C.hook_window('tre')
         s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 5), round='a' * 32)
         self.assertEqual(r['hook'], dict(lost='early'))
         self.assertIsNone(s['journey']['fish']['act'])
-        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + 3.0 + C.HOOK_LATE + 0.1), round='a' * 32)
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + w + C.HOOK_LATE + 0.1), round='a' * 32)
         self.assertEqual(r['hook'], dict(lost='late'))
-        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + 3.0 + C.HOOK_LATE - 0.1), round='a' * 32)
+        s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + w + C.HOOK_LATE - 0.1), round='a' * 32)
         self.assertIn('secs', r['hook'])
         s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 - C.HOOK_EARLY + 0.05), round='a' * 32)
         self.assertIn('secs', r['hook'])
@@ -220,13 +298,16 @@ class Rounds(unittest.TestCase):
             run(self.s, 'jr_fish_hook', Clock(T0 + 10), round='b' * 32)
 
     def test_the_window_is_the_rods(self):
-        s = put_round(story(wallet=1000), rod='long_vuong', win=4.3)
-        _, r = run(s, 'jr_fish_hook', Clock(T0 + 14), round='a' * 32, ms=4200)
+        s = put_round(story(wallet=1000), rod='long_vuong', win=1.65)
+        _, r = run(s, 'jr_fish_hook', Clock(T0 + 12), round='a' * 32, ms=1600)
         self.assertIn('secs', r['hook'])
-        _, r = run(s, 'jr_fish_hook', Clock(T0 + 14), round='a' * 32, ms=4301)
+        _, r = run(s, 'jr_fish_hook', Clock(T0 + 12), round='a' * 32, ms=1651)
         self.assertEqual(r['hook'], dict(lost='late'))
         s = put_round(story(wallet=1000), rod='long_vuong')   # cast on 2.6.2: no `win`, the rod's own
-        self.assertEqual(F.window_of(s['journey']['fish']['act']), 4.0)
+        self.assertEqual(F.window_of(s['journey']['fish']['act']), 1.5)
+        _, r = run(s, 'jr_fish_hook', Clock(T0 + 12), round='a' * 32, ms=1490)
+        self.assertIn('secs', r['hook'])
+        s = put_round(story(wallet=1000), rod='long_vuong', win=4.0)   # a round cast on 2.6.3 keeps its own 4 s
         _, r = run(s, 'jr_fish_hook', Clock(T0 + 14), round='a' * 32, ms=3990)
         self.assertIn('secs', r['hook'])
 
@@ -251,7 +332,7 @@ class Rounds(unittest.TestCase):
         """[slow-cmd] 1628 ms jr_fish_hook … save=12127KB: the cast's answer and the tap each lose 1–2 s. The client's own
         measure from the bite it drew decides; the receipt only has to be after the bite and within window + HOOK_LAG."""
         win = C.hook_window('tre')
-        for late_by, ms in ((win + 2.5, 900), (win + 5, 2900), (win + C.HOOK_LAG - 0.1, 3000)):
+        for late_by, ms in ((win + 2.5, 600), (win + 5, 950), (win + C.HOOK_LAG - 0.1, 1000)):
             s, r = run(self.s, 'jr_fish_hook', Clock(T0 + 10 + late_by), round='a' * 32, ms=ms)
             self.assertIn('secs', r['hook'], (late_by, ms))
         hooked_at = T0 + 10 + win + C.HOOK_LAG - 0.1
@@ -480,7 +561,7 @@ class Saves(unittest.TestCase):
     def test_tampered_saves_are_refused(self):
         for bad in (lambda d: d.__setitem__('seq', -1), lambda d: d['bag'].append(dict(i=99, s='ca_ro', g=1, d=1, p=0, k=0, o=0, od=0)),
                     lambda d: d.__setitem__('rods', ['carbon']), lambda d: d.__setitem__('carry', 5),
-                    lambda d: d.__setitem__('aq', [['ca_ro', 1]] * 9)):
+                    lambda d: d.__setitem__('aq', [['ca_ro', 1]] * 9), lambda d: d.__setitem__('far', -5)):
             s = story(wallet=1000)
             bad(F.ensure(s))
             with self.assertRaises(GameError):

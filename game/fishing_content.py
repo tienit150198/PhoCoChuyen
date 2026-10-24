@@ -1,6 +1,7 @@
 """🎣 Câu cá: every number of the fishing system in one place (owner 24/10: "phát triển thành bộ sưu tập cá, mua cần
 câu, quăng xa ra cá lớn, gần ra cá nhỏ … cá chia phổ thông, quý, hiếm … tới huyền thoại, cổ đại … cần có giá để người
-ta câu cá kiếm tiền"; then "cần tăng giá … mỗi loại nhiều cá … quăng cùng loại cần thì lượng xa cũng hên xui").
+ta câu cá kiếm tiền"; then "cần tăng giá … mỗi loại nhiều cá … quăng cùng loại cần thì lượng xa cũng hên xui"; then "k có
+'tầm cần' nha … chỗ quăng dễ hơn luôn đi … tầm quăng random đi, kiểu cần cổ đại thì cả 1 km hoặc 2km cũng được đi").
 
 Tune here, never in game/fishing.py. The model functions below are pure: the server rolls with them (game/fishing.py)
 and tests/test_fishing_ev.py integrates them to the expected xu per cast and per hour of each rod (`expected`).
@@ -28,47 +29,55 @@ NEWS_MIN = 6           # 🔴 Cổ đại: a line on the town ticker
 
 # ---------------------------------------------------------------- spots
 SPOTS = {
-    'ho': dict(name='Hồ phố', emoji='🏞️', max=100, luck=1.0, water='#4aa3c7', deep='#1f5f86', shore='#7bbf6a',
+    'ho': dict(name='Hồ phố', emoji='🏞️', luck=1.0, water='#4aa3c7', deep='#1f5f86', shore='#7bbf6a',
                hint='Hồ lớn giữa phố, nước ngọt, nhiều cá đồng.'),
-    'song': dict(name='Sông', emoji='🌊', max=110, luck=1.05, water='#5f9eb0', deep='#2f5f6e', shore='#b9a37a',
+    'song': dict(name='Sông', emoji='🌊', luck=1.05, water='#5f9eb0', deep='#2f5f6e', shore='#b9a37a',
                  hint='Sông rộng nước chảy, cá da trơn và cá lớn.'),
-    'bien': dict(name='Bến cảng', emoji='⚓', max=120, luck=1.1, water='#2f86c7', deep='#123f75', shore='#d8c79a',
+    'bien': dict(name='Bến cảng', emoji='⚓', luck=1.1, water='#2f86c7', deep='#123f75', shore='#d8c79a',
                  hint='Cầu cảng ra biển, cá biển và quái vật dưới sâu.'),
-    'dao': dict(name='Đảo riêng', emoji='🏝️', max=120, luck=1.15, water='#22b7c9', deep='#0d5e8a', shore='#f1dfa6',
+    'dao': dict(name='Đảo riêng', emoji='🏝️', luck=1.15, water='#22b7c9', deep='#0d5e8a', shore='#f1dfa6',
                 hint='Biển quanh đảo: rạn san hô, cá màu và cá khổng lồ.', island=True),
 }
 SPOT_IDS = tuple(SPOTS)
 PUBLIC_SPOTS = ('ho', 'song', 'bien')
 
-# Distance zones (metres from the shore): far = bigger and rarer fish. The weights per rarity (before luck / bait).
+# Distance zones: far = bigger and rarer fish. The weights per rarity (before luck / bait). Where each zone starts is the
+# rod's own (RODS `zones`, metres): a better rod throws further out, so the same zone lies further away.
 ZONES = (
-    dict(id='gan', name='Gần', to=20, junk=0.15, rar=(100, 4, 0.35, 0.025, 0.0015, 0.0001, 0.00001), skew=1.8),
-    dict(id='vua', name='Vừa', to=40, junk=0.10, rar=(100, 5, 0.45, 0.035, 0.0025, 0.0002, 0.00002), skew=1.4),
-    dict(id='xa', name='Xa', to=65, junk=0.06, rar=(100, 12, 1.8, 0.25, 0.03, 0.003, 0.0003), skew=1.1),
-    dict(id='sau', name='Sâu', to=10**9, junk=0.04, rar=(100, 28, 6.5, 1.2, 0.15, 0.016, 0.0018), skew=0.85),
+    dict(id='gan', name='Gần', junk=0.15, rar=(100, 4, 0.35, 0.025, 0.0015, 0.0001, 0.00001), skew=1.8),
+    dict(id='vua', name='Vừa', junk=0.10, rar=(100, 5, 0.45, 0.035, 0.0025, 0.0002, 0.00002), skew=1.4),
+    dict(id='xa', name='Xa', junk=0.06, rar=(100, 12, 1.8, 0.25, 0.03, 0.003, 0.0003), skew=1.1),
+    dict(id='sau', name='Sâu', junk=0.04, rar=(100, 28, 6.5, 1.2, 0.15, 0.016, 0.0018), skew=0.85),
 )
 
 
-def zone_of(dist: float) -> int:
-    return next(i for i, z in enumerate(ZONES) if dist < z['to'])
-
-
 # ---------------------------------------------------------------- rods, baits, baskets
-# range: metres at full power; line: the heaviest fish (kg) it holds safely; luck: rare weights × luck^rarity;
-# reel: reel speed (a shorter fight); bite: the share of casts a fish really bites (else it only nibbles: rỉa mồi); hook: the
-# seconds to tap Giật after the bite shows (owner 24/10 "giật dễ hơn": 3 s, up to 4 s). Cổ đại from Cần bạch kim (`ancient`), else × ANCIENT_GATE.
+# reach: (shortest, longest) cast in metres (owner 24/10: random, big numbers, Long Vương up to 2 km); zones: where Vừa,
+# Xa and Sâu start, in metres (past the reach: out of this rod's reach; short of it: never landed in). Set so each rod
+# lands in each zone as often as it did before 2.6.4 (power × 20–110 m): the catch, so the xu per hour, did not change.
+# line: the heaviest fish (kg) it holds safely; luck: rare weights × luck^rarity; reel: reel speed (a shorter fight); bite:
+# the share of casts a fish really bites (else it only nibbles: rỉa mồi); hook: the seconds to tap Giật after the bite shows
+# (owner 24/10 "giật cũng là 1 giây không cần 3s đâu": 1 s, up to 1,5 s; judged on the client's own measure, so lag
+# never makes a tap late). 2.6.4's easy reel lands more rare fish, so the luck of Cần carbon and up came down a little
+# (1,31 → 1,29, 1,69 → 1,65, 2,07 → 2,0, 2,1 → 2,02, 2,18 → 2,09): each rod's xu per hour stays 2.6.3's. Cổ đại from Cần bạch kim (`ancient`), else × ANCIENT_GATE.
 RODS = (
-    dict(id='tre', name='Cần tre', emoji='🎋', price=0, range=20, line=6, luck=1.0, reel=1.0, bite=0.78, hook=3.0, ancient=False, color='#c9a96b'),
-    dict(id='truc', name='Cần trúc', emoji='🎍', price=30_000, range=24, line=15, luck=1.0, reel=1.05, bite=0.8, hook=3.1, ancient=False, color='#9bbf5a'),
-    dict(id='carbon', name='Cần carbon', emoji='🎣', price=200_000, range=40, line=45, luck=1.31, reel=1.1, bite=0.89, hook=3.25, ancient=False, color='#3b3f4a'),
-    dict(id='bien', name='Cần câu biển', emoji='🌊', price=1_500_000, range=60, line=180, luck=1.69, reel=1.15, bite=0.93, hook=3.4, ancient=False, color='#2a6fb8'),
-    dict(id='vang', name='Cần vàng', emoji='🥇', price=8_000_000, range=75, line=800, luck=2.07, reel=1.2, bite=0.95, hook=3.6, ancient=False, color='#e6b422'),
-    dict(id='bach_kim', name='Cần bạch kim', emoji='💠', price=20_000_000, range=90, line=3_500, luck=2.1, reel=1.25, bite=0.97, hook=3.8, ancient=True, color='#cfd8e3'),
-    dict(id='long_vuong', name='Cần Long Vương', emoji='🐉', price=50_000_000, range=110, line=25_000, luck=2.18, reel=1.3, bite=0.98, hook=4.0, ancient=True, color='#d62f2f'),
+    dict(id='tre', name='Cần tre', emoji='🎋', price=0, reach=(15, 80), zones=(62, 100, 150), line=6, luck=1.0, reel=1.0, bite=0.78, hook=1.0, ancient=False, color='#c9a96b'),
+    dict(id='truc', name='Cần trúc', emoji='🎍', price=30_000, reach=(20, 120), zones=(67, 150, 200), line=15, luck=1.0, reel=1.05, bite=0.8, hook=1.05, ancient=False, color='#9bbf5a'),
+    dict(id='carbon', name='Cần carbon', emoji='🎣', price=200_000, reach=(40, 250), zones=(20, 192, 300), line=45, luck=1.29, reel=1.1, bite=0.89, hook=1.1, ancient=False, color='#3b3f4a'),
+    dict(id='bien', name='Cần câu biển', emoji='🌊', price=1_500_000, reach=(80, 500), zones=(40, 154, 437), line=180, luck=1.65, reel=1.15, bite=0.93, hook=1.2, ancient=False, color='#2a6fb8'),
+    dict(id='vang', name='Cần vàng', emoji='🥇', price=8_000_000, reach=(150, 900), zones=(50, 100, 545), line=800, luck=2.0, reel=1.2, bite=0.95, hook=1.3, ancient=False, color='#e6b422'),
+    dict(id='bach_kim', name='Cần bạch kim', emoji='💠', price=20_000_000, reach=(300, 1_500), zones=(80, 200, 627), line=3_500, luck=2.02, reel=1.25, bite=0.97, hook=1.4, ancient=True, color='#cfd8e3'),
+    dict(id='long_vuong', name='Cần Long Vương', emoji='🐉', price=50_000_000, reach=(500, 2_000), zones=(100, 250, 579), line=25_000, luck=2.09, reel=1.3, bite=0.98, hook=1.5, ancient=True, color='#d62f2f'),
 )
 ROD = {r['id']: r for r in RODS}
 ROD_IDS = tuple(ROD)
 ANCIENT_GATE = 0.05
+
+
+def zone_of(dist: float, rod: str) -> int:
+    """The zone a cast of `dist` metres with `rod` lands in (a rod of a newer build: the bamboo rod's)."""
+    zs = (ROD.get(rod) or ROD['tre'])['zones']
+    return next((i for i, t in enumerate(zs) if dist < t), len(zs))
 
 # Baits: bought by the box (`n` uses), one used per cast while chosen. `rar`: × weight per rarity; `wait`: × bite wait;
 # `hook` (optional): seconds added to the rod's hook window.
@@ -78,13 +87,13 @@ ANCIENT_GATE = 0.05
 BAITS = (
     dict(id='giun', name='Giun đất', emoji='🪱', price=60, n=30, rar=(1.25, 1.2, 1, 1, 1, 1, 1), wait=0.85,
          hint='Cá nhỏ cắn nhanh hơn.'),
-    dict(id='tom', name='Tôm tươi', emoji='🦐', price=100, n=20, rar=(1, 1.3, 1.3, 1.2, 1, 1, 1), wait=0.95, hook=0.1,
+    dict(id='tom', name='Tôm tươi', emoji='🦐', price=100, n=20, rar=(1, 1.3, 1.3, 1.2, 1, 1, 1), wait=0.95, hook=0.05,
          hint='Cá Khá, Quý ưa mồi tôm.'),
-    dict(id='moi_gia', name='Mồi giả', emoji='🪝', price=600, n=10, rar=(0.9, 1, 1.4, 1.45, 1.3, 1, 1), wait=1.0, hook=0.2,
+    dict(id='moi_gia', name='Mồi giả', emoji='🪝', price=600, n=10, rar=(0.9, 1, 1.4, 1.45, 1.3, 1, 1), wait=1.0, hook=0.1,
          hint='Cá săn mồi (Quý, Hiếm) mê mồi giả.'),
-    dict(id='phat_sang', name='Mồi phát sáng', emoji='✨', price=5_000, n=10, rar=(0.85, 0.9, 1, 1.5, 1.6, 1.5, 1.2), wait=1.0, hook=0.2,
+    dict(id='phat_sang', name='Mồi phát sáng', emoji='✨', price=5_000, n=10, rar=(0.85, 0.9, 1, 1.5, 1.6, 1.5, 1.2), wait=1.0, hook=0.1,
          night=1.25, hint='Sáng lấp lánh, ban đêm càng hiệu nghiệm.'),
-    dict(id='huyen_thoai', name='Mồi huyền thoại', emoji='🔱', price=55_000, n=5, rar=(0.8, 0.8, 0.9, 1, 1.2, 2.2, 2.2), wait=1.05, hook=0.3,
+    dict(id='huyen_thoai', name='Mồi huyền thoại', emoji='🔱', price=55_000, n=5, rar=(0.8, 0.8, 0.9, 1, 1.2, 2.2, 2.2), wait=1.05, hook=0.15,
          hint='Gọi cá Huyền thoại, Cổ đại.'),
 )
 BAIT = {b['id']: b for b in BAITS}
@@ -100,14 +109,18 @@ BASKETS = (   # 🧺 giỏ cá: how many fish the bag holds
 AQUARIUM_MAX = 8        # 🐠 fish kept swimming in the home aquarium (deco 'be_ca')
 
 # ---------------------------------------------------------------- casting, bite, reel
-POWER_SWEET = 0.95      # above: overpower, the line may tangle (rối dây)
-TANGLE_CHANCE = 0.4
-SPREAD = (0.8, 1.2)     # distance = power × rod range × uniform(SPREAD): the same rod and power land differently
+# Casting is never a skill check (owner 24/10 "quăng dễ hơn … tầm quăng random"): hold and release, or just tap, and the
+# line flies. distance = lo + (hi − lo) × q × (1 − POWER_NUDGE × (1 − power)) over the rod's reach (lo, hi), q drawn from a
+# Kumaraswamy(CAST_SHAPE) on 0..1: most casts land mid-range, now and then a monster one near the top. A full meter only
+# nudges it out a little (a plain tap lands up to 10 % shorter); nothing fails.
+CAST_SHAPE = (2.0, 3.0)
+POWER_NUDGE = 0.1
+FAR_SHARE = 0.85        # a cast past this share of the rod's longest: 🚀 Quăng siêu xa!
 CAST_SECONDS = 1.6      # the cast's flight: the wait counts from the splash
 WAIT = ((5, 15), (6, 17), (9, 20), (14, 28), (16, 30), (18, 34), (24, 45))   # bite wait (s) per rarity: longer → heavier
 JUNK_WAIT = (5, 12)
 NOBITE_WAIT = (10, 18)  # rỉa mồi: nibbles only, then the bait is gone
-HOOK_WINDOW = 3.0       # seconds to tap Giật after the bite shows: the default (a rod's own `hook`, + its bait's)
+HOOK_WINDOW = 1.0       # seconds to tap Giật after the bite shows: the default (a rod's own `hook`, + its bait's)
 # The client measures how long after it showed the bite the player tapped (`ms`, performance.now()) and the server judges
 # that against the window: a slow save or network never costs the fish. The server's own receipt time only bounds it:
 HOOK_EARLY = 0.25       # a tap received this long before the bite at most (it cannot follow a bite shown on screen)
@@ -118,6 +131,7 @@ REEL = (3.0, 4.0, 5.0, 6.5, 8.0, 10.0, 12.0)   # fight seconds per rarity (+ up 
 REEL_MIN_SHARE = 0.6    # the server refuses a landing sooner than this share of the fight
 ROUND_TTL = 180         # seconds a round stays open
 NIBBLES = (0, 3)        # fake twitches before the bite (scare the fish if tapped)
+GREEN_MIN = 0.3        # the green zone's width (share of the bar) at the hardest
 SNAP_BASE, SNAP_SLOPE = 0.4, 1.0   # a fish heavier than the line: P(snap) = base + slope × (kg/line − 1), at most 1
 
 # ---------------------------------------------------------------- the market (🐟 Quầy thu mua)
@@ -128,9 +142,10 @@ DEAL_TTL = 300          # seconds an offer stands
 RELEASE_SPIRIT = 3      # 🐟 thả cá: +1 tinh thần, at most this many a day
 
 # ---------------------------------------------------------------- the sim's "decent play" (tests/test_fishing_ev.py)
-SIM_POWER = (0.70, 0.95)
-SIM_MISS = 0.15                                   # taps Giật in time: 1 − SIM_MISS / window (3 s: 95 %, 4 s: 96 %)
-SIM_REEL = (0.95, 0.93, 0.9, 0.85, 0.8, 0.75, 0.7)   # keeps the tension green to the end
+SIM_POWER = (0.5, 1.0)  # a tap now and then, mostly a held meter
+SIM_MISS = 0.1                                    # taps Giật in time: 1 − SIM_MISS / window (1 s: 90 %, 1,5 s: 93 %)
+# lands the fish (2.6.4's easy reel: tests/fishing-reel.mjs's watching bot lands them all, a blind one ≥ 90 % / ≥ 70 %)
+SIM_REEL = (0.98, 0.97, 0.96, 0.94, 0.92, 0.9, 0.88)
 SIM_UI = (3.0, 1.5)     # seconds on the catch card (landed) / after a miss
 HAGGLE_EV = 1 - HAGGLE_CHANCE * (1 - sum(HAGGLE_OFFER) / 200)   # accepting every offer
 # xu per hour of active fishing (the best public spot, day, no rain, no bait). The free bamboo rod sets the floor; each
@@ -438,32 +453,45 @@ def reel_of(r: int, f: float, rod: str) -> float:
     return (REEL[r] + 3.0 * f) / ROD[rod]['reel']
 
 
+def cast_q(u: float) -> float:
+    """The Kumaraswamy(CAST_SHAPE) quantile of u in [0, 1]: how far along the rod's reach a cast lands."""
+    a, b = CAST_SHAPE
+    return (1 - (1 - u) ** (1 / b)) ** (1 / a)
+
+
+def cast_dist(rod: str, power: float, u: float) -> float:
+    """Metres of a cast with `rod` at `power` (0..1) for the uniform draw `u`."""
+    lo, hi = (ROD.get(rod) or ROD['tre'])['reach']
+    return lo + (hi - lo) * cast_q(u) * (1 - POWER_NUDGE * (1 - power))
+
+
 def snap_chance(kg: float, rod: str) -> float:
     line = ROD[rod]['line']
     return 0.0 if kg <= line else min(1.0, SNAP_BASE + SNAP_SLOPE * (kg / line - 1))
 
 
 def fight_of(r: int, kg: float, rod: str) -> dict:
-    """What the client's reel mini-game uses: pull 0..1 (how hard the fish fights), dart 0..1 (how often it darts),
-    green 0..1 (the green zone's width)."""
+    """What the client's reel mini-game (public/js/v4/fish-reel.js) uses: pull 0..1 (how hard the fish fights), dart 0..1
+    (how often it darts), green 0..1 (the green zone's width). 2.6.4 (owner 24/10 "màu xanh rất khó để canh"): about half
+    the bar is green for a common fish, never under GREEN_MIN for a 🔴 Cổ đại one; softer, rarer darts."""
     load = min(1.5, kg / ROD[rod]['line'])
-    pull = min(1.0, 0.18 + 0.1 * r + 0.35 * load)
-    return dict(pull=round(pull, 3), dart=round(min(0.95, 0.12 + 0.12 * r), 3), green=round(max(0.18, 0.46 - 0.04 * r - 0.08 * min(1, load)), 3))
+    pull = min(1.0, 0.15 + 0.09 * r + 0.3 * load)
+    return dict(pull=round(pull, 3), dart=round(min(0.7, 0.1 + 0.09 * r), 3),
+                green=round(max(GREEN_MIN, 0.54 - 0.035 * r - 0.06 * min(1, load)), 3))
 
 
 # ---------------------------------------------------------------- expected value (tests/test_fishing_ev.py)
 def expected(rod: str, spot: str, bait: str | None = None, cond: dict | None = None, steps: int = 24) -> dict:
     """{cast: xu per cast, hour: xu per hour, casts: casts per hour, bait: bait xu per hour} of decent play (SIM_*),
-    by integrating the model above over power, spread, zone, rarity, species and weight."""
+    by integrating the model above over power, the cast's distance, zone, rarity, species and weight."""
     cond = cond or dict(night=False, rain=False, month=6)
-    rd, sp = ROD[rod], SPOTS[spot]
+    rd = ROD[rod]
     zp = [0.0] * len(ZONES)
-    n = steps
+    n, m = steps, steps * 16
     for i in range(n):
         p = SIM_POWER[0] + (SIM_POWER[1] - SIM_POWER[0]) * (i + .5) / n
-        for k in range(n):
-            s = SPREAD[0] + (SPREAD[1] - SPREAD[0]) * (k + .5) / n
-            zp[zone_of(min(sp['max'], p * rd['range'] * s))] += 1 / (n * n)
+        for k in range(m):
+            zp[zone_of(cast_dist(rod, p, (k + .5) / m), rod)] += 1 / (n * m)
     value = time_ = 0.0
     hook = sim_hook(rod, bait)
     for zi, pz in enumerate(zp):

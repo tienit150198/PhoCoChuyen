@@ -26,17 +26,33 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-meter{position:absolute;right:12px;width:26px;border-radius:14px;background:rgba(6,30,46,.7);border:2px solid rgba(255,255,255,.7);overflow:hidden;z-index:2;pointer-events:none}
 .fs-meter[hidden]{display:none}
 .fs-meter i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,#3ddc84,#ffd34d 70%,#ff8a1c 92%)}
-.fs-meter s{position:absolute;left:0;right:0;top:0;background:repeating-linear-gradient(45deg,rgba(255,59,59,.85) 0 5px,rgba(160,20,20,.85) 5px 10px)}
-.fs-meter u{position:absolute;left:-2px;right:-2px;height:2px;background:#fff;text-decoration:none}
-.fs-meter em{position:absolute;right:30px;transform:translateY(50%);font-style:normal;font-size:10px;font-weight:800;color:#fff;white-space:nowrap;text-shadow:0 1px 2px #000}
+.fs-meter.full{border-color:#ffd34d;box-shadow:0 0 12px #ffb02e;animation:fs-glow .35s ease-in-out infinite alternate}
+@keyframes fs-glow{to{box-shadow:0 0 22px #ffd34d}}
 .fs-pow{position:absolute;right:46px;padding:2px 8px;border-radius:8px;background:#fff;color:#0b2536;font-weight:800;font-size:13px;z-index:2;pointer-events:none}
 .fs-pow[hidden]{display:none}
+/* the cast's distance: a counter while the bobber flies, the big "🎯 1.234 m!" at the splash, then a small chip */
+.fs-dist{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;z-index:2;pointer-events:none;
+  color:#fff;text-align:center;white-space:nowrap;text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 10px rgba(0,0,0,.35)}
+.fs-dist[hidden]{display:none}
+.fs-dist b{font-size:40px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.fs-dist small{font-size:15px;font-weight:800}
+.fs-dist.fly b{font-size:34px;opacity:.92}
+.fs-dist.land.pop{animation:fs-pop .45s cubic-bezier(.2,1.6,.4,1)}
+.fs-dist.huge b{font-size:46px;color:#ffe36a;text-shadow:0 2px 0 #9a4a00,0 0 18px #ff9d1c,0 0 34px #ffcf26}
+.fs-dist.huge small{font-size:17px;color:#fff3b0}
+.fs-dist.huge.pop{animation:fs-pop .45s cubic-bezier(.2,1.6,.4,1),fs-dshake .12s linear .45s 4}
+@keyframes fs-dshake{25%{transform:translate(calc(-50% - 3px),-50%)}75%{transform:translate(calc(-50% + 3px),-50%)}}
+.fs-dist.mini{top:64px;transform:translateX(-50%);flex-direction:row;gap:6px;padding:4px 12px;border-radius:999px;background:rgba(6,30,46,.62);text-shadow:none}
+.fs-dist.mini b{font-size:14px}
+.fs-dist.mini small{font-size:12px;font-weight:700;color:#cfe8f5}
 .fs-ten{position:absolute;top:50px;left:12px;right:12px;padding:8px 10px;border-radius:14px;background:rgba(6,30,46,.78);z-index:2;pointer-events:none}
 .fs-ten[hidden]{display:none}
-.fs-ten-bar{position:relative;height:16px;border-radius:9px;background:linear-gradient(90deg,#5a7a8c 0 10%,#24465a 10% 90%,#ff3b3b 90%);overflow:hidden}
-.fs-ten-bar b{position:absolute;top:0;bottom:0;background:rgba(61,220,132,.9);border-radius:4px}
+.fs-ten-bar{position:relative;height:18px;border-radius:9px;background:linear-gradient(90deg,#5a7a8c 0 10%,#c9a227 10% 90%,#ff3b3b 90%);overflow:hidden}
+.fs-ten-bar b{position:absolute;top:0;bottom:0;background:rgba(61,220,132,.95);border-radius:4px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
 .fs-ten-bar i{position:absolute;top:-3px;bottom:-3px;width:5px;margin-left:-2px;border-radius:3px;background:#fff;box-shadow:0 0 6px #fff}
+.fs-ten.red{animation:fs-redflash .3s ease-in-out infinite alternate}
 .fs-ten.red .fs-ten-bar{animation:fs-shake .12s linear infinite}
+@keyframes fs-redflash{to{background:rgba(190,30,30,.85);box-shadow:0 0 18px #ff3b3b}}
 .fs-ten-row{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;font-weight:700}
 .fs-prog{flex:1 1 auto;height:8px;border-radius:5px;background:#24465a;overflow:hidden}
 .fs-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4fc3f7,#ffd34d);border-radius:inherit}
@@ -135,6 +151,7 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-dex-head{display:flex;align-items:center;gap:8px;margin:10px 0 4px}
 .fs-dex-head b{flex:1 1 auto;font-size:14px}
 .fs-dex-head small{font-size:11.5px;color:#6b5a40}
+.fs-far{margin:8px 0 2px;font-size:13px}
 .fs-bar2{height:8px;border-radius:5px;background:#efe6d4;overflow:hidden;margin-bottom:6px}
 .fs-bar2 i{display:block;height:100%;background:var(--rc,#1f8fd0);border-radius:inherit}
 .fs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px}
@@ -165,7 +182,7 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-reward ul{margin:2px 0 0;padding:0;list-style:none}
 .fs-empty{padding:20px 8px;text-align:center;color:#6b5a40}
 @media (prefers-reduced-motion:reduce){
-  .fs-go.hook,.fs-ban.rec,.fs-card svg.fish-art,.fs-bite.go{animation:none}
+  .fs-go.hook,.fs-ban.rec,.fs-card svg.fish-art,.fs-bite.go,.fs-dist.pop,.fs-meter.full,.fs-ten.red{animation:none}
   .fs-card,.fs-panel,.fs-deal{animation:none}
 }
 @media (max-height:640px){
