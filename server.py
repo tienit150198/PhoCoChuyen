@@ -70,6 +70,7 @@ from game import retention
 from game import kpi  # 📊 Tổng quan đầu tư: counters (a dict update each) and daily rollups
 from game import leaderboard
 from game import lb_titles
+from game import exclusive
 from game import friend_charms  # 🤝 Phụ kiện đôi: the pairs the character wears, read for the bootstrap
 from game import fair_board  # 🏆 Bảng vàng hội chợ: the fair's titles after the end
 from game import auction  # 🔨 Nhà đấu giá đồ độc bản: the day's lots, settlement
@@ -764,11 +765,13 @@ class Handler(BaseHTTPRequestHandler):
                     except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 view=fresh_view(state)
-                ranks=[]
+                ranks=[];ex_titles=[]
                 if not created:
                     try:  # 🏅 the weekly leaderboard titles this save holds now (game/lb_titles.py), for its own name card
                         lb_titles.ensure(self.server.store);ranks=lb_titles.held(self.server.store,self.server.store.key(token))
                     except Exception as e:self.log_error("lb_titles: %s",type(e).__name__)  # never blocks loading the game
+                    try:ex_titles=exclusive.held(self.server.store,self.server.store.key(token))  # 🌧️ an exclusive honour this save holds (game/exclusive.py)
+                    except Exception as e:ex_titles=[];self.log_error("exclusive: %s",type(e).__name__)  # never blocks loading the game
                 charms=None
                 if not created:
                     try:charms=friend_charms.boot(self.server.store,token)  # 🤝 phụ kiện đôi worn, offers waiting (game/friend_charms.py)
@@ -788,7 +791,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),auth=dict(tiktok=tiktok_auth.public_config()),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version(),ui=ui_config(),gifts=gifts,xfers=xfers,quay_invites=0 if created else quay_hire.invite_count(self.server.store,token),lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"],rank=h["rank"]) for h in ranks],**({"charms":charms} if charms else {}),**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
+                                   game_version=self.server.game_version(),ui=ui_config(),gifts=gifts,xfers=xfers,quay_invites=0 if created else quay_hire.invite_count(self.server.store,token),lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"],rank=h["rank"]) for h in ranks],**({"ex_titles":[dict(id=x["id"],emoji=x["emoji"],name=x["name"],frame=x["frame"]) for x in ex_titles]} if ex_titles else {}),**({"charms":charms} if charms else {}),**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
             if route=="/api/state":
                 token,state,revision,_=self.require_session()
                 settled=business.on_load_result(self.server.store,token,state,own=True)  # a sync starts from this read's parse (game/storage.py `own`)

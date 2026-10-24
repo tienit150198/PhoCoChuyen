@@ -18,7 +18,7 @@ function harness(){
   const state={journey:{gender:'female'},wardrobe:{look:{top:'ao_thun_kem'}}};
   const world={at:{x:6,y:6,direction:'se'},getPresence(){return this.at;},setRemotePlayers(peers){drawn.push(structuredClone(peers));}};
   const env={world,api:{state,live:{url:'/live'}}};
-  const context=vm.createContext({sitePresence,lookOf,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',publicActivity,leisurePresence:leisure,live:socket,
+  const context=vm.createContext({sitePresence,lookOf,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',exTownTag:()=>null,badge:()=>'',bgBadge:()=>'',bgChip:()=>'',publicActivity,leisurePresence:leisure,live:socket,
     setInterval(fn){timers.set(++id,fn);return id;},clearInterval(key){timers.delete(key);},Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.create=createTownPresence;',context);
   const bridge=context.create(()=>env,{transport:socket,document:doc,events:target,leisure,now:()=>now,status(){}}).start();

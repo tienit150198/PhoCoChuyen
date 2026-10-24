@@ -4,6 +4,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {T} from './terms.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';
 import {chip as bgChip,badgeHTML as bgBadge} from './bang-tag.js';   // ⚔️ profile.bang (game/bang.py tag_of): the bang and role
+import {isEx,exCss} from './exclusive.js';   // 🌧️ an exclusive honour (game/exclusive.py): p.rank.ex
 
 /** 🛃 A customs officer past Tập sự (v4/hq.js inspector, kept here so this sheet does not load that module). */
 const hqInspector=st=>{const o=st?.careers?.customs?.promo?.org;return Boolean(o&&!o.susp&&o.post?.id&&o.post.id!=='hq_ts');};
@@ -23,6 +24,7 @@ function titlesLine(p,cls='small clip'){
   const shop=p.shop||{},worn=Array.isArray(shop.titles)?shop.titles:shop.title?[shop.title]:[],lead=p.rank||worn[0];
   if(!lead)return '';
   const rest=(p.rank?worn:worn.slice(1)).map(w=>esc(w.emoji)).join('');
+  if(p.rank?.ex&&isEx(p.rank.ex)){exCss();return `<p class="${cls}">${esc(lead.emoji)} <b class="ex-ti">${esc(lead.name)}</b><i class="ex-tag">Độc nhất</i>${rest?` <span aria-label="${esc(worn.map(w=>w.name).join(', '))}">${rest}</span>`:''}</p>`;}   // 🌧️ game/exclusive.py
   return `<p class="${cls}">${p.rank?'<b>':''}${esc(lead.emoji)} ${esc(lead.name)}${p.rank?'</b>':''}${rest?` <span aria-label="${esc(worn.map(w=>w.name).join(', '))}">${rest}</span>`:''}</p>`;
 }
 /** 🚗 The vehicle the player rides (shop.ride, game/garage.py; absent in older snapshots). */

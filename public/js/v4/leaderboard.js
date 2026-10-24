@@ -10,6 +10,7 @@ import {emojiOf} from './journey.js';
 import {myPortrait,wingIcon,WING_TIERS,WING_TIER_COLOR} from './look.js';   // 🪽 the Cánh board draws each best wing
 import {live} from './live.js';
 import {logo as hfLogo,chipClass} from './honour-frames.js';   // 🖼️ the top titles' frames and colours (owner 18/10)
+import {exChip} from './exclusive.js';   // 🌧️ an exclusive honour beside the name (a row's `ex`, game/exclusive.py)
 import {marketTag,mx} from '../market-ui.js';   // 🔥 nghề hot hôm nay, 📈 lãi nhân viên (game/staff_market.py)
 import {petPicture,lookup,accOf,fxRef} from './pet-art.js';      // 🐾 the Thú cưng board draws each best pet with its aura
 
@@ -131,7 +132,7 @@ function podium(rows){
       <span class="lb-pod-medal" aria-hidden="true">${fr||medal}</span>
       <b class="lb-pod-pet" data-no-translate>${esc(r.pn||'Bé cưng')}</b><span class="lb-pod-tag">${petTag(r)} <small>${esc(breedName(r))}</small></span>
       <span class="lb-pod-owner"><small>Sen:</small> <b data-no-translate>${esc(r.name)}</b>${r.me?' <span class="tag blue">Bạn</span>':''}</span>
-      ${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
+      ${exChip(r.ex,' lb-held')}${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
       <span class="lb-pod-power">💪 ${fmt(r.score)}</span></li>`;};
   const order=[top[1],top[0],top[2]].filter(Boolean);
   return `<div class="lb-podwrap"><span class="lb-pod-ribbon">🐾 Top bé cưng 🐾</span><ol class="lb-pod" aria-label="Top 3 thú cưng">${order.map(card).join('')}</ol></div>`;
@@ -140,7 +141,7 @@ function petRow(r){
   const fr=r.title?hfLogo('pets',r.rank):'';
   return `<li class="lb-row lb-prow${r.me?' me':''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||`<b class="lb-paw">${r.rank}</b>`}</span>
     <span class="lb-pet" aria-hidden="true">${petArt(r,52)}</span>
-    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.pn||'Bé cưng')}</b> ${petTag(r)}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>Sen: <span data-no-translate>${esc(r.name)}</span>${r.guest?' · khách':''}${breedName(r)?` · ${esc(breedName(r))}`:''}</small></span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.pn||'Bé cưng')}</b> ${petTag(r)}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${exChip(r.ex,' lb-held')}${r.title?`<span class="lb-held hn-chip${chipClass(`lb_pets_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>Sen: <span data-no-translate>${esc(r.name)}</span>${r.guest?' · khách':''}${breedName(r)?` · ${esc(breedName(r))}`:''}</small></span>
     ${scoreBox('pets',r)}</li>`;
 }
 /* ---- 🪽 Cánh (game/wing_lb.py): each player's điểm cánh, the best wing drawn in its tier's colour, a podium for the top 3 ---- */
@@ -162,7 +163,7 @@ function wingPodium(rows){
       <span class="lb-pod-medal" aria-hidden="true">${fr||medal}</span>
       <b class="lb-pod-pet" data-no-translate>${esc(r.name)}</b><span class="lb-pod-tag">${wingTag(r)}${r.me?' <span class="tag blue">Bạn</span>':''}</span>
       <small class="lb-pod-owner">${esc(wingCounts(r))}</small>
-      ${r.title?`<span class="lb-held hn-chip${chipClass(`lb_wings_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
+      ${exChip(r.ex,' lb-held')}${r.title?`<span class="lb-held hn-chip${chipClass(`lb_wings_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}
       <span class="lb-pod-power">🪽 ${fmt(r.score)}</span></li>`;};
   const order=[top[1],top[0],top[2]].filter(Boolean);
   return `<div class="lb-podwrap lb-wpod"><span class="lb-pod-ribbon">🪽 Top đôi cánh 🪽</span><ol class="lb-pod" aria-label="Top 3 cánh">${order.map(card).join('')}</ol></div>`;
@@ -171,14 +172,14 @@ function wingRow(r){
   const fr=r.title?hfLogo('wings',r.rank):'';
   return `<li class="lb-row lb-prow lb-wrow${r.me?' me':''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||`<b>${r.rank}</b>`}</span>
     <span class="lb-pet lb-wing" style="--wt:${WING_TIER_COLOR[WT(r.wg?.r)]}">${wingArt(r,52)}</span>
-    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b> ${wingTag(r)}${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_wings_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(wingCounts(r))}</small></span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b> ${wingTag(r)}${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${exChip(r.ex,' lb-held')}${r.title?`<span class="lb-held hn-chip${chipClass(`lb_wings_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(wingCounts(r))}</small></span>
     ${scoreBox('wings',r)}</li>`;
 }
 function rowHTML(board,r){
   const medal=r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:'';
   const fr=r.title?hfLogo(board,r.rank):'';   // 🖼️ a holder of this board's title: its frame around the rank
   return `<li class="lb-row${r.me?' me':''}${r.rank<=3?` top top${r.rank}`:''}${fr?' hf-row':''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${fr||medal||`<b>${r.rank}</b>`}</span>
-    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held hn-chip${chipClass(`lb_${board}_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(statsLine(board,r))}</small></span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${exChip(r.ex,' lb-held')}${r.title?`<span class="lb-held hn-chip${chipClass(`lb_${board}_${r.rank}`)}">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(statsLine(board,r))}</small></span>
     ${scoreBox(board,r)}</li>`;
 }
 

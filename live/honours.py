@@ -15,6 +15,8 @@ and on a player's card. Never sent by a client; resolved here from the game's ow
 * 👑 Danh hiệu độc bản (game/auction.py): a title won at the auction house, its catalogue id (`dh_mat_trang`), first of
   all (one of a kind). Read from `auction_lots` (status 'sold', kind 'title': a few rows) like the weekly holders, again
   on NOTIFY {op: 'auction_end'}; a database without the table has none.
+* 🌧️ Danh hiệu độc nhất (game/exclusive.py, owner 24/10): given by the admin to one account by name (`ex_cuong_vu`),
+  before everything else. Its holder is read from `accounts` (a row or two) with the weekly holders.
 
 🖼️ The frame a player chose (game/journey.py HF_PICK, owner 18/10 "nhiều khung thì chủ động đổi khung được k"): read
 with the fair titles; a held id goes first, a worn title's id (`t_…`) leads (the client wears it only when `st.t` is
@@ -36,6 +38,7 @@ import time
 from game.fair import AWARDS as FAIR_AWARDS, TITLE_ROWS as FAIR_ROWS
 from game.lb_titles import honour, tier_of
 from game.auction_content import ITEMS as UQ_ITEMS
+from game import exclusive
 
 from .auth import pid_of
 from .db import Error as DbError, log
@@ -73,6 +76,7 @@ class Honours:
         self.lb: dict = {}              # sid -> [lb ids, best first]
         self.lb_at = -1e18              # monotonic of the last read
         self.uq: dict = {}              # sid -> [auction title ids] (👑 game/auction.py)
+        self.ex: dict = {}              # sid -> [exclusive honour ids] (🌧️ game/exclusive.py)
         self.off_until = 0.0
 
     # ---- invalidation (NOTIFY) -------------------------------------------------------------------------------
@@ -113,6 +117,11 @@ class Honours:
             if r['item'] in UQ_TITLES:
                 uq.setdefault(r['winner_sid'], []).append(r['item'])
         self.uq = uq
+        try:   # 🌧️ the exclusive honours' holders (game/exclusive.py: accounts by username)
+            sql, args = exclusive.ids_sql()
+            self.ex = exclusive.from_rows(await self.app.db.fetch(sql, args)) if exclusive.EXCLUSIVE else {}
+        except DbError as e:
+            log('honours ex:', type(e).__name__)
 
     def _race(self) -> dict:
         wed = self.app.by_name.get('wedding') if hasattr(self.app, 'by_name') else None
@@ -171,7 +180,7 @@ class Honours:
         for pid in ids:
             hit = self.rows.get(pid)
             sid, fair, hf = (hit[1], hit[2], hit[3]) if hit else (None, (), None)
-            got = (list(self.uq.get(sid, ())) + list(self.lb.get(sid, ()))) if sid else []
+            got = (list(self.ex.get(sid, ())) + list(self.uq.get(sid, ())) + list(self.lb.get(sid, ()))) if sid else []
             r = race.get(pid)
             awards = [x for x in fair if x in FAIR_AWARDS]
             got += awards + ([r] if r in RACE else []) + [x for x in fair if x not in FAIR_AWARDS]

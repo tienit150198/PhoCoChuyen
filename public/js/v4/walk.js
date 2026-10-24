@@ -57,7 +57,8 @@ import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scen
 import * as feast from './wedfeast.js';
 import {paint as stPaint,nameAttrs as stName} from './style-tag.js';   // 🎨 name colour / frame of the week (`st`, live/styles.py)
 import {chips as hnChips,titles as hnTitles,icons as hnIcons} from './honours.js';
-import {avatar as hfAvatar} from './honour-frames.js';   // 🖼️ a top title's avatar frame (owner 18/10)   // 🏅 `tt`: every honour title held now (live/honours.py)
+import {exPill,exRain,exInk} from './exclusive.js';   // 🌧️ the name tag of an exclusive honour's frame
+import {avatar as hfAvatar,pick as hfPick} from './honour-frames.js';   // 🖼️ a top title's avatar frame (owner 18/10)   // 🏅 `tt`: every honour title held now (live/honours.py)
 import {choice,next as nextRide,canRide,label as rideLabel,wire,fromWire,drawRide,rider,steer,topOf,spouse as spouseOf,loadSpouse,canFly,flying,toggleFly,flyLabel,FLY_TOAST} from './ride.js';
 // 👶 the baby in a stroller's arms (`bb`, live/babies.py; v4/baby.js)
 import * as BB from './baby.js';
@@ -847,7 +848,7 @@ function draw(ts,t){
   for(const p of list){
     if(p.parked)continue;
     const top=p.on?sy(p.on.y-topOf(p.on.ride||{})*AV)-30:sy(p.y-(p.ride&&!p.s?topOf(p.ride):132+(p.lift||0))*AV)-4,wed=pids?.includes(p.pid)?(p.g==='female'?'f':p.g==='male'?'m':'x'):null;
-    tag(c,tagX.get(p.pid)??sx(p.x),top,p.name,p.ti,p.pid===myPid,dark,wed,p.st);
+    tag(c,tagX.get(p.pid)??sx(p.x),top,p.name,p.ti,p.pid===myPid,dark,wed,p.st,exWorn(p));
     let above=top-(wed?(p.ti?36:24):p.ti?30:20);
     if(p.bub){const age=now-p.bub.t0;if(age>BUBBLE_MS)p.bub=null;else above=bubble(c,sx(p.x),above,p.bub.text,age>BUBBLE_MS-500?(BUBBLE_MS-age)/500:1,dark)-4;}
     if(p.emo){const age=now-p.emo.t0;if(age>EMO_MS)p.emo=null;else if(p.emo.cheers)cheers(c,sx(p.x),above,age);else{c.globalAlpha=Math.min(1,(EMO_MS-age)/600);c.font='26px serif';c.textAlign='center';c.textBaseline='bottom';c.fillText(p.emo.e,sx(p.x),above-age/90);c.globalAlpha=1;}}
@@ -900,7 +901,9 @@ const WIDTHS=new Map();
 function textW(c,font,text){const key=font+'|'+text;let w=WIDTHS.get(key);if(w==null){c.font=font;w=c.measureText(text).width;WIDTHS.set(key,w);if(WIDTHS.size>600)WIDTHS.delete(WIDTHS.keys().next().value);}return w;}
 /** A name tag above someone. wed: the bride ('f'), the groom ('m') or either ('x') at their wedding: a bigger gold and
  * rose pill with 👰/🤵, the same on light and dark (dark text on a light pill). */
-function tag(c,x,y,name,title,mine,dark,wed,st=null){
+/** 🌧️ Wears an exclusive honour's frame ("Mưa rơi", game/exclusive.py): its name tag rains (memo per tt / st). */
+function exWorn(p){if(p._exT!==p.tt||p._exS!==p.st){p._exT=p.tt;p._exS=p.st;p._ex=Boolean(p.tt&&hfPick(p.tt,p.st)?.ex);}return p._ex;}
+function tag(c,x,y,name,title,mine,dark,wed,st=null,ex=false){
   c.textAlign='center';c.textBaseline='bottom';
   if(wed){
     const label=`${wed==='f'?'👰':wed==='m'?'🤵':'💍'} ${name}`;
@@ -916,6 +919,12 @@ function tag(c,x,y,name,title,mine,dark,wed,st=null){
   }
   const nw=textW(c,'700 11.5px "Trebuchet MS",sans-serif',name),tw=title?textW(c,'600 9.5px "Trebuchet MS",sans-serif',title):0;
   const w=Math.max(nw,tw)+12,hgt=title?28:17,sp=st?stPaint(S.env?.api,st,dark):null;
+  if(ex){   // 🌧️ Mưa rơi: a glass pill with rain falling in it (./exclusive.js)
+    const x0=x-w/2,y0=y-hgt,ink=exInk(c,x-nw/2,x+nw/2,dark);exPill(c,x0,y0,w,hgt,dark);exRain(c,x0,y0,w,hgt,performance.now()/1000,dark);
+    c.textAlign='center';c.textBaseline='bottom';c.font='700 11.5px "Trebuchet MS",sans-serif';c.fillStyle=ink.name;c.fillText(name,x,y-(title?13:2.5));
+    if(title){c.font='600 9.5px "Trebuchet MS",sans-serif';c.fillStyle=ink.title;c.fillText(title,x,y-2);}
+    return;
+  }
   c.fillStyle=dark?'rgba(24,24,34,.78)':'rgba(255,253,248,.86)';c.beginPath();c.roundRect(x-w/2,y-hgt,w,hgt,8);c.fill();
   if(sp?.ring){c.strokeStyle=sp.ring;c.lineWidth=2;c.stroke();}   // 🎨 a frame of the week: the pill's border
   let fill=mine?(dark?'#ff9b7d':'#b8432c'):(dark?'#f1ede6':'#4a3b35');

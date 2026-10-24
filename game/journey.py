@@ -411,7 +411,9 @@ ROW_MAX = 10**7       # validate(): one Sổ ví row's |amount| (every release),
 # 🆓 k_<n>: an everyday frame anyone may wear (owner 18/10 "cho người ta chọn khung mặc định nữa nhé, nếu k muốn thì bỏ đi").
 HF_PICK = 'hf_pick'
 FREE_FRAMES = ('01', '02', '05', '19', '22', '23', '24')   # public/js/v4/honour-frames.js FREE
-HF_PICK_RE = re.compile(r'off|lb_[a-z][a-z0-9_]{0,39}_(?:[1-9]|10)|dh_[a-z0-9_]{1,40}|t_[a-z0-9_]{1,40}|k_(?:' + '|'.join(FREE_FRAMES) + ')')
+# 🌧️ ex_<name>: an exclusive honour's frame (game/exclusive.py): allowed in a save, worn by its holder only (check_pick
+# refuses jr_frame to anybody else; live/honours.py never sends it for anybody else).
+HF_PICK_RE = re.compile(r'off|lb_[a-z][a-z0-9_]{0,39}_(?:[1-9]|10)|dh_[a-z0-9_]{1,40}|ex_[a-z0-9_]{1,40}|t_[a-z0-9_]{1,40}|k_(?:' + '|'.join(FREE_FRAMES) + ')')
 
 
 def withdraw_max(c: dict, j: dict | None = None) -> int:

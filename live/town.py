@@ -48,7 +48,7 @@ from pathlib import Path
 from game.content import CAREERS
 from game.garage import VEHICLES as GARAGE   # 🚗 the ids a town ride may name
 from game.wings_content import FLY_FAST   # 🪽 a flyer's speed by tier
-from . import bangs, charms, faces, wings
+from . import bangs, charms, faces, honours, wings
 from . import fish_carry
 from .auth import pid_of
 from .protocol import Feature, LiveError, on
@@ -270,6 +270,7 @@ class Walker:
         self.wg = None   # 🪽 the wing worn {k, r} (live/wings.py)
         self.fl = None   # 🪽 flying: the tier of the wings worn, else None
         self.fh = None   # 🎣 the fish carried (live/fish_carry.py)
+        self.tt = None   # 🌧️ the honour ids held (live/honours.py): the town's name tag shows an exclusive one
 
     def public(self):
         out = dict(pid=self.pid, name=self.player.name or 'Mây', lk=self.look, g=self.gender,
@@ -290,6 +291,8 @@ class Walker:
             out['fl'] = self.fl
         if self.fh:
             out['fh'] = dict(self.fh)
+        if self.tt:
+            out['tt'] = list(self.tt)
         return out
 
 
@@ -435,6 +438,7 @@ class TownFeature(ScaleSites, TownSocial, Feature):
         w.bg = await bangs.of_app(self.app).one(w.pid)   # ⚔️ once per entry, never per move
         w.pr = await charms.of_app(self.app).one(conn.player)   # 🤝 likewise
         w.wg = await wings.of_app(self.app).one(conn.player)   # 🪽 likewise
+        w.tt = await honours.of_app(self.app).one(w.pid) or None   # 🌧️ likewise (cached; read from the game's records)
         w.fh = fh
         if f.get('fl') is True and w.wg and activity is None:   # 🪽 in flight: a road vehicle stays home
             w.fl = w.wg['r']

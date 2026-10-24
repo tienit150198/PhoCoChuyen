@@ -49,7 +49,7 @@ test('the worn wing of a save, on the character, the portraits and a walker',()=
 
 test('walkers bring their wings on both maps, the workplace scene flaps them',()=>{
   const src=readFileSync(new URL('../public/js/isometric-town.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
-  const ctx=vm.createContext({withPairs,cleanPairs,withWings,cleanWing,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',publicActivity:()=>null,sitePresence:{},live:{},leisurePresence:{}});
+  const ctx=vm.createContext({withPairs,cleanPairs,withWings,cleanWing,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',exTownTag:()=>null,badge:()=>'',publicActivity:()=>null,sitePresence:{},live:{},leisurePresence:{}});
   vm.runInContext(src+'\nglobalThis.peer=publicPeer;',ctx);
   const p=ctx.peer({pid:'p1',x:1,y:2,lk:{top:'ao_quen'},wg:{k:'thien_than',r:7}});
   assert.deepEqual(JSON.parse(JSON.stringify(p.look)),{top:'ao_quen',wg:{k:'thien_than',r:7}});

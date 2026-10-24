@@ -13,6 +13,15 @@
 - Chi phí: khởi động phải chạy lại từ WILD_TICK (≈ 0,4–1 s CPU mỗi tháng tuổi sàn), RAM ≈ 15 MB/năm.
 - Tests: tests/test_market_wild.py; scripts/browser_market_wild.py (390x844).
 
+# 2.6.6.1 — 24/10/2026
+
+Danh hiệu độc nhất (chủ game 24/10: "cho mnt2410 cái khung mưa rơi đi, xong rồi cái danh hiệu Cuồng Vũ Tán Tiên. làm độc nhất nhé"). Không đổi schema, không có "Có gì mới". Ghi chú nội bộ: không thông báo ở đâu cả (không tin phố, không chat thế giới, không báo "mở khoá" cho người khác); chỉ chủ nhân thấy trong mục Danh hiệu của mình, người khác chỉ thấy bên tên.
+
+- 🌧️ Cơ chế danh hiệu độc nhất `ex_*` (`game/exclusive.py`): admin tặng theo tên đăng nhập, tra bảng `accounts` lúc chạy (chỉ tài khoản tạo trước ngày tặng, nên tên đăng ký lại sau khi bị xoá không nhận được). Không lưu vào save, không đổi schema.
+- 👑 "Cuồng Vũ Tán Tiên" (`ex_cuong_vu`) cho `mnt2410`: luôn hiện đầu tiên bên tên (chat, thẻ người chơi, Đi dạo, hồ câu, phố 2.5D, bảng xếp hạng, hồ sơ), chip mưa lấp lánh, ghi "Độc nhất".
+- 💧 Khung "Mưa rơi": vòng kính xanh tím, mưa rơi, gợn nước, lấp lánh, mây và chiếc ô; đứng yên khi giảm chuyển động; bong bóng chat mưa; nhãn tên có mưa ở Đi dạo và hồ câu. Chọn ở Hành trình → Danh hiệu → Khung (tự chọn thì khung này đứng đầu), "Không đeo" hoặc khung khác để tháo.
+- 🔒 Người khác không đeo được: lệnh `jr_frame` với id `ex_*` không giữ bị từ chối (mã `not_yours`, lưu bị huỷ); máy chủ chỉ gửi id `ex_*` cho đúng người giữ; giao diện bỏ qua id lạ.
+
 # 2.6.6 — 24/10/2026
 
 Gộp 2 nhánh: hồ câu (chủ game 24/10: "bị mất cái cánh", hồ đông cần kéo ngang, thanh kéo cá, "cần xịn thì nhìn khác đi", "cá to thì nhìn to thật"; góp ý #515) và 🐱 Mèo Mai (chủ game: "trong danh sách thú thêm con mèo này nhé, tên Mai, bán giá cao cao chút"). Không đổi schema. Có "Có gì mới".

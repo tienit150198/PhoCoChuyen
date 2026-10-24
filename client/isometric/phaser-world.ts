@@ -1167,7 +1167,7 @@ class DioramaScene extends Phaser.Scene {
     for(const peer of peers){
       const appearance=JSON.stringify([peer.gender,peer.look]);
       let actor=this.remoteActors.get(peer.pid);
-      if(!actor){const image=this.add.image(0,0,'__DEFAULT').setOrigin(.5,1).setScale(CHARACTER_SCALE).setVisible(false),tag=this.add.text(0,0,nameTag(peer),{fontFamily:FONT,fontSize:'13px',color:peer.ink||'#654a39',backgroundColor:'#fff3da',padding:{x:6,y:3},align:'center'}).setOrigin(.5,1).setVisible(false);actor={peer,look:{...defaultLook(peer.gender),...peer.look},appearance,pose:'',artRevision:-1,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:''};this.remoteActors.set(peer.pid,actor);}
+      if(!actor){const image=this.add.image(0,0,'__DEFAULT').setOrigin(.5,1).setScale(CHARACTER_SCALE).setVisible(false),tag=this.add.text(0,0,nameTag(peer),{fontFamily:FONT,fontSize:'13px',color:peer.ink||'#654a39',backgroundColor:peer.tb||'#fff3da',padding:{x:6,y:3},align:'center'}).setOrigin(.5,1).setVisible(false);actor={peer,look:{...defaultLook(peer.gender),...peer.look},appearance,pose:'',artRevision:-1,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:''};this.remoteActors.set(peer.pid,actor);}
       else{
         if(actor.appearance!==appearance){actor.look={...defaultLook(peer.gender),...peer.look};actor.appearance=appearance;actor.pose='';}
         if(Math.hypot(actor.peer.x-peer.x,actor.peer.y-peer.y)>1e-5){
@@ -1179,7 +1179,7 @@ class DioramaScene extends Phaser.Scene {
           actor.from={...actor.at};actor.path=this.owner.reduced?[]:air?airRoute(this.navigation,actor.at,peer):findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};
           actor.down=air&&peer.fl==null&&actor.path.length>0;   // gliding down: still above the roofs until it lands
         }
-        if(nameTag(actor.peer)!==nameTag(peer)||actor.peer.ink!==peer.ink){actor.tag.setText(nameTag(peer)).setColor(peer.ink||'#654a39');if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
+        if(nameTag(actor.peer)!==nameTag(peer)||actor.peer.ink!==peer.ink||actor.peer.tb!==peer.tb){actor.tag.setText(nameTag(peer)).setColor(peer.ink||'#654a39').setBackgroundColor(peer.tb||'#fff3da');if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
       }
       // 🚗 a two-wheeler or car under them (a yacht/plane waits at the harbour/airfield: refreshVehicles)
       // 🪽 flying (`fl`: the tier, only with wings on): never on a vehicle

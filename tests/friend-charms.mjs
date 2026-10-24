@@ -59,7 +59,7 @@ test('the 2.5D chibi: its stamp key carries the pairs, the cozy portrait marker 
 
 test('a peer on the 2.5D map: pr beside the look, a later switch, and an outfit change keeps it',()=>{
   const src=readFileSync(new URL('../public/js/isometric-town.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
-  const ctx=vm.createContext({withPairs,cleanPairs,withWings,cleanWing,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',publicActivity:()=>null,sitePresence:{},live:{},leisurePresence:{}});
+  const ctx=vm.createContext({withPairs,cleanPairs,withWings,cleanWing,lookOf,withBang:x=>x,tagLine:()=>'',tagInk:()=>'',exTownTag:()=>null,badge:()=>'',publicActivity:()=>null,sitePresence:{},live:{},leisurePresence:{}});
   vm.runInContext(src+'\nglobalThis.peer=publicPeer;',ctx);
   const p=ctx.peer({pid:'p1',x:1,y:2,lk:{top:'ao_quen'},pr:{chi_cot:1,x:1}});
   assert.deepEqual(JSON.parse(JSON.stringify(p.look)),{top:'ao_quen',pr:{chi_cot:1}});
