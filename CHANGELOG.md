@@ -1,3 +1,13 @@
+# 2.6.3 — 24/10/2026
+
+🎣 Giật cá dễ hơn (fix/fish-hook; chủ game 24/10: "cách giật đang khó quá" → chọn "Giật dễ hơn"). Không đổi schema. Có gì mới 2.6.3.
+
+- Cửa sổ giật 3 giây (trước 1,4 s), cần xịn giữ lâu hơn: tre 3 s, trúc 3,1, carbon 3,25, biển 3,4, vàng 3,6, bạch kim 3,8, Long Vương 4 s; mồi cộng thêm (tôm +0,1, mồi giả / phát sáng +0,2, huyền thoại +0,3). Quầy bán cần ghi "⏱️ Giật …s".
+- Lúc cá cắn: chữ "Giật!" to nhấp nháy, rung mạnh hơn, vòng sáng quanh phao co lại theo số giây còn lại (kèm số giây) và thanh đếm ngược trong nút Giật.
+- Bấm lúc cá mới rỉa không mất cá: "Chưa cắn đâu, chờ chút…", lượt vẫn tiếp; tha 3 lần, lần thứ 4 cá sợ bỏ đi. Lượt rỉa mồi (không có cá cắn) bấm vẫn hết lượt như cũ.
+- Mạng chậm / save nặng (journal 1,5–2 s một lệnh) không còn bị "Chậm tay": máy gửi kèm số ms từ lúc hiện cá cắn tới lúc chạm (performance.now()), server xét theo cửa sổ của cần; giờ server nhận chỉ để chặn (không trước lúc cắn − 0,25 s, không quá cửa sổ + 8 s). Bản cũ chưa tải lại vẫn chấm theo giờ nhận như trước. Kéo cá (jr_fish_land) vốn tính từ lúc server nhận lệnh giật nên lag chỉ cộng thêm thời gian: giữ nguyên.
+- Kinh tế: mô hình giật trúng 95–96 % (trước 90 %), thu nhập mỗi giờ +4–6 %, hoàn vốn cần 40–49 giờ. Mồi huyền thoại 50.000 → 55.000 xu (vẫn ≈85 % phần nó thêm).
+
 # 2.6.2 — 24/10/2026
 
 🎣 Câu cá (feat/fishing a4168179 + d6966f52; chủ game 24/10). Schema 93 (fish_best, fish_dex, fish_rec: chỉ thêm bảng và index). Có gì mới 2.6.2.

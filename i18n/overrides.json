@@ -1,5 +1,12 @@
 {
   "strings": {
+    "Giật cá dễ hơn: 3 giây để giật, có vòng đếm ngược; bấm lúc cá rỉa không mất cá": "Easier fishing: 3 seconds to yank with a countdown ring; tapping while a fish nibbles no longer loses it",
+    "Mạng chậm không còn bị tính chậm tay": "A slow connection no longer counts as a slow yank",
+    "Chưa cắn đâu, chờ chút…": "Not biting yet, hang on…",
+    "Chưa cắn đâu! Giật nữa là cá sợ chạy đó.": "Not biting yet! Yank again and the fish will flee.",
+    "Chạm Giật trước khi vòng sáng tắt!": "Tap Yank before the glowing ring runs out!",
+    "❗ Giật!": "❗ Yank!",
+    "⏱️ Giật +": "⏱️ Yank +",
     "Câu cá: giữ để lấy lực, quăng xa ra cá to, giật đúng lúc rồi kéo cho khéo!": "Fishing: hold to power up, cast far for big fish, strike on time and reel in with care!",
     "Sổ cá 122 loài, 7 độ hiếm, có cả cá Huyền thoại và Cổ đại": "A fish book of 122 species in 7 rarities, Legendary and Ancient included",
     "7 cây cần từ cần tre tới Long Vương, 5 loại mồi; câu cá kiếm xu thật": "7 rods from bamboo to Dragon King, 5 baits; fishing earns real xu",
@@ -46389,6 +46396,7 @@
     "Đỡ một quả bóng bổng, đẹp mắt!": "A beautiful dig!"
   },
   "patterns": {
+    "⏱️ Giật $1": "⏱️ Yank $1",
     "🎣 $1 vừa câu được $2 $3 $4 ở $5! Cả phố trầm trồ!": "🎣 $1 just caught $2 $3 $4 at $5! The whole town is cheering!",
     "Giỏ đầy rồi ($1 con)! Bán bớt ở 🐟 Quầy thu mua nhé.": "The basket is full ($1 fish)! Sell some at the 🐟 Fish Market.",
     "💥 Phựt! Đứt dây rồi.$1": "💥 Snap! The line broke.$1",

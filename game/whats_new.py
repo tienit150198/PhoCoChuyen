@@ -39,6 +39,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.3", date="2026-10-24", items=(   # owner 24/10: "cách giật đang khó quá" → "Giật dễ hơn"
+        dict(emoji='🎣', text="Giật cá dễ hơn: 3 giây để giật, có vòng đếm ngược; bấm lúc cá rỉa không mất cá", go=dict(action='fishing')),
+        dict(emoji='📶', text="Mạng chậm không còn bị tính chậm tay"),
+    )),
     dict(version="2.6.2", date="2026-10-24", items=(   # owner 24/10: "phát triển thành bộ sưu tập cá, rồi mua cần câu cá … cá chia nhiều loại … tới huyền thoại, cổ đại", "bảng xếp hạng cá lớn nhất và bộ sưu tập cá", "chợ cá … bị trả giá"
         dict(emoji='🎣', text="Câu cá: giữ để lấy lực, quăng xa ra cá to, giật đúng lúc rồi kéo cho khéo!", go=dict(action='fishing')),
         dict(emoji='📖', text="Sổ cá 122 loài, 7 độ hiếm, có cả cá Huyền thoại và Cổ đại", go=dict(action='fishing')),
