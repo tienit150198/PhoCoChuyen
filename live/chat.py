@@ -33,6 +33,8 @@ Frames (client → server; replies in brackets)
   hide {id}                                 [hid {ch, id} to my tabs]                   🗑️ when welcome.flags.chatdel
   clear {chs: [ch, ...]}                    [cleared {chs: {ch: upto}} to my tabs]
   blocks {}                                 [blocks {list: [{pid, name, av, fc?}]}]     🚫 when welcome.flags.blocks
+  note {text}  ('' clears)                  [noted {pid, nt} to my tabs and my online friends]   💭 when `me` has `nt`
+  note_report {pid, reason}                 [note_reported {pid}]                               (live/notes.py)
 Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts, quiet, faced.
 
 Replies store only a source ID. Each output resolves it to reply={id,pid,name,text} (160 characters), or
@@ -102,6 +104,7 @@ from . import filters
 from . import chat_reply
 from . import honours
 from . import bangs
+from . import notes as notemod
 from . import player_names
 from . import styles
 from .auth import pid_of, profile
@@ -354,6 +357,7 @@ class ChatFeature(Feature):
         p.friends = {pid_of(r['sid']): dict(sid=r['sid'], name=clean_name(r['name']) or 'Một người chơi',
                                             av=r['av'] if r['av'] in AVATARS else '🌸') for r in rows}
         await self.faces_of(p.friends)
+        await notemod.of_app(self.app).rows_of([p.pid, *p.friends])   # 💭 their notes (friend_list reads the cache)
 
     async def load_hidden(self, p) -> None:
         a = await self.db.fetch('SELECT target AS x FROM blocks WHERE pid=? UNION SELECT pid AS x FROM blocks WHERE target=?', (p.pid, p.pid))
@@ -395,6 +399,7 @@ class ChatFeature(Feature):
                 peers[r['channel']] = dict(pid=r['pid'], name=clean_name(r['display']) or clean_name(r['gname']) or 'Một người chơi',
                                            av=r['avatar'] if r['avatar'] in AVATARS else '🌸', friend=r['pid'] in p.friends)
         fx = await self.faces_of([x['pid'] for x in peers.values()])
+        nx = await notemod.of_app(self.app).for_viewer(p, [x['pid'] for x in peers.values()])   # 💭 the peers' notes
         out = []
         for r in rows:
             c = dict(id=r['id'], kind=r['kind'], title=r['title'], unread=unread.get(r['id'], 0), read=int(r['last_read']))
@@ -406,6 +411,8 @@ class ChatFeature(Feature):
                 c['peer'] = peers[r['id']]
                 if fx.get(c['peer']['pid']):
                     c['peer']['fc'] = fx[c['peer']['pid']]
+                if nx.get(c['peer']['pid']):
+                    c['peer']['nt'] = nx[c['peer']['pid']]
                 c['peer']['on'] = p.show_online and self.hub.visible(c['peer']['pid'])
             m = last.get(r['id'])
             if m and m['hidden'] == 0 and m['pid'] not in p.hidden:
@@ -423,6 +430,9 @@ class ChatFeature(Feature):
                 f = dict(pid=k, name=v['name'], av=v['av'], on=bool(p.show_online and self.hub.visible(k)))
                 if self.faces.get(k):   # filled by load_friends, kept current by `face`
                     f['fc'] = self.faces[k]
+                nt = self._note_cached(k, p)   # 💭 filled by load_friends, kept current by `note`
+                if nt:
+                    f['nt'] = nt
                 out.append(f)
         return out
 
@@ -465,6 +475,7 @@ class ChatFeature(Feature):
         if self.del_ok and 'hides' not in p.ext:   # 🗑️ ever deleted a message on their side? (else no lookups per page)
             p.ext['hides'] = bool(await self.db.fetchval('SELECT 1 FROM chat_hides WHERE pid=? LIMIT 1', (p.pid,)))
         await self.fit_face(p)   # the profile emoji may have changed since (read again at every connect)
+        await notemod.of_app(self.app).rows_of([p.pid])   # 💭 my note for `me` (cached after the first read)
         fc = conn.ext.pop('fc', None)
         if fc is not None:   # a client of this release: the face it wears now (an older one keeps the stored face)
             code = facemod.clean(fc, p.av)
@@ -493,7 +504,70 @@ class ChatFeature(Feature):
                    wait=round(wait, 1), muted=round(p.muted_until, 1) if p.muted_until > time.time() and not adm else 0)
         if adm:
             out['adm'] = 1
+        if notemod.of_app(self.app).on:   # 💭 my note ({t, at} or null); absent: this service has no notes yet
+            out['nt'] = self._note_cached(p.pid, p)
         return out
+
+    # ---- 💭 notes (live/notes.py) ------------------------------------------------------------------------------
+    def _note_cached(self, pid: str, viewer) -> dict | None:
+        nm = notemod.of_app(self.app)
+        row = nm.rows.get(pid)
+        nt = notemod.public(row)
+        return nt if nt and nm.can_see(row, pid, viewer) else None
+
+    def announce_note(self, p, nt, skip_conn=None) -> None:
+        """`noted {pid, nt}` to my other tabs and my online friends (a hidden player's note goes to friends anyway)."""
+        conns = {c for c in p.conns if c.ready}
+        for pid in p.friends:
+            o = self.hub.players.get(pid)
+            if o:
+                conns |= {c for c in o.conns if c.ready}
+        conns = [c for c in conns if c is not skip_conn and c.player.pid not in p.hidden and p.pid not in c.player.hidden]
+        self.hub.send_many(conns, dict(t='noted', pid=p.pid, nt=nt))
+
+    @on('note', rate=(6, 60))
+    async def note(self, conn, f):
+        """💭 Set my note (one line, at most 60 characters, 24 h) or clear it (text '')."""
+        p = conn.player
+        nm = notemod.of_app(self.app)
+        if not nm.on:
+            raise LiveError('off', 'Ghi chú đang tạm nghỉ, thử lại sau nhé.')
+        got = notemod.clean(f.get('text'))
+        if got is None:
+            raise LiveError('text', f'Ghi chú từ 1 đến {notemod.LEN} ký tự, một dòng nhé.')
+        text, raw = got
+        if text:
+            if not p.account:
+                raise LiveError('account', 'Tạo tài khoản để viết ghi chú nhé.')
+            if p.muted_until > time.time() and not self.is_admin(p):
+                raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
+        try:
+            nt = await nm.store(p, text, raw)
+        except DbError as e:
+            nm._off(e)
+            raise LiveError('off', 'Ghi chú đang tạm nghỉ, thử lại sau nhé.')
+        self.announce_note(p, nt, skip_conn=conn)
+        return dict(t='noted', pid=p.pid, nt=nt)
+
+    @on('note_report', rate=(10, 60))
+    async def note_report(self, conn, f):
+        p, pid, reason = conn.player, f.get('pid'), f.get('reason', 'other')
+        if not isinstance(pid, str) or not PID.fullmatch(pid) or pid == p.pid or reason not in REASONS:
+            raise LiveError('bad', 'Báo cáo không hợp lệ.')
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để báo cáo nhé.')
+        nm = notemod.of_app(self.app)
+        try:
+            hid = await nm.report(p, pid, reason)
+        except DbError as e:
+            nm._off(e)
+            raise LiveError('off', 'Chưa gửi được, thử lại sau nhé.')
+        if hid:
+            o = self.hub.players.get(pid)
+            if o:
+                self.announce_note(o, None)
+            self.hub.send_many([c for c in p.conns if c.ready], dict(t='noted', pid=pid, nt=None))
+        return dict(t='note_reported', pid=pid)
 
     def on_gone(self, player):
         pass
@@ -1174,6 +1248,7 @@ class ChatFeature(Feature):
         await self.db.execute('INSERT INTO chat_prefs(pid, online, updated) VALUES(?, ?, ?) '
                               'ON CONFLICT(pid) DO UPDATE SET online=excluded.online, updated=excluded.updated', (p.pid, int(online), time.time()))
         self.hub.set_visible(p, online)
+        await notemod.of_app(self.app).set_pub(p)   # 💭 a hidden player's note: friends only
         self.hub.send_many([x for x in p.conns if x.ready], dict(t='prefs', online=online))
         if online:   # back in sight: the friends who are online now
             self.hub.send_many([x for x in p.conns if x.ready], dict(t='state', friends=self.friend_list(p)))
@@ -1493,6 +1568,7 @@ class ChatFeature(Feature):
             self.reply_epoch += 1
             self.names.put(e['pid'], '')
             self.faces.put(e['pid'], '')
+            notemod.of_app(self.app).forget(e['pid'])   # 💭 the note row went with the data
             # Account erasure emits this event: invalidate existing quotes on every open screen,
             # while new pages always re-read the source's deleted flag from the database.
             self.hub.send_many([c for c in self.hub.conns if c.ready], dict(t='reply_hidden', pid=e['pid']))
@@ -1563,6 +1639,7 @@ class ChatFeature(Feature):
             await self.sync_pin()
         if not self.del_ok and now >= self._del_at:   # 🗑️ the game server of SCHEMA_VERSION 13 may have started since
             await self.check_del()
+        await notemod.of_app(self.app).prune(now)   # 💭 notes past their 24 h
 
     async def prune_town(self, keep: int = TOWN_KEEP) -> int:
         """Move Cả phố messages older than the newest `keep` to chat_archive (owner 17/10; deleted outright 01/10–17/10;

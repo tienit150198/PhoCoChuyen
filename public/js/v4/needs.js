@@ -70,6 +70,14 @@ function bedLine(b){
   return `<b>${esc(b.text)}</b><span>Sáng mai tỉnh táo ${b.wake}</span>${sp}`;
 }
 
+/** 🍳 Vào bếp (game/home_cook.py, feedback #485): the evening's cooking game, or what was cooked tonight. An older
+ * server sends no `cook`: nothing shows. */
+function cookEntry(E){
+  const C=E?.cook;if(!C)return '';
+  if(C.done)return `<div class="nd-cook done" role="status"><span aria-hidden="true">${C.done.emoji}</span><span class="grow"><b>Tối nay tự nấu: ${esc(C.done.name)}</b><small>${'★'.repeat(C.done.stars)}${'☆'.repeat(3-C.done.stars)} ${esc(C.done.word||'')}</small></span></div>`;
+  if(!C.ok)return C.why==='Chỗ ở chưa có bếp riêng'?'<p class="nd-cook-off">🍳 Thuê phòng trọ hoặc có nhà là tự nấu cơm tối được.</p>':'';
+  return `<button type="button" class="nd-cook" data-action="ndCook"><span aria-hidden="true">👩‍🍳</span><span class="grow"><b>Vào bếp nấu cơm tối</b><small>Chọn món, đi chợ, nấu, nêm. Ngon thì thêm tinh thần.</small></span><i>Nấu ›</i></button>`;
+}
 /** The evening sheet's body and foot (the caller adds the header). `start`: the "Bắt đầu ngày N" button. */
 export function eveningBody(N,pick,{start='',wallet=0}={}){
   const E=N?.evening;if(!E)return '';
@@ -88,7 +96,7 @@ export function eveningBody(N,pick,{start='',wallet=0}={}){
     return `<button type="button" role="radio" aria-checked="${on}" class="nd-bed${on?' on':''}" data-action="ndBed" data-bed="${b.bed}"${b.ok?'':' disabled'}><b>${esc(b.time)}</b><small>${b.ok?esc(b.text):'Ăn chưa xong'}</small></button>`;
   }).join('');
   const usual=`<button type="button" class="nd-usual" data-action="ndUsual"><span aria-hidden="true">🌙</span><span class="grow"><b>Như mọi khi</b><small><span>${u.emoji} ${esc(u.name)}</span>${u.price?` <i class="nd-price">${fmt(u.price)} xu</i>`:''} · <span>ngủ lúc ${esc(u.time)}</span></small></span><i>Chọn</i></button>`;
-  return `<div class="sheet-body nd-eve">${needBars(N,{wide:true})}${usual}
+  return `<div class="sheet-body nd-eve">${needBars(N,{wide:true})}${cookEntry(E)}${E.cook?.done?'':usual}
     <h3 class="jr-sub">Tối nay ăn gì?</h3><div class="lf-choices nd-meals" role="radiogroup" aria-label="Bữa tối">${meals}</div>
     <p class="nd-fine"><span>Cơm nhà đã tính trong tiền cơm nước mỗi ngày, nên không tốn thêm.</span> <span>Ví còn ${fmt(wallet)} xu.</span></p>
     <h3 class="jr-sub">Mấy giờ đi ngủ?</h3><div class="nd-beds" role="radiogroup" aria-label="Giờ đi ngủ">${beds}</div>
@@ -104,6 +112,7 @@ export async function needsAction(action,data,el,env){
     case'ndLunch':{if(el)el.disabled=true;await cmd('jr_needs_lunch',{meal:data.meal});env.renderMain?.();return true;}
     case'ndSnack':{if(el)el.disabled=true;const r=await cmd('jr_needs_snack',{item:data.item});if(el)el.disabled=false;
       env.renderMain?.();if(r&&document.getElementById('sheet')?.open)env.renderSheet?.(false);return true;}
+    case'ndCook':{await (await import('./cook-night.js')).openCook(env);return true;}   // 🍳 lazy
     case'ndMeal':ui.eve={...(ui.eve||{}),meal:data.meal};env.renderSheet(false);return true;
     case'ndBed':ui.eve={...(ui.eve||{}),bed:Number(data.bed)};env.renderSheet(false);return true;
     case'ndEve':case'ndUsual':{

@@ -97,11 +97,25 @@ ITEMS = [
     dict(id='soda', name='Nước ngọt Bọt Biển', emoji='🥤', group='drink', unit='lon', cost=7, start=24),
     dict(id='beer', name='Bia Sông Mây', emoji='🍺', group='drink', unit='lon', cost=11, start=24, age=18),
     dict(id='gas', name='Phiếu đổi bình gas', emoji='🔥', group='supply', unit='phiếu', cost=310, start=2, unlock=2),
+    # 🆕 More goods as the shop grows (feedback #373): locked in the stock room until the career level (inventory
+    # `unlock`), none on the opening shelf. Sold to walk-ins at closing (_walkins) and in the wholesale orders (WS_ACCOUNTS).
+    # Ids are stored in saves: never rename or remove one.
+    dict(id='sugar', name='Đường cát trắng', emoji='🍬', group='goods', unit='gói 1 kg', cost=15, start=0, unlock=3),
+    dict(id='coffee', name='Cà phê gói 3 trong 1', emoji='☕', group='drink', unit='bịch', cost=28, start=0, unlock=4),
+    dict(id='water', name='Bình nước suối 20 lít', emoji='💧', group='drink', unit='bình', cost=14, start=0, unlock=5),
+    dict(id='detergent', name='Bột giặt Mây Thơm', emoji='🫧', group='care', unit='túi', cost=24, start=0, unlock=6),
+    dict(id='cookie', name='Hộp bánh quy bơ', emoji='🍪', group='goods', unit='hộp', cost=30, start=0, unlock=7),
 ]
 ITEM_INDEX = {x['id']: x for x in ITEMS}
 # Price list (per unit; per kg for weighed goods). Players may tune ±25% before a shift.
 PRICES = {'rice': 18, 'egg': 3, 'noodle': 4, 'fishsauce': 35, 'oil': 52, 'milk': 8, 'bread': 5, 'greens': 30,
           'tomato': 25, 'soap': 18, 'snack': 7, 'soda': 10, 'beer': 15, 'gas': 330}
+# The newer goods (feedback #373) keep a fixed list price: they stay out of SPEC['prices'] (life.prices, the tag board),
+# so a save never holds a price key an older build refuses (game/experiences.py validate).
+BASE_PRICES = dict(PRICES)
+NEW_GOODS = ('sugar', 'coffee', 'water', 'detergent', 'cookie')
+PRICES.update(sugar=20, coffee=38, water=20, detergent=32, cookie=42)
+WALK_SAY = {'sugar': 'gói đường', 'coffee': 'bịch cà phê', 'water': 'bình nước', 'detergent': 'túi bột giặt', 'cookie': 'hộp bánh quy'}
 
 PROMOS = [
     dict(id='noodle5', item='noodle', kind='bundle', every=5, free=1, label='Mì Hảo Vị: mua 5 gói tính tiền 4'),
@@ -482,6 +496,7 @@ def on_start(s: dict, c: dict) -> None:
     for key, spec in LISTS.items():
         if _list_for(key, c['day']):
             kit.log(s, c, 'list', f'🧺 Chiều nay {PEOPLE[key][0]} ghé lấy giỏ quen hàng tuần — soạn sẵn trước khi đóng ca.', kit.npc_id(ID, key))
+    _ws_deal(s, c)
     flyer = rival(c['day'])
     if flyer:
         kit.log(s, c, 'rival', 'Tờ rơi Mây Mart hôm nay: ' + ', '.join(f'{ITEM_INDEX[k]["name"]} {v} xu' for k, v in flyer.items()) + '.')
@@ -2431,6 +2446,310 @@ def _pickups(s: dict, c: dict, d: dict) -> list[str]:
     return lines
 
 
+# ---- 📦 wholesale customers (feedback #373: "tạp hóa có thể thêm nhiều món bán và khách sỉ")
+# From career level WS_LEVEL the shop gets pre-orders from wholesale accounts: an order offered in the morning is taken
+# (a deposit) or passed, then delivered on the next day (the due day) from the shelf. Bigger volume, a thinner margin:
+# the price is the standard list less the account's discount. Every account has a trust 0–5: a full delivery on the
+# day +1, a short one −1, a missed one −2 (deposit back); more trust, bigger orders; at 0 the account pauses WS_PAUSE
+# days. All of it lives in data['ws'] (an older build never reads that key).
+WS_LEVEL = 3
+WS_DEPOSIT = 20           # percent of the order paid when it is taken
+WS_PAUSE = 3              # days an account at trust 0 stops ordering
+WS_KEEP = 12              # orders kept (open ones always)
+WS_TRUST = 3
+WS_TRUST_NAMES = ('Ngưng đặt', 'Dè dặt', 'Mới hợp tác', 'Tin', 'Tin cậy', 'Mối ruột')
+WS_SIZE = (60, 80, 100, 100, 115, 130)   # percent of the account's base order, by trust
+WS_OPEN = ('offer', 'taken')
+WS_STATES = ('offer', 'taken', 'done', 'missed', 'skipped', 'expired')
+WS_ACCOUNTS = [
+    dict(id='nhau', name='Quán nhậu Ba Tèo', emoji='🍻', lvl=3, off=8, pay='cash',
+         lines=(('beer', 48), ('soda', 24), ('snack', 12)), say='Mai quán có tiệc, chiều mai giao bia nước giùm anh nha.'),
+    dict(id='cangtin', name='Căng tin trường Hẻm Mây', emoji='🏫', lvl=3, off=10, pay='transfer',
+         lines=(('milk', 36), ('bread', 20), ('snack', 15)), say='Sáng mai giao trước giờ ra chơi nha con, cô chuyển khoản.'),
+    dict(id='banhmi', name='Tiệm bánh mì Cô Hai', emoji='🥖', lvl=4, off=8, pay='cash',
+         lines=(('egg', 60), ('oil', 3), ('sugar', 5), ('fishsauce', 2)), say='Mai cô làm mẻ bánh lớn, giao trứng với đường sớm nghe.'),
+    dict(id='cafe', name='Quán cà phê Gió Chiều', emoji='🧋', lvl=5, off=10, pay='transfer',
+         lines=(('coffee', 10), ('sugar', 10), ('milk', 24), ('water', 6)), say='Đơn hàng tuần của quán, mai em giao, anh chuyển khoản.'),
+    dict(id='congtrinh', name='Đội thợ anh Lực', emoji='👷', lvl=6, off=10, pay='cash',
+         lines=(('water', 10), ('noodle', 40), ('soda', 24), ('detergent', 2)), say='Mai đổ bê tông, giao nước với mì ra công trình giùm anh.'),
+    dict(id='nhatro', name='Dãy trọ bà Tư', emoji='🏘️', lvl=7, off=12, pay='transfer',
+         lines=(('rice', 25), ('detergent', 8), ('soap', 12), ('cookie', 6), ('water', 8)), say='Đồ chung cho cả dãy trọ, mai cháu giao, bà chuyển khoản.'),
+]
+WS_INDEX = {a['id']: a for a in WS_ACCOUNTS}
+WS_KEYS = {'id', 'acc', 'day', 'due', 'lines', 'off', 'value', 'deposit', 'state', 'got', 'paid'}
+
+
+def _ws(c: dict) -> dict:
+    """data['ws'], created on first use (validate_data checks it strictly when present)."""
+    d = _data(c)
+    w = d.get('ws')
+    if not isinstance(w, dict):
+        w = d['ws'] = dict(orders=[], trust={a['id']: WS_TRUST for a in WS_ACCOUNTS}, pause={}, done=0, missed=0, walk=0)
+    for a in WS_ACCOUNTS:   # an account added by a later build
+        w['trust'].setdefault(a['id'], WS_TRUST)
+    return w
+
+
+def _ws_level(c: dict) -> int:
+    return kit.level(c) if type(c.get('xp')) is int else 1
+
+
+def _ws_value(lines: dict, off: int) -> int:
+    return sum(PRICES[k] * q for k, q in lines.items()) * (100 - off) // 100
+
+
+def _ws_order(c: dict, oid) -> dict:
+    kit.need(isinstance(oid, str), 'Không có đơn sỉ này.')
+    o = next((x for x in _ws(c)['orders'] if x['id'] == oid), None)
+    kit.need(o is not None, 'Không có đơn sỉ này.')
+    return o
+
+
+def _ws_deal(s: dict, c: dict) -> list[str]:
+    """Morning: yesterday's open offers lapse, an order never delivered on its day is missed, today's offers come in."""
+    day = c['day']
+    level = _ws_level(c)
+    d = _data(c)
+    if level < WS_LEVEL and 'ws' not in d:
+        return []
+    w = _ws(c)
+    lines = []
+    for o in w['orders']:
+        if o['state'] == 'offer' and o['day'] < day:
+            o['state'] = 'expired'
+        elif o['state'] == 'taken' and o['due'] < day:
+            lines.append(_ws_miss(s, c, o))
+    if level < WS_LEVEL or any(o['day'] == day for o in w['orders']):
+        _ws_trim(w)
+        return lines
+    busy = {o['acc'] for o in w['orders'] if o['state'] in WS_OPEN}
+    pool = [a for a in WS_ACCOUNTS if a['lvl'] <= level and a['id'] not in busy and w['pause'].get(a['id'], 0) <= day]
+    r = kit.rng(ID, 'ws', day)
+    r.shuffle(pool)
+    for a in pool[:1 if level < 6 else 2]:
+        size = WS_SIZE[w['trust'][a['id']]] * r.choice((90, 100, 100, 110))
+        got = {k: max(1, min(60, q * size // 10000)) for k, q in a['lines']}
+        value = _ws_value(got, a['off'])
+        o = dict(id=f'ws-{day}-{a["id"]}', acc=a['id'], day=day, due=day + 1, lines=got, off=a['off'], value=value,
+                 deposit=-(-value * WS_DEPOSIT // 100), state='offer', got={}, paid=0)
+        w['orders'].append(o)
+        lines.append(f'📦 Đơn sỉ mới: {a["emoji"]} {a["name"]} đặt hàng, giao ngày mai ({value} xu). Xem ở 🧺 Giỏ quen.')
+        kit.log(s, c, 'ws', lines[-1])
+    _ws_trim(w)
+    return lines
+
+
+def _ws_trim(w: dict) -> None:
+    keep = [o for o in w['orders'] if o['state'] in WS_OPEN]
+    room = max(0, WS_KEEP - len(keep))
+    old = [o for o in w['orders'] if o['state'] not in WS_OPEN]
+    old = old[len(old) - room:] if room else []
+    w['orders'] = sorted(old + keep, key=lambda o: (o['day'], o['id']))
+
+
+def _ws_trust(c: dict, acc: str, n: int) -> int:
+    """Move an account's trust; at 0 it pauses WS_PAUSE days and comes back at 1. Returns the trust reached (0: paused)."""
+    w = _ws(c)
+    t = max(0, min(5, w['trust'][acc] + n))
+    if t == 0:
+        w['pause'][acc] = c['day'] + WS_PAUSE
+        w['trust'][acc] = 1
+        return 0
+    w['trust'][acc] = t
+    return t
+
+
+def _ws_miss(s: dict, c: dict, o: dict) -> str:
+    a, w = WS_INDEX[o['acc']], _ws(c)
+    refund = min(o['paid'], max(0, c['money']))
+    if refund:
+        kit.money(s, c, -refund, f'Hoàn cọc đơn sỉ không giao: {a["name"]}', o['id'], 'refund')
+        d = _data(c)
+        d['sales'] = max(0, d['sales'] - refund)
+        d['day_sales'] = max(0, d['day_sales'] - refund)
+    o.update(state='missed', paid=o['paid'] - refund)
+    w['missed'] += 1
+    t = _ws_trust(c, o['acc'], -2)
+    line = f'📦 {a["emoji"]} {a["name"]} chờ hàng mà tiệm không giao: hoàn cọc {refund} xu' + (
+        f', mối này ngưng đặt {WS_PAUSE} ngày.' if t == 0 else f' (lòng tin còn “{WS_TRUST_NAMES[t]}”).')
+    kit.log(s, c, 'ws', line)
+    return line
+
+
+def _ws_close(s: dict, c: dict) -> list[str]:
+    """Closing: today's untaken offers lapse; an order due today and not delivered is missed."""
+    if 'ws' not in _data(c):
+        return []
+    lines = []
+    for o in _ws(c)['orders']:
+        if o['state'] == 'offer' and o['day'] <= c['day']:
+            o['state'] = 'expired'
+        elif o['state'] == 'taken' and o['due'] <= c['day']:
+            lines.append(_ws_miss(s, c, o))
+    return lines
+
+
+def _ws_take(s: dict, c: dict, p: dict) -> dict:
+    o = _ws_order(c, p.get('order'))
+    a = WS_INDEX[o['acc']]
+    if o['state'] == 'taken':
+        return dict(message=f'Đã nhận đơn của {a["name"]} rồi. Giao ngày {o["due"]}.')
+    kit.need(o['state'] == 'offer' and o['day'] == c['day'], 'Đơn này đã hết hạn nhận.')
+    o.update(state='taken', paid=o['deposit'])
+    from .. import income_boost as ib
+    with ib.skip():   # 📈 a deposit is not earned yet (a missed order gives it back): its +50% comes on delivery
+        kit.money(s, c, o['deposit'], f'Tiền cọc đơn sỉ: {a["name"]}', o['id'], 'revenue')
+    d = _data(c)
+    d['sales'] += o['deposit']
+    d['day_sales'] += o['deposit']
+    kit.metric(c, 'gr_ws_take')
+    short = [k for k, q in o['lines'].items() if kit.stock(c, k) < q]
+    tip = (' Kho chưa đủ ' + ', '.join(ITEM_INDEX[k]['name'] for k in short[:3]) + ': nhập hôm nay cho kịp.') if short else ' Kho đủ hàng rồi.'
+    return dict(message=f'{a["emoji"]} Nhận đơn của {a["name"]}, cọc {o["deposit"]} xu. Giao ngày mai (ngày {o["due"]}).' + tip, celebrate=True)
+
+
+def _ws_skip(s: dict, c: dict, p: dict) -> dict:
+    o = _ws_order(c, p.get('order'))
+    a = WS_INDEX[o['acc']]
+    if o['state'] in ('skipped', 'expired'):
+        return dict(message='Đã bỏ qua đơn này.')
+    kit.need(o['state'] == 'offer', 'Đơn này đã nhận rồi, không bỏ được.')
+    o['state'] = 'skipped'
+    return dict(message=f'Bạn khéo từ chối đơn của {a["name"]}. Lần sau họ vẫn đặt.')
+
+
+def _ws_deliver(s: dict, c: dict, p: dict) -> dict:
+    o = _ws_order(c, p.get('order'))
+    a, w = WS_INDEX[o['acc']], _ws(c)
+    if o['state'] == 'done':
+        return dict(message=f'Đơn của {a["name"]} đã giao rồi.')
+    kit.need(o['state'] == 'taken', 'Đơn này chưa nhận hoặc đã đóng.')
+    kit.need(c['day'] >= o['due'], f'Hẹn giao ngày {o["due"]}: nhập đủ hàng, tới ngày đó giao nhé.')
+    kit.confirm(p, 'Xác nhận soạn hàng và giao đơn sỉ.')
+    short = {k: q - max(0, _available(c, k, None)) for k, q in o['lines'].items() if _available(c, k, None) < q}
+    if short and p.get('partial') is not True:
+        raise kit.eng().GameError('Chưa đủ hàng: ' + ', '.join(f'thiếu {q} {ITEM_INDEX[k]["unit"]} {ITEM_INDEX[k]["name"]}' for k, q in short.items())
+                                  + '. Nhập thêm ở “Kho & giá” (hỏa tốc có ngay) hoặc giao phần đang có.')
+    got, cost = {}, 0
+    for k, q in o['lines'].items():
+        n = min(q, _available(c, k, None))
+        if n > 0:
+            cost += _take(c, k, n)
+            got[k] = n
+    kit.need(got, 'Kệ không còn món nào của đơn này để giao.')
+    c['life']['consumed_cost'] += cost
+    value = _ws_value(got, o['off'])
+    rest = value - o['paid']
+    kept = min(o['paid'], value)
+    if kept > 0:   # 📈 the deposit kept is earned now: its income boost (booked without one when it was taken)
+        from .. import income_boost as ib
+        ib.on_money(s, c, kept, f'Thu tiền đơn sỉ: {a["name"]}', o['id'], 'revenue')
+    if rest > 0:
+        kit.money(s, c, rest, f'Thu tiền đơn sỉ: {a["name"]}', o['id'], 'revenue')
+        if a['pay'] == 'transfer':
+            kit.bank(rest)
+    elif rest < 0:
+        kit.money(s, c, -min(-rest, max(0, c['money'])), f'Trả lại cọc phần thiếu: {a["name"]}', o['id'], 'refund')
+    d = _data(c)
+    d['sales'] = max(0, d['sales'] + rest)
+    d['day_sales'] = max(0, d['day_sales'] + rest)
+    d['customers'] += 1
+    o.update(state='done', got=got, paid=value)
+    w['done'] += 1
+    missing = sum(short.values())
+    t = _ws_trust(c, o['acc'], -1 if missing else 1)
+    kit.metric(c, 'gr_ws_done')
+    trust = f'ngưng đặt {WS_PAUSE} ngày' if t == 0 else f'lòng tin “{WS_TRUST_NAMES[t]}”'
+    if missing:
+        return dict(message=f'Giao thiếu {missing} món cho {a["name"]}, thu {value} xu ({trust}).', refused=True)
+    return dict(message=f'🚚 Giao đủ đơn cho {a["emoji"]} {a["name"]} · thu {max(0, rest)} xu (tổng {value} xu) · {trust}.', celebrate=True)
+
+
+def _walkins(s: dict, c: dict) -> list[str]:
+    """Closing: walk-ins buy a few of the newer goods on the shelf (unlocked by level, at the shop's own price)."""
+    level, day = _ws_level(c), c['day']
+    sold, total, cost = [], 0, 0
+    for k in NEW_GOODS:
+        it = ITEM_INDEX[k]
+        if it['unlock'] > level:
+            continue
+        n = min(_available(c, k, None), kit.rng(ID, 'walk', day, k).randint(1, 4))
+        if n <= 0:
+            continue
+        cost += _take(c, k, n)
+        total += n * _price(c, k)
+        sold.append(f'{n} {WALK_SAY[k]}')
+    if not total:
+        return []
+    c['life']['consumed_cost'] += cost
+    kit.money(s, c, total, 'Khách lẻ mua hàng mới', f'walk-{day}', 'revenue')
+    d = _data(c)
+    d['sales'] += total
+    d['day_sales'] += total
+    _ws(c)['walk'] += total
+    line = f'🆕 Khách lẻ mua hàng mới: {", ".join(sold)} · +{total} xu.'
+    kit.log(s, c, 'ws', line)
+    return [line]
+
+
+def _ws_view(c: dict) -> dict:
+    """The screen's wholesale book (read only: `c` may be the public view's copy)."""
+    level = _ws_level(c)
+    d = kit.data(c)
+    w = d['ws'] if isinstance(d.get('ws'), dict) else dict(orders=[], trust={}, pause={}, done=0, missed=0, walk=0)
+    rows = []
+    for o in w['orders']:
+        if o['state'] not in WS_OPEN and o['day'] < c['day'] - 1:
+            continue
+        a = WS_INDEX[o['acc']]
+        lines = [dict(item=k, qty=q, have=max(0, _available(c, k, None)), got=o['got'].get(k, 0)) for k, q in o['lines'].items()]
+        can = None
+        if o['state'] == 'taken':
+            can = 'not_yet' if c['day'] < o['due'] else 'short' if any(x['have'] < x['qty'] for x in lines) else 'ok'
+        rows.append(dict(id=o['id'], acc=o['acc'], name=a['name'], emoji=a['emoji'], say=a['say'], pay=a['pay'], day=o['day'],
+                         due=o['due'], off=o['off'], value=o['value'], deposit=o['deposit'], state=o['state'], paid=o['paid'],
+                         lines=lines, can=can, list=sum(PRICES[k] * q for k, q in o['lines'].items())))
+    accounts = []
+    for a in WS_ACCOUNTS:
+        t = w['trust'].get(a['id'], WS_TRUST)
+        accounts.append(dict(id=a['id'], name=a['name'], emoji=a['emoji'], lvl=a['lvl'], off=a['off'], open=a['lvl'] <= level,
+                             trust=t, trust_name=WS_TRUST_NAMES[t], pause=max(0, w['pause'].get(a['id'], 0) - c['day'])))
+    goods = [dict(item=k, unlock=ITEM_INDEX[k]['unlock'], open=ITEM_INDEX[k]['unlock'] <= level, price=_price(c, k)) for k in NEW_GOODS]
+    return dict(level=level, unlock=WS_LEVEL, on=level >= WS_LEVEL, orders=rows, accounts=accounts, goods=goods,
+                done=w['done'], missed=w['missed'], walk=w['walk'], deposit=WS_DEPOSIT)
+
+
+def _ws_validate(c: dict) -> None:
+    d = kit.data(c)
+    if 'ws' not in d:
+        return
+    w = d['ws']
+    bad = 'Sổ khách sỉ sai.'
+    kit.need(isinstance(w, dict) and set(w) == {'orders', 'trust', 'pause', 'done', 'missed', 'walk'}, bad)
+    kit.need(isinstance(w['trust'], dict) and set(w['trust']) <= set(WS_INDEX), bad)
+    _ints(w['trust'].values(), 1, 5)
+    kit.need(isinstance(w['pause'], dict) and set(w['pause']) <= set(WS_INDEX), bad)
+    _ints(w['pause'].values(), 0, 10**7)
+    for k in ('done', 'missed', 'walk'):
+        kit.integer(w[k], 0, 10**9)
+    kit.need(isinstance(w['orders'], list) and len(w['orders']) <= WS_KEEP + len(WS_ACCOUNTS), bad)
+    ids = set()
+    for o in w['orders']:
+        kit.need(isinstance(o, dict) and set(o) == WS_KEYS and o['acc'] in WS_INDEX and o['state'] in WS_STATES
+                 and isinstance(o['id'], str) and o['id'] not in ids, bad)
+        ids.add(o['id'])
+        kit.integer(o['day'], 1, 10**7)
+        kit.need(o['due'] == o['day'] + 1 and o['off'] == WS_INDEX[o['acc']]['off'], bad)
+        allowed = {k for k, _ in WS_INDEX[o['acc']]['lines']}
+        kit.need(isinstance(o['lines'], dict) and o['lines'] and set(o['lines']) <= allowed, bad)
+        _ints(o['lines'].values(), 1, 60)
+        kit.need(o['value'] == _ws_value(o['lines'], o['off']) and o['deposit'] == -(-o['value'] * WS_DEPOSIT // 100), bad)
+        kit.need(isinstance(o['got'], dict) and set(o['got']) <= set(o['lines']), bad)
+        for k, q in o['got'].items():
+            kit.integer(q, 1, o['lines'][k])
+        kit.integer(o['paid'], 0, o['value'] if o['state'] == 'done' else o['deposit'])
+
+
 # ---- tomorrow's forecast (care loop)
 @functools.lru_cache(maxsize=64)
 def _demand(day: int) -> tuple:
@@ -2466,7 +2785,13 @@ def _forecast(c: dict) -> dict:
     x = c.get('ext', {}).get('inv') or {}
     level = kit.level(c) if 'xp' in c else 1
     needs = []
-    for item, raw in _demand(day):
+    demand = dict(_demand(day))
+    ws = kit.data(c).get('ws') if isinstance(kit.data(c).get('ws'), dict) else {}
+    for o in ws.get('orders', []):   # 📦 wholesale orders taken for tomorrow
+        if o['state'] == 'taken' and o['due'] == day:
+            for k, q in o['lines'].items():
+                demand[k] = demand.get(k, 0) + q
+    for item, raw in sorted(demand.items()):
         if ITEM_INDEX[item].get('unlock', 1) > level:
             continue
         want = -(-raw * (100 + FORECAST_SPARE) // 100)
@@ -2536,6 +2861,12 @@ def _care(c: dict) -> list:
         elif age > OVERDUE_DAYS and row['reminded'] != c['day']:
             rows.append(dict(ok=False, icon='📒', label=f'Nhắc khéo {name}', note=f'nợ {row["balance"]} xu đã {age} ngày' + (' — sắp mất trắng' if age >= BAD_DAYS - 2 and row['trust'] <= 2 else ''),
                              tone='danger' if age >= BAD_DAYS - 2 else 'warn', do=dict(cmd='gr_remind', npc=kit.npc_id(ID, i))))
+    for o in (d['ws']['orders'] if isinstance(d.get('ws'), dict) else []):   # 📦 wholesale (feedback #373)
+        a = WS_INDEX[o['acc']]
+        if o['state'] == 'offer' and o['day'] == c['day']:
+            rows.append(dict(ok=None, icon='📦', label=f'Đơn sỉ mới: {a["name"]}', note=f'{o["value"]} xu · giao ngày mai', do=dict(tab='lists')))
+        elif o['state'] == 'taken' and o['due'] <= c['day']:
+            rows.append(dict(ok=False, icon='🚚', label=f'Giao đơn sỉ cho {a["name"]}', note='trước khi đóng ca', tone='warn', do=dict(tab='lists')))
     near = [x['id'] for x in ITEMS if _near_units(c, x['id']) and not _today_units(c, x['id']) and x['id'] not in d['cleared']]
     if near:
         rows.append(dict(ok=None, icon='🏷️', label='Xả giá hàng HSD ngày mai', note=', '.join(ITEM_INDEX[k]['name'] for k in near[:3]),
@@ -2560,7 +2891,7 @@ def _shelf_unit_price(c: dict, item: str) -> int:
 
 
 def _tag(s: dict, c: dict, p: dict) -> dict:
-    item = kit.one_of(p.get('item'), PRICES, 'Món không có trong bảng giá.')
+    item = kit.one_of(p.get('item'), BASE_PRICES, 'Món này giữ giá niêm yết, không đổi tem được.')
     it = ITEM_INDEX[item]
     value = kit.integer(p.get('price'), 1, 1000)
     low, high = _floor_price(item), _cap_price(item)
@@ -2614,7 +2945,8 @@ def _pull_today(s: dict, c: dict, p: dict) -> dict:
 
 
 SHOP_ACTIONS = {'gr_tag': _tag, 'gr_clear': _clear, 'gr_pull_today': _pull_today,
-                'gr_rotate': _rotate_action, 'gr_pack': _pack, 'gr_plan': _plan}
+                'gr_rotate': _rotate_action, 'gr_pack': _pack, 'gr_plan': _plan,
+                'gr_ws_take': _ws_take, 'gr_ws_skip': _ws_skip, 'gr_ws_deliver': _ws_deliver}
 
 
 # ---------------------------------------------------------------- surprises at the shop
@@ -3128,7 +3460,7 @@ def public_data(c: dict) -> dict:
     d['today_view'] = dict(day=c['day'], mod=dict(id=mod['id'], emoji=mod['emoji'], name=mod['name'], text=mod['text']),
                            calm=bool(d['today'].get('calm')) and d['today'].get('day') == c['day'],
                            rival=[dict(item=k, theirs=v, ours=_price(c, k)) for k, v in rival(c['day']).items()])
-    d['price_range'] = {k: [_floor_price(k), _cap_price(k)] for k in PRICES}
+    d['price_range'] = {k: [_floor_price(k), _cap_price(k)] if k in BASE_PRICES else [PRICES[k], PRICES[k]] for k in PRICES}
     d['near'] = {x['id']: _near_units(c, x['id']) for x in ITEMS}
     d['held'] = {x['id']: _held(c, x['id'], None) for x in ITEMS}
     # Weighed lines whose stall has nothing left for that bill (gr_weigh refuses them): {task id: [line, …]}.
@@ -3140,6 +3472,8 @@ def public_data(c: dict) -> dict:
             if out:
                 d['scale_out'][t['id']] = out
     d['desk'] = _desk_view(c, kit.data(c))
+    d['ws_view'] = _ws_view(view)   # 📦 wholesale book and the newer goods (feedback #373)
+    d.pop('ws', None)
     d.pop('fine', None)
     return d
 
@@ -3266,6 +3600,7 @@ def validate_data(c: dict) -> None:
     for k in ('sales', 'customers', 'shelves', 'day_sales', 'repaid'):
         kit.integer(d.get(k), 0, 10**9)
     kit.desk_validate(d['desk'], EVENTS)
+    _ws_validate(c)
     today = d['today']
     kit.need(isinstance(today, dict) and set(today) == {'day', 'mod', 'calm'} and today['mod'] in MOD_INDEX
              and type(today['calm']) is bool, 'Thông tin hôm nay sai.')
@@ -3310,6 +3645,7 @@ def on_close(s: dict, c: dict) -> dict:
         elif t['kind'] == 'bulk' and t['bulk']['stage'] == 'deliver':
             notes.append(_bulk_cancel(s, c, t))
     lines = _pickups(s, c, d)
+    lines += _ws_close(s, c) + _walkins(s, c)
     owed = sum(r['balance'] for r in d['ledger'].values())
     f = _forecast(c)
     lines.append(f'📅 Ngày mai: {f["mod"]["emoji"]} {f["mod"]["name"]}' + (f' · {len(f["lists"])} giỏ quen' if f['lists'] else '') + f'. {f["tip"]}')
@@ -3568,11 +3904,11 @@ SPEC = dict(
            ('Mận', 'gr_shelf', 'Siêng năng, hay phát hiện hộp móp méo.', 80, 83)],
     roles={'gr_shelf': 'Xếp kệ & hạn dùng', 'gr_till': 'Phụ quầy tính tiền', 'gr_book': 'Giữ sổ ghi nợ'},
     inventory=dict(items=ITEMS, capacity=80),
-    prices=PRICES,
+    prices=BASE_PRICES,
     tip=2,
-    physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_rush_pay', 'gr_bulk_deliver', 'gr_clear', 'gr_rotate', 'gr_pack'),
+    physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_rush_pay', 'gr_bulk_deliver', 'gr_clear', 'gr_rotate', 'gr_pack', 'gr_ws_deliver'),
     free_actions=(),
-    no_tick=('gr_change', 'gr_change_undo', 'gr_remind', 'gr_haggle', 'gr_rush_change', 'gr_rush_scan', 'gr_rush_void', 'gr_rush_undo', 'gr_decide', 'gr_plan'),
+    no_tick=('gr_change', 'gr_change_undo', 'gr_remind', 'gr_haggle', 'gr_rush_change', 'gr_rush_scan', 'gr_rush_void', 'gr_rush_undo', 'gr_decide', 'gr_plan', 'gr_ws_take', 'gr_ws_skip'),
     waste_items=(),
     activity=('🛒', 'Kệ tạp hóa gọn gàng', [('Sữa hộp', 'Tủ mát'), ('Mì gói', 'Kệ khô'), ('Trứng gà', 'Tủ mát'), ('Nước mắm', 'Kệ khô')],
               ['Đọc hạn từng lô', 'Rút hàng hết hạn', 'Xếp lô cũ ra trước', 'Đối chiếu tem giá']),

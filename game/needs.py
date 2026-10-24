@@ -244,6 +244,12 @@ def meals(s: dict) -> list[dict]:
     cook = _where(s) in ('rent', 'own') and _cook(s)
     rows = [dict(id='nha', emoji=home['emoji'], name=home['name'], price=0, full=home['full'], minutes=home['minutes'],
                  spirit=1 if cook else 0, note=home['note'] + (' · tay nghề nội trợ' if cook else ''))]
+    from . import home_cook   # 🍳 cooked tonight (game/home_cook.py): that tray is the dinner, already eaten
+    done = home_cook.tonight(s)
+    if done:
+        x = home_cook.DISHES[done['dish']]
+        rows = [dict(id='nha', emoji=x['emoji'], name=f'Mâm cơm tự nấu: {x["name"]}', price=0, full=0, minutes=x['minutes'],
+                     spirit=0, note='Đã nấu và ăn xong')]
     spouse = _spouse(s)
     for mid, x in EVE.items():
         if mid == 'vo_chong':
@@ -256,6 +262,8 @@ def meals(s: dict) -> list[dict]:
     for r in rows:
         r['ok'] = r['price'] <= 0 or wallet >= r['price']
         r['why'] = None if r['ok'] else f'Ví còn {max(0, wallet)} xu'
+        if done and r['id'] != 'nha':
+            r['ok'], r['why'] = False, 'Tối nay đã nấu cơm nhà'
     return rows
 
 
@@ -521,6 +529,8 @@ def public(s: dict, focus: str | None = None) -> dict:
             chosen=dict(n['eve'], time=hm(n['eve']['bed']), wake=sleep_wake(n['eve']['bed']),
                         name=next((r['name'] for r in rows if r['id'] == n['eve']['meal']), ''),
                         emoji=next((r['emoji'] for r in rows if r['id'] == n['eve']['meal']), '🍽️')) if n['eve'] else None)
+        from . import home_cook   # 🍳 the kitchen (an older page ignores it)
+        v['evening']['cook'] = home_cook.view(s)
     return v
 
 

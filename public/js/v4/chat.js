@@ -18,6 +18,9 @@
  * gone from my screens only) and, on mine, "Thu hồi" for 24 h (for everyone); both ask "…thật?" first. Tin nhắn: "Chọn"
  * (or holding a row) ticks chats, "Xóa" empties them for me only (a DM leaves the list until someone writes again).
  * 🚫 Tin nhắn → "Đã chặn" (welcome.flags.blocks; feedback #93): who I blocked, "Bỏ chặn" each.
+ * 💭 Ghi chú (feedback #170; only when welcome `me` has `nt`, live/notes.py): a strip of bubbles over avatars on top of
+ * Tin nhắn and Bạn bè, mine first ("+ Ghi chú": write one line of NOTE_LEN for 24 h, or clear it), then the friends'
+ * and DM peers' notes, newest first; tapping one shows it with "Nhắn tin" and "Báo cáo". `noted` keeps it current.
  * 🛟 Safety (moderation #14): my own message back with `safety` (live/filters.py safety_cue: hẹn gặp, địa chỉ, số điện
  * thoại, zalo/fb/ig…) opens a friendly notice once per device (SAFETY_KEY); the report reasons have "An toàn / trẻ vị
  * thành niên" (reason 'minor': first in the admin queue). Nothing is blocked by it. */
@@ -37,7 +40,8 @@ const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,thread
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
   act:null,report:null,confirm:null,flash:'',flashTimer:0,pending:new Map(),pick:new Set(),gtitle:'',members:null,
   nextTown:0,cd:0,older:false,synced:0,bound:false,notifyOpen:false,notify:null,
-  sel:null,blocks:null,unblocking:null,reply:null,composeEpoch:0,failed:new Map()};   // 🗑️ chats ticked in "Chọn" (a Set, null = not choosing); 🚫 the blocked list
+  sel:null,blocks:null,unblocking:null,reply:null,composeEpoch:0,failed:new Map(),
+  noteDraft:'',noteBusy:false,noteOf:null,noteReport:false};   // 💭 my note being written; whose note is open   // 🗑️ chats ticked in "Chọn" (a Set, null = not choosing); 🚫 the blocked list
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
 const friendRequests=new Map();   // message id -> pending/sent; only an explicit player's tap starts a request
 const REASONS=[['minor','🛟 An toàn / trẻ vị thành niên'],['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
@@ -50,6 +54,7 @@ const dmId=pid=>{const [a,b]=[me(),pid].sort();return `dm:${a}:${b}`;};
 const coarse=()=>matchMedia('(pointer:coarse)').matches;
 const REACTS=['❤️','😂','😮','😢','👍','🔥'];   // live/chat.py REACTS, same order
 const LP_MS=450,LP_MOVE=10;   // a long press: held this long, moved less than this (px)
+const NOTE_LEN=60,NOTE_TTL=86400;   // 💭 live/notes.py LEN, TTL
 const QUIET_FOREVER=4102444800;   // live/chat.py QUIET_FOREVER: notifications off (not just for 8 hours)
 const CALL_SHOW=900;              // 📣 a dating-corner invitation shows this long (s) on Cả phố
 /** Cả phố holds messages (numeric ids) and 📣 invitation lines (sys, placed after the message they followed: k). */
@@ -104,13 +109,14 @@ function dialog(){
   d.addEventListener('close',onClose);
   d.addEventListener('keydown',e=>{
     if(e.key==='Escape'){e.stopPropagation();if(S.reactFor!=null){e.preventDefault();S.reactFor=null;render();}}   // closes the chat only, never pauses the game behind it
+    if(e.key==='Enter'&&!e.isComposing&&e.target.dataset?.chField==='note'){e.preventDefault();onAct('noteSave',{},null);return;}   // 💭 Enter posts it
     if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('[role="button"][data-ch-act]')){e.preventDefault();onAct(e.target.dataset.chAct,e.target.dataset,e.target);}
   });   // closes the chat only, never pauses the game behind it
   const ta=d.querySelector('textarea');
   ta.addEventListener('input',()=>{S.composeEpoch++;grow(ta);counter();});
   ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();submit();}});
   d.querySelector('.ch-compose').addEventListener('submit',e=>{e.preventDefault();submit();});
-  d.addEventListener('input',e=>{if(e.target.dataset.chField==='gtitle'){S.gtitle=e.target.value;const b=d.querySelector('[data-ch-act="groupMake"]');if(b)b.disabled=!canMake();}});
+  d.addEventListener('input',e=>{if(e.target.dataset.chField==='note')noteTyped(e.target);if(e.target.dataset.chField==='gtitle'){S.gtitle=e.target.value;const b=d.querySelector('[data-ch-act="groupMake"]');if(b)b.disabled=!canMake();}});
   d.addEventListener('change',e=>{
     if(e.target.dataset.chField==='online')live.send({t:'prefs',online:e.target.checked});
     if(e.target.dataset.chField==='pick'){const p=e.target.value;e.target.checked?S.pick.add(p):S.pick.delete(p);const b=d.querySelector('[data-ch-act="groupMake"],[data-ch-act="groupAddGo"]');if(b)b.disabled=!canMake();}
@@ -309,6 +315,7 @@ function bind(){
     if(f.code==='muted'&&live.me){live.me.town='muted';live.me.muted=f.until;}
     if(f.ref==='pin'||f.ref==='unpin')S.pinning=false;
     if(f.ref==='unblock')S.unblocking=null;
+    if(f.ref==='note')S.noteBusy=false;   // 💭 the draft stays to fix
     if(f.code==='no_chat'&&S.thread?.startsWith('dm:')&&!live.chan(S.thread)){const t=thread(S.thread);t.loaded=true;t.busy=false;t.more=false;if(S.dlg?.open)render();return;}   // a first chat with this friend: nothing yet
     if(S.dlg?.open){flash(f.msg||'Không gửi được.');render();}
   });
@@ -328,6 +335,11 @@ function bind(){
   live.on('hid',f=>{dropMsg(f.ch,f.id);if(S.dlg?.open)render();});            // 🗑️ deleted on my side (maybe in another tab)
   live.on('reply_hidden',f=>{redactReplies({pid:f.pid});if(S.dlg?.open)render();});
   live.on('cleared',f=>{dropCleared(f.chs);if(S.dlg?.open)render();});
+  live.on('noted',f=>{   // 💭 a note changed (live.js keeps me, friends and peers)
+    if(f.pid===me()&&S.noteBusy){S.noteBusy=false;S.confirm=null;if(S.view==='note')S.view=null;flash(f.nt?'Đã đăng ghi chú.':'Đã xóa ghi chú.');}
+    if(S.dlg?.open)render();
+  });
+  live.on('note_reported',()=>{if(S.dlg?.open){flash('Đã báo cáo ghi chú. Cảm ơn bạn!');render();}});
   live.on('blocks',f=>{S.blocks=f.list||[];for(const p of S.blocks)redactReplies({pid:p.pid});S.unblocking=null;if(S.dlg?.open)render();});   // 🚫 who I blocked
   live.on('state',f=>{if(f.town){S.town.why=f.town;S.town.wait=f.wait||0;S.town.at=Date.now();}if(S.dlg?.open){enter();render();}});
   for(const t of ['presence','prefs','muted','read'])live.on(t,()=>{if(S.dlg?.open)render();});
@@ -397,6 +409,12 @@ function onAct(act,d,el){
         S.sel=null;flash(chs.length>1?`Đã xóa ${chs.length} cuộc trò chuyện ở phía bạn.`:'Đã xóa cuộc trò chuyện ở phía bạn.');
       }
       break;}
+    case'note':S.view='note';S.noteDraft=ntOn(live.me?.nt)?live.me.nt.t:'';S.confirm=null;enter();render();S.dlg.querySelector('[data-ch-field="note"]')?.focus();return;   // 💭 write mine
+    case'noteSave':{const t=S.noteDraft.trim();if(!t||S.noteBusy)return;if(live.send({t:'note',text:t,cid:'note'}))S.noteBusy=true;break;}
+    case'noteClear':if(S.confirm!=='noteClear'){S.confirm='noteClear';break;}if(live.send({t:'note',text:'',cid:'note'}))S.noteBusy=true;break;
+    case'noteOf':S.view='noteOf';S.noteOf=d.pid;S.noteReport=false;break;
+    case'noteReport':S.noteReport=true;break;
+    case'noteReason':{const pid=S.noteOf;if(pid&&live.send({t:'note_report',pid,reason:d.reason,cid:'noteReport'})){for(const x of notePeople())if(x.pid===pid)delete x.nt;}S.view=null;S.noteOf=null;S.noteReport=false;break;}   // gone for me at once
     case'blocks':S.view='blocks';S.sel=null;S.confirm=null;live.send({t:'blocks'});break;   // 🚫 the list (the answer redraws)
     case'unblock':if(live.send({t:'unblock',pid:d.pid}))S.unblocking=d.pid;break;
     case'pin':if(live.send({t:'pin',id:Number(d.id)}))S.pinning=true;S.act=null;break;   // 📌 admins (the server checks)
@@ -477,6 +495,7 @@ function head(){
   const back=`<button type="button" class="icon-btn" data-ch-act="back" aria-label="Quay lại">${icon('chevron',20,'ch-back-ico')}</button>`;
   if(S.view==='group')return `${back}<h2 class="grow">Nhóm mới</h2>${x}`;
   if(S.view==='blocks')return `${back}<h2 class="grow">Đã chặn</h2>${x}`;
+  if(S.view==='note'||S.view==='noteOf')return `${back}<h2 class="grow">💭 Ghi chú</h2>${x}`;
   if(S.view==='members'||S.view==='add'){const c=live.chan(S.thread);return `${back}<h2 class="grow" data-no-translate>${esc(c?.title||'Nhóm')}</h2>${x}`;}
   if(S.thread){
     const c=live.chan(S.thread),grp=c?.kind==='group'||S.thread.startsWith('g:');
@@ -575,6 +594,28 @@ function actBar(m,mine,kind){
     `<button type="button" class="ch-mini" data-ch-act="report" data-id="${m.id}">${icon('flag',14)} Báo cáo</button>`+
     `<button type="button" class="ch-mini${S.confirm==='block:'+m.pid?' warn':''}" data-ch-act="block" data-pid="${esc(m.pid)}">${S.confirm==='block:'+m.pid?'Chặn thật?':'Chặn'}</button>${hide}</div>`;
 }
+/* ---- 💭 notes ---- */
+const ntOn=nt=>Boolean(nt?.t)&&(Number(nt.at)||0)+NOTE_TTL>Date.now()/1000;   // a note still showing (24 h)
+const myAv=()=>({av:live.me?.av,fc:S.env?.api?.state?faceCode(S.env.api.state):live.me?.fc});
+/** Friends and DM peers (one each), the ones a note can belong to. */
+function notePeople(){const seen=new Set(),out=[];for(const x of [...live.friends,...live.chans.map(c=>c.peer)])if(x?.pid&&!seen.has(x.pid)){seen.add(x.pid);out.push(x);}return out;}
+/** The strip on top of Tin nhắn and Bạn bè: mine first (a guest has none), then the others' notes, newest first. */
+function notesStrip(){
+  if(!live.me||!('nt' in live.me))return '';   // a service without notes
+  const cell=(a,nt,attrs,label,ph)=>`<button type="button" class="ch-ntcell" ${attrs}><span class="ch-ntbub${nt?'':' ph'}"><span class="ch-ntt"${nt?' data-no-translate':''}>${nt?esc(nt.t):ph}</span></span>${av(a,'md')}<small data-no-translate>${esc(label)}</small></button>`;
+  const others=notePeople().filter(x=>ntOn(x.nt)).sort((a,b)=>b.nt.at-a.nt.at);
+  const mine=live.me.account?cell(myAv(),ntOn(live.me.nt)?live.me.nt:null,'data-ch-act="note" aria-label="Ghi chú của bạn"','Bạn','+ Ghi chú'):'';
+  if(!mine&&!others.length)return '';
+  return `<div class="ch-notes">${mine}${others.map(x=>cell(x,x.nt,`data-ch-act="noteOf" data-pid="${esc(x.pid)}"`,x.name||'Bạn bè','')).join('')}</div>`;
+}
+/** Typing a note: the preview, the count and "Đăng" follow without a redraw (the field keeps its caret). */
+function noteTyped(el){
+  S.noteDraft=el.value.slice(0,NOTE_LEN);S.confirm=null;
+  const v=el.closest('.ch-ntview');if(!v)return;const t=S.noteDraft.trim(),b=v.querySelector('.ch-ntbub');
+  b.firstChild.textContent=t||'Bạn đang nghĩ gì?';b.classList.toggle('ph',!t);
+  v.querySelector('.ch-ntcount').textContent=`${S.noteDraft.length}/${NOTE_LEN}`;
+  const go=v.querySelector('[data-ch-act="noteSave"]');if(go)go.disabled=!t||S.noteBusy;
+}
 const empty=(ico,text,btn='')=>`<div class="ch-empty">${icon(ico,30)}<p>${text}</p>${btn}</div>`;
 
 function body(){
@@ -586,6 +627,24 @@ function body(){
     return (S.view==='group'?`<label class="ch-field"><span>Tên nhóm</span><input data-ch-field="gtitle" maxlength="40" value="${esc(S.gtitle)}" data-no-translate></label>`:'')+
       (list.length?`<p class="ch-label">Chọn bạn · tối đa ${max}</p><div class="ch-picks">${list.map(f=>`<label class="ch-pick">${av(f)}<span class="grow" data-no-translate>${esc(f.name)}</span>${dot(f.on)}<input type="checkbox" data-ch-field="pick" value="${esc(f.pid)}"${S.pick.has(f.pid)?' checked':''}></label>`).join('')}</div>`:empty('user','Chưa có bạn để mời.'))+
       `<button type="button" class="btn primary full ch-make" data-ch-act="${S.view==='add'?'groupAddGo':'groupMake'}"${canMake()?'':' disabled'}>${S.view==='add'?'Thêm vào nhóm':'Lập nhóm'}</button>`;
+  }
+  if(S.view==='note'){   // 💭 mine: one line, 24 h
+    const had=ntOn(live.me?.nt),draft=S.noteDraft,ask=S.confirm==='noteClear';
+    return `<div class="ch-ntview"><div class="ch-ntprev"><span class="ch-ntbub big${draft.trim()?'':' ph'}"><span class="ch-ntt" data-no-translate>${esc(draft.trim()||'Bạn đang nghĩ gì?')}</span></span>${av(myAv(),'md')}</div>`+
+      `<label class="ch-field"><span>Ghi chú · 24 giờ</span><input data-ch-field="note" maxlength="${NOTE_LEN}" value="${esc(draft)}" placeholder="Bạn đang nghĩ gì?" enterkeyhint="send" autocomplete="off" data-no-translate></label>`+
+      `<small class="ch-ntcount" aria-live="polite">${draft.length}/${NOTE_LEN}</small>`+
+      `<p class="ch-ntfine">${live.me?.online===false?'🙈 Đang ẩn online: chỉ bạn bè thấy.':'Hiện ở danh sách chat và thẻ nhân vật của bạn.'}</p>`+
+      `<div class="ch-foot">${had?`<button type="button" class="btn ${ask?'warn':'ghost'}" data-ch-act="noteClear"${S.noteBusy?' disabled':''}>${icon('trash',16)} ${ask?'Xóa thật?':'Xóa ghi chú'}</button>`:''}`+
+      `<button type="button" class="btn primary" data-ch-act="noteSave"${draft.trim()&&!S.noteBusy?'':' disabled'}>${S.noteBusy?'Đang đăng…':'Đăng'}</button></div></div>`;
+  }
+  if(S.view==='noteOf'){   // 💭 someone's: read it, write to them, report it
+    const f=notePeople().find(x=>x.pid===S.noteOf);
+    if(!f||!ntOn(f.nt))return empty('chat','Ghi chú này đã hết hạn.');
+    const reasons=S.noteReport?`<p class="ch-label">Báo cáo vì:</p><div class="ch-actbar wrap">${REASONS.map(([k,l])=>`<button type="button" class="ch-mini" data-ch-act="noteReason" data-reason="${k}">${l}</button>`).join('')}</div>`:'';
+    return `<div class="ch-ntview"><div class="ch-ntprev"><span class="ch-ntbub big"><span class="ch-ntt" data-no-translate>${esc(f.nt.t)}</span></span>${av(f,'md')}</div>`+
+      `<p class="ch-ntwho"><b data-no-translate>${esc(f.name||'Bạn bè')}</b> <small>· ${hm(f.nt.at)}</small></p>${reasons}`+
+      `<div class="ch-foot"><button type="button" class="btn primary" data-ch-act="dm" data-pid="${esc(f.pid)}">${icon('chat',16)} Nhắn tin</button>`+
+      (S.noteReport?'':`<button type="button" class="btn ghost" data-ch-act="noteReport">${icon('flag',16)} Báo cáo</button>`)+`</div></div>`;
   }
   if(S.view==='blocks'){   // 🚫 who I blocked (feedback #93)
     const L=S.blocks;if(!L)return empty('refresh','Đang tải…');
@@ -633,15 +692,15 @@ function body(){
     const make=live.friends.length?`<button type="button" class="ch-new" data-ch-act="groupNew">${icon('plus',16)} Nhóm mới</button>`:'';
     const tools=(live.flags.blocks?`<button type="button" class="ch-mini" data-ch-act="blocks">🚫 Đã chặn${S.blocks?.length?` (${S.blocks.length})`:''}</button>`:'')+
       (rows&&DEL()?`<button type="button" class="ch-mini" data-ch-act="selMode">${icon('trash',14)} Chọn</button>`:'')+make;
-    return (tools?`<div class="ch-tools">${tools}</div>`:'')+(rows?`<div class="ch-rows">${rows}</div>`:empty('chat','Chưa có tin nhắn.',live.friends.length?`<button type="button" class="btn ghost" data-ch-act="tab" data-tab="friends">Nhắn bạn bè</button>`:''));
+    return notesStrip()+(tools?`<div class="ch-tools">${tools}</div>`:'')+(rows?`<div class="ch-rows">${rows}</div>`:empty('chat','Chưa có tin nhắn.',live.friends.length?`<button type="button" class="btn ghost" data-ch-act="tab" data-tab="friends">Nhắn bạn bè</button>`:''));
   }
   // friends
   const list=[...live.friends].sort((a,b)=>(b.on-a.on)||a.name.localeCompare(b.name,'vi'));
   const mine=live.me?{av:live.me.av,fc:S.env?.api?.state?faceCode(S.env.api.state):live.me.fc}:null;
   const toggle=(mine?`<button type="button" class="ch-row ch-me" data-ch-act="avatar"><span class="ch-av-wrap">${av(mine,'md')}</span><span class="grow"><b>Ảnh đại diện</b><small>Đổi gương mặt, áo theo Tủ đồ</small></span>${icon('arrow',16)}</button>`:'')+
     `<label class="ch-switch"><span>Hiện online</span><input type="checkbox" role="switch" data-ch-field="online"${live.me?.online!==false?' checked':''}><i aria-hidden="true"></i></label>`;
-  if(!list.length)return toggle+empty('user',live.me?.account?'Chưa có bạn bè.':'Có tài khoản để kết bạn.',`<button type="button" class="btn ghost" data-ch-act="friends">${icon('user',16)} ${live.me?.account?'Tìm bạn':'Kết bạn'}</button>`);
-  return toggle+`<div class="ch-rows">${list.map(f=>`<div class="ch-friend-work"><button type="button" class="ch-row" data-ch-act="dm" data-pid="${esc(f.pid)}"><span class="ch-av-wrap">${av(f,'md')}${dot(f.on)}</span><span class="grow"><b data-no-translate>${esc(f.name)}</b>${live.bonds?.includes(f.pid)?'<small class="ch-bond">Đang tìm hiểu 💕</small>':f.on?'<small class="ch-online">Đang online</small>':''}</span><span class="ch-friend-action" title="Nhắn tin" aria-hidden="true">${icon('chat',18)}</span></button><button type="button" class="ch-friend-action" data-ch-act="workvisit" data-pid="${esc(f.pid)}" title="Ghé chỗ làm" aria-label="Ghé chỗ làm của ${esc(f.name)}">${icon('store',18)}</button></div>`).join('')}</div>`;
+  if(!list.length)return notesStrip()+toggle+empty('user',live.me?.account?'Chưa có bạn bè.':'Có tài khoản để kết bạn.',`<button type="button" class="btn ghost" data-ch-act="friends">${icon('user',16)} ${live.me?.account?'Tìm bạn':'Kết bạn'}</button>`);
+  return notesStrip()+toggle+`<div class="ch-rows">${list.map(f=>`<div class="ch-friend-work"><button type="button" class="ch-row" data-ch-act="dm" data-pid="${esc(f.pid)}"><span class="ch-av-wrap">${av(f,'md')}${dot(f.on)}</span><span class="grow"><b data-no-translate>${esc(f.name)}</b>${live.bonds?.includes(f.pid)?'<small class="ch-bond">Đang tìm hiểu 💕</small>':f.on?'<small class="ch-online">Đang online</small>':''}</span><span class="ch-friend-action" title="Nhắn tin" aria-hidden="true">${icon('chat',18)}</span></button><button type="button" class="ch-friend-action" data-ch-act="workvisit" data-pid="${esc(f.pid)}" title="Ghé chỗ làm" aria-label="Ghé chỗ làm của ${esc(f.name)}">${icon('store',18)}</button></div>`).join('')}</div>`;
 }
 
 /** What the composer may do on this screen: null = hidden, {ro: line} = read-only, {} = write. */

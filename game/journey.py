@@ -1139,6 +1139,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(cradle.action(s, name, p))
     elif name.startswith('jr_fridge_'):
         result.update(fr.action(s, name, p))
+    elif name.startswith('jr_cook_'):   # 🍳 Nấu cơm tối ở nhà (game/home_cook.py, feedback #485)
+        from . import home_cook
+        result.update(home_cook.action(s, name, p))
     elif name.startswith('jr_rui_'):
         result.update(rui.action(s, name, p))
     elif name.startswith('jr_vang_'):
@@ -1484,6 +1487,8 @@ def validate(s: dict) -> None:
     cradle.validate(s)   # 👶 journey['cradle'] (optional)
     ls.validate(s)   # 🏝️ journey['leisure'] (optional: only once a leisure round was played)
     fr.validate(s)   # 🧊 journey['fridge'] (optional)
+    from . import home_cook
+    home_cook.validate(s)   # 🍳 journey['cook'] (optional)
     from . import wealth_fee
     wealth_fee.validate(j)   # 🏛️ journey['wfee'] (optional)
     ct.validate(s)

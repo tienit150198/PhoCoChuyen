@@ -1342,7 +1342,7 @@ class GroceryRushTests(unittest.TestCase):
                             j.act('gr_rush_id', task=tid)
                             continue
                         if rnd.random() < 0.1:
-                            it = rnd.choice([k for k in G.PRICES if k not in G.WEIGHED])
+                            it = rnd.choice([k for k in G.BASE_PRICES if k not in G.WEIGHED])   # the goods with a tag (new goods: list price)
                             v = rnd.randrange(G._floor_price(it), G._cap_price(it) + 1)
                             if v != G._price(j.c, it):
                                 j.act('gr_tag', item=it, price=v)   # a new price tag between two customers

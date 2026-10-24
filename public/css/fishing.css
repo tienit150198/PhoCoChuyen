@@ -245,6 +245,7 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-pcard>.fs-x{position:absolute;top:6px;right:6px;width:34px;height:34px;background:#e8eef2;color:#1d2b36;font-size:15px}
 .fs-pc-who{display:flex;gap:10px;align-items:center;padding-right:34px}
 .fs-pc-who>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fs-pc-note{margin:8px 0 0;padding:6px 10px;border-radius:12px;background:#eef3f6;font-size:13px;overflow-wrap:anywhere}   /* 💭 their chat note */
 .fs-pc-who b{font-size:16px}
 .fs-pc-who small{font-size:12px;color:#5d6d78}
 .fs-pc-fish{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}

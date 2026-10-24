@@ -142,6 +142,13 @@
 .career-job.gr .gr-bonds li small{grid-column:1/-1;color:var(--gr-muted)}
 .career-job.gr .gr-hearts{color:var(--gr-bad);letter-spacing:1px}
 .career-job.gr .gr-bonds h4{margin:0}
+.career-job.gr .gr-ws-head{margin-top:14px}
+.career-job.gr .gr-ws-emoji{font-size:28px;line-height:1;width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:var(--gr-surface-2);flex:none}
+.career-job.gr .gr-ws-acts{gap:6px;justify-content:flex-end}
+.career-job.gr .gr-ws s{opacity:.6}
+.career-job.gr .gr-ws-goods{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.career-job.gr .gr-ws-goods .chip{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--gr-surface-2);border:1px solid var(--gr-line)}
+.career-job.gr .gr-ws-goods .chip.muted{opacity:.6}
 
 /* Shelf rotation */
 .career-job.gr .gr-shelf{display:flex;gap:8px;overflow-x:auto;padding:10px;border-radius:var(--gr-rs);background:var(--gr-surface-2);border-bottom:6px solid var(--gr-line)}

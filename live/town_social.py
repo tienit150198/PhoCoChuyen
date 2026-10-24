@@ -157,6 +157,10 @@ class TownSocial:
                    friend=friend, account=other.player.account, code=code)
         if getattr(other, 'bg', None):   # ⚔️ the bang tag (live/bangs.py)
             out['bg'] = dict(other.bg)
+        from . import notes
+        nt = await notes.of_app(self.app).one(conn.player, other.pid)   # 💭 their note (live/notes.py)
+        if nt:
+            out['nt'] = nt
         if friend:   # 💞 the relationship the two set (game/friend_charms.py)
             from . import charms
             rel = await charms.bond(self.app, conn.player, other.player)
