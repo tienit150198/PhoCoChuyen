@@ -1661,6 +1661,8 @@ def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) 
         if cid == 'cafe_bakery':
             # Expanded menu applies to new orders; old tickets keep their recipe.
             original = PLUGINS[cid].make_task(t['day'], slot, t['created_turn'], legacy=t.get('gen', 1) < 3)
+        elif cid in PLUGINS and getattr(PLUGINS[cid], 'legacy_task', None) and PLUGINS[cid].legacy_task(t):
+            original = PLUGINS[cid].make_task(t['day'], slot, t['created_turn'], legacy=True)   # an office dossier an older build made (#355)
         need(t["id"]==original["id"],"Mã công việc sai ngày.")
         need(set(original)<=set(t),"Bản lưu thiếu trường công việc.")
         for key in ("npc","title","opening","kind","needs","variant","solution","value","evidence"):

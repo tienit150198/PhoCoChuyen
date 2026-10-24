@@ -147,6 +147,47 @@ def _bad_phone(rng, num: str) -> str:
     return num[:i] + b + a + num[i + 2:]
 
 
+# #355 (player: "thay gõ chữ thành drop down thì dễ"): who called, from where and when are picked from four options
+# (the right one, a misheard one, someone else the call mentions), scored like the typed boxes. A call already
+# handed out keeps its typed boxes: JOB's `legacy` test makes engine.validate_state rebuild it as it was (ctx legacy).
+CALLERS = ('Xưởng vải Lực Thành', *SCHOOLS, 'Vận tải Nhanh Như Gió', 'Công ty Khóa kéo Sao Mai', 'Ngân hàng Phương Nam')
+OWN_COMPANY = 'Công ty CP Cánh Diều'
+
+
+def _typed_call(t: dict) -> bool:
+    """A call message handed out before #355: its name box is typed."""
+    w = t.get('work')
+    fields = w.get('fields') if isinstance(w, dict) else None
+    return isinstance(fields, list) and any(isinstance(f, dict) and f.get('id') == 'name' and f.get('kind') == 'text' for f in fields)
+
+
+def _choices(rng, right: str, wrong: list, fill: list) -> tuple[list, str]:
+    """Four options ({id, label}) in a shuffled order and the id of `right`: `wrong` first, then `fill` to make four."""
+    labels = [right]
+    for x in [*wrong, *fill]:
+        if len(labels) == 4:
+            break
+        if x and x not in labels:
+            labels.append(x)
+    rng.shuffle(labels)
+    opts = [dict(id='abcd'[i], label=x) for i, x in enumerate(labels)]
+    return opts, opts[labels.index(right)]['id']
+
+
+def _misheard_names(rng, name: str, female: bool) -> list:
+    fam, mid, given = name.split(' ', 2)
+    near_given = rng.choice([g for g in ow.GIVEN[female] if g != given])
+    near_fam = rng.choice([f for f in ow.FAMILY if f != fam])
+    return [f'{fam} {mid} {near_given}', f'{near_fam} {mid} {given}']
+
+
+def _misheard_times(said: str) -> list:
+    h, m = (int(x) for x in said.split(':'))
+    twelve = f'{h - 12:02d}:{m:02d}' if h > 12 else f'{h + 12:02d}:{m:02d}'   # sáng / chiều mixed up
+    near = f'{h + 1:02d}:15' if m == 45 else f'{h:02d}:{30 if m == 0 else 0:02d}'   # "kém mười lăm", "rưỡi" misheard
+    return [near, twelve]
+
+
 def g_calls(rng, ctx: dict) -> dict:
     tier = ctx['tier']
     used: set = set()
@@ -192,19 +233,42 @@ def g_calls(rng, ctx: dict) -> dict:
     script.append(dict(who='📞 Khách', text=f'Gọi lại sau {said_t[0]} nhé, trước đó {me} không nghe máy được.'))
     if tier >= 2:
         script.append(dict(who='📞 Khách', text=f'À, có ai hỏi thì số bàn {me} là {_say(other)}, nhưng gọi di động thôi nhé.'))
-    alts = [f'{x} {name}' for x in ('anh', 'chị', 'ông', 'bà')]
-    fields = [dict(id='name', label='Người gọi (họ tên)', kind='text', _ok=name, _alt=alts, _why='Ghi đủ họ tên để sếp biết ai.', _sev=1),
-              dict(id='company', label='Gọi từ đâu', kind='text', _ok=company,
-                   _alt=[company.replace('Công ty ', ''), company.replace('Ngân hàng ', ''), company.split(' (')[0]], _why='Ghi đúng tên đơn vị.', _sev=1),
+    if ctx.get('legacy'):   # a call handed out before #355: its typed boxes, exactly as made then (engine re-checks them)
+        alts = [f'{x} {name}' for x in ('anh', 'chị', 'ông', 'bà')]
+        fields = [dict(id='name', label='Người gọi (họ tên)', kind='text', _ok=name, _alt=alts, _why='Ghi đủ họ tên để sếp biết ai.', _sev=1),
+                  dict(id='company', label='Gọi từ đâu', kind='text', _ok=company,
+                       _alt=[company.replace('Công ty ', ''), company.replace('Ngân hàng ', ''), company.split(' (')[0]], _why='Ghi đúng tên đơn vị.', _sev=1),
+                  dict(id='phone', label='Số gọi lại', kind='digits', _ok=phone, _why='Người gọi đã sửa lại số — lấy số sau cùng.', _sev=2, _code='call_phone'),
+                  dict(id='time', label='Gọi lại lúc (24 giờ, vd 14:30)', kind='time', _ok=said_t[1], _why=f'“{said_t[0]}” là {said_t[1]}.', _sev=1),
+                  dict(id='topic', label='Việc gì', kind='pick', opts=TOPICS, _ok=topic, _why='Chọn đúng việc để sếp biết gọi lại chuẩn bị gì.', _sev=1)]
+        tw = None
+        if ctx['twist']:
+            later = rng.choice([x for x in LATER if x[1] != said_t[1]])
+            tw = dict(at=0, field='time', ok=later[1], why=f'Người gọi đã đổi giờ: “{later[0]}” là {later[1]}.',
+                      note=f'{name} vừa gọi lại lần nữa — nghe máy đi!',
+                      line=dict(who='📞 Khách (gọi lại)', text=f'À em ơi, {me} đổi giờ nhé: {later[0]} mới gọi được.'))
+        return _call_task(name, script, fields, tw)
+    later = rng.choice([x for x in LATER if x[1] != said_t[1]])   # the twist's new time (always an option)
+    name_opts, name_ok = _choices(rng, name, _misheard_names(rng, name, female), [BOSS])
+    others = [x for x in CALLERS if x != company]
+    rng.shuffle(others)
+    company_opts, company_ok = _choices(rng, company, [OWN_COMPANY], others)
+    time_opts, time_ok = _choices(rng, said_t[1], [*_misheard_times(said_t[1]), later[1]], [x[1] for x in SPOKEN])
+    fields = [dict(id='name', label='Người gọi (họ tên)', kind='pick', opts=name_opts, _ok=name_ok, _why='Chọn đúng họ tên để sếp biết ai.', _sev=1),
+              dict(id='company', label='Gọi từ đâu', kind='pick', opts=company_opts, _ok=company_ok, _why='Chọn đúng tên đơn vị.', _sev=1),
               dict(id='phone', label='Số gọi lại', kind='digits', _ok=phone, _why='Người gọi đã sửa lại số — lấy số sau cùng.', _sev=2, _code='call_phone'),
-              dict(id='time', label='Gọi lại lúc (24 giờ, vd 14:30)', kind='time', _ok=said_t[1], _why=f'“{said_t[0]}” là {said_t[1]}.', _sev=1),
+              dict(id='time', label='Gọi lại lúc (24 giờ)', kind='pick', opts=time_opts, _ok=time_ok, _why=f'“{said_t[0]}” là {said_t[1]}.', _sev=1),
               dict(id='topic', label='Việc gì', kind='pick', opts=TOPICS, _ok=topic, _why='Chọn đúng việc để sếp biết gọi lại chuẩn bị gì.', _sev=1)]
     tw = None
     if ctx['twist']:
-        later = rng.choice([x for x in LATER if x[1] != said_t[1]])
-        tw = dict(at=0, field='time', ok=later[1], why=f'Người gọi đã đổi giờ: “{later[0]}” là {later[1]}.',
+        later_ok = next(o['id'] for o in time_opts if o['label'] == later[1])
+        tw = dict(at=0, field='time', ok=later_ok, why=f'Người gọi đã đổi giờ: “{later[0]}” là {later[1]}.',
                   note=f'{name} vừa gọi lại lần nữa — nghe máy đi!',
                   line=dict(who='📞 Khách (gọi lại)', text=f'À em ơi, {me} đổi giờ nhé: {later[0]} mới gọi được.'))
+    return _call_task(name, script, fields, tw)
+
+
+def _call_task(name: str, script: list, fields: list, tw) -> dict:
     return dict(npc=0, title=f'Ghi lời nhắn: {name}',
                 opening='Điện thoại bàn reo. Anh Quân đang họp, chị Khuê nhắc: “Ghi lời nhắn cho đủ, sai một số là sếp gọi nhầm người đấy.”',
                 brief='Đọc cuộc gọi, ghi lời nhắn cho sếp: ai gọi, từ đâu, số gọi lại, giờ gọi lại, việc gì.',
@@ -738,9 +802,9 @@ FORMS = [dict(id='inbox', label='Thư gửi sếp', min_day=1, bonus=25, build=g
 JOB = ow.OfficeJob(dict(
     id=ID, prefix=P, boss=BOSS, boss_npc=0, forms=FORMS, mods=MODS, forced={4: 'board'}, intro={2: 'away', 3: 'vip', 4: 'check'},
     more_mods=('vip',), busy_mod='away', crunch='board', audit='check', auditor='Chị Khuê', helpers=('Chị Khuê',), care=CARE, desk=DESK,
-    rules=rules,
+    rules=rules, legacy=lambda t: t.get('form') == 'calls' and _typed_call(t),
     hints=dict(inbox='Đọc “Sếp dặn” → chạm từng thư, chọn khay. Soi kỹ địa chỉ gửi: email thật luôn có đuôi @canhdieu.vn.',
-               calls='Đọc hết cuộc gọi, kể cả câu cuối — người gọi hay sửa số, sửa giờ. Ghi giờ theo 24 giờ.',
+               calls='Đọc hết cuộc gọi, kể cả câu cuối — người gọi hay sửa số, sửa giờ. Chọn đúng người, nơi gọi và giờ (24 giờ).',
                letter='So từng chỗ với ghi chú của sếp và tờ lịch: chạm chỗ sai, chọn cách viết đúng.',
                meetings='Chọn một cuộc họp → chạm ô phòng/giờ. Xem bảng: ai bận, phòng nào đã có người đặt, cần máy chiếu hay màn hình.',
                prep='Chạm từng việc để thêm vào danh sách theo thứ tự. Việc gây hại thì bỏ ra.',
