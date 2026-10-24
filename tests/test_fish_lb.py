@@ -223,7 +223,7 @@ class Names(unittest.TestCase):
         validate_state(s)
 
     def test_schema_93(self):
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 93)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 93)   # the fish tables came with 93; later schemas keep them
         names = [t['name'] for t in pg_schema.TABLES]
         for t in ('fish_best', 'fish_dex', 'fish_rec'):
             self.assertIn(t, names)
