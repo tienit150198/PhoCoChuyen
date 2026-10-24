@@ -360,7 +360,6 @@ function whyText(bad,rm,it){
   return 'Chỗ này không đặt được.';
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const SNAP=U/2;
 /** The surfaces a small thing may stand on in `rm`: their top in pixels and how to turn a point into a spot. */
 function surfaces(rm,list,G){
   const out=[];
@@ -399,8 +398,7 @@ function candidate(rm,it,ax,ay,list,f){
   if(it.spot==='wall')y=(ay-G.WY)/A.SW;
   else if(it.spot==='top')y=(ay+6-G.FY)/A.SF-U;
   else y=(ay+3-G.FY)/A.SF-it.h*U;
-  const snap=v=>Math.round(v/SNAP)*SNAP;   // ▦ the grid: half a cell (the arrow keys still nudge finer)
-  const q={r:rm.id,x:clamp(snap(x),0,z[0]),y:clamp(snap(y),0,z[1]),f};if(it.rot)q.rot=it.rot;return q;
+  const q={r:rm.id,x:clamp(Math.round(x),0,z[0]),y:clamp(Math.round(y),0,z[1]),f};   // anywhere, as before 2.6.0 (no snap grid)if(it.rot)q.rot=it.rot;return q;
 }
 const heldItem=()=>S.held?A.turn(ITEM(S.held.k),S.held.rot||0):null;
 const roomsFor=it=>(V()?.rooms||[]).filter(r=>it.rooms.includes(r.type));
@@ -539,9 +537,8 @@ const sparkles=(x,y,w,h)=>`<g class="dc-sparks" aria-hidden="true">${[[.1,.1,'#f
 function zoneMarkup(rm,it,G,list){
   if(!it||!it.rooms.includes(rm.type))return '';
   const z=zoneOf(rm,it),out=[];
-  const grid=(y0,rows,rh)=>{let d='';for(let i=1;i<rm.cols;i++)d+=`M${A.PX+i*A.CW} ${y0}v${rows*rh}`;for(let j=1;j<rows;j++)d+=`M${A.PX} ${y0+j*rh}h${rm.cols*A.CW}`;return d?`<path class="dc-grid" d="${d}"/>`:'';};   // ▦ the cells it snaps to
-  if(it.spot==='wall'&&rm.wrows)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.WY}" width="${rm.cols*A.CW}" height="${rm.wrows*A.WR}" rx="8"/>`,grid(G.WY,rm.wrows,A.WR));
-  else if(it.spot!=='wall'&&z)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.FY}" width="${rm.cols*A.CW}" height="${rm.frows*A.FR}" rx="8"/>`,it.spot==='top'?'':grid(G.FY,rm.frows,A.FR));
+  if(it.spot==='wall'&&rm.wrows)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.WY}" width="${rm.cols*A.CW}" height="${rm.wrows*A.WR}" rx="8"/>`);
+  else if(it.spot!=='wall'&&z)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.FY}" width="${rm.cols*A.CW}" height="${rm.frows*A.FR}" rx="8"/>`);
   for(const f of rm.fix)if(f.block&&f.layer===(it.spot==='wall'?'wall':'floor')&&!(it.spot==='rug'&&f.rug)&&!(f.allow||[]).some(t=>it.tags.includes(t))){
     const y=f.layer==='wall'?G.WY+f.y*A.WR:G.FY+f.y*A.FR,h=f.layer==='wall'?f.h*A.WR:f.h*A.FR;
     out.push(`<rect class="dc-nogo" x="${A.PX+f.x*A.CW+3}" y="${y+3}" width="${f.w*A.CW-6}" height="${h-6}" rx="6"/>`);
@@ -1203,8 +1200,8 @@ function decoPage(v){
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
   const cells=S.edit&&!S.photo?cellsMarkup(rm,chosen()):'';   // ♿ every spot a named button
-  const done=S.edit&&(S.coop||!S.remote)?`<div class="dc-donecorner">${btn('✓ Xong','done',{},'primary small',' aria-label="Xong, thôi bày trí"')}</div>`:'';   // always in reach, even zoomed in
-  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap"><div class="dc-zoom"${ZM.style()}>${svg}${cells}</div>${ZM.controls(btn)}${done}${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
+  // 🏠 the chibi room as before 2.6.0 (owner 24/10: "nhà cũ chibi… trang trí cũ"): nothing drawn over it; 🔍 ＋ － ⤢ in a row above
+  const stage=`<div class="dc-stage">${roomTabs(v)}${ZM.controls(btn)}<div class="dc-roomwrap"><div class="dc-zoom"${ZM.style()}>${svg}${cells}</div>${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
   const side=S.coop?`${coopCard()}${S.edit&&wide?drawer(v):''}`:S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${S.edit?'':babyCard()}${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${stayCard(v)}${cozyCard(v)}${coopOwnerCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }

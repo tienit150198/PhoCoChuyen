@@ -83,6 +83,11 @@ assert.doesNotMatch(html,/home3d|Nhà 3D|◈/,'no 3D view any more');
 
 // ---- 🔍 zoom: controls, a pinch-free check of the math, the wheel at full view leaves the page scrolling
 assert.match(html,/class="dc-zoombar"/);
+// 🏠 the chibi room as before 2.6.0 (owner 24/10): no dashed outlines on the drawings (#518), no snap grid, nothing over the room
+const css=await readFile(new URL('../public/css/reno.css',import.meta.url),'utf8');
+for(const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g))if(/stroke-dasharray/.test(m[2]))assert.doesNotMatch(m[1],/\.dc-(grid|stage|side|roomwrap|zoom)/,'no dashes inherited by every drawing: '+m[1].trim());
+assert.doesNotMatch(html,/dc-snapgrid|class="dc-grid" d=|dc-donecorner/,'no snap grid, no ✓ Xong over the room');
+assert.ok(html.indexOf('class="dc-zoombar"')<html.indexOf('class="dc-roomwrap"'),'🔍 in a row above the room');
 const Z=zoomer(),frame={style:{},classList:{add(){},remove(){}},offsetWidth:400,offsetHeight:300,parentElement:{getBoundingClientRect:()=>({left:0,top:0,width:400,height:300}),classList:{toggle(){}},querySelector:()=>null,querySelectorAll:()=>[]}};
 const root={querySelector:s=>s==='.dc-zoom'?frame:null};
 Z.button(root,'in');assert.ok(Z.k>1);assert.match(frame.style.transform,/scale\(1\.350\)/);
