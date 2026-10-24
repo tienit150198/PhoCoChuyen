@@ -1492,6 +1492,38 @@ def _legacy_offer(db, spec: dict, provider: str, data: dict) -> tuple:
     return place, offer
 
 
+def _talk_offer(db, row: dict, role: str, price: int) -> dict:
+    """#526 The offer a legacy talk ('wo') seals at `price`. A career place offers only its NEXT customer ticket, and that
+    ticket changes as soon as the provider serves one more customer or closes the shift, so the ticket the buyer bargained
+    on is usually gone by the time someone agrees. A career talk then moves to the place's current ticket of the same kind
+    whose price range still holds the agreed price; a quầy dish is never swapped for another dish."""
+    d = _data(row)
+    place = db.execute('SELECT * FROM work_visit_places WHERE id=? AND owner=?', (d.get('place'), row['provider'])).fetchone()
+    need(place, 'Không tìm thấy chỗ làm này.', 'not_found', 404)
+    place = dict(place)
+    snap = _data(place)
+    offers = [o for o in snap.get('offers') or [] if isinstance(o, dict) and isinstance(o.get('offer_id'), str)
+              and type(o.get('price')) is int] if snap.get('available') else []
+    same = next((o for o in offers if o['offer_id'] == d.get('offer_id')), None)
+    if same:
+        return same
+    if place['kind'] != 'quay':
+        staff = str(d.get('offer_id') or '').startswith('staff:')
+        fits = [o for o in offers
+                if (q := legacy_quote(db, row['provider'], place['kind'], o.get('career') or place['target'], o['price']))['lo'] <= price <= q['hi']]
+        fits.sort(key=lambda o: o['offer_id'].startswith('staff:') != staff)
+        if fits:
+            return fits[0]
+    if offers:
+        need(False, 'Phiếu dịch vụ đã đổi nên giá này không còn hợp. Dừng cuộc trả giá này rồi đặt lại nhé.', 'offer_gone', 409)
+    if place['kind'] == 'quay':
+        need(False, 'Món này đang hết hoặc quầy tạm dừng. Thử lại sau, hoặc dừng trả giá.', 'offer_gone', 409)
+    if role == 'provider':
+        need(False, 'Tiệm chưa nhận thêm khách lúc này (chưa mở ca, đang đủ việc hoặc hết lượt hôm nay). '
+             'Làm bớt việc hoặc mở ca rồi bấm Đồng ý lại, hoặc Từ chối.', 'offer_gone', 409)
+    need(False, 'Tiệm này chưa đón khách lúc này. Thử lại sau, hoặc dừng trả giá.', 'offer_gone', 409)
+
+
 def _order(store, sid: str, data: dict, ip: str) -> dict:
     """A fixed-price order: the buyer pays the quoted price into escrow; the provider takes it (or not, refunded)."""
     need(set(data) <= {'pid', 'career', 'service', 'qty', 'note', 'rid', 'expected_price', 'place', 'offer_id'}, 'Thông tin đặt dịch vụ không hợp lệ.')
@@ -1655,7 +1687,9 @@ def _answer(store, sid: str, data: dict, ip: str) -> dict:
     if row['kind'] == 'wo':
         from . import work_visits
         d = _data(row)
-        return work_visits.market_order(store, row['buyer'], dict(place=d.get('place'), offer_id=d.get('offer_id'), note=d.get('note', ''),
+        with store.connect() as db:
+            offer = _talk_offer(db, row, role, price)
+        return work_visits.market_order(store, row['buyer'], dict(place=d.get('place'), offer_id=offer['offer_id'], note=d.get('note', ''),
                                                                   rid='tk' + row['id'][3:]), ip, talk=dict(id=row['id'], price=price, rounds=row['rounds'],
                                                                                                            actor=sid, provider_agreed=True))
     if spec:

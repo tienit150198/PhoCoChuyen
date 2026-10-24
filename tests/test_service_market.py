@@ -515,6 +515,41 @@ class Legacy(_Helpers):
         r = self.row(t['id'])
         self.assertEqual((r['status'], r['link']), ('linked', out['order']['id']))
 
+    def test_legacy_talk_survives_the_next_customer_ticket(self):
+        """#526: the provider served another customer (or closed the shift) after the buyer bargained: the ticket the
+        talk names is gone. Agreeing moves the talk to the shop's current ticket, never 'Dịch vụ này hiện chưa sẵn sàng.'"""
+        from game import work_visits as wv
+        a, b = self.user('lg_ra'), self.user('lg_rb')
+        self.sell(a, service='job', mode='nego')
+        offer = self.get(b, 'dir', career='milk_tea', service='job')['items'][0]['offers'][0]
+        price = offer['base'] * 2
+        t = self.post(b, 'offer', pid=self.pid(a), career='milk_tea', service='job', place=offer['place'], offer_id=offer['offer_id'],
+                      price=price, rid='legacy-talk-26')['order']
+        # the shop serves a customer and takes its next NPC one: the ticket the talk names is gone
+        mr._mutate(self.store, {self.sid(a): lambda s: s['careers']['milk_tea']['tasks'][0].update(status='completed')})
+        self.cmd(a, 'more_work', career='milk_tea')
+        now = self.get(b, 'dir', career='milk_tea', service='job')['items'][0]['offers']
+        self.assertNotIn(offer['offer_id'], [o['offer_id'] for o in now])
+        with patch.object(wv, '_bridge', return_value=pst):
+            out = self.post(a, 'answer', order=t['id'], op='accept', ask=price)
+        self.assertEqual((out['order']['price'], out['order']['status']), (price, 'accepted'))
+        self.assertEqual(self.row(t['id'])['status'], 'linked')
+
+    def test_legacy_talk_on_a_closed_shop_says_what_to_do(self):
+        a, b = self.user('lg_ca'), self.user('lg_cb')
+        self.sell(a, service='job', mode='nego')
+        offer = self.get(b, 'dir', career='milk_tea', service='job')['items'][0]['offers'][0]
+        t = self.post(b, 'offer', pid=self.pid(a), career='milk_tea', service='job', place=offer['place'], offer_id=offer['offer_id'],
+                      price=offer['base'] * 2, rid='legacy-talk-27')['order']
+        with self.store.connect() as db:   # the shift ended: no ticket at all
+            db.execute("UPDATE work_visit_places SET data=jsonb_set(jsonb_set(data::jsonb,'{offers}','[]'),'{available}','false')::text "
+                       'WHERE id=?', (offer['place'],))
+            db.commit()
+        msg = self.refused('offer_gone', self.post, a, 'answer', order=t['id'], op='accept', ask=offer['base'] * 2)
+        self.assertIn('mở ca rồi bấm Đồng ý lại', msg)
+        self.assertEqual(self.row(t['id'])['status'], 'talk')   # still answerable: decline works
+        self.assertEqual(self.post(a, 'answer', order=t['id'], op='decline')['order']['status'], 'declined')
+
 
     def test_quay_visitor_bonus_cap_stays_at_twice_the_dish_base(self):
         from game import quay as qy, quay_self as qs, quay_business as qb
