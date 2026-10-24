@@ -44,6 +44,10 @@ Moving (memory only, never the database)
   `fl` (the tier) and `v` while flying, and the `rd` diff carries `fl` (null: on foot) beside `r`. Flying and riding never
   go together: taking off sends the vehicle home (a passenger behind gets off, sitting behind someone gets off), riding or
   sitting behind lands first. A café and a wedding are on foot (`no_fly`). Older clients ignore `fl` (they see a walker).
+  🪽 In the air nothing on the ground is in the way (owner 24/10 "bay bị mắc nhà ... bay cứ vướng vướng"): a flyer's `move`
+  goes in a straight line to the target, over the lake, the fountain and the stalls, only kept inside the place (Geo.air);
+  landing over something solid walks them from there to the nearest walkable point first (Geo.route from a point off the
+  walkable ground), so nobody stays inside a stall.
 * 👶 Bế bé đi chơi (live/babies.py): `walk_in` / `wed_in` may carry `bb` {n, g, o, sh?}, the baby in the player's
   arms; their public entry has `bb` while set. The shared child is carried by one spouse at a time (`bb_taken` in
   walk_room). Optional: an older client ignores it.
@@ -179,9 +183,23 @@ class Geo:
                 return False
         return True
 
+    def fly(self, x: float, y: float) -> tuple:
+        """🪽 The point (x, y) kept inside the place (a flyer may be over anything else)."""
+        return (round(min(max(x, 0.0), float(W)), 1), round(min(max(y, 0.0), float(H)), 1))
+
+    def air(self, a, b) -> list:
+        """🪽 A flyer's path: straight from a to b (kept inside the place), over the lake, the fountain and the stalls."""
+        return [[round(a[0], 1), round(a[1], 1)], list(self.fly(*b))]
+
     def route(self, a, b) -> list:
-        """A walkable path from a to b (both walkable): straight when it can be, else through junctions."""
+        """A walkable path from a to b: straight when it can be, else through junctions. 🪽 From a point off the
+        walkable ground (landing over a stall, the lake): first to the nearest walkable point; b likewise onto it."""
         a, b = (round(a[0], 1), round(a[1], 1)), (round(b[0], 1), round(b[1], 1))
+        if not self.inside(*b):
+            b = self.clamp(*b)
+        if not self.inside(*a):
+            c = self.clamp(*a)
+            return [list(a)] + self.route(c, b)
         if self.seg_ok(a, b):
             return [list(a), list(b)]
         J = self.junctions
@@ -724,7 +742,8 @@ class StreetFeature(Feature):
         if w.seat:
             self._unseat(room, w, now)
         g = GEO[room.data['place']]
-        w.path, w.t0 = g.route(w.at(now), g.clamp(x, y)), now
+        here = w.at(now)
+        w.path, w.t0 = (g.air(here, (x, y)) if w.fl is not None else g.route(here, g.clamp(x, y))), now   # 🪽 straight
         self._queue(room, w.pid, dict(k='mv', pid=w.pid, p=w.path, at=round(now, 3)))
         self._carry(room, w)
         return None
@@ -784,7 +803,9 @@ class StreetFeature(Feature):
             w.ride = None
         here, end = w.at(now), tuple(w.path[-1])
         w.fl = tier
-        w.path, w.t0 = GEO[room.data['place']].route(here, end), now
+        g = GEO[room.data['place']]
+        # 🪽 taking off: straight on; landing: from where they are (over a stall, the lake) onto walkable ground first
+        w.path, w.t0 = (g.air(here, end) if tier is not None else g.route(here, end)), now
         self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=w.ride, v=w.speed, p=w.path, at=round(now, 3), fl=w.fl))
         return True
 
@@ -897,7 +918,8 @@ class StreetFeature(Feature):
         tb.seats[si] = w.pid
         w.seat = (i, si)
         g = GEO[room.data['place']]
-        w.path, w.t0 = g.route(w.at(now), tuple(tb.pts[si])), now
+        here = w.at(now)
+        w.path, w.t0 = (g.air(here, tb.pts[si]) if w.fl is not None else g.route(here, tuple(tb.pts[si]))), now   # 🪽
         if tb.topic is None:
             tb.deal(now)
         self._queue(room, w.pid, dict(k='mv', pid=w.pid, p=w.path, at=round(now, 3)))

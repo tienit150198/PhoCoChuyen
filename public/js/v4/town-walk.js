@@ -16,8 +16,11 @@
  * 🪽 Bay (owner 24/10 "bay được k nhỉ, sẽ có tăng tốc độ như xe ấy, nếu sử dụng cánh thì k lái xe được"): wearing wings,
  * "🪽 Bay / 🪽 Hạ cánh" under it: the player hovers over the street (a bob with the wings' beat, their shadow on the
  * ground), the wings drawn apart at their full stroke, faster by the tier (./ride.js flySpeedNow); never on the vehicle
- * (its toggle lands first, taking off sends it home). No parking at a door: they fly to it. */
-import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
+ * (its toggle lands first, taking off sends it home). No parking at a door: they fly to it.
+ * 🪽 In the air nothing is in the way (owner 24/10 "bay bị mắc nhà ... bay cứ vướng vướng"): a straight line over the shops
+ * and roofs to the tap, the door or the keys' step, kept inside the town (town-place.js airRoute); Hạ cánh over a shop
+ * walks them down to the nearest street point, and the rest of the way goes on over the streets (groundRoute). */
+import {plan,nearest,walkable,airRoute,groundRoute,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
 import {figure,paintPlayer,CANVAS,lookOf,myPairs,wingOfState} from './look.js';
 import {drawWings,drawMotes,wingBitmap,flapStep,wingScale,flyMotion,flyShadow,FLY_WING,FLY_LEAN,CLASSIC_WING,WING_BOX} from './wings-art.js';   // 🪽 Bay
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
@@ -245,8 +248,17 @@ function setFly(){
   const can=canFly(S()),on=can&&flying(S())&&!W.ride;
   if(W.fb){W.fb.hidden=!can;if(can){const t=tr(flyLabel(on));if(W.fb.textContent!==t)W.fb.textContent=t;W.fb.setAttribute('aria-pressed',String(on));W.fb.title=tr(on?'Đang bay: chạm để hạ cánh':'Bay nhanh như đi xe');}}
   if(on===W.fly)return;
-  W.fly=on;if(on)W.park=null;W.drawn=0;kick();
+  W.fly=on;if(on)W.park=null;else landNow();W.drawn=0;kick();
 }
+/** 🪽 Hạ cánh: the rest of the way on foot from where they are (over a shop: down to the street first), or, standing
+ * over a roof, the few steps down to the nearest street point. */
+function landNow(){
+  const m=W.me;if(!m||!W.pl)return;
+  if(m.path?.length&&W.leg){W.legs.unshift({...W.leg,fly:false});W.leg=null;m.path=null;nextLeg();return;}
+  if(!walkable(W.pl,[m.x,m.y])){W.legs=[{to:nearest(W.pl,[m.x,m.y])}];W.leg=null;nextLeg();}
+}
+/** One leg's path: straight in the air, else over the floor (from over a roof: down to the street first). */
+const legPath=(g,from)=>g.fly&&W.fly?airRoute(W.pl,from,g.to):groundRoute(W.pl,from,g.to);
 /** 👶 The baby toggle (only with a baby at home) and the sprite with the baby in your arms. */
 function setBaby(){
   if(!W.bb)return;
@@ -330,9 +342,9 @@ function walkTo(p,then=null,door=null){
     else legs.push({to:p,ride:true});
   }
   let from=[W.me.x,W.me.y];
-  for(const g of legs){g.preview=route(W.pl,from,g.to);if(g.preview?.length)from=g.preview.at(-1);}
+  for(const g of legs){g.preview=legPath(g,from);if(g.preview?.length)from=g.preview.at(-1);}
   W.legs=legs;W.leg=null;
-  if(still()){while(W.legs.length){const g=W.legs.shift(),path=route(W.pl,[W.me.x,W.me.y],g.to),end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];legEnd(g);}
+  if(still()){while(W.legs.length){const g=W.legs.shift(),path=legPath(g,[W.me.x,W.me.y]),end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];legEnd(g);}
     W.me.path=null;snap();W.drawn=0;kick();arrived();return;}
   nextLeg();
 }
@@ -341,7 +353,7 @@ function nextLeg(){
   for(;;){
     const g=W.legs.shift();W.leg=g||null;
     if(!g){arrived();return;}
-    const path=route(W.pl,[W.me.x,W.me.y],g.to);
+    const path=legPath(g,[W.me.x,W.me.y]);
     let len=0;if(path)for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
     if(!path||len<.5){legEnd(g);continue;}
     const fast=g.ride?speedOf(W.ride):g.fly&&W.fly?flySpeedNow(S()):1;   // 🪽 the wings' speed

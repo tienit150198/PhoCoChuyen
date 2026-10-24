@@ -33,6 +33,9 @@ const NO_FLY:FlyPose={flap:0,lift:0,lean:0};
 const hover=(o:any,wg:any,t:number|null,moving:boolean):FlyPose=>{const m=flyMotion(o,wg,t,moving);return {flap:m.flap,lift:m.lift*(VA.RIDE_SCALE||.78),lean:m.lean};};
 /** The body's turn for a lean 0…1 facing `direction` (forward: toward the side it faces on screen). */
 const leanOf=(lean:number,direction:string)=>lean*flyLean()*faceOfDir(direction);
+/** 🪽 A flyer is drawn above every building, tree and sign (the island's statics go up to ~4500: (x+y)*32 at its far
+ * corner), still in depth order among flyers; their shadow stays on the ground (hidden by a roof it falls on). */
+export const FLY_DEPTH=6000;
 const flyShadowOf=(h:number,s:number)=>VA.flyShadow?VA.flyShadow(h,s):{rx:20*s,ry:6*s,a:.25};
 // 🛵 Owner 17/10 "cảm giác lái": a ride starts at walking pace and reaches its speed over RIDE_RAMP s (eased).
 const RIDE_RAMP=.7;
@@ -49,7 +52,7 @@ const onLowEnd=(fn:()=>void):()=>void=>PM.onLowEnd?.(fn)||(()=>{});
 /* Frame watch (23/10 lag): while something moves, an average frame interval over SLOW_MS for SLOW_FRAMES frames means
  * this device cannot hold 60: cap the loop at LOW_FPS (even 30 instead of a jittery 35–45, half the drawing). */
 const SLOW_MS=30,SLOW_FRAMES=120,LOW_FPS=32;
-import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,landmarkSpritePlacement,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
+import {activeTasks,advanceRoute,airRoute,CAMERA_ZOOM,clampToBounds,landingSpot,moveInAir,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,landmarkSpritePlacement,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
 import {insideIsland,islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
 import {TextureFrames} from './texture-frames';
@@ -78,7 +81,7 @@ export type WorldMode = 'town' | 'work';
 type StaticVisual=Phaser.GameObjects.Image|Phaser.GameObjects.Text|Phaser.GameObjects.Container;
 // mask: filled when first needed (maskOf) or in idle time (warmMasks), from the frame the image had when registered
 type Occluder=Omit<OccludingShape,'mask'>&{mask?:AlphaMask|null;maskKey:string;maskFrame:Phaser.Textures.Frame;image:Phaser.GameObjects.Image;sign?:Phaser.GameObjects.Container;alpha:number;target:number};
-type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string;fly?:number|null;shadow?:Phaser.GameObjects.Image|null;fm?:any;fp?:FlyPose};
+type RemoteActor={peer:RemotePlayer;look:Record<string,any>;appearance:string;pose:string;artRevision:number;at:Point;from:Point;path:Point[];started:number;image:Phaser.GameObjects.Image;tag:Phaser.GameObjects.Text;texture:string;ride?:any;rideKey?:string;fly?:number|null;shadow?:Phaser.GameObjects.Image|null;fm?:any;fp?:FlyPose;down?:boolean};
 interface Hotspot extends Point {id:string;label:string;approach:Point;interactionPoint?:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
@@ -122,6 +125,15 @@ export class PhaserWorld {
   private flyCap=Infinity;
   setFlyCap(n:number){this.flyCap=Number.isFinite(n)&&n>=1?n:Infinity;}
   private flightSignature='';
+  /** 🪽 Hạ cánh over a house, a tree or the water (owner 24/10 "bay bị mắc nhà"): the flight just ended, gliding down to
+   * the nearest walkable point (model.ts landingSpot), still drawn in the air and still `fl` to the live service until
+   * they touch down; null on the ground. */
+  landing:any=null;
+  private wasAir=false;
+  /** 🪽 The flight drawn now: flying (never on a ride), or the glide down after Hạ cánh. */
+  get air(){return this.mode==='town'&&!this.vehicles?.ride?this.flight||this.landing:null;}
+  /** 🪽 Up in the air (flying or gliding down): nothing on the ground is in the way, only the map's bounds. */
+  get inAir(){return this.mode==='town'&&(!!(this.flight&&!this.vehicles?.ride)||!!this.landing);}
   treasure:Array<Point&{id:string;count:number}>=[];
   direction:Facing='se';
   reduced=false;
@@ -226,8 +238,8 @@ export class PhaserWorld {
   /** 🚗 The live presence's `r` (isometric-town.js): the vehicle ridden, or the yacht/plane "đang đi"; null on foot. */
   getRide(){return this.mode==='town'?this.vehicles?.wire||null:null;}
   /** 🪽 The live presence's `fl` (isometric-town.js): true while flying over the town. */
-  getFly(){return this.mode==='town'&&!!this.flight;}
-  correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!isWalkable(this.stage.navigation,at))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
+  getFly(){return this.mode==='town'&&(!!this.flight||!!this.landing);}   // 🪽 the glide down too: over a roof until it lands
+  correctPresence(at:Point){if(this.mode!=='town'||!this.stage||!(isWalkable(this.stage.navigation,at)||this.inAir&&inside(at,this.stage.navigation.bounds)))return;Object.assign(this.player,at,{path:[],goal:null});this.pending=null;this.stage.positionPlayer(false);if(this.cameraMode==='follow')this.recenter();this.wake();}
   setTreasure(value:unknown){
     const rows=Array.isArray(value)?value.filter(c=>c&&typeof c.id==='string'&&Number.isFinite(c.x)&&Number.isFinite(c.y)).map(c=>({id:c.id,x:c.x,y:c.y,count:Number.isFinite(c.count)?Math.max(1,Math.floor(c.count)):1})):[];
     if(JSON.stringify(rows)===JSON.stringify(this.treasure))return;this.treasure=rows;this.stage?.syncTreasure();this.wake();
@@ -254,11 +266,11 @@ export class PhaserWorld {
     const vehicles=townVehicles(state,content),vehicleSignature=JSON.stringify(vehicles),vehiclesChanged=vehicleSignature!==this.vehicleSignature;
     if(vehiclesChanged){this.vehicles=vehicles;this.vehicleSignature=vehicleSignature;this.stage?.refreshVehicles();}
     const flight=townFly(state),flightSignature=JSON.stringify(flight),flightChanged=flightSignature!==this.flightSignature;
-    if(flightChanged){this.flight=flight;this.flightSignature=flightSignature;if(flight&&this.rideParked){this.rideParked=false;this.stage?.unparkRide();}}
+    if(flightChanged){this.flight=flight;this.flightSignature=flightSignature;if(flight)this.lastFlight=flight;if(flight&&this.rideParked){this.rideParked=false;this.stage?.unparkRide();}}
     const lookChanged=this.stage?.refreshPlayer(this.stage.riderFrame());if(changed||lookChanged||vehiclesChanged||flightChanged)this.wake();
   }
   private updateCanvasLabel(){const meta=this.game?.catalogue?.find(c=>c.id===this.career);this.canvas.setAttribute('aria-label',canvasDescription(this.mode,String(this.c.life?.shop_name||meta?.place||meta?.short||this.career)));}
-  setMode(mode:WorldMode){if(mode!==this.mode){this.clearMovementControls();this.rideParked=false;this.rideBoost=0;this.stage?.unparkRide();this.mode=mode;this.currentArea='main';this.player.path=[];this.pending=null;this.layoutSignature='';this.stage?.rebuild();this.resetCamera();this.updateCanvasLabel();document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode}}));}this.wake();}
+  setMode(mode:WorldMode){if(mode!==this.mode){this.clearMovementControls();this.landing=null;this.wasAir=false;this.rideParked=false;this.rideBoost=0;this.stage?.unparkRide();this.mode=mode;this.currentArea='main';this.player.path=[];this.pending=null;this.layoutSignature='';this.stage?.rebuild();this.resetCamera();this.updateCanvasLabel();document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode}}));}this.wake();}
   scene(){return {id:'iso-'+kindOf(this.career),areas:[{id:'main',name:'Nơi làm việc',main:true}]};}
   words(){return wordsFor(this.career);}
   isPortrait(){return this.width<=620;}
@@ -305,7 +317,7 @@ export class PhaserWorld {
   pet(){this.say(this.words().cat_line||'Mướp rất vui khi có bạn ở đây.');this.stage?.celebrate(true);this.wake();}
   go(id:string,callback:()=>void=noOp){
     const h=this.hotspots.find(h=>h.id===id);if(!h||!this.stage){callback();return;}
-    const route=findRoute(this.stage.navigation,this.player,h.approach);if(!route.length){callback();return;}this.player.path=route;this.player.goal=h.approach;this.pending=callback;this.stage.highlight(id);this.wake();
+    const route=this.inAir?airRoute(this.stage.navigation,this.player,h.approach):findRoute(this.stage.navigation,this.player,h.approach);if(!route.length){callback();return;}/* 🪽 in the air: straight to the door */this.player.path=route;this.player.goal=h.approach;this.pending=callback;this.stage.highlight(id);this.wake();
   }
   snapshot(){const copy=document.createElement('canvas');copy.width=1080;copy.height=Math.max(1,Math.round(1080*this.canvas.height/this.canvas.width));const ctx=copy.getContext('2d')!;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(this.canvas,0,0,copy.width,copy.height);return copy.toDataURL('image/webp',.78);}
   preview(career:string){
@@ -334,13 +346,16 @@ export class PhaserWorld {
     const stage=this.stage;if(!stage)return;
     let moving=false;const before={x:this.player.x,y:this.player.y},ride=this.mode==='town'?this.vehicles?.ride:null,intent=!!(this.keys.size||this.movementInput.x||this.movementInput.y||this.player.path.length);
     const flight=this.mode==='town'&&!ride?this.flight:null;   // 🪽 never on a ride (ride.js flying)
+    if(flight)this.landing=null;else if(this.wasAir)this.land();   // 🪽 Hạ cánh (or onto a vehicle): down on open ground
+    if(this.landing&&(!this.player.path.length||this.mode!=='town'))this.landing=null;   // the glide was cut short (a mode change, a correction)
+    this.wasAir=!!flight;const air=!!flight||!!this.landing;
     if(!ride&&this.rideParked){this.rideParked=false;stage.unparkRide();}
     if(ride&&intent&&this.rideParked){this.rideParked=false;stage.unparkRide();}   // the next step: back on the vehicle
     this.rideBoost=(ride||flight)&&intent&&!this.rideParked?(this.reduced?1:Math.min(1,this.rideBoost+dt/RIDE_RAMP)):Math.max(0,this.rideBoost-dt/.25);
     const fast=ride&&!this.rideParked?1+(rideSpeed(ride)-1)*easeOut(this.rideBoost):flight?1+(Math.max(1,Math.min(this.flyCap,Number(flight.speed)||1))-1)*easeOut(this.rideBoost):1;
-    if(this.keys.size||this.movementInput.x||this.movementInput.y){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
-      const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),Math.min(.06,dt)*fast);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);if(moving)this.followAgain();
-    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;if(cb&&ride&&!this.rideParked){this.rideParked=true;this.rideBoost=0;stage.parkRide();}cb?.();}}
+    if(!this.landing&&(this.keys.size||this.movementInput.x||this.movementInput.y)){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
+      const next=(air?moveInAir:moveOnGround)(stage.navigation,this.player,normalizeMovementInput(sx,sy),Math.min(.06,dt)*fast);/* 🪽 in the air: straight, only the bounds */this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);if(moving)this.followAgain();
+    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',air?undefined:stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;if(this.landing){this.landing=null;this.wake();}const cb=this.pending;this.pending=null;if(cb&&ride&&!this.rideParked){this.rideParked=true;this.rideBoost=0;stage.parkRide();}cb?.();}}
     if(moving&&stage.cameraMode==='follow'){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);camera.setScroll(view.scrollX,view.scrollY);}
     if(moving){this.direction=presenceDirection(before,this.player,this.direction);const delta=project({x:this.player.x-before.x,y:this.player.y-before.y});this.walkDistance+=Math.hypot(delta.x,delta.y);}
     stage.bobParked(this.time);
@@ -368,12 +383,22 @@ export class PhaserWorld {
   private pointerUp=(e:PointerEvent)=>{const pointer=this.pointers.get(e.pointerId);this.pointers.delete(e.pointerId);this.pinch=null;this.canvas.style.cursor='grab';if(pointer&&!pointer.drag&&!gestureIsDrag(pointer.start,this.local(e))&&!this._paused&&this.stage)this.tap(this.worldPoint(this.local(e)));this.wake();};
   private pointerCancel=(e:PointerEvent)=>{this.pointers.delete(e.pointerId);this.pinch=null;this.canvas.style.cursor='grab';this.wake();};
   private wheel=(e:WheelEvent)=>{if(!this.stage||this._paused)return;e.preventDefault();this.stage.browseCamera();const p=this.local(e),before=this.worldPoint(p),camera=this.stage.cameras.main,range=this.zoomRange();camera.setZoom(Phaser.Math.Clamp(camera.zoom*Math.exp(-e.deltaY*.0013),range.min,range.max));const after=this.worldPoint(p);camera.scrollX+=before.x-after.x;camera.scrollY+=before.y-after.y;this.lastInput=this.time;this.wake();};
-  private keydown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase(),target=e.target as HTMLElement|null;if(target?.matches('input,textarea,select,[contenteditable="true"]')||this.shouldSleep())return;if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(key)){e.preventDefault();this.keys.add(key);this.wake();}if(key==='e'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!this.blockingDialog()&&this.stage){e.preventDefault();const h=nearestReachableHotspot(this.stage.navigation,this.player,this.hotspots);if(h){this.stage.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));}this.wake();}if(key==='home'){e.preventDefault();this.resetCamera();}};
+  private keydown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase(),target=e.target as HTMLElement|null;if(target?.matches('input,textarea,select,[contenteditable="true"]')||this.shouldSleep())return;if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(key)){e.preventDefault();this.keys.add(key);this.wake();}if(key==='e'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!this.blockingDialog()&&this.stage){e.preventDefault();const h=nearestReachableHotspot(this.stage.navigation,this.player,this.hotspots,2.4,this.inAir);if(h){this.stage.highlight(h.id);this.go(h.id,()=>this.onInteract(h.id));}this.wake();}if(key==='home'){e.preventDefault();this.resetCamera();}};
   private keyup=(e:KeyboardEvent)=>{this.keys.delete(e.key.toLowerCase());this.wake();};
   /** The player walks again (a tap, the keys, the joystick): a camera left browsing after a drag / zoom follows them again,
    * as the classic map does (players: "move nhân vật mà cam không đi theo"); the zoom they chose stays. */
+  /** 🪽 The flight just ended (Hạ cánh, a vehicle, wings off): over a house, a tree or the water, a short glide straight
+   * down to the nearest walkable point (landingSpot); on open ground they are down already. */
+  private land(){
+    const nav=this.stage?.navigation;if(!nav||this.mode!=='town'||isWalkable(nav,this.player)){this.landing=null;return;}
+    const at=landingSpot(nav,this.player);this.landing={...(this.lastFlight||{}),d0:Math.max(1e-6,Math.hypot(at.x-this.player.x,at.y-this.player.y))};this.pending=null;
+    if(this.reduced){Object.assign(this.player,at,{path:[],goal:null});this.landing=null;return;}
+    this.player.path=[at];this.player.goal=at;this.wake();
+  }
+  private lastFlight:any=null;
   private followAgain(){const s=this.stage;if(s&&s.cameraMode==='browse'&&!s.islandOverview&&this.pointers.size<2)s.cameraMode='follow';}  // not mid-pinch
-  private tap(point:Point){if(this.mode==='town'&&this.socialEnabled){const pid=this.stage!.hitRemote(point);if(pid){window.dispatchEvent(new CustomEvent('mnl:town-peer',{detail:{pid}}));return;}}if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.followAgain();this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(isWalkable(this.stage!.navigation,ground)){this.followAgain();this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
+  private tap(point:Point){if(this.mode==='town'&&this.socialEnabled){const pid=this.stage!.hitRemote(point);if(pid){window.dispatchEvent(new CustomEvent('mnl:town-peer',{detail:{pid}}));return;}}if(this.mode==='work'&&this._fx?.tap?.(point)){this.wake();return;}const h=this.stage!.hitTest(point);if(h){this.stage!.highlight(h.id);this.followAgain();this.go(h.id,()=>this.onInteract(h.id));return;}const ground=unproject(point);if(this.inAir&&!this.landing){const nav=this.stage!.navigation,at=clampToBounds(nav,ground);this.followAgain();this.player.path=airRoute(nav,this.player,at);this.pending=null;this.player.goal=at;this.stage!.mark(at);this.wake();return;}   // 🪽 straight over houses, trees and water
+    if(isWalkable(this.stage!.navigation,ground)){this.followAgain();this.player.path=findRoute(this.stage!.navigation,this.player,ground);this.pending=null;this.player.goal=ground;this.stage!.mark(ground);this.wake();}}
   destroy(){if(this.destroyed)return;this.destroyed=true;if(this.speechTimer)clearTimeout(this.speechTimer);if(this.wingTimer)clearTimeout(this.wingTimer);this.player.path=[];this.pending=null;this.clearMovementControls();this.disposeObservers();this._fx?.clear?.();this.engine.destroy(false);this.engine.loop.wake();this.cachedPreview.clear();if((window as any).__isoWorld===this)delete (window as any).__isoWorld;}
   private disposeObservers(){this.offLow();this.resizeObserver?.disconnect();this.visibleObserver?.disconnect();this.modalObserver?.disconnect();for(const remove of this.listeners.splice(0))remove();}
 }
@@ -496,7 +521,7 @@ class DioramaScene extends Phaser.Scene {
     const modeChanged=this.previousMode!==this.owner.mode,changed=modeChanged||this.owner.mode==='work'&&this.previousCareer!==this.owner.career;
     this.previousMode=this.owner.mode;this.previousCareer=this.owner.career;this.cameras.main.setBackgroundColor(this.owner.mode==='town'?SEA_COLOR:'#ede3ce');this.background=this.add.graphics().setDepth(-10000);this.staticObjects.push(this.background);
     if(this.owner.mode==='town')this.town();else this.work();
-    if(changed||!isWalkable(this.navigation,this.owner.player)){const home=this.owner.mode==='town'?{x:6.2,y:6.2}:{x:6.4,y:6.4};const at=nearestWalkable(this.navigation,home)||home;Object.assign(this.owner.player,at,{path:[],goal:null});this.owner.pending=null;if(modeChanged||!this.cameraSet||this.cameraMode==='follow')this.resetCamera(false);}
+    if(changed||!isWalkable(this.navigation,this.owner.player)&&!(this.owner.inAir&&inside(this.owner.player,this.navigation.bounds))){const home=this.owner.mode==='town'?{x:6.2,y:6.2}:{x:6.4,y:6.4};const at=nearestWalkable(this.navigation,home)||home;Object.assign(this.owner.player,at,{path:[],goal:null});this.owner.pending=null;if(modeChanged||!this.cameraSet||this.cameraMode==='follow')this.resetCamera(false);}
     this.refreshVehicles();this.treasureObjects.clear();this.syncTreasure();this.reindexStatics();this.refreshPlayer(this.riderFrame());this.positionPlayer(false);this.updateOcclusion(1/60);this.syncRemotePlayers();if(this.fxImage)this.fxImage.setVisible(this.owner.mode==='work');this.requestRender();
   }
   syncTreasure(){
@@ -736,7 +761,7 @@ class DioramaScene extends Phaser.Scene {
     if(signature!==this.occlusionPosition){
       this.occlusionPosition=signature;
       for(const entry of this.fadingOccluders)entry.target=1;
-      const candidates=this.occluderIndex.query({x0:p.x-14,y0:p.y-80,x1:p.x+14,y1:p.y-25});
+      const candidates=this.owner.inAir?[]:this.occluderIndex.query({x0:p.x-14,y0:p.y-80,x1:p.x+14,y1:p.y-25});   // 🪽 above the roofs: nothing to fade
       this.occludedCount=0;
       for(const entry of candidates){const mask=this.maskOf(entry);if(mask&&coversPlayer({...p,depth:this.actor.depth},{bounds:entry.bounds,depth:entry.depth,mask})){entry.target=.35;this.fadingOccluders.add(entry);this.occludedCount++;}}
     }
@@ -755,7 +780,7 @@ class DioramaScene extends Phaser.Scene {
     // Keep real sprite depth and reveal the player only through the faded obstacle.
     if(this.actorRing.x!==p.x||this.actorRing.y!==p.y-2)this.actorRing.setPosition(p.x,p.y-2);
     if(this.actorRing.depth!==this.actor.depth-.1)this.actorRing.setDepth(this.actor.depth-.1);
-    this.actorRing.setAlpha(.65).setVisible(this.occludedCount===0);
+    this.actorRing.setAlpha(.65).setVisible(this.occludedCount===0&&!this.owner.inAir);   // 🪽 in the air: the shadow marks the ground
     return active;
   }
   private islandGround(){
@@ -1141,7 +1166,10 @@ class DioramaScene extends Phaser.Scene {
           // Offscreen movement can leave the loop asleep. Advance the previous
           // segment before starting a new packet so its coordinates stay current.
           if(actor.path.length)actor.at=interpolateRoute(actor.from,actor.path,Math.min(1,(this.owner.time-actor.started)/.24));
-          actor.from={...actor.at};actor.path=this.owner.reduced?[]:findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};
+          // 🪽 a flyer (or one landing from over a roof: live/town.py puts them on the nearest open ground) goes straight
+          const air=peer.fl!=null||actor.fly!=null||!isWalkable(this.navigation,actor.at)||!isWalkable(this.navigation,peer);
+          actor.from={...actor.at};actor.path=this.owner.reduced?[]:air?airRoute(this.navigation,actor.at,peer):findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};
+          actor.down=air&&peer.fl==null&&actor.path.length>0;   // gliding down: still above the roofs until it lands
         }
         if(nameTag(actor.peer)!==nameTag(peer)||actor.peer.ink!==peer.ink){actor.tag.setText(nameTag(peer)).setColor(peer.ink||'#654a39');if(actor.tag.visible)this.remoteVisualRevision++;}actor.peer=peer;
       }
@@ -1175,14 +1203,14 @@ class DioramaScene extends Phaser.Scene {
     who.shadow.setPosition(at.x,at.y+1).setScale(2*o.rx/64,2*o.ry/24).setAlpha(o.a).setDepth(at.y+.2).setVisible(true);
   }
   /** 🪽 True while I fly over the town (World.flight, never on a ride). */
-  get flying(){return this.owner.mode==='town'&&!!this.owner.flight&&!this.riding;}
+  get flying(){return this.owner.mode==='town'&&!!this.owner.air&&!this.riding;}
   private myShadow:{shadow?:Phaser.GameObjects.Image|null}={shadow:null};
   stepRemotePlayers(now:number){
     let active=false;const c=this.cameras.main,cx=c.scrollX+c.width/2,cy=c.scrollY+c.height/2,hw=c.width/c.zoom/2+160,hh=c.height/c.zoom/2+160;
     const inView=(point:Point)=>point.x>=cx-hw&&point.x<=cx+hw&&point.y>=cy-hh&&point.y<=cy+hh;
     for(const actor of this.remoteActors.values()){
       let moving=false;
-      if(actor.path.length){const progress=Math.min(1,(now-actor.started)/.24);actor.at=interpolateRoute(actor.from,actor.path,progress);moving=progress<1;if(!moving)actor.path=[];}
+      if(actor.path.length){const progress=Math.min(1,(now-actor.started)/.24);actor.at=interpolateRoute(actor.from,actor.path,progress);moving=progress<1;if(!moving){actor.path=[];actor.down=false;}}
       const point=px(actor.at),visible=inView(point);
       if(actor.image.visible!==visible){actor.image.setVisible(visible);this.remoteVisualRevision++;}
       const tagVisible=visible&&c.zoom>=.22;if(actor.tag.visible!==tagVisible){actor.tag.setVisible(tagVisible);this.remoteVisualRevision++;}
@@ -1210,9 +1238,10 @@ class DioramaScene extends Phaser.Scene {
       if(lift)this.flyShadow(actor,point,lift);else if(actor.shadow?.visible)actor.shadow.setVisible(false);
       if(actor.image.rotation!==turn){actor.image.setRotation(turn);this.remoteVisualRevision++;}
       if(actor.image.x!==point.x||actor.image.y!==iy){actor.image.setPosition(point.x,iy);this.remoteVisualRevision++;}
-      if(actor.image.depth!==point.y+.5)actor.image.setDepth(point.y+.5);
+      const depth=actor.fly!=null||actor.down?FLY_DEPTH+point.y:point.y+.5;   // 🪽 a flyer above the roofs
+      if(actor.image.depth!==depth)actor.image.setDepth(depth);
       if(actor.tag.x!==point.x||actor.tag.y!==iy-112)actor.tag.setPosition(point.x,iy-112);
-      if(actor.tag.depth!==point.y+.7)actor.tag.setDepth(point.y+.7);
+      if(actor.tag.depth!==depth+.2)actor.tag.setDepth(depth+.2);
     }
     return active;
   }
@@ -1404,14 +1433,15 @@ class DioramaScene extends Phaser.Scene {
   private myFlyState:any={};
   myFly:FlyPose=NO_FLY;
   positionPlayer(moving:boolean){
-    this.playerMoving=moving;const riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,flying=!riding&&this.owner.mode==='town'&&!!this.owner.flight;
+    this.playerMoving=moving;const riding=this.owner.mode==='town'&&!!this.owner.vehicles?.ride&&!this.owner.rideParked,flying=!riding&&!!this.owner.air;   // 🪽 the glide down after Hạ cánh too
     // 🪽 in the air: the standing frame (legs together), never the walking cycle
     const pose=flying?{frame:0,lean:0,squash:1}:walkingPose(this.owner.walkDistance,moving,this.owner.reduced),frame=riding?this.riderFrame(moving):pose.frame;
     if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==frame||riding!==this.riding)this.refreshPlayer(frame);if(!this.actor)return;
-    this.myFly=flying?hover(this.myFlyState,this.owner.flight?.wg,this.owner.reduced?null:performance.now()/1000,moving):(this.myFlyState={},NO_FLY);
-    const f=px(this.owner.player),lift=this.myFly.lift;   // 🪽 up in the air, its shadow below
+    this.myFly=flying?hover(this.myFlyState,this.owner.air?.wg,this.owner.reduced?null:performance.now()/1000,moving):(this.myFlyState={},NO_FLY);
+    const down=this.owner.landing,goal=this.owner.player.goal,k=down&&goal?Math.min(1,Math.hypot(goal.x-this.owner.player.x,goal.y-this.owner.player.y)/(down.d0||1)):1;   // 🪽 gliding down: lower as they near the ground
+    const f=px(this.owner.player),lift=this.myFly.lift*k,depth=this.owner.inAir?FLY_DEPTH+f.y:f.y+.5;   // 🪽 up in the air, its shadow below
     if(lift)this.flyShadow(this.myShadow,f,lift);else if(this.myShadow.shadow?.visible)this.myShadow.shadow.setVisible(false);
-    if(this.actor.x!==f.x||this.actor.y!==f.y-lift)this.actor.setPosition(f.x,f.y-lift);if(this.actor.depth!==f.y+.5)this.actor.setDepth(f.y+.5);
+    if(this.actor.x!==f.x||this.actor.y!==f.y-lift)this.actor.setPosition(f.x,f.y-lift);if(this.actor.depth!==depth)this.actor.setDepth(depth);
     if(riding)this.rideMotion(f,moving);else this.actor.setRotation(flying?leanOf(this.myFly.lean,this.owner.direction):pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);
     if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138-lift};this.speech.setPosition(at.x,at.y);}
   }
