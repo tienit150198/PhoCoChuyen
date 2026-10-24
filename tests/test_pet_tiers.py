@@ -250,6 +250,31 @@ class Fusion(unittest.TestCase):
         p['b'], p['c'] = 'linh_khuyen', 0
         self.assertIn('huyền thoại', refused(self, s, 'jr_pet_fuse', pets=[extra] + more[:2], main=extra, confirm=True))
 
+    def test_mai_fuses_like_any_cat(self):
+        # 🐱 Mèo Mai (24/10) is a shop cat like the others: in no recipe, she keeps her breed going up, gives it to a main
+        # that takes it, and three SSS may still make her the cat legendary or a legendary Mai
+        self.assertFalse(any('meo_mai' in k or h == 'meo_mai' for k, (h, _) in px.RECIPES.items()))
+        s, ids = self.three(0, ('meo_mai',) * 3)
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, main=ids[1], confirm=True)
+        self.assertEqual((r['fuse']['pet'], r['fuse']['breed'], r['fuse']['rank']), (ids[1], 'meo_mai', 'C'))
+        validate_state(s)
+        s, ids = self.three(1, ('meo_mun', 'meo_mai', 'corgi'))
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, breed='meo_mai', confirm=True)
+        self.assertEqual((r['fuse']['pet'], r['fuse']['breed'], r['fuse']['rank']), (ids[0], 'meo_mai', 'B'))
+        validate_state(s)
+        s, ids = self.three(6, ('meo_mai',) * 3)
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, confirm=True)
+        legend = next(q for q in px.all_pets(s) if q['id'] == ids[0])
+        self.assertEqual((legend['b'], px.is_legend(legend, s)), ('meo_mai', True))
+        validate_state(s)
+        s, ids = self.three(6, ('meo_mai',) * 3)
+        with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
+            s, r = act(s, 'jr_pet_fuse', pets=ids, breed='than_tai', confirm=True)
+        self.assertEqual(r['fuse']['breed'], 'than_tai')
+
     def test_hybrid_recipe(self):
         s, ids = self.three(1, ('pom', 'husky', 'samoyed'))
         with rolls(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):

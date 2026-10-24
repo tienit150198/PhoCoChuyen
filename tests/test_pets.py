@@ -52,7 +52,7 @@ class Catalogue(unittest.TestCase):
         self.assertGreaterEqual(len(C.CATS), 12)
         prices = [C.BREEDS[b]['price'] for b in C.SHOP]   # 🧬 hybrids and legendaries are never sold
         self.assertEqual(min(prices), 300)
-        self.assertEqual(max(prices), 30000)
+        self.assertEqual(max(prices), 45000)                       # 🐱 Mèo Mai (24/10); the dearest dog: Phú Quốc 30.000
         for bid, b in C.BREEDS.items():
             self.assertRegex(bid, pt.ID_RE.pattern)
             self.assertTrue(b['trait'] and b['line'] and 1 <= len(b['coats']) <= 16, bid)
@@ -66,6 +66,46 @@ class Catalogue(unittest.TestCase):
         self.assertEqual(len({a['id'] for a in C.ACCS}), len(C.ACCS))
         self.assertFalse(set(C.ACC) & set(C.TOY))
         self.assertEqual(jr.content()['pets'], pt.catalogue())
+
+    def test_mai(self):
+        # 🐱 owner 24/10: his own cat Mai, a Scottish Fold, in the shop "bán giá cao cao chút"
+        b = C.BREEDS['meo_mai']
+        self.assertEqual((b['kind'], b['name'], b['shape'], b['nick'], b['shop'], b['fuse'], b['shelter'], b['tier']),
+                         ('cat', 'Mèo Mai', 'mai', 'Mai', True, '', False, 'hiem'))
+        self.assertIn('meo_mai', C.SHOP)
+        self.assertIn('meo_mai', C.CATS)
+        self.assertNotIn('meo_mai', C.SHELTER_RARE)
+        others = [C.BREEDS[x]['price'] for x in C.SHOP if x in C.CATS and x != 'meo_mai']
+        self.assertEqual(max(others), 26000)                                    # Savannah
+        self.assertGreaterEqual(b['price'], max(others) * 3 // 2)              # clearly dearer than any other cat …
+        self.assertLessEqual(b['price'], max(others) * 2)
+        self.assertLess(b['price'], min(C.BREEDS[x]['price'] for x in C.MYTH))  # … far below the ✨ / 🌟 ones
+        (coat,) = b['coats']                                                    # white, a lilac-grey cap, amber eyes
+        self.assertTrue(coat['b'] > '#f0' and coat['l'] == '#ffffff' and coat['m'] < coat['b'])
+        self.assertTrue(all(C.BREEDS[x]['nick'] == '' for x in C.ORDER if x != 'meo_mai'))
+        self.assertEqual(next(x for x in pt.catalogue()['breeds'] if x['id'] == 'meo_mai')['nick'], 'Mai')
+
+    def test_mai_art(self):
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'pet_art_mai.mjs')], cwd=root, capture_output=True, text=True,
+                             encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
+    def test_buy_mai(self):
+        s = story(wallet=50000)
+        s, _ = buy(s, 'meo_mai', nick='Mai')
+        p = P(s)['list'][-1]
+        self.assertEqual((p['b'], p['c'], p['n']), ('meo_mai', 0, 'Mai'))
+        self.assertEqual(s['journey']['wallet'], 50000 - 45000)
+        self.assertEqual(pt.walk_ref(s)['b'], 'meo_mai')
+        validate_state(s)
+        refused(self, story(wallet=40000), 'jr_pet_adopt', **{'from': 'shop'}, breed='meo_mai', coat=0, nick='Mai', confirm=True)
+        refused(self, story(wallet=50000), 'jr_pet_adopt', **{'from': 'shop'}, breed='meo_mai', coat=1, nick='Mai', confirm=True)
 
     def test_shelter_is_seeded_per_day(self):
         s = story()
@@ -296,6 +336,8 @@ class Live(unittest.TestCase):
         from live.street import Walker, clean_pet
         self.assertEqual(clean_pet(dict(b='corgi', c=1, n='Tofu', a=['no_hong', 'nope', 'o_bong'])),
                          dict(b='corgi', c=1, n='Tofu', a=['no_hong']))
+        self.assertEqual(clean_pet(dict(b='meo_mai', c=0, n='Mai')), dict(b='meo_mai', c=0, a=[], n='Mai'))
+        self.assertIsNone(clean_pet(dict(b='meo_mai', c=1)))
         for bad in (None, 'x', dict(b='rong'), dict(b='pug', c=9), dict(b='pug', c='0'), dict(b='pug', c=0, zz=1)):
             self.assertIsNone(clean_pet(bad))
         self.assertEqual(clean_pet(dict(b='pug', c=0, n='zalo 0912345678'))['n'], 'zalo •••')
