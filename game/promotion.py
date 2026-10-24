@@ -1139,8 +1139,20 @@ def _good_normal(c: dict, summary: dict) -> bool:
         return care['reliable']   # the office careers' "ngày chắc tay"
     if c['day_completed'] < 2:
         return False
-    stars = [f['stars'] for f in c['feed'] if f.get('stars') and f.get('day') == c['day'] and f.get('kind') == 'review']
+    stars = day_stars(c)
     return not stars or sum(stars) / len(stars) >= 3.5
+
+
+def day_stars(c: dict) -> list:
+    """Today's review stars as the day's measure: a review's fair stars when the customer gave fewer (góp ý #532: a
+    troll's 1★ on a job done 4/4 right, 100 %, cost the "ngày tốt"), never fewer than the customer gave."""
+    out = []
+    for f in c.get('feed') or ():
+        if f.get('stars') and f.get('day') == c.get('day') and f.get('kind') == 'review':
+            fb = f.get('feedback')
+            fair = fb.get('fair') if isinstance(fb, dict) else None
+            out.append(max(f['stars'], fair) if type(fair) is int and 1 <= fair <= 5 else f['stars'])
+    return out
 
 
 def good_today(c: dict, career: str, rec: dict) -> str | None:
@@ -1150,7 +1162,7 @@ def good_today(c: dict, career: str, rec: dict) -> str | None:
     if rec.get('shift') or career in ACCT:
         return None
     done = c.get('day_completed') if type(c.get('day_completed')) is int else 0
-    stars = [f['stars'] for f in c.get('feed', ()) if f.get('stars') and f.get('day') == c.get('day') and f.get('kind') == 'review']
+    stars = day_stars(c)
     head = f'Hôm nay: {done} việc xong'
     if done < 2:
         return f'{head} · còn {2 - done} việc nữa là ngày tốt'
@@ -1193,7 +1205,7 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
     good = (mgr['quality'] >= GOOD_Q if mgr else _good_normal(c, summary)) if worked else False
     if x is not None:
         before = x['p']
-        today = [f['stars'] for f in c['feed'] if f.get('stars') and f.get('day') == c['day'] and f.get('kind') == 'review']
+        today = day_stars(c)
         lines = ORG.close(x, s, c, career, worked, good, sum(today) / len(today) if today else None, ORG.ext_of(rec, x))
         _org_step(rec, x, before)
         if worked:

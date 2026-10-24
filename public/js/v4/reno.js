@@ -790,6 +790,8 @@ async function onClick(op,data){
     case'troSet':{const p=placed(data.uid);if(!p||!A.TRO_BG[data.bg])return;if(await send('jr_fish_tro',{uid:p.id,bg:data.bg}))sfx('success');return;}
     case'troSize':{const p=placed(data.uid),it=ITEM(p?.k);if(!p||!it)return;
       if(await send('jr_fish_tro',{uid:p.id,sz:it.id==='tranh_ca'?'nho':'lon'})){sfx('success');if(!placed(p.id))S.sel='';}return;}
+    case'troOut':{const p=placed(data.uid);if(!p)return;   // 🎣 the fish back to the bag (#528)
+      if(await S.env.confirmAction('Gỡ cá khỏi tranh?','Cá về giỏ cá, tranh mất.','Gỡ cá')&&await send('jr_fish_tro',{uid:p.id,out:true})){sfx('success');S.sel='';S.undo=S.undo.filter(u=>!(p.id in u));render();}return;}
     case'pick':return pick(data.uid);
     case'restore':S.dlg?.close();await (await import('./restore.js')).openRestore(S.env,{service:'co_dien',ref:data.uid});return;   // 🧰 Làm cổ điển by a player restorer
     case'sell':{const p=placed(data.uid)||v.bag.find(b=>b.id===data.uid),it=ITEM(p?.k);if(!it)return;
@@ -1289,7 +1291,8 @@ function toolButtons(v,p,it){
   if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Chọn vị trí hoặc phòng muốn đặt'));
   if(!S.coop&&!S.remote&&!agedBy(p.id)&&['table','bed','light','le'].includes(it.cat)&&!it.uq&&S.env?.api?.state?.journey?.story)out.push(tb('🧰 Làm cổ điển','restore','Nhờ một người chơi làm Thợ phục chế'));
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'));
-  if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
+  if(!S.coop&&tro)out.push(tb('🎣 Gỡ cá','troOut','Lấy cá ra, về giỏ cá',' danger'));
+  else if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
   return out;
 }
 /** 🎣 A tranh cá of this save (journey.fish.tro): its own background and size (game/fishing.py jr_fish_tro, góp ý #517). */

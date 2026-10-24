@@ -9,6 +9,10 @@
 - Bản cũ (2.6.7) đọc dòng mới: nhánh đấu chỉ vẽ vòng 1…rounds nên không thấy trận hạng 3 (không có "chung kết thứ hai"); thẻ bang ghi trận đó là "Vòng 3" (4 bang) kèm tỉ số; xếp hạng bang xếp 2 bang theo điểm rồi Elo; hạng 11–15 không có danh hiệu, không có thưởng, client cũ không hiện chip/khung. Không lỗi.
 - Tests: tests/test_pet_war_third.py (3, 4, 5, 8, 2 bang; bye; hòa; điểm; Elo; danh hiệu; giao diện; đọc bằng code 2.6.7), tests/honour_frames_508.mjs.
 
+Góp ý:
+- #528: cá lỡ vào tranh lấy ra lại được. Trang trí nhà → chọn tranh cá → 🎣 Gỡ cá: tranh mất, cá về giỏ (⭐ giữ). jr_fish_tro {uid, out: true}; game/deco.py drop() bỏ món khỏi nhà, không trả xu.
+- #532: ngày tốt không mất vì khách troll / khó tính. Sao của một đánh giá trong ngày = max(sao khách cho, feedback.fair) (promotion.day_stars), cho cả dòng "Hôm nay" và lúc khép ngày.
+
 # 2.6.7 — 25/10/2026
 
 Gộp 7 nhánh (chủ game 24/10 "xong thì 2.6.7 đưa lên hết nhé"). Schema 94 (bảng chat_notes mới). "Có gì mới" chung chung theo chủ game ("nhiều cái k nên công bố"): thêm coin/cổ phiếu, đổi giao diện nhà, sửa lỗi theo góp ý. Không công bố biến động sàn.

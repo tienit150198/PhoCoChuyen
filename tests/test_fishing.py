@@ -556,6 +556,33 @@ class Market(unittest.TestCase):
             with self.assertRaises(GameError):
                 validate_state(bad)
 
+    def test_trophy_fish_back_to_bag(self):
+        """🎣 góp ý #528: a fish mounted by mistake comes back out of its tranh (hung or in the furniture bag), kept ⭐."""
+        from game import deco as dc
+        s = self.bagged(('ca_chep', 2000), ('ca_ro', 300))
+        s, r = run(s, 'jr_fish_mount', Clock(), id=1, bg='hong')
+        s, r = run(s, 'jr_fish_mount', Clock(), id=2, sz='nho')
+        hung, loose = list(s['journey']['fish']['tro'])
+        L = dc.layout(s)
+        room = L['rooms'][0]
+        x = next(x for x in range(0, room['cols'] * dc.U) if not dc.check(room, 'tranh_ca', dc._q(room['id'], x, 0, 0), {}, L['kinds']))
+        s, r = act(s, 'jr_deco_put', uid=hung, r=room['id'], x=x, y=0, f=0)
+        for bad in (dict(uid=hung, out=False), dict(uid=hung, out=True, bg='kem'), dict(uid='d99', out=True)):
+            with self.assertRaises(GameError):
+                run(s, 'jr_fish_tro', Clock(), **bad)
+        for uid in (hung, loose):
+            s, r = run(s, 'jr_fish_tro', Clock(), uid=uid, out=True)
+            self.assertIn('về giỏ', r['message'])
+            self.assertNotIn(uid, s['journey']['fish']['tro'])
+            self.assertNotIn(uid, [x['id'] for x in s['journey']['reno']['items']])
+            self.assertNotIn(uid, dc.layout(s)['pos'])
+        bag = s['journey']['fish']['bag']
+        self.assertEqual(sorted((f['s'], f['g'], f['k']) for f in bag), [('ca_chep', 2000, 1), ('ca_ro', 300, 1)])
+        self.assertEqual(len({f['i'] for f in bag}), 2)
+        validate_state(s)
+        with self.assertRaises(GameError):
+            run(s, 'jr_fish_tro', Clock(), uid=hung, out=True)
+
     def test_buy_rods_and_equip(self):
         s = story(wallet=250_000)
         s, r = run(s, 'jr_fish_buy', Clock(), kind='rod', item='carbon')
