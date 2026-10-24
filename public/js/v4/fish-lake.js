@@ -18,6 +18,8 @@ import {drawFish,fmtKg,RARITY_COLORS} from './fish-art.js';
 import {drawRod,rodTipOf,rodLook,lineColor} from './fish-rod.js';
 import {paint as stPaint} from './style-tag.js';
 import {titles as hnTitles,icons as hnIcons} from './honours.js';
+import {pick as hfPick} from './honour-frames.js';
+import {exPill,exRain,exInk} from './exclusive.js';   // 🌧️ an exclusive honour's frame: its name tag rains
 import {tagLine,badge as bgBadge} from './bang-tag.js';
 
 export {posOf,spacing,figScale,screenX,extent,clampCam,offscreen,hitPeer,tierOf,feedLine};
@@ -107,7 +109,8 @@ function tagOf(p,api,dark,dpr){
   const bang=tagLine(p.bg,true),L=hnTitles(api,p.tt),lead=L.length?`${L[0].emoji} ${L[0].short}`:'',more=L.length?hnIcons(api,p.tt,lead):'';
   const title=[bang,lead&&(more?`${lead} ${more}`:lead)].filter(Boolean).join(' · ');
   const name=(bgBadge(p.bg)?`${bgBadge(p.bg)} `:'')+(p.name||'?');
-  const key=JSON.stringify([name,title,p.st,dark,dpr]);
+  const ex=Boolean(p.tt&&hfPick(p.tt,p.st)?.ex);   // 🌧️ Mưa rơi (game/exclusive.py)
+  const key=JSON.stringify([name,title,p.st,dark,dpr,ex]);
   if(p.tag?.key===key)return p.tag;
   const cv=globalThis.document?.createElement?.('canvas');if(!cv)return null;
   const c=cv.getContext('2d'),nf='700 11px "Trebuchet MS",sans-serif',tf='600 9px "Trebuchet MS",sans-serif';
@@ -115,6 +118,12 @@ function tagOf(p,api,dark,dpr){
   const w=Math.ceil(Math.min(170,Math.max(nw,tw))+12),h=title?27:16;
   cv.width=Math.ceil(w*dpr);cv.height=Math.ceil(h*dpr);c.setTransform(dpr,0,0,dpr,0,0);
   const sp=p.st?stPaint(api,p.st,dark):null;
+  if(ex){   // 🌧️ the glass pill, its ink; the rain is drawn over it each frame (drawLake)
+    exPill(c,1,1,w-2,h-2,dark,7);const ink=exInk(c,(w-nw)/2,(w+nw)/2,dark);
+    c.textAlign='center';c.textBaseline='top';c.font=nf;c.fillStyle=ink.name;c.fillText(name,w/2,2.5,w-8);
+    if(title){c.font=tf;c.fillStyle=ink.title;c.fillText(title,w/2,15,w-8);}
+    p.tag={key,cv,w,h,ex};return p.tag;
+  }
   c.fillStyle=dark?'rgba(24,24,34,.8)':'rgba(255,253,248,.88)';c.beginPath();(c.roundRect?c.roundRect(.5,.5,w-1,h-1,7):c.rect(.5,.5,w-1,h-1));c.fill();
   if(sp?.ring){c.strokeStyle=sp.ring;c.lineWidth=2;c.stroke();}
   let fill=dark?'#f1ede6':'#4a3b35';
@@ -177,7 +186,7 @@ export function drawLake(c,g,lake,t,view){
     let top=view.py-128*view.scale-6;
     const held=p.got&&t-p.got.t0<CATCH_S?p.got:null;
     if(held)top=heldUp(c,p,held,x,top,t,view);
-    const tg=tagOf(p,view.api,night,view.dpr);if(tg){c.drawImage(tg.cv,x-tg.w/2,top-tg.h,tg.w,tg.h);top-=tg.h+3;}
+    const tg=tagOf(p,view.api,night,view.dpr);if(tg){c.drawImage(tg.cv,x-tg.w/2,top-tg.h,tg.w,tg.h);if(tg.ex)exRain(c,x-tg.w/2+1,top-tg.h+1,tg.w-2,tg.h-2,t,night,7);top-=tg.h+3;}
     if(p.said){const age=t-p.said.t0;if(age>BUBBLE_S)p.said=null;else bubble(c,x,top,p.said.text,age>BUBBLE_S-.5?(BUBBLE_S-age)/.5:1,night);}
   }
   return whole.size;

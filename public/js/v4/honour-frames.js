@@ -9,6 +9,7 @@
  * a frame drawn for it alone (UQ); the chooser lists the auction titles owned. */
 import {escapeHTML as esc} from '../icons.js';
 import {FRAMES} from './honour-frames-data.js';
+import {isEx,exOf,exCss,rainFrame,EX_LABEL} from './exclusive.js';   // 🌧️ an exclusive honour's frame (game/exclusive.py)
 
 const DIR='/icons/frames/';
 // game/lb_titles.py BOARD_TITLES: [top 1, top 2–3, top 4–10]
@@ -122,10 +123,12 @@ function drawSvg(key,spec){
   u=`data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g,'%27')}`;UQ_SVG.set(key,u);return u;
 }
 
-/** {n, tier, …} of one honour id: n the art, tier the chip's colour (0 top 1, 1 top 2–3, 2 top 4–10, 3 trùm, 4 độc bản);
- * a board's {board, rank}; a workplace's {career}; an auction title's {uq: its id} (its own drawn frame, no art). */
+/** {n, tier, …} of one honour id: n the art, tier the chip's colour (0 top 1, 1 top 2–3, 2 top 4–10, 3 trùm, 4 độc bản,
+ * 7 độc nhất); a board's {board, rank}; a workplace's {career}; an auction title's {uq: its id} (its own drawn frame, no
+ * art); 🌧️ an exclusive honour's {ex: its id} ("Mưa rơi", ./exclusive.js). */
 export function ofId(id){
   if(typeof id!=='string')return null;
+  if(id.startsWith('ex_'))return isEx(id)?{n:null,tier:7,ex:id}:null;
   if(id.startsWith('dh_'))return UQ_RE.test(id)?{n:null,tier:4,uq:id}:null;
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]);
@@ -134,14 +137,15 @@ export function ofId(id){
   if(r!==1||b==='pagoda')return null;   // a workplace: its top 1 only; nobody is the boss of a pagoda
   return {n:CAREER[b]||CAREER_ANY,tier:3,career:b};
 }
-const geo=f=>f?.uq||f?.drawn?UQ_AV:FRAMES[f?.n]?.av;
+const geo=f=>f?.uq||f?.drawn||f?.ex?UQ_AV:FRAMES[f?.n]?.av;
 const spec=f=>f.uq?uqSpec(f.uq):DRAWN[f.board][f.tier];   // a drawn frame's row
-const svgOf=f=>f.uq?uqSvg(f.uq):drawnSvg(f.board,f.tier);
+const svgOf=f=>f.ex?rainFrame(false):f.uq?uqSvg(f.uq):drawnSvg(f.board,f.tier);   // 🌧️ the still frame (the stylesheet animates it)
 const has=f=>Boolean(f&&geo(f));
 /** 🏅 How a frame shows it is an honour (#508): {fx: the art's filter, cls, medal: the text on its medal (a board's rank)},
  * or null: an everyday frame and a town project's stay as drawn. */
 export function look(f){
   if(!f)return null;
+  if(f.ex){exCss();return {fx:'drop-shadow(0 0 4px #8fa8ff)',cls:' hf-ex',medal:''};}   // 🌧️ Mưa rơi
   if(f.uq){const [,,M]=uqSpec(f.uq);return {fx:`drop-shadow(0 0 4px ${M})`,cls:' hf-uq',medal:''};}
   if(f.drawn){const [,,M]=spec(f),halo=LOOK[f.board]?.[1]||M,m=METAL[f.tier]||'b',medal=DRAWN_MEDAL.has(f.board);   // 💒 its ribbon says TOP 1 / TOP 3: no medal (🎣 the fish boards wear one)
     return {fx:`drop-shadow(0 0 4px ${halo})`,cls:` hf-uq hf-top${medal?` hf-m${m}`:''}`,medal:medal?String(f.rank):'',hue:0,halo,metal:m,drawn:true};}
@@ -174,6 +178,7 @@ export function choices(api){
     const it=items.find(i=>i?.id===id);
     out.push({id,emoji:it?.emoji||uqSpec(id)[0],name:String(x.t||it?.name||'Danh hiệu độc bản'),label:'Độc bản · Nhà đấu giá',n:null,f:{n:null,tier:4,uq:id}});
   }
+  for(const x of api?.exTitles||[]){const k=exOf(x?.id);if(k&&!out.some(o=>o.id===k.id))out.push({id:k.id,emoji:k.emoji,name:k.frame,label:`${EX_LABEL} · ${k.name}`,n:null,f:{n:null,tier:7,ex:k.id}});}   // 🌧️ first
   for(const h of api?.lbTitles||[]){const id=`lb_${h.board}_${h.rank}`,f=ofId(id);if(has(f)&&!out.some(x=>x.id===id))out.push({id,emoji:h.emoji,name:h.name,label:h.label,n:f.n,f});}
   const t=J?.spend?.wear?.title,w=WORN[t];
   if(w&&FRAMES[w]){const it=(api.content?.journey?.spend?.titles||[]).find(x=>x.id===t);out.push({id:t,emoji:it?.emoji||'🏗️',name:it?.name||'Danh hiệu đang đeo',label:'Phong cách',n:w,f:{n:w,tier:5}});}
@@ -183,7 +188,7 @@ export function choices(api){
 function wrap(f,cls=''){
   const d=geo(f);if(!d)return null;ensureCss();
   const [w,h,cx,cy,r,sq]=d,box=2*r*PAD,lk=look(f);
-  return {lk,cls:`hf-av${lk?lk.cls:''}${cls}`,style:`--hf-img:url('${f.uq||f.drawn?svgOf(f):`${DIR}${f.n}_av.webp`}');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}${lk?`;--hf-fx:${lk.fx}`:''}`};
+  return {lk,cls:`hf-av${lk?lk.cls:''}${cls}`,style:`--hf-img:url('${f.uq||f.drawn||f.ex?svgOf(f):`${DIR}${f.n}_av.webp`}');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}${lk?`;--hf-fx:${lk.fx}`:''}`};
 }
 const badge=(f,inner,cls='')=>{const a=wrap(f,` hf-logo${cls}`);return a?`<span class="${a.cls}" aria-hidden="true" style="${a.style}"><b>${inner}</b></span>`:'';};
 /** 👑 An auction title's own frame around its emoji (the lot card, Của tôi), or ''. */
@@ -263,7 +268,7 @@ const PAD=1.08;   // the picture is a little bigger than the window, so the fram
 export function avatar(tt,st,html,api=null){
   const f=pick(tt,st),a=wrap(f);if(!a)return html;
   // the crest: the workplace's emoji on the shared "Trùm" frame, the title's own on an auction frame
-  const icon=f.uq?(auctionEmoji(api,f.uq)||uqSpec(f.uq)[0]):f.drawn?spec(f)[0]:f.career&&!CAREER[f.career]?careerIcon(api,f.career):'';
+  const icon=f.ex?'':f.uq?(auctionEmoji(api,f.uq)||uqSpec(f.uq)[0]):f.drawn?spec(f)[0]:f.career&&!CAREER[f.career]?careerIcon(api,f.career):'';
   const medal=a.lk?.medal;
   return `<span class="${a.cls}" style="${a.style}"${icon?` data-hf-icon="${esc(icon)}"`:''}${medal?` data-hf-rank="${esc(medal)}"`:''}>${html}</span>`;
 }
@@ -279,6 +284,7 @@ const cssStr=v=>`'${String(v).replace(/[\'"<>&\n]/g,'')}'`;
  * title's bubble (` hf-uq`) is drawn in its own colours with its crest and "01/01"; a top board's wears its medal. */
 export function bubble(tt,st){
   const f=pick(tt,st);
+  if(f?.ex){exCss();return {cls:' hf-ex',attrs:''};}   // 🌧️ Mưa rơi: glass, rain behind the words, ripples (./exclusive.js)
   if(f?.uq||f?.drawn){ensureCss();const [emo,L,M,D,,,tag]=spec(f);
     return {cls:' hf-uq',attrs:` style="--uq-a:${L};--uq-b:${M};--uq-c:${D};--uq-emo:${cssStr(emo)}${tag?`;--uq-tag:${cssStr(tag)}`:''}"`};}
   const d=f&&FRAMES[f.n]?.chat;if(!d)return {cls:'',attrs:''};ensureCss();
@@ -293,6 +299,7 @@ const auctionEmoji=(api,id)=>(api?.content?.journey?.auction?.items||[]).find(x=
 /** The chip class of a title id: the top tiers wear colours (game/lb_titles.py), others the plain chip. */
 export function chipClass(id){
   const f=ofId(id);if(!f)return '';ensureCss();
+  if(f.ex){exCss();return ' hn-ex';}   // 🌧️ a rain shimmer
   return [' hn-top',' hn-t1',' hn-t2',' hn-t3',' hn-t4'][f.tier]||'';
 }
 function careerIcon(api,b){

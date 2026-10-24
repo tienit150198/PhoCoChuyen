@@ -552,12 +552,15 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
     top, total = _top(store, board, limit)
     sid = _viewer(store, token)
     holders = lbt.holders(store)
+    from . import exclusive
+    ex = exclusive.holders(store)   # 🌧️ an exclusive honour beside the name (game/exclusive.py)
     rows = []
     for i, (row_sid, r) in enumerate(top):
         mine = [h for h in holders.get(row_sid, ()) if h['board'] == board]
         row = dict(r, rank=i + 1, me=row_sid == sid)
         if mine:
             row['title'] = dict(emoji=mine[0]['emoji'], name=mine[0]['name'])
+        exclusive.mark(row, row_sid, ex)
         rows.append(row)
     me = None
     if sid:

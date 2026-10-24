@@ -92,6 +92,7 @@ import time
 
 from . import babies, bangs, charms, coride, effects, honours, plates, styles, wings
 from game.wings_content import FLY_FAST   # 🪽 a flyer's speed by tier
+from game import exclusive   # 🌧️ an exclusive honour leads the name tag
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS, PET_FX, PET_SETS
@@ -460,14 +461,15 @@ class StreetFeature(Feature):
     def rooms(self) -> list:
         return [r for p in self.PREFIXES for r in self.hub.rooms_with_prefix(p)]
 
-    def title_of(self, player, title, titles=None, st=None) -> str | None:
-        """The name tag's title. An honour first: this week's race title (live/wedding.py), else the best weekly
+    def title_of(self, player, title, titles=None, st=None, tt=None) -> str | None:
+        """The name tag's title. An honour first: an exclusive honour (🌧️ game/exclusive.py, among `tt`), else this
+        week's race title (live/wedding.py), else the best weekly
         leaderboard title held now (lb_weekly), else a 🎨 title of the week the player paid for (`st`, live/styles.py);
         then what the player wears (`titles`: up to WEAR_MAX title and certificate ids, or the one `title` of an older
         client). The first shows by name, the others by emoji: "👑 Trùm cuối của phố 🌱🎓"."""
         wed = self.app.by_name.get('wedding')
         won = wed.race_title(player.pid) if wed is not None and wed.enabled() else None
-        won = won or self.lb.get(player.sid) or styles.title_text(st)
+        won = exclusive.text_of(tt) or won or self.lb.get(player.sid) or styles.title_text(st)
         ids = titles if isinstance(titles, list) and titles else [title]
         worn = []
         for x in ids[:WEAR_MAX]:
@@ -693,7 +695,7 @@ class StreetFeature(Feature):
         await self.lb_fresh()
         st = await styles.of_app(self.app).one(p.pid)   # 🎨 read from chat_style, never from the frame
         tt = await honours.of_app(self.app).one(p.pid)  # 🏅 read from the game's records, never from the frame
-        title = self.title_of(p, f.get('title'), f.get('titles'), st)
+        title = self.title_of(p, f.get('title'), f.get('titles'), st, tt)
         await self._ensure_loaded(p)
         bb = babies.clean_baby(f.get('bb'))   # 👶 the baby carried (optional)
         bsp = await babies.spouse_of(self.db, p, bb)

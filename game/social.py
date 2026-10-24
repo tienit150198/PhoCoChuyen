@@ -184,6 +184,8 @@ def _public_profile(p: dict, me: str | None = None, db=None, ranks: dict | None 
     held = (ranks or {}).get(p.get('sid'))
     if held:   # 🏅 the best weekly leaderboard title this player holds now (game/lb_titles.py)
         out['rank'] = dict(emoji=held[0]['emoji'], name=held[0]['name'])
+        if held[0].get('ex'):   # 🌧️ an exclusive honour leads (game/exclusive.py): the client draws it apart
+            out['rank']['ex'] = held[0]['ex']
     if db is not None and me:
         out['following'] = bool(db.execute('SELECT 1 FROM follows WHERE pid=? AND target=?', (me, p['pid'])).fetchone())
         out['blocked'] = bool(db.execute('SELECT 1 FROM blocks WHERE pid=? AND target=?', (me, p['pid'])).fetchone())
@@ -474,6 +476,13 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
     mine = me['pid']
     from . import lb_titles
     ranks = lb_titles.holders(store) if route in ('directory', 'shop', 'community') else None
+    if ranks is not None:   # 🌧️ an exclusive honour (game/exclusive.py) before the weekly titles
+        from . import exclusive
+        ex = exclusive.holders(store)
+        if ex:
+            ranks = dict(ranks)
+            for xsid, ids in ex.items():
+                ranks[xsid] = [dict(t, ex=t['id']) for t in map(exclusive.title, ids) if t] + list(ranks.get(xsid, ()))
     with store.connect() as db:
         if route == 'me':
             unread = _count(db, 'SELECT COUNT(*) FROM inbox WHERE pid=? AND read=0', (mine,))

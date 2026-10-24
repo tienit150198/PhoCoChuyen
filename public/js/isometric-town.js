@@ -23,6 +23,7 @@ import {createTownSocial} from './isometric-social.js';
 import {lookOf,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish} from './v4/look.js';
 import {leisurePresence,publicActivity} from './isometric/leisure-presence.js';
 import {withBang,tagLine,tagInk,badge} from './v4/bang-tag.js';
+import {exTownTag} from './v4/exclusive.js';   // 🌧️ an exclusive honour's title on the name tag
 
 const MAP='iso-town-v1',GAP=270,POLL=100,JOIN_WAIT=12000;
 const RIDE_MAX=1.8;   // 🪽 isometric/vehicle-art.js MAX_SPEED: a flyer's pace on a live service without `fly`
@@ -54,12 +55,18 @@ function publicPeer(value){
   if(value.activity!=null&&!activity)return null;
   return {pid:value.pid,name:typeof value.name==='string'?value.name.slice(0,24):'Mây',
     look:withFish(withWings(withPairs(value.lk&&typeof value.lk==='object'?value.lk:{},value.pr),value.wg),value.fh),pr:cleanPairs(value.pr),wg:cleanWing(value.wg),fh:cleanFish(value.fh),
-    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...flyOf(value.fl),...bangOf(value.bg)};
+    gender:value.g==='female'||value.g==='male'?value.g:null,fc:typeof value.fc==='string'?value.fc:'',...point,...(activity?{activity}:{}),...(publicRide(value.r)?{r:publicRide(value.r)}:{}),...(publicPet(value.pt)?{pt:publicPet(value.pt)}:{}),...flyOf(value.fl),...tagOf(value.bg,value.tt),...(Array.isArray(value.tt)?{tt:value.tt.filter(x=>typeof x==='string').slice(0,16)}:{})};
 }
 /** 🎣 {sp, kg} of the fish I carry (journey.fish.wear), or null. */
 export const myFishOf=state=>{const f=state?.journey?.fish?.wear;return f&&typeof f==='object'&&typeof f.sp==='string'&&Number.isFinite(Number(f.kg))?{sp:f.sp,kg:Number(f.kg)}:null;};
 /** 🪽 {fl: the tier} while flying, else {}. */
 export const flyOf=fl=>Number.isInteger(fl)&&fl>=0&&fl<=7?{fl}:{};
+/** ⚔️ 🌧️ The name tag's lines under the name: an exclusive honour's title first (game/exclusive.py, from `tt`) in its own
+ * ink and background (`tb`), then the bang's (bangOf); {} with neither. */
+export function tagOf(bg,tt){
+  const b=bangOf(bg),x=exTownTag(tt);if(!x)return b;
+  return {...b,tag:[x.line,b.tag].filter(Boolean).join('\n').slice(0,80),ink:x.ink,tb:x.tb};
+}
 /** ⚔️ {tag, ink, badge} for the name tag, or {} without a bang. */
 export function bangOf(bg){
   const tag=tagLine(bg,true);if(!tag)return {};
@@ -204,7 +211,7 @@ export function createTownPresence(envGetter,options={}){
               if(Object.hasOwn(e,'r')){const r=publicRide(e.r);if(r)peer.r=r;else delete peer.r;}
               if(Object.hasOwn(e,'pt')){const pt=publicPet(e.pt);if(pt)peer.pt=pt;else delete peer.pt;}
               if(Object.hasOwn(e,'fl')){delete peer.fl;Object.assign(peer,flyOf(e.fl));}   // 🪽 took off / landed
-              if(Object.hasOwn(e,'bg')){delete peer.tag;delete peer.ink;delete peer.badge;delete peer.bu;Object.assign(peer,bangOf(e.bg));}
+              if(Object.hasOwn(e,'bg')){delete peer.tag;delete peer.ink;delete peer.badge;delete peer.bu;delete peer.tb;Object.assign(peer,tagOf(e.bg,peer.tt));}
               changed=true;
             }
           }

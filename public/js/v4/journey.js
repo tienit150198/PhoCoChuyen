@@ -24,7 +24,8 @@ import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
 import {fundMoveHTML,shortNum} from './wealth.js';
-import {chooser as hfChooser} from './honour-frames.js';   // 🖼️ Khung danh hiệu: which frame to wear (owner 18/10)
+import {chooser as hfChooser} from './honour-frames.js';
+import {exOf,exCss,EX_SRC} from './exclusive.js';   // 🌧️ Danh hiệu độc nhất (game/exclusive.py)   // 🖼️ Khung danh hiệu: which frame to wear (owner 18/10)
 import {typingNow} from '../typing-tap.js';
 import {pickView,pickAction,lockOf} from './career-pick.js';   // 🔎 Đổi nghề: search, chips, why a place is shut (owner 23/10)
 // The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
@@ -137,12 +138,14 @@ export function journeyHome(env){
 export const wornOf=J=>Array.isArray(J?.worn)?J.worn:J?.equipped_title?[{...J.equipped_title,kind:'title'}]:[];
 const wearMax=J=>J?.wear_max||3;
 function wornChips(api,J){
-  const worn=wornOf(J),rank=(api.lbTitles||[])[0];
+  const worn=wornOf(J),rank=(api.lbTitles||[])[0],ex=exOf((api.exTitles||[])[0]?.id);   // 🌧️ an exclusive honour leads (game/exclusive.py)
   // 14/10 (profile tidy): one line under the name, as on Phố nghề: the first title by name, the others by emoji
   // (the full names stay in the label and in Danh hiệu).
   const chip=(w,named)=>`<button type="button" class="jr-title-chip${named?'':' icon'}" data-action="jrView" data-view="titles"${named?'':` aria-label="${esc(w.name)}" title="${esc(w.name)}"`}><span aria-hidden="true">${esc(w.emoji)}</span>${named?` ${esc(w.name)}`:''}</button>`;
   const top=rank?`<button type="button" class="jr-title-chip rank" data-action="rank" data-board="${esc(rank.board)}" title="${esc(rank.label)} tuần này"><span aria-hidden="true">${esc(rank.emoji)}</span> ${esc(rank.name)}</button>`:'';
-  return `<div class="jr-worn">${top}${worn.map((w,i)=>chip(w,!rank&&!i)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
+  if(ex)exCss();
+  const one=ex?`<button type="button" class="jr-title-chip ex-chip" data-action="jrView" data-view="titles" title="${esc(`${ex.name} · ${EX_SRC}`)}"><span aria-hidden="true">${esc(ex.emoji)}</span> <b class="ex-ti">${esc(ex.name)}</b></button>`:'';
+  return `<div class="jr-worn">${one}${top}${worn.map((w,i)=>chip(w,!rank&&!ex&&!i)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
 }
 const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage" data-tab="family"><span aria-hidden="true">${sp.status==='married'?'💍':'💞'}</span> ${sp.status==='married'?'Đã kết hôn':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
 /* 🚗 The vehicle the player rides (game/garage.py), next to Thay đồ; it opens the garage (v4/garage.js). */
@@ -496,7 +499,15 @@ function titlesView(env){
   // What is worn now, on top: one tap on a chip takes it off. Titles and certificates count together.
   const bar=`<section class="jr-wearing" aria-label="Đang đeo"><h3>Đang đeo <small>${worn.length}/${max}</small></h3><p class="muted small">Chọn tối đa ${max} danh hiệu và chứng chỉ. Cái đầu tiên hiện tên, các cái sau hiện biểu tượng.</p>
     <div class="jr-worn">${worn.map(w=>`<button type="button" class="jr-title-chip on" data-action="jrWear" data-item="${esc(w.id)}" aria-label="Cất ${esc(w.name)}"><span aria-hidden="true">${esc(w.emoji)}</span> ${esc(w.name)} <i aria-hidden="true">✕</i></button>`).join('')||'<span class="muted small">Chưa đeo gì. Chạm một danh hiệu hay chứng chỉ bên dưới để đeo.</span>'}</div></section>`;
-  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${hfChooser(api)}${bar}${cats}${certTitles(env,ids,full)}</div>`;
+  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${exCard(api)}${hfChooser(api)}${bar}${cats}${certTitles(env,ids,full)}</div>`;
+}
+
+/** 🌧️ Danh hiệu độc nhất (game/exclusive.py): given by name, one player in the whole town; always beside the name, its
+ * frame chosen below like any other. '' for everyone else. */
+function exCard(api){
+  const L=(api.exTitles||[]).map(x=>exOf(x?.id)).filter(Boolean);if(!L.length)return '';exCss();
+  return L.map(x=>`<section class="jr-card ex-card" aria-label="Danh hiệu độc nhất"><h3><span aria-hidden="true">${esc(x.emoji)}</span> <span class="ex-ti">${esc(x.name)}</span><i class="ex-tag">Độc nhất</i></h3>`+
+    `<p class="muted small">Cả phố chỉ mình bạn có. Danh hiệu luôn hiện bên tên bạn. Khung ${esc(x.frame)} chọn ở mục Khung bên dưới.</p></section>`).join('');
 }
 
 /* ------------------------------------------------------------------ wallet */

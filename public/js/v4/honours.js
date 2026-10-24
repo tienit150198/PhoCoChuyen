@@ -6,6 +6,7 @@
  * compares them). An unknown id shows nothing; an older service sends no `tt`. */
 import {escapeHTML as esc} from '../icons.js';
 import {chipClass} from './honour-frames.js';   // 🖼️ the top titles' colours (owner 18/10)
+import {exOf,exCss,EX_SRC} from './exclusive.js';   // 🌧️ an exclusive honour (game/exclusive.py)
 
 // game/lb_titles.py BOARD_TITLES, TIERS: the main boards' tiers (top 1 / top 2–3 / top 4–10)
 const BOARDS={
@@ -71,6 +72,8 @@ function noun(api,b){const n=NOUN[b];if(n)return n;const s=api?.content?.careers
 export function title(api,id){
   if(typeof id!=='string')return null;
   const e=EVENT[id];if(e)return {emoji:e[0],short:e[2],full:e[1],src:e[3]};
+  // 🌧️ one of a kind, given by the admin to one player (game/exclusive.py): first of all in `tt`
+  const x=exOf(id);if(x)return {emoji:x.emoji,short:x.name,full:x.name,src:`${EX_SRC} · khung ${x.frame}`,ex:true};
   // 👑 a one-of-a-kind title won at the auction house (game/auction_content.py, content.journey.auction)
   if(id.startsWith('dh_')){const u=(api?.content?.journey?.auction?.items||[]).find(x=>x.id===id&&x.kind==='title');return u?{emoji:u.emoji,short:u.short||u.name,full:u.name,src:'Danh hiệu độc bản · Nhà đấu giá'}:null;}
   const m=LB.exec(id);if(!m)return null;
@@ -120,7 +123,9 @@ export function inlineMax(){try{return matchMedia('(min-width: 700px)').matches?
 /** The popover's content: every title with its full name and where it comes from. */
 export function list(api,tt,who=''){
   const L=titles(api,tt);if(!L.length)return '';ensureCss();
-  return `<div class="hn-pop" role="note">${who?`<b data-no-translate>Danh hiệu của ${esc(who)}</b>`:'<b>Danh hiệu</b>'}<ul>${L.map(t=>`<li><i aria-hidden="true">${esc(t.emoji)}</i><span>${esc(t.full)}<small>${esc(t.src)}</small></span></li>`).join('')}</ul></div>`;
+  if(L.some(t=>t.ex))exCss();
+  const name=t=>t.ex?`<span class="ex-ti">${esc(t.full)}</span><i class="ex-tag">Độc nhất</i>`:esc(t.full);   // 🌧️ marked one of a kind
+  return `<div class="hn-pop" role="note">${who?`<b data-no-translate>Danh hiệu của ${esc(who)}</b>`:'<b>Danh hiệu</b>'}<ul>${L.map(t=>`<li><i aria-hidden="true">${esc(t.emoji)}</i><span>${name(t)}<small>${esc(t.src)}</small></span></li>`).join('')}</ul></div>`;
 }
 /** The emojis of the titles a name tag does not already show (a canvas tag: at most `max`). */
 export function icons(api,tt,shown='',max=3){

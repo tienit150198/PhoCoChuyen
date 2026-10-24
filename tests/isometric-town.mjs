@@ -16,7 +16,7 @@ function harness({state='open',flag=true,mode='town',url='/live'}={}){
   const world={mode,getPresence(){return this.mode==='town'?{x:6,y:6,direction:1,name:'Spoof',task:'private'}:null;},setRemotePlayers(p){drawn.push(p);}};
   const env={world,api:{live:{url},state:{private:'secret',journey:{gender:'female'}}}};
   const socialFrames=[],social={update:s=>socialFrames.push(s),stop(){}};
-  const context=vm.createContext({sitePresence,live,leisurePresence:createLeisurePresence(),withBang:x=>x,tagLine:()=>'',tagInk:()=>'',badge:()=>'',bgBadge:()=>'',bgChip:()=>'',publicActivity,lookOf:()=>({top:'ao_quen'}),withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish,console,document:doc,window:eventTarget,
+  const context=vm.createContext({sitePresence,live,leisurePresence:createLeisurePresence(),withBang:x=>x,tagLine:()=>'',tagInk:()=>'',exTownTag:()=>null,badge:()=>'',bgBadge:()=>'',bgChip:()=>'',publicActivity,lookOf:()=>({top:'ao_quen'}),withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish,console,document:doc,window:eventTarget,
     setInterval:(fn)=>{timers.set(++id,fn);return id;},clearInterval:i=>timers.delete(i),
     setTimeout:(fn)=>{timers.set(++id,fn);return id;},clearTimeout:i=>timers.delete(i),Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
