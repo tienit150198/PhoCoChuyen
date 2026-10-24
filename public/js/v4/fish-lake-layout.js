@@ -3,7 +3,7 @@
  * cast lands on the shared water in perspective, and the feed's lines. The live room (live/fish_lake.py) gives every
  * fisher a slot `s`; slot 0 is the middle, then right and left in turn (posOf, the service's pos()). One lake per spot
  * with no cap (owner 24/10 "hồ k tối đa lượng người mỗi bến"): the boardwalk is as long as the crowd, the view pans. */
-import {fmtKg} from './fish-art.js';
+import {fmtKg,fishSpan,PERSON} from './fish-art.js';
 
 export const FULL_DRAW=24;     // fishers drawn whole (the nearest to the view's middle); the rest as silhouettes
 export const VIEW_STEP=6;      // pos units the view moves before asking the service for the whole entries there
@@ -71,3 +71,32 @@ export function merge(old,x){
   }
   return p;
 }
+/** 🐋 A landed fish next to its fisher drawn at `scale` (css px per look unit; owner 25/10 "cá to thì nhìn to thật"):
+ * {len: px long, as its weight says (fish-art.js fishSpan × the character's height), big: too big to hold up over the
+ * head (it lands lying on the boardwalk beside them instead), dx, dy: its middle from their feet when it rests}. */
+export function catchPose(g,scale){
+  const span=fishSpan((Number(g)||0)/1000),len=Math.max(14,span*PERSON*scale),big=span>=1.05;
+  return big?{len,big,dx:len*.5+18*scale,dy:-Math.max(6,len*.13)}:{len,big,dx:0,dy:-128*scale-14-len*.15};
+}
+/* ↔️ Owner 25/10 "cho người ta là scroll ngang nếu nhiều người nhé": the boardwalk scrolls. A drag on the lake pans the
+ * view (with momentum when let go), the wheel / a trackpad too, and a thin bar under the boardwalk shows where the view
+ * is along the whole crowd (its thumb drags). The numbers, in pos units (one place per fisher). */
+/** The view after a finger moved `dx` px since it went down at `cam0` (a drag right looks left), kept over the boardwalk. */
+export const panBy=(cam0,dx,sp,ext)=>clampCam((Number(cam0)||0)-(Number(dx)||0)/Math.max(1,sp),ext);
+/** A fling's speed (pos units / s) dying out after `dt` seconds; 0 once slow. */
+export function glide(v,dt){const n=(Number(v)||0)*Math.exp(-3.2*Math.max(0,dt));return Math.abs(n)<.25?0:n;}
+/** The wheel's step in px (lines and pages turned into px; a vertical wheel pans sideways too). */
+export function wheelPx(e){
+  const k=e?.deltaMode===1?16:e?.deltaMode===2?400:1,dx=Number(e?.deltaX)||0,dy=Number(e?.deltaY)||0;
+  return (Math.abs(dx)>Math.abs(dy)?dx:dy)*k;
+}
+/** The bar: the whole boardwalk with half a view of room at each end. {total (pos units), left, width: the thumb's
+ * share of the bar, me: my place's share, can: the crowd is wider than the view}. */
+export function scrollOf(cam,[lo,hi],sp,w,me=0){
+  const half=w/2/Math.max(1,sp),total=(hi-lo)+2*half,c=clampCam(cam,[lo,hi]);
+  return {total,left:(c-lo)/total,width:2*half/total,me:(me-lo+half)/total,can:hi-lo+1>2*half};
+}
+/** The view's middle for the thumb's left edge at `left` (a share of the bar). */
+export function camAt(left,[lo,hi],sp,w){const half=w/2/Math.max(1,sp),total=(hi-lo)+2*half;return clampCam(lo+(Number(left)||0)*total,[lo,hi]);}
+/** My place is out of sight (📍 Về chỗ tôi). */
+export const farFromMe=(cam,me,sp,w)=>Math.abs((Number(cam)||0)-(Number(me)||0))>w/2/Math.max(1,sp)-.5;

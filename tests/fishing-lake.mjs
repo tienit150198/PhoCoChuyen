@@ -106,4 +106,31 @@ assert.equal(made,after,'30 more frames paint no new canvas (sprites and tags ca
 assert.ok(spriteCount()<=2*L.FULL_DRAW);
 assert.ok(sprite({hair:'toc_ngan'},'male',{},.4,2)===sprite({hair:'toc_ngan'},'male',{},.4,2),'one sprite per look and size');
 assert.equal(drawLake(ctx,G,{peers:new Map(),self:{}},10,view),0,'alone: only the boardwalk');
+// 🪽 2.6.5.2 (owner 25/10 "người chơi vào thì thấy bị mất cái cánh, kiểu cắt mất ấy"): the sprite's box grows for the
+// wings worn (the largest pair measured in a browser: ±122 wide, 155 up from the feet) and a big carried fish, the
+// feet staying at (ox, oy); a plain character keeps the small box.
+const LK=await import('../public/js/v4/look.js');
+const plainS=sprite({hair:'toc_dai'},'female',{},.5,1),wingS=sprite({hair:'toc_dai'},'female',{wg:{k:'rong',r:7}},.5,1);
+assert.deepEqual([plainS.w,plainS.h,plainS.ox,plainS.oy],[85,87.5,42.5,80],'plain: as before (170 × 175 units, feet at 85, 160)');
+assert.ok(wingS.ox>=122*.5&&wingS.w-wingS.ox>=122*.5&&wingS.oy>=155*.5,`wings fit: ${JSON.stringify(wingS)}`);
+for(const k of LK.WING_STYLES)for(let r=0;r<8;r++){const [l,t,rr]=LK.figBounds(LK.figureOf({wg:{k,r}},'male'));assert.ok(l<=-122&&rr>=122&&t<=-155,`${k} ${r}`);}
+const fishS=sprite({hair:'toc_dai'},'female',{fh:{sp:'ca_map',r:5,kg:900,fam:'shark',body:'#778',belly:'#eee',fin:'#556',pat:'none'}},.5,1);
+assert.ok(fishS.w>plainS.w*1.4&&fishS.oy>=plainS.oy,'a 900 kg fish dragged behind: a wider box, the feet where they were');
+// 🐋 a landed fish next to its fisher: as long as it weighs, too big to hold up → on the boardwalk beside them
+const small=L.catchPose(2000,.4),huge=L.catchPose(300000,.4);
+assert.ok(!small.big&&huge.big&&huge.len>small.len*4&&huge.dx>0);
+// ↔️ owner 25/10 "cho người ta là scroll ngang nếu nhiều người nhé": the pan, the fling, the wheel and the bar
+const ext=L.extent(Array.from({length:80},(_,s)=>({s})));
+assert.deepEqual(ext,[-39,40]);
+assert.equal(L.panBy(0,46*3,46,ext),-3,'a drag 3 places right looks 3 places left');
+assert.equal(L.panBy(0,-46*500,46,ext),40,'never past the end of the boardwalk');
+assert.equal(L.glide(10,0),10);assert.ok(L.glide(10,.5)<10&&L.glide(10,.5)>0&&L.glide(.2,0)===0&&L.glide(10,5)===0,'a fling slows down and stops');
+assert.equal(L.wheelPx({deltaY:100}),100);assert.equal(L.wheelPx({deltaX:-30,deltaY:5}),-30);assert.equal(L.wheelPx({deltaY:3,deltaMode:1}),48);
+const sb=L.scrollOf(0,ext,46,390,0);
+assert.ok(sb.can&&sb.width>0&&sb.width<.1&&Math.abs(sb.left+sb.width/2-sb.me)<.01,`80 fishers: a small thumb on me ${JSON.stringify(sb)}`);
+const sbL=L.scrollOf(-39,ext,46,390),sbR=L.scrollOf(40,ext,46,390);
+assert.ok(Math.abs(sbL.left)<1e-9&&Math.abs(sbR.left+sbR.width-1)<1e-9,'the thumb spans the bar from end to end');
+for(const c of [-39,-10,0,17,40])assert.ok(Math.abs(L.camAt(L.scrollOf(c,ext,46,390).left,ext,46,390)-c)<1e-9,'thumb ↔ view');
+assert.ok(!L.scrollOf(0,L.extent([{s:0},{s:1},{s:2}]),84,390).can,'a few fishers: no bar');
+assert.ok(L.farFromMe(12,0,46,390)&&!L.farFromMe(2,0,46,390),'📍 only once my place is out of sight');
 console.log('fishing-lake: ok');

@@ -1,5 +1,10 @@
 {
   "strings": {
+    "📍 Về chỗ tôi": "📍 Back to my spot",
+    "Xem dọc bờ hồ": "Look along the lake shore",
+    "Đang kéo lên…": "Reeling it in…",
+    "🎣 Lên cá rồi! Xem trong 🧺 giỏ nhé.": "🎣 Fish landed! Check your 🧺 basket.",
+    "Dài": "Length",
     "Hồ câu đông vui: thấy mọi người cùng câu, ai giật được cá gì cũng thấy": "A lively lake: see everyone fishing with you and every fish they land",
     "Cần xịn ra cá to, cá hiếm nhiều hơn hẳn; giá cá từ 🟣 Hiếm giảm 5%": "Top rods land far more big and rare fish; fish from 🟣 Rare up sell for 5% less",
     "Chạm vào người khác ở hồ để xem cá to nhất của họ; chat bong bóng với người câu gần bạn": "Tap a fisher to see their biggest fish; chat in bubbles with fishers near you",
@@ -46422,6 +46427,10 @@
     "Đỡ một quả bóng bổng, đẹp mắt!": "A beautiful dig!"
   },
   "patterns": {
+    "👥 $1 người câu dọc bờ hồ": "👥 $1 fishers along the shore",
+    "Con lớn nhất dài $1": "The biggest one is $1 long",
+    "Cá dài $1, so với người": "A $1 fish next to a person",
+    "Con lớn nhất dài $1, so với người": "The biggest one, $1 long, next to a person",
     "⏱️ Giật $1": "⏱️ Yank $1",
     "🎣 $1 vừa câu được $2 $3 $4 ở $5! Cả phố trầm trồ!": "🎣 $1 just caught $2 $3 $4 at $5! The whole town is cheering!",
     "Giỏ đầy rồi ($1 con)! Bán bớt ở 🐟 Quầy thu mua nhé.": "The basket is full ($1 fish)! Sell some at the 🐟 Fish Market.",

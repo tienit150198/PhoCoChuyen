@@ -29,10 +29,12 @@
  * (spot 'dao' with the trip). Old-Safari safe (scripts/check_old_safari.mjs), no library: one rAF loop while open. */
 import {escapeHTML as esc} from '../icons.js';
 import {stylesheet} from '../lazy.js';
-import {fishSvg,drawFish,fmtKg,RARITY_COLORS} from './fish-art.js';
+import {fishSvg,drawFish,fmtKg,fmtLen,scaleSvg,RARITY_COLORS} from './fish-art.js';
 import {reelStart,reelStep,MID,RED} from './fish-reel.js';
 import {createLake,drawLake,sprite,bubble} from './fish-lake.js';
-import {posOf,spacing,figScale,screenX,extent,clampCam,offscreen,hitPeer,tierOf,feedLine,waterPoint} from './fish-lake-layout.js';
+import {posOf,spacing,figScale,screenX,extent,clampCam,offscreen,hitPeer,tierOf,feedLine,waterPoint,catchPose,panBy,glide,wheelPx,scrollOf,camAt,farFromMe} from './fish-lake-layout.js';
+import {TYPING} from '../typing-tap.js';
+import {drawRod,rodTipOf,rodLook,lineColor,rodSvg} from './fish-rod.js';
 import {figure,lookOf,portrait,withWings} from './look.js';
 import {avatar as hfAvatar} from './honour-frames.js';
 import {chips as hnChips} from './honours.js';
@@ -45,7 +47,7 @@ const MEDAL=['🥇','🥈','🥉'];
 const F={env:null,dlg:null,cv:null,ctx:null,raf:0,last:0,spot:'ho',trip:'',phase:'idle',pressing:false,c0:0,power:0,
   r:null,f:null,bob:null,fx:[],rings:[],drops:[],waves:null,stars:null,jump:null,line:null,panel:null,tab:{shop:'rod',board:'dex'},
   open:-1,rec:null,recAt:0,boards:{},detail:null,dims:{w:0,h:0,dpr:1},msgT:0,busy:false,timers:[],prevPause:null,onState:null,nibDone:0,twitch:0,
-  lake:null,cam:0,camTo:null,meFig:null,lastAct:'',panAt:0,feedN:-1,bannerT:0,pcard:null};
+  lake:null,cam:0,camTo:null,meFig:null,lastAct:'',panAt:0,feedN:-1,bannerT:0,pcard:null,pan:null,sb:null,vel:0,sbKey:'',dotsKey:''};
 
 const C=()=>F.env?.api?.content?.journey?.fish||null;
 const P=()=>F.env?.api?.state?.journey?.fish||{fresh:true,rod:'tre',rods:['tre'],bait:{},use:'',gio:0,cap:20,bag:[],dex:{},tot:{},ms:[],carry:0,aq:[],tro:{},deal:null};
@@ -91,6 +93,7 @@ export async function openFishing(env,{spot='',trip=''}={}){
   const d=dialog();
   if(!d.open)d.showModal();
   if(env.world&&F.prevPause===null){F.prevPause=Boolean(env.world.paused);env.world.paused=true;}
+  noTyping();document.addEventListener('focusin',guard,true);   // ⌨️ #515
   F.onState=()=>{F.meFig=null;paintHud();if(F.panel)paintPanel();};
   env.api.addEventListener?.('state',F.onState);
   F.meFig=null;idle('');paintSpots();paintHud();resize();loadRecords();joinLake();
@@ -122,6 +125,8 @@ function dialog(){
       <form class="fs-sayrow" hidden><input type="text" maxlength="120" enterkeyhint="send" placeholder="Nói với người câu gần đây…" aria-label="Lời nói"><button type="submit" class="fs-btn primary small">Nói</button><button type="button" class="fs-btn small" data-fs="sayClose" aria-label="Đóng">✕</button></form>
       <div class="fs-banner" role="status" aria-live="polite" hidden></div>
       <button type="button" class="fs-pan l" data-fs="pan" data-dir="-1" hidden></button><button type="button" class="fs-pan r" data-fs="pan" data-dir="1" hidden></button>
+      <div class="fs-scroll" role="scrollbar" aria-orientation="horizontal" aria-label="Xem dọc bờ hồ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0" hidden><canvas class="fs-sdots" aria-hidden="true"></canvas><i class="fs-sthumb"></i><b class="fs-sme" aria-hidden="true"></b></div>
+      <button type="button" class="fs-home" data-fs="home" hidden>📍 Về chỗ tôi</button>
       <div class="fs-pcard" hidden></div>
       <div class="fs-card" hidden></div>
     </div>
@@ -131,12 +136,19 @@ function dialog(){
   document.body.append(d);
   F.cv=d.querySelector('.fs-cv');F.ctx=F.cv.getContext('2d');
   const go=d.querySelector('.fs-go'),stage=d.querySelector('.fs-stage');
-  const down=e=>{if(e.button>0)return;e.preventDefault();
-    if(e.currentTarget===F.cv&&tapPeer(e))return;   // 👥 a tap on another fisher: their card, not a cast
+  const down=e=>{if(e.button>0)return;e.preventDefault();noTyping();
     try{e.currentTarget.setPointerCapture?.(e.pointerId);}catch{/* fine */}press(e.timeStamp);};
   const up=e=>{e.preventDefault();release();};
   go.addEventListener('pointerdown',down);go.addEventListener('pointerup',up);go.addEventListener('pointercancel',up);
-  F.cv.addEventListener('pointerdown',down);F.cv.addEventListener('pointerup',up);F.cv.addEventListener('pointercancel',up);
+  // ↔️ the lake itself: a drag pans along the boardwalk (idle), a tap on a fisher opens their card, else it casts / reels
+  F.cv.addEventListener('pointerdown',cvDown);F.cv.addEventListener('pointermove',cvMove);F.cv.addEventListener('pointerup',cvUp);F.cv.addEventListener('pointercancel',cvUp);
+  F.cv.addEventListener('wheel',cvWheel,{passive:false});
+  // ⌨️ #515 (iOS: holding the reel button popped the keyboard up): the press targets never start a touch's default (no
+  // focus, no selection, no callout) and nothing outside the lake may take the focus while it is open (noTyping, guard)
+  for(const el of [go,F.cv])el.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();noTyping();},{passive:false});
+  const bar=d.querySelector('.fs-scroll');
+  bar.addEventListener('pointerdown',sbDown);bar.addEventListener('pointermove',sbMove);bar.addEventListener('pointerup',sbUp);bar.addEventListener('pointercancel',sbUp);
+  bar.addEventListener('keydown',e=>{const k={ArrowLeft:-3,ArrowRight:3,PageUp:-10,PageDown:10}[e.key];if(!k)return;e.preventDefault();lookAt((F.camTo??F.cam)+k);});
   go.addEventListener('contextmenu',e=>e.preventDefault());stage.addEventListener('contextmenu',e=>e.preventDefault());
   d.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!F.panel&&!e.repeat&&(e.target===go||e.target===d)){e.preventDefault();press(e.timeStamp);}});
   d.addEventListener('keyup',e=>{if((e.key===' '||e.key==='Enter')&&!F.panel&&(e.target===go||e.target===d)){e.preventDefault();release();}});
@@ -157,7 +169,8 @@ function stop(){
   cancelAnimationFrame(F.raf);F.raf=0;for(const id of F.timers)clearTimeout(id);F.timers=[];
   F.env?.api?.removeEventListener?.('state',F.onState);
   if(F.env?.world&&F.prevPause!==null){F.env.world.paused=F.prevPause;F.env.world.wake?.();}
-  F.prevPause=null;F.r=null;F.f=null;F.phase='idle';F.panel=null;biteFx(false);
+  F.prevPause=null;F.r=null;F.f=null;F.phase='idle';F.panel=null;biteFx(false);F.pan=null;F.sb=null;F.vel=0;
+  document.removeEventListener('focusin',guard,true);
   F.lake?.stop();F.lake=null;F.camTo=null;hidePeerCard();
 }
 
@@ -202,13 +215,108 @@ function lakeAct(k,extra={}){
   if(k==='idle'&&['','idle','lost'].includes(F.lastAct))return;
   F.lastAct=k;F.lake.act(k,extra);
 }
-/** The view follows my place unless I looked along the boardwalk (◀ ▶, a feed line); a cast looks back at me. */
+/** The view follows my place unless I looked along the boardwalk (a drag, the wheel, the bar, ◀ ▶, a feed line); a
+ * cast looks back at me. A drag moves it with the finger, a fling glides on and slows down. */
 function camera(t,dt){
-  const L=F.lake;if(!L?.online){F.cam=0;return;}
-  const list=[...L.peers.values(),{s:L.slot}],to=clampCam(F.camTo??L.pos,extent(list));
-  F.cam+=(to-F.cam)*Math.min(1,dt*6);if(Math.abs(to-F.cam)<.005)F.cam=to;
+  const L=F.lake;if(!L?.online){F.cam=0;F.vel=0;paintScroll();return;}
+  const ext=lakeExt();
+  if(F.pan?.moved||F.sb){/* the finger has it */}
+  else if(F.vel){F.cam+=F.vel*dt;const c=clampCam(F.cam,ext);F.vel=c!==F.cam?0:glide(F.vel,dt);F.cam=c;F.camTo=F.cam;}
+  else{const to=clampCam(F.camTo??L.pos,ext);F.cam+=(to-F.cam)*Math.min(1,dt*6);if(Math.abs(to-F.cam)<.005)F.cam=to;}
   L.view(F.cam);
+  paintScroll();
   if(t-F.panAt>.3){F.panAt=t;paintPan();}
+}
+const lakeExt=()=>{const L=F.lake;return extent(L?.online?[...L.peers.values(),{s:L.slot}]:[]);};
+/** Look at place `pos` (eased there), kept over the boardwalk. */
+function lookAt(pos){F.vel=0;F.camTo=clampCam(pos,lakeExt());}
+/** ↔️ The lake can be panned now: idle (no round on), no sheet open, a crowd wider than the view. */
+function panOK(){
+  if(F.panel||!['idle','card','lost'].includes(F.phase)||!F.lake?.online)return false;
+  const g=geo();return scrollOf(F.cam,lakeExt(),g.sp,g.w).can;
+}
+const HOLD_MS=200,SLOP=8;
+/** A finger on the lake. Idle with a crowd: wait to see whether it drags (pan), taps (a fisher's card, else a cast)
+ * or stays down (HOLD_MS: the power meter, as before). During a round: the press itself (bite, reel), at once. */
+function cvDown(e){
+  if(e.button>0)return;e.preventDefault();noTyping();
+  try{F.cv.setPointerCapture?.(e.pointerId);}catch{/* fine */}
+  if(!panOK()){if(tapPeer(e.clientX,e.clientY))return;press(e.timeStamp);return;}
+  F.vel=0;
+  const P={id:e.pointerId,x0:e.clientX,y0:e.clientY,t0:e.timeStamp,cam0:F.cam,moved:false,lx:e.clientX,lt:e.timeStamp,v:0,held:false};
+  P.timer=setTimeout(()=>{if(F.pan===P&&!P.moved){P.held=true;if(!tapPeer(P.x0,P.y0,true))press(P.t0);else F.pan=null;}},HOLD_MS);
+  F.pan=P;
+}
+function cvMove(e){
+  const P=F.pan;if(!P||e.pointerId!==P.id||P.held)return;
+  const dx=e.clientX-P.x0,dy=e.clientY-P.y0;
+  if(!P.moved){if(Math.abs(dx)<SLOP||Math.abs(dx)<Math.abs(dy)*.7)return;P.moved=true;clearTimeout(P.timer);hidePeerCard();}
+  const g=geo(),ms=Math.max(1,e.timeStamp-P.lt),v=-(e.clientX-P.lx)/g.sp/(ms/1000);
+  P.v=P.v*.6+v*.4;P.lx=e.clientX;P.lt=e.timeStamp;
+  F.cam=panBy(P.cam0,dx,g.sp,lakeExt());F.camTo=F.cam;
+}
+function cvUp(e){
+  if(e.type==='pointerup')e.preventDefault();
+  const P=F.pan;
+  if(!P||e.pointerId!==P.id){release();return;}
+  clearTimeout(P.timer);F.pan=null;
+  if(P.held){release();return;}
+  if(P.moved){if(e.type==='pointerup'&&e.timeStamp-P.lt<90)F.vel=Math.max(-60,Math.min(60,P.v));return;}   // a fling glides on
+  if(e.type!=='pointerup')return;
+  if(tapPeer(P.x0,P.y0))return;   // 👥 a tap on another fisher: their card, not a cast
+  press(P.t0);release();          // a plain tap casts, as before
+}
+/** The mouse wheel, a trackpad's sideways swipe: along the boardwalk. */
+function cvWheel(e){
+  if(!panOK())return;
+  const px=wheelPx(e);if(!px)return;e.preventDefault();
+  const g=geo();lookAt((F.camTo??F.cam)+px/g.sp);
+}
+/** The bar under the boardwalk: drag its thumb, or tap a spot to look there. */
+function sbDown(e){
+  if(e.button>0)return;e.preventDefault();noTyping();
+  const el=e.currentTarget,r=el.getBoundingClientRect(),g=geo(),o=scrollOf(F.cam,lakeExt(),g.sp,g.w),at=(e.clientX-r.left)/Math.max(1,r.width);
+  F.sb={id:e.pointerId,off:at>=o.left&&at<=o.left+o.width?at-o.left:o.width/2};F.vel=0;
+  try{el.setPointerCapture?.(e.pointerId);}catch{/* fine */}
+  sbMove(e);
+}
+function sbMove(e){
+  const B=F.sb;if(!B||e.pointerId!==B.id)return;
+  const r=e.currentTarget.getBoundingClientRect(),g=geo(),at=(e.clientX-r.left)/Math.max(1,r.width);
+  F.cam=camAt(at-B.off,lakeExt(),g.sp,g.w);F.camTo=F.cam;
+}
+function sbUp(e){if(F.sb&&e.pointerId===F.sb.id)F.sb=null;}
+/** The bar (where the view is along the whole crowd, a tick per fisher, 📍 me) and the 📍 Về chỗ tôi button. */
+function paintScroll(){
+  const d=F.dlg;if(!d||!F.dims.w)return;
+  const bar=d.querySelector('.fs-scroll'),home=d.querySelector('.fs-home'),L=F.lake,g=geo();
+  const ext=lakeExt(),o=scrollOf(F.cam,ext,g.sp,g.w,myPos()),show=Boolean(L?.online)&&o.can&&!F.panel;
+  if(bar.hidden!==!show)bar.hidden=!show;
+  const far=show&&farFromMe(F.cam,myPos(),g.sp,g.w)&&['idle','card','lost'].includes(F.phase)&&!F.pan?.moved&&!F.sb;
+  if(home.hidden!==!far)home.hidden=!far;
+  if(!show)return;
+  const key=`${o.left.toFixed(4)}|${o.width.toFixed(4)}|${o.me.toFixed(4)}`;
+  if(key!==F.sbKey){F.sbKey=key;
+    const th=bar.querySelector('.fs-sthumb');th.style.left=`${o.left*100}%`;th.style.width=`${Math.max(4,o.width*100)}%`;
+    bar.querySelector('.fs-sme').style.left=`${o.me*100}%`;
+    bar.setAttribute('aria-valuenow',String(Math.round(o.left/Math.max(1e-6,1-o.width)*100)));}
+  const n=L.peers.size,dk=`${n}|${ext}|${myPos()}|${bar.clientWidth}|${g.sp}`;
+  if(dk!==F.dotsKey){F.dotsKey=dk;   // a tick per fisher: how the crowd spreads along the boardwalk
+    const cv=bar.querySelector('.fs-sdots'),w=bar.clientWidth||100,h=bar.clientHeight||10,dpr=F.dims.dpr,q=cv.getContext('2d');
+    cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);q.setTransform(dpr,0,0,dpr,0,0);q.fillStyle='rgba(255,255,255,.55)';
+    const half=g.w/2/g.sp,total=ext[1]-ext[0]+2*half;
+    for(const p of L.peers.values()){const x=(posOf(p.s)-ext[0]+half)/total*w;q.fillRect(Math.round(x),2,1.5,h-4);}
+    bar.title=`👥 ${fmt(L.count)} người câu dọc bờ hồ`;}
+}
+/** ⌨️ #515: no typing field keeps the focus under a press (iOS keeps its keyboard up for a focused field). */
+function noTyping(){const a=document.activeElement;if(a&&a!==document.body&&a.matches?.(TYPING))try{a.blur();}catch{/* detached */}}
+/** ⌨️ #515: while the lake is open, a field behind it (a work screen's form, the chat) never takes the focus; the lake's
+ * own 💬 line only once its 💬 button opened it. */
+function guard(e){
+  const t=e.target;if(!F.dlg?.open||!t?.matches?.(TYPING))return;
+  if(F.dlg.contains(t)){if(t.closest('[hidden]'))t.blur();return;}
+  const box=t.closest('dialog[open]');if(box&&box!==F.dlg&&!box.contains(F.dlg))return;   // a sheet opened over the lake
+  t.blur();
 }
 function paintPan(){
   const d=F.dlg;if(!d)return;const g=geo(),o=offscreen([...(F.lake?.peers.values()||[])],F.cam,g.sp,g.w);
@@ -243,11 +351,11 @@ function onCatch(e,p,mine){
   clearTimeout(F.bannerT);F.bannerT=setTimeout(()=>{el.hidden=true;},4800);
   if(p&&!CALM){const g=geo();if(Math.abs(posOf(p.s)-F.cam)>g.w/2/g.sp&&['idle','card','lost'].includes(F.phase))F.camTo=posOf(p.s);}   // look at it
 }
-/** A tap on another fisher (not during a round): their mini card. */
-function tapPeer(e){
+/** A tap on another fisher (not during a round): their mini card (`peek`: only whether one is there). */
+function tapPeer(cx,cy,peek=false){
   const L=F.lake;if(!L?.peers.size||!['idle','card','lost'].includes(F.phase))return false;
-  const g=geo(),r=F.cv.getBoundingClientRect(),hit=hitPeer([...L.peers.values()],e.clientX-r.left,e.clientY-r.top,{cam:F.cam,sp:g.sp,w:g.w,py:g.py,scale:g.scale});
-  if(!hit)return false;
+  const g=geo(),r=F.cv.getBoundingClientRect(),hit=hitPeer([...L.peers.values()],cx-r.left,cy-r.top,{cam:F.cam,sp:g.sp,w:g.w,py:g.py,scale:g.scale});
+  if(!hit)return false;if(peek)return true;
   F.pcard={pid:hit.pid,data:null};paintPeerCard();L.card(hit.pid);return true;
 }
 function paintPeerCard(f){
@@ -257,7 +365,7 @@ function paintPeerCard(f){
   const api=F.env?.api,d=F.pcard.data,fish=(x,label)=>{if(!x)return '';const sp=spOf(x.s),R=rar(x.r);
     return `<li style="--rc:${esc(R.color||'#ccc')}">${sp?fishSvg(sp,{w:44,h:22}):''}<span>${label}: <b>${esc(sp?.name||x.s)}</b> ${esc(fmtKg(x.g))} <small>${esc(R.emoji)} ${esc(R.name)}</small></span></li>`;};
   const pic=hfAvatar(p.tt,p.st,portrait(withWings(p.lk||{},p.wg),p.g,52,p.name),api);
-  el.innerHTML=`<button type="button" class="fs-x" data-fs="pcardX" aria-label="Đóng">✕</button><div class="fs-pc-who">${pic}<div><b data-no-translate${stName(api,p.st)}>${esc(p.name)}</b>${p.tt?`<small>${hnChips(api,p.tt,2)}</small>`:''}<small>🎣 ${esc(rodOf(p.rod||'tre').emoji)} ${esc(rodOf(p.rod||'tre').name)}</small></div></div>
+  el.innerHTML=`<button type="button" class="fs-x" data-fs="pcardX" aria-label="Đóng">✕</button><div class="fs-pc-who">${pic}<div><b data-no-translate${stName(api,p.st)}>${esc(p.name)}</b>${p.tt?`<small>${hnChips(api,p.tt,2)}</small>`:''}<small class="fs-pc-rod">${rodSvg(p.rod||'tre',24)} ${esc(rodOf(p.rod||'tre').emoji)} ${esc(rodOf(p.rod||'tre').name)}</small></div></div>
     ${!d?'<p class="fs-note">Đang xem…</p>':`<ul class="fs-pc-fish">${fish(d.today,'🐟 Hôm nay')}${fish(d.best,'🐋 Lớn nhất')}${d.dex?`<li><span>📖 Sổ cá: <b>${fmt(d.dex)}</b> loài</span></li>`:''}${!d.today&&!d.best&&!d.dex?'<li><span>Chưa có con cá nào để khoe.</span></li>':''}</ul>`}`;
   el.hidden=false;
 }
@@ -267,6 +375,7 @@ function hidePeerCard(){F.pcard=null;const el=F.dlg?.querySelector('.fs-pcard');
 /** `at`: the event's timeStamp (performance.now() time of the touch: the handler itself may run a frame late). */
 function press(at){
   if(F.panel)return;
+  noTyping();const sr=F.dlg?.querySelector('.fs-sayrow');if(sr&&!sr.hidden)sr.hidden=true;   // ⌨️ #515: a press closes the 💬 line and its keyboard
   F.pressing=true;F.dlg?.querySelector('.fs-go')?.classList.add('down');
   if(F.phase==='idle'||F.phase==='card'){hideCard();hidePeerCard();F.camTo=null;F.phase='charge';F.c0=clock();F.power=0;meters();paintMeter();paintGo();return;}
   if(F.phase==='wait'&&F.r?.biteL){nibbleTap();return;}   // a fish (or junk) is coming: not yet
@@ -340,17 +449,27 @@ async function endFight(kind){
   F.phase='landing';const f=F.f;meters();paintGo();
   if(kind==='snap'){snapFx();say(f.heavy&&f.snapAt?'💥 Phựt! Cá quá nặng, đứt dây rồi.':'💥 Phựt! Căng quá đứt dây rồi.');}
   else if(kind==='slack'){fleeFx();say('🐟 Dây chùng quá, cá giãy thoát mất!');}
-  let res=null;
-  for(let i=0;i<4;i++){
-    try{res=await F.env.api.command('jr_fish_land',{round:r.id,ok:kind==='ok'});break;}
+  // A slow save (prod 25/10: jr_fish_* 1,5–2,4 s on big saves) never costs the fish: "Đang kéo lên…" while it lands;
+  // a "too early" (the server's clock), a save that moved meanwhile (409, dropped quietly by api.js) or no answer at
+  // all are asked again (the same round: the server answers a landed one as a duplicate, never twice).
+  let res=null,err=null;
+  const wait=ms=>new Promise(done=>later(done,ms));
+  for(let i=0;i<6;i++){
+    err=null;
+    try{res=await F.env.api.command('jr_fish_land',{round:r.id,ok:kind==='ok'});
+      if(res?.duplicate&&!res.land&&i<5){await wait(500);continue;}   // landed by this tab already: ask for what it was
+      break;}
     catch(e){
-      if(e?.data?.code==='too_early'&&i<3){await new Promise(done=>later(done,700));continue;}
-      if(!e?.quiet)say(e?.message||'Chưa ghi được lượt câu.');break;
+      err=e;const code=e?.data?.code||'';
+      if(code==='too_early'&&i<5){await wait(700);continue;}
+      if((e?.conflict||!e?.status||e.status>=500)&&i<5){await wait(500+i*400);continue;}
+      break;
     }
   }
   if(F.r!==r)return;
   const land=res?.land;
-  if(!land){idle();return;}
+  if(!land){if(err&&!err.quiet)say(err.message||'Chưa ghi được lượt câu.');idle();return;}
+  if(land.res==='fish'&&!land.catch){say(res.message||'🎣 Lên cá rồi! Xem trong 🧺 giỏ nhé.',3200);idle();return;}   // an answer replayed (duplicate)
   if(land.res==='fish'||land.res==='junk'){F.lastAct='';jump(land,res);return;}   // 👥 the service tells the others (the commit's word)
   lakeAct('lost');
   if(kind==='ok'||land.res==='snap'){if(land.res==='snap')snapFx();say(res.message||'Mất cá rồi!',3200);}
@@ -359,8 +478,9 @@ async function endFight(kind){
 /** The catch leaps out of the water to the dock, then its card. */
 function jump(land,res){
   const g=geo(),fromD=Math.max(1,(F.r?.dist||10)*.12),sp=land.catch?spOf(land.catch.s):null;
+  const pose=sp?catchPose(land.catch.g,g.scale):null;   // 🐋 as long as it weighs: a big one lands on the boardwalk beside me
   F.jump={t0:clock(),dur:1.05,sp,junk:land.res==='junk'?(C()?.junk||[]).find(j=>j.id===land.junk):null,
-    x0:g.px+(F.bob?.lat||0)*g.half(g.yOf(fromD))*.4,y0:g.yOf(fromD),x1:g.px+6,y1:g.py-70,len:sp?clamp(34+sp.r*8,34,90):30};
+    x0:g.px+(F.bob?.lat||0)*g.half(g.yOf(fromD))*.4,y0:g.yOf(fromD),x1:pose?.big?g.px+pose.dx:g.px+6,y1:pose?.big?g.py+pose.dy:g.py-70,len:pose?Math.max(18,pose.len):30,big:!!pose?.big};
   splashAt(F.jump.x0,F.jump.y0,16,'#e8f8ff');
   F.phase='jump';F.f=null;F.line=null;meters();paintGo();vibrate(land.res==='fish'&&land.catch?.r>=4?[40,40,120]:30);
   later(()=>showCard(land,res),1000);
@@ -422,6 +542,7 @@ function resize(){
   const bank=F.dlg?.querySelector('.fs-bank')?.offsetHeight||112;F.bankH=bank;
   const meter=F.dlg?.querySelector('.fs-meter');
   if(meter){meter.style.top=`${Math.round(h*.2)}px`;meter.style.height=`${Math.round(h-bank-h*.2-40)}px`;}
+  const bar=F.dlg?.querySelector('.fs-scroll');if(bar)bar.style.bottom=`${Math.max(0,bank-6)}px`;F.dotsKey='';   // ↔️ just under the boardwalk (over its posts)
 }
 /** The lake in perspective, as deep as the rod in hand throws (M: a little past its longest cast, at the horizon). */
 /** 👥 With others at the lake I stand at my place on the boardwalk (px: where the view puts it; a crowd packs closer). */
@@ -502,8 +623,7 @@ function draw(t){
     if(F.f.dl>0){ring(fx,fy,.4);}
   }
   bank(ctx,g,S,night);
-  drawLake(ctx,g,F.lake||NOBODY,t,{cam:F.cam,sp:g.sp,scale:g.scale,py:g.py,dpr:F.dims.dpr,dark:night,api:F.env?.api,spOf,rarOf:rar,
-    rodColor:id=>rodOf(id).color,junkEmoji:id=>(C()?.junk||[]).find(j=>j.id===id)?.emoji,calm:CALM});
+  drawLake(ctx,g,F.lake||NOBODY,t,{cam:F.cam,sp:g.sp,scale:g.scale,py:g.py,dpr:F.dims.dpr,dark:night,api:F.env?.api,spOf,rarOf:rar,junkEmoji:id=>(C()?.junk||[]).find(j=>j.id===id)?.emoji,calm:CALM});
   dock(ctx,g,night);
   lineAndBobber(ctx,g,t);
   player(ctx,g,t,night);
@@ -591,15 +711,14 @@ function rodTip(g,t){
   if(F.phase==='charge')a=.35+1.5*F.power;
   else if(F.phase==='fight'&&F.f)a=.45+.5*F.f.tau+Math.sin(t*20)*.03*F.f.tau;
   else if(F.phase==='fly'||F.phase==='casting')a=.08;
-  const L=58+40*g.scale,bx=g.px+24*g.scale,by=g.py-40*g.scale;
+  const L=(58+40*g.scale)*rodLook(P().rod).len,bx=g.px+24*g.scale,by=g.py-40*g.scale;   // 🎣 a better rod is longer
   return {bx,by,x:bx+Math.sin(a)*L,y:by-Math.cos(a)*L,a};
 }
 function lineAndBobber(ctx,g,t){
-  const tip=rodTip(g,t);
-  ctx.strokeStyle='#5a3a1a';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(tip.bx,tip.by);
-  const bend=F.phase==='fight'&&F.f?F.f.tau*16:0;ctx.quadraticCurveTo((tip.bx+tip.x)/2+bend*.3,(tip.by+tip.y)/2-bend*.2,tip.x+bend*.5,tip.y+bend);ctx.stroke();
-  const rc=myRod().color||'#c8a85a';ctx.strokeStyle=rc;ctx.lineWidth=1.6;ctx.stroke();
-  const tx=tip.x+bend*.5,ty=tip.y+bend;
+  const tip=rodTip(g,t),id=P().rod;
+  const bend=F.phase==='fight'&&F.f?F.f.tau*16:0,R={bx:tip.bx,by:tip.by,cx:(tip.bx+tip.x)/2+bend*.3,cy:(tip.by+tip.y)/2-bend*.2,x:tip.x+bend*.5,y:tip.y+bend,s:1,t,calm:CALM};
+  drawRod(ctx,id,R);   // 🎣 each rod its own look (v4/fish-rod.js)
+  const [tx,ty]=rodTipOf(id,R),lc=lineColor(id);
   if(!F.bob||F.phase==='jump')return;
   let bx,by;
   if(F.phase==='fly'&&F.bob){
@@ -612,7 +731,7 @@ function lineAndBobber(ctx,g,t){
     by+=Math.sin(t*2.2)*1.4+F.bob.dip*(F.phase==='bite'||F.phase==='hooking'?9:6);
   }
   const snapped=F.line?.snap&&t-F.line.snap<1.2;
-  ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(tx,ty);
+  ctx.strokeStyle=lc;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(tx,ty);
   if(snapped){ctx.quadraticCurveTo(tx+10,ty+30,tx+4,ty+60);ctx.stroke();return;}
   const sag=F.phase==='fight'&&F.f?(1-F.f.tau)*30:22;
   ctx.quadraticCurveTo((tx+bx)/2,Math.max(ty,by)-(Math.abs(by-ty)*.25)+sag,bx,by);ctx.stroke();
@@ -659,8 +778,8 @@ const NOBODY={peers:new Map(),self:{}};
 const CALM=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch{return false;}})();
 function leap(ctx,t){
   const j=F.jump,u=clamp((t-j.t0)/j.dur,0,1);
-  const x=j.x0+(j.x1-j.x0)*u,y=j.y0+(j.y1-j.y0)*u-Math.sin(Math.PI*u)*90;
-  if(j.sp)drawFish(ctx,j.sp,x,y,j.len,{angle:Math.sin(t*14)*.3-.4+u*.6,flip:j.x1<j.x0,wiggle:(t*3)%1});
+  const x=j.x0+(j.x1-j.x0)*u,y=j.y0+(j.y1-j.y0)*u-Math.sin(Math.PI*u)*(90+(j.big?j.len*.3:0));
+  if(j.sp)drawFish(ctx,j.sp,x,y,j.len,{angle:u>=1&&j.big?0:Math.sin(t*14)*.3-.4+u*.6,flip:j.big||j.x1<j.x0,wiggle:(t*3)%1});
   else{ctx.font='28px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(j.junk?.emoji||'🥾',x,y);}
 }
 
@@ -689,7 +808,7 @@ function paintGo(tip){
   const b=F.dlg?.querySelector('.fs-go'),s=F.dlg?.querySelector('.fs-tip');if(!b)return;
   const ph=F.phase;b.className='fs-go'+(ph==='bite'?' hook':ph==='fight'?' reel':['wait','casting','fly','hooking','landing','jump','lost'].includes(ph)?' wait':'');
   b.textContent={idle:'🎣 Giữ để quăng',card:'🎣 Giữ để quăng tiếp',charge:'Thả tay để quăng!',casting:'Vút…',fly:'Vút…',wait:'Chờ phao chìm… (chạm = Giật)',bite:'❗ GIẬT!',hooking:'Giật!',
-    fight:'💪 Giữ để kéo · thả để nhả',landing:'Kéo lên…',jump:'Lên rồi!',lost:'…'}[ph]||'🎣';
+    fight:'💪 Giữ để kéo · thả để nhả',landing:'Đang kéo lên…',jump:'Lên rồi!',lost:'…'}[ph]||'🎣';
   if(s)s.textContent=tip!=null&&tip!==''?tip:{idle:'Giữ rồi thả để quăng, xa gần hên xui!',card:'Giữ rồi thả để quăng, xa gần hên xui!',charge:'Thả tay là bay! Đầy vạch thì xa hơn chút.',wait:'Phao rung nhẹ là cá rỉa. Phao chìm hẳn + “!” mới giật.',
     bite:'Chạm Giật trước khi vòng sáng tắt!',fight:'Giữ để kéo, vạch nháy đỏ thì thả tay.'}[ph]||'';
 }
@@ -732,7 +851,7 @@ function showCard(land,res){
   const ban=c.rec?'<span class="fs-ban rec">🏆 Kỷ lục mới của cả phố!</span>':c.new?'<span class="fs-ban new">📖 Loài mới vào Sổ cá!</span>':c.pb?'<span class="fs-ban pb">🏅 Kỷ lục mới của bạn!</span>':'';
   el.innerHTML=`${c.r>=5?`<div class="fs-confetti">${Array.from({length:26},(_,i)=>`<i style="left:${(i*37)%100}%;background:${['#ffcf26','#ff8a1c','#ff3b3b','#3d7bff','#43b05c','#a855f7'][i%6]};animation-delay:${(i%7)*.08}s"></i>`).join('')}</div>`:''}
     ${ban}${fishSvg({...sp,r:c.r},{w:220,h:110,title:sp.name})}<h3>${esc(sp.name)}</h3><span class="fs-rar">${esc(R.emoji)} ${esc(R.name)}</span>
-    <p class="fs-kg">${esc(fmtKg(c.g))}</p><p class="fs-price">Giá lái: ~${fmt(c.price)} xu · ${esc(spotOf(c.spot).emoji)} ${esc(spotOf(c.spot).name)}</p>
+    <p class="fs-kg">${esc(fmtKg(c.g))} <small>📏 ${esc(fmtLen(c.g/1000))}</small></p><div class="fs-scale">${scaleSvg({...sp,r:c.r},c.g/1000,{title:`Cá dài ${fmtLen(c.g/1000)}, so với người`})}</div><p class="fs-price">Giá lái: ~${fmt(c.price)} xu · ${esc(spotOf(c.spot).emoji)} ${esc(spotOf(c.spot).name)}</p>
     ${fx.length?`<ul class="fs-fx">${fx.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
     <div class="fs-card-acts"><button type="button" class="fs-btn primary" data-fs="again">🎣 Câu tiếp</button>${c.r>=(C()?.carry_min||3)?`<button type="button" class="fs-btn blue" data-fs="carry" data-id="${c.i}">💪 Vác đi dạo</button>`:''}<button type="button" class="fs-btn" data-fs="release" data-id="${c.i}">🌊 Thả</button></div>`;
   el.hidden=false;
@@ -749,12 +868,13 @@ async function act(a,ds){
       if(ds.id&&ds.id!==F.spot){F.spot=ds.id;F.waves=null;hideCard();idle();paintSpots();joinLake();say(`${spotOf(F.spot).emoji} ${spotOf(F.spot).name}: ${spotOf(F.spot).hint||''}`);}return;
     case'again':hideCard();idle();return;
     case'feed':{const el=F.dlg.querySelector('.fs-feed-all');el.hidden=!el.hidden;if(!el.hidden)paintFeed();return;}
-    case'feedPid':{const p=F.lake?.peers.get(ds.pid);if(p){F.camTo=posOf(p.s);F.dlg.querySelector('.fs-feed-all').hidden=true;}return;}
+    case'feedPid':{const p=F.lake?.peers.get(ds.pid);if(p){lookAt(posOf(p.s));F.dlg.querySelector('.fs-feed-all').hidden=true;}return;}
     case'sayOpen':{const f=F.dlg.querySelector('.fs-sayrow');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus();return;}
     case'sayClose':F.dlg.querySelector('.fs-sayrow').hidden=true;return;
     case'pan':{const g=geo(),o=offscreen([...(F.lake?.peers.values()||[])],F.cam,g.sp,g.w),left=Number(ds.dir)<0,to=left?o.lp:o.rp;
-      if(to!=null)F.camTo=to+(left?1:-1)*Math.max(0,g.w/2/g.sp-1.5);return;}
+      if(to!=null)lookAt(to+(left?1:-1)*Math.max(0,g.w/2/g.sp-1.5));return;}
     case'pcardX':hidePeerCard();return;
+    case'home':F.vel=0;F.camTo=null;return;   // 📍 back to my place
     case'shop':case'market':case'board':case'dex':
       if(!['idle','card','lost'].includes(F.phase)){say('Đang câu dở, xong con này đã nhé!');return;}
       openPanel(a);return;
@@ -810,7 +930,7 @@ function shopHTML(){
   if(t==='rod'){
     out+=`<p class="fs-note">Cần xịn quăng xa hơn (📏 xa gần hên xui, ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, ra cá hiếm và cá to nhiều hơn hẳn.</p><p class="fs-note">🍀 Tỷ lệ mỗi hạng cá khi quăng tới vùng xa nhất của cần (chưa tính chỗ câu, mồi).</p><p class="fs-note">Mua cần nào cũng được, không cần mua theo thứ tự.</p><ul class="fs-list">${c.rods.map(r=>{
       const own=(p.rods||[]).includes(r.id),cur=p.rod===r.id;
-      return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico" style="--c:${esc(r.color||'#eee')}">${esc(r.emoji)}</span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${esc(reachTxt(reachOf(r)))} · 🧵 ${esc(kgLine(r.line))}</small>${oddsHTML(r)}<small>⏱️ Giật ${secs(r.hook||C()?.hook_window||1)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
+      return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico fs-rodico" style="--c:${esc(r.color||'#eee')}">${rodSvg(r.id,40)}<i>${esc(r.emoji)}</i></span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${esc(reachTxt(reachOf(r)))} · 🧵 ${esc(kgLine(r.line))}</small>${oddsHTML(r)}<small>⏱️ Giật ${secs(r.hook||C()?.hook_window||1)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
         ${cur?'<span class="fs-tag">Đang cầm</span>':own?fbtn('Cầm','equip',{rod:r.id}):fbtn(r.price?`${fmt(r.price)} xu`:'Miễn phí','buy',{kind:'rod',item:r.id},'primary')}</li>`;}).join('')}</ul>`;
   }else if(t==='bait'){
     out+=`<p class="fs-note">Mồi tốt tăng cơ hội gặp cá hiếm. Mỗi lần quăng tốn 1 mồi đang dùng.</p><ul class="fs-list"><li class="fs-item${!p.use?' cur':''}"><span class="fs-ico">🎣</span><div class="fs-it"><b>Không mồi đặc biệt</b><small>Mồi cơm thường, miễn phí</small></div>${!p.use?'<span class="fs-tag">Đang dùng</span>':fbtn('Dùng','equip',{bait:''})}</li>
@@ -834,7 +954,7 @@ function marketHTML(){
   out+=`<ul class="fs-list">${bag.map(f=>{
     const sp=spOf(f.s)||{name:f.s,r:0},R=rar(sp.r),price=priceOf(f),open=F.open===f.i;
     const off=f.o<0?'<small class="fs-off">Lái không mua con này hôm nay</small>':f.o>0?`<small class="fs-off">Lái trả ${f.o}%: ~${fmt(Math.floor(price*f.o/100))} xu</small>`:'';
-    return `<li class="fs-fish" style="--rc:${esc(R.color||'#ccc')}">${fishSvg(sp,{w:64,h:32})}<div class="fs-it"><b>${esc(sp.name)}${f.k?' ⭐':''}${p.carry===f.i?' 💪':''}</b><small>${esc(fmtKg(f.g))} · ${esc(R.name)} · ~${fmt(price)} xu</small>${off}</div>
+    return `<li class="fs-fish" style="--rc:${esc(R.color||'#ccc')}">${fishSvg(sp,{w:64,h:32})}<div class="fs-it"><b>${esc(sp.name)}${f.k?' ⭐':''}${p.carry===f.i?' 💪':''}</b><small>${esc(fmtKg(f.g))} · 📏 ${esc(fmtLen(f.g/1000))} · ${esc(R.name)} · ~${fmt(price)} xu</small>${off}</div>
       <span style="display:flex;gap:4px">${f.o<0?'':fbtn('Bán','sell',{id:f.i},'primary')}${fbtn(open?'▴':'⋯','row',{id:f.i})}</span>
       ${open?`<div class="fs-fish-acts">${fbtn(f.k?'☆ Bỏ giữ':'⭐ Giữ','keep',{id:f.i})}${sp.r>=(C()?.carry_min||3)?fbtn(p.carry===f.i?'🧺 Cất':'💪 Vác','carry',{id:p.carry===f.i?0:f.i}):''}${fbtn('🖼️ Treo tranh','mount',{id:f.i})}${fbtn('🐠 Thả bể','aqua',{id:f.i})}${fbtn('🌊 Thả về hồ','release',{id:f.i})}</div>`:''}</li>`;}).join('')}</ul>`;
   const aq=p.aq||[];
@@ -874,7 +994,7 @@ function dexHTML(){
       <div class="fs-bar2" style="--rc:${esc(R.color)}"><i style="width:${list.length?n/list.length*100:0}%"></i></div><div class="fs-grid">${list.map(s=>{
         const row=dex[s.id],ok=have(s.id),rc=rec[s.id];
         if(!ok)return `<button type="button" class="fs-cell unk" data-fs="sp" data-id="${esc(s.id)}">${fishSvg(s,{w:80,h:40,silhouette:true})}<b>???</b><small>${esc(s.spots.map(x=>spotOf(x).emoji).join(''))}${s.cond?` ${esc(s.cond.split(' ')[0])}`:''}</small></button>`;
-        return `<button type="button" class="fs-cell got" style="--rc:${esc(R.color)}" data-fs="sp" data-id="${esc(s.id)}">${fishSvg(s,{w:80,h:40})}<b>${esc(s.name)}</b><small>${row[1]?`🏅 ${esc(fmtKg(row[1]))} · `:''}×${fmt(row[0])}</small>${rc?`<small class="fs-rec">🏆 ${esc(fmtKg(rc.g))}${rc.me?' (bạn)':''}</small>`:''}</button>`;
+        return `<button type="button" class="fs-cell got" style="--rc:${esc(R.color)}" data-fs="sp" data-id="${esc(s.id)}">${row[1]?`<span class="fs-len" title="Con lớn nhất dài ${esc(fmtLen(row[1]/1000))}">📏 ${esc(fmtLen(row[1]/1000).replace('~',''))}</span>`:''}${fishSvg(s,{w:80,h:40})}<b>${esc(s.name)}</b><small>${row[1]?`🏅 ${esc(fmtKg(row[1]))} · `:''}×${fmt(row[0])}</small>${rc?`<small class="fs-rec">🏆 ${esc(fmtKg(rc.g))}${rc.me?' (bạn)':''}</small>`:''}</button>`;
       }).join('')}</div>`;
   });
   return out;
@@ -884,7 +1004,7 @@ function detailHTML(id){
   const row=P().dex?.[id],ok=(row?.[0]||0)>0,R=rar(s.r),rc=F.rec?.records?.[id];
   return `<div class="fs-detail">${fbtn('← Sổ cá','spBack')}<div>${fishSvg(s,{w:240,h:120,silhouette:!ok,title:ok?s.name:'?'})}</div><h3 style="margin:2px 0">${ok?esc(s.name):'???'}</h3><span class="fs-rar" style="display:inline-block;padding:2px 10px;border-radius:99px;background:${esc(R.color)};color:#fff;font-weight:800;font-size:12px">${esc(R.emoji)} ${esc(R.name)}</span>
     <dl><dt>Ở đâu</dt><dd>${s.spots.map(x=>`${esc(spotOf(x).emoji)} ${esc(spotOf(x).name)}`).join(', ')}</dd>${s.cond?`<dt>Khi nào</dt><dd>${esc(s.cond)}</dd>`:''}<dt>Gợi ý</dt><dd>${esc(s.hint||'')}</dd>
-    ${ok?`<dt>Nặng</dt><dd>${esc(fmtKg(s.w[0]*1000))} – ${esc(fmtKg(s.w[1]*1000))}</dd><dt>Bạn câu</dt><dd>${fmt(row[0])} con${row[1]?` · lớn nhất ${esc(fmtKg(row[1]))}`:''}</dd>`:''}
+    ${ok?`<dt>Nặng</dt><dd>${esc(fmtKg(s.w[0]*1000))} – ${esc(fmtKg(s.w[1]*1000))}</dd><dt>Dài</dt><dd>${esc(fmtLen(s.w[0]))} – ${esc(fmtLen(s.w[1]))}</dd><dt>Bạn câu</dt><dd>${fmt(row[0])} con${row[1]?` · lớn nhất ${esc(fmtKg(row[1]))}`:''}</dd>${row[1]?`<dd class="fs-scale">${scaleSvg(s,row[1]/1000,{title:`Con lớn nhất dài ${fmtLen(row[1]/1000)}, so với người`})}</dd>`:''}`:''}
     <dt>Kỷ lục phố</dt><dd>${rc?`🏆 ${esc(fmtKg(rc.g))} · <span data-no-translate>${esc(rc.name)}</span>${rc.me?' (bạn)':''}`:'Chưa ai câu được'}</dd></dl></div>`;
 }
 async function loadBoard(board,force=false){

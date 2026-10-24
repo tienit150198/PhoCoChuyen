@@ -47,9 +47,9 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-dist.mini small{font-size:12px;font-weight:700;color:#cfe8f5}
 .fs-ten{position:absolute;top:50px;left:12px;right:12px;padding:8px 10px;border-radius:14px;background:rgba(6,30,46,.78);z-index:2;pointer-events:none}
 .fs-ten[hidden]{display:none}
-.fs-ten-bar{position:relative;height:18px;border-radius:9px;background:linear-gradient(90deg,#5a7a8c 0 10%,#c9a227 10% 90%,#ff3b3b 90%);overflow:hidden}
+.fs-ten-bar{position:relative;height:24px;border-radius:9px;background:linear-gradient(90deg,#5a7a8c 0 10%,#c9a227 10% 90%,#ff3b3b 90%);overflow:hidden}
 .fs-ten-bar b{position:absolute;top:0;bottom:0;background:rgba(61,220,132,.95);border-radius:4px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
-.fs-ten-bar i{position:absolute;top:-3px;bottom:-3px;width:5px;margin-left:-2px;border-radius:3px;background:#fff;box-shadow:0 0 6px #fff}
+.fs-ten-bar i{position:absolute;top:-3px;bottom:-3px;width:7px;margin-left:-3px;border-radius:3px;background:#fff;box-shadow:0 0 6px #fff}
 .fs-ten.red{animation:fs-redflash .3s ease-in-out infinite alternate}
 .fs-ten.red .fs-ten-bar{animation:fs-shake .12s linear infinite}
 @keyframes fs-redflash{to{background:rgba(190,30,30,.85);box-shadow:0 0 18px #ff3b3b}}
@@ -98,6 +98,9 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-card h3{margin:2px 0 0;font-size:20px}
 .fs-card .fs-rar{display:inline-block;margin-top:2px;padding:2px 10px;border-radius:999px;background:var(--rc);color:#fff;font-weight:800;font-size:12px;text-shadow:0 1px 1px rgba(0,0,0,.35)}
 .fs-card .fs-kg{font-size:28px;font-weight:900;margin:4px 0 0;font-variant-numeric:tabular-nums}
+.fs-card .fs-kg small{font-size:13px;font-weight:800;color:#6b5a40}
+.fs-scale{display:flex;justify-content:center;margin:2px 0 0}.fs-scale svg{max-width:100%;height:auto}
+.fs-cell .fs-len{position:absolute;top:3px;right:4px;font-size:9.5px;font-weight:800;color:#5b6b7a;background:#f3f6f8;border-radius:6px;padding:0 3px;line-height:1.5}
 .fs-card .fs-price{margin:2px 0 6px;color:#5d6d78;font-size:13px}
 .fs-card svg.fish-art{display:block;margin:0 auto;width:220px;height:110px;animation:fs-swim 1.6s ease-in-out infinite alternate}
 @keyframes fs-swim{to{transform:translateY(-4px) rotate(-2deg)}}
@@ -132,6 +135,11 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-item{display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid #f0e6d2}
 .fs-item.cur{background:#eaf6ff;border-radius:10px}
 .fs-ico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--c,#eee);font-size:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+/* 🎣 each rod drawn as it looks (v4/fish-rod.js rodSvg), its emoji as a badge */
+.fs-ico.fs-rodico{position:relative;width:46px;height:46px;background:linear-gradient(150deg,#fffdf6 55%,var(--c,#eee));box-shadow:inset 0 0 0 2px var(--c,#eee)}
+.fs-rodico svg{display:block}
+.fs-rodico i{position:absolute;right:-4px;bottom:-4px;font-style:normal;font-size:14px;line-height:1}
+.fs-pc-rod svg{vertical-align:middle}
 .fs-it{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
 .fs-it b{font-size:14px}
 .fs-it small{font-size:11.5px;color:#6b5a40}
@@ -208,6 +216,16 @@ dialog.fs-sheet::backdrop{background:rgba(4,16,26,.6)}
 .fs-pan{position:absolute;bottom:126px;min-width:44px;min-height:38px;padding:0 10px;border:0;border-radius:999px;background:rgba(6,30,46,.7);color:#fff;font:inherit;font-weight:800;font-size:13px;z-index:2;cursor:pointer}
 .fs-pan[hidden]{display:none}
 .fs-pan.l{left:6px}.fs-pan.r{right:6px}
+/* ↔️ the boardwalk's bar: where the view is along the whole crowd (a tick per fisher, 📍 me); its thumb drags */
+.fs-scroll{position:absolute;left:58px;right:58px;bottom:90px;height:22px;z-index:2;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
+  background:linear-gradient(transparent 6px,rgba(6,30,46,.55) 6px 16px,transparent 16px);border-radius:6px}
+.fs-scroll[hidden]{display:none}
+.fs-scroll:focus-visible{outline:2px solid #ffd34d;outline-offset:1px}
+.fs-sdots{position:absolute;left:0;top:6px;width:100%;height:10px;pointer-events:none}
+.fs-sthumb{position:absolute;top:5px;height:12px;min-width:14px;border-radius:6px;background:rgba(255,211,77,.92);box-shadow:0 0 0 1px rgba(58,35,0,.35);pointer-events:none}
+.fs-sme{position:absolute;top:2px;width:6px;height:18px;margin-left:-3px;border-radius:3px;background:#ff6a3d;box-shadow:0 0 0 1px #fff;pointer-events:none}
+.fs-home{position:absolute;top:86px;left:50%;transform:translateX(-50%);min-height:36px;padding:0 14px;border:0;border-radius:999px;background:#ffd34d;color:#3a2300;font:inherit;font-weight:900;font-size:13px;z-index:3;cursor:pointer;box-shadow:0 3px 0 #b06f00}
+.fs-home[hidden]{display:none}
 .fs-pcard{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);width:min(320px,calc(100% - 28px));padding:12px 12px 10px;border-radius:18px;background:#fffdf6;color:#1d2b36;z-index:4;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .fs-pcard[hidden]{display:none}
 .fs-pcard>.fs-x{position:absolute;top:6px;right:6px;width:34px;height:34px;background:#e8eef2;color:#1d2b36;font-size:15px}
