@@ -96,8 +96,9 @@ class Catalogue(unittest.TestCase):
         self.assertEqual(set(re.findall(r'^\s+([a-z_0-9]+):\{h:', art, re.M)), {k for k, v in DC.ITEMS.items() if not v.get('uq')})
         uq = (ROOT / 'public/js/v4/auction-art.js').read_text(encoding='utf-8')  # shared auction + home artwork
         uq = uq[uq.index('export const PAINTINGS={'):]
-        self.assertEqual({'uq_' + x for x in re.findall(r'([a-z_0-9]+):\[', uq[:uq.index('};')])}, {k for k, v in DC.ITEMS.items() if v.get('uq') and k not in ('anh_chup', 'tranh_ca') and not k.startswith('uq_dc_')})   # 🪑 drawn from their base piece (tests/test_auction_items.py)
-        self.assertIn('ART.anh_chup={h:', js)   # 📸 the framed player photo (game/photo_studio.py), drawn apart
+        self.assertEqual({'uq_' + x for x in re.findall(r'([a-z_0-9]+):\[', uq[:uq.index('};')])}, {k for k, v in DC.ITEMS.items() if v.get('uq') and k not in ('anh_chup', 'tranh_ca', 'tranh_ca_nho') and not k.startswith('uq_dc_')})   # 🪑 drawn from their base piece (tests/test_auction_items.py)
+        self.assertIn('ART.anh_chup={h:', js)
+        self.assertIn('ART.tranh_ca_nho={h:', js)   # 🎣 the small tranh cá (#517), drawn apart like the big one   # 📸 the framed player photo (game/photo_studio.py), drawn apart
         backs = set(re.findall(r'^\s+([a-z_0-9]+):\(', art[art.index('const BACKS={'):], re.M))
         body = {m.group(1): e for e in re.split(r'\n(?=  [a-z_0-9]+:\{h:)', art[:art.index('const BACKS={')])
                 if (m := re.match(r'\s*([a-z_0-9]+):\{h:', e))}

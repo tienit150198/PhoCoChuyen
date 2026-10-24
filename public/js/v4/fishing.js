@@ -29,7 +29,7 @@
  * (spot 'dao' with the trip). Old-Safari safe (scripts/check_old_safari.mjs), no library: one rAF loop while open. */
 import {escapeHTML as esc} from '../icons.js';
 import {stylesheet} from '../lazy.js';
-import {fishSvg,drawFish,fmtKg,fmtLen,scaleSvg,RARITY_COLORS} from './fish-art.js';
+import {fishSvg,drawFish,fmtKg,fmtLen,scaleSvg,RARITY_COLORS,TRO_BG,TRO_BG_NAMES} from './fish-art.js';
 import {reelStart,reelStep,MID,RED} from './fish-reel.js';
 import {createLake,drawLake,sprite,bubble} from './fish-lake.js';
 import {posOf,spacing,figScale,screenX,extent,clampCam,offscreen,hitPeer,tierOf,feedLine,waterPoint,catchPose,panBy,glide,wheelPx,scrollOf,camAt,farFromMe} from './fish-lake-layout.js';
@@ -47,7 +47,7 @@ const MEDAL=['🥇','🥈','🥉'];
 const F={env:null,dlg:null,cv:null,ctx:null,raf:0,last:0,spot:'ho',trip:'',phase:'idle',pressing:false,c0:0,power:0,
   r:null,f:null,bob:null,fx:[],rings:[],drops:[],waves:null,stars:null,jump:null,line:null,panel:null,tab:{shop:'rod',board:'dex'},
   open:-1,rec:null,recAt:0,boards:{},detail:null,dims:{w:0,h:0,dpr:1},msgT:0,busy:false,timers:[],prevPause:null,onState:null,nibDone:0,twitch:0,
-  lake:null,cam:0,camTo:null,meFig:null,lastAct:'',panAt:0,feedN:-1,bannerT:0,pcard:null,pan:null,sb:null,vel:0,sbKey:'',dotsKey:''};
+  lake:null,cam:0,camTo:null,meFig:null,lastAct:'',panAt:0,feedN:-1,bannerT:0,pcard:null,pan:null,sb:null,vel:0,sbKey:'',dotsKey:'',mnt:null};
 
 const C=()=>F.env?.api?.content?.journey?.fish||null;
 const P=()=>F.env?.api?.state?.journey?.fish||{fresh:true,rod:'tre',rods:['tre'],bait:{},use:'',gio:0,cap:20,bag:[],dex:{},tot:{},ms:[],carry:0,aq:[],tro:{},deal:null};
@@ -152,7 +152,7 @@ function dialog(){
   go.addEventListener('contextmenu',e=>e.preventDefault());stage.addEventListener('contextmenu',e=>e.preventDefault());
   d.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!F.panel&&!e.repeat&&(e.target===go||e.target===d)){e.preventDefault();press(e.timeStamp);}});
   d.addEventListener('keyup',e=>{if((e.key===' '||e.key==='Enter')&&!F.panel&&(e.target===go||e.target===d)){e.preventDefault();release();}});
-  d.addEventListener('click',e=>{const el=e.target.closest('[data-fs]');if(!el||!d.contains(el))return;e.preventDefault();act(el.dataset.fs,el.dataset).catch(err=>say(err?.message||'Có lỗi nhỏ, thử lại nhé.'));});
+  d.addEventListener('click',e=>{const el=e.target.closest('[data-fs]');if(!el||!d.contains(el))return;e.preventDefault();act(el.dataset.fs,el.dataset.fs==='sayOpen'?{tap:e.isTrusted}:el.dataset).catch(err=>say(err?.message||'Có lỗi nhỏ, thử lại nhé.'));});
   d.addEventListener('cancel',e=>{e.preventDefault();if(F.panel){closePanel();return;}if(!d.querySelector('.fs-pcard').hidden){hidePeerCard();return;}close();});
   d.querySelector('.fs-sayrow').addEventListener('submit',e=>{e.preventDefault();const inp=e.currentTarget.querySelector('input'),text=inp.value.trim();if(!text)return;
     if(F.lake?.say(text)){inp.value='';e.currentTarget.hidden=true;}else say('Chưa nói được: đang mất kết nối, thử lại sau nhé.');});
@@ -869,8 +869,10 @@ async function act(a,ds){
     case'again':hideCard();idle();return;
     case'feed':{const el=F.dlg.querySelector('.fs-feed-all');el.hidden=!el.hidden;if(!el.hidden)paintFeed();return;}
     case'feedPid':{const p=F.lake?.peers.get(ds.pid);if(p){lookAt(posOf(p.s));F.dlg.querySelector('.fs-feed-all').hidden=true;}return;}
-    case'sayOpen':{const f=F.dlg.querySelector('.fs-sayrow');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus();return;}
-    case'sayClose':F.dlg.querySelector('.fs-sayrow').hidden=true;return;
+    case'sayOpen':{   // only a real tap on 💬, never in the middle of a cast or a fight (#515)
+      if(!ds.tap||F.pressing||['charge','hooking','fight'].includes(F.phase))return;
+      const f=F.dlg.querySelector('.fs-sayrow');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus();else noTyping();return;}
+    case'sayClose':noTyping();F.dlg.querySelector('.fs-sayrow').hidden=true;return;
     case'pan':{const g=geo(),o=offscreen([...(F.lake?.peers.values()||[])],F.cam,g.sp,g.w),left=Number(ds.dir)<0,to=left?o.lp:o.rp;
       if(to!=null)lookAt(to+(left?1:-1)*Math.max(0,g.w/2/g.sp-1.5));return;}
     case'pcardX':hidePeerCard();return;
@@ -898,7 +900,12 @@ async function act(a,ds){
       const id=Number(ds.id),r=await send('jr_fish_release',{ids:[id]});
       if(r){say([r.message,...(r.effects||[])].filter(Boolean).join(' '));if(F.phase==='card'){hideCard();idle();const g=geo();ring(g.px,g.yOf(4),1.4);}F.open=-1;paintPanel();}return;}
     case'carry':{const id=Number(ds.id),on=P().carry!==id||F.phase==='card';const r=await send('jr_fish_carry',{id:on?id:0});if(r){say(r.message||'');paintPanel();}return;}
-    case'mount':{const r=await send('jr_fish_mount',{id:Number(ds.id)});if(r){say(r.message||'',4200);F.open=-1;paintPanel();}return;}
+    case'mount':{const id=Number(ds.id);F.mnt=F.mnt?.id===id?null:{id,sz:'lon',bg:'kem'};paintPanel();return;}   // 🖼️ choose the size and background first (#517)
+    case'mntSz':if(F.mnt&&['lon','nho'].includes(ds.sz)){F.mnt.sz=ds.sz;paintPanel();}return;
+    case'mntBg':if(F.mnt&&TRO_BG[ds.bg]){F.mnt.bg=ds.bg;paintPanel();}return;
+    case'mntGo':{const m=F.mnt;if(!m)return;
+      const r=await send('jr_fish_mount',{id:m.id,...(m.sz!=='lon'?{sz:m.sz}:{}),...(m.bg!=='kem'?{bg:m.bg}:{})});
+      if(r){say(r.message||'',4200);F.mnt=null;F.open=-1;paintPanel();}return;}
     case'aqua':{const r=await send('jr_fish_aqua',ds.out!=null?{out:Number(ds.out)}:{id:Number(ds.id)});if(r){say(r.message||'');F.open=-1;paintPanel();}return;}
     case'row':F.open=F.open===Number(ds.id)?-1:Number(ds.id);paintPanel();return;
     case'sp':F.detail=ds.id;paintPanel();return;
@@ -909,7 +916,7 @@ const sellable=()=>(P().bag||[]).filter(f=>!f.k&&!(f.o<0));   // not ⭐ kept, n
 
 /* ---------------------------------------------------------------- the sheets */
 function openPanel(kind){
-  F.panel=kind==='dex'?'board':kind;if(kind==='dex')F.tab.board='dex';F.detail=null;F.open=-1;
+  F.panel=kind==='dex'?'board':kind;if(kind==='dex')F.tab.board='dex';F.detail=null;F.open=-1;F.mnt=null;
   if(F.panel==='board'){loadRecords();if(F.tab.board!=='dex')loadBoard(F.tab.board);}
   paintPanel();
 }
@@ -956,11 +963,21 @@ function marketHTML(){
     const off=f.o<0?'<small class="fs-off">Lái không mua con này hôm nay</small>':f.o>0?`<small class="fs-off">Lái trả ${f.o}%: ~${fmt(Math.floor(price*f.o/100))} xu</small>`:'';
     return `<li class="fs-fish" style="--rc:${esc(R.color||'#ccc')}">${fishSvg(sp,{w:64,h:32})}<div class="fs-it"><b>${esc(sp.name)}${f.k?' ⭐':''}${p.carry===f.i?' 💪':''}</b><small>${esc(fmtKg(f.g))} · 📏 ${esc(fmtLen(f.g/1000))} · ${esc(R.name)} · ~${fmt(price)} xu</small>${off}</div>
       <span style="display:flex;gap:4px">${f.o<0?'':fbtn('Bán','sell',{id:f.i},'primary')}${fbtn(open?'▴':'⋯','row',{id:f.i})}</span>
-      ${open?`<div class="fs-fish-acts">${fbtn(f.k?'☆ Bỏ giữ':'⭐ Giữ','keep',{id:f.i})}${sp.r>=(C()?.carry_min||3)?fbtn(p.carry===f.i?'🧺 Cất':'💪 Vác','carry',{id:p.carry===f.i?0:f.i}):''}${fbtn('🖼️ Treo tranh','mount',{id:f.i})}${fbtn('🐠 Thả bể','aqua',{id:f.i})}${fbtn('🌊 Thả về hồ','release',{id:f.i})}</div>`:''}</li>`;}).join('')}</ul>`;
+      ${open?`<div class="fs-fish-acts">${fbtn(f.k?'☆ Bỏ giữ':'⭐ Giữ','keep',{id:f.i})}${sp.r>=(C()?.carry_min||3)?fbtn(p.carry===f.i?'🧺 Cất':'💪 Vác','carry',{id:p.carry===f.i?0:f.i}):''}${fbtn('🖼️ Treo tranh','mount',{id:f.i},F.mnt?.id===f.i?'on':'')}${fbtn('🐠 Thả bể','aqua',{id:f.i})}${fbtn('🌊 Thả về hồ','release',{id:f.i})}</div>${F.mnt?.id===f.i?mountHTML(sp,f):''}`:''}</li>`;}).join('')}</ul>`;
   const aq=p.aq||[];
   out+=`<h4 style="margin:12px 0 4px">🐠 Bể cá ở nhà (${aq.length}/${C()?.aquarium||8})</h4>${aq.length?`<ul class="fs-list">${aq.map(([s,g],k)=>{const sp=spOf(s)||{name:s,r:0};return `<li class="fs-fish" style="--rc:${esc(rar(sp.r).color||'#ccc')}">${fishSvg(sp,{w:64,h:32})}<div class="fs-it"><b>${esc(sp.name)}</b><small>${esc(fmtKg(g))}</small></div>${fbtn('Vớt về giỏ','aqua',{out:k})}</li>`;}).join('')}</ul>`:'<p class="fs-note">Thả cá đẹp vào bể (có bể cá trong nhà thì cá bơi ở đó).</p>'}`;
   out+=`<p class="fs-note">🖼️ Tranh cá: ${Object.keys(p.tro||{}).length}/${C()?.trophies||12} (treo ở Trang trí nhà).</p>`;
   return out;
+}
+/** 🖼️ Treo tranh: big (2 × 2) or small (1 × 1), and the board's colour, with a preview; changeable later in Bày trí phòng. */
+function mountHTML(sp,f){
+  const m=F.mnt,[bg,top]=TRO_BG[m.bg]||TRO_BG.kem,small=m.sz==='nho',w=small?56:96,h=small?46:70;
+  const pick=(a,k,label,on,extra='')=>`<button type="button" class="fs-btn small fs-mnt-opt${on?' on':''}" data-fs="${a}" data-${k[0]}="${esc(k[1])}" aria-pressed="${on}">${extra}${esc(label)}</button>`;
+  return `<div class="fs-mnt" role="group" aria-label="Treo tranh cá">
+    <div class="fs-mnt-pre" aria-hidden="true"><span class="fs-mnt-fr" style="width:${w}px;height:${h}px;background:linear-gradient(${top} 0 45%,${bg} 45%)">${fishSvg(sp,{w:w-14,h:h-22})}<i>${esc(fmtKg(f.g))}</i></span></div>
+    <div class="fs-mnt-row"><small>Cỡ</small>${pick('mntSz',['sz','lon'],'Lớn 2×2',!small)}${pick('mntSz',['sz','nho'],'Nhỏ 1×1',small)}</div>
+    <div class="fs-mnt-row"><small>Nền</small>${Object.keys(TRO_BG).map(k=>pick('mntBg',['bg',k],TRO_BG_NAMES[k],m.bg===k,`<i class="fs-mnt-sw" style="background:${TRO_BG[k][0]}"></i>`)).join('')}</div>
+    ${fbtn('🖼️ Làm tranh','mntGo',{},'primary')}</div>`;
 }
 function dealHTML(){
   const d=P().deal;if(!d)return '';

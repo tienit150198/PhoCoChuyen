@@ -86,8 +86,11 @@ class Catalogue(unittest.TestCase):
     def test_items(self):
         self.assertEqual(len(DC.KNOWN_199), 171)
         self.assertEqual(len(DC.KNOWN_1911), 171 + len(EC.ITEMS))           # 🏰 the villa pieces (game/estates_content.py)
-        uq = [k for k, v in DC.ITEMS.items() if v.get('uq')]                 # 🔨 the paintings won at auction, after them
-        self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq) + DC.NEW_2026)   # 🛋️ 21/10/2026: the new pieces, last
+        uq = [k for k, v in DC.ITEMS.items() if v.get('uq') and k != 'tranh_ca_nho']   # 🔨 the paintings won at auction, after them
+        self.assertEqual(tuple(DC.ITEMS), DC.KNOWN_1911 + tuple(uq) + DC.NEW_2026 + ('tranh_ca_nho',))   # 🛋️ 21/10/2026: the new pieces, then 🎣 #517's small tranh cá
+        self.assertEqual(DC.KNOWN_265, DC.KNOWN_2471 + DC.NEW_2026)
+        self.assertEqual((DC.ITEMS['tranh_ca_nho']['w'], DC.ITEMS['tranh_ca_nho']['h'], DC.ITEMS['tranh_ca_nho']['spot']), (1, 1, 'wall'))
+        self.assertEqual((DC.ITEMS['tranh_ca_nho']['price'], DC.ITEMS['tranh_ca_nho']['rooms']), (0, DC.ITEMS['tranh_ca']['rooms']))
         self.assertEqual(DC.KNOWN_2471, DC.KNOWN_1911 + tuple(uq))
         self.assertEqual(uq[-2:], ['anh_chup', 'tranh_ca'])                  # 📸 a framed player photo (game/photo_studio.py), 🎣 a mounted fish (game/fishing.py), last
         self.assertTrue(uq and all(k.startswith(('uq_tr_', 'uq_dc_')) and DC.ITEMS[k]['price'] == 0 for k in uq[:-2]))   # 🪑 20/10 furniture too

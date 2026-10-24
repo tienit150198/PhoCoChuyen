@@ -44,7 +44,7 @@ FISH_KEYS = frozenset({'i', 's', 'g', 'd', 'p', 'k', 'o', 'od'})
 ACT_KEYS = frozenset({'id', 'at', 'spot', 'trip', 'rod', 'dist', 'zone', 'kind', 'sp', 'g', 'bite', 'hook', 'reel', 'snap', 'nib'})
 TOT_KEYS = ('cast', 'fish', 'junk', 'snap', 'miss', 'sold', 'xu', 'rel')
 COMMANDS = ('jr_fish_cast', 'jr_fish_hook', 'jr_fish_land', 'jr_fish_buy', 'jr_fish_equip', 'jr_fish_sell', 'jr_fish_deal',
-            'jr_fish_keep', 'jr_fish_release', 'jr_fish_carry', 'jr_fish_mount', 'jr_fish_aqua')
+            'jr_fish_keep', 'jr_fish_release', 'jr_fish_carry', 'jr_fish_mount', 'jr_fish_aqua', 'jr_fish_tro')
 TOKEN = re.compile(r'[0-9a-f]{32}')
 TRIP_RE = re.compile(r'[0-9a-f]{16}')
 UID_RE = re.compile(r'd[0-9]{1,9}')
@@ -56,6 +56,14 @@ SELL_MAX = 200
 LIMIT = 10**9
 KIND, LABEL = 'life', '🎣 Câu cá'
 TROPHY_KIND = 'tranh_ca'   # game/deco_content.py ITEMS: a wall piece drawn from journey.fish.tro
+# 🖼️ góp ý #517 "khung tranh cá nhỏ hơn … màu nền tranh nhạt nhẹ nhàng hơn hoặc tự đổi nền tranh": the same tranh cá in
+# a 1 × 1 frame (TROPHY_SMALL), and the board's background. journey.fish.tro {uid: [species, grams]} or
+# [species, grams, bg] (bg in TROPHY_BG, never the default: a plain entry is 'kem', so older trophies turn light too).
+TROPHY_SMALL = 'tranh_ca_nho'
+TROPHY_KINDS = (TROPHY_KIND, TROPHY_SMALL)
+TROPHY_BG = ('kem', 'xanh', 'hong', 'go', 'trang', 'bien')   # public/js/v4/deco-art.js TRO_BG draws them; 'bien': the old deep blue
+TROPHY_BG_DEFAULT = 'kem'
+TROPHY_SIZES = {'lon': TROPHY_KIND, 'nho': TROPHY_SMALL}
 
 
 def now() -> float:
@@ -192,7 +200,7 @@ def catalogue() -> dict:
         baits=[dict({k: b[k] for k in ('id', 'name', 'emoji', 'price', 'n', 'hint')}, hook=b.get('hook', 0.0)) for b in C.BAITS],
         baskets=[dict(b) for b in C.BASKETS], species=sp, junk=[dict(id=a, emoji=b, name=c) for a, b, c in C.JUNK],
         far_share=C.FAR_SHARE, hook_window=C.HOOK_WINDOW, hook_scare=C.HOOK_SCARE, carry_min=C.CARRY_MIN, aquarium=C.AQUARIUM_MAX,
-        trophies=TROPHY_MAX, tier_reward=list(C.TIER_REWARD), spot_reward=C.SPOT_REWARD,
+        trophies=TROPHY_MAX, trophy_bg=list(TROPHY_BG), tier_reward=list(C.TIER_REWARD), spot_reward=C.SPOT_REWARD,
         haggle=dict(chance=C.HAGGLE_CHANCE, offer=list(C.HAGGLE_OFFER)),
         titles=[dict(id=t['id'], emoji=t['emoji'], name=t['name'], earn=t['earn']) for t in C.STYLE_TITLES])
 
@@ -631,10 +639,25 @@ def _carry(s, d, p, t):
     return dict(message=f'💪 Vác {C.SPECIES[f["s"]]["name"]} {fmt_kg(f["g"])} đi dạo phố!')
 
 
-def _mount(s, d, p, t):
-    """🖼️ Tranh cá: the fish leaves the bag for a wall piece in the furniture bag (game/deco.py places it)."""
+def _tro_opts(p: dict) -> tuple[str | None, str | None]:
+    """The tranh cá's chosen background and size from a command ({bg, sz}, each optional), checked."""
     need = _core().need
-    need(set(p) == {'id'}, 'Chọn cá nhé.')
+    bg, sz = p.get('bg'), p.get('sz')
+    need(bg is None or (isinstance(bg, str) and bg in TROPHY_BG), 'Chọn một màu nền nhé.', 'bad_bg')
+    need(sz is None or (isinstance(sz, str) and sz in TROPHY_SIZES), 'Chọn cỡ tranh nhé.', 'bad_size')
+    return bg, sz
+
+
+def _tro_entry(sp: str, g: int, bg: str | None) -> list:
+    return [sp, g] + ([bg] if bg and bg != TROPHY_BG_DEFAULT else [])
+
+
+def _mount(s, d, p, t):
+    """🖼️ Tranh cá: the fish leaves the bag for a wall piece in the furniture bag (game/deco.py places it), big (2 × 2)
+    or small (1 × 1), on the background the player chose (light cream when none)."""
+    need = _core().need
+    need('id' in p and set(p) <= {'id', 'bg', 'sz'}, 'Chọn cá nhé.')
+    bg, sz = _tro_opts(p)
     f = _find(d, p.get('id'))
     need(f is not None, 'Cá không còn trong giỏ.', 'gone')
     from . import reno as rn
@@ -643,14 +666,64 @@ def _mount(s, d, p, t):
     d['tro'] = {u: v for u, v in d['tro'].items() if u in have}
     need(len(d['tro']) < TROPHY_MAX, f'Nhà đã có {TROPHY_MAX} tranh cá rồi.', 'full')
     uid = rn.new_uid(blk)
-    blk['items'].append(dict(id=uid, k=TROPHY_KIND, r=None, x=None))
-    d['tro'][uid] = [f['s'], f['g']]
+    blk['items'].append(dict(id=uid, k=TROPHY_SIZES[sz or 'lon'], r=None, x=None))
+    d['tro'][uid] = _tro_entry(f['s'], f['g'], bg)
     d['bag'] = [x for x in d['bag'] if x is not f]
     if d['carry'] == f['i']:
         d['carry'] = 0
     if d['deal'] and f['i'] in d['deal']['ids']:
         d['deal'] = None
     return dict(message='🖼️ Tranh cá đã vào túi đồ trang trí. Mở Trang trí nhà để treo lên tường nhé!')
+
+
+def _tro(s, d, p, t):
+    """🖼️ A mounted tranh cá's background ({uid, bg}) or size ({uid, sz}: 'lon' 2 × 2, 'nho' 1 × 1), changed later. A
+    painting grown past the room it hangs in (a neighbour in the way) waits in the furniture bag to be hung again."""
+    need = _core().need
+    uid = p.get('uid')
+    need(isinstance(uid, str) and set(p) <= {'uid', 'bg', 'sz'} and len(p) >= 2, 'Chọn tranh cá nhé.')
+    bg, sz = _tro_opts(p)
+    from . import reno as rn
+    blk = rn.ensure_block(s)
+    it = next((x for x in blk['items'] if x.get('id') == uid), None)
+    need(uid in d['tro'] and it is not None and it.get('k') in TROPHY_KINDS, 'Tranh cá này không còn trong nhà.', 'gone')
+    v = d['tro'][uid]
+    out = []
+    if bg is not None:
+        d['tro'][uid] = _tro_entry(v[0], v[1], bg)
+        out.append('🎨 Đã đổi nền tranh.')
+    if sz is not None and it['k'] != TROPHY_SIZES[sz]:
+        stays = _resize(s, blk, it, TROPHY_SIZES[sz])
+        out.append('🖼️ Tranh đã thu nhỏ.' if sz == 'nho' else '🖼️ Tranh đã to lại.' if stays
+                   else '🖼️ Tranh đã to lại. Chỗ cũ không đủ rộng nên tranh về túi đồ, treo lại nhé.')
+    return dict(message=' '.join(out) or 'Tranh vẫn như cũ.')
+
+
+LAYOUT_BLOCKS = ('decor', 'decor_new', 'decor_more', 'decor_wide', 'decor_spin')   # game/deco.py: where a placed piece stands
+
+
+def _resize(s: dict, blk: dict, it: dict, kind: str) -> bool:
+    """A tranh cá becomes `kind` where it hangs; when it no longer fits there (a neighbour, the roof, a window: every
+    saved layout must stay valid, game/deco.py validate) it goes to the furniture bag instead. True: it stayed."""
+    e, old = _core(), it['k']
+    blk['items'] = [x for x in blk['items'] if x is not it] + [it]   # last in line: a neighbour never gives way to it
+    it['k'] = kind
+    from . import deco as dc
+    try:
+        dc.validate(s)
+        return True
+    except e.GameError:
+        pass
+    it['k'] = old
+    j, uid = s['journey'], it['id']
+    if uid in dc.layout(s)['pos']:
+        dc.apply(s, 'jr_deco_pick', dict(uid=uid))
+    for key in LAYOUT_BLOCKS:   # a place lived in before keeps its own block
+        b = j.get(key)
+        if isinstance(b, dict) and isinstance(b.get('items'), dict):
+            b['items'].pop(uid, None)
+    it['k'] = kind
+    return False
 
 
 def _aqua(s, d, p, t):
@@ -782,7 +855,8 @@ def _ok(d) -> bool:
         return False
     tro = d['tro']
     if not (isinstance(tro, dict) and len(tro) <= TROPHY_MAX and all(
-            isinstance(u, str) and UID_RE.fullmatch(u) and isinstance(v, list) and len(v) == 2 and _sp(v[0]) and _int(v[1], 1, 10**8)
+            isinstance(u, str) and UID_RE.fullmatch(u) and isinstance(v, list) and len(v) in (2, 3) and _sp(v[0]) and _int(v[1], 1, 10**8)
+            and (len(v) == 2 or (isinstance(v[2], str) and v[2] in TROPHY_BG and v[2] != TROPHY_BG_DEFAULT))
             for u, v in tro.items())):
         return False
     if not _act_ok(d['act']):

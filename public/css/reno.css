@@ -158,6 +158,10 @@
 .dc-steps{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
 .dc-steps .dc-step{flex:1 1 44px;min-width:44px;min-height:44px;padding-inline:4px;font-size:1.1rem}
 .dc-steps .dc-unsel{flex:2 1 auto;min-height:44px}
+.dc-trobg{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
+.dc-trobg-sw{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:.82rem;font-weight:700;cursor:pointer}
+.dc-trobg-sw i{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.18);flex:none}
+.dc-trobg-sw.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
 .dc-tools-at{flex:none;color:var(--ink-2);font-size:.82rem;font-weight:700;white-space:nowrap}
 .dc-seg>button{flex:1 1 auto;min-width:0;padding-inline:6px;white-space:nowrap}
 @media (max-width:420px){.dc-seg>button{font-size:.8rem;padding-inline:4px}.dc-money{margin-left:auto}}
@@ -334,7 +338,7 @@
 .dc-donecorner{position:absolute;right:8px;top:8px;z-index:2}
 .dc-donecorner .btn{min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 /* ▦ the cells a piece snaps to while it is placed */
-.dc-grid{fill:none;stroke:#3fae66;stroke-opacity:.38;stroke-width:1;stroke-dasharray:2 4}
+.dc-snapgrid{fill:none;stroke:#3fae66;stroke-opacity:.38;stroke-width:1;stroke-dasharray:2 4}
 .dc-turn{font-weight:800}
 /* 🪑 the character using a piece (v4/home-pose.js) */
 .hp-zz text{font-family:system-ui,sans-serif}
