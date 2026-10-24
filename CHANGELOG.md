@@ -1,3 +1,16 @@
+# 2.6.6 — 24/10/2026
+
+Gộp 2 nhánh: hồ câu (chủ game 24/10: "bị mất cái cánh", hồ đông cần kéo ngang, thanh kéo cá, "cần xịn thì nhìn khác đi", "cá to thì nhìn to thật"; góp ý #515) và 🐱 Mèo Mai (chủ game: "trong danh sách thú thêm con mèo này nhé, tên Mai, bán giá cao cao chút"). Không đổi schema. Có "Có gì mới".
+
+- 🐱 Mèo Mai (`meo_mai`, Scottish Fold trắng – xám lilac, tai cụp, vòng cổ vàng): 45.000 xu, đắt nhất tiệm (mèo đắt nhất trước đó Savannah 26.000, chó Phú Quốc 30.000), dưới thú lai 40.000–120.000 và thần thoại/huyền thoại. Dáng ngồi dựa tường như người, dáng vui giơ một chân; gợi ý tên "Mai" (trường `nick`). Ghép, lên hạng như mèo tiệm khác, không có trong công thức lai.
+- 🪽 Cánh không bị cắt: khung vẽ nhân vật tính theo đồ đang mặc (cánh to nhất ±128 × 162, cá đang ôm), nhân vật thường giữ khung cũ, chân không lệch. Áp dụng ở hồ câu, phố 2.5D, Đi dạo, hội chợ, nhà giam, đảo riêng, đảo bang.
+- ↔️ Hồ đông người: kéo/vuốt ngang để nhìn dọc bờ (vuốt mạnh thì trôi tiếp), con lăn / trackpad trên máy tính, thanh cuộn mỏng dưới bờ (mỗi người một vạch, 📍 chỗ mình, kéo được), nút "📍 Về chỗ tôi", vẫn giữ ◀ ▶. Lúc rảnh: chạm người khác mở thẻ, chạm mặt hồ quăng, giữ thì vạch lực; đang có cá cắn / đang kéo thì mọi lần bấm là bấm câu. Đã thử 80 người.
+- 💪 Kéo cá dễ hẳn: vùng xanh +8 % (ít nhất 42 %, tối đa 66 % thanh), cá giật ít và chậm, kim trôi êm, thả tay thì dây chùng chậm. Mô phỏng người chơi hầu như không nhìn (giữ 3,5 s, thả 2 s): 🔴 Cổ đại 13 % → 75 %, cá phổ thông 100 %; người chơi bình thường ≥ 98,8 % ở mọi độ hiếm; giữ mãi không thả vẫn đứt dây cá mạnh.
+- ⌨️ #515 (iOS hiện bàn phím khi giữ nút): khi hồ câu mở, ô nhập phía sau (màn hình việc làm, chat) bị bỏ chọn và không lấy được tiêu điểm; mỗi lần bấm bỏ chọn ô nhập; nút bấm và mặt hồ chặn chọn chữ / menu giữ; ô 💬 chỉ mở khi bấm 💬.
+- ⏳ Máy chủ lưu chậm (1,5–2,4 s) không làm mất cá: "Đang kéo lên…", hỏi lại jr_fish_land khi "chưa đủ lâu", xung đột lưu (409), không có trả lời hoặc lỗi 5xx (cùng lượt, máy chủ không ghi hai lần); lượt đã lên thì báo "🎣 Lên cá rồi! Xem trong 🧺 giỏ nhé." thay vì báo lỗi.
+- 🎣 Mỗi cần một dáng: tre (đốt tre), trúc (xanh, ống gỗ), carbon (vân carbon, tay cầm bần, ống bạc), biển (to, ống chrome, dây bện vàng), vàng (ánh vàng, hồng ngọc, lấp lánh), bạch kim (kim cương, dây băng), Long Vương (vảy đỏ vàng, cán ngọc, đầu rồng, dây lửa). Người khác cầm đúng cần của họ; quầy bán cần và thẻ người chơi vẽ cùng cần.
+- 🐋 Cá to nhìn to: độ dài theo cân nặng (căn bậc ba, trên 1,6 lần người thì tăng chậm): 2 kg cầm một tay, ôm hai tay, vác vai, trăm ký trở lên kéo dây. Áp dụng khi cá nhảy lên, khi cầm trên tay (hồ câu, phố), cá người khác câu, thẻ mẻ cá ("📏 ~2,8 m" + hình cá cạnh người), giỏ, sổ cá (huy hiệu độ dài).
+
 # 2.6.5.2 — 24/10/2026
 
 Hotfix theo góp ý người chơi (#524, #525, #526). Không đổi schema, không có "Có gì mới".
