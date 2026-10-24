@@ -70,7 +70,9 @@ BOARD_TITLES = {                # (emoji, name) per tier
     # fighters of the bang war's champion and runner-up (game/pet_war.py; its own two tiers, BOARD_TIERS).
     ARENA: (('🏆', 'Vua đấu trường tuần'), ('⚔️', 'Cao thủ đấu trường'), ('🛡️', 'Chiến binh đấu trường')),
     PET_CUP: (('👑', 'Vô địch giải pet tuần'), ('🥈', 'Top 3 giải pet tuần'), ('🎗️', 'Top 10 giải pet tuần')),
-    PET_WAR: (('🏆', 'Bang vô địch đấu pet'), ('🥈', 'Á quân bang chiến pet')),
+    # 🥉 25/10 (owner: "trận tranh hạng 3"): the third's fighters too (game/pet_war.py: the 3rd-place match's winner, or
+    # with 3 bangs the semi-final's loser). No weekly xu for it (WEEKLY_REWARD has two tiers: reward_of gives 0).
+    PET_WAR: (('🏆', 'Bang vô địch đấu pet'), ('🥈', 'Á quân bang chiến pet'), ('🥉', 'Hạng ba bang chiến pet')),
     # 22/10 (player #470 "thêm độ xe để đua xe"): 🏁 the week's best time-trial times of Đường đua Bến Mây, per track and
     # class (game/racing.py standings), top 1 and top 2–3 only.
     'race_drag_bike': (('🏁', 'Vua drag xe máy tuần'), ('🏍️', 'Top drag xe máy')),
@@ -87,9 +89,10 @@ BOARD_TITLES = {                # (emoji, name) per tier
     FISH_BIG: (('🐋', 'Vua cá lớn của tuần'), ('🎣', 'Cần thủ cá khủng'), ('🐟', 'Hội săn cá lớn')),
     FISH_DEX: (('📖', 'Nhà sưu tập cá của tuần'), ('🐠', 'Bách khoa cá'), ('🐡', 'Hội sưu tầm cá')),
 }
-# A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five.
-BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10)), **{b: ((1, 1), (2, 3)) for b in (*RACE, WEDDING)}}
-BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân'), **{b: ('Top 1', 'Top 2–3') for b in (*RACE, WEDDING)}}
+# A board whose tiers are not top 1 / 2–3 / 4–10: 🛡️ the five fighters of the champion bang, then the runner-up's five,
+# then 🥉 the third's five (ranks 11–15: an older build's tier_of finds no tier there and shows no title for them).
+BOARD_TIERS = {PET_WAR: ((1, 5), (6, 10), (11, 15)), **{b: ((1, 1), (2, 3)) for b in (*RACE, WEDDING)}}
+BOARD_LABELS = {PET_WAR: ('Bang vô địch', 'Bang á quân', 'Bang hạng ba'), **{b: ('Top 1', 'Top 2–3') for b in (*RACE, WEDDING)}}
 MAIN = (ALL, TITLES, CERTS, WEALTH, COLLECTION, ONLINE, PETS, ISLAND, WINGS, ARENA, PET_CUP, PET_WAR, *RACE, WEDDING, FISH_BIG, FISH_DEX)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(

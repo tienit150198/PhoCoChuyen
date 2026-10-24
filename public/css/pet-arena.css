@@ -83,6 +83,7 @@
 .pa-slot.empty span{display:grid;place-items:center;width:44px;height:44px;font-size:1.3rem;color:var(--muted)}
 .pa-bracket .pa-round{margin:0 0 10px}
 .pa-round>b{display:block;font-size:.82rem;color:var(--ink-2);margin:0 0 4px}
+.pa-bracket .pa-round.third{padding-top:8px;border-top:1px dashed var(--line)}   /* 🥉 Tranh hạng 3 (game/pet_war.py) */
 .pa-match{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;width:100%;min-height:44px;margin:0 0 4px;padding:4px 30px 4px 10px;
   border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);cursor:pointer;font-size:.88rem}
 .pa-match:disabled{cursor:default;opacity:.85}

@@ -348,12 +348,12 @@ function warWeek(v){
       ${mine?'<button type="button" class="pa-chip" data-pa="unpick">Rút bé khỏi đội</button>':''}`:'';
     team=`<section class="pa-card"><h4 data-no-translate>${esc(w.team.name)}</h4>${lead}<div class="pa-slots">${slots.join('')}</div>${boss}${choose}</section>`;
   }
-  return head+team+bracket(w)+(w.champ?`<p class="pa-champ">🏆 ${esc(w.champ)} vô địch!</p>`:'')+warLadder(w);
+  return head+team+bracket(w)+(w.champ?`<p class="pa-champ">🏆 ${esc(w.champ)} vô địch!${w.third?`<br><small>🥉 Hạng ba: <span data-no-translate>${esc(w.third)}</span></small>`:''}</p>`:'')+warLadder(w);
 }
 function bracket(w){
   if(!w.bracket?.length)return '';
   const by=r=>w.bracket.filter(m=>m.rd===r.rd);
-  return `<section class="pa-card pa-bracket"><h4>Nhánh đấu</h4>${w.rounds.map(r=>`<div class="pa-round"><b>${esc(r.name)}</b>${by(r).map(m=>{
+  return `<section class="pa-card pa-bracket"><h4>Nhánh đấu</h4>${w.rounds.map(r=>`<div class="pa-round${r.third?' third':''}"><b>${r.third?'🥉 ':''}${esc(r.name)}</b>${by(r).map(m=>{
     const a=m.a||'?',b=m.bye?'(miễn đấu)':m.b||'?',done=m.state==='done',sc=m.bye?'✓':done?`${m.wa}–${m.wb}`:m.state==='live'?'🔴':clock(m.start);
     const can=m.state!=='wait'&&!m.bye&&m.a;
     return `<button type="button" class="pa-match${m.mine?' mine':''} ${m.state}" data-pa="watch" data-rd="${m.rd}" data-slot="${m.slot}"${can?'':' disabled'}>
@@ -361,7 +361,7 @@ function bracket(w){
 }
 function warLadder(w){
   if(!w.ladder?.length)return w.last?`<p class="pa-muted">Tuần trước: 🏆 ${esc(w.last.champ||'—')}</p>`:'';
-  return `<section class="pa-card"><h4>Bảng xếp hạng bang</h4><ol class="pa-ladder">${w.ladder.map(r=>`<li><span class="pa-rank r${Math.min(r.rank,4)}">${r.champ?'🏆':r.rank}</span><b data-no-translate>${esc(r.name)}</b><small>${r.w}–${r.l}</small><em>${fmt(r.pts)} đ</em></li>`).join('')}</ol></section>`;
+  return `<section class="pa-card"><h4>Bảng xếp hạng bang</h4><ol class="pa-ladder">${w.ladder.map(r=>`<li><span class="pa-rank r${Math.min(r.rank,4)}">${r.champ?'🏆':r.place===3?'🥉':r.rank}</span><b data-no-translate>${esc(r.name)}</b><small>${r.w}–${r.l}</small><em>${fmt(r.pts)} đ</em></li>`).join('')}</ol></section>`;
 }
 
 /* ---------------------------------------------------------------- 👑 the leaders' lineup of the weekly war */
@@ -718,7 +718,7 @@ async function watchWar(rd,slot){
     const d=mv.duels[i++];
     if(d.w===0)score[0]++;else if(d.w===1)score[1]++;
     const m={kind:'war',sides:d.sides,ev:d.ev,hp:d.hp,max:d.max,w:d.w,me:null,message:`Trận ${d.i+1}/${mv.total} · ${mv.a} ${score[0]}–${score[1]} ${mv.b}`};
-    const go=()=>startFight(m,'war',{title:`🛡️ ${mv.a} – ${mv.b}`,sub:`Trận ${d.i+1}/${mv.total}`,next:()=>{timer=setTimeout(next,S.fast?900:1800);}});
+    const go=()=>startFight(m,'war',{title:`🛡️ ${mv.a} – ${mv.b}`,sub:`${mv.third?'🥉 Tranh hạng 3 · ':''}Trận ${d.i+1}/${mv.total}`,next:()=>{timer=setTimeout(next,S.fast?900:1800);}});
     if(!d.ev){go();return;}
     go();
   };

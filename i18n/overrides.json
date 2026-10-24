@@ -1,5 +1,11 @@
 {
   "strings": {
+    "Tranh hạng 3": "3rd-place match",
+    "🥉 Tranh hạng 3": "🥉 3rd-place match",
+    "Hạng ba bang chiến pet": "Pet war third place",
+    "Bang hạng ba": "Third-place guild",
+    "🥉 Hạng ba:": "🥉 Third place:",
+    "🥉 Bang mình tranh hạng 3, cùng giờ chung kết.": "🥉 Our guild plays for 3rd place, at the same time as the final.",
     "Sàn có thêm nhiều coin và cổ phiếu mới": "More coins and stocks on the market",
     "Đổi giao diện nhà": "A new look for homes",
     "Thêm vài món mới và sửa nhiều lỗi theo góp ý của mọi người": "A few new things and many fixes from your feedback",
@@ -46791,6 +46797,11 @@
     "Giá niêm yết": "List price"
   },
   "patterns": {
+    "🥉 Hạng ba! · $1 thắng $2 thua · +$3 điểm": "🥉 Third place! · $1 won $2 lost · +$3 points",
+    "🥉 Hạng ba! · $1 thắng $2 thua": "🥉 Third place! · $1 won $2 lost",
+    "Hạng tư · $1 thắng $2 thua · +$3 điểm": "Fourth place · $1 won $2 lost · +$3 points",
+    "Hạng tư · $1 thắng $2 thua": "Fourth place · $1 won $2 lost",
+    "🥉 Tranh hạng 3 · Trận $1/$2": "🥉 3rd-place match · Duel $1/$2",
     "$1 báo lãi quý vượt kỳ vọng": "$1 beats its quarterly profit forecast",
     "$1 ký được hợp đồng lớn": "$1 signs a big contract",
     "Quỹ lớn gom mạnh cổ phiếu $1": "A big fund buys up $1 shares",

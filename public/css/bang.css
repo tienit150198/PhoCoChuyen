@@ -239,6 +239,10 @@ html[data-theme="dem"] .bg-gold{background:linear-gradient(90deg,#4a3a12,#6b4f10
 .bg-war-ms li.win em{color:var(--good)}.bg-war-ms li.loss em{color:var(--bad)}.bg-war-ms li.live{border-color:var(--bad)}
 .bg-war-res{margin:0 0 6px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-weight:800}
 .bg-war-res.champ{background:var(--good-soft);color:var(--good)}
+.bg-war-res.third{background:#f6e7d8;color:#8a5222}   /* 🥉 */
+html[data-theme="dem"] .bg-war-res.third{background:#4a3220;color:#f3c9a0}
+.bg-war-ms li.third{border-style:dashed}
+.bg-war-ms li>b{flex:none;white-space:nowrap}
 .bg-war-res small{font-weight:700;color:var(--ink-2)}
 .bg-war-acts{flex-wrap:wrap;border-top:0}
 .bg-war-acts .btn{flex:1 1 140px;min-height:44px}

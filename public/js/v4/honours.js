@@ -21,7 +21,7 @@ const BOARDS={
   wings:['Cánh',[['🪽','Đôi cánh số 1 phố'],['🌟','Cánh thần thoại'],['🕊️','Hội chắp cánh']]],   // 🪽 game/wing_lb.py (23/10)
   arena:['Đấu trường',[['🏆','Vua đấu trường tuần'],['⚔️','Cao thủ đấu trường'],['🛡️','Chiến binh đấu trường']]],
   pet_cup:['Giải pet',[['👑','Vô địch giải pet tuần'],['🥈','Top 3 giải pet tuần'],['🎗️','Top 10 giải pet tuần']]],
-  pet_war:['Bang chiến',[['🏆','Bang vô địch đấu pet'],['🥈','Á quân bang chiến pet']]],
+  pet_war:['Bang chiến',[['🏆','Bang vô địch đấu pet'],['🥈','Á quân bang chiến pet'],['🥉','Hạng ba bang chiến pet']]],
   // 🏁 game/racing.py (22/10): the week's best times of Đường đua Bến Mây, top 1 and top 2–3
   race_drag_bike:['Drag xe máy',[['🏁','Vua drag xe máy tuần'],['🏍️','Top drag xe máy']]],
   race_drag_car:['Drag ô tô',[['🏁','Vua drag ô tô tuần'],['🚗','Top drag ô tô']]],
@@ -31,9 +31,9 @@ const BOARDS={
   fish_big:['Cá lớn',[['🐋','Vua cá lớn của tuần'],['🎣','Cần thủ cá khủng'],['🐟','Hội săn cá lớn']]],   // 🎣 game/lb_titles.py FISH_BIG (24/10): this week's heaviest fish
   fish_dex:['Sổ cá',[['📖','Nhà sưu tập cá của tuần'],['🐠','Bách khoa cá'],['🐡','Hội sưu tầm cá']]],   // 🎣 game/lb_titles.py FISH_DEX (24/10): species collected
 };
-// game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, then the runner-up's five
-const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;
-const WAR_SHORT=['Bang vô địch','Bang á quân'];
+// game/lb_titles.py BOARD_TIERS: 🛡️ the bang war's titles go to the champion's five fighters, the runner-up's five, 🥉 the third's five (11–15)
+const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:r<=10?1:2):r===1?0:r<=3?1:2;
+const WAR_SHORT=['Bang vô địch','Bang á quân','Bang hạng ba'];
 // game/lb_titles.py CAREER_NOUN (a workplace board's top 1 is "🏆 Trùm <noun>"), CAREER_TITLE (no "Trùm" there)
 const NOUN={milk_tea:'trà sữa',grocery:'tạp hóa',delivery:'giao hàng',cafe_bakery:'bánh & cà phê',florist:'tiệm hoa',
   mother_baby:'mẹ & bé',restaurant:'mì cay',pet_care:'chăm thú cưng',salon:'salon tóc',repair:'sửa đồ',farm:'nông trại',
@@ -65,7 +65,7 @@ const EVENT={
   w_vip:['🥇','Khách quý của phố','Khách quý','Khách mời của tuần'],
   w_pro:['🎊','Ăn cưới chuyên nghiệp','Ăn cưới pro','Khách mời của tuần'],
 };
-const LB=/^lb_([a-z][a-z0-9_]{0,39})_([1-9]|10)$/;
+const LB=/^lb_([a-z][a-z0-9_]{0,39})_([1-9]|1[0-5])$/;   // 11–15: 🥉 pet_war only (below)
 function noun(api,b){const n=NOUN[b];if(n)return n;const s=api?.content?.careers?.[b]?.meta?.short;return s?s.charAt(0).toLowerCase()+s.slice(1):null;}
 
 /** {emoji, short, full, src} of one id, or null. */
@@ -78,6 +78,7 @@ export function title(api,id){
   if(id.startsWith('dh_')){const u=(api?.content?.journey?.auction?.items||[]).find(x=>x.id===id&&x.kind==='title');return u?{emoji:u.emoji,short:u.short||u.name,full:u.name,src:'Danh hiệu độc bản · Nhà đấu giá'}:null;}
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]),B=BOARDS[b];
+  if(r>10&&b!=='pet_war')return null;
   if(B&&b==='pet_war'){const t=tierOf(r,b),[emoji,name]=B[1][t];return {emoji,short:WAR_SHORT[t],full:name,src:`${WAR_SHORT[t]} · ${B[0]} tuần này`};}
   if(B){const [label,tiers]=B,[emoji,name]=tiers[tierOf(r,b)];return {emoji,short:`Top ${r} ${label}`,full:name,src:`Top ${r} ${label} · tuần này`};}
   if(r!==1)return null;

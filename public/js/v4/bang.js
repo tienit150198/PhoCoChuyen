@@ -563,9 +563,10 @@ function warCard(){
   const slots=[];for(let i=0;i<size;i++){const x=(w.slots||[])[i],f=x?.pet;
     slots.push(x?`<li class="${x.me?'me':''}">${warPic(f)}<span class="grow"><b data-no-translate>${esc(x.name)}${x.me?' (bạn)':''}</b><small><span data-no-translate>${esc(f?.n||'')}</span>${Number.isInteger(f?.r)?` · <i class="pt-rk r${f.r}">${RANK[f.r]||''}</i>`:''} · 💪 ${fmt(f?.pw)}</small></span></li>`
       :`<li class="empty"><span class="bg-war-paw" aria-hidden="true">${i+1}</span><span class="grow"><small>Còn trống</small></span></li>`);}
-  const ms=(w.matches||[]).map(m=>`<li class="${m.state}${m.won===true?' win':m.won===false?' loss':''}"><b>${esc(m.round)}</b><span class="grow" data-no-translate>${m.bye?'(miễn đấu)':esc(m.vs?'gặp '+m.vs:'')}</span><em>${m.state==='done'?(m.bye?'✓':`${m.score[0]}–${m.score[1]} ${m.won?'✅':'❌'}`):m.state==='live'?'🔴':esc(hm(m.start))}</em></li>`).join('');
+  const ms=(w.matches||[]).map(m=>`<li class="${m.state}${m.won===true?' win':m.won===false?' loss':''}${m.third?' third':''}"><b>${m.third?'🥉 ':''}${esc(m.round)}</b><span class="grow" data-no-translate>${m.bye?'(miễn đấu)':esc(m.vs?'gặp '+m.vs:'')}</span><em>${m.state==='done'?(m.bye?'✓':`${m.score[0]}–${m.score[1]} ${m.won?'✅':'❌'}`):m.state==='live'?'🔴':esc(hm(m.start))}</em></li>`).join('');
   const r=w.result;
-  const res=r?`<p class="bg-war-res${r.champ?' champ':''}">${r.champ?'🏆 Bang mình vô địch!':r.second?'🥈 Á quân!':r.out?'Bang mình không ra trận tuần này.':`Dừng ở ${esc(r.round)} · ${r.w} thắng ${r.l} thua`}${r.pts?` · +${fmt(r.pts)} điểm`:''}${!r.champ&&r.champ_name?`<br><small>🏆 Vô địch: <span data-no-translate>${esc(r.champ_name)}</span></small>`:''}</p>`:'';
+  const res=r?`<p class="bg-war-res${r.champ?' champ':r.third?' third':''}">${r.champ?'🏆 Bang mình vô địch!':r.second?'🥈 Á quân!':r.third?`🥉 Hạng ba! · ${r.w} thắng ${r.l} thua`:r.place===4?`Hạng tư · ${r.w} thắng ${r.l} thua`:r.out?'Bang mình không ra trận tuần này.':`Dừng ở ${esc(r.round)} · ${r.w} thắng ${r.l} thua`}${r.pts?` · +${fmt(r.pts)} điểm`:''}${!r.champ&&r.champ_name?`<br><small>🏆 Vô địch: <span data-no-translate>${esc(r.champ_name)}</span></small>`:''}</p>`:'';
+  const third=w.third&&!r?'<p class="tp-note bg-war-third">🥉 Bang mình tranh hạng 3, cùng giờ chung kết.</p>':'';
   const acts=[];
   if(w.can_lead)acts.push(btn('war','👑 Chọn đội hình',' data-lineup="1"','btn primary'));
   if(w.can_pick)acts.push(btn('war',w.mine?'🐾 Đổi bé của tôi':'🐾 Ghi danh bé của tôi','',w.can_lead?'btn cream':'btn primary'));
@@ -574,7 +575,7 @@ function warCard(){
   return `<section class="sd-card bg-war" data-k="war"><h3>🛡️ Bang chiến tuần</h3>
     <p class="bg-war-when"><b>${esc(day)}</b><span>chốt đội ${esc(hm(w.lock))}</span></p><p class="bg-war-line">${status}</p>${res}
     <p class="tp-note bg-war-who">${who} · ${w.n||0}/${size} bé</p><ol class="bg-war-slots">${slots.join('')}</ol>
-    ${ms?`<ol class="bg-war-ms">${ms}</ol>`:''}${note?`<p class="tp-note">${esc(note)}</p>`:''}${acts.length?`<div class="bg-row bg-war-acts">${acts.join('')}</div>`:''}</section>`;
+    ${ms?`<ol class="bg-war-ms">${ms}</ol>`:''}${third}${note?`<p class="tp-note">${esc(note)}</p>`:''}${acts.length?`<div class="bg-row bg-war-acts">${acts.join('')}</div>`:''}</section>`;
 }
 /** 👑 The week's three parts (game/bang.py standings): 🐾 Pets, 🏗️ Công trình, ⭐ Cấp bang. */
 function parts(x,total=false){

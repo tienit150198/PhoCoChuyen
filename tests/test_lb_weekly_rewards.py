@@ -23,13 +23,13 @@ class Amounts(unittest.TestCase):
     def test_table(self):
         self.assertEqual([lbt.reward_of('wedding', r) for r in (1, 2, 3, 4)], [2_000_000, 1_000_000, 1_000_000, 0])
         self.assertEqual([lbt.reward_of('all', r) for r in (1, 2, 3, 4, 10, 11)], [1_000_000, 500_000, 500_000, 200_000, 200_000, 0])
-        self.assertEqual([lbt.reward_of('pet_war', r) for r in (1, 5, 6, 10, 11)], [500_000, 500_000, 200_000, 200_000, 0])
+        self.assertEqual([lbt.reward_of('pet_war', r) for r in (1, 5, 6, 10, 11, 15, 16)], [500_000, 500_000, 200_000, 200_000, 0, 0, 0])
         self.assertEqual([lbt.reward_of('race_drag_bike', r) for r in (1, 3, 4)], [1_000_000, 500_000, 0])
         self.assertEqual([lbt.reward_of('milk_tea', r) for r in (1, 2)], [1_000_000, 0])   # 🏆 Trùm: top 1 only
         self.assertGreater(lbt.reward_of('wedding', 1), max(lbt.reward_of(b, 1) for b in lbt.MAIN if b != 'wedding'))
         self.assertEqual([t['reward'] for t in lbt.tiers_of('wedding')], [2_000_000, 1_000_000])
         self.assertEqual([t['reward'] for t in lbt.tiers_of('wealth')], [1_000_000, 500_000, 200_000])
-        self.assertEqual([t['reward'] for t in lbt.tiers_of('pet_war')], [500_000, 200_000])
+        self.assertEqual([t['reward'] for t in lbt.tiers_of('pet_war')], [500_000, 200_000, 0])   # 🥉 the third: a title, no xu
         self.assertEqual(lbt.tiers_of('grocery')[0]['reward'], 1_000_000)
 
     def test_wedding_board_titles(self):

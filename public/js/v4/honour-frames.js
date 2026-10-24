@@ -15,7 +15,7 @@ const DIR='/icons/frames/';
 // game/lb_titles.py BOARD_TITLES: [top 1, top 2–3, top 4–10]
 const TIERS={all:['25','26','27'],titles:['36','35','34'],certs:['31','32','33'],wealth:['28','30','29'],collection:['60','59','58'],
   online:['73','71','69'],pets:['57','20','35'],island:['68','66','62'],wings:['36','57','27'],   // 🪽 Cánh (23/10): the crowned laurels, the starry frame, the winged TOP 10
-  arena:['65','20','57'],pet_cup:['25','26','27'],pet_war:['25','20'],
+  arena:['65','20','57'],pet_cup:['25','26','27'],pet_war:['25','20','57'],
   race_drag_bike:['65','26'],race_drag_car:['65','26'],race_deo_bike:['65','26'],race_deo_car:['65','26']};   // 🏁 Đường đua Bến Mây (22/10): the stadium, the laurels   // ⚔️ 🏟️ 🛡️ the pet arena's boards (19/10): the stadium, the corgi, the starry pets; the laurels; the war's two tiers   // 🏝️ Đảo đẹp (19/10): Chúa đảo's frame, the island bridge, the park   // 🐾 Thú cưng (19/10): the starry cat-and-dog frame, the corgi, the hearts (#508: never an everyday frame)   // 🦉 Cú đêm của phố (owner's own board 18/10), the night-lantern frame, the sunset frame
 /* 🏅 Player feedback #508 (lii, 23/10: "khung danh hiệu top có nhiều cái giống nhau và có mấy cái giống khung thường"): every
  * board wears its own look on top of the art: [hue turn of the art (deg; a board that shares another board's art is
@@ -62,8 +62,8 @@ const WORN={t_ct_cong_vien:'62',t_ct_rap_phim:'63',t_ct_thu_vien:'64',t_ct_san_v
 // 🆓 Everyday frames anyone may choose (game/journey.py FREE_FRAMES, owner 18/10 "cho người ta chọn khung mặc định nữa"): k_<n>
 const FREE={k_01:['01','🧋','Trà sữa trân châu'],k_02:['02','🐱','Mèo cam tinh nghịch'],k_05:['05','⭐','Chủ tiệm năm sao'],k_19:['19','🐰','Thỏ bánh mochi'],
   k_22:['22','👻','Phố ma dễ thương'],k_23:['23','🎄','Giáng sinh trong phố'],k_24:['24','🧧','Tết có lộc']};
-const LB=/^lb_([a-z][a-z0-9_]{0,39})_([1-9]|10)$/;
-const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:1):r===1?0:r<=3?1:2;   // 🛡️ game/lb_titles.py BOARD_TIERS: the champion bang's five, the runner-up's five
+const LB=/^lb_([a-z][a-z0-9_]{0,39})_([1-9]|1[0-5])$/;   // 11–15: 🥉 pet_war only (ofId)
+const tierOf=(r,b)=>b==='pet_war'?(r<=5?0:r<=10?1:2):r===1?0:r<=3?1:2;   // 🛡️ game/lb_titles.py BOARD_TIERS: the champion bang's five, the runner-up's five, 🥉 the third's five
 
 /* 👑 Khung độc bản (#508: "nếu vật phẩm đấu giá có ghi khung độc bản thì sẽ là 1 khung không ai có được"): each title of
  * the auction house (game/auction_content.py; one owner ever: the unique index auction_lots_item) wears a frame of its
@@ -172,6 +172,7 @@ export function ofId(id){
   if(id.startsWith('dh_'))return UQ_RE.test(id)?{n:null,tier:4,uq:id}:null;
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]);
+  if(r>10&&b!=='pet_war')return null;
   if(DRAWN[b]){const t=tierOf(r,b);return DRAWN[b][t]?{n:null,tier:t,board:b,rank:r,drawn:true}:{n:undefined,tier:t,board:b,rank:r};}   // 💒 top 3 only
   if(TIERS[b])return {n:TIERS[b][tierOf(r,b)],tier:tierOf(r,b),board:b,rank:r};
   if(r!==1||b==='pagoda')return null;   // a workplace: its top 1 only; nobody is the boss of a pagoda
@@ -220,7 +221,8 @@ export function choices(api){
     out.push({id,emoji:it?.emoji||uqSpec(id)[0],name:String(x.t||it?.name||'Danh hiệu độc bản'),label:'Độc bản · Nhà đấu giá',n:null,f:{n:null,tier:4,uq:id}});
   }
   for(const x of api?.exTitles||[]){const k=exOf(x?.id);if(k&&!out.some(o=>o.id===k.id))out.push({id:k.id,emoji:k.emoji,name:k.frame,label:`${EX_LABEL} · ${k.name}`,n:null,f:{n:null,tier:7,ex:k.id}});}   // 🌧️ first
-  for(const h of api?.lbTitles||[]){const id=`lb_${h.board}_${h.rank}`,f=ofId(id);if(has(f)&&!out.some(x=>x.id===id))out.push({id,emoji:h.emoji,name:h.name,label:h.label,n:f.n,f});}
+  for(const h of api?.lbTitles||[]){if(!(h?.rank<=10))continue;   // game/journey.py HF_PICK_RE: ranks 1–10 (🥉 pet_war 11–15 is worn automatically)
+    const id=`lb_${h.board}_${h.rank}`,f=ofId(id);if(has(f)&&!out.some(x=>x.id===id))out.push({id,emoji:h.emoji,name:h.name,label:h.label,n:f.n,f});}
   const t=J?.spend?.wear?.title,w=WORN[t];
   if(w&&FRAMES[w]){const it=(api.content?.journey?.spend?.titles||[]).find(x=>x.id===t);out.push({id:t,emoji:it?.emoji||'🏗️',name:it?.name||'Danh hiệu đang đeo',label:'Phong cách',n:w,f:{n:w,tier:5}});}
   return out;

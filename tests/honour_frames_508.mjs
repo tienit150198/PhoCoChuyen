@@ -26,6 +26,13 @@ for(const b of Object.keys(TIERS)){
 }
 assert.equal(look(ofId('lb_all_2')).metal,'s');assert.equal(look(ofId('lb_all_7')).metal,'b');
 assert.equal(look(ofId('lb_all_7')).medal,'7');assert.equal(look(ofId('lb_pet_war_8')).medal,'2');
+// 🥉 Tranh hạng 3 (25/10): the third bang's five fighters hold ranks 11–15 of pet_war only; never chosen in the frame list
+// (game/journey.py HF_PICK_RE stays 1–10 so a rolled-back build still validates the save): worn automatically
+for(let r=11;r<=15;r++){const f=ofId(`lb_pet_war_${r}`);assert.equal(f.tier,2);const L=look(f);assert.equal(L.medal,'3');assert.equal(L.metal,'b');}
+assert.equal(ofId('lb_pet_war_16'),null);assert.equal(ofId('lb_all_11'),null);assert.equal(ofId('lb_wealth_15'),null);
+assert.equal(pick(['lb_pet_war_12'],{}).tier,2);
+assert.ok(!choices({lbTitles:[{board:'pet_war',rank:12,emoji:'🥉',name:'Hạng ba bang chiến pet',label:'Bang hạng ba'},{board:'pet_war',rank:7,emoji:'🥈',name:'x',label:'y'}]}).some(c=>c.id==='lb_pet_war_12'));
+assert.ok(choices({lbTitles:[{board:'pet_war',rank:7,emoji:'🥈',name:'x',label:'y'}]}).some(c=>c.id==='lb_pet_war_7'));
 assert.ok(new Set(Object.keys(TIERS).map(b=>TIERS[b].join())).size>=Object.keys(TIERS).length-6,'most boards have their own art');
 for(const k of Object.keys(FREE)){const f=pick([k],{});assert.equal(f.tier,6);assert.equal(look(f),null,`${k}: an everyday frame stays plain`);
   assert.doesNotMatch(avatar([k],{},'<i></i>'),/hf-top|data-hf-rank|hf-uq/);}

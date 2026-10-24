@@ -543,10 +543,14 @@ class War(Store):
         champ_team = v['ladder'][0]['id']
         champs = [s for s, (tid, _) in team.items() if tid == champ_team]
         self.assertEqual(sorted(x[2] for x in st if x[1] <= 5), sorted(champs))
-        self.assertTrue(all(lbt.tier_of('pet_war', x[1]) == (0 if x[1] <= 5 else 1) for x in st))
+        self.assertTrue(all(lbt.tier_of('pet_war', x[1]) == (0 if x[1] <= 5 else 1 if x[1] <= 10 else 2) for x in st))
         self.assertEqual(lbt.title_of('pet_war', 5)['text'], '🏆 Bang vô địch đấu pet')
         self.assertEqual(lbt.title_of('pet_war', 6)['label'], 'Bang á quân')
-        self.assertIsNone(lbt.title_of('pet_war', 11))
+        # 🥉 3 bangs: one semi-final was a bye, its real semi-final's loser is third (no 3rd-place match)
+        third = next(x['id'] for x in v['ladder'] if x['place'] == 3)
+        self.assertEqual(sorted(x[2] for x in st if x[1] > 10), sorted(s for s, (tid, _) in team.items() if tid == third))
+        self.assertEqual(lbt.title_of('pet_war', 11)['text'], '🥉 Hạng ba bang chiến pet')
+        self.assertIsNone(lbt.title_of('pet_war', 16))
         with self.store.connect() as db:
             self.assertEqual(PW.team_rating(db, 'bang', champ_team)['titles'], 1)
 
