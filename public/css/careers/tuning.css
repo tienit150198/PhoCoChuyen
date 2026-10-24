@@ -29,7 +29,8 @@
 .tuning .dx-lean{fill:#c62828}
 .tuning .dx-axis{font-size:9px}
 .tuning .dx-afr-svg{margin-top:4px}
-.tuning .dx-table summary{min-height:40px;font-size:13px}
+.tuning .dx-table summary{min-height:44px;padding:11px 0;box-sizing:border-box;font-size:14px;font-weight:700;cursor:pointer}
+.tuning .dx-said{margin:4px 0 8px;line-height:1.5}
 .tuning .dx-table table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
 .tuning .dx-table th,.tuning .dx-table td{padding:4px 6px;border-bottom:1px solid var(--sk-line,#d8dde6);text-align:right}
 .tuning .dx-legal{padding:10px 12px;border-left:3px solid #c62828;background:#fdecea;border-radius:8px}

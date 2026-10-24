@@ -392,6 +392,27 @@ def _warn(s: dict, c: dict, d: dict, t: dict, st: dict) -> str:
     return ' ⚖️ Lắp hay cho qua như vậy là trái luật, khách ra đường sẽ bị phạt.' + tail
 
 
+def _peak(dyno: dict, line: str) -> tuple:
+    """(the highest power of `line`, the first rpm where it is reached)."""
+    vals = dyno[line]
+    top = max(vals)
+    return top, dyno['rpm'][vals.index(top)]
+
+
+def _how(t: dict, st: dict) -> tuple | None:
+    """#524 A wrong dyno reading: the way (find the peak in the sheet's numbers, 📋 Đọc số liệu), then the working."""
+    dyno = t['needs'].get('dyno')
+    if st['id'] != 'dyno.doc' or not dyno:
+        return None
+    a, ra = _peak(dyno, 'after')
+    if dyno['gain']:
+        b, rb = _peak(dyno, 'before')
+        return ('Mở “📋 Đọc số liệu” dưới biểu đồ: lấy số lớn nhất cột Sau trừ số lớn nhất cột Trước.',
+                f'đỉnh sau độ {a} mã lực ở {_thousands(ra)} vòng/phút − đỉnh trước độ {b} mã lực ở {_thousands(rb)} vòng/phút = {a - b} mã lực.')
+    return ('Mở “📋 Đọc số liệu” dưới biểu đồ: lấy số lớn nhất cột Công suất.',
+            f'đỉnh công suất {a} mã lực ở {_thousands(ra)} vòng/phút.')
+
+
 # ---------------------------------------------------------------- actions
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     kit.need(name in ('dx_intro', 'dx_step', 'dx_desk', 'dx_svc'), 'Thao tác ở xưởng độ không hợp lệ.')
@@ -410,7 +431,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     steps = t['needs']['steps']
     st = steps[t['at']] if t['at'] < len(steps) else None
     illegal = bool(st) and p.get('step') == st['id'] and illegal_pick(t, st['id'], sk.value(st, p.get('value')))
-    correct, message, finished = sk.work(t, p, _quality, 'Anh Tư', LINES, _severity)
+    correct, message, finished = sk.work(t, p, _quality, 'Anh Tư', LINES, _severity, _how)
     if illegal:
         message += _warn(s, c, d, t, st)
         t['lines'] = (t['lines'][:-1] + [message[:480]])[-LINES:]

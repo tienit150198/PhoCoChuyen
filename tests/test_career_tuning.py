@@ -149,6 +149,32 @@ class Work(unittest.TestCase):
         v = public_state(j.state)['careers']['tuning']['tasks'][0]
         self.assertIn('dyno', v['needs'])
 
+    def test_a_wrong_dyno_reading_points_at_the_numbers_then_works_it_out(self):
+        """#524 (a blind player 'nhập mò' until the third try): the dyno sheet's numbers are public once the car is on it
+        (the client reads them out under 📋 Đọc số liệu); a wrong reading says where to look, the second shows the peaks."""
+        j = Journey('tuning', day=6, slot=1)
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        while True:
+            clear_desk(j, 'dx_', TC.DESK)
+            t = j.get(tid)
+            st = t['needs']['steps'][t['at']]
+            if st['id'] == 'dyno.doc':
+                break
+            j.act('dx_step', task=tid, step=st['id'], value=t['_key'][st['id']])
+        d = public_state(j.state)['careers']['tuning']['tasks'][0]['needs']['dyno']
+        right = t['_key']['dyno.doc']
+        a, b = max(d['after']), max(d['before'])
+        self.assertEqual(right, a - b if d['gain'] else a, 'the public numbers are enough to answer exactly')
+        first = j.act('dx_step', task=tid, step='dyno.doc', value=right + 1)
+        self.assertIn('📋 Đọc số liệu', first['message'])
+        second = j.act('dx_step', task=tid, step='dyno.doc', value=right + 1)
+        ra = T._thousands(d['rpm'][d['after'].index(a)])
+        self.assertIn(f'Anh Tư chỉ: đỉnh {"sau độ" if d["gain"] else "công suất"} {a} mã lực ở {ra} vòng/phút', second['message'])
+        self.assertTrue(second['message'].endswith(f'= {right} mã lực.' if d['gain'] else f'{ra} vòng/phút.'))
+        j.act('dx_step', task=tid, step='dyno.doc', value=right)
+        validate_state(j.state)
+
     def test_the_certificate_takes_two_xu_off_the_parts(self):
         got = []
         for cert in (False, True):

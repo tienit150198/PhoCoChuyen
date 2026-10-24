@@ -43,7 +43,26 @@ function vehicleArt(t,x){
   return `<div class="dx-paint" style="--dx-paint:${x.esc(paint)}">${art}${stepsArt(t,{kind:'paper',icons:PART,head:'📋',label:'Phiếu độ'})}</div>`;
 }
 
-/** The dyno sheet: power before (dashed) and after (solid) against rpm, the AFR line under it with the 13,5 limit. */
+const vn=v=>Number(v).toLocaleString('vi-VN');
+const afrTxt=v=>`${Math.floor(v/10)},${v%10}`;
+/** The dyno sheet in words (#524, a blind player): the peak of each power line with its rpm, the leanest AFR point against
+ * the 13,5 limit. Enough to answer the dyno steps exactly; read by screen readers on the chart and on the open step,
+ * and shown to everyone under “📋 Đọc số liệu”. */
+export function dynoSaid(dyno,x){
+  if(!dyno||!dyno.rpm?.length)return '';
+  const rpm=dyno.rpm,unit=dyno.unit||'mã lực',changed=dyno.after.some((v,i)=>v!==dyno.before[i]);
+  const peak=a=>{const top=Math.max(...a);return [top,rpm[a.indexOf(top)]];};
+  const [a,ra]=peak(dyno.after),[b,rb]=peak(dyno.before);
+  const power=changed?`Công suất đỉnh trước độ ${vn(b)} ${unit} ở ${vn(rb)} vòng/phút; sau độ ${vn(a)} ${unit} ở ${vn(ra)} vòng/phút.`
+    :`Công suất đỉnh ${vn(a)} ${unit} ở ${vn(ra)} vòng/phút.`;
+  const afr=dyno.afr||[],lim=x.cc?.limits?.afr||135;
+  if(!afr.length)return power;
+  const hi=Math.max(...afr),at=rpm[afr.lastIndexOf(hi)];
+  return `${power} AFR ở tải lớn cao nhất ${afrTxt(hi)} ở ${vn(at)} vòng/phút (giới hạn ${afrTxt(lim)}: ${hi>lim?'vượt, nghèo xăng':'trong giới hạn'}).`;
+}
+
+/** The dyno sheet: power before (dashed) and after (solid) against rpm, the AFR line under it with the 13,5 limit. The
+ * pictures are hidden from screen readers: the figure is described by dynoSaid() and the table under “📋 Đọc số liệu”. */
 function dynoChart(dyno,x){
   if(!dyno||!dyno.rpm?.length)return '';
   const W=320,H=150,L=34,R=8,T=12,B=26,rpm=dyno.rpm,n=rpm.length;
@@ -58,17 +77,19 @@ function dynoChart(dyno,x){
   const afr=dyno.afr||[],lim=x.cc?.limits?.afr||135;
   const afrLine=afr.map((v,i)=>`${X(i).toFixed(1)},${AY(v).toFixed(1)}`).join(' ');
   const dots=afr.map((v,i)=>v>lim?`<circle cx="${X(i).toFixed(1)}" cy="${AY(v).toFixed(1)}" r="3.5" class="dx-lean"/>`:'').join('');
-  const fmt=v=>`${Math.floor(v/10)},${v%10}`;
-  const said=`Biểu đồ dyno: ${changed?'trước độ và sau độ, ':''}công suất theo vòng tua ${rpm[0]} đến ${rpm[n-1]} vòng/phút; AFR từ ${fmt(Math.min(...afr))} đến ${fmt(Math.max(...afr))}.`;
-  const rows=rpm.map((r,i)=>`<tr><td>${r.toLocaleString('vi-VN')}</td>${changed?`<td>${dyno.before[i]}</td>`:''}<td>${dyno.after[i]}</td><td>${fmt(afr[i]??0)}</td></tr>`).join('');
-  return `<figure class="card dx-dyno" aria-label="${x.esc(said)}">
-    <figcaption><b>📈 Biểu đồ dyno</b><span class="dx-legend">${changed?'<i class="dx-k-before"></i> Trước độ <i class="dx-k-after"></i> Sau độ':'<i class="dx-k-after"></i> Công suất'} · ${x.esc(dyno.unit||'mã lực')}</span></figcaption>
-    <svg viewBox="0 0 ${W} ${H}" role="presentation" class="dx-svg">${grid}${ticks}<text x="${W-R}" y="${H-8+12}" text-anchor="end" class="dx-axis">nghìn vòng/phút</text>
+  const unit=dyno.unit||'mã lực',said=dynoSaid(dyno,x);
+  const rows=rpm.map((r,i)=>`<tr><th scope="row">${vn(r)}</th>${changed?`<td>${dyno.before[i]}</td>`:''}<td>${dyno.after[i]}</td><td>${afrTxt(afr[i]??0)}</td></tr>`).join('');
+  const open=x.ui.dxTable?' open':'';
+  return `<figure class="card dx-dyno" aria-labelledby="dx-dyno-h" aria-describedby="dx-dyno-said">
+    <figcaption><b id="dx-dyno-h">📈 Biểu đồ dyno</b><span class="dx-legend" aria-hidden="true">${changed?'<i class="dx-k-before"></i> Trước độ <i class="dx-k-after"></i> Sau độ':'<i class="dx-k-after"></i> Công suất'} · ${x.esc(unit)}</span></figcaption>
+    <p class="sr-only" id="dx-dyno-said">${x.esc(said)}</p>
+    <svg viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false" class="dx-svg">${grid}${ticks}<text x="${W-R}" y="${H-8+12}" text-anchor="end" class="dx-axis">nghìn vòng/phút</text>
       ${changed?`<polyline points="${line(dyno.before)}" class="dx-before"/>`:''}<polyline points="${line(dyno.after)}" class="dx-after"/></svg>
-    <svg viewBox="0 0 ${W} ${AH}" role="presentation" class="dx-svg dx-afr-svg"><text x="${L-4}" y="${AY(lim)+4}" text-anchor="end">13,5</text>
+    <svg viewBox="0 0 ${W} ${AH}" aria-hidden="true" focusable="false" class="dx-svg dx-afr-svg"><text x="${L-4}" y="${AY(lim)+4}" text-anchor="end">13,5</text>
       <line x1="${L}" x2="${W-R}" y1="${AY(lim)}" y2="${AY(lim)}" class="dx-limit"/><polyline points="${afrLine}" class="dx-afr"/>${dots}
       <text x="${L}" y="${AH-2}" class="dx-axis">AFR ở tải lớn (vạch đỏ: giới hạn nghèo xăng)</text></svg>
-    <details class="dx-table"><summary>Xem số đo từng mốc</summary><table><thead><tr><th>Vòng/phút</th>${changed?'<th>Trước</th>':''}<th>${changed?'Sau':'Công suất'}</th><th>AFR</th></tr></thead><tbody>${rows}</tbody></table></details></figure>`;
+    <details class="dx-table" data-dx-table${open}><summary>📋 Đọc số liệu</summary><p class="small dx-said" aria-hidden="true">${x.esc(said)}</p>
+      <table><caption class="sr-only">Số đo dyno từng mốc vòng tua, công suất tính bằng ${x.esc(unit)}</caption><thead><tr><th scope="col">Vòng/phút</th>${changed?'<th scope="col">Trước</th>':''}<th scope="col">${changed?'Sau':'Công suất'}</th><th scope="col">AFR</th></tr></thead><tbody>${rows}</tbody></table></details></figure>`;
 }
 
 /** The ticket on the lift: the vehicle and its plate; the goal once named, the budget, then the build sheet. */
@@ -89,7 +110,9 @@ function legalLine(x){
 function slip(t,x){
   const st=current(t);
   if(!st)return `<p class="sl-finished" role="status">✓ Đã giao xe · chất lượng ${x.esc(t.quality)}% · tiền công ${x.fmt(t.paid||0)} xu.</p>`;
-  return stepCard(x,st,{at:t.at,total:stepsOf(t).length,quality:t.quality??100,cmd:'dx_step',payload:{task:t.id},key:`${t.id}-${st.id}`});
+  // #524 the dyno steps read a chart: a screen reader hears its numbers right with the question
+  const said=String(st.id).startsWith('dyno.')?`Số liệu dyno: ${dynoSaid(t.needs?.dyno,x)} Bảng từng mốc ở mục Đọc số liệu dưới biểu đồ.`:'';
+  return stepCard(x,st,{at:t.at,total:stepsOf(t).length,quality:t.quality??100,cmd:'dx_step',payload:{task:t.id},key:`${t.id}-${st.id}`,said:t.needs?.dyno?said:''});
 }
 
 export default {
@@ -104,7 +127,12 @@ export default {
   // Compact layout: the notebook folds; the full layout keeps it open.
   idle(x){return wrap(top(x)+tail(x)+(clean()?notebook(x):`<h3 class="sl-rules-h">📒 Sổ tay xưởng Tư Pít-tông</h3>${rulesList(x)}`));},
   input(el,x){return kitInput(el,x);},
-  meters(root,x){inboxTick(root,x);},
+  meters(root,x){
+    inboxTick(root,x);
+    // “📋 Đọc số liệu” stays open across renders once opened (a screen reader user answers right under it)
+    const d=root.querySelector('[data-dx-table]');
+    if(d&&!d._dx){d._dx=1;d.addEventListener('toggle',()=>{x.ui.dxTable=d.open;});}
+  },
   page(view,x){return view==='car:notes'?notesPage(x,{cls:'slip tuning',eyebrow:'Xưởng độ xe Tư Pít-tông',title:'Sổ tay của xưởng',body:rulesList(x)}):'';},
   actions:{...kitActions,...slipActions},
   dock:[['car:notes','book','Sổ tay của xưởng','Bảng độ, luật khí thải, tiếng ồn, đèn, biển số, dyno'],['car:intro','question','Giới thiệu nghề','Nhanh mà phải dừng được']],
