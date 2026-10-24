@@ -1,6 +1,8 @@
 /** Quote-only updates. Never refresh/modify the player's authoritative save. */
 export const RANGES=['1H','1D','3D','1W','1M'];
 export const rangeOf=env=>RANGES.includes(env.ui.ivRange)?env.ui.ivRange:'1D';
+/** 🎢 Sàn Phố: the new asset whose chart is open ('' for Mây Coin, gold or the list). */
+export const assetOf=env=>{const a=env.ui.ivMarket;return typeof a==='string'&&a!=='coin'&&a!=='gold'&&/^[a-z0-9_]{1,16}$/.test(a)?a:'';};
 const controllers=new WeakMap(),pending=new WeakMap();
 const selected=env=>env.ui.ivQuotes?.[rangeOf(env)];
 export function acceptQuote(env,data){
@@ -17,7 +19,8 @@ export async function refreshQuotes(env){
  if(key?.span===span)return key.work;
  env.ui.ivRefreshing=true;env.ui.ivRefreshError='';env.renderSheet();
  const work=Promise.resolve().then(async()=>{
-  try{acceptQuote(env,await env.api.json('/api/market?range='+span));}
+  const asset=assetOf(env);
+  try{acceptQuote(env,await env.api.json('/api/market?range='+span+(asset?'&asset='+asset:'')));}
   catch{if(rangeOf(env)===span)env.ui.ivRefreshError='Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.';}
   finally{if(pending.get(env.api)?.work===work){pending.delete(env.api);env.ui.ivRefreshing=false;env.renderSheet();}}
  });
@@ -32,11 +35,11 @@ export function marketBoot(env){
  function watch(force=false){
   const isVisible=visible(),entered=isVisible&&!visibleBefore;visibleBefore=isVisible;
   if(!isVisible){stop();return;}
-  const span=rangeOf(env);
+  const span=rangeOf(env),asset=assetOf(env),key=span+'|'+asset;
   if(socket?.state==='open'&&socket.flags.market){
-   if(!force&&watching===span)return;
-   watching=span;
-   if(socket.send({t:'market_watch',range:span,open:true})){
+   if(!force&&watching===key)return;
+   watching=key;
+   if(socket.send(asset?{t:'market_watch',range:span,open:true,asset}:{t:'market_watch',range:span,open:true})){
     clearTimeout(timeout);
     // A single missed-reply fallback, never a polling loop.
     timeout=setTimeout(()=>{if(visible()&&rangeOf(env)===span)refreshQuotes(env);},8000);
@@ -61,6 +64,10 @@ export function marketBoot(env){
  if(env.marketLive)attach(env.marketLive);
  else import('./live.js').then(m=>attach(m.live)).catch(()=>watch());
 }
+export function changeAsset(env,id){
+ env.ui.ivMarket=id;env.ui.ivPoint=null;
+ controllers.get(env.api)?.watch(true);env.renderSheet();
+}
 export function changeRange(env,range){
  env.ui.ivRange=RANGES.includes(range)?range:'1D';env.ui.ivPoint=null;
  controllers.get(env.api)?.watch(true);env.renderSheet();
@@ -69,7 +76,7 @@ export function changeRange(env,range){
 export function marketView(env){
  const I=env.api.state?.invest,G=env.api.state?.vang;
  const all=Object.values(env.ui.ivQuotes||{}),q=all.sort((a,b)=>b.tick-a.tick)[0];
- if(!I||!q)return {I,G};
+ if(!I||!q)return {I,G,B:q?.board||null};
  let copy=I,gold=G;
  if(q.tick>=(I.coin.market_clock?.tick??-1)){
   const c=I.coin,price=q.coin.price,value=Math.floor(c.units*price/(I.rules.coin*I.rules.cent));
@@ -79,5 +86,5 @@ export function marketView(env){
   const p=q.gold.price,buy=Math.ceil(p*10250/10000),sell=Math.floor(p*9750/10000);
   gold={...G,p,buy,sell,y:q.gold.previous,value:Math.floor(G.phan*sell/10),market_news:q.gold.news,market_clock:q};
  }
- return {I:copy,G:gold};
+ return {I:copy,G:gold,B:q.board||null};
 }
