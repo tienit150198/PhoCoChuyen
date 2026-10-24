@@ -41,6 +41,30 @@ assert.equal(L.withFish({hair:'a'},{sp:'x'}).fh,undefined,'no drawing fields: no
 L.paintPlayer(ctx,F,L.CANVAS);
 
 // 4. 🖼️ tranh cá and 🐠 the aquarium (deco-art.js): a shadow until reno.js fills the maps, then the catch and its weight
+// 3b. 🐋 2.6.5.2 (owner 25/10 "cá to thì nhìn to thật"): drawn as long as its weight, next to a person; the box grows
+const FA=await import('../public/js/v4/fish-art.js');
+const spans=[0,.01,.1,.5,2,10,50,300,1000,5000,25000,1e7].map(FA.fishSpan);
+for(let i=1;i<spans.length;i++)assert.ok(spans[i]>=spans[i-1],`never smaller for more weight: ${spans}`);
+assert.equal(FA.fishSpan(0),FA.SPAN_MIN);assert.equal(FA.fishSpan(1e9),FA.SPAN_MAX);
+assert.ok(FA.fishSpan(.1)<.2,'100 g: a palm');
+assert.ok(FA.fishSpan(2)>.25&&FA.fishSpan(2)<.4,'2 kg: about a forearm');
+assert.ok(FA.fishSpan(300)>1.4,'300 kg: taller than the person');
+assert.ok(FA.fishSpan(300)/FA.fishSpan(2)>4,'a 300 kg fish looks far bigger than a 2 kg one');
+assert.ok(Math.abs(FA.fishSpan(299.99)-FA.fishSpan(300.01))<.01,'no jump at the bend of the curve');
+assert.deepEqual([.3,2,30,200,5000].map(kg=>FA.holdGeom(kg).pose),['hand','hand','arms','shoulder','drag']);
+assert.equal(FA.fmtLen(2),'~55 cm');assert.equal(FA.fmtLen(300),'~2,8 m');
+for(const kg of [.5,5,50,150,300,1000,20000]){const g=FA.holdGeom(kg),[l,t,r,b]=FA.holdBox(kg);
+  assert.ok(r-l>=g.len*.9&&b>t,`${kg} kg: its box holds it`);
+  const B=L.figBounds(L.figureOf({fh:{...fh,kg}},'female'));assert.ok(B[0]<=l&&B[2]>=r&&B[1]<=t,`${kg} kg: the figure's box holds the fish`);}
+assert.deepEqual(L.figBounds(L.figureOf({},'female')),[-55,-150,55,10],'a plain figure keeps the small box');
+const sc=FA.scaleSvg(sp,300,{title:'x'});assert.ok(sc.startsWith('<svg')&&!/NaN|undefined/.test(sc));
+const big=Number(/width="(\d+)"/.exec(FA.scaleSvg(sp,300))[1]),small=Number(/width="(\d+)"/.exec(FA.scaleSvg(sp,2))[1]);assert.ok(big>small+40,'to scale');
+for(const kg of [1,100,400,20000])L.paintPlayer(ctx,L.figureOf({fh:{...fh,kg}},'male'),L.CANVAS);
+for(const kg of [1,400,20000]){const o=[];L.paintPlayer(o,L.figureOf({fh:{...fh,kg}},'male'),L.SVG);assert.ok(!/NaN/.test(o.join('')));}
+// the 2.5D chibi (isometric/character-art.js): longer by weight, slanted past the stamp's width, never over 170 px
+const CA=await import('../public/js/isometric/character-art.js');
+assert.ok(CA.stampFishLen(2)<CA.stampFishLen(50)&&CA.stampFishLen(50)<CA.stampFishLen(300)&&CA.stampFishLen(1e6)===170);
+
 const A=await import('../public/js/v4/deco-art.js');
 assert.ok(A.ART.tranh_ca.d(76,68,'u1').includes('fish-sil'));
 A.FISH_TRO.set('u1',{sp,g:4200});

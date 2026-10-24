@@ -10,7 +10,7 @@
  * the player steps straight to where they tapped and the others stand still). Arrow keys walk, Enter uses the place
  * the player stands at. jail.js owns the dialog and passes its helpers in (setup). */
 import {VIEW,PEOPLE,plan,route,nearestFree,back as paintBack,props,marks,bubble,cap,frame,portraitFor,folk} from '../scenes/jail-place.js';
-import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
+import {figure,figCanvas,lookOf} from './look.js';
 import {t as tr} from './i18n.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -210,10 +210,9 @@ export function setup(ctx){
       if(key!==W.figKey){W.figKey=key;W.fig=figure(st);W.sprite=null;}
       const px=Math.max(.1,W.dpr*W.k*s),sk=`${key}|${Math.round(px*100)}`;
       if(W.sprite?.key!==sk){
-        const cv=document.createElement('canvas');cv.width=Math.ceil(110*px);cv.height=Math.ceil(160*px);
-        const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);paintPlayer(q,W.fig,CANVAS);W.sprite={key:sk,cv};
+        W.sprite={key:sk,b:figCanvas(W.fig,px)};   // 🪽 the box grows for the wings worn
       }
-      c.scale(s,s);c.drawImage(W.sprite.cv,-55,-150,110,160);
+      const b=W.sprite.b;c.scale(s,s);if(b)c.drawImage(b.cv,-b.ox,-b.oy,b.w,b.h);
     }catch{/* look not ready */}
     c.restore();
   }

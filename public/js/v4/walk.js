@@ -49,7 +49,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
-import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish} from './look.js';
+import {lookOf,figureOf,figCanvas,CANVAS,portrait,rankRef,withPairs,cleanPairs,withWings,cleanWing,withFish,cleanFish} from './look.js';
 import {drawWings,drawMotes,wingBitmap,flapAt,flapStep,wingScale,wingSparkles,CLASSIC_WING,WING_BOX,flyMotion,flyShadow,FLY_WING,FLY_LEAN} from './wings-art.js';
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
@@ -731,12 +731,14 @@ function background(){
 }
 function sprite(p){
   const key=`${S.k}|${S.dpr}`;if(p.sp&&p.spk===key)return p.sp;
-  const hw=55;p.hw=hw;   // 🪽 the wings are drawn apart (wingsBack / wingsFront): they move
-  const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(2*hw*s);cv.height=Math.ceil(160*s);
-  const c=cv.getContext('2d');c.setTransform(s,0,0,s,hw*s,150*s);
-  try{const F=figureOf(withFish(withPairs(p.lk,p.pr),p.fh),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
-  p.sp=cv;p.spk=key;return cv;
+  // 🪽 the wings are drawn apart (wingsBack / wingsFront): they move. 🎣 A big carried fish grows the box (look.js figBounds).
+  const s=AV*S.k*S.dpr;let b=null;
+  try{const F=figureOf(withFish(withPairs(p.lk,p.pr),p.fh),p.g);if(p.rk)F.rk=p.rk;if(p.bb&&!p.r)F.bb=p.bb;b=figCanvas(F,s);}catch(e){console.warn('walk: look',e);}   // 👶 bb: carrying a baby
+  if(!b){const cv=document.createElement('canvas');cv.width=Math.ceil(110*s);cv.height=Math.ceil(160*s);b={cv,ox:55,oy:150,w:110,h:160};}
+  p.box=b;p.sp=b.cv;p.spk=key;return b.cv;
 }
+/** Draw a walker's figure canvas with its feet at (x, y). */
+const putFig=(c,p,sp,x,y)=>{const b=p.box||{ox:55,oy:150,w:110,h:160};c.drawImage(sp,x-b.ox*AV,y-b.oy*AV,b.w*AV,b.h*AV);};
 /* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop; on a vehicle it rides along
  * (./ride.js drawRide `pet`: the driver's, else the pillion's). */
 const PETS=new Map();
@@ -819,17 +821,17 @@ function draw(ts,t){
       if(!calm)c.rotate(side*Math.sin(ph*Math.PI)*.11);
       if(spin<1.3)c.scale(Math.cos(spin/1.3*Math.PI*4),1);
       const up=Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6);wingsBack(c,p,0,-up,sec,calm);
-      c.drawImage(sp,-(p.hw||55)*AV,-150*AV-up,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,0,-up,sec,calm);c.restore();continue;}
+      putFig(c,p,sp,0,-up);wingsFront(c,p,0,-up,sec,calm);c.restore();continue;}
     // 🪽 flying (owner 24/10 "người k cần di chuyển nữa (k cần bước đi)"): no walking bob, a hover up in the air (a float
     // with the wings' beat, wings-art.js flyMotion), leaning a little into the way they go; the shadow on the ground
     p.flying=p.fl!=null&&!!p.wg&&!p.s;p.fp=p.flying?flyMotion(p.fm??={ph:((p.pid||'').length*.137)%1},p.wg,calm?null:sec,!!p.moving):null;if(!p.flying)p.fm=undefined;p.lift=p.fp?.lift||0;
     if(p.flying){const o=flyShadow(p.lift,AV);c.fillStyle=`rgba(40,30,25,${o.a.toFixed(2)})`;c.beginPath();c.ellipse(p.x,p.y+2,o.rx,o.ry,0,0,Math.PI*2);c.fill();
       c.save();c.translate(p.x,p.y-p.lift*AV);c.rotate(p.fp.lean*FLY_LEAN*(p.face||1));
-      wingsBack(c,p,0,0,sec,calm);c.drawImage(sp,-(p.hw||55)*AV,-150*AV,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,0,0,sec,calm);c.restore();
+      wingsBack(c,p,0,0,sec,calm);putFig(c,p,sp,0,0);wingsFront(c,p,0,0,sec,calm);c.restore();
       if(p.pt)drawPet(c,p,ct?.journey?.pets);continue;}
     const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
     wingsBack(c,p,p.x,p.y+bob,sec,calm);
-    c.drawImage(sp,p.x-(p.hw||55)*AV,p.y-150*AV+bob,2*(p.hw||55)*AV,160*AV);wingsFront(c,p,p.x,p.y+bob,sec,calm);
+    putFig(c,p,sp,p.x,p.y+bob);wingsFront(c,p,p.x,p.y+bob,sec,calm);
     if(p.pt)drawPet(c,p,ct?.journey?.pets);
   }
   const h=S.hap;

@@ -21,7 +21,7 @@
  * and roofs to the tap, the door or the keys' step, kept inside the town (town-place.js airRoute); Hạ cánh over a shop
  * walks them down to the nearest street point, and the rest of the way goes on over the streets (groundRoute). */
 import {plan,nearest,walkable,airRoute,groundRoute,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
-import {figure,paintPlayer,CANVAS,lookOf,myPairs,wingOfState} from './look.js';
+import {figure,figBounds,paintPlayer,CANVAS,lookOf,myPairs,wingOfState} from './look.js';
 import {drawWings,drawMotes,wingBitmap,flapStep,wingScale,flyMotion,flyShadow,FLY_WING,FLY_LEAN,CLASSIC_WING,WING_BOX} from './wings-art.js';   // 🪽 Bay
 import {refURL,refBox} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
 import {t as tr,language} from './i18n.js';
@@ -469,12 +469,13 @@ function backdrop(){
 }
 /** The player as one small bitmap, made again only when the look or the zoom changes. */
 function sprite(){
-  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S()),myPairs(),wingOfState(S())])+(W.fly?'|fly':'');   // 📱 the phone in hand · 👶 the baby in your arms · 🤝 the pairs worn · 🪽 the wings (flying: drawn apart)
+  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color,BB.wire(S()),S().journey?.fish?.wear||null,myPairs(),wingOfState(S())])+(W.fly?'|fly':'');   // 📱 the phone in hand · 👶 the baby in your arms · 🤝 the pairs worn · 🪽 the wings (flying: drawn apart) · 🎣 the fish carried
   if(W.sprite&&W.spriteKey===key)return W.sprite;
-  const wide=wingOfState(S())&&!W.fly,cv=W.sprite||document.createElement('canvas'),w=Math.ceil((wide?250:110)*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;   // 🪽 room for the larger pair
-  const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,w/2,h-12*sc);
-  try{const F=BB.withBaby(figure(S()),S());if(W.fly&&F?.L?.wg){const {wg:_,...L}=F.L;F.L=L;}paintPlayer(c,F,CANVAS);}catch{/* look not ready */}
-  W.sprite=cv;W.spriteKey=key;W.spriteFoot=[w/2,h-12*sc];return cv;
+  let F=null;try{F=BB.withBaby(figure(S()),S());if(W.fly&&F?.L?.wg){const {wg:_,...L}=F.L;F.L=L;}}catch{/* look not ready */}
+  const [l,t,r,b]=figBounds(F,[-55,-158,55,12]),cv=W.sprite||document.createElement('canvas'),w=Math.ceil((r-l)*sc),h=Math.ceil((b-t)*sc);cv.width=w;cv.height=h;   // 🪽 🎣 room for the larger pair, a big fish
+  const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,-l*sc,-t*sc);
+  try{if(F)paintPlayer(c,F,CANVAS);}catch{/* look not ready */}
+  W.sprite=cv;W.spriteKey=key;W.spriteFoot=[-l*sc,-t*sc];return cv;
 }
 function draw(){
   const c=W.c;if(!c||!W.cw||!W.me||!W.pl)return;

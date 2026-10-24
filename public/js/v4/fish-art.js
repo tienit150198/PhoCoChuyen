@@ -249,8 +249,53 @@ export function drawFish(ctx,sp,x,y,len,{angle=0,flip=false,alpha=1,glow=true,si
 }
 function hexA(hex,a){const m=/^#?([0-9a-f]{6})$/i.exec(String(hex||''));if(!m)return `rgba(220,220,220,${a})`;const n=parseInt(m[1],16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;}
 
-/** The size a carried fish shows at on the walk maps (px of a ~32 px tall character): rarer = bigger. */
+/** The size a carried fish shows at on the walk maps (px of a ~32 px tall character): rarer = bigger. (Before 2.6.5.2;
+ * kept for an older caller: the drawings now go by weight, fishSpan.) */
 export function carrySize(r,kg){return Math.round(Math.min(34,10+Number(r||0)*3+Math.log10(1+Number(kg||0))*3));}
+
+/* 🐋 Owner 25/10 "cá to thì nhìn to thật, chứ k phải nhìn bé tí nhé": a fish is drawn as long as its weight says, next to
+ * the person holding it. PERSON: the character's height in look units (v4/look.js paintPlayer, ~1,7 m). */
+export const PERSON=125,PERSON_M=1.7,SPAN_MIN=.12,SPAN_MAX=2.6;
+/** How long a fish of `kg` looks, as a share of a person's height: about the cube root of the weight, as real fish go
+ * (100 g ≈ .12, a palm; 2 kg ≈ .32, a forearm; 10 kg ≈ .54; 50 kg ≈ .92; 300 kg ≈ 1.67, taller than the fisher), then
+ * slower (a log) past 1.6 so a 25-tonne monster stays on screen: never over SPAN_MAX, never under SPAN_MIN. */
+export function fishSpan(kg){
+  const k=Math.max(0,Number(kg)||0),c=.25*Math.cbrt(k),s=c<=1.6?c:1.6+.6*Math.log(c/1.6);
+  return Math.round(Math.min(SPAN_MAX,Math.max(SPAN_MIN,s))*1000)/1000;
+}
+/** Its length in metres, about ("~2,8 m"): what the 📏 badges say. */
+export const fishMeters=kg=>fishSpan(kg)*PERSON_M;
+export function fmtLen(kg){const m=fishMeters(kg);return m<1?`~${Math.max(5,Math.round(m*100/5)*5)} cm`:`~${String(+m.toFixed(1)).replace('.',',')} m`;}
+/** How a fisher holds a fish of `span`: 'hand' (across the chest), 'arms' (hugged in both arms), 'shoulder' (over the
+ * shoulder, across the back), 'drag' (too big to lift: lying on the ground behind, pulled by a rope). */
+export const holdOf=span=>span<.5?'hand':span<1.05?'arms':span<1.6?'shoulder':'drag';
+/** Where a carried fish of `kg` goes on the classic character (look units, feet at 0, 0; v4/look.js paintPlayer):
+ * {pose, len, x, y, angle, flip, back (drawn behind the body), hands [[x, y] …] (the hands on it), arm (a raised
+ * sleeve's hand, or null), rope ([from, to] or null)}. */
+export function holdGeom(kg){
+  const span=fishSpan(kg),pose=holdOf(span),len=Math.round(span*PERSON*10)/10;
+  if(pose==='hand'||pose==='arms'){const y=pose==='hand'?-36:-40,h=Math.max(13,len*.29);
+    return {pose,len,x:0,y,angle:-.08,flip:false,back:false,hands:[[-h,y+3],[h,y+1]],arm:null,rope:null};}
+  if(pose==='shoulder'){const a=-.62,x=-4,y=-70,s=34;   // the head up past the right shoulder, the tail down the back
+    const hand=[Math.round((x+Math.cos(a)*s)*10)/10,Math.round((y+Math.sin(a)*s)*10)/10];
+    return {pose,len,x,y,angle:a,flip:false,back:true,hands:[[-25,-36]],arm:hand,rope:null};}
+  const y=-Math.round(len*.12)-3,snout=-16,x=Math.round((snout-len*.4)*10)/10;   // its snout just behind the legs
+  return {pose,len,x,y,angle:.03,flip:false,back:true,hands:[[-25,-38],[25,-36]],arm:null,rope:[[-25,-38],[snout,y+2]]};
+}
+/** The box a fish drawn `len` long at (x, y) turned `angle` covers (its tail, fins and glow too): [l, t, r, b]. */
+export function fishBox(x,y,len,angle=0){
+  const hw=len*.56,hh=len*.3,c=Math.abs(Math.cos(angle)),s=Math.abs(Math.sin(angle)),W=hw*c+hh*s,H=hw*s+hh*c;
+  return [x-W,y-H,x+W,y+H];
+}
+/** 📏 The fish beside a person, to scale (the catch card, Sổ cá's detail): a small SVG `h` px tall, as wide as needed. */
+export function scaleSvg(sp,kg,{h=46,title=''}={}){
+  const span=fishSpan(kg),P=h-6,fl=Math.max(8,span*P),fw=fl*1.1,fh=fw/2,w=Math.ceil(26+8+fw+4),y=h-2;
+  const fish=fishSvg(sp,{w:fw,h:fh,glow:false}).replace('<svg ',`<svg x="${F(34)}" y="${F(y-fh)}" `);
+  const man=`<g fill="#5b6b7a"><circle cx="13" cy="${F(y-P+P*.13)}" r="${F(P*.13)}"/><rect x="${F(13-P*.12)}" y="${F(y-P*.72)}" width="${F(P*.24)}" height="${F(P*.42)}" rx="${F(P*.06)}"/><rect x="${F(13-P*.1)}" y="${F(y-P*.32)}" width="${F(P*.08)}" height="${F(P*.32)}"/><rect x="${F(13+P*.02)}" y="${F(y-P*.32)}" width="${F(P*.08)}" height="${F(P*.32)}"/></g>`;
+  return `<svg class="fish-scale" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${String(title||'').replace(/"/g,'')}"><line x1="0" y1="${F(y+.5)}" x2="${w}" y2="${F(y+.5)}" stroke="#9aa7b0" stroke-width="1"/>${man}${fish}</svg>`;
+}
+/** The box of a carried fish of `kg` on the classic character (holdGeom), [l, t, r, b]. */
+export function holdBox(kg){const g=holdGeom(kg);return fishBox(g.x,g.y,g.len,g.angle);}
 
 /** "1,2 kg" / "350 g" / "2,5 tấn" (game/fishing.py fmt_kg). */
 export function fmtKg(g){

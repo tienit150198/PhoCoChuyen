@@ -8,7 +8,7 @@
  * while the next level is built, its raw sand bank with stakes, scaffolding and a crane (L.site).
  * 🏯 20/10 (game/bang_extra.py): the hall in a house style (B.hall, public/js/house-art.js) and the decorations
  * (B.decor at L.decorAt), drawn with the same models as the new interface through houseView(). */
-import {figureOf,paintPlayer,CANVAS} from './look.js';
+import {figureOf,figCanvas} from './look.js';
 import {inPoly,band as bandOf,gatePosts,screenOf} from '../bang-island-layout.js';
 import {HOUSES,paintHouse,houseTop,DECOR,paintDecor} from '../house-art.js';
 
@@ -246,19 +246,18 @@ export function createBangWalkRenderer(canvas,L,bang){
   function figure(p){
     const key=JSON.stringify([p.look,p.gender]),px=Math.max(.1,cam.fs*dpr),size=Math.round(px*100);let hit=figures.get(key);
     if(!hit||hit.size!==size){
-      const cv=document.createElement('canvas');cv.width=Math.ceil(FIG_W*px);cv.height=Math.ceil(FIG_H*px);
-      const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);
-      try{paintPlayer(q,figureOf(p.look||{},p.gender==='male'||p.gender==='female'?p.gender:'none'),CANVAS);}catch{/* an unknown look draws nothing */}
-      hit={cv,size};figures.set(key,hit);if(figures.size>60)figures.delete(figures.keys().next().value);
+      let b=null;try{b=figCanvas(figureOf(p.look||{},p.gender==='male'||p.gender==='female'?p.gender:'none'),px);}catch{/* an unknown look draws nothing */}   // 🪽 🎣 grown for wings, a big fish
+      if(!b){const cv=document.createElement('canvas');cv.width=Math.ceil(FIG_W*px);cv.height=Math.ceil(FIG_H*px);b={cv,ox:55,oy:150,w:FIG_W,h:FIG_H};}
+      hit={...b,size};figures.set(key,hit);if(figures.size>60)figures.delete(figures.keys().next().value);
     }
-    return hit.cv;
+    return hit;
   }
   function person(p,t){
     if(p.hidden)return;
     const [a,b]=P(p.x,p.y),fs=cam.fs,bob=p.walking?Math.abs(Math.sin(t/110))*3:0,flip=Boolean(p.left),sit=p.pose==='sit';
     ctx.save();ctx.translate(a,b-bob);if(flip)ctx.scale(-1,1);if(p.pose==='bow')ctx.rotate(.14);
     if(sit){ctx.beginPath();ctx.rect(-60*fs,-160*fs,120*fs,130*fs);ctx.clip();ctx.translate(0,14*fs);}
-    ctx.drawImage(figure(p),-55*fs,-150*fs,FIG_W*fs,FIG_H*fs);ctx.restore();
+    {const b=figure(p);ctx.drawImage(b.cv,-b.ox*fs,-b.oy*fs,b.w*fs,b.h*fs);}ctx.restore();
   }
   function resize(){
     const r=canvas.getBoundingClientRect();dpr=Math.min(2,globalThis.devicePixelRatio||1);w=Math.max(1,r.width);h=Math.max(1,r.height);

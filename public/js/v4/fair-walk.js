@@ -16,7 +16,7 @@
  * (./ride.js), like in the town: faster, parked beside a stall while they play it, hopped back on for the next walk;
  * the "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it. The others see it: the crowd's walks carry `r`. */
 import {VIEW,plan,route,nearestFree,back as paintBack,props,marks,STALLS} from '../scenes/fair-place.js';
-import {figure,figureOf,paintPlayer,CANVAS,lookOf} from './look.js';
+import {figure,figureOf,figCanvas,lookOf} from './look.js';
 import {t as tr} from './i18n.js';
 import {crowd} from './fair-crowd.js';
 import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,topOf,wire,spouse as spouseOf,loadSpouse} from './ride.js';
@@ -349,11 +349,10 @@ export function setup(ctx){
       const me=myFig(),px=Math.ceil(Math.max(.1,W.dpr*W.k*s)*8)/8,key=`${me.fk}|${px}`;
       if(W.avatar?.key!==key){
         const A=W.avatars?.fk===me.fk?W.avatars:(W.avatars={fk:me.fk,at:new Map()});let cv=A.at.get(px);
-        if(!cv){cv=document.createElement('canvas');cv.width=Math.ceil(110*px);cv.height=Math.ceil(160*px);
-          const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);paintPlayer(q,me.F,CANVAS);A.at.set(px,cv);if(A.at.size>4)A.at.delete(A.at.keys().next().value);}
+        if(!cv){cv=figCanvas(me.F,px);A.at.set(px,cv);if(A.at.size>4)A.at.delete(A.at.keys().next().value);}   // 🪽 🎣 the box grows for wings and a big fish
         W.avatar={key,cv};
       }
-      c.drawImage(W.avatar.cv,-55,-150,110,160);
+      const b=W.avatar.cv;if(b)c.drawImage(b.cv,-b.ox,-b.oy,b.w,b.h);
     }catch{/* look not ready */}
     c.restore();
   }

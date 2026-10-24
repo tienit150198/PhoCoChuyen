@@ -1,6 +1,6 @@
 /** Reference-matched chibi atlas: four views × idle/two walking poses, cached by saved wardrobe. */
 import {defaultLook,art,figureOf,paintPlayer,paintTop,paintAcc,paintPairs,cleanPairs,cleanWing,cleanFish,CANVAS,topColour,hairColour} from '../v4/look.js';
-import {drawFish,carrySize} from '../v4/fish-art.js';
+import {drawFish,fishSpan} from '../v4/fish-art.js';
 import {drawWings,wingSparkles,wingBitmap,wingScale,drawRays,LIGHT_Y,cleanWing as wingOf} from '../v4/wings-art.js';
 
 const WIDTH=120,HEIGHT=160,FOOT=156;
@@ -213,12 +213,16 @@ function paintStampWings(c,o,[tx,ty]){
   if(back){q.clearRect(0,0,WIDTH,HEIGHT);paint(q,{aura:false});fade();c.drawImage(layer,0,0);}   // seen from the back: over it
   wingSparkles(c,CANVAS,o.look.wg,x,y,{s:opts.s});
 }
-/** 🎣 The carried fish held across the chibi's belly, facing the way it walks (rarer and heavier = longer); from the
- * back (nw, ne) it shows past both sides of the body. */
+/** 🎣 The carried fish held across the chibi's belly, facing the way it walks, as long as its weight says (fish-art.js
+ * fishSpan × the chibi's ~150 px: owner 25/10 "cá to thì nhìn to thật"); one longer than the stamp is wide is held
+ * slanted, up to 170 px corner to corner (bigger than the chibi). From the back (nw, ne) it shows past both sides. */
+export const stampFishLen=kg=>Math.round(Math.min(170,Math.max(24,fishSpan(kg)*150)));
 function paintStampFish(c,o,[tx,ty],[,hy]){
-  const fh=o.look.fh,len=Math.min(WIDTH-14,carrySize(fh.r,fh.kg)*3.1),y=ty+(hy-ty)*.5,left=o.direction==='sw'||o.direction==='nw';
-  drawFish(c,{...fh,id:fh.sp},tx,y,len,{flip:left,angle:left?.2:-.2});
-  const hand=art(o.look,'skin').c;c.fillStyle=hand;for(const dx of [-len*.27,len*.3]){c.beginPath();c.arc(tx+(left?-dx:dx),y+2-dx*.2,4,0,Math.PI*2);c.fill();}
+  const fh=o.look.fh,len=stampFishLen(fh.kg),y=ty+(hy-ty)*.5,left=o.direction==='sw'||o.direction==='nw',fit=WIDTH-14;
+  const tilt=len<=fit?.2:Math.min(1.05,Math.acos(fit/len)+.05),a=left?tilt:-tilt;
+  drawFish(c,{...fh,id:fh.sp},tx,y,len,{flip:left,angle:a});
+  const hand=art(o.look,'skin').c;c.fillStyle=hand;
+  for(const d of [-Math.min(30,len*.27),Math.min(32,len*.3)]){const dx=(left?-d:d)*Math.cos(a),dy=(left?-d:d)*Math.sin(a);c.beginPath();c.arc(tx+dx,y+2+dy,4,0,Math.PI*2);c.fill();}
 }
 /** Feet at (60,160). onReady requests one texture refresh after the atlas finishes loading. */
 export function getCharacterStamp(options={}){
