@@ -297,6 +297,30 @@ def _data(c: dict) -> dict:
     return d
 
 
+def _dec(n: int, places: int) -> str:
+    """n / 10**places the Vietnamese way, no trailing zeros: (1812, 1) → '181,2', (175764, 3) → '175,764'."""
+    whole, part = divmod(n, 10 ** places)
+    return f'{whole:,}'.replace(',', '.') + (',' + f'{part:0{places}d}'.rstrip('0') if part else '')
+
+
+def _how(t: dict, st: dict) -> tuple | None:
+    """#525 A wrong money step: (the way with this slip's numbers, the whole working down to the answer)."""
+    n, key = t['needs'], t['_key']
+    phan = key.get('can.phan')
+    if st['id'] == 'tien.vang' and phan is not None:
+        sell = n['sell']
+        return (f'Tính lại: {phan} phân × {sell} ÷ 10, bỏ phần lẻ.',
+                f'{phan} phân × {sell} ÷ 10 = {_dec(phan * sell, 1)} → bỏ phần lẻ: {key["tien.vang"]} xu.')
+    if st['id'] == 'tien.tra' and phan is not None:
+        buy = _row(t['day'], n['tuoi_key'])['buy']
+        ded = 0 if n['own'] else C.DEDUCT_OTHER
+        why = f'trừ hao {ded}% (hàng tiệm khác hoặc không hóa đơn)' if ded else 'không trừ hao (hàng tiệm mình còn hóa đơn)'
+        cut = f' → trừ hao {ded}%: {_dec(phan * buy, 1)} × {100 - ded}% = {_dec(phan * buy * (100 - ded), 3)}' if ded else ''
+        return (f'Tính lại: {phan} phân × {buy} ÷ 10, {why}, rồi mới bỏ phần lẻ.',
+                f'{phan} phân × {buy} ÷ 10 = {_dec(phan * buy, 1)}{cut} → bỏ phần lẻ: {key["tien.tra"]} xu.')
+    return None
+
+
 def _quality(wrong: int) -> int:
     return sk.quality(wrong, C.WRONG_COST, C.QUALITY_FLOOR)
 
@@ -363,7 +387,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     if t['kind'] == 'ban' and t['at'] == 0 and p.get('step') == 'khay.chon' and p.get('value') == t['_key']['khay.chon']:
         kit.need(kit.stock(c, n['piece']) > 0, f'Trong tủ hết {n["piece_name"].lower()}. Nhập thêm ở Kho, hoặc bấm “Hết hàng” mời khách ghé lại.',
                  'out_of_stock')
-    correct, message, finished = sk.work(t, p, _quality, 'Cô Ba Ngọc', LINES, _severity)
+    correct, message, finished = sk.work(t, p, _quality, 'Cô Ba Ngọc', LINES, _severity, _how)
     if t['kind'] == 'ban' and correct and t['at'] == 1 and not t['held']:   # the piece leaves the case: its cost goes on the slip
         t['cogs'] = kit.take(c, n['piece'])
         t['held'] = True
@@ -512,6 +536,7 @@ def public_data(c: dict) -> dict:
 def content() -> dict:
     return dict(
         rules=C.RULES,
+        deduct=C.DEDUCT_OTHER,   # % hao off a buy-back from another shop or without the invoice (the money step shows it)
         pieces=[dict(id=k, name=x['name'], emoji=x['emoji'], tuoi=C.TUOI[x['tuoi']][1], phan=x['phan'], cong=x['cong']) for k, x in C.PIECES.items()],
         tuoi={k: dict(label=v[1], street=v[2]) for k, v in C.TUOI.items()},
         intro=dict(title='Một ngày ở tiệm vàng Ngọc Mây',

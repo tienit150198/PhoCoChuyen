@@ -10,6 +10,7 @@
 .slip progress{display:block;width:100%;height:7px;accent-color:var(--sk-accent);margin-bottom:14px}
 .slip .sl-step h3{margin:0 0 8px}
 .slip .sl-evidence{padding:12px;border-left:3px solid var(--sk-accent);background:var(--sk-surface-2,#f1f3f7);line-height:1.55;margin:0}
+.slip .sl-facts{margin:8px 0 0;padding:8px 12px;border-radius:8px;border:1px dashed var(--sk-accent);line-height:1.5;font-weight:600;font-variant-numeric:tabular-nums}
 .slip .sl-options,.slip .sl-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
 .slip .sl-options button,.slip .sl-picks button{min-height:48px;white-space:normal;text-align:left;padding:12px;line-height:1.4}
 .slip .sl-options button{justify-content:flex-start}

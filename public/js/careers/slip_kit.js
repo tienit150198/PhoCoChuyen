@@ -49,12 +49,15 @@ export function stepBody(st,x,cmd,payload,key){
   return amountBox(x,`sl-${key}`,0,{min:0,max:100000,label:'Con số ghi vào phiếu',send:'Ghi vào phiếu',cmd,payload:{...payload,step:st.id},field:'value',unit:st.unit||''});
 }
 
-/** The open step of a slip: count, progress, what is in front of you and the answer area. */
-export function stepCard(x,st,{at,total,quality,cmd,payload,key,label='phiếu'}){
+/** The open step of a slip: count, progress, what is in front of you and the answer area. `facts`: plain text shown under
+ * the question (the numbers it works from, e.g. the weight weighed one step earlier); `said`: plain text only a screen
+ * reader reads there (what a chart beside the slip shows, so the step is answerable without seeing it). */
+export function stepCard(x,st,{at,total,quality,cmd,payload,key,label='phiếu',facts='',said=''}){
   return `<section class="card sl-step" aria-labelledby="sl-step-title-${x.esc(key)}">
     <p class="sl-step-count" role="status">Bước ${at+1}/${total}${quality===undefined?'':` · chất lượng ${x.esc(quality)}%`}</p>
     <progress value="${at}" max="${total}" aria-label="Tiến trình ${x.esc(label)}"></progress>
     <h3 id="sl-step-title-${x.esc(key)}">${x.esc(st.title)}</h3><p class="sl-evidence">${x.esc(st.evidence)}</p>
+    ${facts?`<p class="sl-facts"><span aria-hidden="true">📋</span> ${x.esc(facts)}</p>`:''}${said?`<p class="sr-only">${x.esc(said)}</p>`:''}
     ${stepBody(st,x,cmd,payload,key)}</section>`;
 }
 

@@ -208,6 +208,41 @@ class Work(unittest.TestCase):
         self.assertEqual(data(j)['stats']['bought'], 1)
         validate_state(j.state)
 
+    def test_a_wrong_buy_back_payout_shows_the_hao_and_then_the_working(self):
+        """#525: '181 đúng rồi mà 175 là sao': 6 phân × 302 ÷ 10 = 181,2, minus the 3 % hao of another shop's gold → 175.
+        The first slip names the weight and the hao, the second shows every step down to the answer, which matches the
+        notebook (deduct, then drop the fraction) and the content() rate the slip card shows."""
+        j = shop('mua', pred=lambda n: 'tuoi_key' in n and not n['own'])
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        while True:
+            clear_desk(j, 'vg_', MC.DESK)
+            t = j.get(tid)
+            st = t['needs']['steps'][t['at']]
+            if st['id'] == 'tien.tra':
+                break
+            j.act('vg_step', task=tid, step=st['id'], value=t['_key'][st['id']])
+        phan, buy = t['_key']['can.phan'], M._row(t['day'], t['needs']['tuoi_key'])['buy']
+        self.assertEqual(t['work']['can.phan'], phan, 'the client reads the weight it shows from the answered step')
+        self.assertEqual(M.content()['deduct'], MC.DEDUCT_OTHER)
+        self.assertIn(f'trừ {MC.DEDUCT_OTHER}%', ' '.join(MC.RULES))
+        answer = t['_key']['tien.tra']
+        self.assertEqual(answer, int(phan * buy / 10 * (100 - MC.DEDUCT_OTHER) / 100 + 1e-9))
+        no_hao = phan * buy // 10
+        self.assertNotEqual(no_hao, answer)
+        first = j.act('vg_step', task=tid, step='tien.tra', value=no_hao)
+        self.assertFalse(first['correct'])
+        self.assertIn(f'{phan} phân × {buy} ÷ 10, trừ hao {MC.DEDUCT_OTHER}%', first['message'])
+        self.assertNotIn(f'{answer} xu', first['message'])
+        second = j.act('vg_step', task=tid, step='tien.tra', value=no_hao)
+        self.assertIn(f'Cô Ba Ngọc chỉ: {phan} phân × {buy} ÷ 10 = {M._dec(phan * buy, 1)} → trừ hao {MC.DEDUCT_OTHER}%', second['message'])
+        self.assertTrue(second['message'].endswith(f'bỏ phần lẻ: {answer} xu.'))
+        self.assertEqual(M._dec(1812, 1), '181,2')
+        self.assertEqual(M._dec(175764, 3), '175,764')
+        self.assertEqual(M._dec(1750000, 3), '1.750')
+        j.act('vg_step', task=tid, step='tien.tra', value=answer)
+        validate_state(j.state)
+
     def test_a_fake_or_doubtful_seller_is_refused_without_money(self):
         j = shop('mua', day=10, pred=lambda n: 'tuoi_key' not in n)
         before = j.c['money']

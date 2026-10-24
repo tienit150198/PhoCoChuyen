@@ -93,9 +93,11 @@ def quality(wrong: int, cost: int, floor: int) -> int:
 
 
 # ---------------------------------------------------------------- a slip worked step by step (moto, vet)
-def work(t: dict, p: dict, quality_of, who: str, lines: int, sev=None) -> tuple:
+def work(t: dict, p: dict, quality_of, who: str, lines: int, sev=None, how=None) -> tuple:
     """Grade the payload's answer to the slip's open step: (correct, message, finished). A wrong answer stays open, is
-    logged once per step (errors, a review slip of severity sev(step id)) and lowers t['quality']."""
+    logged once per step (errors, a review slip of severity sev(step id)) and lowers t['quality'].
+    `how(t, step)`: None, or (hint, worked) for a worked-out number: the hint (the way, with the slip's own numbers) on
+    the first slip, the whole working down to the answer from kit.REVEAL_AFTER slips on (said by `who`)."""
     from .. import consequences as cq
     steps, key = t['needs']['steps'], t['_key']
     kit.need(t['at'] < len(steps), 'Phiếu này đã xong.')
@@ -111,7 +113,12 @@ def work(t: dict, p: dict, quality_of, who: str, lines: int, sev=None) -> tuple:
         t['mistakes'] += 1
         t['quality'] = quality_of(t['wrong'])
         again = 'Tính lại cho kỹ nhé.' if st['type'] == 'number' else 'Xem lại sổ tay rồi làm lại bước này.'
-        message = f'Chưa đúng: {st["title"].lower()}. {kit.step_help(t, st, key[st["id"]], "", again, who)}'
+        hint, worked = (how(t, st) if how else None) or ('', '')
+        if worked and kit.tries_on_step(t.get('lines')) + 1 >= kit.REVEAL_AFTER:
+            say = f'{who} chỉ: {worked}'
+        else:
+            say = kit.step_help(t, st, key[st['id']], hint, again, who)
+        message = f'Chưa đúng: {st["title"].lower()}. {say}'
         t['lines'] = (t['lines'] + [message[:480]])[-lines:]
         return False, message, False
     t['work'][st['id']] = v

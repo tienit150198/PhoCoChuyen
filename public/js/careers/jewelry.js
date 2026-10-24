@@ -40,11 +40,22 @@ function slipCard(t,x){
     stepsArt(t,{kind:t.kind==='open'?'cash':'tray',icons:TOOL,head:emoji,label}))}</article>`;
 }
 
+/** #525 The money steps work from the weight weighed one step earlier and, for a buy-back, the notebook's hao: both are
+ * written on the slip, not left to memory and the folded notebook. */
+function facts(t,st,x){
+  const phan=t.work?.['can.phan'],n=t.needs||{};
+  if(!Number.isInteger(phan))return '';
+  if(st.id==='tien.vang')return `Món nặng ${phan} phân (số vừa cân).`;
+  if(st.id!=='tien.tra')return '';
+  const hao=n.own?'Hàng tiệm mình, còn hóa đơn: không trừ hao.':`Hàng tiệm khác hoặc không hóa đơn: trừ hao ${x.cc?.deduct??3}%.`;
+  return `Món nặng ${phan} phân vàng (số vừa cân${n.stone?', đã trừ đá':''}). ${hao}`;
+}
+
 function slip(t,x){
   const st=current(t);
   if(!st)return `<p class="sl-finished" role="status">✓ Xong phiếu · chất lượng ${x.esc(t.quality)}%${t.paid?` · ${x.fmt(t.paid)} xu`:''}.</p>`;
   const out=t.kind==='ban'&&t.at===0?`<div class="sl-row">${x.cmd('Hết hàng, hẹn khách','vg_out',{task:t.id},'ghost small')}${kho}</div>`:'';
-  return stepCard(x,st,{at:t.at,total:stepsOf(t).length,quality:t.quality??100,cmd:'vg_step',payload:{task:t.id},key:`${t.id}-${st.id}`})+out;
+  return stepCard(x,st,{at:t.at,total:stepsOf(t).length,quality:t.quality??100,cmd:'vg_step',payload:{task:t.id},key:`${t.id}-${st.id}`,facts:facts(t,st,x)})+out;
 }
 
 export default {
