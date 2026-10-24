@@ -1,3 +1,11 @@
+# 2.6.5.2 — 24/10/2026
+
+Hotfix theo góp ý người chơi (#524, #525, #526). Không đổi schema, không có "Có gì mới".
+
+- 🛎️ Phố dịch vụ (#526): bấm "Đồng ý" một cuộc trả giá đơn ở chỗ làm không còn báo "Dịch vụ này hiện chưa sẵn sàng." Phiếu khách của tiệm đổi ngay khi tiệm phục vụ thêm khách / đủ việc / đóng ca, nên cuộc trả giá nay chốt vào phiếu hiện tại cùng loại còn hợp giá; không còn phiếu nào thì báo rõ cần làm gì (mã `offer_gone`). Quầy không đổi món.
+- 💍 Tiệm vàng (#525): bước tính tiền trả khách ghi luôn số phân và mức trừ hao 3 %; trả lời sai thì gợi ý số trên phiếu, lần hai Cô Ba Ngọc chỉ từng bước (181,2 × 97 % = 175,764 → 175).
+- 🔧 Xưởng độ xe (#524): biểu đồ dyno có bản chữ cho trình đọc màn hình (công suất đỉnh trước/sau kèm vòng tua, AFR cao nhất so với 13,5) và nút "📋 Đọc số liệu" hiện bảng số từng mốc cho mọi người.
+
 # 2.6.5.1 — 24/10/2026
 
 Hotfix (chủ game 24/10 "game mở ra k focus theo nhân vật gì cả, di chuyển và mở game ra nhân vật đi đâu ấy"). Không đổi schema, không có "Có gì mới".
