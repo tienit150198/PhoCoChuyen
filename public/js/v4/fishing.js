@@ -111,7 +111,7 @@ function dialog(){
       <canvas class="fs-cv" aria-label="Mặt hồ"></canvas>
       <div class="fs-hud"><button type="button" class="fs-chip fs-gear" data-fs="shop"></button><button type="button" class="fs-chip fs-bagb" data-fs="market"></button></div>
       <div class="fs-say" role="status" aria-live="polite" hidden></div>
-      <div class="fs-bite" aria-hidden="true" hidden>❗ Giật!</div>
+      <div class="fs-bite" aria-hidden="true" hidden>❗ Giật!</div><p class="sr-only fs-sr" role="status" aria-live="assertive"></p>
       <div class="fs-meter" hidden><i></i></div><span class="fs-pow" hidden></span>
       <div class="fs-dist" aria-live="polite" hidden><b></b><small></small></div>
       <div class="fs-ten" hidden><div class="fs-ten-bar"><b></b><i></i></div><div class="fs-ten-row"><span>🐟</span><span class="fs-prog"><i></i></span><span>🧍</span></div></div>
@@ -124,7 +124,7 @@ function dialog(){
       <ol class="fs-feed-all" hidden></ol>
       <form class="fs-sayrow" hidden><input type="text" maxlength="120" enterkeyhint="send" placeholder="Nói với người câu gần đây…" aria-label="Lời nói"><button type="submit" class="fs-btn primary small">Nói</button><button type="button" class="fs-btn small" data-fs="sayClose" aria-label="Đóng">✕</button></form>
       <div class="fs-banner" role="status" aria-live="polite" hidden></div>
-      <button type="button" class="fs-pan l" data-fs="pan" data-dir="-1" hidden></button><button type="button" class="fs-pan r" data-fs="pan" data-dir="1" hidden></button>
+      <button type="button" class="fs-pan l" data-fs="pan" data-dir="-1" aria-label="Xem bên trái hồ" hidden></button><button type="button" class="fs-pan r" data-fs="pan" data-dir="1" aria-label="Xem bên phải hồ" hidden></button>
       <div class="fs-scroll" role="scrollbar" aria-orientation="horizontal" aria-label="Xem dọc bờ hồ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0" hidden><canvas class="fs-sdots" aria-hidden="true"></canvas><i class="fs-sthumb"></i><b class="fs-sme" aria-hidden="true"></b></div>
       <button type="button" class="fs-home" data-fs="home" hidden>📍 Về chỗ tôi</button>
       <div class="fs-pcard" hidden></div>
@@ -332,7 +332,7 @@ function paintFeed(){
   const L=F.lake,on=Boolean(L?.online),bar=d.querySelector('.fs-feed');bar.hidden=!on;
   if(!on){d.querySelector('.fs-feed-all').hidden=true;d.querySelector('.fs-sayrow').hidden=true;return;}
   d.querySelector('.fs-feed-n').textContent=`👥 ${fmt(L.count)}`;
-  d.querySelector('.fs-feed-n').title=`${fmt(L.count)} người đang câu ở đây`;
+  d.querySelector('.fs-feed-n').title=`${fmt(L.count)} người đang câu ở đây`;d.querySelector('.fs-feed-n').setAttribute('aria-label',`${fmt(L.count)} người đang câu ở đây`);
   const last=L.feed[L.feed.length-1],line=d.querySelector('.fs-feed-line');
   line.textContent=last?lineOf(last):L.count>1?`${fmt(L.count)} người đang câu ở ${spotOf(F.spot).name}. Ai câu được gì sẽ hiện ở đây!`:'Chưa có ai khác ở đây. Câu con đầu tiên nào!';
   if(L.feed.length!==F.feedN){if(F.feedN>=0&&last){line.classList.remove('new');void line.offsetWidth;line.classList.add('new');}F.feedN=L.feed.length;}
@@ -570,6 +570,7 @@ function biteFx(on){
   const d=F.dlg;if(!d)return;const el=d.querySelector('.fs-bite');
   if(el){el.hidden=!on;el.classList.remove('go');if(on){void el.offsetWidth;el.classList.add('go');}}
   if(on)biteLeft(1);else d.querySelector('.fs-go')?.style.removeProperty('--left');
+  const sr=d.querySelector('.fs-sr');if(sr)sr.textContent=on?'Cá cắn câu! Giật ngay!':'';   // ♿ the big "Giật!" is drawn only: a screen reader hears it
 }
 function biteLeft(left){F.dlg?.querySelector('.fs-go')?.style.setProperty('--left',clamp(left,0,1).toFixed(3));}
 function fleeFx(){const p=F.f?fishXY():bobXY();ring(p[0],p[1],1);ring(p[0]+16,p[1]-4,.6);splashAt(p[0],p[1],6,'#e8f8ff');}
@@ -793,7 +794,8 @@ function paintHud(){
   if(!F.dlg)return;
   const p=P(),rod=myRod(),b=(C()?.baits||[]).find(x=>x.id===p.use),n=b?p.bait?.[b.id]||0:0;
   const gear=F.dlg.querySelector('.fs-gear');gear.textContent=`${rod.emoji} ${rod.name} · ${b?`${b.emoji} ×${fmt(n)}`:'không mồi'}`;
-  const bag=F.dlg.querySelector('.fs-bagb'),cnt=(p.bag||[]).length;bag.textContent=`🧺 ${cnt}/${p.cap||20}`;bag.classList.toggle('full',cnt>=(p.cap||20));
+  gear.setAttribute('aria-label',`${rod.name}, ${b?`${b.name?`mồi ${b.name}`:'mồi'} ×${fmt(n)}`:'không mồi'}. Quầy bán cần`);
+  const bag=F.dlg.querySelector('.fs-bagb'),cnt=(p.bag||[]).length;bag.textContent=`🧺 ${cnt}/${p.cap||20}`;bag.setAttribute('aria-label',`Giỏ cá ${cnt}/${p.cap||20}. Quầy thu mua`);bag.classList.toggle('full',cnt>=(p.cap||20));
   const c=p.cond||{},night=c.night!=null?c.night:isNight();
   F.dlg.querySelector('.fs-sky').textContent=`${night?'🌙':'☀️'}${c.rain?' 🌧️':''}`;
   F.dlg.querySelector('.fs-sky').title=`${night?'Ban đêm':'Ban ngày'}${c.rain?', trời mưa':''}: có loài chỉ cắn câu lúc này`;

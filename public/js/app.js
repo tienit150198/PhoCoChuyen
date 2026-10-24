@@ -377,6 +377,7 @@ function navItems(c){
   if(api.state?.journey?.gender)items.push(['jrAccShop','bag','Cửa hàng',charmsWaiting(api)]);  // 🛍️ Cửa hàng (v4/acc-shop.js): for the character and the pets, its own entry beside the hubs (railHTML); the badge: gifts waiting
   if(api.state?.journey?.gender&&forgeOpen(api.state,api.content))items.push(['jrForge','wrench','Cường hóa']);  // ⚒️ Cường hóa (v4/acc-shop.js forgeView): every ghép / nâng hạng, its own entry too
   if(!newInterface(api.state))items.push(['sharedIsland','map','Ra đảo nhặt rương']);
+  else items.push(['isoPickups','gift','Rương & lì xì']);  // ♿ #428 (isometric-pickups.js): chests and lì xì as a list, "Đi tới và nhặt
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
@@ -451,7 +452,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over)||(x[0]==='townFair'&&fairNow()?.state==='open')||(x[0]==='halloween'&&hwNow()?.state==='open');   // 🎃 in sight while candy is earned
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','fishing','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
+  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','isoPickups','islandOpen','liveWalk','liveWed','liveKara','tileMatch','fishing','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -778,6 +779,7 @@ function renderSheet(preserve=true){
   sheetScroll.watch(dialog);if(!preserve)sheetScroll.reset();
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
+  {const h=box.querySelector('.sheet-head h1,.sheet-head h2')||box.querySelector('h1,h2');if(h){if(!h.id)h.id='sheetTitle';dialog.setAttribute('aria-labelledby',h.id);}else dialog.removeAttribute('aria-labelledby');}   // ♿ the sheet's name for screen readers: its heading (it had none)
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
   applyGuide(dialog);watchHead(dialog);if(iso?.booted())iso.updateIsometricShell(env());
   if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{el.setSelectionRange(selection,selection);}catch{/* not a text input */}}}}

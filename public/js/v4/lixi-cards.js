@@ -77,7 +77,9 @@ export function cardHTML(p,act='data-ch-act="lixi"'){
   const [label,kind]=cardAction(p),open=openNow(p);
   const who=p.name?`<b data-no-translate>${esc(p.name)}</b>`:'<b>Một người hàng xóm</b>';
   const left=open?`Còn ${p.left}/${p.n} bao`:p.status==='expired'?'Đã hết giờ':'Đã giật hết';
-  const btn=kind?`<button type="button" class="lxc-go ${kind}" ${act} data-id="${esc(p.id)}" data-do="${kind}">${esc(label)}</button>`:'';
+  // ♿ #428: the button says whose lì xì it is ("Giật" alone, read out of its card, said nothing)
+  const aria=kind==='grab'?` aria-label="${esc(`Giật lì xì của ${p.name||'một người hàng xóm'}`)}"`:'';
+  const btn=kind?`<button type="button" class="lxc-go ${kind}" ${act} data-id="${esc(p.id)}" data-do="${kind}"${aria}>${esc(label)}</button>`:'';
   return `<div class="lxc${open?' on':''}" role="note"><span class="lxc-env" aria-hidden="true">🧧</span><div class="lxc-t"><div>${who} <span>phát lì xì ${fmt(p.total)} xu</span></div>`+
     `${p.wish?`<q data-no-translate>${esc(p.wish)}</q>`:''}<small>${left}</small></div>${btn}</div>`;
 }

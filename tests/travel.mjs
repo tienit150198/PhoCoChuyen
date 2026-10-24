@@ -36,7 +36,9 @@ assert.match(html,/Còn thiếu/);   // 1,000 xu cannot pay business class today
 assert.match(mainBtn(html),/disabled/);
 html=at('list',{pick:'han_quoc'});
 assert.match(html,/Cần visa Hàn Quốc/);assert.match(html,/data-tv="visa"/);
-assert.match(mainBtn(html),/disabled/);
+// ♿ #519: no visa yet, the main button goes to the visa office (not a dimmed "Đặt vé"), its reason read with it
+assert.match(mainBtn(html),/🛂 Làm visa/);assert.doesNotMatch(mainBtn(html),/disabled/);assert.match(mainBtn(html),/aria-describedby="tv-why"/);
+assert.match(html,/id="tv-why">Cần visa Hàn Quốc/);
 html=at('list',{pick:'thai_lan'});
 assert.match(html,/Miễn visa/);
 
@@ -44,7 +46,7 @@ assert.match(html,/Miễn visa/);
 html=at('booked');
 const b=F.states.booked.travel.book;
 assert.match(html,new RegExp(b.code));assert.match(html,new RegExp(`>${b.seat}<`));
-assert.match(mainBtn(html),/disabled/);assert.match(html,/Còn 2 ngày nữa/);
+assert.match(mainBtn(html),/aria-disabled="true"/);assert.doesNotMatch(mainBtn(html),/ disabled/);assert.match(html,/Còn 2 ngày nữa/);   // ♿ focusable, with its reason
 assert.match(html,new RegExp(`Hủy vé · hoàn ${fmt(b.back)} xu`));
 html=at('today');
 assert.match(mainBtn(html),/Ra sân bay/);assert.doesNotMatch(mainBtn(html),/disabled/);

@@ -58,8 +58,16 @@ try{for(const width of [390,1280]){
   await page.goto(`http://127.0.0.1:${server.address().port}`);
   await dlg.locator('.tv-place').first().waitFor();
   await fits('1-places');
-  await dlg.locator('.tv-place[data-id="da_lat"]').click();
+  // ♿ #519: opened on its heading; a place picked with the keyboard: focus on the place's heading, never on <body>
+  const focused=()=>page.evaluate(()=>{const a=document.activeElement;return {tag:a.tagName,text:a.textContent.trim(),tv:a.dataset?.tv||'',id:a.dataset?.id||''};});
+  assert.equal((await focused()).tag,'H2');
+  for(let i=0;i<30&&(await focused()).id!=='da_lat';i++)await page.keyboard.press('Tab');
+  await page.keyboard.press('Enter');
   await dlg.locator('.tv-days').waitFor();
+  {const f=await focused();assert.equal(f.tag,'H3');assert.match(f.text,/Đà Lạt/);}
+  await dlg.locator('.tv-day[data-n="1"]').focus();await page.keyboard.press('Enter');
+  assert.equal((await focused()).tv,'ahead','a day picked: focus stays on the day');
+  await dlg.locator('.tv-day[data-n="4"]').click();
   assert.match(await main.innerText(),/Đặt vé · 270 xu/);
   await fits('2-place');
   await dlg.locator('.tv-day[data-n="0"]').click();

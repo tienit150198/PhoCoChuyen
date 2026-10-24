@@ -9,12 +9,13 @@ import {withWhy,whyTap} from '../ui-kit.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY,afterTap,qtyVal} from '../qty-input.js';
 import {paint as sheetPaint} from './sheet-paint.js';
+import {keep as keepFocus,home as focusHome,say} from './sheet-focus.js';
 
 const TABS=[['trip','✈️','Du lịch'],['suu','💎','Sưu tập'],['nha','🏰','Dinh thự'],['bay','🛫','Phi cơ & du thuyền'],['tiec','🎉','Mở tiệc'],['hoc','🎓','Khóa học'],['mtq','🎆','Mạnh Thường Quân']];
 export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq',luxFw:'mtq'};   // luxFw: 🎆 straight to the fireworks (the menu, the show's banner)
 const S={dlg:null,env:null,tab:'trip',country:'',cls:'pho_thong',docs:{},iv:null,answers:[],souv:'',set:'',piece:'',estate:'',fly:'',
   pkind:'sinh_nhat',tier:'binh_dan',guests:20,course:'',give:'phao_hoa',size:'nho',slot:0,msg:'me',wish:'',amount:10000,anon:false,
-  board:null,boardAt:0,busy:false,flash:null,listening:false};
+  board:null,boardAt:0,busy:false,flash:null,said:null,listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().lux;
@@ -41,6 +42,7 @@ function dialog(){
     if(e.target===d){d.close();return;}
     const el=e.target.closest('[data-lx]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();if(el.dataset.why){whyTap(el);return;}   // dimmed with a reason (docs/UI_KIT.md): say why, send nothing
+    if(el.getAttribute('aria-disabled')==='true'){if(!S.busy)say(d,main(V()||{})[2]||'');return;}   // ♿ #519: the main button, focusable with its reason
     onClick(el.dataset.lx,el.dataset);
   });
   d.addEventListener('change',e=>{
@@ -64,8 +66,10 @@ export async function openLux(env,tab){
   const d=dialog();
   if(TABS.some(t=>t[0]===tab))S.tab=tab;
   S.flash=null;S.iv=null;
-  if(!d.open){d.showModal();d.scrollTop=0;}
+  const fresh=!d.open;
+  if(fresh){d.showModal();d.scrollTop=0;}
   render();
+  if(fresh)focusHome(d.querySelector('.sd-root'));   // ♿ #519: the screen reader starts on the heading ("Làm visa" from ✈️ Du lịch)
   if(S.tab==='mtq')loadBoard();
 }
 /** 🛂 The visa tab on one country (v4/travel.js: "Làm visa" on a place that needs one). */
@@ -166,7 +170,9 @@ async function onClick(op,data){
     case'country':S.country=data.id;S.iv=null;S.answers=[];S.souv='';render();return;
     case'cls':S.cls=data.id;render();return;
     case'doc':{const set=docsOf(country());set.has(data.id)?set.delete(data.id):set.add(data.id);render();return;}
-    case'answer':{S.answers[S.iv]=Number(data.n);S.iv=S.iv+1<asks(country()).length?S.iv+1:null;render();return;}
+    case'answer':{S.answers[S.iv]=Number(data.n);S.iv=S.iv+1<asks(country()).length?S.iv+1:null;render();
+      // ♿ the next question is read from its start; after the last one, the reader lands on "Nộp hồ sơ"
+      if(S.iv!=null)focusHome(S.dlg.querySelector('.sd-root'));else S.dlg.querySelector('[data-lx="go"]')?.focus({preventScroll:true});return;}
     case'photo':await send('jr_lux_photo',{});return;
     case'insure':await send('jr_lux_insure',{country:country().id});return;
     case'souv':S.souv=S.souv===data.id?'':data.id;render();return;
@@ -190,7 +196,7 @@ async function onClick(op,data){
       if(what==='travel'){const to=tvTo(country().id);S.dlg.close();await (await import('./travel.js')).openTravel(S.env,{to});}
       else if(what==='trip')await send('jr_lux_trip',{country:country().id,cls:S.cls,confirm:true});
       else if(what==='souv')await send('jr_lux_souv',{id:S.souv});
-      else if(what==='iv'){S.iv=0;S.answers=[];render();}
+      else if(what==='iv'){S.iv=0;S.answers=[];render();focusHome(S.dlg.querySelector('.sd-root'));}
       else if(what==='visa'){const c=country(),r=await send('jr_lux_visa',{country:c.id,docs:[...docsOf(c)],answers:asks(c).map((_,i)=>S.answers[i]??0),confirm:true});if(r){S.answers=[];S.iv=null;}}
       else if(what==='buy'){const id=S.tab==='suu'?piece().id:S.tab==='nha'?estate().id:fly().id;await send('jr_lux_buy',{id,confirm:true});}
       else if(what==='sell')await send('jr_lux_sell',{id:piece().id,confirm:true});
@@ -224,24 +230,29 @@ function shot(r){
 /* ---- rendering ---- */
 function render(){
   if(!S.dlg)return;
-  sheetPaint(S.dlg.querySelector('.sd-root'),page(),'.sd-body');   // typing guests / an amount while the wallet moves: kept
+  // typing guests / an amount while the wallet moves: kept; ♿ #519: the tapped button (or the new screen's heading) keeps the reader's place
+  keepFocus(S.dlg,S.dlg.querySelector('.sd-root'),()=>sheetPaint(S.dlg.querySelector('.sd-root'),page(),'.sd-body'));
+  if(S.flash!==S.said){S.said=S.flash;if(S.flash?.text)say(S.dlg,S.flash.text);}
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
-const chip=(op,id,label,on,title='')=>`<button type="button" class="sd-chip${on?' on':''}" data-lx="${op}" data-id="${esc(id)}" aria-pressed="${on}"${title?` aria-label="${esc(title)}" title="${esc(title)}"`:''}>${label}</button>`;
+const chip=(op,id,label,on,title='')=>`<button type="button" class="sd-chip${on?' on':''}" data-lx="${op}" data-id="${esc(id)}" aria-pressed="${on}"${title?` aria-label="${esc(title)}" title="${esc(title)}" aria-description=""`:''}>${label}</button>`;
 const row=(op,id,ico,name,right,on,extra='')=>`<button type="button" class="sd-item${on?' on':''}" data-lx="${op}" data-id="${esc(id)}" aria-pressed="${on}"><span class="sd-ico" aria-hidden="true">${ico}</span><b>${esc(name)}</b><span class="sd-fx">${extra}</span><em>${right}</em></button>`;
-const help=lines=>`<details class="lx-help"><summary aria-label="Hướng dẫn">?</summary><ul>${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></details>`;
+const help=(lines,label='Hướng dẫn')=>`<details class="lx-help"><summary aria-label="${esc(label)}">?</summary><ul>${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></details>`;
 
 function page(){
   const v=V(),c=CAT(),t=TABS.find(x=>x[0]===S.tab)||TABS[0];
-  const head=`<header class="sheet-head sd-head"><span class="sd-logo" aria-hidden="true">${t[1]}</span><div class="grow"><h2 id="lx-title">${esc(t[2])}</h2></div>
+  // ♿ #519: the visa office says so (it shared "Du lịch" with the ✈️ Du lịch sheet it is opened from)
+  const title=S.tab==='trip'&&v?.story&&c&&!visaLeft(country())?'Làm visa':t[2];
+  const head=`<header class="sheet-head sd-head"><span class="sd-logo" aria-hidden="true">${t[1]}</span><div class="grow"><h2 id="lx-title">${esc(title)}</h2></div>
     <span class="sd-wallet" title="Ví">👛 ${fmt(Math.max(0,J().wallet||0))}</span><button class="icon-btn" type="button" data-lx="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   if(!v||!c)return head+`<div class="sheet-body sd-body"><p class="sd-empty">⏳</p></div>`;
   if(!v.story)return head+`<div class="sheet-body sd-body"><p class="sd-empty">Chỉ có trong hành trình.</p></div>`;
-  const tabs=`<nav class="sd-tabs lx-tabs" role="tablist" aria-label="Mua sắm">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" aria-label="${esc(l)}" title="${esc(l)}" class="${S.tab===id?'on':''}" data-lx="tab" data-tab="${id}">${e}</button>`).join('')}</nav>`;
+  const tabs=`<nav class="sd-tabs lx-tabs" role="tablist" aria-label="Mua sắm">${TABS.map(([id,e,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" aria-label="${esc(l)}" title="${esc(l)}" aria-description="" class="${S.tab===id?'on':''}" data-lx="tab" data-tab="${id}">${e}</button>`).join('')}</nav>`;
   const inner={trip,suu,nha,bay,tiec,hoc,mtq}[S.tab](v,c);
-  const [label,,why]=main(v);
-  const bar=`<footer class="sd-bar">${why&&why!=='✓'?`<small class="sd-why">${esc(why)}</small>`:''}<button type="button" class="btn primary big sd-main" data-lx="go"${S.busy||why?' disabled':''}>${esc(label)}</button></footer>`;
-  const flash=`<p class="sd-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
+  const [label,,why]=main(v),line=why&&why!=='✓'?why:'';
+  // ♿ #519: a main button that cannot go yet stays focusable (aria-disabled) and names its reason (aria-describedby)
+  const bar=`<footer class="sd-bar">${line?`<small class="sd-why" id="lx-why">${esc(line)}</small>`:''}<button type="button" class="btn primary big sd-main" data-lx="go"${S.busy||why?' aria-disabled="true"':''}${line?' aria-describedby="lx-why"':''}>${esc(label)}</button></footer>`;
+  const flash=`<p class="sd-flash ${S.flash?.kind||''}">${S.flash?esc(S.flash.text):''}</p>`;   // read out by the dialog's own live region (sheet-focus.js say)
   return head+tabs+`<div class="sheet-body sd-body">${flash}${inner}</div>`+bar;
 }
 
@@ -257,7 +268,7 @@ function trip(v,c){
   }
   if(S.iv!=null&&asks(co).length){
     const q=c.interview[asks(co)[S.iv]];
-    return chips+`<section class="sd-card">${head}<h4>🗣️ ${esc(q.q)}</h4><div class="sd-list">${q.a.map((a,i)=>`<button type="button" class="sd-item" data-lx="answer" data-n="${i}"><b>${esc(a)}</b></button>`).join('')}</div></section>`;
+    return chips+`<section class="sd-card">${head}<h4 data-focus-here tabindex="-1">🗣️ <span class="sr-only">Câu ${S.iv+1}/${asks(co).length}: </span>${esc(q.q)}</h4><div class="sd-list">${q.a.map((a,i)=>`<button type="button" class="sd-item" data-lx="answer" data-n="${i}"><b>${esc(a)}</b></button>`).join('')}</div></section>`;
   }
   const set=docsOf(co),photoOld=!v.photo||day()-v.photo>=c.photo.days;
   const docs=c.docs.map(d=>`<button type="button" class="sd-chip lx-doc${set.has(d.id)?' on':''}" data-lx="doc" data-id="${d.id}" aria-pressed="${set.has(d.id)}">${d.emoji} ${esc(d.name)}</button>`).join('');
@@ -266,7 +277,7 @@ function trip(v,c){
   const rules=help([`Lãnh sự cần: ${co.docs.map(d=>c.docs.find(x=>x.id===d).name).join(', ')}.`,
     `Ảnh thẻ chụp chưa quá ${c.photo.days} ngày.`, `Sao kê: tài khoản ngân hàng có ít nhất ${fmt(co.bank*co.trip)} xu.`,
     `Xác nhận việc: đã đi làm ít nhất ${c.work_days} ngày.`, co.interview?'Phỏng vấn: trả lời thật, có vé khứ hồi.':'',
-    'Thiếu hay sai một giấy là bị trả hồ sơ, phí không hoàn.'].filter(Boolean));
+    'Thiếu hay sai một giấy là bị trả hồ sơ, phí không hoàn.'].filter(Boolean),'Hướng dẫn: giấy tờ cần nộp');
   return chips+`<section class="sd-card">${head}<div class="sd-chips lx-docs">${docs}</div>${tools?`<div class="lx-tools">${tools}</div>`:''}${rules}</section>`;
 }
 const stars=n=>'★'.repeat(n);

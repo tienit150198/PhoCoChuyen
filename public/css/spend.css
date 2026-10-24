@@ -73,6 +73,9 @@
 .sd-bar{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:4px;padding:10px 14px calc(10px + var(--safe-b));border-top:1px solid var(--line);background:var(--surface)}
 .sd-main{width:100%;min-height:48px;font-size:1.02rem}
 .sd-why{text-align:center;color:var(--warn);font-weight:700;font-size:.85rem}
+/* ♿ #519: a main button that cannot go yet stays focusable (aria-disabled) for screen readers, dimmed like :disabled */
+.sd-main[aria-disabled="true"]{opacity:.5;box-shadow:none;cursor:not-allowed}
+.sd-sheet [data-focus-here]:focus:not(:focus-visible),.sd-sheet h2[tabindex="-1"]:focus:not(:focus-visible){outline:none}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* Landscape phones (844x390): a shorter head, the tabs in one line, the bar slim. */
 @media (max-height:480px){
