@@ -85,6 +85,11 @@ export const SHAPES={
   bronto:{k:'cat',ear:'none',muzzle:'snout',tail:'dino',neck:1,belly:1,body:1.1,spots:1,smile:1},
   trice:{k:'dog',ear:'none',horn:'trice',frill:1,muzzle:'snout',tail:'dino',belly:1,body:1.05,smile:1},
   dragon:{k:'cat',ear:'fin',horn:'dragon',spikes:1,tail:'dragon',bwings:1,muzzle:'snout',belly:1,smile:1},
+  // 🐱 24/10: Mai, the owner's own Scottish Fold (game/pets_content.py meo_mai): white, a lilac-grey cap over the ears
+  // with a white blaze (face 'cap'), a lilac saddle, a thick ringed tail with a dark tip, sleepy amber eyes (lazy), grey
+  // toe beans, a thin yellow collar with a silver ring when nothing else is worn, and her famous pose: slumped against
+  // the wall like a person, belly out, legs forward (slump: maiSit)
+  mai:{k:'cat',ear:'fold',tail:'ringed',face:'cap',muzzle:'cat',chubby:1,saddle:1,lazy:1,collar:'#f2c230',slump:1},
 };
 /* 🏅 Ranks (game/pet_tiers.py RANKS: 0 D … 6 SSS) and the coat effects of an SSS (FX) or a mutant pup. */
 export const RANK=['D','C','B','A','S','SS','SSS'];
@@ -219,6 +224,9 @@ function ears(S,K,x,y,r,front){
     case'fin':return front?[-1,1].map(sx=>Pa(`M${n(x+sx*r*.9)} ${n(y-r*.15)}l${n(sx*r*.55)} ${n(-r*.42)}l${n(-sx*r*.08)} ${n(r*.28)}l${n(sx*r*.3)} ${n(-r*.05)}l${n(-sx*r*.22)} ${n(r*.34)}z`,K.m,1.2)).join(''):'';
     case'puff':return front?[-1,1].map(sx=>C(x+sx*r*.98,y+r*.12,r*.42,b,1.4)+C(x+sx*r*.92,y+r*.5,r*.34,b,1.4)).join(''):'';
     case'fold':if(!front)return '';
+      if(S.face==='cap')return [-1,1].map(sx=>{const X=t=>n(x+sx*r*t);
+        return Pa(`M${X(.24)} ${n(y-r*.86)}Q${X(.42)} ${n(y-r*1.12)} ${X(.74)} ${n(y-r*1)}Q${X(.97)} ${n(y-r*.9)} ${X(.9)} ${n(y-r*.6)}Q${X(.6)} ${n(y-r*.8)} ${X(.24)} ${n(y-r*.86)}z`,m,1.3)
+          +L(`M${X(.4)} ${n(y-r*.94)}Q${X(.66)} ${n(y-r*.97)} ${X(.86)} ${n(y-r*.76)}`,dk(m,.8),.9);}).join('');
       if(S.k==='cat')return [-1,1].map(sx=>Pa(`M${n(x+sx*r*.25)} ${n(y-r*.82)}q${n(sx*r*.38)} ${n(-r*.18)} ${n(sx*r*.62)} ${n(r*.12)}q${n(-sx*r*.22)} ${n(r*.05)} ${n(-sx*r*.58)} ${n(-r*.02)}z`,ec,1.3)).join('');
       return [-1,1].map(sx=>Pa(`M${n(x+sx*r*.4)} ${n(y-r*.8)}q${n(sx*r*.5)} ${n(-r*.08)} ${n(sx*r*.62)} ${n(r*.35)}q${n(-sx*r*.3)} ${n(-r*.05)} ${n(-sx*r*.5)} ${n(-r*.12)}z`,K.m,1.3)).join('');
   }
@@ -238,6 +246,9 @@ function face(S,K,x,y,r,mood,blink){
       +Pa(`M${n(x+r*1.05)} ${n(y-r*.1)}q${n(-r*.05)} ${n(-r*.8)} ${n(-r*.72)} ${n(-r*.82)}q${n(.02)} ${n(r*.4)} ${n(r*.22)} ${n(r*.62)}q${n(r*.3)} ${n(r*.28)} ${n(r*.5)} ${n(r*.2)}z`,l,0);break;
     case'calico2':if(K.name==='Tam thể')o+=Pa(`M${n(x-r*1.05)} ${n(y-r*.1)}q${n(r*.05)} ${n(-r*.8)} ${n(r*.75)} ${n(-r*.82)}q${n(-r*.05)} ${n(r*.45)} ${n(-r*.2)} ${n(r*.7)}q${n(-r*.3)} ${n(r*.25)} ${n(-r*.55)} ${n(r*.12)}z`,m,0)+E(x+r*.6,y-r*.5,r*.32,r*.24,l,0);break;
     case'spots':o+=[[-.5,-.55],[.45,-.6],[0,-.75],[-.8,.05],[.82,.08]].map(([a,c])=>E(x+a*r,y+c*r,r*.11,r*.08,m,0)).join('');break;
+    case'cap':o+=[-1,1].map(sx=>{const A=r*(S.chubby?1.2:1.1),B=r*(S.chubby?.9:.95),P=t=>{const a=t*Math.PI/180;return `${n(x+A*Math.cos(a))} ${n(y+B*Math.sin(a))}`;},X=t=>n(x+sx*r*t);
+      const top=sx<0?-94:-86,side=sx<0?-174:-4,low=sx<0?-.1:.02;   // the right lobe reaches a little lower, by the eye (the photo)
+      return Pa(`M${P(top)}A${n(A)} ${n(B)} 0 0 ${sx<0?0:1} ${P(side)}C${X(.98)} ${n(y+r*low)} ${X(.7)} ${n(y-r*.36)} ${X(.3)} ${n(y-r*.44)}Q${X(.14)} ${n(y-r*.6)} ${X(.08)} ${n(y-r*.89)}z`,m,0);}).join('');break;
     case'tux':if(/^#f|^#e/i.test(l)&&l!==b)o+=Pa(`M${n(x-r*.15)} ${n(y-r*.62)}q${n(r*.15)} ${n(-r*.06)} ${n(r*.3)} 0l${n(r*.2)} ${n(r*.6)}h${n(-r*.7)}z`,l,0);break;
   }
   if(S.wrinkles)o+=L(`M${n(x-r*.32)} ${n(y-r*.6)}q${n(r*.32)} ${n(-r*.14)} ${n(r*.64)} 0M${n(x-r*.22)} ${n(y-r*.44)}q${n(r*.22)} ${n(-r*.1)} ${n(r*.44)} 0`,S.k==='cat'?K.m:K.m,1.1,' opacity=".7"');
@@ -252,17 +263,32 @@ function face(S,K,x,y,r,mood,blink){
   const mouthY=my+(S.muzzle==='dog'?r*.08:S.muzzle==='snout'?r*.16:r*.14),happy=mood==='happy';
   if(happy&&(S.k==='dog'||S.muzzle==='snout'))o+=Pa(`M${n(x-r*.22)} ${n(mouthY)}q${n(r*.22)} ${n(r*.5)} ${n(r*.44)} 0z`,'#a8434f',1.1)+Pa(`M${n(x-r*.11)} ${n(mouthY+r*.14)}q${n(r*.11)} ${n(r*.36)} ${n(r*.22)} 0z`,TONGUE,0);
   else if(happy)o+=Pa(`M${n(x-r*.16)} ${n(mouthY)}q${n(r*.16)} ${n(r*.32)} ${n(r*.32)} 0z`,'#c75a6a',1);
+  else if(S.lazy)o+=L(`M${n(x)} ${n(mouthY-r*.06)}v${n(r*.08)}M${n(x-r*.17)} ${n(mouthY+r*.09)}q${n(r*.17)} ${n(-r*.13)} ${n(r*.34)} 0`,OL,1.1);
   else o+=L(`M${n(x-r*.24)} ${n(mouthY)}q${n(r*.12)} ${n(r*.14)} ${n(r*.24)} 0q${n(r*.12)} ${n(r*.14)} ${n(r*.24)} 0`,OL,1.1);
   if(S.smile&&!happy)o+=Pa(`M${n(x-r*.08)} ${n(mouthY+r*.05)}q${n(r*.08)} ${n(r*.2)} ${n(r*.16)} 0z`,TONGUE,0);
   // Eyes.
   const ex=r*(S.muzzle==='flatcat'?.4:.42),ey=y-r*(S.muzzle==='flatcat'?.0:.04),er=r*(S.head>1.08?.21:.18)*(S.k==='cat'?1.08:1);
   if(blink==='sleep')o+=L(`M${n(x-ex-er)} ${n(ey)}q${n(er)} ${n(er*.9)} ${n(er*2)} 0M${n(x+ex-er)} ${n(ey)}q${n(er)} ${n(er*.9)} ${n(er*2)} 0`,OL,1.4);
+  else if(S.lazy)o+=lazyEyes(K,x,ex,ey,er*1.12,happy);
   else if(happy)o+=L(`M${n(x-ex-er)} ${n(ey+er*.3)}q${n(er)} ${n(-er*1.5)} ${n(er*2)} 0M${n(x+ex-er)} ${n(ey+er*.3)}q${n(er)} ${n(-er*1.5)} ${n(er*2)} 0`,OL,1.6);
   else{const iris=K.e&&K.e!==EYE?K.e:null,dark=lum(S.face==='mask'?K.l:K.b)<.3;
     for(const sx of [-1,1]){const cx=x+sx*ex;
       o+=iris?E(cx,ey,er,er*1.1,iris,dark?0:1.1,dark?' stroke="#fff3df" stroke-width="1"':'')+E(cx,ey+er*.1,er*.4,er*.66,EYE,0):E(cx,ey,er,er*1.12,EYE,0,dark?' stroke="#fff3df" stroke-width="1.1"':'');
       o+=C(cx+er*.35,ey-er*.4,er*.36,'#fff',0)+C(cx-er*.35,ey+er*.4,er*.16,'#fff',0,' opacity=".8"');}}
   o+=blush(x-r*.68,y+r*.32,r/12)+blush(x+r*.68,y+r*.32,r/12);
+  return o;
+}
+/** 😼 Mai's eyes: round amber irises, the upper lids half down; `awake` (happy): wide open (the photos). */
+function lazyEyes(K,x,ex,ey,er,awake){
+  let o='';const ry=er*1.06,iris=K.e&&K.e!==EYE?K.e:'#d9c24e';
+  for(const sx of [-1,1]){const cx=x+sx*ex;
+    o+=E(cx,ey,er,ry,iris,1.1)+E(cx,ey+er*.08,er*.42,er*.7,EYE,0);
+    if(awake){o+=C(cx+er*.36,ey-er*.38,er*.34,'#fff',0)+C(cx-er*.34,ey+er*.4,er*.15,'#fff',0,' opacity=".8"');continue;}
+    // the lid: the top of the eye cut by a chord, drooping a little to the outer corner (sleepy, unimpressed)
+    const yo=ey-ry*.1,yi=ey-ry*.32,R=er+.8,RY=ry+.8,at=yy=>R*Math.sqrt(Math.max(0,1-((yy-ey)/RY)**2));
+    const xo=cx+sx*at(yo),xi=cx-sx*at(yi),[x1,y1,x2,y2]=sx<0?[xo,yo,xi,yi]:[xi,yi,xo,yo];
+    o+=Pa(`M${n(x1)} ${n(y1)}A${n(R)} ${n(RY)} 0 0 1 ${n(x2)} ${n(y2)}z`,K.b,0)+L(`M${n(x1)} ${n(y1)}L${n(x2)} ${n(y2)}`,OL,1.3)
+      +C(cx+er*.34,ey+er*.12,er*.2,'#fff',0,' opacity=".9"');}
   return o;
 }
 function ruff(S,K,x,y,r){
@@ -322,6 +348,12 @@ function hat(id,x,y,r){
       +C(x,y-r*1.06,r*.08,'#ef7f72',0)+C(x-r*.3,y-r*1,r*.06,'#7fb8e0',0)+C(x+r*.3,y-r*1,r*.06,'#7cc47f',0);
   }
   const it=wd(id);return it?hatX(it,x,y,r):'';
+}
+/** The collar: a worn neck piece, else a breed's own (Mai: a thin yellow band with a little silver ring). */
+function collarOf(S,o,x,y,w){
+  if(o.acc?.neck||!S.collar)return collar(o.acc?.neck,x,y,w);
+  return Pa(`M${n(x-w)} ${n(y-1)}q${n(w)} ${n(3.8)} ${n(w*2)} 0v2.1q${n(-w)} ${n(3.8)} ${n(-w*2)} 0z`,S.collar,.9)
+    +C(x+w*.18,y+4.3,1.55,'none',0,' stroke="#8f959e" stroke-width="1.5"')+C(x+w*.18,y+4.3,1.55,'none',0,' stroke="#e8ecf1" stroke-width=".7"');
 }
 function collar(id,x,y,w){
   if(!id)return '';const c={vong_chuong:'#e05a4f',vong_da:'#8a5a3a',vong_ngoc:'#f7f1ea',vong_vang:'#e7b93e'}[id];if(!c){const it=wd(id);return it?neckX(it,x,y,w):'';}
@@ -545,6 +577,14 @@ function bedX(it,w){
 }
 
 /* ---------------------------------------------------------------- tails */
+/** 🐱 A thick fluffy tail along the path `d` with darker rings (dashes of the same stroke) and a dark tip (`tip`, the
+ * path's end), as Mai's: lilac `c`, `k` its size. */
+function ringTail(d,tip,c,k=1){
+  const w=n(7.6*k),ring=dk(c,.76),dark=dk(c,.56);
+  return L(d,OL,9.6*k)+L(tip,OL,9.6*k)+L(d,c,7.6*k)
+    +`<path d="${d}" fill="none" stroke="${ring}" stroke-width="${w}" stroke-dasharray="${n(2.1*k)} ${n(2.5*k)}" stroke-dashoffset="${n(-1.2*k)}"/>`
+    +L(tip,dark,7.6*k);
+}
 function tail(S,K,x,y,dir,big=1,anim=true){   // dir: 1 = the tail goes to the right/up, -1 to the left
   const c=S.face==='points'?K.m:S.tail==='pom'?K.b:K.b,cls=anim?' class="pet-tail"':'',sw=1.5,k=big;
   switch(S.tail){
@@ -563,6 +603,7 @@ function tail(S,K,x,y,dir,big=1,anim=true){   // dir: 1 = the tail goes to the r
     case'thin':return `<g${cls}>`+L(`M${n(x)} ${n(y)}q${n(dir*12*k)} ${n(-2*k)} ${n(dir*13*k)} ${n(-14*k)}`,OL,4)+L(`M${n(x)} ${n(y)}q${n(dir*12*k)} ${n(-2*k)} ${n(dir*13*k)} ${n(-14*k)}`,c,2.4)+'</g>';
     case'long':{const st=S.stripes?K.m:null;return `<g${cls}>`+L(`M${n(x)} ${n(y)}q${n(dir*16*k)} ${n(0)} ${n(dir*14*k)} ${n(-18*k)}`,OL,6)+L(`M${n(x)} ${n(y)}q${n(dir*16*k)} ${n(0)} ${n(dir*14*k)} ${n(-18*k)}`,S.face==='calico'?K.m:c,4)
       +(st?L(`M${n(x+dir*10*k)} ${n(y-3*k)}l${n(dir*2.5*k)} ${n(-1)}M${n(x+dir*14*k)} ${n(y-9*k)}l${n(dir*2.5*k)} 0`,st,1.6):'')+'</g>';}
+    case'ringed':return `<g${cls}>`+ringTail(`M${n(x)} ${n(y)}Q${n(x+dir*16*k)} ${n(y)} ${n(x+dir*13*k)} ${n(y-14*k)}`,`M${n(x+dir*13*k)} ${n(y-14*k)}Q${n(x+dir*12.6*k)} ${n(y-16.2*k)} ${n(x+dir*11.6*k)} ${n(y-17.4*k)}`,K.m,k)+'</g>';
     case'thick':return `<g${cls}>`+L(`M${n(x)} ${n(y)}q${n(dir*15*k)} ${n(0)} ${n(dir*13*k)} ${n(-16*k)}`,OL,8)+L(`M${n(x)} ${n(y)}q${n(dir*15*k)} ${n(0)} ${n(dir*13*k)} ${n(-16*k)}`,c,6)+'</g>';
     case'fluffy':{const st=S.stripes?K.m:null;return `<g${cls}>`+Pa(`M${n(x)} ${n(y+2*k)}q${n(dir*18*k)} ${n(2*k)} ${n(dir*16*k)} ${n(-20*k)}q${n(dir*4*k)} ${n(-4*k)} ${n(dir*1*k)} ${n(-6*k)}q${n(-dir*6*k)} ${n(2*k)} ${n(-dir*8*k)} ${n(10*k)}q${n(-dir*2*k)} ${n(6*k)} ${n(-dir*9*k)} ${n(6*k)}z`,c,sw)
       +(st?L(`M${n(x+dir*12*k)} ${n(y-4*k)}l${n(dir*4*k)} ${n(-2*k)}M${n(x+dir*14*k)} ${n(y-11*k)}l${n(dir*4*k)} 0`,st,1.6):'')+'</g>';}
@@ -577,6 +618,8 @@ function marks(S,K,cx,cy,rx,ry){   // body markings: tabby stripes, Bengal spots
   if(S.spots)s+=[[-.5,-.4],[-.1,-.6],[.3,-.3],[-.3,.1],[.15,.15],[.55,-.05]].map(([a,b])=>E(cx+a*rx,cy+b*ry,rx*.09+1,ry*.12+.6,K.m,0,' opacity=".9"')).join('');
   if(S.ridge)s+=Pa(`M${n(cx-rx*.55)} ${n(cy-ry*.9)}q${n(rx*.55)} ${n(-ry*.42)} ${n(rx*1.1)} 0q${n(-rx*.55)} ${n(-ry*.12)} ${n(-rx*1.1)} 0z`,K.m,0,' opacity=".9"');
   if(S.face==='calico'||S.face==='calico2'&&K.name==='Tam thể')s+=E(cx-rx*.35,cy-ry*.4,rx*.32,ry*.36,K.m,0)+E(cx+rx*.32,cy-ry*.1,rx*.24,ry*.3,K.l,0);
+  if(S.saddle){const A=rx-.8,B=ry-.8,P=t=>{const a=t*Math.PI/180;return `${n(cx+A*Math.cos(a))} ${n(cy+B*Math.sin(a))}`;};
+    s+=Pa(`M${P(-160)}A${n(A)} ${n(B)} 0 0 1 ${P(-48)}Q${n(cx+rx*.15)} ${n(cy-ry*.05)} ${n(cx-rx*.35)} ${n(cy+ry*.05)}Q${n(cx-rx*.75)} ${n(cy+ry*.05)} ${P(-160)}z`,K.m,0);}
   if(S.face==='points')s+='';
   return s;
 }
@@ -606,10 +649,43 @@ function sitPose(S,K,o){
   s+=R(-lx-3.4,-lh,6.8,lh+1,K.b,3,1.4)+E(-lx,-1.2,4.2,2.6,paw,1.3);
   s+=raise?`<g class="pet-wave" transform="rotate(-40 ${n(bw*.55)} ${n(by+bh*.05)})">${R(bw*.55-3.4,by+bh*.05-12,6.8,13,K.b,3.4,1.4)+E(bw*.55,by+bh*.05-12.5,4.2,3.2,paw,1.3)+E(bw*.55,by+bh*.05-13.5,1.6,1,PINK,0)}</g>`:R(lx-3.4,-lh,6.8,lh+1,K.b,3,1.4)+E(lx,-1.2,4.2,2.6,paw,1.3);
   if(raise)s+=R(lx-3.4,-lh,6.8,lh+1,K.b,3,1.4)+E(lx,-1.2,4.2,2.6,paw,1.3);
-  s+=collar(o.acc?.neck,0,hy+hr*.86,hr*.62);
+  s+=collarOf(S,o,0,hy+hr*.86,hr*.62);
   s+=head(S,K,0,hy,hr,{mood:o.mood,acc:o.acc});
   if(o.mood==='happy')s+=`<g class="pet-hearts">${heart(hr*1.25,hy-hr*.9,2.2)+heart(-hr*1.35,hy-hr*.4,1.6,'#f5a9bc')}</g>`;
   const wr=o.wr||{};s+=shine([[hr*.95,hy-hr*1.25,wr.head],[-hr*1.05,hy-hr*.05,wr.eye],[hr*.75,hy+hr*1,wr.neck],[bw*.95,by,wr.body],[-bw*1.9,by-bh*.6,wr.back],[bw*1.9,by-bh*.75,wr.back]].filter(p=>p[2]));
+  return s;
+}
+/** 😼 Mai's pose (S.slump): slumped against a wall like a person (the photo), the round belly out, both hind legs
+ * forward showing grey toe beans, one front paw on the belly and one down by her side (happy: raised, a little wave),
+ * the ringed tail on the floor, the head tilted toward the wall. Same slots as sitPose: wings / cape, clothes, collar. */
+function maiSit(S,K,o){
+  const b=K.b,m=K.m,hr=12.5,hx=3.5,hy=-33.5,happy=o.mood==='happy',bean='#8e8992',fur='#d9d5dd';let s='';
+  const tx=2,ty=-22.5,tw=12.6,th=10,bx=0,by=-12.5,bw=16,bh=12.5;    // torso (leaning right) and belly
+  s+=E(0,-.5,25,2.6,'#000',0,' opacity=".12"');
+  const [bk,fr]=backX(o.acc,'sit',{w:bw,y:by-bh*.95,h:bh*1.5},null);s+=bk;
+  s+=ringTail(`M-9 -6Q-18 -4 -26.5 -2`,`M-26.5 -2L-28.3 -1.6`,m);                 // the tail, lying to the left
+  s+=E(-9.5,-6.5,7.6,6.4,b,1.5)+E(10,-6.5,7.6,6.4,b,1.5);                                 // thighs
+  const torso=`<ellipse cx="${tx}" cy="${ty}" rx="${tw}" ry="${th}" transform="rotate(10 ${tx} ${ty})"`;
+  s+=`${torso} fill="${b}" stroke="${OL}" stroke-width="1.6"/>`+E(bx,by,bw,bh,b,1.6)+`${torso} fill="${b}"/>`;  // one round outline
+  // the saddle: a lilac patch on her left side, along the edge of the belly and up the shoulder
+  {const A=bw-.8,B=bh-.8,P=t=>{const a=t*Math.PI/180;return `${n(bx+A*Math.cos(a))} ${n(by+B*Math.sin(a))}`;};
+    s+=Pa(`M${P(176)}A${n(A)} ${n(B)} 0 0 1 ${P(236)}Q-5 -22 -6 -29.5Q-11 -26.5 -11 -19Q-11.5 -13 ${P(176)}z`,m,0);}
+  s+=L('M-2 -8q2.5 1.4 5 0M4 -11.5q2 1 4 0M-5 -13q1.6 .9 3.2 0',fur,.9);                // fluffy belly
+  if(o.acc?.body)s+=coat(o.acc.body,'sit',tx-1,ty-6,tw*.95,th*2.1);
+  s+=fr;
+  // the hind feet, soles to you: grey beans
+  const foot=(x,y,rot)=>`<g transform="rotate(${rot} ${x} ${y})">`+E(x,y,4.4,5.4,b,1.4)+E(x,y+1.4,2.1,1.7,bean,0)
+    +[[-2.3,-1.9],[-.8,-3.3],[.9,-3.3],[2.4,-1.9]].map(([a,c])=>E(x+a,y+c,.9,1.05,bean,0)).join('')+'</g>';
+  s+=foot(-9.5,-3.6,-12)+foot(10,-3.4,14);
+  // front legs: her right one bent, the paw on the belly; the left one down by her side (happy: up, waving)
+  const arm=d=>L(d,OL,7.6)+L(d,b,5.4);
+  s+=arm('M-6.5 -26Q-10 -20 -4.5 -15.5')+E(-3.8,-15,3.6,2.8,b,1.3);
+  if(!happy)s+=arm('M11.5 -25Q15 -18 14.5 -9')+E(14.6,-8.2,3.6,2.6,b,1.3);
+  s+=`<g transform="rotate(4 ${hx} ${hy})">`+collarOf(S,o,hx-.6,hy+hr*.84,hr*.6)+head(S,K,hx,hy,hr,{mood:o.mood,acc:o.acc})+'</g>';
+  if(happy)s+=`<g class="pet-wave" transform="rotate(-8 13 -24)">${arm('M13 -23Q20 -25 21.5 -33')+E(21.8,-35,3.8,4.4,b,1.3)
+    +E(21.8,-34,1.8,1.5,bean,0)+[[-1.7,-2.7],[0,-3.5],[1.7,-2.7]].map(([a,c])=>E(21.8+a,-34+c,.8,.95,bean,0)).join('')}</g>`;
+  if(happy)s+=`<g class="pet-hearts">${heart(hx+hr*1.3,hy-hr*.9,2.2)+heart(hx-hr*1.4,hy-hr*.5,1.6,'#f5a9bc')}</g>`;
+  const wr=o.wr||{};s+=shine([[hx+hr*.95,hy-hr*1.25,wr.head],[hx-hr*1.05,hy-hr*.05,wr.eye],[hx+hr*.75,hy+hr*1,wr.neck],[bw*.95,by-4,wr.body],[-bw*1.9,by-bh,wr.back],[bw*1.9,by-bh*1.2,wr.back]].filter(p=>p[2]));
   return s;
 }
 function walkPose(S,K,o){
@@ -629,7 +705,7 @@ function walkPose(S,K,o){
   if(o.acc?.body)s+=coat(o.acc.body,'walk',0,cy,rx,ry);
   s+=fr;
   s+=leg(-rx*.38,'a')+leg(rx*.68,'b');                                                 // near legs
-  s+=collar(o.acc?.neck,hx,hy+hr*.84,hr*.58);
+  s+=collarOf(S,o,hx,hy+hr*.84,hr*.58);
   s+=head(S,K,hx,hy,hr,{mood:o.mood,acc:o.acc});
   const wr=o.wr||{};s+=shine([[hx+hr*.9,hy-hr*1.2,wr.head],[hx+hr*1.1,hy,wr.eye],[hx-hr*.9,hy+hr*.9,wr.neck],[rx*.2,cy+ry*.2,wr.body],[-rx*1.5,cy-ry*2.6,wr.back]].filter(p=>p[2]));
   return s;
@@ -641,9 +717,10 @@ function sleepPose(S,K,o){
   s+=E(0,-ry,rx,ry,K.b,1.6)+marks(S,K,0,-ry,rx,ry);
   if(o.acc?.body)s+=Pa(`M${n(-rx*.7)} ${n(-ry*1.75)}q${n(rx*.6)} ${n(-ry*.35)} ${n(rx*1.2)} ${n(.2)}l${n(rx*.05)} ${n(ry*1.1)}h${n(-rx*1.3)}z`,coatColor(o.acc.body),1.2);
   s+=tail(S,K,-rx*.85,-ry*.45,1,.0001,false);
-  s+=Pa(`M${n(-rx*.95)} ${n(-ry*.6)}q${n(rx*.2)} ${n(ry*.75)} ${n(rx*1.25)} ${n(ry*.5)}`,'none',0)+L(`M${n(-rx*.95)} ${n(-ry*.55)}q${n(rx*.1)} ${n(ry*.62)} ${n(rx*1.2)} ${n(ry*.42)}`,OL,5.2)+L(`M${n(-rx*.95)} ${n(-ry*.55)}q${n(rx*.1)} ${n(ry*.62)} ${n(rx*1.2)} ${n(ry*.42)}`,S.face==='points'?K.m:K.b,3.4);
+  if(S.tail==='ringed')s+=ringTail(`M${n(-rx*.95)} ${n(-ry*.55)}q${n(rx*.1)} ${n(ry*.62)} ${n(rx*.95)} ${n(ry*.5)}`,`M${n(rx*0)} ${n(-ry*.05)}q${n(rx*.12)} ${n(-ry*.02)} ${n(rx*.25)} ${n(-ry*.08)}`,K.m,.7);
+  else s+=Pa(`M${n(-rx*.95)} ${n(-ry*.6)}q${n(rx*.2)} ${n(ry*.75)} ${n(rx*1.25)} ${n(ry*.5)}`,'none',0)+L(`M${n(-rx*.95)} ${n(-ry*.55)}q${n(rx*.1)} ${n(ry*.62)} ${n(rx*1.2)} ${n(ry*.42)}`,OL,5.2)+L(`M${n(-rx*.95)} ${n(-ry*.55)}q${n(rx*.1)} ${n(ry*.62)} ${n(rx*1.2)} ${n(ry*.42)}`,S.face==='points'?K.m:K.b,3.4);
   s+=E(rx*.32,-2.2,5,2.6,S.face==='points'?K.m:K.l,1.2);
-  s+=collar(o.acc?.neck,rx*.58,-hr*.5,hr*.55);
+  s+=collarOf(S,o,rx*.58,-hr*.5,hr*.55);
   s+=head(S,K,rx*.62,-hr*.95,hr,{blink:'sleep',acc:o.acc});
   s+=`<g class="pet-zz"><text x="${n(rx*.62+hr)}" y="${n(-hr*2.1)}" font-size="8" font-weight="800" fill="${OL}">z</text><text x="${n(rx*.62+hr+6)}" y="${n(-hr*2.6)}" font-size="6" font-weight="800" fill="${OL}">z</text></g>`;
   return s;
@@ -656,7 +733,7 @@ export function petInner(breed,coat,pose='sit',acc={},fx={}){
   // fx: r rank, x coat effect, lg a 🌟 legendary that kept its breed, wr {slot: piece rank}, o cute aura, st a whole set
   const x=fx?.x||'',r=Math.max(0,Math.min(6,Number(fx?.r)||0)),legend=breed?.fuse==='legend'||fx?.lg===true;
   const S=SHAPES[breed?.shape]||SHAPES.mutt,K={b:'#e2a65a',m:'#c4823a',l:'#fbe3bd',e:EYE,...(coat||{}),...(breed?.fuse==='myth'?{}:FXCOAT[x]||{})},k=SIZE[breed?.size]||1,o={acc:acc||{},mood:pose==='happy'?'happy':'',wave:breed?.id==='than_tai',wr:fx?.wr||null};
-  const body=pose==='walk'?walkPose(S,K,o):pose==='sleep'?sleepPose(S,K,o):sitPose(S,K,o);
+  const body=pose==='walk'?walkPose(S,K,o):pose==='sleep'?sleepPose(S,K,o):S.slump?maiSit(S,K,o):sitPose(S,K,o);
   const bed=acc?.bed?bedSVG(acc.bed,pose==='walk'?52:46):'',tall=acc?.bed==='nha_go'||acc?.bed==='lau_dai'||/^(castle|canopy)$/.test(wd(acc?.bed)?.art||'');
   const [back0,front0]=aura(r,x,legend,S.k,pose,k),[wb,wf]=wearFx(Number(fx?.o)||0,fx?.st||''),back=back0+wb,front=front0+wf,mut=x==='dot_bien'?' filter="url(#pt-mut)"':'';
   return `<g class="pet-art pet-${pose}${r?` pet-r${r}`:''}${legend?' pet-legend':''}">${back0||mut||x==='cau_vong'?DEFS:''}${back}${bed&&tall?bed:''}<g transform="scale(${k})">${bed&&!tall?`<g transform="scale(${n(1/k*100)/100})">${bed}</g>`:''}<g class="pet-bob"${mut}>${body}</g></g>${front}</g>`;

@@ -357,7 +357,7 @@ async function go(){
     case'back':S.sub='';render();return;
     case'adopt':{const a=shelterPick();if(!a)return;const nick=(S.nick||a.n).trim();
       const r=await send('jr_pet_adopt',{from:'shelter',i:a.i,nick,donate:S.donate,confirm:true});if(r){S.tab='home';S.pet='';S.donate=0;S.shelter=-1;render();}return;}
-    case'shopbuy':{const b=breedOf(S.breed);if(!b)return;const nick=(S.nick||b.name).trim().slice(0,16),q=bq(),pr=b.price*q;
+    case'shopbuy':{const b=breedOf(S.breed);if(!b)return;const nick=(S.nick||b.nick||b.name).trim().slice(0,16),q=bq(),pr=b.price*q;
       if(shopAsk(pr)&&!await ask(q>1?`Đón ${q} bé ${b.name} về?`:`Đón bé ${b.name} về?`,`${q>1?`${q} × ${fmt(b.price)} xu = ${fmt(pr)} xu, trả`:`Trả ${fmt(pr)} xu`} một lần. Ví trước, thiếu thì lấy từ tài khoản.${q>1?` Tên: ${nameHint(nick,q)}.`:''}`,`Đón về${times(q)} · ${fmt(pr)} xu`,pr))return;
       const r=await send('jr_pet_adopt',{from:'shop',breed:b.id,coat:S.coat,nick,...(q>1?{qty:q}:{}),confirm:true});if(r){S.tab='home';S.pet='';S.breed='';S.bq=1;render();}return;}
     case'wbuy':{const it=wItem(S.wk);if(!it)return;const q=bq(),one=wPrice(it,S.wrank),pr=one*q;
@@ -779,10 +779,10 @@ function shop(v,c){
   }
   const b=breedOf(S.breed);
   if(b){const coat=b.coats[S.coat]||b.coats[0];
-    return kinds+`<section class="pt-card pt-center"><div class="pt-stage">${petSVG(b,coat,'happy',{},140)}</div><h3>${esc(b.name)}</h3><p class="pt-muted">✨ ${esc(b.trait)}</p>
+    return kinds+`<section class="pt-card pt-center"><div class="pt-stage">${petSVG(b,coat,'happy',{},140)}</div><h3>${esc(b.name)}</h3><p class="pt-muted">✨ ${esc(b.trait)}</p>${b.nick&&b.line?`<p class="pt-muted">${esc(b.line)}</p>`:''}
       <div class="pt-chips pt-coats">${b.coats.map((k,i)=>chip('coat',{c:i},S.coat===i,`<i style="background:${esc(k.b)};box-shadow:inset -6px 0 0 ${esc(k.m)}"></i>`,k.name)).join('')}</div>
-      <label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" placeholder="Tên bé" autocomplete="off"></label>
-      ${qtyPick(b.price)}${bq()>1?`<p class="pt-muted">Tên các bé: ${esc(nameHint((S.nick||b.name).trim().slice(0,16),bq()))}</p>`:''}</section>
+      <label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" placeholder="${esc(b.nick||'Tên bé')}" autocomplete="off"></label>
+      ${qtyPick(b.price)}${bq()>1?`<p class="pt-muted">Tên các bé: ${esc(nameHint((S.nick||b.nick||b.name).trim().slice(0,16),bq()))}</p>`:''}</section>
       <button type="button" class="pt-link" data-pt="breed" data-id="">↩︎</button>`;}
   return kinds+odds()+`<div class="pt-picks">${breedList().map(x=>`<button type="button" class="pt-pick" data-pt="breed" data-id="${esc(x.id)}">${petPicture(x,x.coats[0],'sit',{},84)}<b>${esc(x.name)}</b><small>${fmt(x.price)}</small></button>`).join('')}</div>`;
 }
@@ -971,10 +971,10 @@ function shopBreeds(c,out){
   const b=breedOf(S.breed);if(!b)return;
   const coat=b.coats[S.coat]||b.coats[0];
   out.detail={id:b.id,title:esc(b.name),stage:petSVG(b,coat,'happy',{},140),
-    info:`<p class="as-d-price"><b>${fmt(b.price)} xu</b> / bé</p><p class="small">✨ ${esc(b.trait)}</p><p class="as-d-note">🎲 Hạng D hoặc C</p>`,
+    info:`<p class="as-d-price"><b>${fmt(b.price)} xu</b> / bé</p><p class="small">✨ ${esc(b.trait)}</p>${b.nick&&b.line?`<p class="as-d-note">${esc(b.line)}</p>`:''}<p class="as-d-note">🎲 Hạng D hoặc C</p>`,
     controls:`<div class="pt-chips pt-coats" role="group" aria-label="Màu lông">${b.coats.map((k,i)=>chip('coat',{c:i},S.coat===i,`<i style="background:${esc(k.b)};box-shadow:inset -6px 0 0 ${esc(k.m)}"></i>`,k.name)).join('')}</div>
-      <label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" placeholder="Tên bé" autocomplete="off"></label>
-      ${qtyPick(b.price)}${bq()>1?`<p class="pt-muted">Tên các bé: ${esc(nameHint((S.nick||b.name).trim().slice(0,16),bq()))}</p>`:''}`,
+      <label class="pt-name"><span class="sr-only">Tên bé</span><input name="nick" maxlength="${c.name_max}" value="${esc(S.nick)}" placeholder="${esc(b.nick||'Tên bé')}" autocomplete="off"></label>
+      ${qtyPick(b.price)}${bq()>1?`<p class="pt-muted">Tên các bé: ${esc(nameHint((S.nick||b.nick||b.name).trim().slice(0,16),bq()))}</p>`:''}`,
     forge:TT()&&threeOf(allPets().filter(p=>!p.legend).map(p=>p.r||0))?'plab':''};
 }
 function shopWear(wing,out){

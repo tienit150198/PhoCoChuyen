@@ -15,11 +15,12 @@ def _c(name, b, m, l, e='#3b2a22'):
 
 
 def _b(bid, kind, name, shape, price, trait, line, coats, *, tier='quen', shelter=False, size='s', shop=True, fuse='',
-       st=(0, 0, 0, 0, 0)):
+       st=(0, 0, 0, 0, 0), nick=''):
     """shop False + fuse 'hybrid' | 'legend' | 'myth': only born from a 3-pet fusion (game/pet_tiers.py). st: the breed's lean
-    on the five stats (game/pet_tiers.py STATS), added to what its rank gives."""
+    on the five stats (game/pet_tiers.py STATS), added to what its rank gives. nick: the name the shop suggests (else
+    the breed's name)."""
     return bid, dict(id=bid, kind=kind, name=name, shape=shape, price=price, trait=trait, line=line,
-                     coats=list(coats), tier=tier, shelter=shelter, size=size, shop=shop, fuse=fuse, st=tuple(st))
+                     coats=list(coats), tier=tier, shelter=shelter, size=size, shop=shop, fuse=fuse, st=tuple(st), nick=nick)
 
 
 # tier: 'ta' (giống ta, cheap), 'quen' (popular), 'hiem' (rare, dear). size: s / m / l (drawn a little bigger).
@@ -130,6 +131,12 @@ BREEDS = dict((
        (_c('Vàng đốm đen', '#d9b06a', '#2f2520', '#f4e2bd', '#e9c547'), _c('Bạc đốm', '#cfd2d6', '#2f2a2b', '#f5f6f7', '#e9c547')), tier='hiem', size='m', st=(8, 4, 2, 0, 2)),
     _b('korat', 'cat', 'Mèo Korat', 'russian', 9500, 'Mang may mắn', 'Lông xám bạc như mây trước mưa, người Thái tặng nhau làm quà cưới.',
        (_c('Xám bạc', '#9aa3b0', '#7c8592', '#c3cad3', '#7fc65a'),), st=(0, 2, 2, 2, 6)),
+    # ---------------------------------------------------------------- 24/10: Mai, the owner's own cat (a Scottish Fold)
+    # White with a lilac-grey cap (a white blaze down the forehead), a lilac saddle and a thick ringed tail, amber eyes, a
+    # thin yellow collar with a silver ring; sits slumped against the wall like a person (public/js/v4/pet-art.js `mai`).
+    # Dearer than every other cat in the shop (Savannah 26.000), far below the 🧬 / ✨ / 🌟 ones no one can buy.
+    _b('meo_mai', 'cat', 'Mèo Mai', 'mai', 45000, 'Ngồi như người', 'Mèo tai cụp mũm mĩm, hay ngồi dựa tường như người 😼',
+       (_c('Trắng xám lilac', '#fbfaf8', '#aaa5ae', '#ffffff', '#d9c24e'),), tier='hiem', size='m', st=(-2, 4, 2, 10, 4), nick='Mai'),
     # ---------------------------------------------------------------- 🧬 giống lai: only from a 3-pet fusion (game/pet_tiers.py RECIPES)
     _b('hmong', 'dog', "H'Mông cộc đuôi", 'hmong', 40000, 'Quốc khuyển', 'Đuôi cộc, lông dày, giữ nhà giữ nương giỏi nhất vùng cao.',
        (_c('Đen', '#36302f', '#211d1d', '#7a6d68'), _c('Vàng', '#d9a35f', '#b57f3f', '#f5dcb3'), _c('Vện', '#a7743e', '#5b3b20', '#d9b07c')),
