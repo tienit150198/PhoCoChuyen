@@ -1,3 +1,15 @@
+# 2.6.4 — 24/10/2026
+
+🎣 Quăng dễ, kéo dễ (feat/fish-cast; chủ game 24/10: "k có 'tầm cần' nha … chỗ quăng dễ hơn … tầm quăng random … cần cổ đại thì cả 1 km hoặc 2km", "giật cũng là 1 giây không cần 3s đâu", "khó ở chỗ giật màu xanh ấy"). Không đổi schema (journey.fish.far là khoá tuỳ chọn). Có gì mới 2.6.4.
+
+- Quăng không bao giờ hỏng: giữ (vạch lực đầy dần) rồi thả, hoặc chạm một cái cũng quăng. Bỏ "rối dây", bỏ vạch đỏ, bỏ đường "🎣 tầm cần". Server quay khoảng cách ngẫu nhiên theo cần (Kumaraswamy(2, 3): đa số giữa tầm, thỉnh thoảng một cú gần tối đa); lực chỉ nhích nhẹ (chạm nhanh ngắn hơn tối đa 10 %).
+- Tầm quăng: tre 15–80 m, trúc 20–120 m, carbon 40–250 m, biển 80–500 m, vàng 150–900 m, bạch kim 0,3–1,5 km, Long Vương 0,5–2 km. Quầy bán cần ghi "📏 15–80 m" / "📏 0,5–2 km".
+- Số đếm chạy lên khi phao bay, "🎯 1.234 m!" to khi phao chạm nước, "🚀 Quăng siêu xa!" khi quá 85 % tầm tối đa, "🏅 Kỷ lục quăng mới!"; 📖 Sổ cá ghi 🎯 Cú quăng xa nhất.
+- Vùng Gần / Vừa / Xa / Sâu tính theo từng cần (mét), đặt sao cho mỗi cần rơi vào mỗi vùng đúng tỉ lệ như 2.6.3. Mặt hồ vẽ phối cảnh theo tầm cần đang cầm (2 km sát chân trời), phao mốc tự đổi (10 m … 2 km).
+- Giật: 1 giây (tre) tới 1,5 giây (Long Vương), mồi +0,05–0,15 s; vẫn chấm theo số ms máy người chơi đo nên mạng chậm không tính chậm tay. Vòng đếm ngược và tha bấm lúc cá rỉa giữ nguyên.
+- Kéo cá (public/js/v4/fish-reel.js): vùng xanh rộng khoảng nửa thanh (cá Cổ đại vẫn ≥ 30 %), kim chậm và tự trôi về vùng xanh, vùng vàng vẫn kéo (chậm hơn), vào đỏ thanh nháy và phải ở đỏ 2,6 s mới đứt dây. Mô phỏng tests/fishing-reel.mjs: người chơi không nhìn kim vẫn kéo được ≥ 90 % cá phổ thông và ≥ 70 % cá Cổ đại.
+- Kinh tế giữ nguyên: thu nhập mỗi giờ mỗi cần lệch ≤ 1 % so với 2.6.3 (tre 5.111, trúc 5.880, carbon 9.992, biển 41.805, vàng 211.101, bạch kim 636.506, Long Vương 1.690.655 xu/giờ). Kéo dễ thì lên nhiều cá hiếm hơn nên may mắn của cần carbon trở lên giảm nhẹ (1,31→1,29, 1,69→1,65, 2,07→2,0, 2,1→2,02, 2,18→2,09).
+
 # 2.6.3.1 — 24/10/2026
 
 Hotfix (chủ game 24/10 "admin đủ hơn 50m nhưng k mua cần câu xịn nhất 50m được"): auction._take / _give_back ghi Sổ ví và sổ ngân hàng thành nhiều dòng ≤ 10 tr (journey.validate giới hạn ±10 tr mỗi dòng ở mọi bản), nên mua cần 20 tr / 50 tr, giữ tiền đấu giá > 10 tr, góp quỹ bang lớn không còn báo "Số lượng không hợp lệ".

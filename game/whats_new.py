@@ -39,6 +39,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.4", date="2026-10-24", items=(   # owner 24/10: "chỗ quăng dễ hơn … tầm quăng random … cả 1 km hoặc 2km", "giật cũng là 1 giây", "khó ở chỗ giật màu xanh ấy"
+        dict(emoji='🎯', text="Quăng dễ: giữ rồi thả là bay, xa gần hên xui", go=dict(action='fishing')),
+        dict(emoji='🚀', text="Cần xịn quăng tới cả 2 km!", go=dict(action='fishing')),
+        dict(emoji='🎣', text="Kéo cá dễ hơn: vùng xanh rộng, cá giãy chậm hơn; giật trong 1 giây", go=dict(action='fishing')),
+    )),
     dict(version="2.6.3", date="2026-10-24", items=(   # owner 24/10: "cách giật đang khó quá" → "Giật dễ hơn"
         dict(emoji='🎣', text="Giật cá dễ hơn: 3 giây để giật, có vòng đếm ngược; bấm lúc cá rỉa không mất cá", go=dict(action='fishing')),
         dict(emoji='📶', text="Mạng chậm không còn bị tính chậm tay"),
