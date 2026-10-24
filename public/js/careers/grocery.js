@@ -132,7 +132,7 @@ function alerts(x){
 function tabs(x,idle=false){
   const tab=curTab(x,idle),d=x.room.data||{};
   const owed=sum((d.ledger_view||[]).map(r=>r.balance)),n=alerts(x)+(d.rotation||[]).length;
-  const due=(d.lists_view||[]).filter(l=>l.when==='today'&&l.items.some(i=>i.packed<i.qty)).length;
+  const due=(d.lists_view||[]).filter(l=>l.when==='today'&&l.items.some(i=>i.packed<i.qty)).length+wsDue(x);
   const worry=(d.ledger_view||[]).some(r=>r.hard||r.risk||r.overdue);
   // Every tab keeps its icon, word and badge (owner 21/10: a row of bare icons was hard to read); the clean layout
   // keeps them short (Giỏ quen → Giỏ; the full name stays in aria-label).
@@ -773,12 +773,46 @@ function listCard(x,l){
     ${l.stale?`<p class="small bad">⚠ ${l.stale} món trong giỏ hết hạn hôm nay — khách sẽ không vui.</p>`:''}
     <div class="row spread wrap space-top"><small class="muted">Khoảng ${x.fmt(l.value)} xu · ${pay}</small>${act}</div></article>`;
 }
+/* 📦 Khách sỉ (game/careers/grocery.py _ws_view, feedback #373): wholesale pre-orders from career level 3, delivered
+ * the next day; the newer goods each level opens. An older server sends no ws_view: nothing shows. */
+const WS_STATE={offer:['amber','Đơn mới'],taken:['blue','Đã nhận'],done:['green','Đã giao'],missed:['red','Lỡ hẹn'],skipped:['','Đã bỏ qua'],expired:['','Hết hạn']};
+const wsDue=x=>{const w=x.room.data?.ws_view;return w?.orders?(w.orders.filter(o=>o.state==='offer'&&o.day===x.room.day||o.state==='taken'&&o.due<=x.room.day).length):0;};
+function wsCard(x,o){
+  const rows=o.lines.map(l=>{const it=item(x,l.item);const done=o.state==='done';
+    return {ok:done?(l.got>=l.qty?true:false):o.state==='taken'||o.state==='offer'?(l.have>=l.qty?true:null):null,icon:it.emoji,label:`${l.qty} ${stockUnit(x,l.item)} ${it.name}`,
+      value:done?`${l.got}/${l.qty}`:`kho ${l.have}`,tone:!done&&l.have<l.qty&&o.state!=='offer'?'warn':''};});
+  const [tone,word]=WS_STATE[o.state]||['',''];
+  const tag=o.state==='taken'?(o.due<=x.room.day?'Hôm nay giao':`Giao ngày ${o.due}`):word;
+  const pay={cash:'💵 tiền mặt',transfer:'📱 chuyển khoản'}[o.pay]||'';
+  let act='';
+  if(o.state==='offer')act=`<span class="row wrap gr-ws-acts">${x.cmd('Bỏ qua','gr_ws_skip',{order:o.id},'small ghost')}${x.cmd(`🤝 Nhận · cọc ${x.fmt(o.deposit)} xu`,'gr_ws_take',{order:o.id},'small primary')}</span>`;
+  else if(o.state==='taken'&&o.can==='not_yet')act=`<small class="muted">Nhập đủ hàng hôm nay, mai giao.</small>${o.lines.some(l=>l.have<l.qty)?x.button('📦 Sang Kho','inventory',{},'small ghost'):''}`;
+  else if(o.state==='taken'&&o.can==='short')act=`<span class="row wrap gr-ws-acts">${x.button('📦 Sang Kho','inventory',{},'small ghost')}${x.confirmCmd('Giao phần đang có','gr_ws_deliver',{order:o.id,partial:true},'Giao thiếu: chỉ thu phần đã giao và mối sỉ bớt tin tiệm. Giao luôn?','small ghost')}</span>`;
+  else if(o.state==='taken')act=x.confirmCmd('🚚 Giao đơn','gr_ws_deliver',{order:o.id},`Soạn hàng và giao cho ${o.name}, thu nốt ${x.fmt(o.value-o.paid)} xu?`,'small primary');
+  return `<article class="card gr-list gr-ws ${o.state==='offer'||o.state==='taken'?'today':''}"><div class="row"><span class="gr-ws-emoji" aria-hidden="true">${x.esc(o.emoji)}</span><div class="grow"><div class="row spread wrap"><h4>${x.esc(o.name)}</h4><span class="tag ${tone}">${x.esc(tag)}</span></div>
+    <p class="small muted">“${x.esc(o.say)}”</p></div></div>
+    ${reqList(rows,x.esc,'Hàng đơn sỉ')}
+    <div class="row spread wrap space-top"><small class="muted">Giá sỉ ${x.fmt(o.value)} xu <s>${x.fmt(o.list)}</s> (−${o.off}%) · ${pay}</small>${act}</div></article>`;
+}
+function wsView(x){
+  const w=x.room.data?.ws_view;if(!w)return '';
+  const goods=`<div class="gr-ws-goods">${w.goods.map(g=>{const it=item(x,g.item);return `<span class="chip ${g.open?'':'muted'}">${it.emoji} ${x.esc(it.name)} · ${g.open?`${x.fmt(g.price)} xu`:`🔒 cấp ${g.unlock}`}</span>`;}).join('')}</div>`;
+  const goodsBox=`<section class="card gr-bonds"><h4>🆕 Hàng mới theo cấp</h4><p class="small muted">Lên cấp mở thêm món. Nhập ở Kho (tổng kho sỉ), khách lẻ mua lúc đóng ca, mối sỉ cũng đặt.</p>${goods}</section>`;
+  if(!w.on)return `<section class="card gr-bonds"><h4>📦 Khách sỉ</h4><p class="small">Mở ở <b>cấp ${w.unlock}</b> (bạn đang cấp ${w.level}). Quán, căng tin, tiệm bánh sẽ đặt hàng trước, giao ngày hôm sau.</p></section>${goodsBox}`;
+  const open=w.orders.filter(o=>o.state==='offer'||o.state==='taken'),past=w.orders.filter(o=>!(o.state==='offer'||o.state==='taken'));
+  const accs=w.accounts.map(a=>`<li><b>${x.esc(a.emoji)} ${x.esc(a.name)}</b>${a.open?`<span class="gr-hearts" aria-label="Lòng tin ${a.trust}/5">${hearts(a.trust)}</span><small>${a.pause?`ngưng đặt ${a.pause} ngày`:x.esc(a.trust_name)} · bớt ${a.off}%</small>`:`<small>🔒 mở ở cấp ${a.lvl}</small>`}</li>`).join('');
+  return `<h3 class="gr-sub gr-ws-head">📦 Khách sỉ</h3>
+    ${open.length?open.map(o=>wsCard(x,o)).join(''):'<div class="card"><p class="small">Hôm nay chưa có đơn sỉ. Mỗi sáng mở ca sẽ có mối đặt hàng.</p></div>'}
+    ${past.length?fold(`Đơn gần đây (${past.length})`,past.map(o=>wsCard(x,o)).join('')):''}
+    <section class="card gr-bonds"><h4>🤝 Mối sỉ</h4><ul>${accs}</ul>${fold('Đơn sỉ khác bán lẻ thế nào?',`<p class="small">Đơn đặt hôm nay, giao ngày mai. Bán nhiều nhưng lời mỏng (giá sỉ bớt ${w.accounts[0]?.off||8}–12%). Nhận đơn thu cọc ${w.deposit}%. Giao đủ đúng ngày: +1 lòng tin, đơn to hơn. Giao thiếu −1, lỡ hẹn −2 và hoàn cọc.</p>`)}</section>
+    ${goodsBox}`;
+}
 function listsView(x){
   const d=x.room.data||{},ls=d.lists_view||[],regs=Object.values(d.lists||{});
   const book=regs.map(r=>`<li><b>${x.esc(r.name||'')}</b><span class="gr-hearts" aria-label="Thân tình ${r.bond}/5">${hearts(r.bond)}</span><small>${x.esc(r.bond_name||'')} · lấy giỏ: ${r.next===x.room.day?'hôm nay':r.next===x.room.day+1?'ngày mai':'ngày '+r.next}${r.bond>=(x.cc.bond_calm||4)?' · không so giá Mây Mart':''}</small></li>`).join('');
   return `<div class="gr-lists">
     ${ls.length?ls.map(l=>listCard(x,l)).join(''):'<div class="card"><p class="small">Hôm nay và ngày mai không có giỏ quen nào.</p></div>'}
-    <section class="card gr-bonds"><h4>💛 Khách quen</h4><ul>${book}</ul>${fold('Thân tình để làm gì?',`<p class="small">Giỏ đủ món, tươi: +1. Không soạn hoặc soạn phải hàng hết hạn: −1. Từ “${x.esc((x.cc.bond_names||[])[3]||'')}” khách gửi thêm tiền bồi dưỡng; từ “${x.esc((x.cc.bond_names||[])[x.cc.bond_calm||4]||'')}” khách không mang tờ rơi Mây Mart ra so giá nữa.</p>`)}</section></div>`;
+    <section class="card gr-bonds"><h4>💛 Khách quen</h4><ul>${book}</ul>${fold('Thân tình để làm gì?',`<p class="small">Giỏ đủ món, tươi: +1. Không soạn hoặc soạn phải hàng hết hạn: −1. Từ “${x.esc((x.cc.bond_names||[])[3]||'')}” khách gửi thêm tiền bồi dưỡng; từ “${x.esc((x.cc.bond_names||[])[x.cc.bond_calm||4]||'')}” khách không mang tờ rơi Mây Mart ra so giá nữa.</p>`)}</section>${wsView(x)}</div>`;
 }
 
 function tabBody(x,work,idle=false){

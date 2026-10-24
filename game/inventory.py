@@ -282,7 +282,8 @@ SUPPLIERS = {
         PARTNER, EXPRESS,
         dict(id='wholesale', name='Tổng kho sỉ Mây Xanh', emoji='🏭', kind='days', days=(1, 1), at=(60, 120),
              factor=0.8, short=5, late=10, voice=V_FAR,
-             items=['rice', 'noodle', 'fishsauce', 'oil', 'soap', 'snack', 'soda', 'beer'],
+             items=['rice', 'noodle', 'fishsauce', 'oil', 'soap', 'snack', 'soda', 'beer',
+                    'sugar', 'coffee', 'water', 'detergent', 'cookie'],
              note='Hàng khô, nước, bia theo thùng: giá sỉ, sáng mai giao. Hợp để trữ hàng không hạn.'),
     ],
     'repair': [
