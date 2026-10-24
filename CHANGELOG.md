@@ -1,3 +1,12 @@
+# 2.6.5.1 — 24/10/2026
+
+Hotfix (chủ game 24/10 "game mở ra k focus theo nhân vật gì cả, di chuyển và mở game ra nhân vật đi đâu ấy"). Không đổi schema, không có "Có gì mới".
+
+- 🎥 Phố 2.5D: camera giữ nhân vật gần giữa màn hình. Trước đây khung "thoải mái" của camera chạm sát mép màn (cách mép 160 px, xuống tới 72 % chiều cao) nên trên điện thoại nhân vật đi xuống dưới cần điều khiển / thanh dưới, trên máy tính lệch tới 480 px; nay khung chỉ ±12 % chiều ngang (tối đa 90 px) và −10 % / +8 % chiều dọc, camera bám mượt (nhanh hơn khi nhân vật sắp ra khỏi màn).
+- Camera bám theo cả khi nhân vật không tự đi (lượn hạ cánh, máy chủ chỉnh vị trí khi vào phố, đóng bảng/hồ câu) và không ngủ vòng vẽ tới khi bắt kịp.
+- Đổi kích thước khung (xoay điện thoại, thanh địa chỉ/bàn phím, cửa sổ máy tính, qua mốc 620 px): đặt nhân vật lại giữa màn; trước đây qua mốc 620 px camera nhảy về giữa phố, nhân vật đã được khôi phục vị trí nằm ngoài màn hình hàng nghìn px.
+- Phố cổ điển, Đi dạo và hồ câu chung đã bám nhân vật đúng (kiểm trên trình duyệt 390×844 và 1280×800), không đổi.
+
 # 2.6.5 — 24/10/2026
 
 Gộp 3 nhánh (chủ game 24/10 "xong hết thì đưa lên 1 lần"). Không đổi schema.
