@@ -46419,7 +46419,15 @@
     "Ngồi mép cầu tàu thả chân xuống nước.": "On the edge of the pier, feet in the water.",
     "Đứng cuối cầu nhìn ra khơi.": "At the end of the pier, looking out to sea.",
     "Đập bóng qua lưới, cát văng tung tóe.": "A spike over the net, sand flying.",
-    "Đỡ một quả bóng bổng, đẹp mắt!": "A beautiful dig!"
+    "Đỡ một quả bóng bổng, đẹp mắt!": "A beautiful dig!",
+    "Phiếu dịch vụ đã đổi nên giá này không còn hợp. Dừng cuộc trả giá này rồi đặt lại nhé.": "The service ticket has changed, so this price no longer fits. Stop this haggle and order again.",
+    "Món này đang hết hoặc quầy tạm dừng. Thử lại sau, hoặc dừng trả giá.": "This dish is sold out or the stall is paused. Try again later, or stop haggling.",
+    "Tiệm chưa nhận thêm khách lúc này (chưa mở ca, đang đủ việc hoặc hết lượt hôm nay). Làm bớt việc hoặc mở ca rồi bấm Đồng ý lại, hoặc Từ chối.": "The shop can't take another customer right now (shift not open, hands full, or today's slots used up). Finish some work or open the shift, then tap Agree again, or Decline.",
+    "Tiệm này chưa đón khách lúc này. Thử lại sau, hoặc dừng trả giá.": "This shop isn't taking customers right now. Try again later, or stop haggling.",
+    "Hàng tiệm mình, còn hóa đơn: không trừ hao.": "Our own shop's piece with its invoice: no wear deduction.",
+    "Mở “📋 Đọc số liệu” dưới biểu đồ: lấy số lớn nhất cột Sau trừ số lớn nhất cột Trước.": "Open “📋 Read the numbers” under the chart: the largest number in the After column minus the largest in the Before column.",
+    "Mở “📋 Đọc số liệu” dưới biểu đồ: lấy số lớn nhất cột Công suất.": "Open “📋 Read the numbers” under the chart: take the largest number in the Power column.",
+    "📋 Đọc số liệu": "📋 Read the numbers"
   },
   "patterns": {
     "⏱️ Giật $1": "⏱️ Yank $1",
@@ -52169,6 +52177,25 @@
     "📦 $1 món trong kho": "📦 $1 in storage",
     "👷 $1/$2 đội thợ đang làm": "👷 $1/$2 crews at work",
     "🌊 Lấn biển tiếp: $1 xu": "🌊 Next reclaim: $1 xu",
-    "Công trình và đồ trang trí không kiếm tiền: để ở, để chơi và khoe với bạn bè (🏝️ Đảo đẹp). Phá bỏ công trình nhận lại $1%.": "Buildings and decorations earn nothing: they are for living, playing and showing off to friends (🏝️ Island board). Demolishing a building returns $1%."
+    "Công trình và đồ trang trí không kiếm tiền: để ở, để chơi và khoe với bạn bè (🏝️ Đảo đẹp). Phá bỏ công trình nhận lại $1%.": "Buildings and decorations earn nothing: they are for living, playing and showing off to friends (🏝️ Island board). Demolishing a building returns $1%.",
+    "Cô Ba Ngọc chỉ: $1.": "Ms. Ba Ngọc shows you: $1.",
+    "Anh Tư chỉ: $1.": "Tư shows you: $1.",
+    "Tính lại: $1 phân × $2 ÷ 10, bỏ phần lẻ.": "Work it again: $1 phân × $2 ÷ 10, drop the fraction.",
+    "Tính lại: $1 phân × $2 ÷ 10, trừ hao $3% (hàng tiệm khác hoặc không hóa đơn), rồi mới bỏ phần lẻ.": "Work it again: $1 phân × $2 ÷ 10, minus $3% wear (another shop's piece or no invoice), and only then drop the fraction.",
+    "Tính lại: $1 phân × $2 ÷ 10, không trừ hao (hàng tiệm mình còn hóa đơn), rồi mới bỏ phần lẻ.": "Work it again: $1 phân × $2 ÷ 10, no wear deduction (our own piece with its invoice), and only then drop the fraction.",
+    "$1 phân × $2 ÷ 10 = $3 → trừ hao $4%: $5 × $6% = $7 → bỏ phần lẻ: $8 xu": "$1 phân × $2 ÷ 10 = $3 → minus $4% wear: $5 × $6% = $7 → drop the fraction: $8 xu",
+    "$1 phân × $2 ÷ 10 = $3 → bỏ phần lẻ: $4 xu": "$1 phân × $2 ÷ 10 = $3 → drop the fraction: $4 xu",
+    "đỉnh sau độ $1 mã lực ở $2 vòng/phút − đỉnh trước độ $3 mã lực ở $4 vòng/phút = $5 mã lực": "peak after tuning $1 hp at $2 rpm − peak before $3 hp at $4 rpm = $5 hp",
+    "đỉnh công suất $1 mã lực ở $2 vòng/phút": "peak power $1 hp at $2 rpm",
+    "Món nặng $1 phân (số vừa cân).": "The piece weighs $1 phân (just weighed).",
+    "Món nặng $1 phân vàng (số vừa cân). $2": "The piece holds $1 phân of gold (just weighed). $2",
+    "Món nặng $1 phân vàng (số vừa cân, đã trừ đá). $2": "The piece holds $1 phân of gold (just weighed, stone taken off). $2",
+    "Hàng tiệm khác hoặc không hóa đơn: trừ hao $1%.": "Another shop's piece or no invoice: minus $1% wear.",
+    "Công suất đỉnh trước độ $1 mã lực ở $2 vòng/phút; sau độ $3 mã lực ở $4 vòng/phút.": "Peak power before tuning $1 hp at $2 rpm; after tuning $3 hp at $4 rpm.",
+    "Công suất đỉnh $1 mã lực ở $2 vòng/phút.": "Peak power $1 hp at $2 rpm.",
+    "$1 AFR ở tải lớn cao nhất $2 ở $3 vòng/phút (giới hạn $4: vượt, nghèo xăng).": "$1 Highest full-load AFR $2 at $3 rpm (limit $4: over it, running lean).",
+    "$1 AFR ở tải lớn cao nhất $2 ở $3 vòng/phút (giới hạn $4: trong giới hạn).": "$1 Highest full-load AFR $2 at $3 rpm (limit $4: within it).",
+    "Số liệu dyno: $1 Bảng từng mốc ở mục Đọc số liệu dưới biểu đồ.": "Dyno numbers: $1 The table for each point is under Read the numbers below the chart.",
+    "Số đo dyno từng mốc vòng tua, công suất tính bằng $1": "Dyno readings at each rpm point, power in $1"
   }
 }
