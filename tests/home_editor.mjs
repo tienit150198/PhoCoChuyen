@@ -135,4 +135,11 @@ assert.equal(sent.length,0,'cooperative edits never touch the visitor save');
 assert.equal(posts.at(-1).url,'/api/home-guests/deco/act');assert.equal(posts.at(-1).body.code,'friend');
 assert.equal(posts.at(-1).body.action,'put');assert.equal(posts.at(-1).body.rot,1,'the friend turns the owner\'s sofa');
 await ui.onClick('pick',{uid:'s'});assert.equal(posts.at(-1).body.action,'pick','and may put it away into the owner\'s bag');
+// ---- #518 "nhà cứ có nét đứt": stroke, stroke-width and stroke-dasharray are inherited, so a class that draws dashes in
+// the SVG must never also name an HTML box (the editor's layout <div class="dc-grid"> once dashed every drawing inside it)
+{const css=await readFile(new URL('../public/css/reno.css',import.meta.url),'utf8'),js=source+await readFile(new URL('../public/js/v4/deco-art.js',import.meta.url),'utf8');
+  const dashed=new Set();for(const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g))if(/stroke-dasharray\s*:/.test(m[2]))for(const c of m[1].matchAll(/\.([\w-]+)/g))dashed.add(c[1]);
+  for(const m of js.matchAll(/<(div|section|p|span|button|figure|li|ul|header|footer|dialog|label)\b[^>]*class="([^"$]*)"/g))
+    for(const c of m[2].split(/\s+/))assert.ok(!dashed.has(c),`HTML <${m[1]} class="${c}"> would dash every drawing inside it`);
+  assert.match(source,/class="dc-snapgrid"/,'the snap grid has its own class');}
 console.log('Home editor (2D): owned moves, turns that fit, held turns, R, busy/guest rejection, coop endpoint, turned drawing, zoom, poses passed');

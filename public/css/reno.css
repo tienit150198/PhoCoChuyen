@@ -334,7 +334,7 @@
 .dc-donecorner{position:absolute;right:8px;top:8px;z-index:2}
 .dc-donecorner .btn{min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 /* ▦ the cells a piece snaps to while it is placed */
-.dc-grid{fill:none;stroke:#3fae66;stroke-opacity:.38;stroke-width:1;stroke-dasharray:2 4}
+.dc-snapgrid{fill:none;stroke:#3fae66;stroke-opacity:.38;stroke-width:1;stroke-dasharray:2 4}
 .dc-turn{font-weight:800}
 /* 🪑 the character using a piece (v4/home-pose.js) */
 .hp-zz text{font-family:system-ui,sans-serif}

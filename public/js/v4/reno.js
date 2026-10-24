@@ -539,7 +539,7 @@ const sparkles=(x,y,w,h)=>`<g class="dc-sparks" aria-hidden="true">${[[.1,.1,'#f
 function zoneMarkup(rm,it,G,list){
   if(!it||!it.rooms.includes(rm.type))return '';
   const z=zoneOf(rm,it),out=[];
-  const grid=(y0,rows,rh)=>{let d='';for(let i=1;i<rm.cols;i++)d+=`M${A.PX+i*A.CW} ${y0}v${rows*rh}`;for(let j=1;j<rows;j++)d+=`M${A.PX} ${y0+j*rh}h${rm.cols*A.CW}`;return d?`<path class="dc-grid" d="${d}"/>`:'';};   // ▦ the cells it snaps to
+  const grid=(y0,rows,rh)=>{let d='';for(let i=1;i<rm.cols;i++)d+=`M${A.PX+i*A.CW} ${y0}v${rows*rh}`;for(let j=1;j<rows;j++)d+=`M${A.PX} ${y0+j*rh}h${rm.cols*A.CW}`;return d?`<path class="dc-snapgrid" d="${d}"/>`:'';};   // ▦ the cells it snaps to
   if(it.spot==='wall'&&rm.wrows)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.WY}" width="${rm.cols*A.CW}" height="${rm.wrows*A.WR}" rx="8"/>`,grid(G.WY,rm.wrows,A.WR));
   else if(it.spot!=='wall'&&z)out.push(`<rect class="dc-zone" x="${A.PX}" y="${G.FY}" width="${rm.cols*A.CW}" height="${rm.frows*A.FR}" rx="8"/>`,it.spot==='top'?'':grid(G.FY,rm.frows,A.FR));
   for(const f of rm.fix)if(f.block&&f.layer===(it.spot==='wall'?'wall':'floor')&&!(it.spot==='rug'&&f.rug)&&!(f.allow||[]).some(t=>it.tags.includes(t))){
