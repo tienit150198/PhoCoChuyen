@@ -26,6 +26,8 @@ def total(s):
     if iv.get('coin'):
         wealth += invest.value(s)
     wealth += vang.value(s)
+    from . import san
+    wealth += san.value(s)   # 🎢 Sàn Phố holdings at today's price
     home = j.get('home') or {}
     owned = ([home['own']] if home.get('own') else []) + list(home.get('props', []))
     seen = set()

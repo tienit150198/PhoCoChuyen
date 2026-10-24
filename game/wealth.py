@@ -145,6 +145,9 @@ def _extras(j) -> tuple[int, int]:
     gold = _d(j.get('vang'))
     if _n(gold.get('phan')) > 0:
         assets += max(0, _n(gold.get('cost')))
+    if type(j.get('san')) is dict:   # 🎢 Sàn Phố coins and stocks at cost, like Mây Coin (game/san.py basis)
+        from .san import basis as san_basis
+        assets += san_basis(j)
     cars = _d(_d(j.get('garage')).get('cars'))
     if cars:
         from .garage import sell_price

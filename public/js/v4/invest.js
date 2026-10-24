@@ -4,7 +4,7 @@
  * Buttons use data-action="iv…" (investAction) or journey's `jrView`.
  * Design: docs/superpowers/specs/2026-09-29-invest-design.md */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {marketBoot,refreshQuotes,changeRange,marketView} from './invest-market.js';
+import {marketBoot,refreshQuotes,changeRange,changeAsset,marketView} from './invest-market.js';
 import {marketChart,rangeControls} from './invest-chart.js';
 // Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
 import {qtyBox,QTY} from '../qty-input.js';
@@ -20,7 +20,8 @@ const CHIPS=[50,100,200,'all'];
 const LOG_ICON={buy:'🪙',sell:'💱',save:'🏦',withdraw:'👛',interest:'🌱',pump:'📈',crash:'📉',scam_offer:'📣',scam_join:'💸',scam_pay:'💸',scam_gone:'🕳️',scam_decline:'🛡️',scam_news:'📰'};
 
 const stateOf=env=>marketView(env).I;
-const pick=(env,box)=>env.ui[box==='save'?'ivSave':'ivCoin']??100;
+const BOX={save:'ivSave',coin:'ivCoin',san:'svAmt'};
+const pick=(env,box)=>env.ui[BOX[box]||'ivCoin']??100;
 const payload=v=>v==='all'?{all:true}:{amount:Number(v)};
 const label=v=>v==='all'?'Tất cả':`${fmt(v)} xu`;
 
@@ -134,11 +135,15 @@ function goldCard(env,G){
   </section>`;
 }
 
-function marketTiles(I,G,selected){
+function marketTiles(I,G,selected,S,B){
   const assets=[{id:'coin',name:'Mây Coin',emoji:'☁️',price:price(I.coin.price,I.rules)+' xu',value:I.coin.value,change:I.coin.change,locked:!I.unlocked},
     {id:'gold',name:'Vàng',emoji:'🪙',price:G?xu(G.p)+'/chỉ':'Đang tải',value:G?.value||0,change:G?.y?(G.p-G.y)*100/G.y:0}];
-  return `<div class="iv-market-tabs" role="group" aria-label="Chọn tài sản">${assets.map(a=>`<button type="button" class="iv-market-tile ${selected===a.id?'selected':''}" data-action="ivMarket" data-market="${a.id}" aria-pressed="${selected===a.id}"><span>${a.emoji} ${a.name}</span><strong>${a.price}</strong><small class="${a.change>=0?'gain':'loss'}">${a.change>=0?'▲ +':'▼ '}${a.change.toLocaleString('vi-VN',{maximumFractionDigits:1})}%</small><small>${a.locked?'Mở khi ví từng có 500 xu':`Đang giữ ${xu(a.value)}`}</small></button>`).join('')}</div>`;
+  const tile=a=>`<button type="button" class="iv-market-tile ${selected===a.id?'selected':''}" data-action="ivMarket" data-market="${a.id}" aria-pressed="${selected===a.id}"><span>${a.emoji} ${a.name}</span><strong>${a.price}</strong><small class="${a.change>=0?'gain':'loss'}">${a.change>=0?'▲ +':'▼ '}${a.change.toLocaleString('vi-VN',{maximumFractionDigits:1})}%</small><small>${a.locked?'Mở khi ví từng có 500 xu':`Đang giữ ${xu(a.value)}`}</small></button>`;
+  const on=S&&(selected==='san'||S.assets.some(a=>a.id===selected));
+  const san=S?`<button type="button" class="iv-market-tile sv-tile ${on?'selected':''}" data-action="ivMarket" data-market="san" aria-pressed="${!!on}"><span>🎢 Sàn Phố</span><strong>${S.assets.length} mã</strong><small>Coin & cổ phiếu</small><small>Đang giữ ${xu(sanTotal(S,B))}</small></button>`:'';
+  return `<div class="iv-market-tabs${san?' three':''}" role="group" aria-label="Chọn tài sản">${assets.map(tile).join('')}${san}</div>`;
 }
+const sanTotal=(S,B)=>S?Object.entries(S.hold).reduce((t,[id,h])=>t+(B?.assets?.[id]?sanVal(h,B.assets[id],S.rules):h.value||0),0):0;
 
 function scamCard(env,I){
   const X=I.scam;if(!X)return '';
@@ -167,20 +172,97 @@ function badges(I){
   return `<h3 class="jr-sub">Huy hiệu đầu tư</h3><div class="iv-badges">${I.badges.map(b=>`<div class="iv-badge"><span aria-hidden="true">${b.emoji}</span><div><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div></div>`).join('')}</div>`;
 }
 
+
+/* ------------------------------------------------------------------ 🎢 Sàn Phố (game/san.py, game/market_wild.py) */
+const pct=n=>`${n>0?'+':n<0?'−':''}${Math.abs(Number(n)||0).toLocaleString('vi-VN',{maximumFractionDigits:1})}%`;
+const sanOf=env=>env.api.state?.san||null;
+/** Units in the board's split terms: a split (1→10) or merge (10→1) since the state was read keeps the value. */
+const uOf=(h,q)=>{const d=(h?.e||0)-(q?.e??h?.e??0);return !h?0:d>0?h.units*10**d:d<0?Math.max(1,Math.floor(h.units/10**-d)):h.units;};
+const sanVal=(h,q,R)=>h&&!h.dead&&q?.price>0?Math.floor(uOf(h,q)*q.price/(R.coin*R.cent)):0;
+/** Big moves flash once: the rows whose price changed at the newest tick, for 2,5 s after it arrived. */
+function flashOf(env,B){
+  if(!B?.assets)return {};
+  const ui=env.ui;
+  if(ui.svTick!==B.tick){
+    const seen=ui.svSeen||{},f={};
+    for(const [id,a] of Object.entries(B.assets))if(seen[id]!=null&&a.price!==seen[id])f[id]=a.price>seen[id]?'up':'down';
+    ui.svSeen=Object.fromEntries(Object.entries(B.assets).map(([id,a])=>[id,a.price]));
+    ui.svFlash=f;ui.svFlashAt=Date.now();ui.svTick=B.tick;
+  }
+  return Date.now()-(ui.svFlashAt||0)<2500?ui.svFlash||{}:{};
+}
+function miniSpark(points){
+  const pts=(points||[]).filter(v=>v>0);if(pts.length<2)return '<span class="sv-spark"></span>';
+  const lo=Math.min(...pts),hi=Math.max(...pts),w=56,h=22,span=Math.max(1,hi-lo);
+  const line=pts.map((v,i)=>`${(i*w/(pts.length-1)).toFixed(1)},${(h-2-(v-lo)*(h-4)/span).toFixed(1)}`).join(' ');
+  return `<svg class="sv-spark ${pts.at(-1)>=pts[0]?'up':'down'}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${line}"/></svg>`;
+}
+function sanTicker(B){
+  const rows=(B?.ticker||[]).slice(0,3);
+  if(!rows.length)return '';
+  return `<div class="sv-ticker" role="status" aria-label="Tin nóng thị trường">${rows.map(r=>`<p class="${r.sign>0?'up':r.sign<0?'down':''}"><span aria-hidden="true">${r.sign>0?'📈':r.sign<0?'📉':'📰'}</span> ${esc(r.text)}${r.kind!=='mover'&&r.move?` <b>${pct(r.move)}</b>`:''}</p>`).join('')}</div>`;
+}
+function sanList(env,S,B){
+  const tab=env.ui.svTab==='stock'?'stock':'coin',flash=flashOf(env,B),R=S.rules;
+  const rows=S.assets.filter(a=>a.kind===tab).map(a=>{
+    const q=B?.assets?.[a.id],h=S.hold[a.id],p=q?.price,dead=!!q?.delisted,ch=q?.ch1h??0,on=env.ui.ivMarket===a.id;
+    const held=h?(h.dead?' · đã mất':` · giữ ${xu(sanVal(h,q,R))}`):'';
+    return `<button type="button" class="sv-row${flash[a.id]?' flash-'+flash[a.id]:''}${on?' selected':''}${a.open?'':' locked'}" data-action="ivMarket" data-market="${a.id}" aria-pressed="${on}">
+      <span class="sv-emo" aria-hidden="true">${a.emoji}</span>
+      <span class="sv-name"><b>${esc(a.name)}</b><small>${esc(a.sym)}${a.risky?' · ⚠️':''}${a.open?held:` · 🔒 ${fmt(a.unlock)} xu`}</small></span>
+      ${miniSpark(q?.spark)}
+      <span class="sv-q"><b>${dead?'Hủy niêm yết':p!=null?price(p,R)+' xu':'…'}</b><small class="${ch>0?'gain':ch<0?'loss':''}">${dead?'':pct(ch)+' 1 giờ'}</small></span></button>`;}).join('');
+  return `<section class="sv" aria-labelledby="svT"><div class="sv-head"><h3 id="svT">🎢 Sàn Phố</h3><nav class="sv-tabs" aria-label="Loại tài sản">${[['coin','Coin'],['stock','Cổ phiếu']].map(([k,l])=>`<button type="button" data-action="ivSanTab" data-tab="${k}" aria-pressed="${tab===k}">${l}</button>`).join('')}</nav></div>
+    ${sanTicker(B)}
+    <div class="sv-list">${rows}</div>
+    <p class="iv-hint">Giá chung cả phố, đổi mỗi 10 phút. Chỉ dùng tiền nhàn rỗi nhé.</p></section>`;
+}
+function sanCard(env,S,B,id){
+  const a=S.assets.find(x=>x.id===id);if(!a)return '';
+  const q=B?.assets?.[id],h=S.hold[id],R=S.rules,J=env.api.state.journey||{},wallet=J.wallet||0;
+  const p=q?.price??0,dead=!!q?.delisted,ch=q?.ch1h??0,unit=a.kind==='stock'?'cp':a.sym;
+  const v=pick(env,'san'),fee=x=>Math.max(1,Math.ceil(x*a.fee/100));
+  const value=sanVal(h,q,R),pnl=value-(h?.basis||0);
+  const was=h&&!h.dead?Math.round((h.peak||0)*10**((q?.e??h.e??0)-(h.e||0))):0,peak=Math.max(was,h&&!h.dead?p:0);
+  const peakVal=h?Math.floor(uOf(h,q)*peak/(R.coin*R.cent)):0,peakNet=peakVal>1?peakVal-fee(peakVal):0;
+  const regret=h&&!h.dead&&peakNet>h.basis&&peakVal*100>=value*110;
+  const buyAmt=v==='all'?wallet:Number(v),sellAmt=v==='all'?value:Number(v);
+  const news=q?.news?.active?`<aside class="iv-news ${q.news.direction==='down'?'down':'up'}"><small>📰 Tin trên sàn</small><b>${esc(q.news.title)}</b>${q.news.move?`<span>Giá phản ứng ${pct(q.news.move)}</span>`:''}</aside>`:'';
+  const hold=h?(h.dead?`<p class="sv-dead">🕳️ ${esc(a.name)} đã bị hủy niêm yết: ${xu(h.basis)} bạn bỏ vào đã mất.</p>`
+    :`<div class="iv-hold"><div class="iv-kv"><span>Đang giữ</span><b>${coins(uOf(h,q),R)} ${esc(unit)}</b></div><div class="iv-kv"><span>Trị giá hiện tại</span><b>${xu(value)}</b></div><div class="iv-kv"><span>Tiền đã bỏ vào (gồm phí)</span><b>${xu(h.basis)}</b></div><div class="iv-kv iv-pnl ${pnl>=0?'gain':'loss'}"><span>${pnl>=0?'Lãi tạm tính':'Lỗ tạm tính'}</span><b>${signed(pnl)}</b></div></div>`
+      +(regret?`<p class="sv-regret">😢 Nếu bán lúc đỉnh (${price(peak,R)} xu) bạn đã có <b>${xu(peakNet)}</b>.</p>`:''))
+    :`<p class="muted small">Bạn chưa có ${esc(a.name)}.</p>`;
+  const locked=!a.open?`<p class="iv-hint">🔒 Mở khi ví của bạn từng có ${xu(a.unlock)}.</p>`:!S.open?`<p class="iv-hint">Sàn chưa mở cửa.</p>`:'';
+  const canTrade=a.open&&S.open&&!dead;
+  return `<section class="jr-card iv-card iv-coin sv-card${a.risky?' risky':''}" aria-labelledby="svCardT">
+    <div class="iv-card-top"><span class="iv-emoji" aria-hidden="true">${a.emoji}</span><div class="grow"><span class="eyebrow">${a.kind==='stock'?'Cổ phiếu':'Coin'} · ${esc(a.sector)}${q?.regime?` · ${esc(q.regime)}`:''}</span><h3 id="svCardT">${esc(a.name)} <small>${esc(a.sym)}</small></h3></div>
+      <div class="iv-price"><strong>${dead?'0 xu':price(p,R)+' xu'}</strong><span class="iv-change ${ch>0?'up':ch<0?'down':'flat'}">${ch>0?'▲':ch<0?'▼':'•'} ${pct(ch)} <small>1 giờ · ${pct(q?.ch24h??0)} 24 giờ</small></span></div></div>
+    ${a.risky?`<p class="sv-warn">${esc(a.desc)}</p>`:`<p class="muted small">${esc(a.desc)}</p>`}
+    ${dead?`<p class="sv-dead">🕳️ Đang bị hủy niêm yết. Coin sẽ niêm yết lại sau một ngày, giá khởi điểm.</p>`:''}
+    ${news}
+    ${marketChart(env,id,q?.spark||[],q?{timestamps:(q.spark||[]).map((_,i,s)=>B.as_of-(s.length-1-i)*3600)}:null,R.cent,{name:a.name,price:p,as_of:B?.as_of})}
+    ${hold}${locked}
+    ${canTrade?chips(env,'san'):''}
+    ${canTrade?`<div class="iv-actions">${btn(`Mua ${v==='all'?'hết ví':label(v)}`,'ivSanBuy',{a:id},'primary',buyAmt<R.min_trade||buyAmt>wallet?' disabled':'')}${btn(`Bán ${v==='all'?'hết':label(v)}`,'ivSanSell',{a:id},'cream',!h||h.dead||(v!=='all'&&(sellAmt>value||sellAmt<R.min_trade))?' disabled':'')}</div>
+    <p class="iv-hint">Phí ${a.fee}% mỗi lần mua và bán${buyAmt>=R.min_trade?` (mua ${xu(buyAmt)}: phí ${xu(fee(buyAmt))})`:''}. Giá chốt khi máy chủ nhận lệnh.</p>`:''}
+  </section>`;
+}
+
 /** The "Đầu tư" sheet (journey home view `invest`). */
 export function investView(env){
   const I=stateOf(env);
   if(!I)return head('Đầu tư','')+`<div class="sheet-body jr-body"><p class="muted">Ngân hàng phố chưa mở cửa…</p></div>`;
-  const G=marketView(env).G,selected=env.ui.ivMarket==='gold'||!env.ui.ivMarket&&!I.unlocked?'gold':'coin';
-  const total=I.saving.balance+I.coin.value+(G?.value||0);
+  const {G,B}=marketView(env),S=sanOf(env),sv=S&&(env.ui.ivMarket==='san'||S.assets.some(a=>a.id===env.ui.ivMarket));
+  const selected=sv?env.ui.ivMarket:env.ui.ivMarket==='gold'||!env.ui.ivMarket&&!I.unlocked?'gold':'coin';
+  const total=I.saving.balance+I.coin.value+(G?.value||0)+sanTotal(S,B);
   const locked=`<section class="jr-card iv-card iv-teaser"><h3>☁️ Mây Coin</h3><p>Mở khi ví của bạn từng có ${xu(I.need)}. Bạn vẫn có thể mua bán vàng ngay.</p><figure class="iv-chart">${sparkline(I.coin.prices,{R:I.rules,clock:I.coin.market_clock})}<figcaption>${I.coin.market_clock?'Giá coin chung cả phố · 10 phút/phiên':'Giá coin theo ngày sống'} · xem trước</figcaption></figure></section>`;
   return head('Đầu tư','')+`<div class="sheet-body jr-body iv">
     <section class="iv-strip" aria-live="polite"><div><small>Ví của bạn</small><b>${xu(I.wallet)}</b></div><div><small>Đang đầu tư</small><b>${xu(total)}</b></div></section>
-    ${marketTiles(I,G,selected)}<p class="iv-clock">${marketClock(I.coin.market_clock||G?.market_clock)}</p>
+    ${marketTiles(I,G,selected,S,B)}<p class="iv-clock">${marketClock(I.coin.market_clock||G?.market_clock)}</p>
     <div class="row spread wrap">${btn(env.ui.ivRefreshing?'Đang cập nhật…':'Cập nhật giá','ivRefresh',{},'ghost small',env.ui.ivRefreshing||env.ui.ivBusy?' disabled':'')}<small class="muted">Giá chốt khi mua / bán</small></div>
     ${env.ui.ivRefreshError?`<p class="iv-hint" role="status">${esc(env.ui.ivRefreshError)}</p>`:''}
-    ${rangeControls(env)}
-    <div class="iv-market-detail" aria-busy="${!!env.ui.ivBusy}"><fieldset class="iv-trading"${env.ui.ivBusy?' disabled':''}>${selected==='gold'?goldCard(env,G):I.unlocked?coinCard(env,I):locked}</fieldset></div>
+    ${selected==='san'?'':rangeControls(env)}
+    <div class="iv-market-detail" aria-busy="${!!env.ui.ivBusy}"><fieldset class="iv-trading"${env.ui.ivBusy?' disabled':''}>${sv?(selected==='san'?'':sanCard(env,S,B,selected))+sanList(env,S,B):selected==='gold'?goldCard(env,G):I.unlocked?coinCard(env,I):locked}</fieldset></div>
     ${I.unlocked?`<details class="iv-extra"><summary>Sổ tiết kiệm & nhật ký</summary><fieldset class="iv-trading"${env.ui.ivBusy?' disabled':''}>${savingCard(env,I)}${I.scam?scamCard(env,I):''}</fieldset>${badges(I)}${logList(I)}</details>`:''}
   </div>`;
 }
@@ -188,7 +270,8 @@ export function investView(env){
 /** A small card for the wallet sheet: teaser while locked, entry once open. */
 export function investEntry(env){
   const I=stateOf(env);if(!I)return '';
-  return `<button type="button" class="jr-card iv-entry" data-action="jrView" data-view="invest"><span class="iv-emoji" aria-hidden="true">📈</span><span class="grow"><b>Đầu tư</b><small>Mây Coin ${xu(I.coin.value)} · Vàng ${xu(env.api.state.vang?.value||0)}</small></span>${icon('arrow',16)}</button>`;
+  const S=sanOf(env),hold=S?sanTotal(S,marketView(env).B):0;
+  return `<button type="button" class="jr-card iv-entry" data-action="jrView" data-view="invest"><span class="iv-emoji" aria-hidden="true">📈</span><span class="grow"><b>Đầu tư</b><small>Mây Coin ${xu(I.coin.value)} · Vàng ${xu(env.api.state.vang?.value||0)}${hold?` · Sàn Phố ${xu(hold)}`:''}</small></span>${icon('arrow',16)}</button>`;
 }
 
 export function investBoot(env){marketBoot(env);}
@@ -198,14 +281,21 @@ export async function investAction(action,data,el,env){
   if(!action?.startsWith('iv'))return false;
   const {ui,cmd,renderSheet,confirmAction}=env,I=stateOf(env);if(!I)return true;
   const ask=(t,x,l)=>confirmAction?confirmAction(t,x,l):Promise.resolve(true);
-  const trade=['ivSave','ivWithdraw','ivBuy','ivSell','ivScamJoin','ivScamDecline','ivGoldBuy','ivGoldSell'].includes(action);
+  const trade=['ivSave','ivWithdraw','ivBuy','ivSell','ivScamJoin','ivScamDecline','ivGoldBuy','ivGoldSell','ivSanBuy','ivSanSell'].includes(action);
   if(trade&&ui.ivBusy)return true;
   if(trade){ui.ivBusy=true;renderSheet();}
   try{
   switch(action){
     case'ivRefresh':await refreshQuotes(env);return true;
     case'ivRange':changeRange(env,data.range);return true;
-    case'ivMarket':ui.ivMarket=data.market==='gold'?'gold':'coin';ui.ivPoint=null;renderSheet();return true;
+    case'ivMarket':{const S=sanOf(env),m=data.market;
+      changeAsset(env,m==='gold'||m==='coin'?m:S&&(m==='san'||S.assets.some(a=>a.id===m))?m:'coin');return true;}
+    case'ivSanTab':ui.svTab=data.tab==='stock'?'stock':'coin';renderSheet();return true;
+    case'ivSanBuy':{const S=sanOf(env),a=S?.assets.find(x=>x.id===data.a),v=pick(env,'san');if(!a)return true;
+      if((a.risky||v==='all')&&!(await ask(`Mua ${a.name}?`,a.risky?a.desc:`Bạn sẽ mua bằng toàn bộ ${xu(I.wallet)} trong ví.`,'Vẫn mua')))return true;
+      await cmd('jr_san_buy',{a:a.id,...payload(v)});return true;}
+    case'ivSanSell':{const S=sanOf(env),a=S?.assets.find(x=>x.id===data.a);if(!a)return true;
+      await cmd('jr_san_sell',{a:a.id,...payload(pick(env,'san'))});return true;}
     // A whole number of phân (a chip), or one part typed: the chỉ box keeps the odd phân, the phân box keeps the chỉ.
     case'ivGoldQty':{const n=goldQty(env),chi=Math.floor(Number(data.chi)),phan=Math.floor(Number(data.phan));
       ui.ivGoldQty=goldClamp(data.chi!=null&&Number.isFinite(chi)?Math.max(0,chi)*10+n%10:data.phan!=null&&Number.isFinite(phan)?Math.floor(n/10)*10+Math.max(0,Math.min(9,phan)):data.n);renderSheet();return true;}
@@ -214,7 +304,7 @@ export async function investAction(action,data,el,env){
       if(await (confirmAction?confirmAction(`Mua ${goldAmount(n)} vàng?`,`Giá tiệm bán ${xu(G.buy)}/chỉ.`,`Mua · ${xu(cost)}`,{cost,pocket:['wallet','account']}):Promise.resolve(true)))await cmd('jr_vang_buy',{phan:n});return true;}
     case'ivGoldSell':{const G=marketView(env).G;if(!G?.phan)return true;const n=Math.min(goldQty(env),G.phan);
       if(await ask(`Bán ${goldAmount(n)} vàng?`,'Tiền bán vàng vào ví.',`Bán · nhận ${xu(goldWorth(n,G))}`))await cmd('jr_vang_sell',n===G.phan?{all:true}:{phan:n});return true;}
-    case'ivAmt':ui[data.box==='save'?'ivSave':'ivCoin']=data.v==='all'?'all':Number(data.v);renderSheet();return true;
+    case'ivAmt':ui[BOX[data.box]||'ivCoin']=data.v==='all'?'all':Number(data.v);renderSheet();return true;
     case'ivSave':await cmd('iv_save',payload(pick(env,'save')));return true;
     case'ivWithdraw':{const v=pick(env,'save'),S=I.saving;
       if(S.pending&&!(await ask('Rút trước kỳ hạn?',`Kỳ này bạn đã có ${xu(S.pending)} tiền lãi. Rút bây giờ thì mất khoản lãi đó (tiền gốc vẫn giữ nguyên). Còn ${fmt(S.term_left)} ngày nữa là tới ngày cộng lãi.`,'Vẫn rút')))return true;

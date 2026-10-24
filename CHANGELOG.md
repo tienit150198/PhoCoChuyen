@@ -1,3 +1,18 @@
+# Chưa phát hành — feat/market-wild
+
+🎢 Sàn Phố (chủ game 24/10: "cho thêm nhiều loại coin khác, nhiều loại chứng khoán nữa nhé… cho biến động lên xuống thất thường… hiện tại dễ đầu tư quá"). Không đổi schema, không thêm bảng, giá tính trong tiến trình. Chủ game 24/10: chỉ báo người chơi "có thêm nhiều coin và cổ phiếu mới", KHÔNG báo việc thị trường biến động mạnh hơn / luật giá đổi.
+
+- Vì sao dễ: giá cũ (realtime_market) bám một đường tham chiếu tăng đều ai cũng đọc được → mua khi giá dưới trung bình 24 h 10 %, bán sau 12 h: +13 %/lệnh sau phí (66 % thắng); giữ vàng một tháng ≈ +20 %.
+- game/market_wild.py (mới): giá là martingale (E[e^r] = 1 mỗi bước, bù chính xác cho nhiễu, nhảy giá, cú sốc ngành / thị trường, chế độ calm/normal/wild/bull/bear, bơm–xả công bằng có trần); tin tức chỉ đúng chiều 72 %. Mọi chiến lược đơn giản (giữ 1 giờ/1 ngày/1 tuần, bắt đáy, đà tăng, theo tin, theo bơm) ≈ −phí. Seed bí mật theo luồng + ngày, không tính trước tương lai.
+- 11 coin mới (Phở, Bánh Mì, Lúa, Cá Rô, Trà Đá, Heo Đất, Mèo Mai; rủi ro cao: Dưa Hấu, Gà Chiến, Cuội, Bão — có thể bị hủy niêm yết về 0, niêm yết lại sau 1 ngày) + 13 cổ phiếu công ty trong phố (10 ngành). Mây Coin và vàng giữ id, nối tiếp giá cũ tại WILD_TICK (MNL_MARKET_WILD_AT, mặc định 26/10 04:00 VN).
+- Biến động (log sd 1 ngày / 1 tuần): Mây Coin 18 % / 47 % (cũ 25 % / 27 %, cũ hồi về tham chiếu), coin thường 15–24 %, rủi ro 27–37 % / ~85 %, cổ phiếu 4–12 %, vàng 4 % (cũ 7 %). Coin có lúc +100 % / −60 % trong 1 giờ.
+- Tách / gộp (1→10 trên launch×10, 10→1 dưới launch/10) cho coin, cổ phiếu và Mây Coin: giá và số lượng đổi cùng lúc, giá trị không đổi (journey.san.h[].e, journey.coin_split_e; biểu đồ đã điều chỉnh).
+- game/san.py (mới): journey.san, jr_san_buy / jr_san_sell, phí coin 2 %, cổ phiếu 1 %, mở theo ví lớn nhất (500 / 2.000 / 3.000 / 10.000), dòng Sổ ví ≤ 10 triệu (tách dòng), lệnh bán ≤ 100 triệu; tài sản (wealth), phạt thiết bị (fair_hai) và public state (đỉnh từ lúc mua cho dòng "Nếu bán lúc đỉnh") có tính.
+- /api/market và socket market_watch mang bảng giá (giá, 1 h/24 h, sparkline, tin, ticker) và biểu đồ mã đang mở. Client: ô 🎢 Sàn Phố, tab Coin / Cổ phiếu, nháy xanh/đỏ, ticker, thẻ mã, dòng tiếc nuối.
+- Tiền tệ (mô phỏng, 10.000 xu/lệnh, 1 lệnh/người/ngày, trộn chiến lược): cũ +167k xu tạo ra / 1.000 ngày-người; mới −276k (phí là chỗ tiêu xu, lãi lỗ thị trường ≈ 0).
+- Chi phí: khởi động phải chạy lại từ WILD_TICK (≈ 0,4–1 s CPU mỗi tháng tuổi sàn), RAM ≈ 15 MB/năm.
+- Tests: tests/test_market_wild.py; scripts/browser_market_wild.py (390x844).
+
 # 2.6.6 — 24/10/2026
 
 Gộp 2 nhánh: hồ câu (chủ game 24/10: "bị mất cái cánh", hồ đông cần kéo ngang, thanh kéo cá, "cần xịn thì nhìn khác đi", "cá to thì nhìn to thật"; góp ý #515) và 🐱 Mèo Mai (chủ game: "trong danh sách thú thêm con mèo này nhé, tên Mai, bán giá cao cao chút"). Không đổi schema. Có "Có gì mới".

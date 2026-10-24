@@ -65,7 +65,7 @@ FEATURES = (
     ('close', ('qn_',)),
     ('story', ('st_', 'ev_')),
     ('fair', ('fair_',)),
-    ('risk', ('jr_rui_', 'jr_vang_')),
+    ('risk', ('jr_rui_', 'jr_vang_', 'jr_san_')),
     ('jobs', ('job_', 'select_career')),
     ('quay', ('jr_quay',)),
 )

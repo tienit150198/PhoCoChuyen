@@ -31,6 +31,7 @@ PRICE_MIN, PRICE_MAX = 100, 10_000_000
 COIN = 1000             # units per coin (thousandths)
 CENT = 100              # price scale
 REALTIME_KEY = 'coin_realtime_v'  # optional journey sidecar, never part of legacy invest schema
+SPLIT_KEY = 'coin_split_e'        # optional journey sidecar: the split exponent coin units are counted in (0 if missing)
 MAX_UNITS = 10**15       # includes maximum valid legacy units redenominated at PRICE_MAX
 FEE_PCT = 2
 MIN_TRADE = 10
@@ -112,16 +113,30 @@ def _value(units: int, price: int) -> int:
     return units * price // (COIN * CENT)
 
 
-def _live_units(j: dict, iv: dict) -> int:
+def _live_units(j: dict, iv: dict, q: dict | None = None) -> int:
     """Project legacy holdings at the fixed epoch, never at first-login's quote.
 
     Floor to a thousandth of a coin; retain one unit for nonzero dust so its
     cost basis survives. Epoch precision loss/gain is strictly below 0.1 xu.
+    Then into the split terms of the quote q (game/market_wild.py: Mây Coin is merged 10→1 under 10 xu and split
+    1→10 above 1.000 xu; units ×10^(e saved - e now), the value never changes).
     """
     units = iv['coin']['units']
-    if j.get(REALTIME_KEY) == 1 or not units:
-        return units
-    return max(1, units * iv['price'] // rm.base_price('coin'))
+    if j.get(REALTIME_KEY) != 1 and units:
+        units = max(1, units * iv['price'] // rm.base_price('coin'))
+    d = j.get(SPLIT_KEY, 0) - (q or {}).get('e', 0)
+    if d > 0 and units:
+        return min(MAX_UNITS, units * 10**d)
+    if d < 0 and units:
+        return max(1, units // 10**-d)
+    return units
+
+
+def _set_split(j: dict, q: dict) -> None:
+    if q.get('e', 0):
+        j[SPLIT_KEY] = q['e']
+    else:
+        j.pop(SPLIT_KEY, None)
 
 
 def market_clock(q: dict) -> dict:
@@ -133,8 +148,9 @@ def sync_market(s: dict) -> dict:
     """Persist the one-time conversion and a current quote during a transaction."""
     iv = _state(s)
     q = rm.quote('coin')
-    iv['coin']['units'] = _live_units(s['journey'], iv)
+    iv['coin']['units'] = _live_units(s['journey'], iv, q)
     s['journey'][REALTIME_KEY] = 1
+    _set_split(s['journey'], q)
     iv['price'], iv['prices'] = q['price'], list(q['history'])
     return q
 
@@ -143,7 +159,10 @@ def value(s: dict) -> int:
     """Read-only live coin valuation, including unconverted legacy holdings."""
     j = s.get('journey') or {}
     iv = j.get('invest')
-    return _value(_live_units(j, iv), rm.quote('coin')['price']) if iv else 0
+    if not iv:
+        return 0
+    q = rm.quote('coin')
+    return _value(_live_units(j, iv, q), q['price'])
 
 
 def _step(price: int, rng: random.Random) -> tuple[int, str]:
@@ -317,6 +336,8 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     iv = _state(s)
     sync_market(s)
     notes: list[str] = []
+    from . import san
+    san.sync(s, notes)   # 🎢 a delisted risky coin's holders lose it once (game/san.py)
     ic.sync(s)   # ⏱️ which of the new life days the real-time allowance covers (decided once per day)
     target = int(j['life_day'])
     iv['day'] = max(iv['day'], target - 400)
@@ -356,9 +377,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     # Stage price/quantity conversion until payload and funds checks succeed.
     # Failed direct calls, as well as failed engine transactions, keep the save.
     if name in ('iv_buy', 'iv_sell'):
-        projected_units = _live_units(j, iv)
-        iv = copy.deepcopy(iv)
         q = rm.quote('coin')
+        projected_units = _live_units(j, iv, q)
+        iv = copy.deepcopy(iv)
         iv['coin']['units'] = projected_units
         iv['price'], iv['prices'] = q['price'], list(q['history'])
     day, wallet = j['life_day'], j['wallet']
@@ -455,6 +476,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
     if name in ('iv_buy', 'iv_sell'):
         j['invest'] = iv
         j[REALTIME_KEY] = 1
+        _set_split(j, q)
     return result
 
 
@@ -478,7 +500,7 @@ def public(s: dict) -> dict:
     coin, sv, sc = iv['coin'], iv['saving'], iv['scam']
     flat = flat_term(s, sv) if sv['balance'] else False
     q = rm.quote('coin')
-    units = _live_units(j, iv)
+    units = _live_units(j, iv, q)
     value = _value(units, q['price'])
     prices = list(q['history'])
     scam = None
@@ -496,7 +518,7 @@ def public(s: dict) -> dict:
                     term_left=max(0, TERM - (j['life_day'] - sv['term_day'])) if sv['balance'] else TERM,
                     daily=accrual(sv['balance'], flat) // 1000, daily_milli=accrual(sv['balance'], flat), flat=flat),
         coin=dict(price=q['price'], prices=prices, change=round((q['price'] - q['previous']) * 100 / q['previous'], 2),
-                  units=units, value=value, basis=coin['basis'], unrealised=value - coin['basis'] if units else 0,
+                  units=units, e=q.get('e', 0), value=value, basis=coin['basis'], unrealised=value - coin['basis'] if units else 0,
                   realised=coin['realised'], fees=coin['fees'], trades=coin['trades'],
                   market_news=q['news'], market_clock=market_clock(q)),
         scam=scam, log=list(reversed(iv['log'])),
@@ -514,6 +536,8 @@ def validate(s: dict) -> None:
     bad = 'Dữ liệu đầu tư không hợp lệ.'
     if REALTIME_KEY in j:
         need(type(j[REALTIME_KEY]) is int and j[REALTIME_KEY] == 1, bad, 'invalid_save')
+    if SPLIT_KEY in j:
+        need(type(j[SPLIT_KEY]) is int and -24 <= j[SPLIT_KEY] <= 24, bad, 'invalid_save')
     need(isinstance(iv, dict) and set(iv) == set(initial()), bad, 'invalid_save')
     need(iv['version'] == VERSION, bad, 'invalid_save')
     integer(iv['day'], 1, 10**6)

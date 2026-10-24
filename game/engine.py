@@ -1421,6 +1421,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["market"]=staff_market_.public()  # 📈 lãi nhân viên theo thị trường + 🔥 nghề hot hôm nay (game/staff_market.py)
     v["rui"]=rui_.public(s)  # 🛡️ Rủi ro & bảo hiểm (game/rui.py): the warning, the card, the policies
     v["vang"]=vang_.public(s)  # 💰 Tiệm vàng (game/vang.py): today's price, the chart, the gold held
+    from . import san as san_
+    v["san"]=san_.public(s)  # 🎢 Sàn Phố (game/san.py): the catalogue, what is open, holdings and the regret peaks
     v['accounting_school']=accounting_school_.summary(s)  # small: the school's own view rides on as_* results
     for cid,c in v["careers"].items():
         if c.get("summary"):continue

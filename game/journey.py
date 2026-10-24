@@ -1146,6 +1146,9 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(rui.action(s, name, p))
     elif name.startswith('jr_vang_'):
         result.update(vang.action(s, name, p))
+    elif name.startswith('jr_san_'):   # 🎢 Sàn Phố: the new coins and the town's stocks (game/san.py)
+        from . import san
+        result.update(san.action(s, name, p))
     elif name.startswith('jr_quay_'):
         result.update(qy.action(s, name, p))
     elif name.startswith('jr_abroad_'):
@@ -1550,6 +1553,8 @@ def validate(s: dict) -> None:
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)
+    from . import san
+    san.validate(s)   # 🎢 journey['san'] (optional)
     qy.validate(s)   # 🏪 journey['quay'] (optional)
     ab.validate(s)   # ✈️🌏 journey['abroad'] (optional)
     sch.validate(s)   # 🏫 journey['school'] (optional)
