@@ -398,7 +398,8 @@ function candidate(rm,it,ax,ay,list,f){
   if(it.spot==='wall')y=(ay-G.WY)/A.SW;
   else if(it.spot==='top')y=(ay+6-G.FY)/A.SF-U;
   else y=(ay+3-G.FY)/A.SF-it.h*U;
-  const q={r:rm.id,x:clamp(Math.round(x),0,z[0]),y:clamp(Math.round(y),0,z[1]),f};   // anywhere, as before 2.6.0 (no snap grid)if(it.rot)q.rot=it.rot;return q;
+  // anywhere, as before 2.6.0 (no snap grid)
+  const q={r:rm.id,x:clamp(Math.round(x),0,z[0]),y:clamp(Math.round(y),0,z[1]),f};if(it.rot)q.rot=it.rot;return q;
 }
 const heldItem=()=>S.held?A.turn(ITEM(S.held.k),S.held.rot||0):null;
 const roomsFor=it=>(V()?.rooms||[]).filter(r=>it.rooms.includes(r.type));
