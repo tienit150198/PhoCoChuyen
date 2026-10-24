@@ -1,3 +1,7 @@
+# 2.6.3.1 — 24/10/2026
+
+Hotfix (chủ game 24/10 "admin đủ hơn 50m nhưng k mua cần câu xịn nhất 50m được"): auction._take / _give_back ghi Sổ ví và sổ ngân hàng thành nhiều dòng ≤ 10 tr (journey.validate giới hạn ±10 tr mỗi dòng ở mọi bản), nên mua cần 20 tr / 50 tr, giữ tiền đấu giá > 10 tr, góp quỹ bang lớn không còn báo "Số lượng không hợp lệ".
+
 # 2.6.3 — 24/10/2026
 
 - 🛒 Quầy bán cần hiện cả 🏦 ngân hàng (server vẫn trả ví trước, thiếu lấy ngân hàng), báo "Còn thiếu … xu" ngay khi không đủ, ghi rõ mua cần nào cũng được (chủ game 24/10 "mua vượt cấp mà k đc": server chưa từng chặn, quầy chỉ hiện ví).

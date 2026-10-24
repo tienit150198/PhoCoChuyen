@@ -412,6 +412,14 @@ def _have(s: dict) -> int:
     return max(0, j['wallet']) + (b['balance'] if b else 0)
 
 
+ROW_MAX = 10**7   # one Sổ ví / bank log row's |amount| (journey.validate, bank.validate: every build)
+
+
+def _parts(amount: int) -> list:
+    """`amount` (≥ 0) as rows of at most ROW_MAX: a 50 M rod or lot is written in 5 rows."""
+    return [min(ROW_MAX, amount - i) for i in range(0, max(0, amount), ROW_MAX)]
+
+
 def ready_why(s: dict, amount: int) -> str:
     j = s['journey']
     if j['wallet'] < 0:
@@ -424,13 +432,14 @@ def _take(s: dict, amount: int, label: str) -> int:
     """`amount` from the wallet first, then the bank account (checked by the caller). The part from the bank."""
     j = s['journey']
     cash = min(max(0, j['wallet']), amount)
-    if cash:
-        _jr()._wallet(j, -cash, KIND, label[:120])
+    for part in _parts(cash):
+        _jr()._wallet(j, -part, KIND, label[:120])
     rest = amount - cash
     if rest:
         b = bk.get(s)
         b['balance'] -= rest
-        bk._log(b, j['life_day'], 'acc', label[:120], -rest)
+        for part in _parts(rest):
+            bk._log(b, j['life_day'], 'acc', label[:120], -part)
     return rest
 
 
@@ -442,9 +451,10 @@ def _give_back(s: dict, amount: int, bank_part: int, label: str) -> None:
     to_bank = min(amount, bank_part) if b else 0
     if to_bank:
         b['balance'] += to_bank
-        bk._log(b, j['life_day'], 'acc', label[:120], to_bank)
-    if amount - to_bank:
-        _jr()._wallet(j, amount - to_bank, KIND, label[:120])
+        for part in _parts(to_bank):
+            bk._log(b, j['life_day'], 'acc', label[:120], part)
+    for part in _parts(amount - to_bank):
+        _jr()._wallet(j, part, KIND, label[:120])
 
 
 # ---------------------------------------------------------------- commands

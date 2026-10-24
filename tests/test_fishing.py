@@ -497,6 +497,18 @@ class Market(unittest.TestCase):
         with self.assertRaises(GameError):
             run(s, 'jr_fish_equip', Clock(), rod='vang')
 
+    def test_a_50m_rod_from_wallet_and_bank(self):
+        # owner 24/10 "admin đủ hơn 50m nhưng k mua cần câu xịn nhất 50m được": a Sổ ví row holds ±10 M (journey.validate),
+        # so a 50 M charge is written in rows of 10 M; the bank part in bank log rows of 10 M too
+        s, _ = act(story(wallet=10**6), 'jr_bk_open')
+        s['journey']['wallet'] = 45_000_000
+        s['journey']['bank']['balance'] = 30_000_000
+        s, r = run(s, 'jr_fish_buy', Clock(), kind='rod', item='long_vuong')
+        j = s['journey']
+        self.assertEqual((j['wallet'], j['bank']['balance'], j['fish']['rod']), (0, 25_000_000, 'long_vuong'))
+        rows = [h['amount'] for h in j['history'] if h['label'].startswith('🎣 Mua Cần Long Vương')]
+        self.assertEqual(sorted(rows), [-10**7] * 4 + [-5_000_000])
+
 
 class Collection(unittest.TestCase):
     def test_milestones_pay_once_with_titles(self):
