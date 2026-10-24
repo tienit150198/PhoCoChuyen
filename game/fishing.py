@@ -185,8 +185,10 @@ def catalogue() -> dict:
     return dict(
         rarities=[dict(r) for r in C.RARITIES], spots=[dict(id=k, **v) for k, v in C.SPOTS.items()],
         zones=[dict(id=z['id'], name=z['name']) for z in C.ZONES],
-        rods=[dict({k: r[k] for k in ('id', 'name', 'emoji', 'price', 'line', 'luck', 'reel', 'bite', 'hook', 'ancient', 'color')},
-                   reach=list(r['reach']), zones=list(r['zones'])) for r in C.RODS],
+        rods=[dict({k: r[k] for k in ('id', 'name', 'emoji', 'price', 'line', 'reel', 'bite', 'hook', 'ancient', 'color')},
+                   reach=list(r['reach']), zones=list(r['zones']), far=C.far_zone(r['id']),
+                   odds=[round(x, 2) for x in C.rod_odds(r['id'])],   # 🍀 % per rarity in its farthest zone (the shop)
+                   luck=round(r['odds'][3] ** (1 / 3), 2)) for r in C.RODS],   # `luck`: a 2.6.4 tab's 🍀 ×, until it reloads
         baits=[dict({k: b[k] for k in ('id', 'name', 'emoji', 'price', 'n', 'hint')}, hook=b.get('hook', 0.0)) for b in C.BAITS],
         baskets=[dict(b) for b in C.BASKETS], species=sp, junk=[dict(id=a, emoji=b, name=c) for a, b, c in C.JUNK],
         far_share=C.FAR_SHARE, hook_window=C.HOOK_WINDOW, hook_scare=C.HOOK_SCARE, carry_min=C.CARRY_MIN, aquarium=C.AQUARIUM_MAX,
@@ -253,7 +255,7 @@ def _cast(s, d, p, t):
         ws = C.rarity_weights(spot, zone, rod['id'], bait, cond)
         r = rng.choices(range(C.NR), weights=ws)[0]
         sp = rng.choice(C.pool(spot, r, cond))
-        f = rng.random() ** z['skew']
+        f = rng.random() ** C.skew_of(zone, rod['id'])
         kg = C.weight_of(sp, f)
         act.update(kind='fish', sp=sp['id'], g=C.grams(kg), bite=start + C.wait_of(r, f, rng.random(), bait),
                    reel=round(C.reel_of(r, f, rod['id']), 2), snap=1 if rng.random() < C.snap_chance(kg, rod['id']) else 0)

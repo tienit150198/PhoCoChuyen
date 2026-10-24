@@ -44,7 +44,7 @@ const funds=()=>wallet()+bankBal();
 let SPM=null;
 const spOf=id=>{if(!SPM){SPM=new Map();for(const s of C()?.species||[])SPM.set(s.id,s);}return SPM.get(id)||null;};
 const rods=()=>C()?.rods||[];
-const rodOf=id=>rods().find(r=>r.id===id)||rods()[0]||{id:'tre',name:'Cần tre',emoji:'🎋',reach:[15,80],zones:[62,100,150],line:6,luck:1,color:'#c8a85a'};
+const rodOf=id=>rods().find(r=>r.id===id)||rods()[0]||{id:'tre',name:'Cần tre',emoji:'🎋',reach:[15,80],zones:[62,100,150],line:6,color:'#c8a85a'};
 const reachOf=r=>Array.isArray(r?.reach)&&r.reach.length===2?r.reach.map(Number):[15,80];
 const myRod=()=>rodOf(P().rod);
 const spotOf=id=>(C()?.spots||[]).find(s=>s.id===id)||{id,name:id,emoji:'🎣',water:'#4aa3c7',deep:'#1f5f86',shore:'#7bbf6a'};
@@ -55,6 +55,12 @@ const fmtM=m=>`${fmt(Math.round(m))} m`;                                     // 
 const shortM=m=>m>=1000?`${km(m)} km`:`${fmt(Math.round(m))} m`;            // buoys ("1,5 km")
 const reachTxt=([lo,hi])=>hi>=1000?`${km(lo)}–${km(hi)} km`:`${fmt(lo)}–${fmt(hi)} m`;   // the rod stall ("0,5–2 km")
 const kgLine=kg=>kg>=1000?`${String(+(kg/1000).toFixed(1)).replace('.',',')} tấn`:`${fmt(kg)} kg`;
+const pct=p=>p>=10?`${Math.round(p)}%`:`${String(+p.toFixed(1)).replace('.',',')}%`;
+/** 🍀 the rod's odds: % per rarity of the fish it hooks in its farthest zone (game/fishing_content.rod_odds), under 0,05 % left out. */
+const oddsHTML=r=>{
+  if(!Array.isArray(r?.odds))return r?.luck?`<small>🍀 ×${esc(String(r.luck).replace('.',','))}</small>`:'';   // an older server
+  const z=(C()?.zones||[])[r.far]?.name;
+  return `<small class="fs-odds">🍀 ${z?`<span>${esc('Vùng '+z)}</span>: `:''}${r.odds.map((p,i)=>p>=.05?`${esc(rar(i).emoji)} ${pct(p)}`:'').filter(Boolean).join(' · ')}</small>`;};
 const priceOf=f=>Number(f?.pr)||0;   // journey.fish.bag[].pr: game/fishing_content.price, before haggling
 const vibrate=p=>{try{navigator.vibrate?.(p);}catch{/* not on iOS */}};
 const later=(fn,ms)=>{const id=setTimeout(fn,ms);F.timers.push(id);return id;};
@@ -668,9 +674,9 @@ function shopHTML(){
   const p=P(),c=C(),t=F.tab.shop;
   let out=tabs('shop',[['rod','🎣 Cần câu'],['bait','🪱 Mồi'],['gio','🧺 Giỏ']])+`<p class="fs-note">👛 Ví: <b>${fmt(wallet())} xu</b>${bankBal()?` · 🏦 Ngân hàng: <b>${fmt(bankBal())} xu</b>`:''}</p>`;
   if(t==='rod'){
-    out+=`<p class="fs-note">Cần xịn quăng xa hơn (📏 xa gần hên xui, ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, may mắn gặp cá hiếm hơn.</p><p class="fs-note">Mua cần nào cũng được, không cần mua theo thứ tự.</p><ul class="fs-list">${c.rods.map(r=>{
+    out+=`<p class="fs-note">Cần xịn quăng xa hơn (📏 xa gần hên xui, ra vùng Xa, Sâu có cá to), dây chịu cá nặng hơn, ra cá hiếm và cá to nhiều hơn hẳn.</p><p class="fs-note">🍀 Tỷ lệ mỗi hạng cá khi quăng tới vùng xa nhất của cần (chưa tính chỗ câu, mồi).</p><p class="fs-note">Mua cần nào cũng được, không cần mua theo thứ tự.</p><ul class="fs-list">${c.rods.map(r=>{
       const own=(p.rods||[]).includes(r.id),cur=p.rod===r.id;
-      return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico" style="--c:${esc(r.color||'#eee')}">${esc(r.emoji)}</span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${esc(reachTxt(reachOf(r)))} · 🧵 ${esc(kgLine(r.line))} · 🍀 ×${String(r.luck).replace('.',',')}</small><small>⏱️ Giật ${secs(r.hook||C()?.hook_window||1)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
+      return `<li class="fs-item${cur?' cur':''}"><span class="fs-ico" style="--c:${esc(r.color||'#eee')}">${esc(r.emoji)}</span><div class="fs-it"><b>${esc(r.name)}</b><small>📏 ${esc(reachTxt(reachOf(r)))} · 🧵 ${esc(kgLine(r.line))}</small>${oddsHTML(r)}<small>⏱️ Giật ${secs(r.hook||C()?.hook_window||1)}</small>${r.ancient?'<small class="fs-anc">🔴 Câu được cá Cổ đại</small>':''}</div>
         ${cur?'<span class="fs-tag">Đang cầm</span>':own?fbtn('Cầm','equip',{rod:r.id}):fbtn(r.price?`${fmt(r.price)} xu`:'Miễn phí','buy',{kind:'rod',item:r.id},'primary')}</li>`;}).join('')}</ul>`;
   }else if(t==='bait'){
     out+=`<p class="fs-note">Mồi tốt tăng cơ hội gặp cá hiếm. Mỗi lần quăng tốn 1 mồi đang dùng.</p><ul class="fs-list"><li class="fs-item${!p.use?' cur':''}"><span class="fs-ico">🎣</span><div class="fs-it"><b>Không mồi đặc biệt</b><small>Mồi cơm thường, miễn phí</small></div>${!p.use?'<span class="fs-tag">Đang dùng</span>':fbtn('Dùng','equip',{bait:''})}</li>

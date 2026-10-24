@@ -73,7 +73,7 @@ class Content(unittest.TestCase):
                          dict(tre=(15, 80), truc=(20, 120), carbon=(40, 250), bien=(80, 500), vang=(150, 900), bach_kim=(300, 1500),
                               long_vuong=(500, 2000)))
         prev = None
-        for r in C.RODS:   # every step up reaches further, holds more and is luckier
+        for r in C.RODS:   # every step up reaches further, holds more, is luckier at every rarity and lands heavier fish
             self.assertLess(r['reach'][0], r['reach'][1])
             self.assertEqual(len(r['zones']), len(C.ZONES) - 1)
             self.assertEqual(list(r['zones']), sorted(set(r['zones'])), r['id'])
@@ -81,7 +81,11 @@ class Content(unittest.TestCase):
                 self.assertGreater(r['reach'][0], prev['reach'][0])
                 self.assertGreater(r['reach'][1], prev['reach'][1])
                 self.assertGreater(r['line'], prev['line'])
-                self.assertGreaterEqual(r['luck'], prev['luck'])
+                self.assertTrue(all(a >= b for a, b in zip(r['odds'], prev['odds'])), r['id'])
+                self.assertLessEqual(r['heavy'], prev['heavy'])
+            self.assertEqual(len(r['odds']), C.NR)
+            self.assertEqual(r['odds'][0], 1)
+            self.assertTrue(0.7 <= r['heavy'] <= 1, r['id'])
             prev = r
         self.assertEqual([r['id'] for r in C.RODS if r['ancient']], ['bach_kim', 'long_vuong'])
         self.assertEqual(C.BASKETS[0]['price'], 0)
