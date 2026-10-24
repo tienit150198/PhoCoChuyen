@@ -145,6 +145,19 @@ class Content(unittest.TestCase):
                              cwd=root, capture_output=True, text=True, encoding='utf-8', timeout=60)
         self.assertEqual(out.returncode, 0, out.stderr[-2000:])
 
+    def test_rods_in_node(self):
+        """Each rod has its own look (public/js/v4/fish-rod.js): tests/fishing-rod.mjs with the catalogue's rod ids."""
+        import shutil
+        import subprocess
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node is not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'fishing-rod.mjs')], input=json.dumps([r['id'] for r in C.RODS]),
+                             cwd=root, capture_output=True, text=True, encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr[-2000:])
+
 
 class Cast(unittest.TestCase):
     def test_distance_zone_and_view(self):

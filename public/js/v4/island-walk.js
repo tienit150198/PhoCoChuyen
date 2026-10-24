@@ -4,7 +4,7 @@
  * resize(), destroy(), and 🏗️ setBuilds(built) (the buildings: v4/island-build-art.js), 🏝️ setLayout(L, paths) (the
  * island at its size, its decorations: public/js/island-decor-art.js, its footpaths). The scene controller
  * (v4/island-scene.js) owns walking, the live room and the overlays. */
-import {figureOf,paintPlayer,CANVAS} from './look.js';
+import {figureOf,figCanvas} from './look.js';
 import {inPoly,turn} from '../island-layout.js';
 import {createBuildArt} from './island-build-art.js';
 import {paintDecorItem,decorFx} from '../island-decor-art.js';
@@ -129,19 +129,18 @@ export function createWalkRenderer(canvas,L0){
   function figure(p){
     const key=JSON.stringify([p.look,p.gender]),px=Math.max(.1,cam.fs*dpr),size=Math.round(px*100);let hit=figures.get(key);
     if(!hit||hit.size!==size){
-      const cv=document.createElement('canvas');cv.width=Math.ceil(FIG_W*px);cv.height=Math.ceil(FIG_H*px);
-      const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);
-      try{paintPlayer(q,figureOf(p.look||{},p.gender==='male'||p.gender==='female'?p.gender:'none'),CANVAS);}catch{/* an unknown look draws nothing */}
-      hit={cv,size};figures.set(key,hit);if(figures.size>60)figures.delete(figures.keys().next().value);
+      let b=null;try{b=figCanvas(figureOf(p.look||{},p.gender==='male'||p.gender==='female'?p.gender:'none'),px);}catch{/* an unknown look draws nothing */}   // 🪽 🎣 grown for wings, a big fish
+      if(!b){const cv=document.createElement('canvas');cv.width=Math.ceil(FIG_W*px);cv.height=Math.ceil(FIG_H*px);b={cv,ox:55,oy:150,w:FIG_W,h:FIG_H};}
+      hit={...b,size};figures.set(key,hit);if(figures.size>60)figures.delete(figures.keys().next().value);
     }
-    return hit.cv;
+    return hit;
   }
   function person(p,t){
     if(p.hidden)return;
     const [a,b]=P(p.x,p.y),fs=cam.fs,bob=p.walking?Math.abs(Math.sin(t/110))*3:0,swim=p.pose==='swim',flip=Boolean(p.left);
     ctx.save();ctx.translate(a,b-bob);if(flip)ctx.scale(-1,1);
     if(swim){ctx.beginPath();ctx.rect(-60*fs,-160*fs,120*fs,104*fs);ctx.clip();ctx.translate(0,52*fs);}
-    ctx.drawImage(figure(p),-55*fs,-150*fs,FIG_W*fs,FIG_H*fs);ctx.restore();
+    {const b=figure(p);ctx.drawImage(b.cv,-b.ox*fs,-b.oy*fs,b.w*fs,b.h*fs);}ctx.restore();
     if(swim){ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(a,b,30*fs,9*fs,0,0,Math.PI*2);ctx.stroke();}
   }
   function vehicle(v,t){

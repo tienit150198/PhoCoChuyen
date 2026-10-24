@@ -12,9 +12,10 @@
  * Drawing (60 fps on a phone with a crowd): each character is painted once into a small canvas (look.js paintPlayer, the
  * wings and the carried fish with it) and reused, the name tag likewise; the FULL_DRAW nearest the view's middle are
  * drawn whole, the others in sight as light silhouettes, nobody out of sight at all. Old-Safari safe, no library. */
-import {posOf,spacing,figScale,screenX,extent,clampCam,inView,detailed,offscreen,waterPoint,arcPoint,hitPeer,tierOf,feedLine,merge,VIEW_STEP} from './fish-lake-layout.js';
-import {figureOf,paintPlayer,CANVAS,withWings,withFish} from './look.js';
+import {posOf,spacing,figScale,screenX,extent,clampCam,inView,detailed,offscreen,waterPoint,arcPoint,hitPeer,tierOf,feedLine,merge,catchPose,VIEW_STEP} from './fish-lake-layout.js';
+import {figureOf,figCanvas,withWings,withFish} from './look.js';
 import {drawFish,fmtKg,RARITY_COLORS} from './fish-art.js';
+import {drawRod,rodTipOf,rodLook,lineColor} from './fish-rod.js';
 import {paint as stPaint} from './style-tag.js';
 import {titles as hnTitles,icons as hnIcons} from './honours.js';
 import {tagLine,badge as bgBadge} from './bang-tag.js';
@@ -83,15 +84,18 @@ export function createLake({live,spot,trip='',me={},clock=()=>performance.now()/
 /* ---------------------------------------------------------------- drawing */
 const SPR=new Map();   // key → {cv, w, h, ox, oy}: a character painted once
 const SPR_MAX=90;
-/** A character's canvas at `scale` (css px per look unit) × dpr: feet at (ox, oy). */
+/** The box of a plain character on the lake (look units, feet at 0, 0): wings and a carried fish grow it (look.js
+ * figBounds), so a Huyền thoại pair or a 300 kg fish over the shoulder is never cut off (owner 25/10 "bị mất cái cánh"). */
+export const LAKE_BOX=Object.freeze([-85,-160,85,15]);
+/** A character's canvas at `scale` (css px per look unit) × dpr: feet at (ox, oy), w × h css px. */
 export function sprite(lk,g,{wg=null,fh=null,rk=null}={},scale=.4,dpr=1,F0=null){
   const px=Math.round(scale*dpr*100)/100,key=JSON.stringify([F0?'me':'', F0?F0.L:lk,g,wg,fh,rk,px]);
   let s=SPR.get(key);if(s){SPR.delete(key);SPR.set(key,s);return s;}
-  const W=170,H=175,cv=globalThis.document?.createElement?.('canvas');if(!cv)return null;
-  cv.width=Math.ceil(W*px);cv.height=Math.ceil(H*px);const c=cv.getContext('2d');
-  c.setTransform(px,0,0,px,85*px,160*px);
-  try{const F=F0||figureOf(withFish(withWings(lk||{},wg),fh),g==='male'||g==='female'?g:'none');if(rk&&!F0)F.rk=rk;paintPlayer(c,F,CANVAS);}catch(e){console.warn('lake: look',e);}
-  s={cv,w:W*px/dpr,h:H*px/dpr,ox:85*px/dpr,oy:160*px/dpr};
+  if(!globalThis.document?.createElement)return null;
+  let F=null;try{F=F0||figureOf(withFish(withWings(lk||{},wg),fh),g==='male'||g==='female'?g:'none');if(rk&&!F0)F.rk=rk;}catch(e){console.warn('lake: look',e);}
+  let b=null;try{b=F?figCanvas(F,px,LAKE_BOX):null;}catch(e){console.warn('lake: look',e);}
+  if(!b){const cv=globalThis.document.createElement('canvas');cv.width=Math.ceil(170*px);cv.height=Math.ceil(175*px);b={cv,ox:85,oy:160,w:170,h:175};}
+  const k=px/dpr;s={cv:b.cv,w:b.w*k,h:b.h*k,ox:b.ox*k,oy:b.oy*k};
   SPR.set(key,s);if(SPR.size>SPR_MAX)SPR.delete(SPR.keys().next().value);
   return s;
 }
@@ -136,7 +140,7 @@ export function bubble(c,x,bottom,text,alpha,dark){
 }
 
 /** The rod's tip for a fisher standing at (x, py) at `scale`: `a` radians right of straight up. */
-export function rodOf(x,py,scale,a){const L=60+70*scale,bx=x+24*scale,by=py-40*scale;return {bx,by,x:bx+Math.sin(a)*L,y:by-Math.cos(a)*L};}
+export function rodOf(x,py,scale,a,id='tre'){const L=(60+70*scale)*rodLook(id).len,bx=x+24*scale,by=py-40*scale;return {bx,by,x:bx+Math.sin(a)*L,y:by-Math.cos(a)*L};}
 
 /** The boardwalk along the bank, as long as the screen, its posts at each place in sight, a small jetty at each fisher. */
 function boardwalk(c,g,view,night,list){
@@ -152,7 +156,7 @@ function boardwalk(c,g,view,night,list){
 
 /** The others at the lake, drawn under my own player and line (v4/fishing.js draw): lines, bobbers and leaping fish on
  * the water, the characters on the boardwalk, then their tags, bubbles and the fish held up. `view`: {cam, sp, scale,
- * py, dpr, dark, api, sp: spacing, spOf(id), rarOf(r), rodColor(id), calm}. Returns how many were drawn whole. */
+ * py, dpr, dark, api, sp: spacing, spOf(id), rarOf(r), calm}. Returns how many were drawn whole. */
 export function drawLake(c,g,lake,t,view){
   const list=[...lake.peers.values()],{w}=g,night=view.dark;
   boardwalk(c,g,view,night,list);
@@ -191,12 +195,11 @@ function angleOf(p,t){
   if(a.k==='bite')return .4+.05*Math.sin(t*20);
   return .35;
 }
+/** Their own rod (p.rod on the wire), as it looks (v4/fish-rod.js). */
 function rod(c,p,x,t,view){
-  const r=rodOf(x,view.py,view.scale,angleOf(p,t)),bend=p.a?.k==='reel'?10+4*Math.sin(t*9):0;
-  c.lineCap='round';c.strokeStyle='#5a3a1a';c.lineWidth=2.4;c.beginPath();c.moveTo(r.bx,r.by);
-  c.quadraticCurveTo((r.bx+r.x)/2+bend*.3,(r.by+r.y)/2-bend*.2,r.x+bend*.5,r.y+bend);c.stroke();
-  c.strokeStyle=view.rodColor?.(p.rod)||'#c8a85a';c.lineWidth=1.3;c.stroke();
-  p.tip=[r.x+bend*.5,r.y+bend];
+  const r=rodOf(x,view.py,view.scale,angleOf(p,t),p.rod),bend=p.a?.k==='reel'?10+4*Math.sin(t*9):0;
+  const R={bx:r.bx,by:r.by,cx:(r.bx+r.x)/2+bend*.3,cy:(r.by+r.y)/2-bend*.2,x:r.x+bend*.5,y:r.y+bend,s:.8,t,calm:view.calm};
+  drawRod(c,p.rod,R);p.tip=rodTipOf(p.rod,R);
 }
 /** A fisher's line and bobber (the tip is last frame's: drawn before the rod so the character covers its butt). */
 function water(c,g,p,x,t,view){
@@ -207,7 +210,7 @@ function water(c,g,p,x,t,view){
   if(a.k==='cast'&&t-a.t0<FLY_S){b=arcPoint(tip,land,(t-a.t0)/FLY_S,40+120*Math.min(1,a.d/(g.M||100)));}
   else if(a.k==='reel'){const k=Math.min(.85,(t-(a.t1||t))/8);b=[land[0]+(x-land[0])*k+Math.sin(t*3)*6,g.yOf(a.d*(1-k))];}
   else b=[land[0],land[1]+Math.sin(t*2.2)*1.2+(a.k==='bite'?4+3*Math.sin(t*16):0)];
-  c.strokeStyle='rgba(255,255,255,.75)';c.lineWidth=1;c.beginPath();c.moveTo(tip[0],tip[1]);
+  c.strokeStyle=lineColor(p.rod);c.lineWidth=1;c.beginPath();c.moveTo(tip[0],tip[1]);
   if(a.k==='reel')c.lineTo(b[0],b[1]);else c.quadraticCurveTo((tip[0]+b[0])/2,Math.max(tip[1],b[1])-Math.abs(b[1]-tip[1])*.25+18,b[0],b[1]);
   c.stroke();
   if(a.k==='reel'){c.globalAlpha=.4;c.fillStyle='#0a2233';c.beginPath();c.ellipse(b[0],b[1]+3,9,3,Math.sin(t*3)*.2,0,7);c.fill();c.globalAlpha=1;return;}
@@ -219,18 +222,18 @@ function water(c,g,p,x,t,view){
 /** 🐟 The catch: it leaps from the water into their hands, then is held up over their head with its name and weight (a
  * glow for 🟣 Hiếm and up, rays for 🟡 🔴). Returns the top it leaves for the tag. */
 function heldUp(c,p,h,x,top,t,view){
-  const age=t-h.t0,head=[x,top-8],u=Math.min(1,age/LEAP_S),from=h.from||[x+20,view.py-150];
-  const sp=h.s?view.spOf?.(h.s):null,len=sp?Math.min(64,26+h.r*6):24;
-  const pt=u<1?arcPoint(from,head,u,90):[head[0],head[1]+Math.sin(t*5)*1.5];
+  const age=t-h.t0,sp=h.s?view.spOf?.(h.s):null,pose=sp?catchPose(h.g,view.scale):{len:24,big:false,dx:0,dy:0};
+  const len=pose.len,head=pose.big?[x+pose.dx,view.py+pose.dy]:[x,top-8],u=Math.min(1,age/LEAP_S),from=h.from||[x+20,view.py-150];
+  const pt=u<1?arcPoint(from,head,u,90+(pose.big?len*.3:0)):[head[0],head[1]+(pose.big?0:Math.sin(t*5)*1.5)];
   const fade=age>CATCH_S-.5?(CATCH_S-age)/.5:1,tier=tierOf(h.r);
   c.globalAlpha=fade;
-  if(sp&&tier!=='plain'){const col=RARITY_COLORS[h.r]||'#fff',R=len*(tier==='legend'?1.5:1.1)*(1+.08*Math.sin(t*6));
+  if(sp&&tier!=='plain'){const col=RARITY_COLORS[h.r]||'#fff',R=Math.min(110,len*(tier==='legend'?1.5:1.1))*(1+.08*Math.sin(t*6));
     const gr=c.createRadialGradient(pt[0],pt[1],2,pt[0],pt[1],R);gr.addColorStop(0,col+'cc');gr.addColorStop(1,col+'00');c.fillStyle=gr;c.beginPath();c.arc(pt[0],pt[1],R,0,7);c.fill();
     if(tier==='legend'&&!view.calm){c.strokeStyle=col+'aa';c.lineWidth=2;c.beginPath();for(let i=0;i<10;i++){const an=t*1.4+i*Math.PI/5;c.moveTo(pt[0]+Math.cos(an)*R*.6,pt[1]+Math.sin(an)*R*.6);c.lineTo(pt[0]+Math.cos(an)*R*1.25,pt[1]+Math.sin(an)*R*1.25);}c.stroke();}
     if(!view.calm)for(let i=0;i<6;i++){const an=t*2+i*1.05,rr=R*(.5+.4*Math.sin(t*3+i));c.fillStyle='#fff';c.fillRect(pt[0]+Math.cos(an)*rr,pt[1]+Math.sin(an)*rr,2,2);}}
-  if(sp)drawFish(c,sp,pt[0],pt[1],len,{angle:u<1?Math.sin(t*14)*.3:0,flip:false,wiggle:u<1?(t*3)%1:0,glow:tier!=='plain'});
+  if(sp)drawFish(c,sp,pt[0],pt[1],len,{angle:u<1?Math.sin(t*14)*.3:0,flip:pose.big,wiggle:u<1||pose.big?(t*(pose.big?.8:3))%1:0,glow:tier!=='plain'});
   else{c.font='22px system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(view.junkEmoji?.(h.junk)||'🥾',pt[0],pt[1]);}
-  let y=pt[1]-len*.32-4;
+  let y=pose.big?top:pt[1]-len*.32-4;   // a big one lies beside them: its label over their head as usual
   if(u>=1&&sp){const R=view.rarOf?.(h.r)||{},label=`${R.emoji||''} ${sp.name} · ${fmtKg(h.g)}`;
     c.font='800 11px "Trebuchet MS",sans-serif';const tw=Math.min(190,c.measureText(label).width)+12;
     c.fillStyle=RARITY_COLORS[h.r]||'#556';c.beginPath();(c.roundRect?c.roundRect(x-tw/2,y-17,tw,16,8):c.rect(x-tw/2,y-17,tw,16));c.fill();

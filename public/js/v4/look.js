@@ -21,7 +21,7 @@ import {paintRank} from './insignia.js';
 // 👶 F.bb: the baby in the character's arms (v4/baby.js)
 import {paintCarried} from './baby-art.js';
 // 🎣 F.L.fh: the fish carried on the walk maps (journey.fish.wear here, `fh` beside a walker's look; live/fish_carry.py)
-import {drawFish,fishSvg,carrySize} from './fish-art.js';
+import {drawFish,fishSvg,holdGeom,holdBox} from './fish-art.js';
 
 export const SLOTS=['hair','shade','skin','top','bottom','shoes','acc'];
 // Same as game/wardrobe.py DEFAULTS (tests/test_wardrobe.py compares them).
@@ -701,6 +701,8 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   const fh=!arms&&!bb?cleanFish(F.L?.fh):null,busy=bb||fh;   // 🎣 or a big fish held across the chest
   K.E(c,0,0,26,8,'#81644823');
   if(F.L?.wg)paintWings(c,F,K,F.ws?{s:F.ws}:undefined);   // 🪽 behind everything (v4/wings-art.js; ws: the mirror's smaller pair)
+  const hold=fh?holdGeom(fh.kg):null;
+  if(hold?.back)paintHeldFish(c,fh,K,sk,hold);   // 🎣 a big fish over the shoulder or dragged behind: behind the body
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
   K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l&&!busy)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r&&!busy)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
@@ -715,7 +717,8 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   if(F.L?.pr)paintPairs(c,F,K);   // 🤝 phụ kiện đôi
   if(F.rk)paintRank(c,F,K);   // 🎖️ cấp hiệu and huy hiệu over the top
   if(bb)paintCarried(c,bb,K,F);   // 👶 in front of everything: held to the chest
-  if(fh)paintHeldFish(c,fh,K,sk);   // 🎣 likewise, the fish
+  if(hold&&!hold.back)paintHeldFish(c,fh,K,sk,hold);   // 🎣 likewise, the fish
+  if(hold)paintHoldHands(c,F,K,sk,hold);
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
 /** 🪽 A wing large, both sides (🛍️ Tiệm phụ kiện, the wardrobe): '' for a style this build lacks. */
@@ -727,12 +730,36 @@ export function wingIcon(wg,size=56,label=''){
 }
 /** 🎣 A carried fish as drawn ({sp, r, kg, fam, body, belly, fin, pat} from the server's catalogue), or null. */
 export const cleanFish=fh=>fh&&typeof fh==='object'&&typeof fh.sp==='string'&&typeof fh.fam==='string'&&Number.isFinite(Number(fh.r))?fh:null;
-/** 🎣 The fish held across the chest in both hands, rarer and heavier = longer (fish-art.js carrySize). */
-function paintHeldFish(c,fh,K,sk){
-  const len=carrySize(fh.r,fh.kg)*3,sp={...fh,id:fh.sp},y=-36;
-  if(K.anim){const w=len*1.1,h=w/2;c.push(fishSvg(sp,{w,h}).replace('<svg ',`<svg x="${n1(-w/2)}" y="${n1(y-h/2)}" `));}
-  else drawFish(c,sp,0,y,len,{angle:-.08});
-  K.E(c,-len*.28,y+3,7,7.5,sk.hand);K.E(c,len*.3,y+1,7,7.5,sk.hand);
+/** 🎣 The fish carried, as long as its weight says (owner 25/10 "cá to thì nhìn to thật"; fish-art.js holdGeom): across
+ * the chest in the hands, hugged in both arms, over the shoulder and down the back, or dragged on a rope behind. */
+function paintHeldFish(c,fh,K,sk,g=holdGeom(fh.kg)){
+  const sp={...fh,id:fh.sp},{len,x,y,angle}=g;
+  if(g.rope)K.L(c,g.rope[0][0],g.rope[0][1],g.rope[1][0],g.rope[1][1],'#8a6a3e',2.2);
+  if(K.anim){const w=len*1.1,h=w/2;c.push(`<g transform="rotate(${n1(angle*180/Math.PI)} ${n1(x)} ${n1(y)})">`+fishSvg(sp,{w,h}).replace('<svg ',`<svg x="${n1(x-w/2)}" y="${n1(y-h/2)}" `)+'</g>');}
+  else drawFish(c,sp,x,y,len,{angle});
+}
+/** The hands on a carried fish (drawn last, over it), a raised sleeve for the one over the shoulder. */
+function paintHoldHands(c,F,K,sk,g){
+  if(g.arm){K.L(c,20,-44,g.arm[0],g.arm[1],F.topC||F.classic,11);K.E(c,g.arm[0],g.arm[1],7,7.5,sk.hand);}
+  for(const [hx,hy] of g.hands)K.E(c,hx,hy,7,7.5,sk.hand);
+}
+/** 🪽 🎣 The box a figure needs (look units, feet at 0, 0): `base` [l, t, r, b] (the walk maps' 110 × 160 with the feet
+ * at 55, 150), grown for the wings worn (the largest pair, Huyền thoại with its glow: ±122 wide, 155 up; measured in a
+ * browser, tests/fishing-lake.mjs) and the fish carried (fish-art.js holdBox). Plain figures keep the small box. */
+export const WING_BOUNDS=Object.freeze([-128,-162,128,10]);
+export function figBounds(F,base=[-55,-150,55,10]){
+  let [l,t,r,b]=base;const grow=([a,e,d,f])=>{l=Math.min(l,a);t=Math.min(t,e);r=Math.max(r,d);b=Math.max(b,f);};
+  if(F?.L?.wg&&cleanWing(F.L.wg))grow(WING_BOUNDS);
+  const fh=F?.bb?null:cleanFish(F?.L?.fh);if(fh){const [a,e,d,f]=holdBox(fh.kg);grow([a-4,e-4,d+4,f+4]);}
+  return [Math.floor(l),Math.floor(t),Math.ceil(r),Math.ceil(b)];
+}
+/** A figure painted once on its own canvas at `px` pixels per look unit, in its figBounds box: {cv, ox, oy, w, h} (the
+ * feet at ox, oy; w, h the box, all in look units). Null without a canvas. */
+export function figCanvas(F,px,base){
+  const [l,t,r,b]=figBounds(F,base),cv=globalThis.document?.createElement?.('canvas');if(!cv)return null;
+  cv.width=Math.ceil((r-l)*px);cv.height=Math.ceil((b-t)*px);const c=cv.getContext('2d');
+  if(c){c.setTransform(px,0,0,px,-l*px,-t*px);paintPlayer(c,F,CANVAS);}
+  return {cv,ox:-l,oy:-t,w:r-l,h:b-t};
 }
 /** 🎣 A look with a walker's carried fish (`fh` beside its look on the walk maps). */
 export const withFish=(L,fh)=>{const f=cleanFish(fh);if(f)return {...L,fh:f};if(L&&'fh' in L){const {fh:_,...rest}=L;return rest;}return L;};
