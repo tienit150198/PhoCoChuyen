@@ -87,6 +87,20 @@ class Boards(Anglers):
         self.assertEqual(len(news), 1)
         self.assertIn(C.SPECIES[RED]['name'], news[0]['text'])
 
+    def test_ancient_lines_are_spaced_on_the_ticker(self):
+        # 2.6.5: Cổ đại comes often on the best rods; one fish line per 10 minutes, one a player an hour
+        a, b = self.angler('An'), self.angler('Bình')
+        g = C.grams(C.SPECIES[RED]['w'][0])
+        self.catch(a, RED, g)
+        self.catch(b, RED, g)   # within 10 minutes of An's line: no line
+        self.assertEqual(len(self.rows("SELECT id FROM news WHERE kind='fish'")), 1)
+        later = F.now() + FL.NEWS_GAP_S + 5
+        with mock.patch.object(FL, 'now', return_value=later), self.store.connect() as db:
+            self.assertTrue(FL._news_room(db, self.sid(b)))    # Bình: room again after the gap
+            self.assertFalse(FL._news_room(db, self.sid(a)))   # An: not before an hour
+        self.catch(b, RED, g, t=later)
+        self.assertEqual(len(self.rows("SELECT id FROM news WHERE kind='fish'")), 2)
+
     def test_views_privacy_and_order(self):
         a, b, c = self.angler('An'), self.angler('Bình'), self.angler('Chi')
         self.catch(a, 'ca_chep', 3000)

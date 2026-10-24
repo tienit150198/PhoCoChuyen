@@ -72,6 +72,23 @@ _DEX = ('INSERT INTO fish_dex(sid, n, k, rc, at) VALUES(?,?,?,?,?) ON CONFLICT (
         'WHERE (fish_dex.n, fish_dex.k) IS DISTINCT FROM (EXCLUDED.n, EXCLUDED.k)')
 
 
+NEWS_GAP_S = 600          # 2.6.5: better rods land 🔴 Cổ đại often (≈2.7 an hour on Cần Long Vương): at most one fish line on
+NEWS_SELF_S = 3600        # the town ticker every 10 minutes, and one a player an hour, so weddings and the rest still show
+
+
+def _news_room(db, sid: str) -> bool:
+    """Room on the ticker for a fish line (the newest rows by primary key, never a scan)."""
+    t, mine = now(), f'fish:{sid[:16]}:'
+    for row in db.execute('SELECT kind, ref, at FROM news ORDER BY id DESC LIMIT 200').fetchall():
+        if row['kind'] != 'fish':
+            continue
+        if t - row['at'] < NEWS_GAP_S:
+            return False
+        if str(row['ref']).startswith(mine) and t - row['at'] < NEWS_SELF_S:
+            return False
+    return True
+
+
 def write_dex(db, sid: str, s: dict, at: float) -> None:
     row = dex_row(s)
     if row:
@@ -90,7 +107,7 @@ def on_catch(db, sid: str, after: dict, catch: dict, result: dict) -> None:
         result.setdefault('effects', []).append('🏆 Kỷ lục loài của cả phố!')
     write_dex(db, sid, after, t)
     clear_cache()
-    if r >= C.NEWS_MIN:
+    if r >= C.NEWS_MIN and _news_room(db, sid):
         from . import forge_news, lux, marriage
         from .fishing import fmt_kg
         who = lux._display(db, sid, forge_news.hidden(after))
