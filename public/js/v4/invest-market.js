@@ -79,8 +79,10 @@ export function marketView(env){
  if(!I||!q)return {I,G,B:q?.board||null};
  let copy=I,gold=G;
  if(q.tick>=(I.coin.market_clock?.tick??-1)){
-  const c=I.coin,price=q.coin.price,value=Math.floor(c.units*price/(I.rules.coin*I.rules.cent));
-  copy={...I,coin:{...c,price,value,unrealised:c.units?value-c.basis:0,change:(price-q.coin.previous)*100/q.coin.previous,market_news:q.coin.news,market_clock:q}};
+  const c=I.coin,price=q.coin.price,d=(c.e||0)-(q.coin.e||0);
+  const units=d>0?c.units*10**d:d<0&&c.units?Math.max(1,Math.floor(c.units/10**-d)):c.units;   // a split since the state (value kept)
+  const value=Math.floor(units*price/(I.rules.coin*I.rules.cent));
+  copy={...I,coin:{...c,units,e:q.coin.e||0,price,value,unrealised:c.units?value-c.basis:0,change:(price-q.coin.previous)*100/q.coin.previous,market_news:q.coin.news,market_clock:q}};
  }
  if(G&&q.tick>=(G.market_clock?.tick??-1)){
   const p=q.gold.price,buy=Math.ceil(p*10250/10000),sell=Math.floor(p*9750/10000);

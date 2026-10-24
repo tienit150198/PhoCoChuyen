@@ -16,18 +16,21 @@ small loss on average, while single assets swing hard (fat tails: jumps, pump-an
 market shocks). Bull and bear regimes are fair as well: a bull regime raises the odds of a crash jump, so the
 compensator gives it a steady climb (and the opposite for a bear's sudden rebounds).
 
-Bounds: an asset that is not risky gets calmer near its floor and ceiling (the step's size shrinks; it stays a
-martingale) and is clamped to [lo, hi] as a last resort. A risky coin (said so in its description) is delisted when it
-falls to its delist level: holdings of that listing are worth nothing, and the coin lists again ("2.0") a real day
-later at its launch price.
+Bounds: a fair walk's median falls (by σ²/2 a day) while its mean holds, so the coins and stocks (and Mây Coin) are
+split 1→10 above launch×10 and merged 10→1 under launch/10: price and units change together, a holding's value never
+does (game/san.py, game/invest.py rescale units by 10^(e saved − e now); charts are split-adjusted). Gold gets calmer
+near its floor and ceiling instead (the step shrinks; still a martingale). [lo, hi] clamps are a last resort. A risky
+coin (said so in its description) is not merged but delisted when it falls to its delist level: holdings of that
+listing are worth nothing, and the coin lists again ("2.0") a real day later at its launch price.
 
-Randomness: one random.Random per stream and market hour, seeded from the secret market salt (realtime_market._salt,
-validated for public servers), the stream and the hour: shared by every worker, unknowable to players, and nothing
+Randomness: one random.Random per stream and real day, seeded from the secret market salt (realtime_market._salt,
+validated for public servers), the stream and the day: shared by every worker, unknowable to players, and nothing
 future is ever computed or sent. Mây Coin and gold keep the old prices up to WILD_TICK and continue from their last
 old price (no jump at deploy); the new assets list at WILD_TICK.
 
-Cost: the walk is path dependent, so a process steps it forward from WILD_TICK once (≈ 2 µs an asset step, about 2 s
-of CPU for a year of market) and then one step every ten minutes; server.py warms it before forking workers.
+Cost: the walk is path dependent, so a process steps it forward from WILD_TICK once (≈ 3–9 µs an asset step: about
+0,4–1 s of CPU a month of market age, 5–15 s after a year; a checkpoint file would remove it) and then one step every
+ten minutes; server.py warms it before forking workers. Memory ≈ 15 MB a year of market.
 Fictional gameplay parameters, not real market data.
 """
 from __future__ import annotations
@@ -50,7 +53,7 @@ RELIST = DAY_TICKS                     # a delisted risky coin lists again a rea
 SQ3H = math.sqrt(3) / 2
 LN10 = math.log(10)
 SPLIT = 10                # a new asset is split 1→10 above launch×SPLIT, and (not risky) merged 10→1 under launch/SPLIT
-E_MAX = 6                 # at most 10^6 either way
+E_MAX = 12                # at most 10^12 either way
 
 _DEFAULT_WILD_AT = int(dt.datetime(2026, 10, 26, 4, tzinfo=rm._VN).timestamp())
 
@@ -81,7 +84,7 @@ WILD_TICK = wild_tick()
 # shocks = per day, (lo, hi) log size, share of shocks that are up.
 FACTORS = {
     'stock': dict(vol=.022, shocks=.15, size=(.03, .08), up=.35),
-    'coin': dict(vol=.045, shocks=.2, size=(.06, .18), up=.4),
+    'coin': dict(vol=.07, shocks=.3, size=(.06, .20), up=.4),
 }
 SECTORS = {
     # stocks
@@ -96,10 +99,10 @@ SECTORS = {
     'fun': dict(market='stock', vol=.03, shocks=.2, size=(.05, .14), up=.5, name='Giải trí'),
     'health': dict(market='stock', vol=.012, shocks=.12, size=(.03, .08), up=.5, name='Y tế'),
     # coins and gold
-    'cloud': dict(market='coin', vol=.03, shocks=.2, size=(.05, .15), up=.45, name='Coin phố'),
-    'meme': dict(market='coin', vol=.08, shocks=.3, size=(.10, .30), up=.45, name='Coin meme'),
+    'cloud': dict(market='coin', vol=.05, shocks=.3, size=(.05, .16), up=.45, name='Coin phố'),
+    'meme': dict(market='coin', vol=.10, shocks=.3, size=(.10, .30), up=.45, name='Coin meme'),
     'stable': dict(market='coin', vol=.004, shocks=.04, size=(.03, .08), up=.4, name='Coin bình ổn'),
-    'metal': dict(market='stock', vol=.008, shocks=.08, size=(.02, .05), up=.55, name='Kim loại quý'),
+    'metal': dict(market='stock', vol=.018, shocks=.15, size=(.02, .06), up=.55, name='Kim loại quý'),
 }
 # Regimes: (vol multiplier, jump-rate multiplier, shift of the up share of jumps).
 REGIMES = {'calm': (.55, .5, 0.), 'normal': (1., 1., 0.), 'wild': (2.0, 2.2, 0.),
@@ -116,49 +119,52 @@ REGIME_TEXT = {'calm': 'Đi ngang', 'normal': 'Bình thường', 'wild': 'Biến
 
 
 def _a(id, kind, sym, name, emoji, sector, launch, vol, beta, gamma, jumps, jsize, up=.5, pumps=0., pump=(.04, .10),
-       risky=False, unlock=500, hours=12, desc='', lo=None, hi=None, unit='coin', fee=2, legacy=False, pmax=None):
-    lo = lo if lo is not None else max(100, launch // 50)
+       risky=False, unlock=500, hours=12, desc='', lo=None, hi=None, unit='coin', fee=2, legacy=False, pmax=None,
+       splits=None):
+    lo = lo if lo is not None else max(50, launch // 200) if risky else max(100, launch // 50)
     hi = hi if hi is not None else launch * 60
     return dict(id=id, kind=kind, sym=sym, name=name, emoji=emoji, sector=sector, launch=launch, vol=vol, beta=beta,
                 gamma=gamma, jumps=jumps, jsize=jsize, up=up, pumps=pumps, pump=pump, risky=risky, unlock=unlock,
                 hours=hours, desc=desc, lo=lo, hi=hi, unit=unit, fee=fee, legacy=legacy,
+                splits=not legacy if splits is None else splits,
                 pmax=pmax if pmax is not None else 1.6 if risky else 1.3 if sector == 'meme' else 1.1,
                 logs=(math.log(launch / SPLIT), math.log(launch * SPLIT)),
-                delist=max(100, launch // 40) if risky else 0)
+                delist=max(100, launch // 80) if risky else 0)
 
 
 C, S = 'coin', 'stock'
 ASSETS = {a['id']: a for a in (
     # the two old ones: same ids, they continue from their last old price
-    _a('coin', C, 'MÂY', 'Mây Coin', '☁️', 'cloud', 10000, .035, 1., 1., .7, (.04, .12), pumps=.03,
-       desc='Đồng coin đầu tiên của phố. Lên xuống mạnh, có lúc bị hô hào rồi xả.', lo=100, hi=10_000_000, legacy=True),
-    _a('gold', 'gold', 'VÀNG', 'Vàng', '🪙', 'metal', 500, .012, -.2, 1., .15, (.02, .05), lo=50, hi=100_000,
-       desc='Tiệm vàng Kim Phát. Bình ổn nhất sàn nhưng vẫn có ngày sốc.', unit='chi', fee=0, legacy=True),
+    _a('coin', C, 'MÂY', 'Mây Coin', '☁️', 'cloud', 10000, .07, 1., 1., 1., (.04, .12), pumps=.03,
+       desc='Đồng coin đầu tiên của phố.', lo=100, hi=10_000_000, legacy=True,
+       splits=True),
+    _a('gold', 'gold', 'VÀNG', 'Vàng', '🪙', 'metal', 500, .025, -.2, 1., .4, (.02, .05), lo=50, hi=100_000,
+       desc='Vàng của tiệm Kim Phát.', unit='chi', fee=0, legacy=True),
     # coins
-    _a('pho', C, 'PHO', 'Phở Coin', '🍜', 'cloud', 25000, .035, 1., 1., .6, (.04, .12), pumps=.03,
+    _a('pho', C, 'PHO', 'Phở Coin', '🍜', 'cloud', 25000, .07, 1., 1., .9, (.04, .12), pumps=.03,
        desc='Coin của hội quán phở trong phố. Nóng như nồi nước dùng, lúc sôi lúc nguội.'),
-    _a('banhmi', C, 'BMI', 'Bánh Mì Coin', '🥖', 'cloud', 12000, .028, .8, .8, .5, (.03, .10), pumps=.02,
+    _a('banhmi', C, 'BMI', 'Bánh Mì Coin', '🥖', 'cloud', 12000, .05, .8, .8, .7, (.03, .10), pumps=.02,
        desc='Coin bình dân, giòn rụm. Biến động vừa phải so với các coin khác.'),
-    _a('lua', C, 'LUA', 'Lúa Coin', '🌾', 'cloud', 8000, .035, .8, 1., .6, (.04, .13), pumps=.03,
+    _a('lua', C, 'LUA', 'Lúa Coin', '🌾', 'cloud', 8000, .07, .8, 1., .9, (.04, .13), pumps=.03,
        desc='Coin nhà nông: được mùa thì lên, mất mùa thì xuống, chẳng ai đoán trước.'),
-    _a('caro', C, 'CARO', 'Cá Rô Token', '🐟', 'cloud', 6000, .04, 1., 1.1, .8, (.05, .15), pumps=.04,
+    _a('caro', C, 'CARO', 'Cá Rô Token', '🐟', 'cloud', 6000, .08, 1., 1.1, 1.1, (.05, .15), pumps=.04,
        desc='Token của dân câu hồ chung. Có hôm cá cắn liên tục, có hôm cả hồ im re.'),
     _a('trada', C, 'TRADA', 'Trà Đá Coin', '🧊', 'stable', 1000, .004, .05, 1., .04, (.03, .10), up=.35,
        desc='Coin “bình ổn”: gần như đứng giá quanh 10 xu. Hiếm khi lệch giá, nhưng đã lệch là giật mình.'),
     _a('heo', C, 'HEO', 'Heo Đất Coin', '🐷', 'stable', 5000, .01, .25, 1., .1, (.03, .09),
        desc='Coin chậm mà chắc của phố. Ít sóng, lãi lỗ đều nhỏ.'),
-    _a('mai', C, 'MAI', 'Mèo Mai Coin', '🐱', 'meme', 3000, .045, .9, .7, .8, (.05, .15), pumps=.06, pump=(.04, .10), pmax=1.2,
+    _a('mai', C, 'MAI', 'Mèo Mai Coin', '🐱', 'meme', 3000, .08, .9, .7, 1.1, (.05, .15), pumps=.06, pump=(.04, .10), pmax=1.2,
        hours=8, desc='Coin meme theo bé mèo Mai. Hay được hô hào lên “mặt trăng” rồi rơi cái bịch, như mèo nhảy tủ lạnh.'),
-    _a('dua', C, 'DUA', 'Dưa Hấu Coin', '🍉', 'meme', 5000, .06, 1.1, 1., 1., (.05, .18), pumps=.08, pump=(.05, .12),
+    _a('dua', C, 'DUA', 'Dưa Hấu Coin', '🍉', 'meme', 5000, .10, 1.1, 1., 1.3, (.05, .18), pumps=.08, pump=(.05, .12),
        risky=True, unlock=3000, hours=8,
        desc='⚠️ Rủi ro rất cao: ruột đỏ hay ruột trắng chỉ biết khi bổ ra. Rơi tới mức hủy niêm yết là coin về 0.'),
-    _a('gachien', C, 'GACH', 'Gà Chiến Coin', '🐓', 'meme', 7000, .07, 1.2, 1.1, 1.1, (.06, .20), pumps=.1,
+    _a('gachien', C, 'GACH', 'Gà Chiến Coin', '🐓', 'meme', 7000, .11, 1.2, 1.1, 1.4, (.06, .20), pumps=.1,
        pump=(.06, .14), risky=True, unlock=3000, hours=6,
        desc='⚠️ Rủi ro rất cao: thắng thì gáy to, thua thì mất trắng. Có thể bị hủy niêm yết, coin về 0.'),
-    _a('cuoi', C, 'CUOI', 'Cuội Coin', '🌕', 'meme', 4000, .07, 1.2, 1.1, 1., (.06, .20), pumps=.12, pump=(.06, .14),
+    _a('cuoi', C, 'CUOI', 'Cuội Coin', '🌕', 'meme', 4000, .11, 1.2, 1.1, 1.3, (.06, .20), pumps=.12, pump=(.06, .14),
        risky=True, unlock=3000, hours=6,
        desc='⚠️ Rủi ro rất cao: “bay lên cung trăng” rồi rơi xuống gốc đa. Có thể bị hủy niêm yết, coin về 0.'),
-    _a('bao', C, 'BAO', 'Bão Coin', '🌪️', 'meme', 15000, .08, 1.3, 1.2, 1.2, (.06, .22), pumps=.08, pump=(.06, .15),
+    _a('bao', C, 'BAO', 'Bão Coin', '🌪️', 'meme', 15000, .12, 1.3, 1.2, 1.5, (.06, .22), pumps=.08, pump=(.06, .15),
        risky=True, unlock=10000, hours=6,
        desc='⚠️ Rủi ro cực cao: quét qua là tan tành. Hay sập rất sâu, có thể bị hủy niêm yết, coin về 0.'),
     # stocks (cổ phiếu of the town's companies, fee 1 %)
@@ -353,14 +359,14 @@ class Engine:
         reg, mreg = st['reg'], self.mreg[m]
         vm, jm, qs = REGIMES[reg]
         mv = MARKET_REGIMES[mreg]
-        if sp['legacy']:                         # Mây Coin and gold: calmer near their bounds (no splits)
+        if not sp['splits']:                     # gold: calmer near its bounds
             top = (lhi - L) / _LOG6
             top = 1. if top >= 1 else .12 if top < .12 else top
             bottom = (L - llo) / _LOG6
             tau = min(top, 1. if bottom >= 1 else .12 if bottom < .12 else bottom)
             tau = round(tau * 50) / 50           # steps of 0,02: the compensator of each is computed once
         else:
-            top = tau = 1.                       # a new asset is split or merged instead (value unchanged)
+            top = tau = 1.                       # split or merged instead (value unchanged)
         key = (a, reg, mreg, tau)
         mu = self.mu.get(key)
         if mu is None:
@@ -406,7 +412,7 @@ class Engine:
                         round((math.exp(jump) - 1) * 100), sign)
         L += r
         e = st['e']
-        if sp['legacy']:
+        if not sp['splits']:
             L = llo if L < llo else lhi if L > lhi else L
         else:
             # A split keeps the price readable and every holding's value the same (game/san.py rescales units):
@@ -554,6 +560,8 @@ def history(a: str, t: int, n: int) -> list[int]:
     i, j = max(lo, WILD_TICK) - eng.start, t + 1 - eng.start
     ps, xs = eng.prices[a], eng.exps[a]
     e = xs[j - 1]
+    if e and old:                                # the old market counted in e = 0 (Mây Coin)
+        old = [round(x * 10. ** e) for x in old]
     if all(x == e for x in xs[i:j]):
         return old + list(ps[i:j])
     # split-adjusted: every older price in the terms of the latest split (a chart never jumps ×10)
@@ -586,7 +594,14 @@ def quote(a: str, at: float | None = None, n: int = rm.HISTORY) -> dict:
     ts = [rm.EPOCH + k * TICK for k in range(t - len(hist) + 1, t + 1)]
     return {'price': hist[-1], 'previous': hist[-2] if len(hist) > 1 else hist[-1], 'history': hist, 'timestamps': ts,
             'tick': t, 'market_day': t // HOUR + 1, 'as_of': ts[-1], 'next_at': ts[-1] + TICK,
-            'news': {k: v for k, v in news(a, t).items() if k != 'move'}}
+            'news': {k: v for k, v in news(a, t).items() if k != 'move'}, 'e': exp_at(a, t)}
+
+
+def adjusted(a: str, t: int, ref: int) -> int:
+    """The price at tick t in the split terms of tick ref (charts: a split or merge is not a ×10 move)."""
+    d = exp_at(a, ref) - exp_at(a, t)
+    p = price_at(a, t)
+    return round(p * 10. ** d) if d else p
 
 
 def _change(now: int, then: int) -> float:

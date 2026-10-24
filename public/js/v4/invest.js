@@ -215,7 +215,7 @@ function sanList(env,S,B){
   return `<section class="sv" aria-labelledby="svT"><div class="sv-head"><h3 id="svT">🎢 Sàn Phố</h3><nav class="sv-tabs" aria-label="Loại tài sản">${[['coin','Coin'],['stock','Cổ phiếu']].map(([k,l])=>`<button type="button" data-action="ivSanTab" data-tab="${k}" aria-pressed="${tab===k}">${l}</button>`).join('')}</nav></div>
     ${sanTicker(B)}
     <div class="sv-list">${rows}</div>
-    <p class="iv-hint">Giá chung cả phố, đổi mỗi 10 phút, lên xuống rất mạnh. Không có cách chơi nào chắc thắng: chỉ dùng tiền nhàn rỗi.</p></section>`;
+    <p class="iv-hint">Giá chung cả phố, đổi mỗi 10 phút. Chỉ dùng tiền nhàn rỗi nhé.</p></section>`;
 }
 function sanCard(env,S,B,id){
   const a=S.assets.find(x=>x.id===id);if(!a)return '';
@@ -292,7 +292,7 @@ export async function investAction(action,data,el,env){
       changeAsset(env,m==='gold'||m==='coin'?m:S&&(m==='san'||S.assets.some(a=>a.id===m))?m:'coin');return true;}
     case'ivSanTab':ui.svTab=data.tab==='stock'?'stock':'coin';renderSheet();return true;
     case'ivSanBuy':{const S=sanOf(env),a=S?.assets.find(x=>x.id===data.a),v=pick(env,'san');if(!a)return true;
-      if((a.risky||v==='all')&&!(await ask(`Mua ${a.name}?`,a.risky?a.desc:`Bạn sẽ mua bằng toàn bộ ${xu(I.wallet)} trong ví. Giá có thể rơi rất mạnh bất cứ lúc nào.`,'Vẫn mua')))return true;
+      if((a.risky||v==='all')&&!(await ask(`Mua ${a.name}?`,a.risky?a.desc:`Bạn sẽ mua bằng toàn bộ ${xu(I.wallet)} trong ví.`,'Vẫn mua')))return true;
       await cmd('jr_san_buy',{a:a.id,...payload(v)});return true;}
     case'ivSanSell':{const S=sanOf(env),a=S?.assets.find(x=>x.id===data.a);if(!a)return true;
       await cmd('jr_san_sell',{a:a.id,...payload(pick(env,'san'))});return true;}

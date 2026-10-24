@@ -425,6 +425,39 @@ class Splits(Market):
             validate_state(s)
 
 
+    def test_mây_coin_merges_keep_the_old_holding_worth_the_same(self):
+        from game import invest as iv
+        eng = mw.Engine('split-coin', 6000, {'coin': 11000, 'gold': 650})
+        eng.advance(6000)
+        eng.st['coin']['L'] = math.log(mw.ASSETS['coin']['launch'] / mw.SPLIT / 1.5)
+        eng.advance(6001)
+        self.assertEqual(eng.exp10('coin', 6001), 1)                 # Mây Coin under 10 xu: 10→1
+        t = START + D
+        with patch.object(rm, 'now', return_value=self.at(t)):
+            s = story(50000)
+            s, _ = iv.action(s, 'iv_buy', {'amount': 10000})
+            units, before = s['journey']['invest']['coin']['units'], iv.value(s)
+            real = rm.quote
+
+            def merged(a, at=None, **k):
+                q = dict(real(a, at, **k))
+                if a == 'coin':
+                    q['price'], q['e'] = q['price'] * 10, q.get('e', 0) + 1
+                    q['history'] = [x * 10 for x in q['history']]
+                return q
+            with patch.object(rm, 'quote', side_effect=merged):
+                self.assertAlmostEqual(iv.value(s), before, delta=2)
+                self.assertEqual(iv.public(s)['coin']['units'], units // 10)
+                iv.sync_market(s)
+                self.assertEqual(s['journey']['invest']['coin']['units'], units // 10)
+                self.assertEqual(s['journey'][iv.SPLIT_KEY], mw.exp_at('coin', t) + 1)
+                validate_state(s)
+                self.assertAlmostEqual(iv.value(s), before, delta=2)
+            s['journey'][iv.SPLIT_KEY] = 99
+            with self.assertRaises(GameError):
+                validate_state(s)
+
+
 class Delisting(Market):
     salt = 'wild-delist-hunt'
 

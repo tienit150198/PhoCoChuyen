@@ -36,11 +36,12 @@ def _snapshot(span,tick,asset=''):
          'epoch':rm.EPOCH,'tick_seconds':rm.TICK_SECONDS,'day_seconds':rm.DAY_SECONDS}
     for name in ('coin','gold'):
         q=rm.quote(name,at)
-        points=[[rm.EPOCH+t*rm.TICK_SECONDS,rm.price_at(name,t)] for t in ticks]
-        out[name]={'price':q['price'],'previous':q['previous'],'news':q['news'],'points':points}
+        points=[[rm.EPOCH+t*rm.TICK_SECONDS,mw.adjusted(name,t,tick) if t>=mw.WILD_TICK else
+                 round(rm.price_at(name,t)*10.**mw.exp_at(name,tick))] for t in ticks]   # split-adjusted (Mây Coin)
+        out[name]={'price':q['price'],'previous':q['previous'],'news':q['news'],'points':points,'e':q.get('e',0)}
     out['board']=mw.board(at)
     if asset and asset not in ('coin','gold') and tick>=mw.WILD_TICK:
-        out['sel']={'id':asset,'points':[[rm.EPOCH+t*rm.TICK_SECONDS,mw.price_at(asset,t)] for t in _ticks(span,tick,mw.WILD_TICK)],
+        out['sel']={'id':asset,'points':[[rm.EPOCH+t*rm.TICK_SECONDS,mw.adjusted(asset,t,tick)] for t in _ticks(span,tick,mw.WILD_TICK)],
                     'epoch':rm.EPOCH+mw.WILD_TICK*rm.TICK_SECONDS}
     return out
 
