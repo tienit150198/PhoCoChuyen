@@ -1,5 +1,13 @@
 {
   "strings": {
+    "Chưa vị trí nào có người: mở 👥 Đội ngũ → Tuyển người, rồi Phân công vị trí.": "No position is staffed yet: open 👥 Team → Hire, then assign positions.",
+    "CHUẨN BỊ CA ĐIỀU PHỐI": "GET THE MANAGED SHIFT READY",
+    "Xem đội": "See the team",
+    "Mua vật tư": "Buy supplies",
+    "🏠 Mặt bằng": "🏠 Premises",
+    "📦 Vật tư quy mô": "📦 Scale supplies",
+    "🏠 Xem mặt bằng": "🏠 See premises",
+    "Đã đủ chỗ ở mặt bằng lớn nhất.": "Every place is filled at the largest premises.",
     "Hồ câu đông vui: thấy mọi người cùng câu, ai giật được cá gì cũng thấy": "A lively lake: see everyone fishing with you and every fish they land",
     "Cần xịn ra cá to, cá hiếm nhiều hơn hẳn; giá cá từ 🟣 Hiếm giảm 5%": "Top rods land far more big and rare fish; fish from 🟣 Rare up sell for 5% less",
     "Chạm vào người khác ở hồ để xem cá to nhất của họ; chat bong bóng với người câu gần bạn": "Tap a fisher to see their biggest fish; chat in bubbles with fishers near you",
@@ -46422,6 +46430,13 @@
     "Đỡ một quả bóng bổng, đẹp mắt!": "A beautiful dig!"
   },
   "patterns": {
+    "Đơn riêng: $1": "Special order: $1",
+    "Đơn riêng: $1 × $2": "Special order: $1 × $2",
+    "Đơn riêng: $1 kèm làm giấy tờ": "Special order: $1 with the registration papers",
+    "👥 Đội ngũ: $1/$2 người": "👥 Team: $1/$2 people",
+    "🧑‍🔧 Có người phụ trách: $1/$2 $3": "🧑‍🔧 Staffed: $1/$2 $3",
+    "Đội quy mô tối đa bằng số $1: lên mốc quy mô để có thêm. Nhân viên tiệm thêm chỗ ở": "The scale team is at most one person per $1: reach the next scale milestone for more. Shop staff get more places with the",
+    "Thêm chỗ cho nhân viên: mặt bằng lớn hơn có tới $1 chỗ.": "More places for staff: larger premises hold up to $1.",
     "⏱️ Giật $1": "⏱️ Yank $1",
     "🎣 $1 vừa câu được $2 $3 $4 ở $5! Cả phố trầm trồ!": "🎣 $1 just caught $2 $3 $4 at $5! The whole town is cheering!",
     "Giỏ đầy rồi ($1 con)! Bán bớt ở 🐟 Quầy thu mua nhé.": "The basket is full ($1 fish)! Sell some at the 🐟 Fish Market.",

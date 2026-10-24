@@ -56,6 +56,17 @@ function contractCard(c,kind,site){
     ${c.result?`<div class="scale-result" role="status"><p>${esc(c.result.message||'Đã lưu biên nhận ca.')}</p>${ledger(c.result)}</div>`:''}</article>`;
 }
 
+/** #388: what a business scale needs before a contract runs, in one place: the crew, who stands where, the
+ * contract supplies (vải, nguyên liệu…), each with the button that opens its section below. */
+function setupCard(s,crewActions){
+  const res=s.resources||[],crew=(s.crew||[]).length,manned=res.filter(r=>r.crew).length;
+  const go=(target,label)=>`<button type="button" class="btn ghost small" data-action="scaleGo" data-target="${target}">${label}</button>`;
+  const rows=[`<li><b>👥 Đội ngũ: ${number(crew)}/${number(res.length)} người</b>${crewActions.length?go('crew',crew<res.length?'Tuyển người':'Xem đội'):''}</li>`,
+    `<li><b>🧑‍🔧 Có người phụ trách: ${number(manned)}/${number(res.length)} ${esc(s.resource_name||'vị trí')}</b>${res.length?go('resources','Phân công'):''}</li>`,
+    ...(s.stock?.items||[]).map(m=>`<li><b>📦 ${esc(m.name)}: ${number((m.locations||[]).reduce((n,x)=>n+(Number(x.units)||0),0))} ${esc(m.unit)}</b>${go('stock','Mua vật tư')}</li>`)];
+  return `<article class="scale-setup"><p class="pm-eyebrow">CHUẨN BỊ CA ĐIỀU PHỐI</p><ul class="scale-setup-list">${rows.join('')}</ul><p class="small muted">Đội quy mô tối đa bằng số ${esc(s.resource_name||'vị trí')}: lên mốc quy mô để có thêm. Nhân viên tiệm thêm chỗ ở <button type="button" class="btn ghost small" data-action="property">🏠 Mặt bằng</button></p></article>`;
+}
+
 export function scaleCard(s,{compact=false,site=null}={}){
   if(!s)return '';
   const community=s.kind==='community',agency=s.kind==='agency';
@@ -80,6 +91,7 @@ export function scaleCard(s,{compact=false,site=null}={}){
     ${s.stages?`<details class="pm-more"><summary>Lộ trình 8 mốc</summary><ol class="scale-path">${s.stages.map(t=>`<li><span>${esc(t.title)}</span><b>${t.fee?coins(t.fee):'Theo tiến độ'}</b></li>`).join('')}</ol></details>`:''}
     ${s.quota&&!community?`<p class="scale-quota">Còn <b>${number(s.quota.available)}</b> suất quản lý · +${number(s.quota.daily)}/ngày thực · giữ tối đa ${number(s.quota.cap)}</p>`:''}
     ${selected?`<p class="scale-note">Đang điều phối tại <b>${esc(selected.name)}</b> <button class="btn ghost" data-action="scaleAllSites">Xem toàn mạng</button></p>`:''}
+    ${s.tier&&!agency&&!community?setupCard(s,crewActions):''}
     ${contractCard(s.contract,s.kind,site)}${heldCard(s.held)}${otherActions.map(action).join('')}
     ${stock?.items?.length?`<details class="scale-stock"${s.contract?.phase==='stock'?' open':''}><summary>Kho vật tư điều phối</summary><p class="small">Vật tư này dùng cho hợp đồng quản lý. Sức chứa tính chung mọi cơ sở, gồm hàng đang về và giữ chỗ.</p>${stock.items.map(m=>`<article><h4>${esc(m.name)}</h4><p>${number(m.occupied)}/${number(m.capacity)} thùng · tối đa ${number(m.order)} thùng/lần</p>${m.locations.filter(x=>!site||x.site===site).map(x=>`<p class="small">${esc(x.name)}: ${number(x.units)} ${esc(m.unit)} · tự do ${number(x.available)}</p>`).join('')}</article>`).join('')}${stockActions.map(action).join('')}</details>`:''}
     ${crewActions.length?`<details class="scale-crew"><summary>Đội ngũ · ${(s.crew||[]).length} người</summary>${(s.crew||[]).map(p=>`<p class="small">${esc(p.name)} · ${esc(p.role)}</p>`).join('')}${crewActions.map(action).join('')}</details>`:''}
@@ -91,8 +103,20 @@ export function scaleCard(s,{compact=false,site=null}={}){
   </section>`;
 }
 
+/** Open one section of the scale card (`.scale-<target>`) and bring it into view (#388). */
+function reveal(target){
+  const box=globalThis.document?.querySelector?.(`.scale-card .scale-${target}`);
+  if(!box)return false;
+  box.open=true;box.scrollIntoView?.({block:'start',behavior:'smooth'});return true;
+}
+
 export async function scaleAction(name,data,el,env){
   if(name==='scaleAllSites'){env.ui.scaleSite=null;env.renderSheet?.();return true;}
+  if(name==='scaleGo'){   // #388: from the setup card, or from the Kho (opens 🎖️ Thăng tiến first)
+    const target=['crew','resources','stock'].includes(data.target)?data.target:'stock';
+    if(!reveal(target)){env.openSheet?.('promo');setTimeout(()=>reveal(target),60);}
+    return true;
+  }
   if(name==='scaleHeldShow'){   // F#469 "Tiếp tục": the held offer is on this same sheet (the other card)
     const box=el?.closest?.('dialog,.sheet')||globalThis.document;
     box?.querySelector?.(data.kind==='special'?'.special-job':'.scale-contract')?.scrollIntoView?.({block:'start',behavior:'smooth'});

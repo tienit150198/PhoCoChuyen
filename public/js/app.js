@@ -79,7 +79,7 @@ const L={
   school:lazy(()=>import('./v4/school.js'),{css:['/css/school.css']}),  // 🏫 Trường học: đại học nhiều ngành, du học một học kỳ (game/school.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay','coachStart']);  // tutorial actions whose buttons other modules render
-const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice','pmForce']);  // 🎖️ v4/promo.js
+const PROMO_OPEN=new Set(['promo','scaleGo','pmBoard','pmStart','pmPick','pmMate','pmOffice','pmForce']);  // 🎖️ v4/promo.js
 const ABROAD_OPEN=new Set(['abroad','abTab','abJob','abLesson']);  // ✈️🌏 v4/abroad.js
 const REMOTE_OPEN=new Set(['remoteClose','rcClose']);  // 📲 v4/remote-close.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
