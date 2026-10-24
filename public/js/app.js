@@ -779,6 +779,7 @@ function renderSheet(preserve=true){
   sheetScroll.watch(dialog);if(!preserve)sheetScroll.reset();
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
+  {const h=box.querySelector('.sheet-head h1,.sheet-head h2')||box.querySelector('h1,h2');if(h){if(!h.id)h.id='sheetTitle';dialog.setAttribute('aria-labelledby',h.id);}else dialog.removeAttribute('aria-labelledby');}   // ♿ the sheet's name for screen readers: its heading (it had none)
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
   applyGuide(dialog);watchHead(dialog);if(iso?.booted())iso.updateIsometricShell(env());
   if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{el.setSelectionRange(selection,selection);}catch{/* not a text input */}}}}
