@@ -165,7 +165,8 @@ function rain(p,top){
   css();
   const root=document.createElement('div');root.className='lxi-root';
   const calm=reduced(),drops=calm?[]:planRain(p.left);
-  root.innerHTML=drops.map((d,i)=>`<button type="button" class="lxi-env" data-lxi="grab" data-i="${i}" aria-label="Giật lì xì" style="left:${d.x}%;font-size:${d.size}px;animation-duration:${d.dur}s;animation-delay:${d.delay}s;--r:${d.rot}deg"><span aria-hidden="true">🧧</span></button>`).join('')+
+  // ♿ #428: the falling envelopes are for fingers; a screen reader / the keyboard gets the banner's one "Giật"
+  root.innerHTML=drops.map((d,i)=>`<button type="button" class="lxi-env" data-lxi="grab" data-i="${i}" aria-hidden="true" tabindex="-1" style="left:${d.x}%;font-size:${d.size}px;animation-duration:${d.dur}s;animation-delay:${d.delay}s;--r:${d.rot}deg"><span aria-hidden="true">🧧</span></button>`).join('')+
     '<div class="lxi-banner" role="status" aria-live="polite"></div><div class="lxi-won" aria-live="polite"></div>';
   const host=top||document.body;mount(root,host);own(root);
   const cur=S.cur={p,root,host,top,done:false,timers:[],keys:null,watch:0};
@@ -180,7 +181,9 @@ function rain(p,top){
   cur.keys=e=>{if((e.key==='Escape'||e.key==='Esc')&&!cur.done){e.preventDefault();e.stopPropagation();endRain(cur,true);}};
   document.addEventListener('keydown',cur.keys,true);
   requestAnimationFrame(()=>root.classList.add('on'));
-  cur.timers.push(setTimeout(()=>endRain(cur,false),(RAIN_S+(calm?3:0))*1000));
+  // ♿ #428: while the reader / keyboard is on the banner (Giật, Xem), the rain waits for it (up to a minute more)
+  let extra=0;const end=()=>{if(!cur.done&&cur.root.contains?.(document.activeElement)&&extra++<20){cur.timers.push(setTimeout(end,3000));return;}endRain(cur,false);};
+  cur.timers.push(setTimeout(end,(RAIN_S+(calm?3:0))*1000));
   cur.watch=setInterval(()=>{   // the player opens a game or a sheet: the rain gives way (the chat card stays)
     if(cur.done)return;
     if(!cur.root.isConnected){endRain(cur,true);return;}
@@ -190,11 +193,13 @@ function rain(p,top){
 function banner(cur){
   const p=LX.packets.get(cur.p.id)||cur.p,el=cur.root.querySelector('.lxi-banner');if(!el)return;
   const got=LX.got.get(p.id),open=openNow(p);
-  const act=got!=null?`<button type="button" class="lxi-go" data-lxi="see">+${fmt(got)} xu</button>`:open&&!p.own?'<button type="button" class="lxi-go" data-lxi="grab">Giật</button>':
+  const act=got!=null?`<button type="button" class="lxi-go" data-lxi="see">+${fmt(got)} xu</button>`:open&&!p.own?'<button type="button" class="lxi-go" data-lxi="grab" aria-label="Giật lì xì">Giật</button>':
     '<button type="button" class="lxi-go" data-lxi="see">Xem</button>';
+  const had=el.contains?.(document.activeElement)?document.activeElement.dataset?.lxi:null;   // ♿ a redraw keeps the reader on its button
   el.innerHTML=`<span class="lxi-ico" aria-hidden="true">🧧</span><div class="lxi-text"><div>${p.own?'<b>Bạn</b>':who(p)} <span>phát lì xì ${fmt(p.total)} xu</span></div>`+
     `${p.wish?`<q data-no-translate>${esc(p.wish)}</q>`:''}<small>${open?`Còn ${p.left}/${p.n} bao`:'Đã hết bao'}</small></div>${act}`+
     '<button type="button" class="lxi-x" data-lxi="x" aria-label="Đóng" title="Đóng">✕</button>';
+  if(had)(el.querySelector?.(`[data-lxi="${had}"]`)||el.querySelector?.('.lxi-go'))?.focus({preventScroll:true});
 }
 function endRain(cur,quick,line=''){
   if(!cur||cur.done)return;cur.done=true;
@@ -211,10 +216,10 @@ function chip(p){
   if(globalThis.document?.fullscreenElement)return next();
   const el=document.createElement('div');el.className='lxi-chip';el.setAttribute('role','status');el.setAttribute('aria-live','polite');
   el.innerHTML=`<span aria-hidden="true">🧧</span><span class="lxi-chip-t">${p.own?'<b>Bạn</b>':who(p)} <span>phát lì xì</span></span>`+
-    (p.own?'<button type="button" data-lxi="see">Xem</button>':'<button type="button" data-lxi="grab">Giật</button>')+
+    (p.own?'<button type="button" data-lxi="see">Xem</button>':'<button type="button" data-lxi="grab" aria-label="Giật lì xì">Giật</button>')+
     '<button type="button" class="lxi-chip-x" data-lxi="x" aria-label="Đóng" title="Đóng">✕</button>';
   own(el);
-  const c=S.chip={el,p,timer:0};
+  const c=S.chip={el,p,timer:0,extra:0};
   el.addEventListener('click',e=>{
     const b=e.target.closest?.('[data-lxi]');if(!b)return;
     hideChip(c);
@@ -223,7 +228,8 @@ function chip(p){
   });
   mount(el,topModal()||document.body);
   requestAnimationFrame(()=>el.classList.add('on'));
-  c.timer=setTimeout(()=>hideChip(c),CHIP_S*1000);
+  const end=()=>{if(S.chip===c&&el.contains?.(document.activeElement)&&c.extra++<20){c.timer=setTimeout(end,3000);return;}hideChip(c);};   // ♿ focused: it waits
+  c.timer=setTimeout(end,CHIP_S*1000);
 }
 function hideChip(c=S.chip){
   if(!c)return;clearTimeout(c.timer);
@@ -238,16 +244,18 @@ export function cardTap(env,id,what){
   if(what==='grab')return grab(id);
   return openLixi(S.env,'detail',id);
 }
-export async function grab(id,cur=null){
+/** `opt.say(text)`: ♿ the result is said there (isometric-pickups.js, #428) instead of a toast or the lì xì sheet. */
+export async function grab(id,cur=null,opt={}){
   const api=S.env?.api;if(!api||S.grabbing.has(id))return null;
-  if(LX.got.has(id)){openLixi(S.env,'detail',id);return null;}
+  if(LX.got.has(id)){if(opt.say)opt.say(`Bạn đã giật bao này rồi: +${fmt(LX.got.get(id))} xu.`);else openLixi(S.env,'detail',id);return null;}
   S.grabbing.add(id);
   try{
     const r=await api.post('/api/lixi/grab',{id});
     if(r?.state&&typeof r.revision==='number')api.accept({state:r.state,revision:r.revision});
     grabbed(id,r.amount);
     const p=LX.packets.get(id);
-    if(cur&&!cur.done){
+    if(opt.say)opt.say(`🧧 +${fmt(r.amount)} xu${p?.name?` từ lì xì của ${p.name}`:''}`);
+    else if(cur&&!cur.done){
       const w=cur.root.querySelector('.lxi-won');
       if(w){w.innerHTML=`+${fmt(r.amount)} xu<small>${p?.name?`lì xì của <b data-no-translate>${esc(p.name)}</b>`:'lì xì'}</small>`;w.classList.add('on');}
       banner(cur);
@@ -259,7 +267,8 @@ export async function grab(id,cur=null){
   }catch(e){
     if(e?.data?.code==='empty'||e?.code==='empty'){const p=LX.packets.get(id);if(p){p.left=0;p.status='done';update({id,left:0,done:true});}}
     const msg=e?.message||'Chưa giật được. Thử lại nhé.';
-    if(cur&&!cur.done){const s=cur.root.querySelector('.lxi-text small');if(s)s.textContent=msg;cur.timers.push(setTimeout(()=>endRain(cur,false),1800));}
+    if(opt.say)opt.say(msg);
+    else if(cur&&!cur.done){const s=cur.root.querySelector('.lxi-text small');if(s)s.textContent=msg;cur.timers.push(setTimeout(()=>endRain(cur,false),1800));}
     else if(S.dlg?.open){S.flash={text:msg,kind:'bad'};render();}
     else S.env?.toast?.(msg,true);
     return null;

@@ -377,6 +377,7 @@ function navItems(c){
   if(api.state?.journey?.gender)items.push(['jrAccShop','bag','Cửa hàng',charmsWaiting(api)]);  // 🛍️ Cửa hàng (v4/acc-shop.js): for the character and the pets, its own entry beside the hubs (railHTML); the badge: gifts waiting
   if(api.state?.journey?.gender&&forgeOpen(api.state,api.content))items.push(['jrForge','wrench','Cường hóa']);  // ⚒️ Cường hóa (v4/acc-shop.js forgeView): every ghép / nâng hạng, its own entry too
   if(!newInterface(api.state))items.push(['sharedIsland','map','Ra đảo nhặt rương']);
+  else items.push(['isoPickups','gift','Rương & lì xì']);  // ♿ #428 (isometric-pickups.js): chests and lì xì as a list, "Đi tới và nhặt
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
@@ -451,7 +452,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()))||(x[0]==='fair'&&!api.state?.fair?.over)||(x[0]==='townFair'&&fairNow()?.state==='open')||(x[0]==='halloween'&&hwNow()?.state==='open');   // 🎃 in sight while candy is earned
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','islandOpen','liveWalk','liveWed','liveKara','tileMatch','fishing','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
+  ['pho','building','Khu phố',['travel','fair','lixi','luxFw','wedInvite','spend','pets','sharedIsland','isoPickups','islandOpen','liveWalk','liveWed','liveKara','tileMatch','fishing','nhom','phone','social','jrTown','rank','townProjects','bang','svcMarket','hotelBook','townFair','halloween']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','auction','garage','island','bangIsland','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],

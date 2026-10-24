@@ -123,6 +123,7 @@ export function isometricHUDHTML(model,state={}){
         ${m.shop?control('Cửa hàng','jrAccShop','bag','iso-tool iso-shop',' aria-label="Cửa hàng: phụ kiện, trang phục, phụ kiện đôi, cánh, đồ thú cưng, nhà và xe"'):''}
         ${m.forge?control('Cường hóa','jrForge','wrench','iso-tool iso-forge',' aria-label="Cường hóa: ghép cánh, ghép thú, nâng đồ thú cưng"'):''}
         ${control('Túi đồ','isoBag','bag','iso-tool')}
+        ${control('Rương & lì xì','isoPickups','gift','iso-tool',' aria-label="Rương và lì xì: danh sách, đi tới và nhặt"')}
         ${m.ride?control(esc(m.ride),'isoRide','bike','iso-tool',` aria-label="${esc(m.ride)}: chạm để đổi xe hoặc đi bộ"`):''}
         ${m.fly?control(esc(m.fly),'isoFly','sparkles','iso-tool iso-fly',` aria-label="${esc(m.fly)}: bay nhanh như đi xe, không lái xe khi bay"`):''}
         ${m.fairOpen?control('Chợ đen','fair','basket','iso-tool iso-fair-button',' aria-label="Chợ đen đang mở"'):''}
@@ -360,6 +361,7 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',PICK);break;
     case'isoChat':await act('liveChat');break;
     case'isoGuide':await openGuide(env);break;   // 🧭 iso-guide.js
+    case'isoPickups':closeHUDDisclosures();await (await import('./isometric-pickups.js')).openPickups(env);break;   // ♿ #428: chests and lì xì as a list
     case'isoGo':await goTo(String(data.dest||''),env);break;
     case'isoCamera':{const open=!cameraOpen;closeHUDDisclosures();cameraOpen=open;syncDisclosureLayer();break;}
     case'isoMore':
