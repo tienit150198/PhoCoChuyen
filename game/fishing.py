@@ -678,16 +678,26 @@ def _mount(s, d, p, t):
 
 def _tro(s, d, p, t):
     """🖼️ A mounted tranh cá's background ({uid, bg}) or size ({uid, sz}: 'lon' 2 × 2, 'nho' 1 × 1), changed later. A
-    painting grown past the room it hangs in (a neighbour in the way) waits in the furniture bag to be hung again."""
+    painting grown past the room it hangs in (a neighbour in the way) waits in the furniture bag to be hung again.
+    {uid, out: true} (góp ý #528, a 1-million fish mounted by mistake): the fish leaves the frame for the bag, kept ⭐."""
     need = _core().need
     uid = p.get('uid')
-    need(isinstance(uid, str) and set(p) <= {'uid', 'bg', 'sz'} and len(p) >= 2, 'Chọn tranh cá nhé.')
+    need(isinstance(uid, str) and (set(p) <= {'uid', 'bg', 'sz'} and len(p) >= 2 or p == dict(uid=uid, out=True)),
+         'Chọn tranh cá nhé.')
     bg, sz = _tro_opts(p)
     from . import reno as rn
     blk = rn.ensure_block(s)
     it = next((x for x in blk['items'] if x.get('id') == uid), None)
     need(uid in d['tro'] and it is not None and it.get('k') in TROPHY_KINDS, 'Tranh cá này không còn trong nhà.', 'gone')
     v = d['tro'][uid]
+    if p.get('out'):
+        need(len(d['bag']) < cap(d), 'Giỏ đầy rồi.', 'bag_full')
+        from . import deco as dc
+        ride = dc.drop(s, uid)
+        d['tro'].pop(uid, None)
+        d['seq'] += 1
+        d['bag'].append(dict(i=d['seq'], s=v[0], g=v[1], d=vn_day(t), p=0, k=1, o=0, od=0))
+        return dict(message='🧺 Đã gỡ cá khỏi tranh, cá về giỏ.' + (' Đồ treo trên tranh vào túi đồ.' if ride else ''))
     out = []
     if bg is not None:
         d['tro'][uid] = _tro_entry(v[0], v[1], bg)

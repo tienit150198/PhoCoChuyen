@@ -1065,6 +1065,23 @@ def _ensure(s: dict) -> tuple[dict, dict, dict]:
     return d, D, L
 
 
+def drop(s: dict, uid: str) -> list:
+    """Take a piece out of the house for good, for nothing (🐟 a tranh cá whose fish goes back to the bag,
+    game/fishing.py jr_fish_tro out, góp ý #528): what stood on it goes to the furniture bag (returned)."""
+    d, D, L = _ensure(s)
+    ride = riders(L['pos'], uid)
+    pos = {u: q for u, q in L['pos'].items() if u != uid and u not in ride}
+    r = _rn().get(s)
+    r['items'] = [x for x in r['items'] if x['id'] != uid]
+    L['kinds'] = {u: k for u, k in L['kinds'].items() if u != uid}
+    L['order'] = [u for u in L['order'] if u != uid]
+    _store(d, D, L, pos)
+    pal = s.get('colors')
+    if isinstance(pal, dict) and isinstance(pal.get('deco'), dict):
+        pal['deco'].pop(uid, None)
+    return ride
+
+
 def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
     """Write the free layout and its grid mirror (what an older build reads). The pieces in the new rooms go to
     journey.decor_new, the others to journey.decor (an older build checks every piece there against its own rooms)."""
