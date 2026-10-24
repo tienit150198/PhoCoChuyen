@@ -66,8 +66,9 @@ def buy_put(s, k, prefer=(), on=None):
 class Catalogue(unittest.TestCase):
     def test_the_new_pieces(self):
         self.assertTrue(40 <= len(NEW) <= 70)
-        self.assertEqual(tuple(DC.ITEMS)[-len(NEW):], NEW)                 # appended last: the KNOWN_* lists keep their meaning
-        self.assertEqual(DC.KNOWN_2471, tuple(DC.ITEMS)[:-len(NEW)])
+        self.assertEqual(DC.KNOWN_265[-len(NEW):], NEW)                    # appended last: the KNOWN_* lists keep their meaning
+        self.assertEqual(DC.KNOWN_2471, DC.KNOWN_265[:-len(NEW)])
+        self.assertEqual(tuple(DC.ITEMS)[len(DC.KNOWN_265):], ('tranh_ca_nho',))   # 🎣 2.6.6 (#517): after them
         self.assertEqual(len({it['name'] for it in DC.ITEMS.values()}), len(DC.ITEMS))
         cats = {c[0] for c in DC.CATS}
         for k in NEW:

@@ -41,7 +41,7 @@ import {t as tr} from './i18n.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',style:'',q:'',qTimer:0,busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null,tryTint:null,saidFlash:null,tapEnd:0,refocus:'',focusNext:[],mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0};
+  try:null,nudge:null,tryTint:null,saidFlash:null,tapEnd:0,refocus:'',focusNext:[],mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0,coop:false,coopLog:null,coopSeq:0,troPick:''};
 const guest=guestSession(S);
 const ZM=zoomer();
 let openSeq=0;
@@ -161,7 +161,7 @@ function fishPieces(){
   const f=J().fish,list=S.env?.api?.content?.journey?.fish?.species;A.FISH_TRO.clear();A.AQUA.length=0;
   if(!f||typeof f!=='object'||!Array.isArray(list))return;
   const by=new Map(list.map(s=>[s.id,s]));
-  for(const [uid,v] of Object.entries(f.tro&&typeof f.tro==='object'?f.tro:{}))if(Array.isArray(v)&&by.has(v[0]))A.FISH_TRO.set(uid,{sp:by.get(v[0]),g:Number(v[1])||0});
+  for(const [uid,v] of Object.entries(f.tro&&typeof f.tro==='object'?f.tro:{}))if(Array.isArray(v)&&by.has(v[0]))A.FISH_TRO.set(uid,{sp:by.get(v[0]),g:Number(v[1])||0,bg:typeof v[2]==='string'?v[2]:'kem'});
   for(const v of Array.isArray(f.aq)?f.aq:[])if(Array.isArray(v)&&by.has(v[0]))A.AQUA.push(by.get(v[0]));
 }
 export async function openReno(env,mode,guestCode=''){
@@ -788,6 +788,10 @@ async function onClick(op,data){
       (await import('./palette.js')).pickColor(S.env,{title:it.name,current:tintOf(p.id)||'goc',preview:c=>A.thumb(it,88,c),
         onTry:c=>{S.tryTint={uid:p.id,c};paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
         onClose:()=>{S.tryTint=null;render();}});return;}
+    case'troBg':S.troPick=S.troPick===data.uid?'':data.uid;render();return;   // 🎣 tranh cá: its background (#517)
+    case'troSet':{const p=placed(data.uid);if(!p||!A.TRO_BG[data.bg])return;if(await send('jr_fish_tro',{uid:p.id,bg:data.bg}))sfx('success');return;}
+    case'troSize':{const p=placed(data.uid),it=ITEM(p?.k);if(!p||!it)return;
+      if(await send('jr_fish_tro',{uid:p.id,sz:it.id==='tranh_ca'?'nho':'lon'})){sfx('success');if(!placed(p.id))S.sel='';}return;}
     case'pick':return pick(data.uid);
     case'restore':S.dlg?.close();await (await import('./restore.js')).openRestore(S.env,{service:'co_dien',ref:data.uid});return;   // 🧰 Làm cổ điển by a player restorer
     case'sell':{const p=placed(data.uid)||v.bag.find(b=>b.id===data.uid),it=ITEM(p?.k);if(!it)return;
@@ -1280,7 +1284,8 @@ function quickSpots(rm,it,skip=new Set(),f=0){
 /** The selected piece's buttons (one string each: easy to add one). */
 function toolButtons(v,p,it){
   const tb=(label,op,tip,cls='')=>btn(label,op,{uid:p.id},`ghost small${cls}`,` title="${esc(tip)}" aria-label="${esc(tip)}"`);
-  const pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),...(S.coop?[]:[tb('🎨 Màu','tint','Đổi màu')])];
+  const tro=isTrophy(p,it),pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),
+    ...(S.coop?[]:tro?[tb('🎨 Nền tranh','troBg','Đổi màu nền tranh'),it.id==='tranh_ca'?tb('🔽 Thu nhỏ','troSize','Tranh nhỏ 1 ô'):tb('🔼 Phóng to','troSize','Tranh lớn 2 × 2 ô')]:[tb('🎨 Màu','tint','Đổi màu')])];
   if(canTurn(it,p)){const t=rotOf(p);out.unshift(tb(`↻ Xoay · ${ROT_WORD[t]}`,'turn',`Xoay 90 độ, đang ${ROT_WORD[t]} (phím R)`,' dc-turn'));}
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
   if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Chọn vị trí hoặc phòng muốn đặt'));
@@ -1288,6 +1293,14 @@ function toolButtons(v,p,it){
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'));
   if(!S.coop)out.push(tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
   return out;
+}
+/** 🎣 A tranh cá of this save (journey.fish.tro): its own background and size (game/fishing.py jr_fish_tro, góp ý #517). */
+const isTrophy=(p,it)=>!S.remote&&(it?.id==='tranh_ca'||it?.id==='tranh_ca_nho')&&A.FISH_TRO.has(p?.id);
+function troPicker(p){
+  if(S.troPick!==p.id)return '';
+  const cur=A.FISH_TRO.get(p.id)?.bg||'kem';
+  return `<div class="dc-trobg" role="group" aria-label="Nền tranh">${Object.entries(A.TRO_BG).map(([k,[c]])=>
+    `<button type="button" class="dc-trobg-sw${k===cur?' on':''}" data-dc="troSet" data-uid="${esc(p.id)}" data-bg="${k}" aria-pressed="${k===cur}"${S.busy?' disabled':''}><i style="background:${c}"></i>${esc(A.TRO_BG_NAMES[k])}</button>`).join('')}</div>`;
 }
 /** ♿ ⬅️⬆️⬇️➡️ one cell and ✕ Bỏ chọn for the chosen piece; a small thing also gets the surfaces it may go up on. */
 function stepButtons(p,it){
@@ -1299,7 +1312,7 @@ function stepButtons(p,it){
 function tools(v){
   const p=placed(S.sel),it=itemOf(p);if(!it)return '';
   const by=agedBy(p.id),badge=by?`<small class="rs-badge" title="Đã phục chế bởi ${esc(by)}">✨ Cổ điển · ${esc(by)}</small>`:'';
-  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b><small class="dc-tools-at">${esc(posOf(p))}</small>${badge}</span>${stepButtons(p,it)}<span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
+  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b><small class="dc-tools-at">${esc(posOf(p))}</small>${badge}</span>${stepButtons(p,it)}<span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span>${isTrophy(p,it)?troPicker(p):''}</div>`;
 }
 /** 🔎 Search folds case and Vietnamese marks ("den long" finds "Đèn lồng"); an English player's own words match too. */
 const fold=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');

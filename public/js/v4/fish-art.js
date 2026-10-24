@@ -204,6 +204,9 @@ export function shade(hex,k=.75){
 
 let uid=0;
 /** The SVG markup of a fish (`silhouette`: the uncaught shadow of Sổ cá). opts: {w, h, silhouette, glow, title}. */
+/** 🖼️ Tranh cá backgrounds (game/fishing.py TROPHY_BG, góp ý #517): [the board, its lighter top half]; 'kem' when none. */
+export const TRO_BG={kem:['#fbf1dc','#fff8ec'],xanh:['#d6ecfb','#eaf5fd'],hong:['#fbdde6','#fdeef2'],go:['#e8c9a0','#f2dcbd'],trang:['#fffdf8','#ffffff'],bien:['#2f5d7c','#3c7096']};
+export const TRO_BG_NAMES={kem:'Kem nhạt',xanh:'Xanh pastel',hong:'Hồng pastel',go:'Gỗ sáng',trang:'Trắng',bien:'Xanh biển'};
 export function fishSvg(sp,{w=120,h=60,silhouette=false,glow=true,title=''}={}){
   const {parts,body}=fishParts(sp),id=`fa${++uid}`,r=Number(sp?.r)||0,rc=RARITY_COLORS[r]||RARITY_COLORS[0];
   const fx=!silhouette&&glow&&r>=3?` filter="url(#${id}g)"`:'';

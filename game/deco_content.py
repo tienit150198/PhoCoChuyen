@@ -598,6 +598,12 @@ for _k, _it in MORE_2026.items():   # the villa rooms take them by BASE, like th
     ITEMS[_k] = _it
 NEW_2026 = tuple(MORE_2026)
 
+# 🎣 Tranh cá nhỏ (góp ý #517 "khung tranh cá nhỏ hơn để trang trí"): the same mounted fish in a 1 × 1 wall frame; a
+# tranh cá switches between the two sizes (game/fishing.py jr_fish_mount / jr_fish_tro). Appended last: 2.6.5 and before
+# keep it in reno.items, unshown, like the pieces above.
+KNOWN_265 = tuple(ITEMS)          # what 2.6.5 knows
+ITEMS['tranh_ca_nho'] = dict(_i('wall', 'wall', 1, 1, 0, 2, _UQ_ROOMS, 'Tranh cá nhỏ', '🐟', ('art',)), price=0, uq=True)
+
 # Theme sets (the SETS rules: one distinct piece per entry, all in one room, each set counted once per home). Every
 # set's bonus stays within SET_BONUS_MAX, the most any set ever gave: Ấm cúng only moves the morning tinh thần by its
 # capped steps (reno.COZY_STEPS, deco.RENT_STEPS), so more sets never mean more money.

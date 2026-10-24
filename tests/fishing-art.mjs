@@ -45,6 +45,10 @@ const A=await import('../public/js/v4/deco-art.js');
 assert.ok(A.ART.tranh_ca.d(76,68,'u1').includes('fish-sil'));
 A.FISH_TRO.set('u1',{sp,g:4200});
 const t=A.ART.tranh_ca.d(76,68,'u1');assert.ok(t.includes('4,2 kg')&&!t.includes('fish-sil')&&!/NaN/.test(t));
+// #517: light cream when none was chosen (older trophies too), every background drawn, a small 1 × 1 frame
+assert.ok(t.includes(A.TRO_BG.kem[0])&&!t.includes(A.TRO_BG.bien[0]),'a plain trophy is light cream');
+for(const [k,[c]] of Object.entries(A.TRO_BG)){A.FISH_TRO.set('u1',{sp,g:4200,bg:k});const x=A.ART.tranh_ca.d(76,68,'u1');assert.ok(x.includes(c)&&!/NaN/.test(x),k);assert.ok(A.TRO_BG_NAMES[k],k);}
+const sm=A.ART.tranh_ca_nho.d(40,34,'u1');assert.ok(sm.includes('4,2 kg')&&sm.includes(A.TRO_BG.bien[0])&&!/NaN|-\d/.test(sm.match(/width="[^"]*"|height="[^"]*"/g).join('')),'the small frame fits its cell');
 const tank=A.ART.be_ca.d(80);A.AQUA.push(...species.slice(0,4));
 const full=A.ART.be_ca.d(80);assert.equal((full.match(/class="fish-art/g)||[]).length,3,'three fish show');assert.ok(!tank.includes('fish-art'));
 console.log(`fishing art ok: ${species.length} species`);

@@ -488,6 +488,61 @@ class Market(unittest.TestCase):
         self.assertEqual([f['s'] for f in s['journey']['fish']['bag']], [C.by_rarity(3)[0]['id']])   # back from the aquarium
         self.assertEqual(s['journey']['fish']['rel'][1], 2)
 
+    def test_trophy_size_and_background(self):
+        """🖼️ góp ý #517: a small (1 × 1) tranh cá and its background, chosen when mounting and changed later."""
+        from game import deco as dc
+        s = self.bagged(('ca_chep', 2000), ('ca_ro', 300), ('ca_ro', 250))
+        for bad in (dict(id=1, bg='do'), dict(id=1, sz='to'), dict(id=1, bg=3), dict(id=1, x=1)):
+            with self.assertRaises(GameError):
+                run(s, 'jr_fish_mount', Clock(), **bad)
+        s, r = run(s, 'jr_fish_mount', Clock(), id=1, sz='nho', bg='hong')
+        s, r = run(s, 'jr_fish_mount', Clock(), id=2, bg='kem')
+        s, r = run(s, 'jr_fish_mount', Clock(), id=3)
+        kinds = {x['id']: x['k'] for x in s['journey']['reno']['items']}
+        self.assertEqual(sorted(kinds.values()), ['tranh_ca', 'tranh_ca', 'tranh_ca_nho'])
+        tro = s['journey']['fish']['tro']
+        small = next(u for u, k in kinds.items() if k == 'tranh_ca_nho')
+        self.assertEqual(tro[small], ['ca_chep', 2000, 'hong'])
+        self.assertEqual(sorted(len(v) for v in tro.values()), [2, 2, 3])   # the light default is never written
+        self.assertEqual(F.catalogue()['trophy_bg'][0], 'kem')
+        # later: the background, then the size (hung on the attic wall; grown where a neighbour hangs: back to the bag)
+        big = next(u for u, k in kinds.items() if k == 'tranh_ca')
+        s, r = run(s, 'jr_fish_tro', Clock(), uid=small, bg='kem')
+        self.assertEqual(s['journey']['fish']['tro'][small], ['ca_chep', 2000])
+        s, r = run(s, 'jr_fish_tro', Clock(), uid=small, bg='bien')
+        self.assertEqual(s['journey']['fish']['tro'][small], ['ca_chep', 2000, 'bien'])
+        for bad in (dict(uid=small), dict(uid='d99', bg='kem'), dict(uid=small, bg='tim'), dict(uid=small, sz='lon', x=1)):
+            with self.assertRaises(GameError):
+                run(s, 'jr_fish_tro', Clock(), **bad)
+        L = dc.layout(s)
+        room = L['rooms'][0]
+        xs = [x for x in range(0, room['cols'] * dc.U) if not dc.check(room, 'tranh_ca', dc._q(room['id'], x, 0, 0), {}, L['kinds'])]
+        x = xs[0]
+        s, r = act(s, 'jr_deco_put', uid=small, r=room['id'], x=x, y=0, f=0)
+        s, r = run(s, 'jr_fish_tro', Clock(), uid=small, sz='lon')   # it fits where it hangs: stays
+        self.assertIn(small, dc.layout(s)['pos'])
+        self.assertNotIn('túi đồ', r['message'])
+        s, r = run(s, 'jr_fish_tro', Clock(), uid=small, sz='nho')
+        self.assertEqual(dc.layout(s)['pos'][small]['x'], x)
+        s, r = act(s, 'jr_deco_put', uid=big, r=room['id'], x=xs[-1], y=0, f=0)
+        self.assertGreaterEqual(xs[-1], x + 2 * dc.U)
+        bx = next((x2 for x2 in range(0, room['cols'] * dc.U) if not dc.check(room, 'tranh_ca_nho', dc._q(room['id'], x2, 0, 0), {}, L['kinds'])
+                   and dc.check(room, 'tranh_ca', dc._q(room['id'], x2, 0, 0), {}, L['kinds'])), None)
+        if bx is not None:   # a spot only the small one fits (the roof, a window): grown there, it goes to the bag
+            s, r = act(s, 'jr_deco_put', uid=small, r=room['id'], x=bx, y=0, f=0)
+            s, r = run(s, 'jr_fish_tro', Clock(), uid=small, sz='lon')
+            self.assertIn('túi đồ', r['message'])
+            self.assertNotIn(small, dc.layout(s)['pos'])
+            self.assertIn(big, dc.layout(s)['pos'])
+            self.assertEqual(next(k for u, k in ((x['id'], x['k']) for x in s['journey']['reno']['items']) if u == small), 'tranh_ca')
+        validate_state(s)
+        # the save: [species, grams] or [species, grams, bg] (never the default, never an unknown one)
+        for v in (['ca_chep', 2000, 'kem'], ['ca_chep', 2000, 'tim'], ['ca_chep', 2000, 'hong', 1]):
+            bad = copy.deepcopy(s)
+            bad['journey']['fish']['tro'][small] = v
+            with self.assertRaises(GameError):
+                validate_state(bad)
+
     def test_buy_rods_and_equip(self):
         s = story(wallet=250_000)
         s, r = run(s, 'jr_fish_buy', Clock(), kind='rod', item='carbon')
