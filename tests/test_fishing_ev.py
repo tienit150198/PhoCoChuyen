@@ -183,7 +183,11 @@ class Reel(unittest.TestCase):
         got = json.loads(out.stdout)
         casual, decent = got['casual'], got['decent']
         self.assertGreaterEqual(min(casual[:2]), 0.9, casual)
-        self.assertGreaterEqual(casual[-1], 0.7, casual)
+        self.assertGreaterEqual(casual[-1], 0.9, casual)   # 2.6.5.2: clearly easy, 🔴 Cổ đại too
+        lazy, hold = got['lazy'], got['hold']
+        self.assertGreaterEqual(min(lazy[:4]), 0.9, lazy)   # a player who hardly looks still lands the common ones
+        self.assertGreaterEqual(lazy[-1], 0.6, lazy)
+        self.assertLess(hold[-1], 0.5, hold)                # never letting go (ignoring the red) loses a strong fish
         self.assertEqual(casual, sorted(casual, reverse=True), 'rarer fish stay a bit harder')
         for r in range(C.NR):
             self.assertGreaterEqual(decent[r], C.SIM_REEL[r], (r, decent))
