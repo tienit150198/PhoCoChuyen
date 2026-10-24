@@ -715,7 +715,8 @@ class Handler(BaseHTTPRequestHandler):
                 # Public prices never load or settle a player's save.
                 if not self.server.rate_limit("market:"+self.client_ip(),120):self.error(429,"Chờ một chút rồi cập nhật giá nhé.");return
                 from market_data import snapshot
-                try:data=snapshot((parse_qs(split.query).get('range') or ['1D'])[0])
+                q=parse_qs(split.query)
+                try:data=snapshot((q.get('range') or ['1D'])[0],asset=(q.get('asset') or [''])[0])
                 except ValueError as e:self.error(400,str(e),"bad_request");return
                 self.json(200,data);return
             if route=="/api/business/quay":
@@ -2068,6 +2069,10 @@ def main():
     except OSError as e:print(f"  Không ghi được bản tĩnh theo mã băm vào {cas} ({type(e).__name__}); các URL ?v= sẽ về no-cache.",flush=True)
     else:
         if written:print(f"  Bản tĩnh theo mã băm: {written} tệp mới trong {cas}",flush=True)
+    # 🎢 Sàn Phố (game/market_wild.py): step the shared market up to now once, before workers fork (they inherit it).
+    from game import market_wild
+    took=market_wild.warm()
+    if took>.5:print(f"  Thị trường: đã tính giá tới hiện tại ({took:.1f} s)",flush=True)
     tune_gc()
     # WORKERS=n (n>1, POSIX only): n processes share the port; see serve_workers().
     workers=max(1,int(os.environ.get("WORKERS","1") or 1)) if hasattr(os,"fork") else 1

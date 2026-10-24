@@ -19,6 +19,11 @@ class RealtimeMarket(unittest.TestCase):
         self.salt = patch.dict(os.environ, {'MNL_MARKET_SALT': 'realtime-test-v1'})
         self.salt.start()
         self.addCleanup(self.salt.stop)
+        # These check the old walk: the wild market (game/market_wild.py, tests/test_market_wild.py) starts later.
+        from game import market_wild
+        self.legacy = patch.object(market_wild, 'WILD_TICK', 10**9)
+        self.legacy.start()
+        self.addCleanup(self.legacy.stop)
 
     def test_epoch_and_asset_anchors(self):
         from game import vang

@@ -186,6 +186,14 @@ def _snapshot(asset: str, salt: str, anchor: int, tick: int) -> tuple:
     return prices, timestamps, direction, title
 
 
+def price_at(asset: str, tick: int) -> int:
+    """The price at a tick: this module's walk before market_wild.WILD_TICK, the wild market's from it on."""
+    from . import market_wild as mw
+    if tick >= mw.WILD_TICK:
+        return mw.price_at(asset, tick)
+    return _price(asset, _salt(), base_price(asset), tick)
+
+
 def quote(asset: str, at: float | None = None) -> dict:
     """Return a fresh quote; cached internals are immutable and private.
 
@@ -194,6 +202,9 @@ def quote(asset: str, at: float | None = None) -> dict:
     """
     anchor = base_price(asset)
     tick = max(0, math.floor(((now() if at is None else at) - EPOCH) / TICK_SECONDS))
+    from . import market_wild as mw   # 🎢 24/10: from WILD_TICK on, the fair random walk (continues from the last price here)
+    if tick >= mw.WILD_TICK:
+        return mw.quote(asset, at)
     prices, timestamps, direction, title = _snapshot(asset, _salt(), anchor, tick)
     return {
         'price': prices[-1], 'previous': prices[-2] if len(prices) > 1 else prices[-1],

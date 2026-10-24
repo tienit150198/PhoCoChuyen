@@ -105,7 +105,8 @@ def device_base(j: dict) -> int:
     inv = j.get('invest')
     if isinstance(inv, dict):
         total += max(0, inv['saving']['balance']) + _coin_net(j)
-    return total + vang.value(dict(journey=j))
+    from . import san
+    return total + vang.value(dict(journey=j)) + san.net_value(j)   # 🎢 Sàn Phố holdings at what they sell for
 
 
 def _credit(j: dict, amount: int, label: str) -> None:
@@ -172,6 +173,9 @@ def _take_parked(j: dict, f: dict, amount: int, label: str) -> int:
             x = min(left, got)
             _credit(j, got - x, 'Tiền thừa sau khi bán Mây Coin nộp phạt')
             left -= x
+    if left > 0:   # 🎢 then the Sàn Phố coins and stocks, biggest first, at today's price (game/san.py)
+        from . import san
+        left -= san.force_sell(j, left, label)
     parked = int(amount) - left
     if parked:
         f['net'] = max(-10**9, f['net'] - parked)

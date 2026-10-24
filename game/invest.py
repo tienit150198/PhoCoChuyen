@@ -317,6 +317,8 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     iv = _state(s)
     sync_market(s)
     notes: list[str] = []
+    from . import san
+    san.sync(s, notes)   # 🎢 a delisted risky coin's holders lose it once (game/san.py)
     ic.sync(s)   # ⏱️ which of the new life days the real-time allowance covers (decided once per day)
     target = int(j['life_day'])
     iv['day'] = max(iv['day'], target - 400)
