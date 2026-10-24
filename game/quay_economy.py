@@ -14,11 +14,11 @@ VAT_PCT, INCOME_PCT = 2, 5
 # Packaging, routine cleaning and supplies, calibrated at default menus/full staffing.
 # Fixed rates on sales, never a post-hoc cap on the player's profit.
 SUPPLIES = {
-    'xe': dict(tra_da=9, fruit=0, ice_cream=7, cafe_bakery=2, milk_tea=6, florist=2, grocery=0, clothing=0),
-    'sap': dict(tra_da=10, fruit=1, ice_cream=7, cafe_bakery=4, milk_tea=6, florist=2, grocery=0, clothing=2),
-    'kiot': dict(tra_da=14, fruit=4, ice_cream=10, cafe_bakery=7, milk_tea=10, florist=5, grocery=0, clothing=3),
+    'xe': dict(tra_da=9, fruit=0, ice_cream=7, cafe_bakery=2, milk_tea=6, florist=2, grocery=0, clothing=0, cosmetics=1, cute_acc=1, ca_vien=6),
+    'sap': dict(tra_da=10, fruit=1, ice_cream=7, cafe_bakery=4, milk_tea=6, florist=2, grocery=0, clothing=2, cosmetics=2, cute_acc=2, ca_vien=7),
+    'kiot': dict(tra_da=14, fruit=4, ice_cream=10, cafe_bakery=7, milk_tea=10, florist=5, grocery=0, clothing=3, cosmetics=3, cute_acc=3, ca_vien=10),
 }
-FOOD = frozenset({'tra_da','fruit','ice_cream','cafe_bakery','milk_tea','grocery'})
+FOOD = frozenset({'tra_da','fruit','ice_cream','cafe_bakery','milk_tea','grocery','ca_vien'})
 EVENTS = ('theft','robbery','food_check','police_check','extortion')
 
 

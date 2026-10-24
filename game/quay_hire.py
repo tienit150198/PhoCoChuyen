@@ -375,8 +375,7 @@ def trade_lock(s: dict, trade: str, mine: bool = True) -> str | None:
     done, need = qy.served(s, trade), qy.UNLOCK_SERVED
     if done >= need:
         return None
-    T = qy.TRADES.get(trade) or {}
-    line = f'Cần làm {need} việc ở nghề {T.get("emoji", "💼")} {T.get("name") or trade}'
+    line = f'Cần làm {need} việc ở nghề {qy.career_name(trade)}'
     return f'{line} (bạn đã làm {done}/{need}).' if mine else line + '.'
 
 
@@ -388,7 +387,7 @@ def _can_work(s: dict, trade: str, mine: bool = True) -> str | None:
         return f'Làm thêm mở từ ngày sống {LIFE_DAYS}.'
     why = trade_lock(s, trade, mine)
     if why and mine:
-        return f'{why} Vào nghề {(qy.TRADES.get(trade) or {}).get("name") or trade} làm thêm để mở.'
+        return f'{why} Vào nghề {qy.career_name(trade, emoji=False)} làm thêm để mở.'
     return why
 
 
@@ -406,14 +405,14 @@ def accept(store, sid: str, display: str, d: dict) -> dict:
     why = _can_work(loaded[0], r['trade'])
     need(not why, why or '', 'cannot')
     day = vn_day(t)
-    trade = qy.TRADES[r['trade']]
 
     def fn(s):
         need(not _can_work(s, r['trade']), 'Chưa nhận được ca này.', 'cannot')
         q = qy.ensure(s)
         need(q['shift'] is None, 'Bạn đang có một ca làm thêm rồi. Làm xong hoặc bỏ ca đó trước nhé.', 'busy_shift')
-        c = s['careers'][r['trade']]
-        q['shift'] = dict(id=r['id'], career=r['trade'], day=int(c['day']), base=int(c.get('day_completed') or 0) if c.get('open') else 0,
+        career = qy.career_of(r['trade'])   # #501/#507: a trade opened by another career's jobs is a day of that career
+        c = s['careers'][career]
+        q['shift'] = dict(id=r['id'], career=career, day=int(c['day']), base=int(c.get('day_completed') or 0) if c.get('open') else 0,
                           wage=r['wage'], value=r['value'], who=r['owner_name'][:24], name=r['stall_name'][:qy.NAME_MAX],
                           until=int(t + SHIFT_HOURS * 3600))
 
@@ -432,7 +431,7 @@ def accept(store, sid: str, display: str, d: dict) -> dict:
         need(n == 1, 'Ca này vừa có người nhận rồi.', 'gone', 409)
     mr._mutate_retry(store, {sid: fn}, ops)
     _ping(store, r['owner'], f'💼 {display[:24]} đã nhận ca ở {r["stall_name"]}.')
-    return dict(message=f'💼 Đã nhận ca! Vào làm {trade["emoji"]} {trade["name"]} ở tiệm của bạn, xong {MIN_TASKS} việc trở lên rồi khép ca. '
+    return dict(message=f'💼 Đã nhận ca! Vào làm {qy.career_name(r["trade"])} ở tiệm của bạn, xong {MIN_TASKS} việc trở lên rồi khép ca. '
                         'Hàng nhập trong ca dùng quỹ nghề của bạn; vốn quầy của chủ không chuyển sang.', changed=True)
 
 
@@ -505,7 +504,7 @@ def flush(store, sid: str) -> bool:
                 qq['out'] = [x for x in qq['out'] if x['id'] != o['id']]
                 if pay:
                     from . import journey as jr
-                    jr._wallet(s['journey'], r['wage'], 'salary', f'💼 Làm thêm ở {r["stall_name"]}'[:120], r['trade'])
+                    jr._wallet(s['journey'], r['wage'], 'salary', f'💼 Làm thêm ở {r["stall_name"]}'[:120], qy.career_of(r['trade']))
 
             def ops(db, o=o, r=r, live=live, pay=pay, earned=earned):
                 if not live:
@@ -633,7 +632,7 @@ def view(store, sid: str, state: dict) -> dict:
                 row['locked'] = why
                 lock = trade_lock(state, r['trade'])
                 if lock and why.startswith(lock):   # #408: the card offers that career, with the count
-                    row['unlock'] = dict(career=r['trade'], served=qy.served(state, r['trade']), need=qy.UNLOCK_SERVED)
+                    row['unlock'] = dict(career=qy.career_of(r['trade']), served=qy.served(state, r['trade']), need=qy.UNLOCK_SERVED)
             board.append(row)
         friends = []
         if stalls:
