@@ -25,11 +25,36 @@ const LOOK={all:[0,'#f2b632'],titles:[0,'#b46cff'],certs:[0,'#3d7bff'],wealth:[0
   pet_war:[150,'#00b894'],race_drag_bike:[40,'#ff9f1c'],race_drag_car:[100,'#9bd832'],race_deo_bike:[160,'#2ec4b6'],race_deo_car:[230,'#c77dff'],
   wedding:[0,'#ff8fb1'],fish_big:[0,'#2fb4e8'],fish_dex:[0,'#36d1b0']};
 const METAL=['g','s','b'];   // the medal of a rank tier: gold, silver, bronze
-// 🏆 Trùm <nghề>: the workplace's own art; the others wear "Top tổng hợp nghề" with the workplace's icon
+// 🏆 Trùm <nghề>: the workplace's own art; the others a frame drawn for them (CAREER_DRAWN, #514)
 const CAREER={milk_tea:'37',clothing:'38',pharmacy:'39',accounting:'40',pilot:'41',grocery:'42',police:'43',flight_attendant:'44',
   it_helpdesk:'45',lawyer:'46',group_accounting:'47',corp_accounting:'48',art_studio:'49',post_office:'50',banquet:'51',hotel:'52',
   customs:'53',delivery:'54',pet_care:'55',cafe_bakery:'21',florist:'14',teacher:'16',tax_payroll:'18',tra_da:'03',pet_shop:'20'};
-const CAREER_ANY='56';   // "Cao thủ đa nghề" (owner 18/10: 72 "Top tổng hợp nghề" has the delivery box and helmet, it looked like Trùm giao hàng)
+/* 🏆 #514 (player 24/10: "khung của Trùm hãng phim cho dễ thương xíu, nhìn khung hiện tại buồn quá"): the 46 workplaces
+ * without their own art all wore one plain frame ("Cao thủ đa nghề", art 56). Each now wears a frame drawn for it: its
+ * family's colours (a hue of its own inside the family) and ornaments, its crest, the ribbon "TRÙM". 🎬 Trùm hãng phim:
+ * a pastel film strip with reels, stars and clapperboards. [family, crest]; FAMILY: [hue, ornaments (a|b: in turn)]. */
+const FAMILY={food:[24,'bowl|leaf'],home:[340,'heart|star'],beauty:[292,'gem|heart'],stage:[228,'note|star'],care:[160,'cross|heart'],
+  fix:[204,'gear|star'],desk:[44,'book|star'],open:[100,'leaf|sun']};
+const CAREER_DRAWN={restaurant:['food','🌶️'],pho:['food','🍜'],com:['food','🍚'],naucom:['food','🍲'],canteen:['food','🥪'],fruit:['food','🍉'],ice_cream:['food','🍦'],
+  homemaker:['home','🏠'],giupviec:['home','🧹'],babysitter:['home','🧸'],mother_baby:['home','🍼'],laundry:['home','🧺'],homestay:['home','🏡'],
+  salon:['beauty','💇'],nail:['beauty','💅'],jewelry:['beauty','💍'],
+  photobooth:['stage','📸'],zpop:['stage','💿'],radio:['stage','📻'],kol:['stage','📱'],singer:['stage','🎤'],
+  nurse:['care','🩺'],vet:['care','🐶'],rescue:['care','🚑'],lifeguard:['care','🛟'],
+  repair:['fix','🔧'],drain:['fix','🪠'],moto:['fix','🛵'],tuning:['fix','🏎️'],car_dealer:['fix','🚗'],restore:['fix','🏺'],oil:['fix','🛢️'],
+  customer_care:['desk','🎧'],hr_admin:['desk','👥'],secretary:['desk','📅'],reception:['desk','🛎️'],teller:['desk','🏦'],library:['desk','📚'],research:['desk','🔬'],stationery:['desk','✏️'],
+  farm:['open','🌾'],garbage:['open','♻️'],tour_guide:['open','🧭'],lighthouse:['open','🗼'],railway:['open','🚦']};
+const FILM=['🎬','#fff4fb','#ffb3d1','#7f63c9','reel|star|clap',12,'TRÙM','film'];   // 🎬 Trùm hãng phim
+/** [crest, light, main, deep, ornaments, count, 'TRÙM'(, style)] of a workplace's drawn frame; a workplace newer than
+ * this table gets one from its id. */
+export function careerSpec(b){
+  if(b==='actor')return FILM;
+  const row=CAREER_DRAWN[b];
+  if(!row){let h=2166136261;for(const c of String(b))h=Math.imul(h^c.codePointAt(0),16777619)>>>0;
+    const hue=h%360;return ['🏆',`hsl(${hue},100%,93%)`,`hsl(${hue},76%,68%)`,`hsl(${hue},52%,32%)`,'star|heart',10,'TRÙM'];}
+  const [fam,emo]=row,[hue,orn]=FAMILY[fam],mates=Object.keys(CAREER_DRAWN).filter(k=>CAREER_DRAWN[k][0]===fam),i=mates.indexOf(b);
+  const h=(hue+Math.round((i-(mates.length-1)/2)*13)+360)%360;
+  return [emo,`hsl(${h},100%,93%)`,`hsl(${h},76%,68%)`,`hsl(${h},52%,32%)`,orn,10+(i%3)*2,'TRÙM'];
+}
 // game/spend_content.py TOWN_TITLES (the top sponsors) and LUX_TITLES (Chúa đảo), worn as `st.t`
 const WORN={t_ct_cong_vien:'62',t_ct_rap_phim:'63',t_ct_thu_vien:'64',t_ct_san_vd:'65',t_ct_cau_dao:'66',t_ct_benh_vien:'67',
   t_ct_vang:'61',t_chu_dao:'68'};
@@ -84,6 +109,14 @@ const ORN={
   wave:'<path d="M-6 1Q-4.5-3-3 1T0 1T3 1T6 1" fill="none" stroke="L" stroke-width="2" stroke-linecap="round"/><path d="M-6 4.5Q-4.5 1-3 4.5T0 4.5T3 4.5T6 4.5" fill="none" stroke="M" stroke-width="1.6" stroke-linecap="round"/>',
   scale:'<path d="M-5-1A5 5 0 0 1 5-1L0 6Z" fill="M" stroke="L" stroke-width="1"/><path d="M-3-1A3 3 0 0 1 3-1" fill="none" stroke="D" stroke-width=".9"/>',
   fish:'<path d="M-6 0Q-1-5 4 0Q-1 5-6 0Z" fill="M" stroke="L" stroke-width="1"/><path d="M4 0L7-3V3Z" fill="L"/><circle cx="-3" cy="-.8" r=".9" fill="D"/>',
+  // #514: the workplaces' families, 🎬 the film set
+  bowl:'<path d="M-6.5-1H6.5A6.5 6 0 0 1-6.5-1Z" fill="M" stroke="L" stroke-width="1"/><path d="M-2-3Q-3.2-5.5-1.6-7.6M2-3Q.8-5.5 2.4-7.6" stroke="L" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+  cross:'<path d="M-2.2-6.5H2.2V-2.2H6.5V2.2H2.2V6.5H-2.2V2.2H-6.5V-2.2H-2.2Z" fill="L" stroke="D" stroke-width=".8"/>',
+  gear:'<circle r="4.6" fill="M" stroke="L" stroke-width="2.6" stroke-dasharray="2.2 1.4"/><circle r="1.7" fill="L"/>',
+  book:'<path d="M0-4Q-3-6-6.5-5V4Q-3 3 0 5Q3 3 6.5 4V-5Q3-6 0-4Z" fill="L" stroke="D" stroke-width=".8"/><path d="M0-4V5" stroke="D" stroke-width=".8"/>',
+  sun:'<circle r="3.4" fill="L" stroke="D" stroke-width=".6"/><circle r="6.2" fill="none" stroke="M" stroke-width="1.7" stroke-dasharray="1.6 1.6"/>',
+  reel:'<circle r="6.6" fill="M" stroke="D" stroke-width="1"/><circle r="1.5" fill="D"/><circle cy="-3.8" r="1.5" fill="L"/><circle cx="3.6" cy="-1.2" r="1.5" fill="L"/><circle cx="2.2" cy="3.1" r="1.5" fill="L"/><circle cx="-2.2" cy="3.1" r="1.5" fill="L"/><circle cx="-3.6" cy="-1.2" r="1.5" fill="L"/>',
+  clap:'<rect x="-6" y="-2" width="12" height="8" rx="1.3" fill="D" stroke="L" stroke-width=".8"/><path d="M-6-2.4L-6.6-7L5.6-8.8L6.2-4.2Z" fill="L" stroke="D" stroke-width=".8"/><path d="M-3.4-3L-2.4-7.6M.4-3.5L1.4-8.1M3.8-4L4.6-8.4" stroke="D" stroke-width="1.2"/><path d="M-4 1H4M-4 3.4H1" stroke="M" stroke-width=".9"/>',
 };
 /* 💒 Boards with a frame drawn for them, not cut from the art pack: [top 1, top 2–3] like an auction title's row plus
  * the ribbon's text (game/lb_titles.py WEDDING, owner 23/10 "cái đám cưới nữa, mình cho danh hiệu với khung riêng"). */
@@ -93,7 +126,7 @@ const DRAWN={wedding:[['💒','#fff4f7','#f7a8c4','#a8556f','heart',12,'TOP 1'],
   fish_dex:[['📖','#fff8e6','#e9b949','#0e6a63','fish',10,'TOP 1'],['🐠','#eafff8','#3fcfae','#0f5e52','scale',12,'TOP 3'],['🐡','#f1fffa','#86dcc3','#2a7564','wave',14,'TOP 10']]};
 const DRAWN_MEDAL=new Set(['fish_big','fish_dex']);   // 🎣 these drawn frames wear the rank's medal too
 /** The tables, for tests/honour_frames_508.mjs. */
-export const TABLES={TIERS,LOOK,FREE,UQ,CAREER,WORN,DRAWN};
+export const TABLES={TIERS,LOOK,FREE,UQ,CAREER,WORN,DRAWN,FAMILY,CAREER_DRAWN,FILM};
 const UQ_AV=[180,180,90,90,60,0];   // the drawn frame's box, like the art's (honour-frames-data.js av)
 const UQ_RE=/^dh_[a-z0-9_]{1,40}$/;
 /** [emoji, light, main, deep, ornament, count] of an auction title's frame. */
@@ -110,14 +143,21 @@ export function uqSvg(id){return drawSvg(`uq:${id}`,uqSpec(id));}
 export function drawnSvg(board,tier){const d=DRAWN[board]?.[tier];return d?drawSvg(`dr:${board}:${tier}`,d):'';}
 function drawSvg(key,spec){
   let u=UQ_SVG.get(key);if(u)return u;
-  const [,L,M,D,orn,n,tag='01/01']=spec,C={L,M,D},shape=ORN[orn].replace(/"([LMD])"/g,(_,k)=>`"${C[k]}"`);
-  let o='';
+  const [,L,M,D,orn,n,tag='01/01',style='']=spec,C={L,M,D},shapes=String(orn).split('|').map(k=>ORN[k].replace(/"([LMD])"/g,(_,x)=>`"${C[x]}"`));
+  let o='',k=0;
   for(let i=0;i<n;i++){const a=(i+.5)*360/n;if(a<24||a>336||Math.abs(a-180)<34)continue;   // clear of the crest and the ribbon
-    o+=`<g transform="rotate(${Math.round(a*10)/10} 90 90) translate(90 22) scale(1.3)">${shape}</g>`;}
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${L}"/><stop offset=".5" stop-color="${M}"/><stop offset="1" stop-color="${D}"/></linearGradient></defs>`+
-    `<circle cx="90" cy="90" r="68" fill="none" stroke="url(#g)" stroke-width="15"/><circle cx="90" cy="90" r="76" fill="none" stroke="${D}" stroke-width="2.5"/><circle cx="90" cy="90" r="60.8" fill="none" stroke="${L}" stroke-width="2"/>`+
-    `<circle cx="90" cy="90" r="68" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="1 6"/>${o}`+
-    `<path d="M90 2L108 18L90 34L72 18Z" fill="url(#g)" stroke="${L}" stroke-width="2"/><path d="M48 150H132L124 160L132 170H48L56 160Z" fill="${D}" stroke="${L}" stroke-width="1.5"/>`+
+    o+=`<g transform="rotate(${Math.round(a*10)/10} 90 90) translate(90 22) scale(1.3)">${shapes[k++%shapes.length]}</g>`;}
+  const film=style==='film';   // 🎬 a pastel film strip: rose, lilac and mint, its sprocket holes, a gold star crest
+  const stops=film?`<stop offset="0" stop-color="${M}"/><stop offset=".45" stop-color="#c9b2ff"/><stop offset="1" stop-color="#9fe3d0"/>`
+    :`<stop offset="0" stop-color="${L}"/><stop offset=".5" stop-color="${M}"/><stop offset="1" stop-color="${D}"/>`;
+  const strip=film?`<circle cx="90" cy="90" r="73.4" fill="none" stroke="#fff" stroke-width="2.6" stroke-dasharray="3 4.2"/><circle cx="90" cy="90" r="62.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-dasharray="3 3.6"/>`
+    :`<circle cx="90" cy="90" r="68" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="1 6"/>`;
+  const crest=film?`<path d="M90 0L96 12L109 13L99 22L102 35L90 28L78 35L81 22L71 13L84 12Z" fill="#ffe28a" stroke="${D}" stroke-width="1.6" stroke-linejoin="round"/>`
+    :`<path d="M90 2L108 18L90 34L72 18Z" fill="url(#g)" stroke="${L}" stroke-width="2"/>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">${stops}</linearGradient></defs>`+
+    `<circle cx="90" cy="90" r="68" fill="none" stroke="url(#g)" stroke-width="15"/><circle cx="90" cy="90" r="76" fill="none" stroke="${D}" stroke-width="2.5"/><circle cx="90" cy="90" r="60.8" fill="none" stroke="${film?D:L}" stroke-width="2"/>`+
+    `${strip}${o}`+
+    `${crest}<path d="M48 150H132L124 160L132 170H48L56 160Z" fill="${D}" stroke="${L}" stroke-width="1.5"/>`+
     `<text x="90" y="164" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" letter-spacing="1" fill="${L}">${tag}</text></svg>`;
   u=`data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g,'%27')}`;UQ_SVG.set(key,u);return u;
 }
@@ -132,17 +172,18 @@ export function ofId(id){
   if(DRAWN[b]){const t=tierOf(r,b);return DRAWN[b][t]?{n:null,tier:t,board:b,rank:r,drawn:true}:{n:undefined,tier:t,board:b,rank:r};}   // 💒 top 3 only
   if(TIERS[b])return {n:TIERS[b][tierOf(r,b)],tier:tierOf(r,b),board:b,rank:r};
   if(r!==1||b==='pagoda')return null;   // a workplace: its top 1 only; nobody is the boss of a pagoda
-  return {n:CAREER[b]||CAREER_ANY,tier:3,career:b};
+  return CAREER[b]?{n:CAREER[b],tier:3,career:b}:{n:null,tier:3,career:b,cd:true};   // #514: drawn for it (careerSpec)
 }
-const geo=f=>f?.uq||f?.drawn?UQ_AV:FRAMES[f?.n]?.av;
-const spec=f=>f.uq?uqSpec(f.uq):DRAWN[f.board][f.tier];   // a drawn frame's row
-const svgOf=f=>f.uq?uqSvg(f.uq):drawnSvg(f.board,f.tier);
+const geo=f=>f?.uq||f?.drawn||f?.cd?UQ_AV:FRAMES[f?.n]?.av;
+const spec=f=>f.uq?uqSpec(f.uq):f.cd?careerSpec(f.career):DRAWN[f.board][f.tier];   // a drawn frame's row
+const svgOf=f=>f.uq?uqSvg(f.uq):f.cd?drawSvg(`cd:${f.career}`,careerSpec(f.career)):drawnSvg(f.board,f.tier);
 const has=f=>Boolean(f&&geo(f));
 /** 🏅 How a frame shows it is an honour (#508): {fx: the art's filter, cls, medal: the text on its medal (a board's rank)},
  * or null: an everyday frame and a town project's stay as drawn. */
 export function look(f){
   if(!f)return null;
   if(f.uq){const [,,M]=uqSpec(f.uq);return {fx:`drop-shadow(0 0 4px ${M})`,cls:' hf-uq',medal:''};}
+  if(f.cd){const [,,M]=spec(f);return {fx:`drop-shadow(0 0 4px ${M})`,cls:' hf-uq hf-top',medal:'',drawn:true};}   // 🏆 #514: its ribbon says TRÙM
   if(f.drawn){const [,,M]=spec(f),halo=LOOK[f.board]?.[1]||M,m=METAL[f.tier]||'b',medal=DRAWN_MEDAL.has(f.board);   // 💒 its ribbon says TOP 1 / TOP 3: no medal (🎣 the fish boards wear one)
     return {fx:`drop-shadow(0 0 4px ${halo})`,cls:` hf-uq hf-top${medal?` hf-m${m}`:''}`,medal:medal?String(f.rank):'',hue:0,halo,metal:m,drawn:true};}
   if(f.board&&LOOK[f.board]){const [hue,halo]=LOOK[f.board],m=METAL[f.tier]||'b';
@@ -183,7 +224,7 @@ export function choices(api){
 function wrap(f,cls=''){
   const d=geo(f);if(!d)return null;ensureCss();
   const [w,h,cx,cy,r,sq]=d,box=2*r*PAD,lk=look(f);
-  return {lk,cls:`hf-av${lk?lk.cls:''}${cls}`,style:`--hf-img:url('${f.uq||f.drawn?svgOf(f):`${DIR}${f.n}_av.webp`}');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}${lk?`;--hf-fx:${lk.fx}`:''}`};
+  return {lk,cls:`hf-av${lk?lk.cls:''}${cls}`,style:`--hf-img:url('${f.uq||f.drawn||f.cd?svgOf(f):`${DIR}${f.n}_av.webp`}');--hf-l:${pct(-(cx-box/2)/box)};--hf-t:${pct(-(cy-box/2)/box)};--hf-w:${pct(w/box)};--hf-h:${pct(h/box)}${sq?';--hf-rad:18%':''}${lk?`;--hf-fx:${lk.fx}`:''}`};
 }
 const badge=(f,inner,cls='')=>{const a=wrap(f,` hf-logo${cls}`);return a?`<span class="${a.cls}" aria-hidden="true" style="${a.style}"><b>${inner}</b></span>`:'';};
 /** 👑 An auction title's own frame around its emoji (the lot card, Của tôi), or ''. */
@@ -259,11 +300,11 @@ const pct=v=>`${Math.round(v*10000)/100}%`;
 const PAD=1.08;   // the picture is a little bigger than the window, so the frame's inner rim covers its edge
 
 /** Wrap an avatar's html in its frame: `html` unchanged when the player wears none. `icon`: an emoji drawn on top
- * (the workplace's, on the shared "Trùm" frame). */
+ * (an auction title's, a drawn frame's crest). */
 export function avatar(tt,st,html,api=null){
   const f=pick(tt,st),a=wrap(f);if(!a)return html;
-  // the crest: the workplace's emoji on the shared "Trùm" frame, the title's own on an auction frame
-  const icon=f.uq?(auctionEmoji(api,f.uq)||uqSpec(f.uq)[0]):f.drawn?spec(f)[0]:f.career&&!CAREER[f.career]?careerIcon(api,f.career):'';
+  // the crest: the title's own on an auction frame, a drawn frame's (a workplace's: its own emoji, #514)
+  const icon=f.uq?(auctionEmoji(api,f.uq)||uqSpec(f.uq)[0]):f.drawn||f.cd?spec(f)[0]:'';
   const medal=a.lk?.medal;
   return `<span class="${a.cls}" style="${a.style}"${icon?` data-hf-icon="${esc(icon)}"`:''}${medal?` data-hf-rank="${esc(medal)}"`:''}>${html}</span>`;
 }
@@ -279,7 +320,7 @@ const cssStr=v=>`'${String(v).replace(/[\'"<>&\n]/g,'')}'`;
  * title's bubble (` hf-uq`) is drawn in its own colours with its crest and "01/01"; a top board's wears its medal. */
 export function bubble(tt,st){
   const f=pick(tt,st);
-  if(f?.uq||f?.drawn){ensureCss();const [emo,L,M,D,,,tag]=spec(f);
+  if(f?.uq||f?.drawn||f?.cd){ensureCss();const [emo,L,M,D,,,tag]=spec(f);
     return {cls:' hf-uq',attrs:` style="--uq-a:${L};--uq-b:${M};--uq-c:${D};--uq-emo:${cssStr(emo)}${tag?`;--uq-tag:${cssStr(tag)}`:''}"`};}
   const d=f&&FRAMES[f.n]?.chat;if(!d)return {cls:'',attrs:''};ensureCss();
   const [w,h,x0,y0,x1,y1]=d,ry=Math.min(.32*(y1-y0),40),rx=Math.min(ry,.2*(x1-x0));
@@ -294,10 +335,4 @@ const auctionEmoji=(api,id)=>(api?.content?.journey?.auction?.items||[]).find(x=
 export function chipClass(id){
   const f=ofId(id);if(!f)return '';ensureCss();
   return [' hn-top',' hn-t1',' hn-t2',' hn-t3',' hn-t4'][f.tier]||'';
-}
-function careerIcon(api,b){
-  const ic=api?.content?.careers?.[b]?.meta?.icon;
-  return {coffee:'☕',cake:'🍰',bag:'👜',book:'📚',calculator:'🧮',headphones:'🎧',shield:'🛡️',bike:'🛵',wrench:'🔧',tractor:'🚜',bell:'🔔',
-    flower:'💐',basket:'🧺',truck:'🚛',sparkles:'✨',cart:'🛒',building:'🏢',home:'🏠',bed:'🛏️',people:'👥',settings:'💻',shirt:'👕',sun:'🌅',
-    gift:'🎁',cross:'➕',flame:'🔥',paw:'🐾',fish:'🐠',camera:'📷',mail:'✉️',bowl:'🍜',scissors:'✂️',calendar:'📅',compass:'🧭',music:'🎵',palette:'🎨',send:'✈️'}[ic]||'🏆';
 }

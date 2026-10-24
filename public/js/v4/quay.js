@@ -51,6 +51,10 @@ const V=()=>J().quay;
 const CAT=()=>S.env?.api?.content?.journey?.quay||null;
 const place=id=>CAT()?.places.find(p=>p.id===id)||{};
 const trade=id=>CAT()?.trades?.[id]||{emoji:'🏪',name:id};
+/* #501/#507: a trade may open with another career's jobs (💄 Mỹ phẩm ← Làm móng): its career and that career's name. */
+const careerOf=id=>CAT()?.trades?.[id]?.career||id;
+const ofCareer=id=>CAT()?.trades?.[id]||Object.values(CAT()?.trades||{}).find(T=>T.career===id)||{emoji:'💼',name:id};
+const careerName=id=>{const T=CAT()?.trades?.[id];return T&&T.career&&T.career!==id?T.career_name||T.career:ofCareer(id).career_name||ofCareer(id).name||id;};
 const MOOD=m=>m>=80?'😄':m>=55?'🙂':m>=35?'😐':'😟';
 
 /* ---- styles on first use ---- */
@@ -415,7 +419,7 @@ function mainTabs(){
  * career right on the card, when the journey has it open. */
 function unlockBtn(u){
   const id=u?.career,open=S.env?.api?.state?.journey?.unlocked||J()?.unlocked;if(!id||!open?.includes?.(id))return '';
-  return btn(`Vào nghề ${esc(trade(id).name||id)} · ${fmt(Math.min(u.served|0,u.need|0))}/${fmt(u.need|0)}`,'go',{career:id},'small ghost qy-unlock');
+  return btn(`Vào nghề ${esc(careerName(id))} · ${fmt(Math.min(u.served|0,u.need|0))}/${fmt(u.need|0)}`,'go',{career:id},'small ghost qy-unlock');
 }
 
 /* 💼 Làm thêm: my shift, then the counters that need someone. */
@@ -424,10 +428,10 @@ function jobsView(){
   if(!h)return '<section class="bk-card bk-center"><p class="bk-hint">Đang tải…</p></section>';
   if(h.error)return `<section class="bk-card bk-center"><p>${esc(h.error)}</p><div class="bk-actions center">${btn('Thử lại','reload',{},'ghost')}</div></section>`;
   const R=h.rules||{};
-  const mine=sh?`<section class="bk-card qy-shift"><div class="qy-top"><span class="qy-tile" aria-hidden="true">💼<i>${trade(sh.career).emoji}</i></span>
+  const mine=sh?`<section class="bk-card qy-shift"><div class="qy-top"><span class="qy-tile" aria-hidden="true">💼<i>${ofCareer(sh.career).emoji}</i></span>
       <div class="grow"><h3>${esc(sh.name)}</h3><p class="qy-line">${esc(sh.who)} · ${xu(sh.wage)}</p></div></div>
-    <p class="qy-line">Làm ${esc(trade(sh.career).name)}: xong ${R.tasks||2} việc rồi khép ca.</p>
-    ${why('shift',`Ca làm ở tiệm ${esc(trade(sh.career).name)} của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận ${xu(sh.wage)} lương, quầy chủ nhận phần doanh thu.`)}
+    <p class="qy-line">Làm ${esc(careerName(sh.career))}: xong ${R.tasks||2} việc rồi khép ca.</p>
+    ${why('shift',`Ca làm ở tiệm ${esc(careerName(sh.career))} của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận ${xu(sh.wage)} lương, quầy chủ nhận phần doanh thu.`)}
     <div class="bk-actions">${btn('Vào làm','go',{career:sh.career},'primary')}${btn('Bỏ ca','quit',{},'ghost')}</div></section>`:'';
   const rows=(h.board||[]).map(b=>`<li class="qy-person"><div class="grow"><b>${b.emoji} ${esc(b.name)}</b>${b.invite?' <span class="qy-tag">Mời bạn</span>':''}<small>${esc(b.owner)} · ${xu(b.wage)}</small>${b.locked&&!h.lock?`<small class="qy-locked">🔒 ${esc(b.locked)}</small>`:''}</div>
       <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':b.locked?'Chưa nhận được':'')}${b.locked&&!h.lock?unlockBtn(b.unlock):''}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
@@ -650,10 +654,10 @@ function openView(v){
   const p=S.pick||{},cat=CAT(),P=place(p.place);
   const requirement=v.open_requirements?.[p.place],cost=(P.price||0)+(P.fund||0);
   // owner 23/10 (Cả phố: "mở quầy quần áo k đc… nó bị xám"): a locked trade says how far along, and a tap says how to open it
-  const done=id=>Math.min(Number(S.env?.api?.state?.careers?.[id]?.metrics?.served)||0,cat.served);
+  const done=id=>Math.min(Number(S.env?.api?.state?.careers?.[careerOf(id)]?.metrics?.served)||0,cat.served);
   const trades=Object.keys(cat.trades).map(id=>{const T=cat.trades[id],ok=v.can.includes(id);
     return `<button type="button" class="qy-chip${p.trade===id?' on':''}${ok?'':' qy-locked'}" data-qy="trade" data-id="${id}"${S.busy?' disabled':''}${ok?'':' aria-disabled="true"'}>${ok?'':'🔒 '}${T.emoji} ${esc(T.name)}${ok?'':` <small>${fmt(done(id))}/${fmt(cat.served)} việc</small>`}</button>`;}).join('');
-  const W=S.why&&!v.can.includes(S.why)&&cat.trades[S.why],why=W?`<div class="qy-why" role="status"><p>🔒 Bán ${W.emoji} ${esc(W.name)} cần làm xong <b>${fmt(cat.served)} việc</b> ở nghề ${esc(W.name)} (bạn đã làm ${fmt(done(S.why))}/${fmt(cat.served)}). Mỗi đơn khách làm xong là một việc.</p>${unlockBtn({career:S.why,served:done(S.why),need:cat.served})}</div>`:'';
+  const W=S.why&&!v.can.includes(S.why)&&cat.trades[S.why],why=W?`<div class="qy-why" role="status"><p>🔒 Bán ${W.emoji} ${esc(W.name)} cần làm xong <b>${fmt(cat.served)} việc</b> ở nghề ${esc(careerName(S.why))} (bạn đã làm ${fmt(done(S.why))}/${fmt(cat.served)}). Mỗi đơn khách làm xong là một việc.</p>${unlockBtn({career:careerOf(S.why),served:done(S.why),need:cat.served})}</div>`:'';
   const places=cat.places.map(x=>`<button type="button" class="qy-place${p.place===x.id?' on':''}" data-qy="place" data-id="${x.id}"><span class="qy-up-emoji" aria-hidden="true">${x.emoji}</span>
     <span class="grow"><b>${esc(x.name)}</b><small>${xu(x.price)} · ${x.slots} người · thuê ${xu(x.rent)}/tháng</small></span></button>`).join('');
   return `${slotsPart(v)}<section class="bk-card"><h3>Bán gì?</h3><div class="qy-chips">${trades}</div>${why}</section>
@@ -907,7 +911,7 @@ function paintCanvases(){
     const m=S.md[st.id]||st.menu,lk=S.lk[st.id]||{...st.look,name:st.name};
     const inRun=S.view==='run'&&S.run?.sid===st.id,observe=S.view==='visit'&&S.visit===st.id,r=st.run,activity=counterActivity(st);
     const actors=[...activity.current,...activity.completed].map(p=>({...p,emoji:p.dish?dishOf(st,p.dish).emoji:''}));
-    const o={place:st.place,name:(lk.name||'').trim()||st.name,color:cat.colors[lk.c]?.[1],decor:lk.d,tables:lk.t,
+    const o={place:st.place,trade:st.trade,name:(lk.name||'').trim()||st.name,color:cat.colors[lk.c]?.[1],decor:lk.d,tables:lk.t,
       menu:m.on.map(k=>{const d=dishOf(st,k);return {emoji:d.emoji,name:d.name,price:m.p[k]??d.base};}),
       me:inRun||!st.staff.length,staff:st.staff.length,actors,online:!!st.online,closed:activity.closed,
       firstPerson:inRun||observe,observe,reason:st.business?.reason||'',orderLabel:inRun?r?.cust?.name||'':'',

@@ -13,7 +13,7 @@ from .loss_limits import bounded_loss
 
 GAP = 12
 RECENT = 8
-FOOD = frozenset({'milk_tea', 'restaurant', 'cafe_bakery', 'tra_da', 'fruit', 'ice_cream', 'pho', 'com'})
+FOOD = frozenset({'milk_tea', 'restaurant', 'cafe_bakery', 'tra_da', 'fruit', 'ice_cream', 'pho', 'com', 'ca_vien'})   # ca_vien: a counter trade (game/quay.py)
 RETAIL = FOOD | frozenset({'mother_baby', 'pharmacy', 'florist', 'grocery', 'clothing', 'pet_shop', 'repair', 'salon', 'pet_care', 'nail', 'photobooth', 'homestay', 'zpop'})
 
 

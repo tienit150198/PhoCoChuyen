@@ -860,10 +860,11 @@ class OfficeJob:
         pool = [f for f in self.cfg['forms'] if f['min_day'] <= day]
         return pool[(kit.rng(self.id, day).randrange(len(pool)) + slot) % len(pool)]
 
-    def make_task(self, day: int, slot: int, serial: int) -> dict:
+    def make_task(self, day: int, slot: int, serial: int, legacy: bool = False) -> dict:
+        """`legacy`: the dossier as an older build made it (legacy_task), so a task handed out then still checks."""
         f = self.form_of(day, slot)
         mod = self.mod(day)
-        ctx = dict(day=day, slot=slot, tier=kit.tier(day), mod=mod['id'],
+        ctx = dict(day=day, slot=slot, tier=kit.tier(day), mod=mod['id'], legacy=legacy,
                    more=1 if mod['id'] in self.cfg.get('more_mods', ()) else 0,
                    twist=twist_on(kit.rng(self.id, day, slot, 'twist'), day, mod['id'], self.cfg.get('busy_mod')))
         g = f['build'](kit.rng(self.id, day, slot, f['id']), ctx)
@@ -873,6 +874,12 @@ class OfficeJob:
         return kit.base_task(self.id, day, slot, serial, g['npc'], g['title'], g['opening'], form=f['id'], work=work,
                              papers=g['papers'], brief=g['brief'], bonus=f['bonus'], gen=GEN, ans={}, acts=0,
                              tw='wait' if work['_twist'] else None, filed=False, late=False, result=None, tips=[])
+
+    def legacy_task(self, t: dict) -> bool:
+        """A stored task made by an older build of its form (cfg 'legacy': the test; engine.validate_state then
+        rebuilds it with make_task(legacy=True))."""
+        test = self.cfg.get('legacy')
+        return bool(test and isinstance(t, dict) and test(t))
 
     # ---------------------------------------------------------------- data
     def data(self, c: dict) -> dict:
@@ -1154,6 +1161,6 @@ class OfficeJob:
     def bind(self, ns: dict) -> None:
         """Expose the hooks as module-level functions of the career module."""
         for name in ('make_task', 'handle', 'feedback', 'known_request', 'public_task', 'validate_task', 'validate_data', 'public_data',
-                     'on_task', 'on_start', 'on_close', 'assist', 'hint', 'content', 'initial'):
+                     'on_task', 'on_start', 'on_close', 'assist', 'hint', 'content', 'initial', 'legacy_task'):
             ns[name] = getattr(self, name)
         ns['FIXED'] = FIXED

@@ -49,6 +49,13 @@ MENUS = {
                 ('gao', '🍚', 'Túi gạo', 18), ('banh_keo', '🍬', 'Bánh kẹo', 8), ('nuoc_ngot', '🥤', 'Nước ngọt', 9)],
     'clothing': [('ao_thun', '👕', 'Áo thun', 22), ('quan_jean', '👖', 'Quần jean', 35), ('vay', '👗', 'Váy', 33),
                  ('non', '🧢', 'Nón', 15), ('khan', '🧣', 'Khăn', 20), ('dep', '🩴', 'Dép', 18)],
+    # #501 + #507 (24/10): mỹ phẩm, phụ kiện dễ thương, cá viên chiên vỉa hè
+    'cosmetics': [('son_moi', '💄', 'Son môi', 20), ('kem_chong_nang', '🧴', 'Kem chống nắng', 24), ('mat_na', '🧖', 'Mặt nạ giấy', 16),
+                  ('sua_rua_mat', '🫧', 'Sữa rửa mặt', 18), ('phan_ma', '🌸', 'Phấn má hồng', 22), ('son_duong', '💋', 'Son dưỡng', 12)],
+    'cute_acc': [('kep_no', '🎀', 'Kẹp tóc nơ', 8), ('moc_khoa', '🧸', 'Móc khóa gấu', 12), ('buoc_toc', '🎗️', 'Dây buộc tóc', 10),
+                 ('vong_tay', '📿', 'Vòng tay hạt', 14), ('sticker', '⭐', 'Sticker xinh', 5), ('bang_do', '👑', 'Băng đô', 13)],
+    'ca_vien': [('ca_vien', '🍢', 'Cá viên chiên', 6), ('bo_vien', '🍡', 'Bò viên chiên', 7), ('xuc_xich', '🌭', 'Xúc xích chiên', 5),
+                ('tom_vien', '🦐', 'Tôm viên', 7), ('pho_mai_que', '🧀', 'Phô mai que', 8), ('khoai_chien', '🍟', 'Khoai tây chiên', 6)],
 }
 # Complete boards: every dish may be offered together.
 MORE_MENUS = {
@@ -60,6 +67,9 @@ MORE_MENUS = {
  'florist': [('bo_sen','🪷','Bó sen',20),('cam_chuong','🌸','Cẩm chướng',18),('hong_trang','🤍','Hồng trắng',24),('baby','💐','Hoa baby',18),('cau','🌸','Cẩm tú cầu',26),('hoa_kho','🍂','Bó hoa khô',23)],
  'grocery': [('sua','🥛','Hộp sữa',10),('dau_an','🫙','Dầu ăn',18),('duong','🧂','Túi đường',12),('muoi','🧂','Túi muối',5),('giay','🧻','Khăn giấy',9),('xa_phong','🧼','Xà phòng',11)],
  'clothing': [('ao_somi','👔','Áo sơ mi',30),('ao_khoac','🧥','Áo khoác',45),('quan_short','🩳','Quần short',24),('tat','🧦','Đôi tất',8),('tui','👜','Túi vải',20),('do_bo','👚','Đồ bộ',32)],
+ 'cosmetics': [('kem_duong','🧴','Kem dưỡng ẩm',26),('tay_trang','💧','Nước tẩy trang',19),('mascara','👁️','Mascara',21),('son_mong','💅','Sơn móng',14),('nuoc_hoa','🌷','Nước hoa mini',30),('bong_tay_trang','☁️','Bông tẩy trang',8)],
+ 'cute_acc': [('tat_cute','🧦','Tất hoạt hình',12),('thu_bong','🐰','Thú bông mini',18),('op_dt','📱','Ốp điện thoại',20),('guong','🪞','Gương mini',9),('vi_nho','👛','Ví nhỏ',16),('kinh_mat','🕶️','Kính mát',22)],
+ 'ca_vien': [('ha_cao','🥟','Há cảo chiên',7),('bap_xao','🌽','Bắp xào',8),('banh_trang','🌯','Bánh tráng trộn',10),('nem_chua','🍖','Nem chua rán',9),('trung_cut','🥚','Trứng cút chiên',6),('xien_que','🍢','Xiên que thập cẩm',15)],
 }
 # F#248 (08/10): "thêm trà đào cam sả, trà thạch đào… và bánh đào nướng". A new dish starts off on a board saved before
 # (turn it on in 🍽️ Menu); a counter opened from now on sells the whole trade (default_menu).
@@ -69,7 +79,8 @@ for _trade, _dishes in MORE_MENUS.items():
     MENUS[_trade].extend(_dishes)
 DISH = {t: {d[0]: dict(id=d[0], emoji=d[1], name=d[2], base=d[3]) for d in rows} for t, rows in MENUS.items()}
 TOOL = {'tra_da': ('🥤', 'Ống hút'), 'fruit': ('🍴', 'Nĩa, muỗng'), 'ice_cream': ('🥄', 'Muỗng'), 'cafe_bakery': ('🥤', 'Ống hút, khăn giấy'),
-        'milk_tea': ('🥤', 'Ống hút'), 'florist': ('💌', 'Thiệp'), 'grocery': ('🛍️', 'Túi'), 'clothing': ('🛍️', 'Túi giấy')}
+        'milk_tea': ('🥤', 'Ống hút'), 'florist': ('💌', 'Thiệp'), 'grocery': ('🛍️', 'Túi'), 'clothing': ('🛍️', 'Túi giấy'),
+        'cosmetics': ('🛍️', 'Túi xinh'), 'cute_acc': ('🎁', 'Túi quà'), 'ca_vien': ('🥢', 'Que xiên, tương ớt')}
 COLORS = (('do', '#d9534f', 'Đỏ'), ('cam', '#ef8a3c', 'Cam'), ('vang', '#e8b923', 'Vàng'), ('la', '#4fa361', 'Xanh lá'),
           ('bien', '#3f86c9', 'Xanh biển'), ('tim', '#8f63c2', 'Tím'), ('hong', '#ec7fa3', 'Hồng'), ('nau', '#8a5a3c', 'Nâu'))
 DECOR = (('cay', '🪴', 'Chậu cây'), ('long_den', '🏮', 'Đèn lồng'), ('co_day', '🎏', 'Cờ dây'), ('meo', '🐱', 'Mèo vẫy'),
@@ -80,7 +91,7 @@ NOTES = (('Ít đá nha', True, None), ('Giao trước 12h giúp mình', True, N
          ('Không lấy đồ nhựa', True, False), ('Cho mình xin thêm muỗng', True, True), ('Để ở bảo vệ giúp em', True, None),
          ('Quà tặng, đừng để hóa đơn', True, None), ('', False, None), ('', False, None))
 TOOL_DEFAULT = {'tra_da': True, 'fruit': True, 'ice_cream': True, 'cafe_bakery': True, 'milk_tea': True, 'florist': False,
-                'grocery': True, 'clothing': True}
+                'grocery': True, 'clothing': True, 'cosmetics': True, 'cute_acc': True, 'ca_vien': True}
 STREETS = ('Lê Lợi', 'Hoa Sứ', 'Cây Me', 'Bến Nghé', 'Nguyễn Trãi', 'Phố Mây', 'Hàng Bông', 'Ông Ích Khiêm')
 NAMES = ('Chị Lan', 'Anh Tuấn', 'Bé Na', 'Cô Ba', 'Chú Sáu', 'Bạn Minh', 'Chị Hoa', 'Anh Khoa', 'Bà Tư', 'Em Vy', 'Anh Phúc',
          'Chị Thảo', 'Bạn Long', 'Cô Mai', 'Ông Bảy', 'Em Bin')
@@ -252,7 +263,7 @@ def order(s: dict, st: dict, run: dict, j: int) -> dict:
     note, sticker, tool = r.choice(NOTES)
     if tool is None:
         tool = TOOL_DEFAULT[st['trade']]
-    if st['trade'] in ('florist', 'grocery', 'clothing') and note in ('Ít đá nha', 'Không lấy đồ nhựa', 'Cho mình xin thêm muỗng'):
+    if st['trade'] in ('florist', 'grocery', 'clothing', 'cosmetics', 'cute_acc') and note in ('Ít đá nha', 'Không lấy đồ nhựa', 'Cho mình xin thêm muỗng'):
         note, sticker, tool = 'Gọi trước khi tới nhé', True, TOOL_DEFAULT[st['trade']]
     route = [r.choice(TURNS) for _ in range(3)]
     addr = f'{r.randint(2, 98)} {r.choice(STREETS)}'
@@ -581,7 +592,7 @@ def _manual_wait(st, s=None):
     board = menu(st)
     available = [d for d in board['on'] if st['business']['stock'].get(d, 0)] or board['on']
     willingness = sum(demand(DISH[st['trade']][d]['base'], board['p'][d]) for d in available) / len(available)
-    speed = factor((s or {}).get('careers', {}).get(st['trade'], {}))
+    speed = factor((s or {}).get('careers', {}).get(qy.career_of(st['trade']), {}))
     from .income_gear import cached
     speed *= 1 + cached(st,'demand') / 100
     from .quay_market import snapshot

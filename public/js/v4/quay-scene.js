@@ -84,6 +84,36 @@ const DECOR={
     for(let i=0;i<10;i++){const x=x0+(i+.5)*(x1-x0)/10;E(c,x,y+5,4.5,4.5,'#ffe9a033');E(c,x,y+4,2.4,3,'#ffd65a');}},
   radio:(c,a)=>{const [x,y]=a.radio;R(c,x-12,y-14,24,14,'#c9514a',3);E(c,x-5,y-7,4,4,'#3a3230');R(c,x+2,y-11,7,3,'#fff1d8',1);L(c,x+6,y-14,x+11,y-24,'#3a3230',1.2);},
 };
+/* #501 + #507: the goods of the newer trades, standing on the counter (x: the counter's middle, y: its top) instead
+ * of a cup or two: a lipstick stand and a little mirror, a pegboard of bows and clips, a fryer with skewers. */
+const GOODS={
+  cosmetics:(c,x,y)=>{
+    R(c,x-34,y-14,40,14,'#fbe3ee',3,'#e7b3c9',1.2);R(c,x-30,y-24,32,10,'#fdeef4',3,'#e7b3c9',1.2);   // a two-step acrylic stand
+    ['#d94a6b','#ef8a9f','#b8325a','#f2a7b8','#c95f86'].forEach((col,i)=>{const lx=x-31+i*7,ly=y-16;R(c,lx,ly-7,5,7,col,1.5);R(c,lx,ly-1,5,4,'#e8c46a',1);});
+    ['#a8d8f0','#fff1a8','#c9b6f2'].forEach((col,i)=>{R(c,x-27+i*10,y-33,7,9,col,2,'#ffffff',1);});   // little jars on the top step
+    E(c,x+20,y-17,11,11,'#e7b3c9');E(c,x+20,y-17,8.5,8.5,'#e9f6fb');L(c,x+16,y-21,x+19,y-24,'#ffffff',1.6);   // a round mirror
+    L(c,x+20,y-6,x+20,y-1,'#d995b2',3);R(c,x+13,y-2,14,3,'#d995b2',1.5);
+    heart(c,x+30,y-30,.22,'#f28fb0');
+  },
+  cute_acc:(c,x,y)=>{
+    R(c,x-36,y-34,46,32,'#ffe3ef',4,'#f0a9c6',1.5);L(c,x-30,y-2,x-33,y+1,'#c98aa6',2);L(c,x+4,y-2,x+7,y+1,'#c98aa6',2);   // a pegboard on little feet
+    for(let i=0;i<4;i++)for(let j=0;j<3;j++)E(c,x-28+i*11,y-28+j*10,1,1,'#e3a1bd');
+    const bow=(bx,by,col)=>{P(c,[[bx,by],[bx-7,by-5],[bx-7,by+5]],col);P(c,[[bx,by],[bx+7,by-5],[bx+7,by+5]],col);E(c,bx,by,2.2,2.2,'#fff6fa');};
+    bow(x-25,y-25,'#ff7aa8');bow(x-6,y-25,'#9ed8ff');bow(x-25,y-11,'#ffd36e');bow(x-6,y-11,'#b9a3ff');
+    R(c,x+2,y-29,4,12,'#7fd6b4',2);R(c,x+2,y-15,4,10,'#ff9fbf',2);   // hair clips
+    E(c,x+24,y-12,9,9,'#f6c58f');E(c,x+18,y-20,3.5,3.5,'#f6c58f');E(c,x+30,y-20,3.5,3.5,'#f6c58f');   // a teddy keyring
+    E(c,x+21,y-13,1.2,1.2,'#4d382a');E(c,x+27,y-13,1.2,1.2,'#4d382a');E(c,x+24,y-9,2.2,1.6,'#fbe3cf');L(c,x+24,y-21,x+24,y-27,'#c99a5a',1.2);
+  },
+  ca_vien:(c,x,y)=>{
+    R(c,x-38,y-16,36,16,'#5d6670',5);R(c,x-40,y-19,40,5,'#7d8791',2.5);E(c,x-20,y-17,17,3.2,'#e8b03c');   // the fryer, hot oil
+    for(const [bx,by] of [[-28,-18],[-20,-17],[-13,-18]])E(c,x+bx,y+by,3,2.4,'#c9822f');
+    L(c,x-1,y-12,x+5,y-12,'#3c4046',2);
+    for(const dx of [-28,-18,-8]){c.strokeStyle='#ffffff99';c.lineWidth=1.3;c.beginPath();c.moveTo(x+dx,y-24);c.quadraticCurveTo(x+dx-4,y-30,x+dx,y-35);c.stroke();}   // steam
+    R(c,x+4,y-6,30,6,'#d9e2e6',2,'#b9c4ca',1);   // a tray of skewers
+    [['#c9822f',0],['#e29a4b',8],['#b56a28',16]].forEach(([col,dx])=>{L(c,x+9+dx,y-4,x+9+dx,y-32,'#e3c08d',1.4);for(let k=0;k<3;k++)E(c,x+9+dx,y-11-k*7,3.4,3.4,col);});
+    R(c,x+30,y-24,7,18,'#d9382c',2);R(c,x+31,y-28,5,5,'#f2c14e',1.5);   // tương ớt
+  },
+};
 /** Where things go, per place (the counter's top is `top`). */
 const LAYOUT={
   xe:{counter:[105,124,150,46],top:124,awn:[95,38,170,16],sign:[120,6,120,24],board:[18,92,74,64],behind:[[158,0],[204,0]],
@@ -107,7 +137,7 @@ function counterBody(c,place,A,col){
   R(c,x+w/2-26,y+16,52,22,'#fffaf2',5,'#e5cfb3',1.5);
 }
 
-/** Paint `opts` on `canvas`: {place, name, color, decor[], tables, menu:[{emoji,name,price}], me (a figure) or null,
+/** Paint `opts` on `canvas`: {place, trade, name, color, decor[], tables, menu:[{emoji,name,price}], me (a figure) or null,
  * staff (count), actors [{seed,state,emoji}], online, closed}. */
 export function paintCounter(canvas,o){
   if(o.firstPerson)return paintBehindCounter(canvas,o);
@@ -132,9 +162,10 @@ export function paintCounter(canvas,o){
   sign(c,o.name||'Quầy của bạn',...A.sign,col);
   if(place==='xe'){L(c,A.sign[0]+20,A.sign[1]+26,A.awn[0]+30,A.awn[1]-4,'#8a6a50',2);L(c,A.sign[0]+A.sign[2]-20,A.sign[1]+26,A.awn[0]+A.awn[2]-30,A.awn[1]-4,'#8a6a50',2);}
   board(c,o.menu||[],...A.board);
-  // on the counter: a cup or two of the trade, the cat, the radio
-  T(c,(o.menu?.[0]?.emoji)||'🧋',A.counter[0]+A.counter[2]/2-12,A.top-6,14,'#000',400);
-  T(c,(o.menu?.[1]?.emoji)||'',A.counter[0]+A.counter[2]/2+12,A.top-6,14,'#000',400);
+  // on the counter: a cup or two of the trade (or its goods, GOODS), the cat, the radio
+  if(GOODS[o.trade])GOODS[o.trade](c,A.counter[0]+A.counter[2]/2,A.top);
+  else{T(c,(o.menu?.[0]?.emoji)||'🧋',A.counter[0]+A.counter[2]/2-12,A.top-6,14,'#000',400);
+    T(c,(o.menu?.[1]?.emoji)||'',A.counter[0]+A.counter[2]/2+12,A.top-6,14,'#000',400);}
   for(const id of ['long_den','meo','radio'])if(has.has(id))DECOR[id](c,A);
   if(o.online){R(c,A.counter[0]+A.counter[2]-38,A.top+18,30,20,'#2f3a4a',4);T(c,'📱',A.counter[0]+A.counter[2]-23,A.top+28,11,'#fff',400);}
   // in front: tables, plants, flowers, the chalkboard

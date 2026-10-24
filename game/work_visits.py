@@ -152,9 +152,9 @@ def places(state):
         inventory = st.get('business', {}).get('stock', {})
         paused = st['id'] in blocked or st.get('business', {}).get('paused') or st.get('economy', {}).get('paused') or st.get('due', 0) > 0
         ready = bool(inventory) and getattr(bridge, 'can_accept_visit', lambda st: True)(st)
-        offers = [dict(offer_id=d, dish=d, price=board['p'][d], staffed=bool(st.get('staff')), label=quay_self.DISH[st['trade']][d]['name'], career=st['trade'])
+        offers = [dict(offer_id=d, dish=d, price=board['p'][d], staffed=bool(st.get('staff')), label=quay_self.DISH[st['trade']][d]['name'], career=quay.career_of(st['trade']))
                   for d in board['on'] if inventory.get(d, 0) > 0] if not paused and ready else []
-        out.append(('quay', st['id'], dict(name=st['name'], career=st['trade'], offers=offers,
+        out.append(('quay', st['id'], dict(name=st['name'], career=quay.career_of(st['trade']), offers=offers,
             activity=dict(label='Nhân viên đang phục vụ' if st.get('staff') else 'Chủ quầy phục vụ', status='waiting' if paused else 'working'),
             staffed=bool(st.get('staff')), available=bool(offers), status='closed' if paused else 'open' if offers else 'waiting',
             reason='Quầy đang tạm dừng.' if paused else '' if offers else 'Nhân viên cần đủ quỹ để nhận thêm đơn.' if inventory and not ready else 'Quầy cần nhập thêm hàng.')))

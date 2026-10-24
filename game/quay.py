@@ -50,8 +50,30 @@ TRADES = {
     'florist': dict(emoji='💐', name='Hoa', price=18, mult=54, cogs=50, spoil=25, nang=100, mua=85, fest=150),
     'grocery': dict(emoji='🛒', name='Tạp hóa', price=12, mult=118, cogs=55, spoil=2, nang=100, mua=100, fest=100),
     'clothing': dict(emoji='👕', name='Quần áo', price=30, mult=35, cogs=55, spoil=0, nang=100, mua=75, fest=135),
+    # #501 + #507 (players 24/10: "bán mỹ phẩm", "phụ kiện dễ thương", "cá viên chiên"): trades of their own, opened by
+    # the jobs of a nearby career (`career`: its 10 jobs open the trade, a hired shift is a day of it). Cá viên spoils.
+    'cosmetics': dict(emoji='💄', name='Mỹ phẩm', price=20, mult=48, cogs=54, spoil=0, nang=95, mua=95, fest=130, career='nail'),
+    'cute_acc': dict(emoji='🎀', name='Phụ kiện dễ thương', price=10, mult=92, cogs=51, spoil=0, nang=100, mua=85, fest=130, career='stationery'),
+    'ca_vien': dict(emoji='🍢', name='Cá viên chiên', price=6, mult=135, cogs=40, spoil=20, nang=95, mua=90, fest=120, career='tra_da'),
 }
 TRADE_IDS = tuple(TRADES)
+TRADE_CAREERS = frozenset(T.get('career', k) for k, T in TRADES.items())
+
+
+def career_of(trade: str) -> str:
+    """The career whose jobs open `trade` and whose day a hired shift there is: its own id, or TRADES[...]['career']."""
+    return (TRADES.get(trade) or {}).get('career', trade)
+
+
+def career_name(trade: str, emoji: bool = True) -> str:
+    """The career to work at to open `trade`, for the player: "🛒 Tạp hóa" (a trade that is a career), "Làm móng"."""
+    T, c = TRADES.get(trade) or {}, career_of(trade)
+    if c == trade:
+        return f'{T.get("emoji", "💼")} {T.get("name") or trade}' if emoji else str(T.get('name') or trade)
+    from .content import CAREER_META
+    return str((CAREER_META.get(c) or {}).get('short') or c)
+
+
 ITEMS = {
     'camera': dict(id='camera', emoji='📹', name='Camera quầy', price=dict(xe=70, sap=140, kiot=250), line='Giảm 50% khả năng bị trộm (vẫn có thể xảy ra)'),
     'bang': dict(id='bang', emoji='🪧', name='Bảng hiệu đèn', price=dict(xe=150, sap=600, kiot=2000), line='+8% khách'),
@@ -128,7 +150,7 @@ def stall(s: dict, sid) -> dict:
 
 
 def served(s: dict, trade: str) -> int:
-    c = s['careers'].get(trade) or {}
+    c = s['careers'].get(career_of(trade)) or {}
     return int((c.get('metrics') or {}).get('served', 0))
 
 
@@ -214,7 +236,7 @@ def forecast(s: dict, st: dict, day: int) -> dict:
     f = P['base'] * T['mult'] / 100 * pace[2] / 100 * T[w[0]] / 100 if w[0] in T else P['base'] * T['mult'] / 100 * pace[2] / 100
     if pace[0] == 'festival':
         f *= T['fest'] / 100
-    x3 = _x3(st['trade'])
+    x3 = _x3(career_of(st['trade']))
     if x3:
         f *= 1.3
     f *= 1 + (8 if 'bang' in st['items'] else 0) / 100 + (4 if 'tu' in st['items'] else 0) / 100
@@ -244,7 +266,7 @@ def candidates(s: dict, st: dict) -> list[dict]:
     """Three people this tháng (seeded by counter and tháng), from the trade's own staff (game/operations.py)."""
     from .operations import PEOPLE
     month = (int(s['journey']['life_day']) - 1) // MONTH_DAYS
-    people = list(enumerate(PEOPLE.get(st['trade']) or ()))
+    people = list(enumerate(PEOPLE.get(career_of(st['trade'])) or ()))
     rng = random.Random(f"quay-c|{s['journey'].get('seed', 0)}|{st['id']}|{month}")
     rng.shuffle(people)
     hired = {e['id'] for e in st['staff']}
@@ -480,9 +502,9 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(paid.slots(q,external_slots(s))['remaining'] > 0, 'Đã hết chỗ mở quầy. Nâng bậc số quầy sở hữu trước nhé.', 'quay_slots')
         trade, place = p.get('trade'), p.get('place')
         need(trade in TRADES, 'Chọn một món để bán.')
-        T = TRADES[trade]   # #408: name the trade and how far along (not "nghề này")
-        need(served(s, trade) >= UNLOCK_SERVED, f'Cần làm {UNLOCK_SERVED} việc ở nghề {T["emoji"]} {T["name"]} (bạn đã làm {served(s, trade)}/{UNLOCK_SERVED}). '
-             f'Vào nghề {T["name"]} làm thêm để mở.', 'locked')
+        cn = career_name(trade)   # #408: name the career to work at and how far along (not "nghề này"); #501: its own name
+        need(served(s, trade) >= UNLOCK_SERVED, f'Cần làm {UNLOCK_SERVED} việc ở nghề {cn} (bạn đã làm {served(s, trade)}/{UNLOCK_SERVED}). '
+             f'Vào nghề {career_name(trade, emoji=False)} làm thêm để mở.', 'locked')
         need(place in PLACES, 'Chọn một chỗ đặt quầy.')
         from . import business_progression as bp
         license = bp.open_requirement(s, place)
@@ -499,7 +521,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         from .quay_economy import config
         config(st)
         st['menu'] = _qs().default_menu(trade)   # F#232: every dish on the board; staff sell only what is on it
-        _take(s, total, f'Mở quầy {nm}', trade)
+        _take(s, total, f'Mở quầy {nm}', career_of(trade))
         _log(st, day, 'Mở quầy', -total)
         q['stalls'].append(st)
         quay_business.initialize(s, st)
@@ -558,7 +580,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         st['fund'] += retained
         st['till'] = 0
         if amount:
-            _jr()._wallet(j, amount, KIND_OUT, f'Thu két {st["name"]}', st['trade'])
+            _jr()._wallet(j, amount, KIND_OUT, f'Thu két {st["name"]}', career_of(st['trade']))
         _log(st, day, 'Thu két về ví', amount)
         return dict(message=f'💰 Thu két: +{_fmt(amount)} xu vào ví.' + (f' Giữ lại {_fmt(retained)} xu vào vốn quầy.' if retained else ''), collected=amount, retained=retained)
     if name == 'jr_quay_fund':
@@ -572,13 +594,13 @@ def action(s: dict, name: str, p: dict) -> dict:
             need(_have(s) >= amount, 'Ví và tài khoản ngân hàng chưa đủ số này.', 'no_money')
             amount = min(amount, MONEY_MAX - st['fund'])
             need(amount > 0, 'Vốn quầy đã đầy.', 'fund_full')
-            _take(s, amount, f'Góp vốn quầy {st["name"]}', st['trade'])
+            _take(s, amount, f'Góp vốn quầy {st["name"]}', career_of(st['trade']))
             st['fund'] += amount
             quay_business.collect_fines(st)
             return dict(message=f'Đã góp {_fmt(amount)} xu vào vốn quầy.')
         need(st['fund'] >= -amount, f'Vốn quầy chỉ còn {_fmt(st["fund"])} xu.', 'no_money')
         st['fund'] += amount
-        _jr()._wallet(j, -amount, KIND_OUT, f'Rút vốn quầy {st["name"]}', st['trade'])
+        _jr()._wallet(j, -amount, KIND_OUT, f'Rút vốn quầy {st["name"]}', career_of(st['trade']))
         return dict(message=f'Đã rút {_fmt(-amount)} xu vốn về ví.')
     if name == 'jr_quay_order':
         need(set(p) <= {'stall', 'level'} and p.get('level') in ORDERS, 'Mức nhập hàng không hợp lệ.')
@@ -623,7 +645,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(p.get('confirm') is True, 'Xác nhận mua.')
         price = it['price'][st['place']]
         need(j['wallet'] >= 0 and _have(s) >= price, f'Cần {_fmt(price)} xu.', 'no_money')
-        _take(s, price, f'{it["name"]} cho {st["name"]}', st['trade'])
+        _take(s, price, f'{it["name"]} cho {st["name"]}', career_of(st['trade']))
         st['items'].append(it['id'])
         _log(st, day, f'Lắp {it["name"].lower()}', -price)
         return dict(message=f'{it["emoji"]} Đã lắp {it["name"].lower()}.')
@@ -643,7 +665,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         paid = _from_till_fund(st, due)
         need(paid == due or _have(s) >= due - paid, f'Cần {_fmt(due)} xu chi phí quầy.', 'no_money')
         if paid < due:
-            _take(s, due - paid, f'Chi phí {st["name"]}', st['trade'], KIND_RENT)
+            _take(s, due - paid, f'Chi phí {st["name"]}', career_of(st['trade']), KIND_RENT)
         st['due'] = 0
         _log(st, day, 'Đóng chi phí quầy', -due)
         return dict(message=f'Đã đóng {_fmt(due)} xu. Quầy mở lại!')
@@ -651,7 +673,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(set(p) <= {'stall', 'confirm'} and p.get('confirm') is True, 'Xác nhận sang nhượng.')
         back = sell_back(st)
         q['stalls'] = [x for x in q['stalls'] if x is not st]
-        _jr()._wallet(j, back, KIND_OUT, f'Sang nhượng {st["name"]}', st['trade'])
+        _jr()._wallet(j, back, KIND_OUT, f'Sang nhượng {st["name"]}', career_of(st['trade']))
         return dict(message=f'Đã sang nhượng {st["name"]}: +{_fmt(back)} xu vào ví.')
     raise e.GameError('Thao tác quầy không hợp lệ.', 'unknown_action')
 
@@ -706,7 +728,7 @@ def _upgrade(s: dict, st: dict, p: dict, day: int) -> dict:
     cost = upgrade_cost(st, place)
     need(_have(s) >= cost, f'Cần {_fmt(cost)} xu trong ví hoặc tài khoản.', 'no_money')
     P = PLACES[place]
-    _take(s, cost, f'Mở rộng {st["name"]}', st['trade'])
+    _take(s, cost, f'Mở rộng {st["name"]}', career_of(st['trade']))
     st['place'] = place
     ev = st.get('shop_events')
     if isinstance(ev, dict) and isinstance(ev.get('recent'), list):
@@ -797,7 +819,8 @@ def catalogue() -> dict:
     """Static numbers for the client (bootstrap content)."""
     return dict(places=[dict(id=k, emoji=v['emoji'], name=v['name'], price=v['price'], rent=v['rent'], slots=v['slots'], wage=v['wage'],
                              fund=start_fund(k), base=v['base']) for k, v in PLACES.items()],
-                trades={k: dict(emoji=v['emoji'], name=v['name']) for k, v in TRADES.items()},
+                trades={k: dict(emoji=v['emoji'], name=v['name'], career=career_of(k), career_name=career_name(k, emoji=False))
+                        for k, v in TRADES.items()},
                 items=[dict(id=k, emoji=v['emoji'], name=v['name'], price=v['price'], line=v['line']) for k, v in ITEMS.items()],
                 orders=[dict(id=k, name=ORDER_NAMES[k]) for k in ORDERS], weather={w[0]: w[1] + ' ' + w[2] for w in WEATHER},
                 pace={p[0]: p[1] for p in PACE}, chapter=UNLOCK_CHAPTER, served=UNLOCK_SERVED, max=MAX_STALLS, left=LEFT_DAYS,
@@ -964,7 +987,7 @@ def validate(s: dict) -> None:
         _qs().validate(st, need, _int, _text)   # 🧑‍🍳 the board, the look, online, the day at the counter (optional keys)
     sh = q['shift']
     need(sh is None or (isinstance(sh, dict) and SHIFT_KEYS <= set(sh) and isinstance(sh['id'], str) and JOB_RE.fullmatch(sh['id']) is not None
-                        and sh['career'] in TRADES and _int(sh['day'], 0, 10**6) and _int(sh['base'], 0, 10**4) and _int(sh['wage'], 1, 10**4)
+                        and sh['career'] in TRADE_CAREERS and _int(sh['day'], 0, 10**6) and _int(sh['base'], 0, 10**4) and _int(sh['wage'], 1, 10**4)
                         and _int(sh['value'], 1, 10**4) and _text(sh['who'], 40) and _text(sh['name'], 40) and _int(sh['until'], 0, 10**11)))
     need(isinstance(q['out'], list) and len(q['out']) <= OUT_MAX)
     for o in q['out']:

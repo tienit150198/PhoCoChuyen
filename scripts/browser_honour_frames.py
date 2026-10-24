@@ -55,6 +55,8 @@ CHAT = """async ([me]) => {
     msg('p2','Đại Gia Mới Nổi','💰','Ai bán vàng không, mua hết 😎',{tt:['lb_wealth_2']}),
     msg('p3','Cô Ba Trà Sữa','🧋','Trân châu đã sẵn sàng rồi nha! Ghé quán mình uống thử, hôm nay giảm giá cho cả phố luôn, nhắn mình để giữ chỗ nhé 💕',{tt:['lb_milk_tea_1','f_dart'],reply:q}),
     msg('p4','Anh Sửa Đồ','🔧','ok',{tt:['lb_repair_1']}),
+    msg('p16','Ngôi Sao Màn Ảnh','🎬','Phim mới của mình ra rạp rồi nha cả phố 🎞️⭐',{tt:['lb_actor_1']}),   // #514: Trùm hãng phim
+    msg('p17','Chị Phở','🍜','Phở nóng đây!',{tt:['lb_pho_1']}),
     msg('p5','Người Dựng Công Viên','🌳','Công viên ven sông xong rồi đó mọi người\\nRa chơi cuối tuần nha\\nCó cả ghế đá mới',{st:{t:'t_ct_cong_vien'}}),
     msg('p6','Hội Săn','🎖️','Hội săn danh hiệu điểm danh!',{tt:['lb_titles_6']}),
     msg('p7','Chợ Đen','🌪️','Mình vừa trúng bão bầu cua 🌪️ (không khung)',{tt:['f_bao','f_king','w_vip']}),
@@ -95,7 +97,7 @@ LB = """async ([board]) => {
 
 CHECK = """() => {
   const out={};
-  out.framedBubbles=[...document.querySelectorAll('.ch-bub.hf')].map(b=>b.closest('.ch-msg').querySelector('.ch-name')?.textContent?.trim().slice(0,14)||(b.closest('.ch-msg.mine')?'mine':'?'));
+  out.framedBubbles=[...document.querySelectorAll('.ch-bub.hf,.ch-bub.hf-uq')].map(b=>b.closest('.ch-msg').querySelector('.ch-name')?.textContent?.trim().slice(0,14)||(b.closest('.ch-msg.mine')?'mine':'?'));
   out.plainOk=[...document.querySelectorAll('.ch-msg')].filter(m=>/không khung|vẫn như cũ/.test(m.textContent)).every(m=>!m.querySelector('.hf,.hf-av'));
   out.deletedPlain=[...document.querySelectorAll('.ch-bub.del')].every(b=>!b.classList.contains('hf'));
   out.avFrames=document.querySelectorAll('.ch-msg .hf-av').length;
@@ -142,7 +144,7 @@ def main():
             r = page.evaluate(CHECK)
             loads = page.evaluate(LOADS, r['urls'])
             print(name, {k: v for k, v in r.items() if k != 'urls'}, 'pictures', len(loads))
-            want = {'Trùm Cuối', 'Đại Gia Mới', 'Cô Ba Trà Sữa', 'Anh Sửa Đồ', 'Người Dựng Côn', 'Hội Săn', 'Nhà Sưu Tầm', 'mine'}
+            want = {'Trùm Cuối', 'Đại Gia Mới', 'Cô Ba Trà Sữa', 'Anh Sửa Đồ', 'Ngôi Sao Màn', 'Chị Phở', 'Người Dựng Côn', 'Hội Săn', 'Nhà Sưu Tầm', 'mine'}
             got = {x[:len(w)] for x in r['framedBubbles'] for w in want if x.startswith(w[:6])} | ({'mine'} if 'mine' in r['framedBubbles'] else set())
             missing = [w for w in want if not any(x.startswith(w[:6]) for x in r['framedBubbles'])]
             if missing:
@@ -151,8 +153,8 @@ def main():
                 failures.append(f'{name}: a plain or deleted message wears a frame')
             if r['chosen'] != ['62', '28', '02']:
                 failures.append(f'{name}: chosen frames {r["chosen"]} (want the park 62, then wealth 28, the cat 02)')
-            if '🔧' not in r['icon']:
-                failures.append(f'{name}: the shared Trùm frame has no workplace icon')
+            if not {'🔧', '🎬', '🍜'} <= set(r['icon']):   # #514: a workplace's drawn Trùm frame wears its crest
+                failures.append(f'{name}: a Trùm frame without its workplace crest {r["icon"]}')
             if r['overflow'] or not r['bodyFits'] or not r['docFits']:
                 failures.append(f'{name}: horizontal overflow {r}')
             if any(w == 0 for _, w in loads):

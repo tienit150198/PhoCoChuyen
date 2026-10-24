@@ -154,8 +154,8 @@ def initialize(s, st, now=None):
         signature='', carry={k: 0 for k in ('wages', 'rent', 'power', 'online', 'tax')},
         expenses={k: 0 for k in EXPENSES}, revenue=0, sold=0, recent=[], halted=-1,
         seq=0, manual_seq=0, owner_next=at, unpaid_fines=0,
-        speed_factor=factor(s.get('careers', {}).get(st['trade'], {})),
-        income_gear=income_gear.effects(s.get('careers', {}).get(st['trade'], {})))
+        speed_factor=factor(s.get('careers', {}).get(qy.career_of(st['trade']), {})),
+        income_gear=income_gear.effects(s.get('careers', {}).get(qy.career_of(st['trade']), {})))
     _profit_state(st)
     market.migrate(st)
     if wealth_pricing.ENABLED:
@@ -193,11 +193,11 @@ def reconcile(s):
     changed = False
     for st in (qy.get(s) or {}).get('stalls', []):
         b = st.get('business')
-        speed = factor(s.get('careers', {}).get(st['trade'], {}))
+        speed = factor(s.get('careers', {}).get(qy.career_of(st['trade']), {}))
         if b is not None and b.get('speed_factor', 1) != speed:
             b['speed_factor'] = speed
             changed = True
-        growth=income_gear.effects(s.get('careers', {}).get(st['trade'], {}))
+        growth=income_gear.effects(s.get('careers', {}).get(qy.career_of(st['trade']), {}))
         if b is not None and b.get('income_gear',dict.fromkeys(income_gear.RATES,0)) != growth:
             b['income_gear']=growth
             changed=True
