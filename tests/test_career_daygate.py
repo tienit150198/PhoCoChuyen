@@ -182,6 +182,18 @@ def test_promotion_good_day_live_line():
     assert pm.good_today(c, 'grocery', {}).endswith('dưới 3,5, chưa là ngày tốt')
     assert pm.good_today(c, 'grocery', {'shift': {'size': 3}}) is None
     assert pm.good_today(c, 'corp_accounting', {}) is None
+    # góp ý #532: a troll's 1★ (or a picky 3★) on a job done right counts at its fair stars, never under what was given
+    c['feed'] = [dict(kind='review', day=4, stars=1, feedback=dict(persona='troll', fair=5)),
+                 dict(kind='review', day=4, stars=3, feedback=dict(persona='picky', fair=5)),
+                 dict(kind='review', day=4, stars=5, feedback=dict(fair=4)), dict(kind='review', day=3, stars=1)]
+    assert pm.day_stars(c) == [5, 5, 5]
+    assert pm.good_today(c, 'grocery', {}).endswith('đã là ngày tốt, khép ngày là tính ✓')
+    assert pm._good_normal(c, {})
+    c['feed'].append(dict(kind='review', day=4, stars=1, feedback=dict(fair=1)))
+    c['feed'].append(dict(kind='review', day=4, stars=1, feedback=dict(fair=1)))
+    c['feed'].append(dict(kind='review', day=4, stars=2, feedback=dict(fair='x')))
+    assert pm.day_stars(c) == [5, 5, 5, 1, 1, 2]
+    assert not pm._good_normal(c, {})
 
 
 def test_validate_accepts_the_mark_and_rejects_garbage():
