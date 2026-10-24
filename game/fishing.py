@@ -693,10 +693,18 @@ def command_commit(db, sid: str, action: str, after, result=None) -> None:
             need(it.access_for(row, sid, now()), 'Bạn không ở trên hòn đảo này.', 'no_island')
         return
     land = (result or {}).get('land') if isinstance(result, dict) else None
-    if action != 'jr_fish_land' or not isinstance(land, dict) or land.get('res') != 'fish' or result.get('duplicate'):
+    if action != 'jr_fish_land' or not isinstance(land, dict) or land.get('res') not in ('fish', 'junk') or result.get('duplicate'):
+        return
+    from .live_chat import notify
+    if land['res'] == 'junk':
+        notify(db, dict(op='fish', sid=sid, junk=land.get('junk')))   # 🎣 the shared lake (live/fish_lake.py): what came up
         return
     from . import fish_lb
-    fish_lb.on_catch(db, sid, after, land['catch'], result)
+    catch = land['catch']
+    fish_lb.on_catch(db, sid, after, catch, result)
+    # 🎣 Hồ câu đông vui (live/fish_lake.py): everyone at that lake sees the fish leap into this player's hands. Sent by
+    # PostgreSQL when this transaction commits, so a refused or rolled back landing shows nothing; an older service ignores it.
+    notify(db, dict(op='fish', sid=sid, spot=catch['spot'], s=catch['s'], g=int(catch['g'])))
 
 
 # ---------------------------------------------------------------- saves
