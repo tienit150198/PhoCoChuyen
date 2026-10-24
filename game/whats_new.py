@@ -39,6 +39,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="2.6.5", date="2026-10-24", items=(   # owner 24/10: "map câu cá nhiều người vào vẫn thấy được", "cho cần xịn thì tỷ lệ cá to nhiều", "giá cá giảm 5% của cá lớn", "bay bị mắc nhà … bay cứ vướng vướng"
+        dict(emoji='👥', text="Hồ câu đông vui: thấy mọi người cùng câu, ai giật được cá gì cũng thấy", go=dict(action='fishing')),
+        dict(emoji='🎣', text="Cần xịn ra cá to, cá hiếm nhiều hơn hẳn; giá cá từ 🟣 Hiếm giảm 5%"),
+        dict(emoji='🪪', text="Chạm vào người khác ở hồ để xem cá to nhất của họ; chat bong bóng với người câu gần bạn"),
+        dict(emoji='🪽', text="Bay xuyên qua nhà cửa, cây cối, không còn vướng"),
+    )),
     dict(version="2.6.4", date="2026-10-24", items=(   # owner 24/10: "chỗ quăng dễ hơn … tầm quăng random … cả 1 km hoặc 2km", "giật cũng là 1 giây", "khó ở chỗ giật màu xanh ấy"
         dict(emoji='🎯', text="Quăng dễ: giữ rồi thả là bay, xa gần hên xui", go=dict(action='fishing')),
         dict(emoji='🚀', text="Cần xịn quăng tới cả 2 km!", go=dict(action='fishing')),

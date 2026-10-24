@@ -1,3 +1,11 @@
+# 2.6.5 — 24/10/2026
+
+Gộp 3 nhánh (chủ game 24/10 "xong hết thì đưa lên 1 lần"). Không đổi schema.
+
+- 👥 Hồ câu chung (feat/fish-shared 59dd24ce + 79a5d0ba): live/fish_lake.py, một hồ chung mỗi chỗ câu, không giới hạn người (30 người gần nhất đủ chi tiết, tối đa 300 tên + vị trí; client vẽ 24 nhân vật thật, còn lại bóng), mẻ cá chỉ phát sau khi jr_fish_land đã lưu, gợi ý quăng/cắn/kéo được kiểm và giới hạn, bảng tin 20 mẻ, banner 🟡/🔴, thẻ người chơi (tôn trọng ẩn bảng), bong bóng chat gần. Cờ LIVE_FISH (mặc định bật khi có LIVE_STREET/LIVE_TOWN).
+- 🎣 Tỷ lệ cá theo cần (feat/fish-odds a889bbfe): RODS `odds` + `heavy`; Long Vương vùng Sâu ⚪10/🟢20/🔵25/🟣22/🟠15/🟡6/🔴2 %; giá 🟣 Hiếm trở lên ×0,95. Xu/giờ: Biển 191k, Vàng 1,16 tr, Bạch kim 5,5 tr, Long Vương 22,5 tr (chủ game chọn giữ). Mồi: giả 2.500, phát sáng 25.000, huyền thoại 640.000 / 5. Tin 🔴 Cổ đại trên dòng tin phố: 1 tin / 10 phút, 1 tin / người / giờ (b6b323bd).
+- 🪽 Bay không vướng (fix/fly-noclip 275a7503): bay thẳng qua nhà, cây, đồ vật ở phố 2.5D, phố cổ điển, Đi dạo; live/town.py nhận vị trí bay trên nhà (giữ biên bản đồ và tốc độ), hạ cánh/lên xe/tắt cánh trên nhà thì đưa về chỗ đi được gần nhất.
+
 # 2.6.4 — 24/10/2026
 
 🎣 Quăng dễ, kéo dễ (feat/fish-cast; chủ game 24/10: "k có 'tầm cần' nha … chỗ quăng dễ hơn … tầm quăng random … cần cổ đại thì cả 1 km hoặc 2km", "giật cũng là 1 giây không cần 3s đâu", "khó ở chỗ giật màu xanh ấy"). Không đổi schema (journey.fish.far là khoá tuỳ chọn). Có gì mới 2.6.4.
