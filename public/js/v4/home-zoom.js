@@ -1,5 +1,5 @@
 /** 🔍 Phóng to, thu nhỏ căn phòng (v4/reno.js): two fingers pinch, the mouse wheel zooms where it points, ＋ / － / ⤢
- * buttons; zoomed in, one finger (or the mouse) on the room pans it. One CSS transform on the room's frame (.dc-zoom):
+ * buttons in a row above the room; zoomed in, one finger (or the mouse) on the room pans it. One CSS transform on the room's frame (.dc-zoom):
  * the SVG keeps its own coordinates (getScreenCTM follows the transform, so taps, drags and the cells still land where
  * they point) and nothing is redrawn while zooming. A redraw writes the same transform back (style()), so it never
  * jumps. The zoom is the viewer's own: nothing is sent or saved. */
@@ -21,8 +21,9 @@ export function zoomer(){
     const f=frameOf(root);if(!f)return;fit(f);
     f.style.transform=css();
     const wrap=f.parentElement;wrap?.classList.toggle('zoomed',Z.k>1);
-    const pct=wrap?.querySelector?.('.dc-zoom-pct');if(pct)pct.textContent=`${Math.round(Z.k*100)}%`;
-    for(const b of wrap?.querySelectorAll?.('[data-dc="zoom"]')||[]){const z=b.dataset.z;b.disabled=z==='in'?Z.k>=ZMAX:Z.k<=ZMIN;}
+    const bar=root.querySelector?.('.dc-zoombar');   // the row above the room
+    const pct=bar?.querySelector?.('.dc-zoom-pct');if(pct)pct.textContent=`${Math.round(Z.k*100)}%`;
+    for(const b of bar?.querySelectorAll?.('[data-dc="zoom"]')||[]){const z=b.dataset.z;b.disabled=z==='in'?Z.k>=ZMAX:Z.k<=ZMIN;}
   }
   /** Zoom to `k` keeping the point under (cx, cy) (screen pixels) where it is; no point: the middle of the room. */
   function zoomAt(root,k,cx,cy){
@@ -76,9 +77,10 @@ export function zoomer(){
   }
   const busy=()=>!!(Z.pinch||Z.pan);
   function reset(root){Z.k=1;Z.x=0;Z.y=0;Z.pts.clear();Z.pinch=null;Z.pan=null;if(root)apply(root);}
-  /** ＋ － ⤢ over the room's corner (buttons: a screen reader and a keyboard zoom too). */
+  /** 🔍 － ＋ ⤢ in a row above the room, like the old view buttons (nothing over the chibi room; buttons: a screen reader
+   * and a keyboard zoom too). */
   function controls(btn){
-    return `<div class="dc-zoombar" role="group" aria-label="Phóng to, thu nhỏ căn phòng">${btn('－','zoom',{z:'out'},'ghost small',` aria-label="Thu nhỏ căn phòng"${Z.k<=ZMIN?' disabled':''}`)}`
+    return `<div class="dc-zoombar" role="group" aria-label="Phóng to, thu nhỏ căn phòng"><span class="dc-zoom-ico" aria-hidden="true">🔍</span>${btn('－','zoom',{z:'out'},'ghost small',` aria-label="Thu nhỏ căn phòng"${Z.k<=ZMIN?' disabled':''}`)}`
       +`<span class="dc-zoom-pct" aria-hidden="true">${Math.round(Z.k*100)}%</span>${btn('＋','zoom',{z:'in'},'ghost small',` aria-label="Phóng to căn phòng"${Z.k>=ZMAX?' disabled':''}`)}`
       +`${btn('⤢','zoom',{z:'fit'},'ghost small',' aria-label="Xem cả phòng"')}</div>`;
   }

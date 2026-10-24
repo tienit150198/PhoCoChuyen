@@ -29,7 +29,7 @@
 .dc-roomwrap{position:relative;min-width:0}
 .dc-room{display:block;width:100%;height:auto;border-radius:18px;border:1px solid var(--line);background:#f3e6d2;box-shadow:var(--shadow-sm);user-select:none;-webkit-user-select:none;touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .dc-room.edit{touch-action:none;cursor:default}
-.dc-hint{position:absolute;right:10px;bottom:10px;max-width:calc(100% - 190px);text-align:right;padding:4px 10px;border-radius:999px;background:rgba(255,253,248,.9);color:#5b4535;font-size:.8rem;font-weight:700;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.dc-hint{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,253,248,.9);color:#5b4535;font-size:.8rem;font-weight:700;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 
 .dc-it{outline:none}
 .dc-room.edit .dc-it{cursor:grab}
@@ -325,20 +325,18 @@
 /* 🎨 Trang trí giúp (game/home_coop.py): the friends' changes beside the room */
 .dc-coop h4{margin:12px 0 4px}.dc-coop-log{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.dc-coop-log li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px;border-top:1px dashed var(--line,#e5d8c5)}.dc-coop-log p{margin:0;line-height:1.4;min-width:0}.dc-coop-log small{color:var(--muted,#746453);flex:none}.dc-coop-log .btn{flex:none}
 .dc-coop .dc-actions{margin-top:10px}
-/* 🔍 Phóng to, thu nhỏ (v4/home-zoom.js): one transform on the room's frame; zoomed in, the room pans under the finger */
+/* 🔍 Phóng to, thu nhỏ (v4/home-zoom.js): one transform on the room's frame; zoomed in, the room pans under the finger.
+ * The buttons sit in a row above the room (where the old view buttons were): nothing is drawn over the chibi room. */
 .dc-roomwrap{overflow:hidden;border-radius:18px}
 .dc-zoom{position:relative;transform-origin:0 0}
 .dc-zoom.moving{will-change:transform}
 .dc-room{touch-action:pan-y}
 .dc-room.edit,.dc-roomwrap.zoomed .dc-room{touch-action:none}
 .dc-roomwrap.zoomed .dc-room:not(.edit){cursor:grab}
-.dc-zoombar{position:absolute;left:8px;bottom:8px;z-index:2;display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:rgba(255,253,248,.92);box-shadow:0 1px 4px rgba(0,0,0,.14)}
-.dc-zoombar .btn{min-width:36px;min-height:36px;padding:0 6px;border-radius:999px;font-weight:800}
-.dc-zoom-pct{min-width:38px;text-align:center;color:#5b4535;font-size:.74rem;font-weight:800}
-.dc-donecorner{position:absolute;right:8px;top:8px;z-index:2}
-.dc-donecorner .btn{min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-/* ▦ the cells a piece snaps to while it is placed */
-.dc-snapgrid{fill:none;stroke:#3fae66;stroke-opacity:.38;stroke-width:1;stroke-dasharray:2 4}
+.dc-zoombar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}
+.dc-zoombar .btn{min-width:40px;min-height:36px;padding:0 10px;font-weight:800}
+.dc-zoom-ico{font-size:1rem;line-height:1}
+.dc-zoom-pct{min-width:40px;text-align:center;color:#5b4535;font-size:.8rem;font-weight:800}
 .dc-turn{font-weight:800}
 /* 🪑 the character using a piece (v4/home-pose.js) */
 .hp-zz text{font-family:system-ui,sans-serif}

@@ -14,7 +14,7 @@ const source=(await readFile(new URL('../public/js/v4/reno.js',import.meta.url),
 globalThis.document={body:{classList:{contains:()=>true}}};
 globalThis.window={matchMedia:()=>({matches:false})};
 const make=()=>new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound','zoomer','BB','flagSVG','tr',
-  source+'\nreturn {S,dropAt,pickSkin,onClick,onKey,guest,page,placeChosen,hw};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},zoomer,new Proxy({},{get:()=>()=>[]}),()=>'',t=>t);
+  source+'\nreturn {S,dropAt,pickSkin,onClick,onKey,guest,page,placeChosen,hw,candidate};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class{},zoomer,new Proxy({},{get:()=>()=>[]}),()=>'',t=>t);
 const ui=make();
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const chair={id:'ghe_dau',name:'Ghế',spot:'floor',cat:'table',w:1,h:1,rooms:['living'],tags:['seat'],cozy:1,price:10,sell:5};
@@ -81,8 +81,18 @@ const back=art.pieceAt(art.turn(sofa,2),0,0,0),front=art.pieceAt(sofa,0,0,0);
 assert.notEqual(back,front);assert.equal(back,art.pieceAt(sofa,0,0,0,null,'back'),'rot 2 is the drawn back');
 assert.doesNotMatch(html,/home3d|Nhà 3D|◈/,'no 3D view any more');
 
+// ---- 🏠 a tap or a drag puts the piece where it points, any unit as before 2.6.0 (no half-cell snap); a turned one keeps its turn
+{const G=art.geom(room),q=ui.candidate(room,chair,art.PX+23*art.SX,G.FY+(17+art.U)*art.SF-3,[],0);
+  assert.deepEqual(q,{r:'living',x:23,y:17,f:0},'not snapped to the half cell');
+  assert.equal(ui.candidate(room,art.turn(sofa,1),art.PX+11*art.SX,G.FY+40*art.SF,[],0)?.rot,1,'the turn goes with it');}
+
 // ---- 🔍 zoom: controls, a pinch-free check of the math, the wheel at full view leaves the page scrolling
 assert.match(html,/class="dc-zoombar"/);
+// 🏠 the chibi room as before 2.6.0 (owner 24/10): no dashed outlines on the drawings (#518), no snap grid, nothing over the room
+const css=await readFile(new URL('../public/css/reno.css',import.meta.url),'utf8');
+for(const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g))if(/stroke-dasharray/.test(m[2]))assert.doesNotMatch(m[1],/\.dc-(grid|stage|side|roomwrap|zoom)/,'no dashes inherited by every drawing: '+m[1].trim());
+assert.doesNotMatch(html,/dc-snapgrid|class="dc-grid" d=|dc-donecorner/,'no snap grid, no ✓ Xong over the room');
+assert.ok(html.indexOf('class="dc-zoombar"')<html.indexOf('class="dc-roomwrap"'),'🔍 in a row above the room');
 const Z=zoomer(),frame={style:{},classList:{add(){},remove(){}},offsetWidth:400,offsetHeight:300,parentElement:{getBoundingClientRect:()=>({left:0,top:0,width:400,height:300}),classList:{toggle(){}},querySelector:()=>null,querySelectorAll:()=>[]}};
 const root={querySelector:s=>s==='.dc-zoom'?frame:null};
 Z.button(root,'in');assert.ok(Z.k>1);assert.match(frame.style.transform,/scale\(1\.350\)/);
@@ -140,6 +150,5 @@ await ui.onClick('pick',{uid:'s'});assert.equal(posts.at(-1).body.action,'pick',
 {const css=await readFile(new URL('../public/css/reno.css',import.meta.url),'utf8'),js=source+await readFile(new URL('../public/js/v4/deco-art.js',import.meta.url),'utf8');
   const dashed=new Set();for(const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g))if(/stroke-dasharray\s*:/.test(m[2]))for(const c of m[1].matchAll(/\.([\w-]+)/g))dashed.add(c[1]);
   for(const m of js.matchAll(/<(div|section|p|span|button|figure|li|ul|header|footer|dialog|label)\b[^>]*class="([^"$]*)"/g))
-    for(const c of m[2].split(/\s+/))assert.ok(!dashed.has(c),`HTML <${m[1]} class="${c}"> would dash every drawing inside it`);
-  assert.match(source,/class="dc-snapgrid"/,'the snap grid has its own class');}
+    for(const c of m[2].split(/\s+/))assert.ok(!dashed.has(c),`HTML <${m[1]} class="${c}"> would dash every drawing inside it`);}
 console.log('Home editor (2D): owned moves, turns that fit, held turns, R, busy/guest rejection, coop endpoint, turned drawing, zoom, poses passed');
