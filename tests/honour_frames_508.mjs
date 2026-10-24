@@ -2,7 +2,7 @@
 // that were a top board's art, and an auction frame (🏮 Đèn Lồng Vàng) missing from the frame chooser.
 //   node tests/honour_frames_508.mjs
 import assert from 'node:assert/strict';
-import {TABLES,ofId,look,pick,choices,chooser,avatar,bubble,logo,uqSpec,uqSvg,uqBadge} from '../public/js/v4/honour-frames.js';
+import {TABLES,ofId,look,pick,choices,chooser,avatar,bubble,logo,uqSpec,uqSvg,uqBadge,careerSpec} from '../public/js/v4/honour-frames.js';
 import {FRAMES} from '../public/js/v4/honour-frames-data.js';
 import {itemArt} from '../public/js/v4/auction-display.js';
 
@@ -86,4 +86,34 @@ assert.equal(pick(['dh_den_long','lb_wealth_2'],{}).uq,'dh_den_long');
 assert.equal(pick(['lb_wealth_2','dh_den_long'],{}).board,'wealth');
 assert.equal(pick(['hf_off','dh_den_long'],{}),null);
 assert.deepEqual(choices({state:{journey:{}}}),[]);assert.deepEqual(choices(null),[]);
+// 4. 🏆 #514 (24/10: "khung của Trùm hãng phim cho dễ thương xíu, nhìn khung hiện tại buồn quá"): a workplace without its
+// own art wears a frame drawn for it (its family's colours and ornaments, its crest, TRÙM), no two alike, never art 56
+{
+  const {CAREER,CAREER_DRAWN,FAMILY,FILM}=TABLES;
+  const svgIn=html=>decodeURIComponent(/url\('data:image\/svg\+xml,([^']*)'\)/.exec(html)[1]);
+  const ids=['actor',...Object.keys(CAREER_DRAWN)],specs=ids.map(careerSpec),svgs=ids.map(b=>avatar([`lb_${b}_1`],{},'<i></i>'));
+  assert.ok(ids.length>=46,'every workplace that wore the shared frame');
+  for(const b of ids){
+    assert.ok(!CAREER[b],`${b}: no art of its own`);
+    const f=ofId(`lb_${b}_1`);assert.deepEqual(f,{n:null,tier:3,career:b,cd:true});
+    assert.equal(ofId(`lb_${b}_2`),null,'a workplace: top 1 only');
+    const a=avatar([`lb_${b}_1`],{},'<i></i>');
+    assert.doesNotMatch(a,/\/icons\/frames\//,`${b}: never a raster frame`);assert.match(a,/hf-uq hf-top/);
+    assert.match(a,new RegExp(`data-hf-icon="${careerSpec(b)[0]}"`));assert.doesNotMatch(a,/data-hf-rank/);
+    assert.match(bubble([`lb_${b}_1`],{}).attrs,/--uq-tag:'TRÙM'/);
+    assert.doesNotMatch(svgIn(a),/undefined|NaN/);
+    assert.ok(FAMILY[CAREER_DRAWN[b]?.[0]]||b==='actor');
+  }
+  assert.equal(new Set(svgs).size,ids.length,'no two workplace frames alike');
+  assert.equal(new Set(specs.map(x=>x.slice(1,4).join())).size,ids.length,'nor their colours');
+  assert.equal(new Set(specs.map(x=>x[0])).size,ids.length,'each its own crest');
+  assert.deepEqual(careerSpec('actor'),FILM);assert.equal(FILM[0],'🎬');assert.equal(FILM[7],'film');
+  const film=svgIn(avatar(['lb_actor_1'],{},'<i></i>'));
+  assert.match(film,/stroke-dasharray="3 4.2"/,'🎬 the film strip has its sprocket holes');assert.match(film,/#9fe3d0/,'pastel mint');
+  assert.match(film,/<rect x="-6" y="-2"/,'clapperboards');assert.match(film,/r="6.6"/,'film reels');
+  assert.match(avatar(['lb_milk_tea_1'],{},'<i></i>'),/\/icons\/frames\/37_av\.webp/,'a workplace with its own art keeps it');
+  const later=careerSpec('a_newer_career');assert.equal(later[6],'TRÙM');assert.ok(!specs.some(x=>x.slice(1,4).join()===later.slice(1,4).join()));
+  assert.match(logo('actor',1),/hf-logo/);assert.equal(logo('actor',2),'');
+  assert.match(chooser({state:{journey:{}},lbTitles:[{board:'actor',rank:1,emoji:'🏆',name:'Trùm hãng phim',label:'Top 1'}]}),/data-id="lb_actor_1"/);
+}
 console.log(`#508: ${seen.size} top looks distinct, ${ids.length} one-of-a-kind frames, auction titles in the chooser passed.`);

@@ -54,6 +54,19 @@ class UniqueFrames(unittest.TestCase):
         schema = (ROOT / 'game/pg_schema.py').read_text(encoding='utf-8')
         self.assertIn("CREATE UNIQUE INDEX IF NOT EXISTS auction_lots_item ON auction_lots(item) WHERE status IN ('open', 'sold')", schema)
 
+    def test_every_workplace_trum_has_a_frame_of_its_own(self):
+        """#514: every workplace whose top 1 is a Trùm has its own art (CAREER) or a frame drawn for it (CAREER_DRAWN,
+        🎬 actor: FILM); none is left on the one shared plain frame."""
+        from game.content import CAREERS
+        from game.lb_titles import CAREER_TITLE
+        src = JS.read_text(encoding='utf-8')
+        art = set(re.findall(r"([a-z_]+):'\d\d'", src[src.index('const CAREER={'):src.index('};', src.index('const CAREER={'))]))
+        drawn = set(re.findall(r"([a-z_]+):\['[a-z]+','", src[src.index('const CAREER_DRAWN={'):src.index('};', src.index('const CAREER_DRAWN={'))]))
+        self.assertFalse(art & drawn)
+        missing = set(CAREERS) - set(CAREER_TITLE) - art - drawn - {'actor'}
+        self.assertEqual(missing, set(), 'a Trùm without a frame of its own')
+        self.assertNotIn('CAREER_ANY', src)
+
     def test_never_a_top_boards_art(self):
         src = JS.read_text(encoding='utf-8')
         self.assertNotIn("return {n:'60',tier:4}", src, "every auction title used to wear the 🏺 collection top 1's art")
