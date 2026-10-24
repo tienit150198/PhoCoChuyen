@@ -298,12 +298,15 @@ export class PhaserWorld {
     // viewport crosses the phone breakpoint. Following keeps the usual fit.
     const next=camera?this.stage?.islandOverview?islandOverviewCamera(w,h):this.stage?.cameraMode==='browse'?
       {scrollX:camera.scrollX+(this.width-w)/2,scrollY:camera.scrollY+(this.height-h)/2,zoom:camera.zoom}:
-      resizedCamera(this.mode,{width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},w,h):null;
+      this.centred(resizedCamera(this.mode,{width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},w,h),w,h):null;
     this.width=w;this.height=h;
     if(this.stage&&camera){this.engine.scale.resize(w,h);camera.setSize(w,h);if(!this.stage.cameraSet)this.resetCamera();else if(next)camera.setScroll(next.scrollX,next.scrollY).setZoom(next.zoom);}
     this.wake();
   }
   resetCamera(){this.stage?.resetCamera();this.wake();}
+  /** 🎥 A following town view resized (a phone turned, the bars or the keyboard, a desktop window): the player in the
+   * middle again at the fitted zoom (resizedCamera kept the old middle, or the town's when crossing the phone width). */
+  private centred(view:{scrollX:number;scrollY:number;zoom:number},w:number,h:number){if(this.mode!=='town')return view;const p=px(this.player,55);return {...view,scrollX:p.x-w/2,scrollY:p.y-h/2};}
   recenter(){this.resetCamera();}
   overviewIsland(){this.setMode('town');this.clearMovementControls();this.player.path=[];this.player.goal=null;this.pending=null;this.stage?.overviewIsland();this.wake();}
   overview(){this.overviewIsland();}
@@ -356,7 +359,12 @@ export class PhaserWorld {
     if(!this.landing&&(this.keys.size||this.movementInput.x||this.movementInput.y)){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
       const next=(air?moveInAir:moveOnGround)(stage.navigation,this.player,normalizeMovementInput(sx,sy),Math.min(.06,dt)*fast);/* 🪽 in the air: straight, only the bounds */this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);if(moving)this.followAgain();
     }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt*fast,'screen',air?undefined:stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;if(this.landing){this.landing=null;this.wake();}const cb=this.pending;this.pending=null;if(cb&&ride&&!this.rideParked){this.rideParked=true;this.rideBoost=0;stage.parkRide();}cb?.();}}
-    if(moving&&stage.cameraMode==='follow'){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);camera.setScroll(view.scrollX,view.scrollY);}
+    // 🎥 Following (owner 24/10 "game mở ra k focus theo nhân vật gì cả … nhân vật đi đâu ấy"): in the town the camera
+    // keeps the player near the middle every frame, not only on the frames they walk (a landing glide, a correction from
+    // the live service, a resize, a sheet closing), and the loop stays awake until it has caught up.
+    let cameraMoving=false;
+    if(stage.cameraMode==='follow'&&(moving||this.mode==='town')&&stage.cameras?.main){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);
+      if(Math.abs(view.scrollX-camera.scrollX)>.01||Math.abs(view.scrollY-camera.scrollY)>.01){camera.setScroll(view.scrollX,view.scrollY);cameraMoving=true;}}
     if(moving){this.direction=presenceDirection(before,this.player,this.direction);const delta=project({x:this.player.x-before.x,y:this.player.y-before.y});this.walkDistance+=Math.hypot(delta.x,delta.y);}
     stage.bobParked(this.time);
     stage.positionPlayer(moving);
@@ -366,7 +374,7 @@ export class PhaserWorld {
     if(effect.clear){this._fx?.clear?.();this.paintFx();}
     else if(this.mode==='work'&&this._fx&&(effect.needsFrames||stage.renderRequested||this.time-this.fxPaintAt>.2&&ev?.end!=null)){this.paintFx();}
     // Phaser advances its pending image queue on Scene UPDATE, even while the view is still.
-    const active=fading||moving||remoteMoving||petMoving||((!!ride||!!flight)&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
+    const active=fading||moving||cameraMoving||remoteMoving||petMoving||((!!ride||!!flight)&&this.rideBoost>0)||this.keys.size>0||!!(this.movementInput.x||this.movementInput.y)||this.pointers.size>0||effect.needsFrames||stage.hasEffects()||stage.load.isLoading();
     this.watchFrames(active);
     if(!active&&stage.settle()){this.engine.loop.sleep();if(wingsLive)this.wingTick();}
   }
@@ -521,7 +529,7 @@ class DioramaScene extends Phaser.Scene {
     const modeChanged=this.previousMode!==this.owner.mode,changed=modeChanged||this.owner.mode==='work'&&this.previousCareer!==this.owner.career;
     this.previousMode=this.owner.mode;this.previousCareer=this.owner.career;this.cameras.main.setBackgroundColor(this.owner.mode==='town'?SEA_COLOR:'#ede3ce');this.background=this.add.graphics().setDepth(-10000);this.staticObjects.push(this.background);
     if(this.owner.mode==='town')this.town();else this.work();
-    if(changed||!isWalkable(this.navigation,this.owner.player)&&!(this.owner.inAir&&inside(this.owner.player,this.navigation.bounds))){const home=this.owner.mode==='town'?{x:6.2,y:6.2}:{x:6.4,y:6.4};const at=nearestWalkable(this.navigation,home)||home;Object.assign(this.owner.player,at,{path:[],goal:null});this.owner.pending=null;if(modeChanged||!this.cameraSet||this.cameraMode==='follow')this.resetCamera(false);}
+    if(changed||!isWalkable(this.navigation,this.owner.player)&&!(this.owner.inAir&&inside(this.owner.player,this.navigation.bounds))){const home=this.owner.mode==='town'?{x:6.2,y:6.2}:{x:6.4,y:6.4};const at=nearestWalkable(this.navigation,home)||home;Object.assign(this.owner.player,at,{path:[],goal:null});this.owner.pending=null;if(modeChanged||!this.cameraSet||this.cameraMode==='follow')this.resetCamera();}   // 🎥 in the town: on the player
     this.refreshVehicles();this.treasureObjects.clear();this.syncTreasure();this.reindexStatics();this.refreshPlayer(this.riderFrame());this.positionPlayer(false);this.updateOcclusion(1/60);this.syncRemotePlayers();if(this.fxImage)this.fxImage.setVisible(this.owner.mode==='work');this.requestRender();
   }
   syncTreasure(){

@@ -104,11 +104,17 @@ export function advanceRoute(from:Point,path:Point[],stride:number,metric:'groun
   }
   return {point,path:[],arrived:true};
 }
-/** Apply only while walking, so an idle user's deliberate camera pan stays untouched. */
+/** The follow camera (never while browsing: an idle user's deliberate pan stays untouched). Owner 24/10 "game mở ra k
+ * focus theo nhân vật gì cả, di chuyển và mở game ra nhân vật đi đâu ấy": the walker stays near the middle of the view,
+ * inside a small comfort box (the old box reached the screen's edges, under the joystick and the bottom bar); past it
+ * the camera eases after them, quickly when they are about to leave the view. */
+export const FOLLOW_BOX={x:.12,maxX:90,up:.1,maxUp:90,down:.08,maxDown:70};
 export function followCamera(camera:CameraView,point:Point,dt:number):CameraView{
   const x=camera.width/2+(point.x-camera.scrollX-camera.width/2)*camera.zoom,y=camera.height/2+(point.y-camera.scrollY-camera.height/2)*camera.zoom;
-  const marginX=Math.min(160,camera.width*.23),top=Math.min(180,camera.height*.22),bottom=camera.height*.72;
-  const dx=x-Math.max(marginX,Math.min(camera.width-marginX,x)),dy=y-Math.max(top,Math.min(bottom,y)),smooth=1-Math.exp(-8*Math.max(0,Math.min(.06,dt)));
+  const cx=camera.width/2,cy=camera.height/2,hx=Math.min(FOLLOW_BOX.maxX,camera.width*FOLLOW_BOX.x),up=Math.min(FOLLOW_BOX.maxUp,camera.height*FOLLOW_BOX.up),down=Math.min(FOLLOW_BOX.maxDown,camera.height*FOLLOW_BOX.down);
+  const dx=x-Math.max(cx-hx,Math.min(cx+hx,x)),dy=y-Math.max(cy-up,Math.min(cy+down,y));
+  if(!dx&&!dy)return {...camera};
+  const far=Math.abs(x-cx)>camera.width*.38||Math.abs(y-cy)>camera.height*.38,smooth=1-Math.exp(-(far?20:9)*Math.max(0,Math.min(.06,dt)));
   return {...camera,scrollX:camera.scrollX+dx/camera.zoom*smooth,scrollY:camera.scrollY+dy/camera.zoom*smooth};
 }
 export function presenceDirection(from:Point,to:Point,previous:Facing='se'):Facing{

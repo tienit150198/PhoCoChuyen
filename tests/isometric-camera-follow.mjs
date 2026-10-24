@@ -157,6 +157,28 @@ try {
     const f=fixture(t);const start=view(f.camera);pointer(f,'pointerdown',400,300);pointer(f,'pointerup',401,301);walk(f,240);
     assert.notDeepEqual(view(f.camera),start,'tap does not silently disable following');
   });
+  // 2.6.5.1 (owner 24/10 "game mở ra k focus theo nhân vật gì cả, di chuyển và mở game ra nhân vật đi đâu ấy"): the town
+  // opens on the player and keeps them near the middle while they walk, fly, are corrected, or the view is resized.
+  const onScreen=f=>{const c=f.camera,p={x:(f.world.player.x-f.world.player.y)*64,y:(f.world.player.x+f.world.player.y)*32-55};
+    return {x:c.width/2+(p.x-c.scrollX-c.width/2)*c.zoom-c.width/2,y:c.height/2+(p.y-c.scrollY-c.height/2)*c.zoom-c.height/2};};
+  const near=(f,what,fx=.2,fy=.2)=>{const o=onScreen(f);assert.ok(Math.abs(o.x)<=f.camera.width*fx&&Math.abs(o.y)<=f.camera.height*fy,`${what}: the player ${Math.round(o.x)},${Math.round(o.y)} px from the middle of ${f.camera.width}x${f.camera.height}`);};
+  for(const [width,height] of [[390,844],[1280,800]])await test(`the town opens on the player and follows them closely (${width}x${height})`,t=>{
+    const f=fixture(t);resize(f,width,height);f.world.recenter();near(f,'open',.01,.01);
+    for(const [x,y] of [[1,0],[0,1],[-1,0],[0,-1],[.7,.7]]){f.world.setMovementInput(x,y);for(let i=0;i<180;i++){f.world.step(1/60);near(f,`walking ${x},${y}`);}f.world.setMovementInput(0,0);}
+    f.world.flight={speed:2.3,wg:{k:'rong',r:7}};   // 🪽 the fastest wings
+    for(const [x,y] of [[1,0],[0,1],[-1,-1]]){f.world.setMovementInput(x,y);for(let i=0;i<180;i++){f.world.step(1/60);near(f,`flying ${x},${y}`,.25,.25);}f.world.setMovementInput(0,0);}
+    f.world.flight=null;for(let i=0;i<120;i++)f.world.step(1/60);
+    f.world.player.path=[{x:f.world.player.x+12,y:f.world.player.y-9}];f.world.player.goal=f.world.player.path[0];
+    for(let i=0;i<600&&f.world.player.path.length;i++){f.world.step(1/30);near(f,'a tap far away',.22,.22);}
+  });
+  await test('a correction, a resize or a stray view: the follow camera brings the player back to the middle',t=>{
+    const f=fixture(t);f.world.recenter();
+    f.world.correctPresence({x:60,y:-40});near(f,'corrected by the live service',.01,.01);
+    for(const [width,height] of [[390,844],[1300,800],[844,390]]){resize(f,width,height);near(f,`resized to ${width}x${height}`,.01,.01);}
+    f.camera.setScroll(f.camera.scrollX+3000,f.camera.scrollY-2000);assert.equal(f.world.cameraMode,'follow');
+    for(let i=0;i<90;i++)f.world.step(1/60);near(f,'idle, the view eased back',.2,.2);
+    for(let i=0;i<240;i++)f.world.step(1/60);assert.equal(f.world.engine.loop.running,false,'caught up: the loop sleeps again');
+  });
   await test('the public camera mode and opt-in diagnostics expose browsing and recenter transitions',t=>{
     const f=fixture(t);assert.equal(f.world.cameraMode,'follow');assert.equal(f.world.debug().cameraMode,'follow');
     drag(f);assert.equal(f.world.cameraMode,'browse');assert.equal(f.world.debug().cameraMode,'browse');
