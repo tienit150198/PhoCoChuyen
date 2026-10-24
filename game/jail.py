@@ -396,7 +396,7 @@ OPEN_MARRIAGE = frozenset({'jail_ask', 'jail_bail', 'seen', 'lookup', 'block', '
 # Live frames (live/protocol.py): every frame of these features, and leaving a room of any other one.
 OPEN_FEATURES = frozenset({'core', 'chat'})
 OPEN_FRAMES = frozenset({'booth_out', 'booth_cancel', 'date_leave', 'fair_out', 'home_out', 'kara_out', 'walk_out',
-                         'town_out', 'visit_out'})
+                         'town_out', 'visit_out', 'fl_out'})
 
 
 def allowed(action: str) -> bool:
